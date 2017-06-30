@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
 				</ul>
 			</li>
 			
@@ -102,6 +102,7 @@
 
 const AccessException = require('./accessexception');
 const Logger = require('composer-common').Logger;
+const ModelUtil = require('composer-common').ModelUtil;
 
 const LOG = Logger.getLog('AccessController');
 
@@ -294,22 +295,16 @@ class AccessController {
         const method = 'matchNoun';
         LOG.entry(method, resource.getFullyQualifiedIdentifier(), aclRule);
 
-        // Determine the input fully qualified name and ID.
-        let fqn = resource.getFullyQualifiedType();
-        let ns = resource.getNamespace();
+        // Determine the input ID.
         let id = resource.getIdentifier();
 
-        // Check the namespace and type of the ACL rule.
+        // Check to see if the resource is an instance of the
+        // required resource type, or is in the required
+        // namespace.
         let noun = aclRule.getNoun();
-
-        // Check to see if the fully qualified name matches.
         let reqFQN = noun.getFullyQualifiedName();
-        if (fqn === reqFQN) {
-            // Noun is matching fully qualified type.
-        } else if (ns === reqFQN) {
-            // Noun is matching namespace.
-        } else {
-            // Noun does not match.
+
+        if (!ModelUtil.isMatchingType(resource, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -378,14 +373,9 @@ class AccessController {
         // Check to see if the participant is an instance of the
         // required participant type, or is in the required
         // namespace.
-        let ns = participant.getNamespace();
         let reqFQN = reqParticipant.getFullyQualifiedName();
-        if (participant.instanceOf(reqFQN)) {
-            // Participant is matching type or subtype.
-        } else if (ns === reqFQN) {
-            // Participant is matching namespace.
-        } else {
-            // Participant does not match.
+
+        if (!ModelUtil.isMatchingType(participant, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -438,14 +428,9 @@ class AccessController {
         // Check to see if the participant is an instance of the
         // required participant type, or is in the required
         // namespace.
-        let ns = transaction.getNamespace();
         let reqFQN = reqTransaction.getFullyQualifiedName();
-        if (transaction.instanceOf(reqFQN)) {
-            // Transaction is matching type or subtype.
-        } else if (ns === reqFQN) {
-            // Transaction is matching namespace.
-        } else {
-            // Participant does not match.
+
+        if (!ModelUtil.isMatchingType(transaction, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -580,7 +565,7 @@ module.exports = AccessController;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 22nd 2017
+		on Fri Jun 30th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

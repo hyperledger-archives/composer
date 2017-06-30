@@ -7,15 +7,12 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Support | Hyperledger Composer</title>
+    <title>Support | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
@@ -34,12 +31,10 @@ ga('send', 'pageview');
 
   
     <link href="/composer/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/assets/css/main.css" rel="stylesheet">
-    <link href="/composer/assets/css/footer.css" rel="stylesheet">
-    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
-    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
     <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
   
 </head>
 
@@ -47,147 +42,72 @@ ga('send', 'pageview');
 <body class="">
 
   
-  <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
-        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
+            <div class="top-nav-docs">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
                 <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li> -->
-                <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
-                </li>
-                <li>
                     <a href="../introduction/introduction.html">Docs</a>
-                </li>
-                <li>
                     <a href="../support/index.html">Community</a>
-                </li>
-            </ul>
+            </div>
         </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container
-   -->
 </nav>
 
-  
+          </div>
 
-  <div class="SiteWrapper">
-    
-      <div class="content">
-<div class="container">
-    <!-- Main CTAs Section -->
-    <div class="row" style="padding-bottom:10px;">
-        <div class="col-lg-12">
-            <h1 class="page-header">
-                Community
-            </h1>
-        </div>
-      </div>
+          <div class="docs-current-page-grid">
+          <p>Support</p>
+          </div>
 
-      <div class="row" style="padding-bottom:10px;">
-        <div class="col-lg-12">
-          <h3>Ask a Question</h3>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4><i class="fa fa-fw fa-rocket"></i> Hyperledger Rocket.Chat</h4>
-                </div>
-                <div class="panel-body">
-                    <p>You will need a <a href="https://identity.linuxfoundation.org/">Linux Foundation ID</a>, or alternatively you can log in with Facebook, GitHub, Google, or OpenStack.</p>
-                    <a href="https://chat.hyperledger.org/channel/composer" class="btn btn-default">Let's chat</a>
-                </div>
-            </div>
-        </div>
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><a href="../introduction/introduction.html">Introduction</a></li>
+<li><a href="../installing/installing-index.html">Installing</a></li>
+<li><a href="../tutorials/tutorials.html">Tutorials</a></li>
+<li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
+<li><a href="../applications/applications-index.html">Developing Applications</a></li>
+<li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
+<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
+<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
+<li><a href="../reference/reference-index.html">Reference</a></li>
+<li><a href="../support/index.html">Support</a>
 
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4><i class="fa fa-fw fa-stack-overflow"></i> Stack Overflow</h4>
-                </div>
-                <div class="panel-body">
-                  <p>Ask questions in Stack Overflow with the tag <b>#hyperledger-composer.</b></p>
-                  <a href="http://stackoverflow.com/questions/tagged/hyperledger-composer" class="btn btn-default">Ask now</a>
-                </div>
-            </div>
-        </div>
-      </div>
+<ul>
+<li><a href="../support/index.html">Support</a></li>
+</ul></li>
+</ul>
 
-      <div class="row" style="padding-bottom:10px;">
-        <div class="col-lg-12">
-          <h3>Contribute to the Project</h3>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4><i class="fa fa-fw fa-github"></i> GitHub</h4>
-                </div>
-                <div class="panel-body">
-                    <p>Check out the code, feel free to get involved.</p>
-                    <a href="https://github.com/hyperledger/composer" class="btn btn-default">GitHub</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4><i class="fa fa-fw fa-phone"></i> Community Call</h4>
-                </div>
-                <div class="panel-body">
-                    <p>Join our weekly open community calls.</p>
-                    <a href="https://github.com/hyperledger/composer/wiki/" class="btn btn-default">Learn how</a>
-                </div>
-            </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-12">
-          <p>Oh hey, you're on the Community page!  Hopefully that means you've given Hyperledger Composer a try: what did you think?</p>
-          <p>You can help us out by completing this 1-question <a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2"><b>survey</b></a> (score us from 0 to 10) - we really appreciate your feedback!</p>
-        </div>
-      </div>
-
-    <article class="main">
-      
-
-      <section class="content-chunk">
-        
-          
-        
-
-        
-      </section>
-    </article>
-  </div>
-</div>
-
-    
-
-    
-      <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
       <p>Released under the Apache License v2.0</p>
     </div>
-  <div class="footer-right">
+  <div class="footer-right-break">
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
@@ -199,6 +119,108 @@ ga('send', 'pageview');
 </div>
 </div>
 
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="community">Community</h1>
+
+<h2 id="ask-a-question">Ask a question</h2>
+
+<h3 id="hyperledger-rocket-chat">Hyperledger Rocket.Chat</h3>
+
+<p>You will need a <a href="https://identity.linuxfoundation.org/">Linux Foundation ID</a> , or alternatively you can log in with Facebook, GitHub, Google, or OpenStack.</p>
+
+<p><a href="https://chat.hyperledger.org/channel/composer" class="support-button primary">Let&#39;s chat</a>
+<br><br></p>
+
+<h3 id="stack-overflow">Stack Overflow</h3>
+
+<p>Ask questions in Stack Overflow with the tag <strong>#hyperledger-composer</strong>.</p>
+
+<p><a href="http://stackoverflow.com/questions/tagged/hyperledger-composer" class="support-button primary">Ask now</a>
+<br><br></p>
+
+<h2 id="contribute-to-the-project">Contribute to the Project</h2>
+
+<h3 id="github">GitHub</h3>
+
+<p>Check out the code, feel free to get involved.</p>
+
+<p><a href="https://github.com/hyperledger/composer" class="support-button primary">GitHub</a>
+<br><br></p>
+
+<h3 id="community-call">Community Call</h3>
+
+<p>Join our weekly open community calls.</p>
+
+<p><a href="https://github.com/hyperledger/composer/wiki/" class="support-button primary">Learn how</a>
+<br><br></p>
+
+<h3 id="feedback">Feedback</h3>
+
+<p>Oh hey, you&#39;re on the Community page!  Hopefully that means you&#39;ve given Hyperledger Composer a try: what did you think?
+You can help us out by completing this <a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">1-question survey</a> (score us from 0 to 10) - we really appreciate your feedback!</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+
+    
+
     
 
 
@@ -207,22 +229,4 @@ ga('send', 'pageview');
 
 <!-- jQuery -->
 <script src="/composer/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="/composer/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>

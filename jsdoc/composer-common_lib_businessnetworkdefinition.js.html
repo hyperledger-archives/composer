@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
 				</ul>
 			</li>
 			
@@ -102,6 +102,8 @@
 
 const AclFile = require('./acl/aclfile');
 const AclManager = require('./aclmanager');
+const QueryFile = require('./query/queryfile');
+const QueryManager = require('./querymanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
 const Factory = require('./factory');
 const fs = require('fs');
@@ -114,7 +116,6 @@ const minimatch = require('minimatch');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
 const Serializer = require('./serializer');
-
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 
@@ -174,6 +175,7 @@ class BusinessNetworkDefinition {
 
         this.modelManager = new ModelManager();
         this.aclManager = new AclManager(this.modelManager);
+        this.queryManager = new QueryManager(this.modelManager);
         this.scriptManager = new ScriptManager(this.modelManager);
         this.introspector = new Introspector(this.modelManager);
         this.factory = new Factory(this.modelManager);
@@ -239,6 +241,7 @@ class BusinessNetworkDefinition {
             let ctoModelFileNames = [];
             let jsScriptFiles = [];
             let permissionsFiles = [];
+            let queriesFiles = [];
             let businessNetworkDefinition;
             let readmeContents = null;
             let packageJsonContents = null;
@@ -307,11 +310,22 @@ class BusinessNetworkDefinition {
                 });
             }
 
+            LOG.debug(method, 'Loading query queries.qry');
+            let queryFile = zip.file('queries.qry');
+            if (queryFile !== null) {
+                promise = promise.then(() => {
+                    return queryFile.async('string');
+                }).then(contents => {
+                    LOG.debug(method, 'Loaded queries.qry');
+                    queriesFiles.push(contents);
+                });
+            }
+
             return promise.then(() => {
                 LOG.debug(method, 'Loaded package.json');
                 businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageJsonContents, readmeContents);
 
-                LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
+                LOG.debug(method, 'Loaded all model, JavaScript, ACL files and Query files');
                 LOG.debug(method, 'Adding model files to model manager');
                 businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
                 LOG.debug(method, 'Added model files to model manager');
@@ -327,6 +341,11 @@ class BusinessNetworkDefinition {
                     businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
                 });
                 LOG.debug(method, 'Added ACL files to ACL manager');
+                LOG.debug(method, 'Adding Query files to query manager');
+                queriesFiles.forEach((queryFile) => {
+                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getModelManager(), queryFile));
+                });
+                LOG.debug(method, 'Added Query files to query manager');
 
                 LOG.exit(method, businessNetworkDefinition.toString());
                 return businessNetworkDefinition; // Returns business network (with model manager and script manager)
@@ -356,11 +375,20 @@ class BusinessNetworkDefinition {
             zip.file(aclFile.getIdentifier(), aclFile.definitions, options);
         }
 
+        const queryFile = this.getQueryManager().getQueryFile();
+        if(queryFile) {
+            zip.file(queryFile.getIdentifier(), queryFile.definitions, options);
+        }
+
         let modelManager = this.getModelManager();
         let modelFiles = modelManager.getModelFiles();
         zip.file('models/', null, Object.assign({}, options, { dir: true }));
         modelFiles.forEach(function(file) {
             let fileName;
+            // ignore the system namespace when creating an archive
+            if (file.isSystemModelFile()){
+                return;
+            }
             if (file.fileName === 'UNKNOWN'  || file.fileName === null || !file.fileName) {
                 fileName = file.namespace + '.cto';
             } else {
@@ -590,6 +618,19 @@ class BusinessNetworkDefinition {
             }
         }
 
+         // grab the query.qry
+        const queryPath = fsPath.resolve(path, 'queries.qry');
+        if(fs.existsSync(queryPath)) {
+            let queryContents = fs.readFileSync( queryPath, ENCODING);
+
+            if(queryContents) {
+                LOG.debug(method, 'Loaded queries.qry', queryContents);
+                const queryFile = new QueryFile('queries.qry', businessNetwork.getModelManager(), queryContents);
+                businessNetwork.getQueryManager().setQueryFile(queryFile);
+            }
+        }
+
+
         LOG.exit(method, path);
         return Promise.resolve(businessNetwork);
     }
@@ -720,6 +761,16 @@ class BusinessNetworkDefinition {
         return this.modelManager;
     }
 
+    /**
+     * Provides access to the QueryManager for this business network. The QueryManager
+     * manage access to the models that have been defined within this business network.
+     * @return {QueryManager} the QueryManager for this business network
+     * @private
+     */
+    getQueryManager() {
+        return this.queryManager;
+    }
+
 }
 
 module.exports = BusinessNetworkDefinition;
@@ -770,7 +821,7 @@ module.exports = BusinessNetworkDefinition;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 22nd 2017
+		on Fri Jun 30th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

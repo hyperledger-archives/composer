@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
 				</ul>
 			</li>
 			
@@ -106,6 +106,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
+const QueryCompiler = require('./querycompiler');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const Resolver = require('./resolver');
@@ -116,6 +117,7 @@ const LOG = Logger.getLog('Context');
 
 const businessNetworkCache = LRU(8);
 const compiledScriptBundleCache = LRU(8);
+const compiledQueryBundleCache = LRU(8);
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -124,19 +126,6 @@ const compiledScriptBundleCache = LRU(8);
  * @memberof module:composer-runtime
  */
 class Context {
-
-    /**
-     * Get a business network from the cache.
-     * @param {string} businessNetworkHash The hash of the business network definition.
-     * @return {BusinessNetworkDefinition} The business network definition.
-     */
-    static getCachedBusinessNetwork(businessNetworkHash) {
-        const method = 'getCachedBusinessNetwork';
-        LOG.entry(method, businessNetworkHash);
-        const result = businessNetworkCache.get(businessNetworkHash);
-        LOG.exit(method, result);
-        return result;
-    }
 
     /**
      * Store a business network in the cache.
@@ -153,25 +142,24 @@ class Context {
     /**
      * Store a compiled script bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
-     * @return {CompiledScriptBundle} The compiled script bundle.
-     */
-    static getCachedCompiledScriptBundle(businessNetworkHash) {
-        const method = 'getCachedCompiledScriptBundle';
-        LOG.entry(method, businessNetworkHash);
-        const result = compiledScriptBundleCache.get(businessNetworkHash);
-        LOG.exit(method, result);
-        return result;
-    }
-
-    /**
-     * Store a compiled script bundle in the cache.
-     * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
      */
     static cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle) {
         const method = 'cacheCompiledScriptBundle';
         LOG.entry(method, businessNetworkHash, compiledScriptBundle);
         compiledScriptBundleCache.set(businessNetworkHash, compiledScriptBundle);
+        LOG.exit(method);
+    }
+
+    /**
+     * Store a compiled query bundle in the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @param {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
+     */
+    static cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle) {
+        const method = 'cacheCompiledQueryBundle';
+        LOG.entry(method, businessNetworkHash, compiledQueryBundle);
+        compiledQueryBundleCache.set(businessNetworkHash, compiledQueryBundle);
         LOG.exit(method);
     }
 
@@ -195,6 +183,8 @@ class Context {
         this.eventNumber = 0;
         this.scriptCompiler = null;
         this.compiledScriptBundle = null;
+        this.queryCompiler = null;
+        this.compiledQueryBundle = null;
     }
 
     /**
@@ -272,6 +262,36 @@ class Context {
                 Context.cacheCompiledScriptBundle(businessNetworkRecord.hash, compiledScriptBundle);
                 LOG.exit(method, compiledScriptBundle);
                 return compiledScriptBundle;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    /**
+     * Load or compile the compiled query bundle.
+     * @param {Object} businessNetworkRecord The business network record.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
+     */
+    loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition) {
+        const method = 'loadCompiledQueryBundle';
+        LOG.entry(method);
+        LOG.debug(method, 'Looking in cache for compiled query bundle', businessNetworkRecord.hash);
+        let compiledQueryBundle = compiledQueryBundleCache.get(businessNetworkRecord.hash);
+        if (compiledQueryBundle) {
+            LOG.debug(method, 'Compiled query bundle is in cache');
+            return Promise.resolve(compiledQueryBundle);
+        }
+        LOG.debug(method, 'Compiled query bundle is not in cache, loading');
+        return Promise.resolve()
+            .then(() => {
+                let compiledQueryBundle = this.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                Context.cacheCompiledQueryBundle(businessNetworkRecord.hash, compiledQueryBundle);
+                LOG.exit(method, compiledQueryBundle);
+                return compiledQueryBundle;
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -371,6 +391,37 @@ class Context {
     }
 
     /**
+     * Get the compiled query bundle to use.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition to use.
+     * @param {Object} [options] The options to use.
+     * @param {CompiledQueryBundle} [options.compiledQueryBundle] The business network definition to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    findCompiledQueryBundle(businessNetworkDefinition, options) {
+        const method = 'findCompiledQueryBundle';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.compiledQueryBundle) {
+                    LOG.debug(method, 'Compiled query bundle already specified');
+                    return options.compiledQueryBundle;
+                } else {
+                    LOG.debug(method, 'Compiled query bundle not specified, loading from world state');
+                    return this.loadBusinessNetworkRecord()
+                        .then((businessNetworkRecord) => {
+                            return this.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition);
+                        });
+                }
+            })
+            .then((compiledQueryBundle) => {
+                LOG.exit(method, compiledQueryBundle);
+                return compiledQueryBundle;
+            });
+    }
+
+    /**
      * Initialize the context for use.
      * @param {Object} [options] The options to use.
      * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
@@ -393,11 +444,16 @@ class Context {
             .then((businessNetworkDefinition) => {
                 LOG.debug(method, 'Got business network archive');
                 this.businessNetworkDefinition = businessNetworkDefinition;
-                return this.findCompiledScriptBundle(businessNetworkDefinition, options);
+                return this.findCompiledScriptBundle(this.businessNetworkDefinition, options);
             })
             .then((compiledScriptBundle) => {
                 LOG.debug(method, 'Got compiled script bundle');
                 this.compiledScriptBundle = compiledScriptBundle;
+                return this.findCompiledQueryBundle(this.businessNetworkDefinition, options);
+            })
+            .then((compiledQueryBundle) => {
+                LOG.debug(method, 'Got compiled query bundle');
+                this.compiledQueryBundle = compiledQueryBundle;
                 LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
                 if (options.sysregistries) {
                     this.sysregistries = options.sysregistries;
@@ -465,15 +521,6 @@ class Context {
      * @return {IdentityService} The identity service provided by the chaincode container.
      */
     getIdentityService() {
-        throw new Error('abstract function called');
-    }
-
-     /**
-     * Get the query service provided by the chaincode container.
-     * @abstract
-     * @return {QueryService} The query service provided by the chaincode container.
-     */
-    getQueryService() {
         throw new Error('abstract function called');
     }
 
@@ -589,7 +636,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this.getEventService(), this.getQueryService(), this);
+            this.api = new Api(this);
         }
         return this.api;
     }
@@ -726,6 +773,25 @@ class Context {
     }
 
     /**
+     * Get the query compiler.
+     * @return {QueryCompiler} queryCompiler The query compiler.
+     */
+    getQueryCompiler() {
+        if (!this.queryCompiler) {
+            this.queryCompiler = new QueryCompiler();
+        }
+        return this.queryCompiler;
+    }
+
+    /**
+     * Get the compiled query bundle.
+     * @return {CompiledScriptBundle} compiledQueryBundle The compiled query bundle.
+     */
+    getCompiledQueryBundle() {
+        return this.compiledQueryBundle;
+    }
+
+    /**
      * Called at the start of a transaction.
      * @param {boolean} readOnly Is the transaction read-only?
      * @return {Promise} A promise that will be resolved when complete, or rejected
@@ -800,14 +866,6 @@ class Context {
         }, Promise.resolve());
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = Context;
@@ -858,7 +916,7 @@ module.exports = Context;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 22nd 2017
+		on Fri Jun 30th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

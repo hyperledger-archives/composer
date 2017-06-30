@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
 				</ul>
 			</li>
 			
@@ -106,6 +106,27 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
+// const ENCODING = 'utf8';
+
+const LOG = require('./log/logger').getLog('ModelManager');
+const SYSTEM_MODEL_CONTENTS = `
+    namespace org.hyperledger.composer.system
+
+    abstract asset Asset {  }
+
+    abstract participant Participant {   }
+
+    abstract transaction Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+
+    abstract event Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+`;
+
 /**
  * &lt;p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
@@ -134,7 +155,26 @@ class ModelManager {
      * &lt;/p>
      */
     constructor() {
+        LOG.entry('constructor');
         this.modelFiles = {};
+        this.addSystemModels();
+        LOG.exit('constructor');
+    }
+
+    /**
+     * Add the system models to the model manager
+     * @private
+     */
+    addSystemModels() {
+        LOG.entry('addSystemModels');
+
+        // add the system model
+        LOG.info('info', SYSTEM_MODEL_CONTENTS);
+        let m = new ModelFile(this, SYSTEM_MODEL_CONTENTS);
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+
+        LOG.exit('addSystemModels');
     }
 
     /**
@@ -182,18 +222,25 @@ class ModelManager {
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
+        const NAME = 'addModelFile';
+        LOG.info(NAME,'addModelFile',modelFile,fileName);
+
+        let m = null;
+
         if (typeof modelFile === 'string') {
-            let m = new ModelFile(this, modelFile, fileName);
-            m.validate();
-            m.retrofit();
-            this.modelFiles[m.getNamespace()] = m;
-            return m;
-        } else {
-            modelFile.validate();
-            modelFile.retrofit();
-            this.modelFiles[modelFile.getNamespace()] = modelFile;
-            return modelFile;
+            m = new ModelFile(this, modelFile, fileName);
         }
+        else {
+            m = modelFile;
+        }
+
+        if(m.isSystemModelFile()) {
+            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+        }
+
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+        return m;
     }
 
     /**
@@ -207,21 +254,27 @@ class ModelManager {
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {
+        const NAME = 'updateModelFile';
+        LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
+            if (m.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[m.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
             m.validate();
-            m.retrofit();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
+            if (modelFile.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[modelFile.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
             modelFile.validate();
-            modelFile.retrofit();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
@@ -235,6 +288,9 @@ class ModelManager {
     deleteModelFile(namespace) {
         if (!this.modelFiles[namespace]) {
             throw new Error('model file does not exist');
+        } else if (namespace === ModelUtil.getSystemNamespace()) {
+            throw new Error('Cannot delete system namespace');
+
         }
         delete this.modelFiles[namespace];
     }
@@ -248,6 +304,8 @@ class ModelManager {
      * @returns {Object[]} The newly added model files (internal).
      */
     addModelFiles(modelFiles, fileNames) {
+        const NAME = 'addModelFiles';
+        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -264,9 +322,15 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
+                    if (m.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
+                    if (modelFile.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }
@@ -277,16 +341,6 @@ class ModelManager {
                 this.modelFiles[ns].validate();
             }
 
-            // let's go and retrofit the model to make sure all is good
-            // make sure that models are all correctly/
-            // temp workaround until system models in place
-            for (let ns in this.modelFiles) {
-                if (! this.modelFiles[ns] === undefined) {
-                    this.modelFiles[ns].retrofit();
-                }
-            }
-
-
             // return the model files.
             return newModelFiles;
         }
@@ -294,11 +348,18 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
+        } finally{
+            LOG.exit(NAME,newModelFiles);
         }
     }
 
     /**
      * Get the array of model file instances
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
+     *
      * @return {ModelFile[]} The ModelFiles registered
      * @private
      */
@@ -354,10 +415,15 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
+        this.addSystemModels();
     }
 
     /**
      * Get the ModelFile associated with a namespace
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
      * @param {string} namespace - the namespace containing the ModelFile
      * @return {ModelFile} registered ModelFile for the namespace or null
      * @private
@@ -383,6 +449,7 @@ class ModelManager {
      * @private
      */
     getType(qualifiedName) {
+
         const namespace = ModelUtil.getNamespace(qualifiedName);
 
         const modelFile = this.getModelFile(namespace);
@@ -403,6 +470,15 @@ class ModelManager {
         }
 
         return classDecl;
+    }
+
+
+    /**
+     * Get all class declarations from system namespaces
+     * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
+     */
+    getSystemTypes() {
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
     }
 
     /**
@@ -464,15 +540,6 @@ class ModelManager {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
     }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = ModelManager;
@@ -523,7 +590,7 @@ module.exports = ModelManager;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 22nd 2017
+		on Fri Jun 30th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

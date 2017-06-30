@@ -12,10 +12,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
@@ -45,8 +42,7 @@ ga('send', 'pageview');
   <div class="SiteWrapper">
     
       <div class="content">
-    <article class="container">
-      <div class="row">
+    <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="col-md-12">
@@ -64,13 +60,54 @@ ga('send', 'pageview');
           </section>
         </div>
         
-      </div>
       <div class="PageNavigation">
     
     
   </div>
     </article>
 </div>
+
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
 
     
 
@@ -82,22 +119,4 @@ ga('send', 'pageview');
 
 <!-- jQuery -->
 <script src="/composer/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="/composer/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>

@@ -12,10 +12,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
@@ -34,12 +31,10 @@ ga('send', 'pageview');
 
   
     <link href="/composer/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/assets/css/main.css" rel="stylesheet">
-    <link href="/composer/assets/css/footer.css" rel="stylesheet">
-    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
-    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
     <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
   
 </head>
 
@@ -47,85 +42,97 @@ ga('send', 'pageview');
 <body class="">
 
   
-  <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
-        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
+            <div class="top-nav-docs">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
                 <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li> -->
-                <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
-                </li>
-                <li>
                     <a href="../introduction/introduction.html">Docs</a>
-                </li>
-                <li>
                     <a href="../support/index.html">Community</a>
-                </li>
-            </ul>
+            </div>
         </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container
-   -->
 </nav>
 
-  
+          </div>
 
-  <div class="SiteWrapper">
-    
-      <div class="content">
-    <article class="container">
-      <div class="row">
-        <!-- If there's a sidebar, divide into 2 columns -->
-        
-        <div class="col-md-3">
-          <nav class="context-nav" id="myScrollspy">
+          <div class="docs-current-page-grid">
+          <p>Writing a Node.js application</p>
+          </div>
+
+          <nav class="context-nav">
             
             
-              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../installing/installing-index.html">Installing</a></strong>
-<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
-<a href="../applications/node.html">Node.js applications</a>
-<a href="../applications/web.html">Web or mobile applications</a>
-<a href="../applications/subscribing-to-events.html">Subscribing to events</a>
-<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
-<strong><a href="../support/index.html">Support</a></strong></p>
+              <ul>
+<li><a href="../introduction/introduction.html">Introduction</a></li>
+<li><a href="../installing/installing-index.html">Installing</a></li>
+<li><a href="../tutorials/tutorials.html">Tutorials</a></li>
+<li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
+<li><a href="../applications/applications-index.html">Developing Applications</a>
+
+<ul>
+<li><a href="../applications/node.html">Node.js applications</a></li>
+<li><a href="../applications/web.html">Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
+<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
+<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
+<li><a href="../reference/reference-index.html">Reference</a></li>
+<li><a href="../support/index.html">Support</a></li>
+</ul>
 
             
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
           </nav>
         </div>
-        <div class="col-md-9">
+        <div class="page-content-grid">
           <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
             
               <h1 id="writing-node-js-applications">Writing Node.js Applications</h1>
 
-<hr>
-
 <p>Application developers use the <code>composer-client</code> npm module to programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions. If applications need to be able to deploy or administer business networks, then the <code>composer-admin</code> npm module can be used.</p>
 
-<p>The sample <a href="https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction. This has been implemented using a JavaScript class; however you are free to structure your code as you wish. </p>
+<p>The sample <a href="https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction. This has been implemented using a JavaScript class; however you are free to structure your code as you wish.</p>
 
 <p>It&#39;s worth highlighting that the style of the API is to use promises. Typically Hyperledger Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.</p>
 
@@ -152,7 +159,7 @@ This API returns a Promise to the businessNetworkDefinition if successful:</p>
 </code></pre></div>
 <p>For a client application this is all the essential setup that is required, from this point on it&#39;s up to what the application wants to do as to what APIs are called.</p>
 
-<h2 id="adding-assets-to-a-regsitry">Adding assets to a regsitry</h2>
+<h2 id="adding-assets-to-a-registry">Adding assets to a registry</h2>
 
 <p>The Hyperledger Composer runtime will create a default registry for each type of modeled asset. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. The <code>getAssetRegistry()</code> method takes the fully qualified asset name as defined in the CTO model file (that is the namespace plus the name of the asset type). It returns a promise that is resolved with the asset registry:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
@@ -162,7 +169,7 @@ This API returns a Promise to the businessNetworkDefinition if successful:</p>
 </code></pre></div>
 <p>Next step is to create some assets (look for the method <code>_bootstrapTitles</code> in the code )</p>
 
-<p>A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the properties defined in the model.</p>
+<p>A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The identifiers here (firstName lastName) matches with the properties defined in the model.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
 <span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'PID:1234567890'</span><span class="p">);</span>
 <span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Fred'</span><span class="p">;</span>
@@ -239,7 +246,7 @@ participant Person identified by personId {
   <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'LID:1148'</span><span class="p">);</span>
 <span class="p">})</span>
 </code></pre></div>
-<p>The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
+<p>The getAssetRegistry call should now be looking a bit familiar, the get API is used to get a specific land title.
 The next step is to create the transaction we want to submit.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getSerializer</span><span class="p">();</span>
 
@@ -265,7 +272,6 @@ The next step is to create the transaction we want to submit.</p>
         </div>
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
-      </div>
       <div class="PageNavigation">
     
     
@@ -273,25 +279,49 @@ The next step is to create the transaction we want to submit.</p>
     </article>
 </div>
 
-    
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
 
     
-      <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
 
     
 
@@ -301,22 +331,4 @@ The next step is to create the transaction we want to submit.</p>
 
 <!-- jQuery -->
 <script src="/composer/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="/composer/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>

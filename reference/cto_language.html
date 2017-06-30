@@ -7,15 +7,12 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Modeling Language | Hyperledger Composer</title>
+    <title>Modeling Language | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
@@ -34,12 +31,10 @@ ga('send', 'pageview');
 
   
     <link href="/composer/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/assets/css/main.css" rel="stylesheet">
-    <link href="/composer/assets/css/footer.css" rel="stylesheet">
-    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
-    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
     <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
   
 </head>
 
@@ -47,86 +42,98 @@ ga('send', 'pageview');
 <body class="">
 
   
-  <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
-        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
+            <div class="top-nav-docs">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
                 <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li> -->
-                <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
-                </li>
-                <li>
                     <a href="../introduction/introduction.html">Docs</a>
-                </li>
-                <li>
                     <a href="../support/index.html">Community</a>
-                </li>
-            </ul>
+            </div>
         </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container
-   -->
 </nav>
 
-  
+          </div>
 
-  <div class="SiteWrapper">
-    
-      <div class="content">
-    <article class="container">
-      <div class="row">
-        <!-- If there's a sidebar, divide into 2 columns -->
-        
-        <div class="col-md-3">
-          <nav class="context-nav" id="myScrollspy">
+          <div class="docs-current-page-grid">
+          <p>Modeling Language</p>
+          </div>
+
+          <nav class="context-nav">
             
             
-              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../installing/installing-index.html">Installing</a></strong>
-<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
-<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
-<a href="../reference/MeetTheModules.html">npm Modules</a>
-<a href="../reference/cto_language.html">Modeling Language</a>
-<a href="../reference/acl_language.html">Access Control Language</a>
-<a href="../reference/connectionprofile.html">Connection Profile</a>
-<a href="../reference/js_scripts.html">Transaction Processor Functions</a>
-<a href="../reference/commands.html">Command Line Interface</a>
-<a href="../reference/composer.participant.add.html">CLI Add Participant</a>
-<a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
-<a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
-<a href="../reference/composer.identity.import.html">CLI Import Identity</a>
-<a href="../jsdoc/index.html">API Documentation</a>
-<a href="../reference/glossary.html">Glossary</a>
-<strong><a href="../support/index.html">Support</a></strong></p>
+              <ul>
+<li><a href="../introduction/introduction.html">Introduction</a></li>
+<li><a href="../installing/installing-index.html">Installing</a></li>
+<li><a href="../tutorials/tutorials.html">Tutorials</a></li>
+<li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
+<li><a href="../applications/applications-index.html">Developing Applications</a></li>
+<li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
+<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
+<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
+<li><a href="../reference/reference-index.html">Reference</a>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profile</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">CLI Commands</a></li>
+<li><a href="../jsdoc/index.html">API Documentation</a></li>
+<li><a href="../reference/glossary.html">Glossary</a></li>
+</ul></li>
+<li><a href="../support/index.html">Support</a></li>
+</ul>
 
             
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
           </nav>
         </div>
-        <div class="col-md-9">
+        <div class="page-content-grid">
           <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
             
               <h1 id="hyperledger-composer-modeling-language">Hyperledger Composer Modeling Language</h1>
 
@@ -144,13 +151,13 @@ in this namespace.</li>
 <li>A set of resource definitions (see below).</li>
 </ol>
 
-<h3 id="imports">Imports</h3>
+<h2 id="imports">Imports</h2>
 
 <p>Use the <code>import</code> keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the <code>.*</code> notation to import all the types from another namespace.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">import org.example.MyAsset
 import org.example2.*
 </code></pre></div>
-<h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
+<h2 id="declarations-of-enumerated-types">Declarations of enumerated types</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
 * An enumerated type
 */
@@ -161,11 +168,11 @@ o PIG
 o DEER_OTHER
 }
 </code></pre></div>
-<h3 id="declarations-of-assets-events-participants-transactions">Declarations of Assets, Events, Participants, Transactions</h3>
+<h2 id="declarations-of-assets-events-participants-transactions">Declarations of Assets, Events, Participants, Transactions</h2>
 
 <p>Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.</p>
 
-<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.</p>
+<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an Asset (instance) has an Asset Definition.</p>
 
 <p>A resource definition has the following properties:</p>
 
@@ -221,7 +228,30 @@ transaction AnimalMovementDeparture extends AnimalMovement {
 </code></pre></div></li>
 </ol>
 
-<h3 id="concepts">Concepts</h3>
+<h2 id="hyperledger-composer-system-namespace">Hyperledger Composer System Namespace</h2>
+
+<p>As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.</p>
+
+<p>Represented as a <code>.cto</code> model file, the system namespace is as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    namespace org.hyperledger.composer.system
+    abstract asset Asset {  }
+    abstract participant Participant {   }
+    abstract transaction Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+    abstract event Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+</code></pre></div>
+<p>In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.</p>
+
+<blockquote>
+<p>If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.</p>
+</blockquote>
+
+<h2 id="concepts">Concepts</h2>
 
 <p>Concepts are complex types (classes) that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.</p>
 
@@ -237,7 +267,7 @@ concept UnitedStatesAddress extends Address {
   o String zipcode
 }
 </code></pre></div>
-<h3 id="primitive-types">Primitive types</h3>
+<h2 id="primitive-types">Primitive types</h2>
 
 <p>Composer resources are defined in terms of the following primitive types:</p>
 
@@ -251,7 +281,7 @@ and UTZ offset</li>
 <li>Boolean : a Boolean value, either true or false.</li>
 </ol>
 
-<h3 id="arrays">Arrays</h3>
+<h2 id="arrays">Arrays</h2>
 
 <p>All types in Composer may be declared as arrays using the [] notation. Hence</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Integer[] integerArray
@@ -262,7 +292,7 @@ and UTZ offset</li>
 <p>Is an array of relationships to the Animal type, stored in a field called
 &#39;incoming&#39;.</p>
 
-<h3 id="relationships">Relationships</h3>
+<h2 id="relationships">Relationships</h2>
 
 <p>A relationship in the Composer language is a tuple composed of:</p>
 
@@ -284,7 +314,7 @@ namespace with the identifier 123456.</p>
 referenced. The act of resolution may result in null, if the object no longer
 exists or the information in the relationship is invalid.</p>
 
-<h3 id="field-validators">Field Validators</h3>
+<h2 id="field-validators">Field Validators</h2>
 
 <p>String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.</p>
 
@@ -326,7 +356,6 @@ exists or the information in the relationship is invalid.</p>
         </div>
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
-      </div>
       <div class="PageNavigation">
     
     
@@ -334,25 +363,49 @@ exists or the information in the relationship is invalid.</p>
     </article>
 </div>
 
-    
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
 
     
-      <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
 
     
 
@@ -362,22 +415,4 @@ exists or the information in the relationship is invalid.</p>
 
 <!-- jQuery -->
 <script src="/composer/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="/composer/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>
