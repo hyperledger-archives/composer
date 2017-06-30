@@ -21,7 +21,6 @@ const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Util = require('../util');
-const ValueGeneratorFactory = require('./valuegenerator');
 const Globalize = require('../globalize');
 
 /**
@@ -84,11 +83,8 @@ class InstanceGenerator {
      */
     visitField(field, parameters) {
         if (field.isArray()) {
-            let result = [];
-            for (let i = 0; i < 3; i++) {
-                result.push(this.getFieldValue(field, parameters));
-            }
-            return result;
+            const valueSupplier = () => this.getFieldValue(field, parameters);
+            return parameters.valueGenerator.getArray(valueSupplier);
         } else {
             return this.getFieldValue(field, parameters);
         }
@@ -102,33 +98,34 @@ class InstanceGenerator {
      */
     getFieldValue(field, parameters) {
         let type = field.getFullyQualifiedTypeName();
-        let valueGenerator = parameters.valueGenerator || ValueGeneratorFactory.sample();
+
         if (ModelUtil.isPrimitiveType(type)) {
             switch(type) {
             case 'DateTime':
-                return valueGenerator.getDateTime();
+                return parameters.valueGenerator.getDateTime();
             case 'Integer':
-                return valueGenerator.getInteger();
+                return parameters.valueGenerator.getInteger();
             case 'Long':
-                return valueGenerator.getLong();
+                return parameters.valueGenerator.getLong();
             case 'Double':
-                return valueGenerator.getDouble();
+                return parameters.valueGenerator.getDouble();
             case 'Boolean':
-                return valueGenerator.getBoolean();
+                return parameters.valueGenerator.getBoolean();
             default:
-                return valueGenerator.getString();
+                return parameters.valueGenerator.getString();
             }
         }
+
         let classDeclaration = parameters.modelManager.getType(type);
+
         if (classDeclaration instanceof EnumDeclaration) {
             let enumValues = classDeclaration.getOwnProperties();
-            return valueGenerator.getEnum(enumValues).getName();
+            return parameters.valueGenerator.getEnum(enumValues).getName();
         }
 
         if (classDeclaration.isAbstract()) {
-            const newClassDecl = this.findConcreteSubclass(classDeclaration);
-            classDeclaration = newClassDecl;
-            type = newClassDecl.getName();
+            classDeclaration = this.findConcreteSubclass(classDeclaration);
+            type = classDeclaration.getName();
         }
 
         if (classDeclaration.isConcept()) {
@@ -181,25 +178,19 @@ class InstanceGenerator {
      * @private
      */
     visitRelationshipDeclaration(relationshipDeclaration, parameters) {
-        let classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
-        let identifierFieldName = classDeclaration.getIdentifierFieldName();
-        let factory = parameters.factory;
-        if (relationshipDeclaration.isArray()) {
-            let result = [];
-            for (let i = 0; i < 3; i++) {
-                let idx = Math.round(Math.random() * 9999).toString();
-                idx = leftPad(idx, 4, '0');
-                let id = `${identifierFieldName}:${idx}`;
-                let relationship = factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
-                result.push(relationship);
-            }
-            return result;
-        } else {
+        const classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
+        const identifierFieldName = classDeclaration.getIdentifierFieldName();
+        const factory = parameters.factory;
+        const valueSupplier = () => {
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
-            let id = `${identifierFieldName}:${idx}`;
-            let relationship = factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
-            return relationship;
+            const id = `${identifierFieldName}:${idx}`;
+            return factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
+        };
+        if (relationshipDeclaration.isArray()) {
+            return parameters.valueGenerator.getArray(valueSupplier);
+        } else {
+            return valueSupplier();
         }
     }
 
