@@ -3,8 +3,11 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${DIR}"
 
-# build the latest version of the installer - note the 0.8.0
-cat install.sh.in | sed 's/{{ENV}}//g' | sed 's/{{ENV_VER}}/0.8.0/g' > install.sh
+RELEASE_VER=$1
+echo building for ${RELEASE_VER}
+
+# build the latest version of the installer - note the release version is the param to this script
+cat install.sh.in | sed 's/{{ENV}}//g' | sed "s/{{ENV_VER}}/${RELEASE_VER}/g" > install.sh
 echo "PAYLOAD:" >> install.sh
 tar czf - docker-compose-playground.yml fabric-dev-servers mychannel.tx twoorgs.genesis.block >> install.sh
 
