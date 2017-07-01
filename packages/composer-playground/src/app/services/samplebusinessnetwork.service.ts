@@ -233,12 +233,13 @@ export class SampleBusinessNetworkService {
         }
 
         let repo = this.octo.repos(owner, repository);
-
         return repo.contents(path + 'lib').fetch()
             .then((scripts) => {
-                let scriptFilePromises: Promise<any>[] = [];
+                let scriptFilePromises: Promise < any > [] = [];
                 scripts.items.forEach((script) => {
-                    scriptFilePromises.push(repo.contents(script.path).fetch());
+                    if (script.path.endsWith('.js')) {
+                        scriptFilePromises.push(repo.contents(script.path).fetch());
+                    }
                 });
                 return Promise.all(scriptFilePromises);
             })
