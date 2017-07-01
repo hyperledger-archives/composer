@@ -5,8 +5,6 @@ const snowWhite = require('sleep');
 // Note that this script is called via npm run e2e:main/nobuild and consequently all
 // paths are relative to that calling location (two directories up)
 
-let protractorRC = null;
-
 // Start the target test server as a spawned child process
 let childServer = spawn('http-server', ['./dist', '-p 3001', '--cors', '--push-state']);
 
@@ -29,5 +27,5 @@ childProtractor.stderr.on('data', function(data) {
 childProtractor.on('close', function(code) {
     console.log('Return code: ', code);
     childServer.kill();
-    process.exit(protractorRC);
+    process.exit(code);
 });

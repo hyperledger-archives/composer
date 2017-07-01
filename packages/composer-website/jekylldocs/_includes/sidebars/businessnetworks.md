@@ -8,7 +8,7 @@
   - [Emitting events](../business-network/publishing-events.html)
   - [Testing](../business-network/testing.html)
   - [Publishing to npm](../business-network/bnd-publish.html)
-  - [Querying Assets](../business-network/query.html)
+  - [Querying Business Network Data](../business-network/query.html)
 - [Developing Applications](../applications/applications-index.html)
 - [Integrating Existing Systems](../integrating/integrating-index.html)
 - [Managing and Operating](../managing/managingindex.html)

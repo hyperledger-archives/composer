@@ -1,11 +1,11 @@
 namespace com.testing
 
-participant Participant identified by participantKey {
+participant MyParticipant identified by participantKey {
   o String participantKey
   o String newValue
 }
 
-participant Participant identified by participantKey {
+participant MyParticipant identified by participantKey {
   o String participantKey
   o String newValue
 }

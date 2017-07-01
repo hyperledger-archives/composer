@@ -17,7 +17,7 @@ In addition it includes a rich set of JavaScript APIs to build native Node.js ap
 
 ---
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'applications' and page.title != "Developing Applications" %}
 ### {{ page.title }}

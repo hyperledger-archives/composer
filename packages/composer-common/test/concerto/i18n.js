@@ -98,7 +98,7 @@ describe('Globalization', function() {
 
             let modelFile = modelManager.getModelFile('concerto');
             modelFile.getNamespace().should.equal('concerto');
-            let classDeclaration = modelFile.getType('concerto.Participant');
+            let classDeclaration = modelFile.getType('concerto.MyParticipant');
             classDeclaration.should.not.be.undefined;
 
             expect(function(){
@@ -223,7 +223,7 @@ describe('Globalization', function() {
     });
 
     describe.skip('#check Factory messages are correct', function() {
-        describe('check messages in newInstance()', function() {
+        describe('check messages in newResource()', function() {
             it('where namespace hasn\'t been registered in the model manager', function() {
                 let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
                 formatter({
@@ -254,7 +254,7 @@ describe('Globalization', function() {
 
                 expect(function() {
                     let factory = new Factory(modelManager);
-                    factory.newInstance('foo', 'bar', '123');
+                    factory.newResource('foo', 'bar', '123');
                 }).to.throw(Error, 'Type bar is not declared in namespace foo');
             });
         });

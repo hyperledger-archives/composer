@@ -25,18 +25,22 @@ const TypeNotFoundException = require('./typenotfoundexception');
 const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODEL_CONTENTS = `
     namespace org.hyperledger.composer.system
-    abstract asset $Asset {  }
-    abstract participant $Participant {   }
-    abstract transaction $Transaction identified by transactionId{
+
+    abstract asset Asset {  }
+
+    abstract participant Participant {   }
+
+    abstract transaction Transaction identified by transactionId{
       o String transactionId
       o DateTime timestamp
     }
-    abstract event $Event identified by eventId{
+
+    abstract event Event identified by eventId{
       o String eventId
       o DateTime timestamp
     }
 `;
-// const util = require('util');
+
 /**
  * <p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
@@ -67,10 +71,24 @@ class ModelManager {
     constructor() {
         LOG.entry('constructor');
         this.modelFiles = {};
-        let systemModelContents = SYSTEM_MODEL_CONTENTS;
-        LOG.info('info',systemModelContents);
-        this.addModelFile(systemModelContents);
+        this.addSystemModels();
         LOG.exit('constructor');
+    }
+
+    /**
+     * Add the system models to the model manager
+     * @private
+     */
+    addSystemModels() {
+        LOG.entry('addSystemModels');
+
+        // add the system model
+        LOG.info('info', SYSTEM_MODEL_CONTENTS);
+        let m = new ModelFile(this, SYSTEM_MODEL_CONTENTS);
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+
+        LOG.exit('addSystemModels');
     }
 
     /**
@@ -121,16 +139,22 @@ class ModelManager {
         const NAME = 'addModelFile';
         LOG.info(NAME,'addModelFile',modelFile,fileName);
 
+        let m = null;
+
         if (typeof modelFile === 'string') {
-            let m = new ModelFile(this, modelFile, fileName);
-            m.validate();
-            this.modelFiles[m.getNamespace()] = m;
-            return m;
-        } else {
-            modelFile.validate();
-            this.modelFiles[modelFile.getNamespace()] = modelFile;
-            return modelFile;
+            m = new ModelFile(this, modelFile, fileName);
         }
+        else {
+            m = modelFile;
+        }
+
+        if(m.isSystemModelFile()) {
+            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+        }
+
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+        return m;
     }
 
     /**
@@ -148,6 +172,9 @@ class ModelManager {
         LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
+            if (m.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[m.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -155,6 +182,9 @@ class ModelManager {
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
+            if (modelFile.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[modelFile.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -206,9 +236,15 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
+                    if (m.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
+                    if (modelFile.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }
@@ -233,6 +269,11 @@ class ModelManager {
 
     /**
      * Get the array of model file instances
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
+     *
      * @return {ModelFile[]} The ModelFiles registered
      * @private
      */
@@ -288,12 +329,15 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
-        let systemModelContents = SYSTEM_MODEL_CONTENTS;
-        this.addModelFile(systemModelContents);
+        this.addSystemModels();
     }
 
     /**
      * Get the ModelFile associated with a namespace
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
      * @param {string} namespace - the namespace containing the ModelFile
      * @return {ModelFile} registered ModelFile for the namespace or null
      * @private
@@ -340,6 +384,15 @@ class ModelManager {
         }
 
         return classDecl;
+    }
+
+
+    /**
+     * Get all class declarations from system namespaces
+     * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
+     */
+    getSystemTypes() {
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
     }
 
     /**
@@ -401,7 +454,6 @@ class ModelManager {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
     }
-
 }
 
 module.exports = ModelManager;

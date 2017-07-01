@@ -15,6 +15,7 @@
 'use strict';
 
 const Globalize = require('./globalize');
+const COMPOSER_SYSTEM_NAMESPACE = 'org.hyperledger.composer.system';
 
 /**
  * Internal Model Utility Class
@@ -116,9 +117,7 @@ class ModelUtil {
      * @private
      */
     static getSystemNamespace() {
-        let result = 'org.hyperledger.composer.system';
-
-        return result;
+        return COMPOSER_SYSTEM_NAMESPACE;
     }
 
     /**

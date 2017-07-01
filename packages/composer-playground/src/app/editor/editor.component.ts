@@ -53,7 +53,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
-    private inputFileNameArray: string[] = null ; // This is the input 'FileName' before the currentFile is updated
+    private inputFileNameArray: string[] = null; // This is the input 'FileName' before the currentFile is updated
     private fileNameError: string = null;
 
     private listItem; // Used in html passage for auto scroll action
@@ -78,40 +78,40 @@ export class EditorComponent implements OnInit, OnDestroy {
         });
 
         return this.initializationService.initialize()
-        .then(() => {
+            .then(() => {
 
-            this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
-            .subscribe((noError) => {
-                if (this.editorFilesValidate() && noError) {
-                    this.noError = noError;
-                    this.dirty = true;
+                this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
+                    .subscribe((noError) => {
+                        if (this.editorFilesValidate() && noError) {
+                            this.noError = noError;
+                            this.dirty = true;
+                        } else {
+                            this.noError = false;
+                        }
+                    });
+
+                this.clientService.namespaceChanged$.takeWhile(() => this.alive)
+                    .subscribe((newName) => {
+                        if (this.currentFile !== null) {
+                            this.updateFiles();
+                            let index = this.findFileIndex(true, newName);
+                            this.setCurrentFile(this.files[index]);
+                        }
+                    });
+
+                this.updatePackageInfo();
+                this.updateFiles();
+
+                if (this.editorService.getCurrentFile() !== null) {
+                    this.setCurrentFile(this.editorService.getCurrentFile());
                 } else {
-                    this.noError = false;
+                    this.setInitialFile();
                 }
             });
-
-            this.clientService.namespaceChanged$.takeWhile(() => this.alive)
-            .subscribe((newName) => {
-                if (this.currentFile !== null) {
-                    this.updateFiles();
-                    let index = this.findFileIndex(true, newName);
-                    this.setCurrentFile(this.files[index]);
-                }
-            });
-
-            this.updatePackageInfo();
-            this.updateFiles();
-
-            if (this.editorService.getCurrentFile() !== null) {
-                this.setCurrentFile(this.editorService.getCurrentFile());
-            } else {
-                this.setInitialFile();
-            }
-        });
     }
 
     ngOnDestroy() {
-       this.alive = false;
+        this.alive = false;
     }
 
     updatePackageInfo() {
@@ -138,7 +138,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
         let always = (this.currentFile === null || file.readme || file.acl);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
-        if ( always || conditional ) {
+        if (always || conditional) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
@@ -183,11 +183,14 @@ export class EditorComponent implements OnInit, OnDestroy {
         let modelFiles = this.clientService.getModelFiles();
         let newModelFiles = [];
         modelFiles.forEach((modelFile) => {
-            newModelFiles.push({
-                model: true,
-                id: modelFile.getNamespace(),
-                displayID: modelFile.getFileName(),
-            });
+            // ignore system model files
+            if (!modelFile.isSystemModelFile()) {
+                newModelFiles.push({
+                    model: true,
+                    id: modelFile.getNamespace(),
+                    displayID: modelFile.getName(),
+                });
+            }
         });
         newModelFiles.sort((a, b) => {
             return a.displayID.localeCompare(b.displayID);
@@ -240,7 +243,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         if (!contents) {
             let newModelNamespace = this.addModelNamespace;
             let increment = 0;
-            while ( this.findFileIndex(true, newModelNamespace) !== -1) {
+            while (this.findFileIndex(true, newModelNamespace) !== -1) {
                 newModelNamespace = this.addModelNamespace + increment;
                 increment++;
             }
@@ -272,7 +275,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         if (!scriptFile) {
             let increment = 0;
             let scriptName = this.addScriptFileName + this.addScriptFileExtension;
-            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+            while (existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1) {
                 scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
                 increment++;
             }
@@ -303,11 +306,11 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.updateFiles();
                 this.setCurrentFile(this.files[0]);
                 this.dirty = true;
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
         } else {
             this.clientService.setBusinessNetworkReadme(readme);
             this.updateFiles();
@@ -323,11 +326,11 @@ export class EditorComponent implements OnInit, OnDestroy {
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your ACL file to disc.';
             confirmModalRef.result.then((result) => {
                 this.processRuleFileAddition(rules);
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
         } else {
             // Set straight away
             this.processRuleFileAddition(rules);
@@ -356,7 +359,11 @@ export class EditorComponent implements OnInit, OnDestroy {
                     currentFile = this.files[0];
                 }
                 this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business network imported deployed successfully', icon : '#icon-deploy_24'});
+                this.alertService.successStatus$.next({
+                    title: 'Deploy Successful',
+                    text: 'Business network imported deployed successfully',
+                    icon: '#icon-deploy_24'
+                });
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -376,59 +383,66 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     openAddFileModal() {
         this.modalService.open(AddFileComponent).result
-        .then((result) => {
-            if (result !== 0) {
-                if (result instanceof ModelFile) {
-                    this.addModelFile(result);
-                } else if (result instanceof Script) {
-                    this.addScriptFile(result);
-                } else if (result instanceof AclFile) {
-                    this.addRuleFile(result);
-                } else {
-                    this.addReadme(result);
+            .then((result) => {
+                if (result !== 0) {
+                    if (result instanceof ModelFile) {
+                        this.addModelFile(result);
+                    } else if (result instanceof Script) {
+                        this.addScriptFile(result);
+                    } else if (result instanceof AclFile) {
+                        this.addRuleFile(result);
+                    } else {
+                        this.addReadme(result);
+                    }
+                    this.clientService.businessNetworkChanged$.next(true);
                 }
-                this.clientService.businessNetworkChanged$.next(true);
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
     }
 
     deploy(): Promise<any> {
         // Gets the definition for the currently deployed business network
-        this.alertService.busyStatus$.next({title: 'Deploying updated business network', text : 'deploying ' + this.clientService.getBusinessNetworkName()});
-        return Promise.resolve()
-        .then(() => {
-            if (this.deploying) {
-                return;
-            }
-            this.deploying = true;
-            return this.adminService.update(this.clientService.getBusinessNetwork());
-        })
-        .then(() => {
-            this.dirty = false;
-            this.deploying = false;
-            return this.clientService.refresh();
-        })
-        .then(() => {
-            this.updatePackageInfo();
-            this.updateFiles();
-            this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business Network Deployed Successfully', icon : '#icon-deploy_24'});
-            if ((<any> window).usabilla_live) {
-                (<any> window).usabilla_live('trigger', 'manual trigger');
-            }
-        })
-        .catch((error) => {
-            this.deploying = false;
-            // if failed on deploy should go back to what had before deployed
-            this.updatePackageInfo();
-            this.updateFiles();
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(error);
+        this.alertService.busyStatus$.next({
+            title: 'Deploying updated business network',
+            text: 'deploying ' + this.clientService.getBusinessNetworkName()
         });
+        return Promise.resolve()
+            .then(() => {
+                if (this.deploying) {
+                    return;
+                }
+                this.deploying = true;
+                return this.adminService.update(this.clientService.getBusinessNetwork());
+            })
+            .then(() => {
+                this.dirty = false;
+                this.deploying = false;
+                return this.clientService.refresh();
+            })
+            .then(() => {
+                this.updatePackageInfo();
+                this.updateFiles();
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({
+                    title: 'Deploy Successful',
+                    text: 'Business Network Deployed Successfully',
+                    icon: '#icon-deploy_24'
+                });
+                if ((<any> window).usabilla_live) {
+                    (<any> window).usabilla_live('trigger', 'manual trigger');
+                }
+            })
+            .catch((error) => {
+                this.deploying = false;
+                // if failed on deploy should go back to what had before deployed
+                this.updatePackageInfo();
+                this.updateFiles();
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     /*
@@ -456,7 +470,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         let regEx = new RegExp(/^(([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)$/);
         if (regEx.test(this.inputFileNameArray[1]) === true) {
             let inputFileName = this.inputFileNameArray[0] + this.inputFileNameArray[1] + this.inputFileNameArray[2];
-            if ( (this.findFileIndex(false, inputFileName) !== -1) && (this.currentFile.displayID !== inputFileName) ) {
+            if ((this.findFileIndex(false, inputFileName) !== -1) && (this.currentFile.displayID !== inputFileName)) {
                 this.fileNameError = 'Error: Filename already exists';
             } else if (this.currentFile.script) {
                 if (this.currentFile.id !== inputFileName) {
@@ -503,8 +517,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     /*
-    * User selects to delete the current editor file
-    */
+     * User selects to delete the current editor file
+     */
     openDeleteFileModal() {
         const confirmModalRef = this.modalService.open(DeleteComponent);
         const deleteFile = this.currentFile;
@@ -513,48 +527,55 @@ export class EditorComponent implements OnInit, OnDestroy {
         confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business network from working and may limit access to data that is already stored in the business network.';
 
         confirmModalRef.result
-        .then((result) => {
-            if (result) {
-                this.alertService.busyStatus$.next({title: 'Deleting file within business network', text : 'deleting ' + this.clientService.getBusinessNetworkName()});
+            .then((result) => {
+                if (result) {
+                    this.alertService.busyStatus$.next({
+                        title: 'Deleting file within business network',
+                        text: 'deleting ' + this.clientService.getBusinessNetworkName()
+                    });
 
-                if (deleteFile.script) {
-                    let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
-                    scriptManager.deleteScript(deleteFile.id);
-                } else if (deleteFile.model) {
-                    let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
-                    modelManager.deleteModelFile(deleteFile.id);
-                } else {
-                    throw new Error('Unable to process delete on selected file type');
+                    if (deleteFile.script) {
+                        let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
+                        scriptManager.deleteScript(deleteFile.id);
+                    } else if (deleteFile.model) {
+                        let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
+                        modelManager.deleteModelFile(deleteFile.id);
+                    } else {
+                        throw new Error('Unable to process delete on selected file type');
+                    }
+
+                    // remove file from list view
+                    let index = this.findFileIndex(false, deleteFile.displayID);
+                    this.files.splice(index, 1);
+
+                    // Make sure we set a file to remove the deleted file from the view
+                    this.setInitialFile();
+
+                    // validate the remaining (acl/cto files and conditionally enable deploy
+                    if (this.editorFilesValidate()) {
+                        this.clientService.businessNetworkChanged$.next(true);
+                    } else {
+                        this.clientService.businessNetworkChanged$.next(false);
+                    }
+
+                    // Send alert
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.successStatus$.next({
+                        title: 'Delete Successful',
+                        text: this.fileType(deleteFile) + ' File ' + deleteFile.displayID + ' was deleted.',
+                        icon: '#icon-trash_32'
+                    });
                 }
-
-                // remove file from list view
-                let index = this.findFileIndex(false, deleteFile.displayID);
-                this.files.splice(index, 1);
-
-                // Make sure we set a file to remove the deleted file from the view
-                this.setInitialFile();
-
-                // validate the remaining (acl/cto files and conditionally enable deploy
-                if (this.editorFilesValidate()) {
-                    this.clientService.businessNetworkChanged$.next(true);
-                } else {
-                    this.clientService.businessNetworkChanged$.next(false);
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(reason);
                 }
-
-                // Send alert
+            })
+            .catch((error) => {
                 this.alertService.busyStatus$.next(null);
-                this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' File ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(reason);
-            }
-        })
-        .catch((error) => {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(error);
-        });
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     fileType(resource: any): string {

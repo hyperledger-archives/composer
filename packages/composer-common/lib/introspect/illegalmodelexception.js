@@ -38,8 +38,8 @@ class IllegalModelException extends BaseModelException {
     constructor(message, modelFile, fileLocation) {
 
         let messageSuffix = '';
-        if(modelFile && modelFile.getFileName()) {
-            messageSuffix = 'File \'' + modelFile.getFileName() + '\': ' ;
+        if(modelFile && modelFile.getName()) {
+            messageSuffix = 'File \'' + modelFile.getName() + '\': ' ;
         }
 
         if(fileLocation) {
@@ -51,10 +51,8 @@ class IllegalModelException extends BaseModelException {
         // First character to be uppercase
         messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
 
-        super(message + ' ' + messageSuffix);
+        super(message, fileLocation, message + ' ' + messageSuffix);
         this.modelFile = modelFile;
-        this.fileLocation = fileLocation;
-        this.shortMessage = message;
     }
 
     /**
