@@ -344,10 +344,8 @@ export class SampleBusinessNetworkService {
 
                 let scriptManager = businessNetworkDefinition.getScriptManager();
                 scripts.forEach((script) => {
-                    if(script.name.endsWith('.js')) {
-                        let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
-                        scriptManager.addScript(thisScript);
-                    }
+                    let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
+                    scriptManager.addScript(thisScript);
                 });
 
                 if (acls) {
