@@ -4,7 +4,7 @@
 /* tslint:disable:max-classes-per-file */
 import { TestBed, async, inject, fakeAsync, tick } from '@angular/core/testing';
 import { SampleBusinessNetworkService } from './samplebusinessnetwork.service';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -1071,7 +1071,6 @@ describe('SampleBusinessNetworkService', () => {
                     alertMock.busyStatus$.next.should.have.been.calledWith(null);
                     error.should.equal('some error');
                 });
-
             tick();
         })));
     });

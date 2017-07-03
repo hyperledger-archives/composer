@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from '../import/import.component';
-import { AddFileComponent } from '../add-file/add-file.component';
+import { ImportComponent } from './import/import.component';
+import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
@@ -11,8 +11,8 @@ import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
-import { AlertService } from '../services/alert.service';
-import { EditorService } from '../services/editor.service';
+import { AlertService } from '../basic-modals/alert.service';
+import { EditorService } from './editor.service';
 
 import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile } from 'composer-common';
 

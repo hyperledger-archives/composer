@@ -7,7 +7,7 @@ import { Directive, Input } from '@angular/core';
 import { TestComponent } from './test.component';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
