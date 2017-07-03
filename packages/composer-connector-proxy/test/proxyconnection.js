@@ -103,27 +103,18 @@ describe('ProxyConnection', () => {
             mockBusinessNetworkDefinition.toArchive.resolves(Buffer.from('hello world'));
         });
 
-        it('should send a deploy call to the connector server with force set to true', () => {
-            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, true, 'aGVsbG8gd29ybGQ=', sinon.match.func).yields(null);
-            return connection.deploy(mockSecurityContext, true, mockBusinessNetworkDefinition)
+        it('should send a deploy call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(null);
+            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition)
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionDeploy', connectionID, securityContextID, true, 'aGVsbG8gd29ybGQ=', sinon.match.func);
-                });
-        });
-
-        it('should send a deploy call to the connector server with force set to false', () => {
-            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, false, 'aGVsbG8gd29ybGQ=', sinon.match.func).yields(null);
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetworkDefinition)
-                .then(() => {
-                    sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionDeploy', connectionID, securityContextID, false, 'aGVsbG8gd29ybGQ=', sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, true, 'aGVsbG8gd29ybGQ=', sinon.match.func).yields(serializedError);
-            return connection.deploy(mockSecurityContext, true, mockBusinessNetworkDefinition)
+            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(serializedError);
+            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition)
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 
