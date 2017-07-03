@@ -78,6 +78,23 @@ class LoggingService extends Service {
         throw new Error('abstract function called');
     }
 
+    /**
+     * Set the log level for the runtime.
+     * @abstract
+     * @param {string} newLogLevel The new log level to apply.
+     */
+    setLogLevel(newLogLevel) {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Get the current log level for the runtime.
+     * @abstract
+     */
+    getLogLevel() {
+        throw new Error('abstract function called');
+    }
+
 }
 
 module.exports = LoggingService;

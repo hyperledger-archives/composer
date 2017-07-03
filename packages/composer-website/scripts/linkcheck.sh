@@ -15,20 +15,23 @@ fi
 
 JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
 echo ${JOBN}
+
 sleep 10
 cat ${DIR}/jekyll.log
 URL="$( cat ${DIR}/jekyll.log | awk '/Server address:/ { print $3 }')"
 
-
 echo Starting linkchecking... ${URL}
 linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt 
+
 if [ "$?" != "0" ]; then
 	asciify '!!Broken Links!!' -f standard 
-	cat ${DIR}/linkresults.txt
 
   # set the links as being broken.
   # need to ignore the jsdoc somehow for the momeny
 fi
+
+# always show the file - includes number of links checked
+cat ${DIR}/linkresults.txt
 
 kill %${JOBN}
 sleep 1
