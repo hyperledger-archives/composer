@@ -12,8 +12,8 @@
   </div>
   <section class="modal-body">
     <span>Upload a Business Network Archive from your computer</span>
-    <file-importer *ngIf="!currentBusinessNetwork" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
-                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'"></file-importer>
+    <file-importer *ngIf="!currentBusinessNetwork" (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
+                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'" [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes"></file-importer>
     <div class="chosen-file" *ngIf="expandInput && currentBusinessNetwork">
       <div class="file-info">
         <div class="flex-container">

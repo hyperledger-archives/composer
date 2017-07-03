@@ -12,8 +12,8 @@
   </div>
   <section class="modal-body">
     <span>Upload a Connection Profile from your computer</span>
-    <file-importer *ngIf="!currentFile" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
-                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
+    <file-importer *ngIf="!currentFile" (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
+                   [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes" [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
     <span>Or create a connection profile, select your Blockchain platform:</span>
     <form class="file-types-list" #f="ngForm" *ngIf="!expandInput">
       <div class="file-types-list-item">
