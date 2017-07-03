@@ -144,6 +144,7 @@ describe('QueryFile', () => {
     describe('#buildQuery', () => {
 
         it('should programatically add a query to the query file', () => {
+
             const queryFile = new QueryFile('generated.qry', modelManager, '');
             const query = queryFile.buildQuery('GEN1', 'Generated query 1', 'SELECT org.acme.Car');
             query.should.be.an.instanceOf(Query);
