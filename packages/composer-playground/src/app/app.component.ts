@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
-import { AlertService } from './services/alert.service';
+import { AlertService } from './basic-modals/alert.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';

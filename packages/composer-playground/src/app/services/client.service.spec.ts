@@ -12,7 +12,7 @@ let should = chai.should();
 let expect = chai.expect;
 
 import { AdminService } from './admin.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ModelFile, Script, AclFile } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { BusinessNetworkConnection } from 'composer-client';

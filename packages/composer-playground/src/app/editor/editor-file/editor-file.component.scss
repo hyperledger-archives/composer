@@ -1,0 +1,50 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+editor-file {
+  .business-network-details {
+    display: flex;
+    height: 50px;
+
+    .business-network-version {
+      margin-right: $space-smedium;
+      color: $secondary-text;
+    }
+
+    .margin-right {
+      margin-right: $space-smedium;
+    }
+
+    .edit-package-text {
+      font-style: italic;
+    }
+
+    .edit-label {
+      line-height: 2.5rem;
+      font-weight: bold;
+    }
+  }
+
+  .readme {
+    background-color: $white;
+    padding: $space-large;
+    min-height: 63vh;
+    max-height: 63vh;
+    overflow-y: scroll;
+  }
+}
+
+.CodeMirror {
+  font-family: Source Code Pro
+
+}
+
+.CodeMirror, .CodeMirror-scroll {
+  min-height: 63vh;
+  max-height: 63vh;
+}
+
+.ps.ps--active-x>.ps__scrollbar-x-rail,
+.ps.ps--active-y>.ps__scrollbar-y-rail{
+    opacity: 0.6;
+}

@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-expression */
 import { ComponentFixture, TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { SuccessComponent } from './success.component';
-import { AlertService } from '../../services/alert.service';
+import { AlertService } from '../alert.service';
 
 import * as chai from 'chai';
 
