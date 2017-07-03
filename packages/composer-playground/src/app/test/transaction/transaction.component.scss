@@ -1,0 +1,20 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+@import '../resource/resource.component';
+
+transaction-modal {
+
+  // Take main styling from resource.component
+  @extend resource-modal;
+
+ .transaction-select{
+    display: flex;
+    color:$secondary-text;
+    align-content: flex-start;
+
+    .transaction-select-item{
+      order: 1;
+      margin: auto 1rem;
+    }
+  }
+}

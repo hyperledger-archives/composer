@@ -139,12 +139,12 @@ class HFCConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetwork) {
+    deploy(securityContext, businessNetwork, deployOptions) {
         HFCUtil.securityCheck(securityContext);
         const self = this;
         let chaincodeId = null;
@@ -159,8 +159,9 @@ class HFCConnection extends Connection {
                 return businessNetwork.toArchive();
             })
             .then((buffer) => {
+                const initArgs = {};
                 return HFCUtil
-                    .deployChainCode(securityContext, 'concerto', 'init', [buffer.toString('base64')], force);
+                    .deployChainCode(securityContext, 'concerto', 'init', [buffer.toString('base64'), JSON.stringify(initArgs)], true);
             })
             .then((result) => {
                 LOG.info('deploy', 'Deployed chaincode', result.chaincodeID);

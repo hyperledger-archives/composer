@@ -170,12 +170,12 @@ class EmbeddedConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetwork) {
+    deploy(securityContext, businessNetwork, deployOptions) {
         let container = EmbeddedConnection.createContainer();
         let userID = securityContext.getUserID();
         let chaincodeUUID = container.getUUID();
@@ -185,7 +185,8 @@ class EmbeddedConnection extends Connection {
         let context = new EmbeddedContext(engine, userID, this);
         return businessNetwork.toArchive({ date: new Date(545184000000) })
             .then((businessNetworkArchive) => {
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
+                const initArgs = {};
+                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
             })
             .then(() => {
                 securityContext.setChaincodeID(chaincodeUUID);

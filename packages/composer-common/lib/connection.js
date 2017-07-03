@@ -91,12 +91,12 @@ class Connection extends EventEmitter {
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetworkDefinition) {
+    deploy(securityContext, businessNetworkDefinition, deployOptions) {
         return Promise.reject(new Error('abstract function called'));
     }
 
