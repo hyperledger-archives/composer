@@ -100,6 +100,15 @@ export class EditorFileComponent {
                 this.editorContent = marked(readme);
                 this.editorType = 'readme';
             }
+        } else if (this._editorFile.query) {
+          let queryFile = this.clientService.getQueryFile();
+          if (queryFile) {
+              this.editorContent = queryFile.getDefinitions();
+              this.editorType = 'code';
+              this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'qry');
+          } else {
+              this.editorContent = null;
+          }
         } else {
             this.editorContent = null;
         }

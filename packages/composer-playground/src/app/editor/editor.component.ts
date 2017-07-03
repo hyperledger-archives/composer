@@ -12,7 +12,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -210,6 +210,16 @@ export class EditorComponent implements OnInit, OnDestroy {
             });
         }
 
+        // deal with query
+        let queryFile = this.clientService.getQueryFile();
+        if (queryFile) {
+            newFiles.push({
+                query: true,
+                id: queryFile.getIdentifier(),
+                displayID: queryFile.getIdentifier()
+            });
+        }
+
         // deal with readme
         let readme = this.clientService.getMetaData().getREADME();
         if (readme) {
@@ -283,6 +293,49 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
+
+    addQueryFile(queryFile = null) {
+      let query;
+      let fileName = 'queries.qry';
+      if (!queryFile) {
+        // let existingQueryFiles = this.clientService.getQueryFiles();
+        let increment = 0;
+
+        query =
+            `/**
+            * New query file
+            */`;
+
+      } else {
+        query = queryFile;
+      }
+
+      let isQuery = false;
+      this.files.forEach((file) => {
+        if (file.query) {
+          isQuery = true;
+        }
+      });
+
+      if (isQuery) {
+        const confirmModalRef = this.modalService.open(ReplaceComponent);
+        confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
+        confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+        confirmModalRef.result.then((result) => {
+          let queryManager = this.clientService.getBusinessNetwork().getQueryManager();
+          queryManager.setQueryFile(query);
+          this.updateFiles();
+      }, (reason) => {
+          if (reason && reason !== 1) {
+              this.alertService.errorStatus$.next(reason);
+          }
+      });
+    } else {
+      let queryManager = this.clientService.getBusinessNetwork().getQueryManager();
+      queryManager.setQueryFile(query);
+      this.updateFiles();
+    }
+  }
 
     addReadme(readme) {
         if (this.files[0].readme) {
@@ -380,6 +433,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                             this.addScriptFile(result);
                         } else if (result instanceof AclFile) {
                             this.addRuleFile(result);
+                        } else if (result instanceof QueryFile) {
+                            this.addQueryFile(result);
                         } else {
                             this.addReadme(result);
                         }
@@ -618,6 +673,14 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
+            } else if (file.query) {
+              let query = this.clientService.getQueryFile();
+              if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
+                  allValid = false;
+                  file.invalid = true;
+              } else {
+                  file.invalid = false;
+              }
             }
         }
         return allValid;

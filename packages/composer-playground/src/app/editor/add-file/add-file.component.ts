@@ -20,7 +20,7 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl', '.qry'];
 
     addModelNamespace: string = 'org.acme.model';
     addModelFileName: string = 'models/org.acme.model';
@@ -71,6 +71,10 @@ export class AddFileComponent {
                 case 'acl':
                     this.expandInput = true;
                     this.createRules(data);
+                    break;
+                case 'qry':
+                    this.expandInput = true;
+                    this.createQuery(data);
                     break;
                 default:
                     throw new Error('Unexpected File Type: ' + type);
@@ -123,6 +127,13 @@ export class AddFileComponent {
         this.currentFileName = filename;
     }
 
+    createQuery(dataBuffer) {
+      this.fileType = 'qry';
+      let filename = 'queries.qry';
+      this.currentFile = this.clientService.createQueryFile(filename, dataBuffer.toString());
+      this.currentFileName = filename;
+    }
+
     fileRejected(reason: string) {
         this.expandInput = false;
         this.alertService.errorStatus$.next(reason);
@@ -147,6 +158,19 @@ export class AddFileComponent {
             }
             this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
             this.currentFileName = scriptName;
+        } else if (this.fileType === 'qry') {
+          // let existingQueryFiles = this.clientService.getQueryFiles();
+          let increment = 0;
+
+          let code =
+              `/**
+* New query file
+*/
+`;
+
+          let fileName = 'queries.qry';
+          this.currentFile = this.clientService.createQueryFile(fileName, code);
+          this.currentFileName = fileName;
         } else {
             let existingModels = this.clientService.getModelFiles();
             let increment = 0;

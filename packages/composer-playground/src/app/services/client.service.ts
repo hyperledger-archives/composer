@@ -7,7 +7,7 @@ import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -42,6 +42,10 @@ export class ClientService {
     // horrible hack for tests
     createScriptFile(id, type, content) {
         return this.getBusinessNetwork().getScriptManager().createScript(id, type, content);
+    }
+
+    createQueryFile(id, content) {
+      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -87,6 +91,9 @@ export class ClientService {
             } else if (type === 'acl') {
                 let aclFile = this.createAclFile(id, content);
                 aclFile.validate();
+            } else if (type === 'query') {
+                let queryFile = this.createQueryFile(id, content);
+                queryFile.validate();
             }
             return null;
         } catch (e) {
@@ -165,6 +172,10 @@ export class ClientService {
 
     getAclFile(): AclFile {
         return this.getBusinessNetwork().getAclManager().getAclFile();
+    }
+
+    getQueryFile(): QueryFile {
+        return this.getBusinessNetwork().getQueryManager().getQueryFile();
     }
 
     getMetaData() {
