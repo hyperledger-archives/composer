@@ -5,7 +5,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Directive, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
 import { EditorComponent } from './editor.component';
@@ -15,9 +14,8 @@ import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
 import { InitializationService } from '../services/initialization.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclManager, AclFile } from 'composer-common';
+import { ModelFile, Script, AclFile } from 'composer-common';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
 
 import * as sinon from 'sinon';
@@ -48,7 +46,6 @@ describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
 
-    let mockBusinessNetworkService;
     let mockAdminService;
     let mockAlertService;
     let mockClientService;
@@ -59,12 +56,7 @@ describe('EditorComponent', () => {
     let mockRuleFile;
     let editorService;
 
-    let mockRouterParams;
-
-    let mockRouter;
-
     beforeEach(() => {
-        mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
@@ -75,16 +67,6 @@ describe('EditorComponent', () => {
         mockRuleFile = sinon.createStubInstance(AclFile);
         editorService = new EditorService();
 
-        mockRouterParams = {
-            subscribe: (callback) => {
-                callback();
-            }
-        };
-
-        mockRouter = {
-            queryParams: mockRouterParams
-        };
-
         mockAlertService.successStatus$ = {next: sinon.stub()};
         mockAlertService.busyStatus$ = {next: sinon.stub()};
         mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -93,13 +75,11 @@ describe('EditorComponent', () => {
             imports: [FormsModule],
             declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective],
             providers: [
-                {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: InitializationService, useValue: mockInitializationService},
-                {provide: ActivatedRoute, useValue: mockRouter},
                 {provide: EditorService, useValue: editorService}]
         });
 
@@ -111,7 +91,6 @@ describe('EditorComponent', () => {
         let mockEditorFilesValidate;
 
         beforeEach(() => {
-            mockBusinessNetworkService.OPEN_SAMPLE = false;
             mockInitializationService.initialize.returns(Promise.resolve());
             mockClientService.businessNetworkChanged$ = {
                 takeWhile: sinon.stub().returns({
@@ -172,21 +151,6 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
             mockSetFile.should.have.been.called;
             mockSetIntialFile.should.not.have.been.called;
-        }));
-
-        it('should open import modal', fakeAsync(() => {
-            mockBusinessNetworkService.OPEN_SAMPLE = true;
-            let mockImportModal = sinon.stub(component, 'openImportModal');
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
-            component.ngOnInit();
-
-            tick();
-
-            mockBusinessNetworkService.OPEN_SAMPLE.should.equal(false);
-            mockImportModal.should.have.been.called;
-            mockUpdatePackage.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
         }));
 
         it('should set noError to false when notified', fakeAsync(() => {

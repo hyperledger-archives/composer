@@ -134,9 +134,7 @@ describe('ImportComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockBusinessNetworkService.isOAuthEnabled.returns(Promise.resolve(true));
             onShowMock = sinon.stub(component, 'onShow');
         });
 
@@ -145,74 +143,29 @@ describe('ImportComponent', () => {
         });
 
         it('should setup the import modal', fakeAsync(() => {
-            mockBusinessNetworkService.isOAuthEnabled.returns(Promise.resolve(false));
-
             component.ngOnInit();
 
             tick();
 
             should.not.exist(component['currentBusinessNetwork']);
-            component['oAuthEnabled'].should.equal(false);
             onShowMock.should.have.been.called;
-        }));
-
-        it('should setup the import modal and get client', fakeAsync(() => {
-            mockBusinessNetworkService.getGithubClientId.returns(Promise.resolve('client_id'));
-            component.ngOnInit();
-
-            tick();
-
-            should.not.exist(component['currentBusinessNetwork']);
-            component['oAuthEnabled'].should.equal(true);
-            component['clientId'].should.equal('client_id');
-            onShowMock.should.have.been.called;
-        }));
-
-        it('should exit and give an error if no client id', fakeAsync(() => {
-            mockBusinessNetworkService.getGithubClientId.returns(Promise.resolve());
-            component.ngOnInit();
-
-            tick();
-
-            should.not.exist(component['currentBusinessNetwork']);
-            component['oAuthEnabled'].should.equal(true);
-            mockActiveModal.dismiss.should.have.been.called;
-            onShowMock.should.not.have.been.called;
         }));
     });
 
     describe('onShow', () => {
-        it('should check if authenticated with github', fakeAsync(() => {
-            mockBusinessNetworkService.isAuthenticatedWithGitHub.returns(true);
-            mockBusinessNetworkService.getModelsInfo.returns(Promise.resolve([{name: 'modelOne'}]));
+        it('should get the list of sample networks', fakeAsync(() => {
+            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelOne'}]));
 
             component.onShow();
-
             component['gitHubInProgress'].should.equal(true);
             tick();
 
+            component['gitHubInProgress'].should.equal(false);
             component['sampleNetworks'].should.deep.equal([EMPTY_NETWORK, {name: 'modelOne'}]);
-            component['gitHubInProgress'].should.equal(false);
-        }));
-
-        it('should handle rate limit error', fakeAsync(() => {
-            mockBusinessNetworkService.isAuthenticatedWithGitHub.returns(true);
-            mockBusinessNetworkService.getModelsInfo.returns(Promise.reject({message: 'API rate limit exceeded'}));
-            mockBusinessNetworkService.RATE_LIMIT_MESSAGE = 'api limit';
-
-            component.onShow();
-
-            component['gitHubInProgress'].should.equal(true);
-            tick();
-
-            component['gitHubInProgress'].should.equal(false);
-
-            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
 
         it('should handle error', fakeAsync(() => {
-            mockBusinessNetworkService.isAuthenticatedWithGitHub.returns(true);
-            mockBusinessNetworkService.getModelsInfo.returns(Promise.reject({message: 'some error'}));
+            mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
 
             component.onShow();
 
@@ -328,7 +281,7 @@ describe('ImportComponent', () => {
     describe('deploy', () => {
         it('should deploy a business network from github', fakeAsync(() => {
 
-            let deployGithubMock = sinon.stub(component, 'deployFromGitHub').returns(Promise.resolve());
+            let deployNpmMock = sinon.stub(component, 'deployFromNpm').returns(Promise.resolve());
 
             mockNgbModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -339,7 +292,7 @@ describe('ImportComponent', () => {
 
             tick();
 
-            deployGithubMock.should.have.been.called;
+            deployNpmMock.should.have.been.called;
 
             component['deployInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -404,26 +357,14 @@ describe('ImportComponent', () => {
         }));
     });
 
-    describe('deployFromGitHub', () => {
-        it('should deploy from github', () => {
+    describe('deployFromNpm', () => {
+        it('should deploy from npm', () => {
             component['sampleNetworks'] = [{name: 'bob'}, {name: 'fred'}];
             component['chosenNetwork'] = 'fred';
 
-            component.deployFromGitHub();
+            component.deployFromNpm();
 
-            mockBusinessNetworkService.deploySample.should.have.been.calledWith('hyperledger', 'composer-sample-networks', {name: 'fred'});
-        });
-
-        it('should deploy from github using custom repo', () => {
-            component['sampleNetworks'] = [{name: 'bob'}, {name: 'fred'}];
-            component['chosenNetwork'] = 'bob';
-
-            component['owner'] = 'my owner';
-            component['repository'] = 'my repository';
-
-            component.deployFromGitHub();
-
-            mockBusinessNetworkService.deploySample.should.have.been.calledWith('my owner', 'my repository', {name: 'bob'});
+            mockBusinessNetworkService.deployChosenSample.should.have.been.calledWith({name: 'fred'});
         });
 
         it('should deploy the empty business network if chosen', () => {
