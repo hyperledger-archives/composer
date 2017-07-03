@@ -99,7 +99,7 @@ export class ClientService {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = this.createModelFile(content, original.getFileName());
+                let modelFile = this.createModelFile(content, original.getName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }

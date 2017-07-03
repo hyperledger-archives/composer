@@ -10,7 +10,6 @@ class BusinessNetworkConnection extends EventEmitter {
    + BusinessNetworkDefinition getBusinessNetwork() 
    + Promise getAllAssetRegistries(SecurityContext) 
    + Promise getAssetRegistry(string) 
-   + Promise existsAssetRegistry(string) 
    + Promise assetRegistryExists(string) 
    + Promise addAssetRegistry(string,string) 
    + Promise getAllParticipantRegistries(SecurityContext) 

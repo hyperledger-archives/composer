@@ -1,6 +1,6 @@
 # Contributing to Composer
 
-* Currently reading -> [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+* Currently reading -> [Step-by-step development environment setup](./contrib-notes/getting-started.md)
 * [Suggested IDE setup](./contrib-notes/ide-setup.md)
 * [Coding Guidelines](./contrib-notes/coding-guidelines.md)
 * [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)

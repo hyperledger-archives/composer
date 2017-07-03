@@ -34,6 +34,7 @@ const LOG = Logger.getLog('QueryCompiler');
 /**
  * A query compiler compiles all queries in a query manager into a compiled
  * query bundle that can easily be called by the runtime.
+ * @protected
  */
 class QueryCompiler {
 

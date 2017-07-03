@@ -145,7 +145,7 @@ describe('IssueIdentityComponent', () => {
             component['participantFQIs'] = ['goat', 'giraffe', 'elephant'];
 
             // mock teXt
-            let text$ = new Observable((observer) => {
+            let text$ = new Observable<string>((observer) => {
                 // pushing values
                 observer.next('');
                 // complete stream
@@ -169,7 +169,7 @@ describe('IssueIdentityComponent', () => {
             component['participantFQIs'] = ['goat', 'giraffe', 'elephant'];
 
             // mock teXt
-            let text$ = new Observable((observer) => {
+            let text$ = new Observable<string>((observer) => {
                 // pushing values
                 observer.next('g');
                 // complete stream

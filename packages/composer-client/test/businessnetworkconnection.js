@@ -290,21 +290,6 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
-    describe('#existsAssetRegistry', () => {
-        it('should call assetRegistryExists', () => {
-            // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
-            sandbox.stub(AssetRegistry, 'assetRegistryExists').resolves({});
-
-            // Invoke the function.
-            return businessNetworkConnection
-                .existsAssetRegistry('wowsuchregistry')
-                .then(() => {
-                    sinon.assert.calledOnce(stub);
-                });
-        });
-    });
-
     describe('#assetRegistryExists', () => {
 
         it('should perform a security check', () => {

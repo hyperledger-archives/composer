@@ -580,11 +580,11 @@ describe('SampleBusinessNetworkService', () => {
         it('should get all the scripts', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
 
             let octoScriptMock = {
-                items: [{path: 'scriptOne'}]
+                items: [{path: 'scriptOne.js'}]
             };
 
             let octoScriptFileMock = {
-                name: 'scriptOne',
+                name: 'scriptOne.js',
                 content: 'YSBzY3JpcHQ='
             };
 
@@ -596,7 +596,7 @@ describe('SampleBusinessNetworkService', () => {
                 fetch: sinon.stub().returns(Promise.resolve(octoScriptMock))
             });
 
-            repoMock.contents.withArgs('scriptOne').returns({
+            repoMock.contents.withArgs('scriptOne.js').returns({
                 fetch: sinon.stub().returns(Promise.resolve(octoScriptFileMock))
             });
 
@@ -608,7 +608,44 @@ describe('SampleBusinessNetworkService', () => {
             service.getScripts('myOwner', 'myRepository', 'packages/')
                 .then((result) => {
                     result.length.should.equal(1);
-                    result[0].should.deep.equal({name: 'scriptOne', data: 'a script'});
+                    result[0].should.deep.equal({name: 'scriptOne.js', data: 'a script'});
+                });
+
+            tick();
+        })));
+
+        it('should filter out non js files', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+
+            let octoScriptMock = {
+                items: [{path: 'scriptOne.js'}, {path: '.eslintrc.yml'}]
+            };
+
+            let octoScriptFileMock = {
+                name: 'scriptOne.js',
+                content: 'YSBzY3JpcHQ='
+            };
+
+            let repoMock = {
+                contents: sinon.stub()
+            };
+
+            repoMock.contents.withArgs('packages/lib').returns({
+                fetch: sinon.stub().returns(Promise.resolve(octoScriptMock))
+            });
+
+            repoMock.contents.withArgs('scriptOne.js').returns({
+                fetch: sinon.stub().returns(Promise.resolve(octoScriptFileMock))
+            });
+
+            let octoMock = {
+                repos: sinon.stub().returns(repoMock)
+            };
+
+            service['octo'] = octoMock;
+            service.getScripts('myOwner', 'myRepository', 'packages/')
+                .then((result) => {
+                    result.length.should.equal(1);
+                    result[0].should.deep.equal({name: 'scriptOne.js', data: 'a script'});
                 });
 
             tick();

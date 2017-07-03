@@ -53,7 +53,7 @@ describe('Asset system tests', function () {
 
     let createAsset = (assetId) => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assets', 'SimpleAsset', assetId);
+        let asset = factory.newResource('systest.assets', 'SimpleAsset', assetId);
         asset.stringValue = 'hello world';
         asset.stringValues = [ 'hello', 'world' ];
         asset.doubleValue = 3.142;
@@ -73,13 +73,13 @@ describe('Asset system tests', function () {
 
     let createAssetContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assets', 'SimpleAssetContainer', 'dogeAssetContainer');
+        let asset = factory.newResource('systest.assets', 'SimpleAssetContainer', 'dogeAssetContainer');
         return asset;
     };
 
     let createAssetRelationshipContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assets', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
+        let asset = factory.newResource('systest.assets', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
         return asset;
     };
 
@@ -529,17 +529,17 @@ describe('Asset system tests', function () {
             .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                let asset = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle1');
                 asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                let asset = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle2');
                 asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                let asset = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle3');
                 asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.add(asset);
             })
@@ -599,11 +599,11 @@ describe('Asset system tests', function () {
             .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let circle1 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                let circle1 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle1');
                 circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle2');
                 circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.addAll([circle1, circle2, circle3]);
             })
@@ -680,11 +680,11 @@ describe('Asset system tests', function () {
             .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let circle1 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                let circle1 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle1');
                 circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle2');
                 circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.addAll([circle1, circle2, circle3]);
             })
