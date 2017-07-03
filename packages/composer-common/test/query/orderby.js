@@ -48,6 +48,12 @@ describe('OrderBy', () => {
                 new OrderBy(mockSelect, null);
             }).should.throw(/Invalid Select or AST/);
         });
+
+        it('should throw when invalid ast provided', () => {
+            (() => {
+                new OrderBy(mockSelect, 'force failure');
+            }).should.throw(/Invalid AST/);
+        });
     });
 
     describe('#accept', () => {

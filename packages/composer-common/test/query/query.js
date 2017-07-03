@@ -63,6 +63,16 @@ describe('Query', () => {
         },
     };
 
+    const invalidAst = {
+        type: 'Query',
+        identifier: {
+            type: 'Identifier',
+            name: 'Q1'
+        },
+        description: 'Select all drivers',
+        select: {}
+    };
+
     beforeEach(() => {
         queryFile = sinon.createStubInstance(QueryFile);
         mockModelManager =sinon.createStubInstance(ModelManager);
@@ -102,6 +112,13 @@ describe('Query', () => {
             query = new Query( queryFile, ast );
             query.validate();
         });
+
+        it('should throw for invalid ast contents', () => {
+            let q = new Query( queryFile, invalidAst );
+            (() => {
+                q.validate();
+            }).should.throw(/Cannot read property 'isConcept' of undefined/);
+        });
     });
 
     describe('#accept', () => {
@@ -127,7 +144,6 @@ describe('Query', () => {
             query.getDescription().should.equal('Generated query 1');
             query.getSelect().getText().should.equal('SELECT org.acme.Car');
 
-            console.log(queryFile.getQueries());
         });
 
         it('should throw a ParseException on invalid input', () => {

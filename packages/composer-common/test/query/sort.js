@@ -25,8 +25,9 @@ describe('Sort', () => {
 
     let sandbox;
     let mockOrderBy;
-
-    const selectWhereOrderBy = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id ASC]', { startRule: 'SelectStatement' });
+    const selectWhereOrderByWithNoDir = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id ]', { startRule: 'SelectStatement' });
+    const selectWhereOrderByDESC = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id DESC]', { startRule: 'SelectStatement' });
+    const selectWhereOrderByASC = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id ASC]', { startRule: 'SelectStatement' });
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockOrderBy = sinon.createStubInstance(OrderBy);
@@ -49,12 +50,19 @@ describe('Sort', () => {
                 new Sort(mockOrderBy, null);
             }).should.throw(/Invalid OrderBy or AST/);
         });
+
+        it('should throw when invalid ast provided', () => {
+            (() => {
+                new Sort(mockOrderBy, 'force failure');
+            }).should.throw(/Invalid AST/);
+        });
+
     });
 
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let s = new Sort(mockOrderBy, selectWhereOrderBy.orderBy.sort[0]);
+            let s = new Sort(mockOrderBy, selectWhereOrderByDESC.orderBy.sort[0]);
             let visitor = {
                 visit: sinon.stub()
             };
@@ -67,7 +75,7 @@ describe('Sort', () => {
     describe('#getOrderBy', () => {
 
         it('should return the owning OrderBy', () => {
-            const s = new Sort(mockOrderBy, selectWhereOrderBy.orderBy.sort[0]);
+            const s = new Sort(mockOrderBy, selectWhereOrderByDESC.orderBy.sort[0]);
             s.getOrderBy().should.equal(mockOrderBy);
         });
 
@@ -82,7 +90,7 @@ describe('Sort', () => {
     describe('#getPropertyPath', () => {
 
         it('should return the name of property of the OrderBy', () => {
-            const s = new Sort(mockOrderBy, selectWhereOrderBy.orderBy.sort[0]);
+            const s = new Sort(mockOrderBy, selectWhereOrderByDESC.orderBy.sort[0]);
             s.getPropertyPath().should.equal('id');
         });
 
@@ -90,10 +98,19 @@ describe('Sort', () => {
 
     describe('#getDirection', () => {
 
-        it('should return the expected direction of the OrderBy', () => {
-            const s = new Sort(mockOrderBy, selectWhereOrderBy.orderBy.sort[0]);
+        it('should return the expected direction of the OrderBy to be ASC if not specified', () => {
+            let s = new Sort(mockOrderBy, selectWhereOrderByWithNoDir.orderBy.sort[0]);
             s.getDirection().should.equal('ASC');
         });
 
+        it('should return the expected direction of the OrderBy to be ASC', () => {
+            let s = new Sort(mockOrderBy, selectWhereOrderByASC.orderBy.sort[0]);
+            s.getDirection().should.equal('ASC');
+        });
+
+        it('should return the expected direction of the OrderBy to be DESC', () => {
+            let s = new Sort(mockOrderBy, selectWhereOrderByDESC.orderBy.sort[0]);
+            s.getDirection().should.equal('DESC');
+        });
     });
 });
