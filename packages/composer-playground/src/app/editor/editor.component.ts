@@ -385,16 +385,20 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.modalService.open(AddFileComponent).result
             .then((result) => {
                 if (result !== 0) {
-                    if (result instanceof ModelFile) {
-                        this.addModelFile(result);
-                    } else if (result instanceof Script) {
-                        this.addScriptFile(result);
-                    } else if (result instanceof AclFile) {
-                        this.addRuleFile(result);
-                    } else {
-                        this.addReadme(result);
+                    try {
+                        if (result instanceof ModelFile) {
+                            this.addModelFile(result);
+                        } else if (result instanceof Script) {
+                            this.addScriptFile(result);
+                        } else if (result instanceof AclFile) {
+                            this.addRuleFile(result);
+                        } else {
+                            this.addReadme(result);
+                        }
+                        this.clientService.businessNetworkChanged$.next(true);
+                    } catch (error) {
+                        this.alertService.errorStatus$.next(error);
                     }
-                    this.clientService.businessNetworkChanged$.next(true);
                 }
             }, (reason) => {
                 if (reason && reason !== 1) {
