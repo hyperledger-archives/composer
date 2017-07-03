@@ -1,0 +1,31 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+
+.view-certificate {
+  width: 660px;
+  outline:0;
+  .modal-body{
+    display: flex;
+    flex-direction: column;
+    .row{
+      flex:1;
+      display:flex;
+      margin-bottom: $space-medium;
+      .property{
+        font-weight:600;
+        flex-basis:20%;
+        flex-shrink:1;
+      }
+      .value{
+        flex:1;
+        max-height:400px;
+        &.cert{
+          word-wrap:break-word;
+          overflow-y:scroll;
+        }
+      }
+    }
+
+  }
+}

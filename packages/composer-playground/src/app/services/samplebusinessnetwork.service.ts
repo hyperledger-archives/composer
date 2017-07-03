@@ -5,7 +5,7 @@ import * as Octokat from 'octokat';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkDefinition, AclFile } from 'composer-common';
 
@@ -233,12 +233,13 @@ export class SampleBusinessNetworkService {
         }
 
         let repo = this.octo.repos(owner, repository);
-
         return repo.contents(path + 'lib').fetch()
             .then((scripts) => {
-                let scriptFilePromises: Promise<any>[] = [];
+                let scriptFilePromises: Promise < any > [] = [];
                 scripts.items.forEach((script) => {
-                    scriptFilePromises.push(repo.contents(script.path).fetch());
+                    if (script.path.endsWith('.js')) {
+                        scriptFilePromises.push(repo.contents(script.path).fetch());
+                    }
                 });
                 return Promise.all(scriptFilePromises);
             })
@@ -344,8 +345,10 @@ export class SampleBusinessNetworkService {
 
                 let scriptManager = businessNetworkDefinition.getScriptManager();
                 scripts.forEach((script) => {
-                    let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
-                    scriptManager.addScript(thisScript);
+                    if (script.name.endsWith('.js')) {
+                        let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
+                        scriptManager.addScript(thisScript);
+                    }
                 });
 
                 if (acls) {

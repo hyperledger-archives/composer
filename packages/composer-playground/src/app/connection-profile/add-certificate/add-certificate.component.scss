@@ -1,0 +1,139 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+.add-certificate {
+  width: 660px;
+  min-height: 450px;
+
+  display: flex;
+  flex-direction: column;
+
+  .file-types-list {
+    max-height: 200px;
+    margin-top: 16px;
+
+    .file-types-list-item {
+      background-color: $third-highlight;
+      padding: $space-medium;
+      &:nth-child(even) {
+        background-color: $white;
+      }
+
+      .description {
+        font-style: italic;
+        padding-left: 2em;
+      }
+
+      label.radio-label {
+        font-weight: bold;
+
+        &::before {
+          top: 8px;
+        }
+
+        &::after {
+          top: 13px;
+        }
+      }
+    }
+  }
+
+  section {
+    font-size: 0.9em;
+
+    file-importer {
+      margin-top: $space-medium;
+    }
+
+    span {
+      color: $secondary-text;
+    }
+
+    .chosen-file {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: $third-highlight;
+      padding: $space-medium;
+
+      .title {
+        font-weight: bold;
+      }
+
+      .file-info {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid $fifth-highlight;
+        padding-bottom: $space-medium;
+        align-items: center;
+
+        svg {
+          fill: $first-highlight;
+          width: 76px;
+          height: 76px;
+          margin-right: $space-medium;
+        }
+
+        .file-title {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          span {
+            color: $primary-text;
+            font-style: italic;
+          }
+        }
+      }
+
+      .file-content {
+        margin-top: $space-medium;
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+
+        .network-part {
+          margin-bottom: $space-smedium;
+        }
+      }
+    }
+
+    .github-spinner {
+      height: 200px;
+      width: 465px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .circle-path {
+        stroke: $first-highlight;
+      }
+    }
+
+    form {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: $space-medium;
+    }
+  }
+
+
+  .import-certificate{
+    display: flex;
+    flex-direction: column;
+    .row{
+      flex:1;
+      display:flex;
+      margin-bottom:$space-medium;
+      .property{
+        font-weight:600;
+        flex-basis:20%;
+      }
+      .value{
+        flex:1;
+      }
+    }
+
+  }
+}
+
