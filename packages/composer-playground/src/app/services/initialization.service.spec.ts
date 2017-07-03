@@ -14,7 +14,7 @@ import { MockBackend } from '@angular/http/testing';
 import { InitializationService } from './initialization.service';
 
 import { ClientService } from './client.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { FileWallet } from 'composer-common';
