@@ -66,6 +66,10 @@ func NewIdentityService(vm *duktape.Context, context *Context, stub shim.Chainco
 	return result
 }
 
+// extract the common name from the creator x509 certificate
+// Although we should really use protobufs to correctly locate the certificate
+// this would have meant pulling in a load of vendor dependencies as they aren't
+// in the chaincode container and it isn't worth it.
 func extractNameFromCreator(stub shim.ChaincodeStubInterface) (result string, errResp error) {
 	logger.Debug("Entering extractNameFromCreator", &stub)
 	defer func() {logger.Debug("Exiting extractNameFromCreator", result, errResp)}()

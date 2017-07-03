@@ -63,6 +63,7 @@ func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result
 	return result
 }
 
+// set the current stub on the loggingservice
 func (container *Container) setStub(stub shim.ChaincodeStubInterface) {
 	container.LoggingService.setStub(stub)
 }

@@ -111,6 +111,7 @@ func NewLoggingService(vm *duktape.Context, container *Container, stub shim.Chai
 	return result
 }
 
+// save the current chaincode stub
 func (loggingService *LoggingService) setStub(stub shim.ChaincodeStubInterface) {
 	loggingService.Stub = stub
 }
