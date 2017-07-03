@@ -15,16 +15,13 @@
 'use strict';
 
 const chai = require('chai');
-// eslint-disable-next-line no-unused-vars
-const should = chai.should();
+chai.should();
 chai.use(require('chai-http'));
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noPreserveCache().noCallThru();
 const express = require('express');
 
 let tarParserResult = [];
-
-let callCount = 0;
 
 /**
  *
@@ -59,9 +56,10 @@ RegClient.prototype.fetch = function (url, options, callback) {
     }
 };
 
+let forceSearchFail = false, forceMetadataFail = false;
+
 // class methods
 RegClient.prototype.get = function (url, options, callback) {
-    callCount++;
     let getSampleNames = {
         objects : [{
             package : {
@@ -75,6 +73,17 @@ RegClient.prototype.get = function (url, options, callback) {
             '0.1.0' : {
                 engines : {
                     composer : '0.9.0'
+                },
+                name : 'bob',
+                description : 'bob package',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+            '0.1.1' : {
+                engines : {
+                    composer : '0.9.1'
                 },
                 name : 'bob',
                 description : 'bob package',
@@ -114,13 +123,15 @@ RegClient.prototype.get = function (url, options, callback) {
         }
     };
 
-    if (url.startsWith('https://registry.npmjs.org/-/v1/search') && callCount === 3) {
+    if (url.startsWith('https://registry.npmjs.org/-/v1/search') && forceSearchFail) {
+        forceSearchFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
         return callback(null, getSampleNames);
     }
 
-    if (url.startsWith('https://registry.npmjs.org/bob') && callCount === 5) {
+    if (url.startsWith('https://registry.npmjs.org/bob') && forceMetadataFail) {
+        forceMetadataFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/bob')) {
         return callback(null, getMetaData);
@@ -132,97 +143,105 @@ describe('npm routes', () => {
 
     let app;
 
-    beforeEach(() => {
+    // Test against both a released and prerelease version of Composer.
+    ['0.9.0', '0.9.0-20170703172042'].forEach((composerVersion) => {
 
-        let pkginfo = function (module, thing) {
-            module.exports[thing] = {
-                'composer-common' : '^0.9.0'
-            };
-        };
+        describe(`composerVersion[${composerVersion}]`, () => {
 
-        mock = {
-            'pkginfo' : pkginfo,
-            'npm-registry-client' : RegClient
-        };
+            beforeEach(() => {
 
-        app = express();
+                mock = {
+                    'composer-common/package.json': {
+                        version: composerVersion
+                    },
+                    'npm-registry-client' : RegClient
+                };
 
-        let router = proxyquire('../routes/npm', mock);
+                app = express();
 
-        router(app);
+                let router = proxyquire('../routes/npm', mock);
 
-        app.listen();
+                router(app);
 
+                app.listen();
+
+
+            });
+
+            describe('GET /api/getSampleList', () => {
+                it('should get the list of samples and exclude invalid ones', () => {
+                    return chai.request(app)
+                        .get('/api/getSampleList')
+                        .then((res) => {
+                            res.should.have.status(200);
+                            res.should.be.json;
+                            res.body.should.be.an('array');
+                            res.body.should.deep.equal([{
+                                name : 'bob',
+                                description : 'bob package',
+                                version : '1.0',
+                                tarball : 'my tar'
+                            }]);
+                        });
+                });
+
+                it('should handle error in getting list', () => {
+                    forceSearchFail = true;
+                    return chai.request(app)
+                        .get('/api/getSampleList')
+                        .then((res) => {
+                            throw new Error('should not have got here');
+                        })
+                        .catch((err) => {
+                            err.response.body.error.should.equal('some error');
+                        });
+                });
+
+                it('should handle error in getting metaData', () => {
+                    forceMetadataFail = true;
+                    return chai.request(app)
+                        .get('/api/getSampleList')
+                        .query({tarball : 'error'})
+                        .then((res) => {
+                            throw new Error('should not have got here');
+                        })
+                        .catch((err) => {
+                            err.response.body.error.should.equal('some error');
+                        });
+                });
+            });
+
+            describe('GET /api/downloadSample', () => {
+                it('should download the chosen sample', () => {
+                    return chai.request(app)
+                        .get('/api/downloadSample')
+                        .query({tarball : 'my tarball'})
+                        .then((res) => {
+                            res.should.have.status(200);
+                            res.charset.should.equal('x-user-defined');
+                            res.should.be.text;
+                            res.text.should.equal('1234');
+
+                            tarParserResult.length.should.equal(1);
+                            tarParserResult[0].should.equal('.bna');
+                        });
+                });
+
+                it('should handle error', () => {
+                    return chai.request(app)
+                        .get('/api/downloadSample')
+                        .query({tarball : 'error'})
+                        .then((res) => {
+                            throw new Error('should not have got here');
+                        })
+                        .catch((err) => {
+                            err.response.body.error.should.equal('some error');
+                        });
+                });
+            });
+
+        });
 
     });
 
-    describe('GET /api/getSampleList', () => {
-        it('should get the list of samples and exclude invalid ones', () => {
-            return chai.request(app)
-                .get('/api/getSampleList')
-                .then((res) => {
-                    res.should.have.status(200);
-                    res.should.be.json;
-                    res.body.should.be.an('array');
-                    res.body.should.deep.equal([{
-                        name : 'bob',
-                        description : 'bob package',
-                        version : '1.0',
-                        tarball : 'my tar'
-                    }]);
-                });
-        });
-
-        it('should handle error  in getting list', () => {
-            return chai.request(app)
-                .get('/api/getSampleList')
-                .then((res) => {
-                    throw new Error('should not have got here');
-                })
-                .catch((err) => {
-                    err.response.body.error.should.equal('some error');
-                });
-        });
-
-        it('should handle error in getting metaData', () => {
-            return chai.request(app)
-                .get('/api/getSampleList')
-                .query({tarball : 'error'})
-                .then((res) => {
-                    throw new Error('should not have got here');
-                })
-                .catch((err) => {
-                    err.response.body.error.should.equal('some error');
-                });
-        });
-    });
-
-    describe('GET /api/downloadSample', () => {
-        it('should download the chosen sample', () => {
-            return chai.request(app)
-                .get('/api/downloadSample')
-                .query({tarball : 'my tarball'})
-                .then((res) => {
-                    res.should.have.status(200);
-                    res.charset.should.equal('x-user-defined');
-                    res.should.be.text;
-                    res.text.should.equal('1234');
-
-                    tarParserResult.length.should.equal(1);
-                    tarParserResult[0].should.equal('.bna');
-                });
-        });
-
-        it('should handle error', () => {
-            return chai.request(app)
-                .get('/api/downloadSample')
-                .query({tarball : 'error'})
-                .then((res) => {
-                    throw new Error('should not have got here');
-                })
-                .catch((err) => {
-                    err.response.body.error.should.equal('some error');
-                });
-        });
-    });
 });

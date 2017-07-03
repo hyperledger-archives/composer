@@ -21,10 +21,8 @@ const tar = require('tar');
 const url = require('url');
 const async = require('async');
 const httpstatus = require('http-status');
-// eslint-disable-next-line no-unused-vars
-const pkgInfo = require('pkginfo')(module, 'dependencies');
 
-const composerVersion = module.exports.dependencies['composer-common'].substring(1);
+const composerVersion = require('composer-common/package.json').version;
 
 const express = require('express');
 const Logger = require('composer-common').Logger;
@@ -144,7 +142,11 @@ module.exports = (app) => {
                     } else if (!metadata.engines.composer) {
                         return false;
                     }
-                    return semver.satisfies(composerVersion, metadata.engines.composer);
+                    let composerVersionToUse = composerVersion;
+                    if (semver.prerelease(composerVersionToUse)) {
+                        composerVersionToUse = semver.inc(composerVersionToUse, 'patch');
+                    }
+                    return semver.satisfies(composerVersionToUse, metadata.engines.composer);
                 });
 
             // If we found multiple versions of the package, we want the first (newest).
