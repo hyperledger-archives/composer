@@ -44,7 +44,6 @@ if [ "${DOCS}" != "" ]; then
        npm run full:unstable
        npm run linkcheck:unstable
     fi
-    npm run linkcheck
 
 
 # Are we running system tests?

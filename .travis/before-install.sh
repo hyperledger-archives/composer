@@ -25,7 +25,13 @@ sudo apt-get install docker-ce
 echo "Docker version: "
 docker --version
 
-sudo apt-get install linkchecker
+# Install using pip as apt-get pulls the wrong version on Travis' trusty image
+# python requests 2.9.2 is essential prereq for linkchecker
+
+sudo pip install linkchecker
+sudo pip install linkchecker --upgrade
+sudo pip install requests==2.9.2
+linkchecker --version
 
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
