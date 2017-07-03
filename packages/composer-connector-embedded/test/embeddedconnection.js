@@ -150,14 +150,14 @@ describe('EmbeddedConnection', () => {
             sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
                         context.should.be.an.instanceOf(Context);
                         context.getIdentityService().getCurrentUserID().should.equal('bob1');
                         return true;
-                    }), 'init', ['aGVsbG8gd29ybGQ=']);
+                    }), 'init', ['aGVsbG8gd29ybGQ=', '{}']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, '6eeb8858-eced-4a32-b1cd-2491f1e3718f');

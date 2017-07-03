@@ -127,6 +127,8 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 		vm.Lock()
 		defer vm.Unlock()
 
+		composer.Container.setStub(stub)
+
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)
 
@@ -158,6 +160,8 @@ func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function stri
 		vm := composer.VM
 		vm.Lock()
 		defer vm.Unlock()
+
+		composer.Container.setStub(stub)
 
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)
