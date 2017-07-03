@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/connection.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/engine.logging.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/connection.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/engine.logging.js</h1>
     
 <section>
     <article>
@@ -100,183 +100,63 @@
 
 'use strict';
 
-const ConnectionManager = require('./connectionmanager');
-const EventEmitter = require('events');
+const Logger = require('composer-common').Logger;
+const util = require('util');
+
+const LOG = Logger.getLog('EngineLogging');
 
 /**
- * Base class representing a connection to a business network.
- * @private
- * @abstract
- * @class
- * @memberof module:composer-common
+ * The JavaScript engine responsible for processing chaincode commands.
+ * @protected
+ * @memberof module:composer-runtime
  */
-class Connection extends EventEmitter {
+class EngineLogging {
 
     /**
-     * Constructor.
-     * @param {ConnectionManager} connectionManager The owning connection manager.
-     * @param {string} connectionProfile The name of the connection profile associated with this connection
-     * @param {string} businessNetworkIdentifier The identifier of the business network for this connection, or null if an admin connection
-     */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
-        super();
-        if (!(connectionManager instanceof ConnectionManager)) {
-            throw new Error('connectionManager not specified');
-        } else if (!connectionProfile) {
-            throw new Error('connectionProfile not specified');
-        }
-        this.connectionManager = connectionManager;
-        this.connectionProfile = connectionProfile;
-        this.businessNetworkIdentifier = businessNetworkIdentifier;
-    }
-
-    /**
-     * Get the connection manager that owns this connection.
-     * @return {ConnectionManager} The owning connection manager.
-     */
-    getConnectionManager() {
-        return this.connectionManager;
-    }
-
-    /**
-     * Returns a string that can be used to identify this connection.
-     * @return {string} the identifier of this connection
-     */
-    getIdentifier() {
-        if(this.businessNetworkIdentifier) {
-            return this.businessNetworkIdentifier + '@' + this.connectionProfile;
-        }
-        else {
-            return this.connectionProfile;
-        }
-    }
-
-    /**
-     * Terminate the connection to the business network.
-     * @abstract
-     * @return {Promise} A promise that is resolved once the connection has been
-     * terminated, or rejected with an error.
-     */
-    disconnect() {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Login as a participant on the business network.
-     * @abstract
-     * @param {string} enrollmentID The enrollment ID of the participant.
-     * @param {string} enrollmentSecret The enrollment secret of the participant.
-     * @return {Promise} A promise that is resolved with a {@link SecurityContext}
-     * object representing the logged in participant, or rejected with a login error.
-     */
-    login(enrollmentID, enrollmentSecret) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Deploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @param {Object} deployOptions connector specific deployment options
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
-     */
-    deploy(securityContext, businessNetworkDefinition, deployOptions) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
-     */
-    undeploy(securityContext, businessNetworkIdentifier) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Test ("ping") the connection to the business network.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @return {Promise} A promise that is resolved once the connection to the
-     * business network has been tested, or rejected with an error.
-     */
-    ping(securityContext) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Invoke a "query" chaincode function with the specified name and arguments.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} functionName The name of the chaincode function to invoke.
+     * Set the log level for the runtime.
+     * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that is resolved with the data returned by the
-     * chaincode function once it has been invoked, or rejected with an error.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    queryChainCode(securityContext, functionName, args) {
-        return Promise.reject(new Error('abstract function called'));
+    setLogLevel(context, args) {
+        const method = 'setLogLevel';
+        LOG.entry(method, context, args);
+        if (!args || args.length !== 1) {
+            LOG.error(method, 'Invalid arguments', args);
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'setLogLevel', ['newLogLevel']));
+        }
+        if (context.getParticipant() === null) {
+            this.getContainer().getLoggingService().setLogLevel(args[0]);
+            return Promise.resolve();
+        }
+        throw new Error('Authorization failure');
     }
 
     /**
-     * Invoke a "invoke" chaincode function with the specified name and arguments.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} functionName The name of the chaincode function to invoke.
+     * Get the current log level of the runtime.
+     * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that is resolved once the chaincode function
-     * has been invoked, or rejected with an error.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
-        return Promise.reject(new Error('abstract function called'));
+    getLogLevel(context, args) {
+        const method = 'getLogLevel';
+        LOG.entry(method, context, args);
+        if (args &amp;&amp; args.length !== 0) {
+            LOG.error(method, 'Invalid arguments', args);
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting no arguments', args, 'getLogLevel'));
+        }
+        if (context.getParticipant() === null) {
+            const curLogLevel = this.getContainer().getLoggingService().getLogLevel();
+            LOG.debug('current log level=' + curLogLevel);
+            return Promise.resolve(curLogLevel);
+        }
+        throw new Error('Authorization failure');
     }
-
-    /**
-     * Create a new identity for the specified user ID.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} userID The user ID.
-     * @param {object} [options] Options for the new identity.
-     * @param {boolean} [options.issuer] Whether or not the new identity should have
-     * permissions to create additional new identities. False by default.
-     * @param {string} [options.affiliation] Specify the affiliation for the new
-     * identity. Defaults to 'institution_a'.
-     * @return {Promise} A promise that is resolved with a generated user
-     * secret once the new identity has been created, or rejected with an error.
-     */
-    createIdentity(securityContext, userID, options) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * List all of the deployed business networks. The connection must
-     * be connected for this method to succeed.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @return {Promise} A promise that will be resolved with an array of
-     * business network identifiers, or rejected with an error.
-     */
-    list(securityContext) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
 }
 
-module.exports = Connection;
+module.exports = EngineLogging;
 </pre>
     </article>
 </section>
