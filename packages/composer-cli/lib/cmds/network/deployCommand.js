@@ -22,12 +22,13 @@ module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
     connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    loglevel: { alias: 'l', required: false, describe: 'the initial loglevel to set (INFO|WARNING|ERROR|DEBUG)', type: 'string' },
+    loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)', type: 'string' },
+    option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+    optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-
     argv.thePromise =  Deploy.handler(argv)
     .then(() => {
         return;
