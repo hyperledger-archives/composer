@@ -239,4 +239,48 @@ describe('Access control system tests', () => {
             });
     });
 
+    it('should be able to enforce delete access permissions on an asset registry', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to remove Bob's car by ID.
+                return aliceAssetRegistry.remove('BO85 CAR')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to remove Alice's car by ID.
+                return bobAssetRegistry.remove('AL1 CE')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to remove Alice's car.
+                return aliceAssetRegistry.remove('AL1 CE');
+            })
+            .then(() => {
+                // Bob should only be able to remove Bob's car.
+                return bobAssetRegistry.remove('BO85 CAR');
+            });
+    });
+
+    it('should be able to enforce delete access permissions on a participant registry', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to remove Bob's record by ID.
+                return aliceParticipantRegistry.remove('bob@mailcorp.com')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to remove Alice's record by ID.
+                return bobParticipantRegistry.remove('alice@mailcorp.com')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to remove Alice's record.
+                return aliceParticipantRegistry.remove('alice@mailcorp.com');
+            })
+            .then(() => {
+                // Bob should only be able to remove Bob's record.
+                return bobParticipantRegistry.remove('bob@mailcorp.com');
+            });
+    });
+
 });

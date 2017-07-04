@@ -26,7 +26,11 @@ class ProxyUtil {
      * @return {Error} The inflated error.
      */
     static inflaterr(error) {
-        let result = global[error.name](error.message);
+        let ctor = global[error.name];
+        if (!ctor) {
+            ctor = Error;
+        }
+        let result = ctor(error.message);
         result.stack = error.stack;
         return result;
     }
