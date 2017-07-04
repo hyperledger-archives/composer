@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from './import/import.component';
@@ -10,7 +9,6 @@ import { ReplaceComponent } from '../basic-modals/replace-confirm';
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
@@ -62,24 +60,14 @@ export class EditorComponent implements OnInit, OnDestroy {
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private modalService: NgbModal,
-                private route: ActivatedRoute,
-                private sampleBusinessNetworkService: SampleBusinessNetworkService,
                 private alertService: AlertService,
                 private editorService: EditorService) {
 
     }
 
     ngOnInit(): Promise<any> {
-        this.route.queryParams.subscribe(() => {
-            if (this.sampleBusinessNetworkService.OPEN_SAMPLE) {
-                this.openImportModal();
-                this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
-            }
-        });
-
         return this.initializationService.initialize()
             .then(() => {
-
                 this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
                     .subscribe((noError) => {
                         if (this.editorFilesValidate() && noError) {
