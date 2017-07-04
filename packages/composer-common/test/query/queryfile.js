@@ -83,15 +83,13 @@ describe('QueryFile', () => {
                 new QueryFile('test.acl', modelManager, invalidQuery);
             }).should.throw(/such error/);
         });
-    });
-
-    describe('#constructor', () => {
 
         it('should parse a query correctly', () => {
             const queryContents = `query Q1 {
                 description: "Select all cars"
                 statement: SELECT org.acme.Car
-            }query Q2 { // test missing whitespace
+            }
+            query Q2 {
                 description: "Select all regulators"
                 statement: SELECT org.acme.Regulator FROM mycustomer.Registry
             }`;
