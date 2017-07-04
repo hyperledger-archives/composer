@@ -1,9 +1,9 @@
 # Contributing to Composer
-* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
-* Currently reading ->  [Suggested IDE setup](./contrib-notes/ide-setup.md)
-* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
-* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
-* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+* [Step-by-step developement environment setup](./getting-started.md)
+* Currently reading ->  [Suggested IDE setup](./ide-setup.md)
+* [Coding Guidelines](./coding-guidelines.md)
+* [Pull Request Guidelines](./submitting-pull-request.md)
+* [Release process](./release-process/weekly-qa-validation.md)
 
 # IDE setup for Hyperledger Composer development
 
@@ -42,4 +42,4 @@ _to do_
 
 # Next step
 
-Move on to read  [Coding Guidelines](./contrib-notes/coding-guidelines.md)
+Move on to read  [Coding Guidelines](./coding-guidelines.md)
