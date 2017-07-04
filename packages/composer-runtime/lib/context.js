@@ -113,6 +113,8 @@ class Context {
         this.compiledScriptBundle = null;
         this.queryCompiler = null;
         this.compiledQueryBundle = null;
+        this.aclCompiler = null;
+        this.compiledAclBundle = null;
     }
 
     /**

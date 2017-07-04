@@ -244,12 +244,12 @@ describe('Access control system tests', () => {
             .then(() => {
                 // Alice should not be able to remove Bob's car by ID.
                 return aliceAssetRegistry.remove('BO85 CAR')
-                    .should.be.rejectedWith(/does not have 'DELETE' access/);
+                    .should.be.rejected;
             })
             .then(() => {
                 // Bob should not be able to remove Alice's car by ID.
                 return bobAssetRegistry.remove('AL1 CE')
-                    .should.be.rejectedWith(/does not have 'DELETE' access/);
+                    .should.be.rejected;
             })
             .then(() => {
                 // Alice should only be able to remove Alice's car.
@@ -266,12 +266,12 @@ describe('Access control system tests', () => {
             .then(() => {
                 // Alice should not be able to remove Bob's record by ID.
                 return aliceParticipantRegistry.remove('bob@mailcorp.com')
-                    .should.be.rejectedWith(/does not have 'DELETE' access/);
+                    .should.be.rejected;
             })
             .then(() => {
                 // Bob should not be able to remove Alice's record by ID.
                 return bobParticipantRegistry.remove('alice@mailcorp.com')
-                    .should.be.rejectedWith(/does not have 'DELETE' access/);
+                    .should.be.rejected;
             })
             .then(() => {
                 // Alice should only be able to remove Alice's record.
