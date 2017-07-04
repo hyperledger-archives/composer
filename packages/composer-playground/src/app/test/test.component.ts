@@ -3,9 +3,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { TransactionService } from '../services/transaction.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
+import { TransactionService } from '../services/transaction.service';
 
 @Component({
     selector: 'app-test',
