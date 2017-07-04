@@ -22,6 +22,7 @@ const fs = require('fs');
 const chai = require('chai');
 chai.use(require('chai-things'));
 const sinon = require('sinon');
+require('chai').should();
 
 describe('Introspector', () => {
 
@@ -51,7 +52,10 @@ describe('Introspector', () => {
 
             modelManager.addModelFile(modelBase, 'model-base.cto');
             const introspector = new Introspector(modelManager);
-            introspector.getClassDeclarations().length.should.equal(17);
+            let classDecl = introspector.getClassDeclarations().filter( (element) => {
+                return !element.isSystemType();
+            });
+            classDecl.length.should.equal(13);
         });
     });
 

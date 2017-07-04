@@ -16,6 +16,7 @@
 
 const Factory = require('../../lib/factory');
 const ModelManager = require('../../lib/modelmanager');
+const ModelUtil = require('../../lib/modelutil');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
 const Serializer = require('../../lib/serializer');
 const TypeNotFoundException = require('../../lib/typenotfoundexception');
@@ -326,7 +327,10 @@ describe('Test Model', function(){
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.isLocalType('MyParticipant').should.equal(false);
             modelFile.isImportedType('MyParticipant').should.equal(true);
-            modelFile.getImports().length.should.equal(5);
+            let imprts = modelFile.getImports().filter( (element) => {
+                return !element.startsWith(ModelUtil.getSystemNamespace());
+            });
+            imprts.length.should.equal(1);
             modelFile.getImports().includes('concerto.MyParticipant').should.equal(true);
         });
     });
@@ -360,7 +364,10 @@ describe('Test Model', function(){
             let modelFile = modelManager.getModelFile('stdlib.business');
             modelFile.isLocalType('Business').should.equal(true);
             modelFile.isImportedType('Person').should.equal(true);
-            modelFile.getImports().length.should.equal(6);
+            let imprts = modelFile.getImports().filter( (element) => {
+                return !element.startsWith(ModelUtil.getSystemNamespace());
+            });
+            imprts.length.should.equal(2);
         });
     });
 });
