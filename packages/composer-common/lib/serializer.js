@@ -136,15 +136,15 @@ class Serializer {
         // create a new instance, using the identifier field name as the ID.
         let resource;
         if (classDeclaration instanceof TransactionDeclaration) {
-            resource = this.factory.newTransaction( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newTransaction( classDeclaration.getNamespace(),
                                                     classDeclaration.getName(),
                                                     jsonObject[classDeclaration.getIdentifierFieldName()] );
         } else if (classDeclaration instanceof EventDeclaration) {
-            resource = this.factory.newEvent( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newEvent( classDeclaration.getNamespace(),
                                               classDeclaration.getName(),
                                               jsonObject[classDeclaration.getIdentifierFieldName()] );
         } else {
-            resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newResource( classDeclaration.getNamespace(),
                                                  classDeclaration.getName(),
                                                  jsonObject[classDeclaration.getIdentifierFieldName()] );
         }

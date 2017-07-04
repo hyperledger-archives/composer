@@ -123,13 +123,10 @@ class InstanceGenerator {
             return parameters.valueGenerator.getEnum(enumValues).getName();
         }
 
-        if (classDeclaration.isAbstract()) {
-            classDeclaration = this.findConcreteSubclass(classDeclaration);
-            type = classDeclaration.getName();
-        }
+        classDeclaration = this.findConcreteSubclass(classDeclaration);
 
         if (classDeclaration.isConcept()) {
-            let concept = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName());
+            let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
             parameters.stack.push(concept);
             return classDeclaration.accept(this, parameters);
         } else {
@@ -137,19 +134,20 @@ class InstanceGenerator {
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
             let id = `${identifierFieldName}:${idx}`;
-            let resource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
+            let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
             parameters.stack.push(resource);
             return classDeclaration.accept(this, parameters);
         }
     }
 
     /**
-     * Find a type that extends the provided abstract type and return it.
+     * Find a concrete type that extends the provided type. If the supplied type argument is
+     * not abstract then it will be returned.
      * TODO: work out whether this has to be a leaf node or whether the closest type can be used
      * It depends really since the closest type will satisfy the model but whether it satisfies
      * any transaction code which attempts to use the generated resource is another matter.
      * @param {ClassDeclaration} declaration the class declaration.
-     * @return {ClassDeclaration} the closest extending concrete class definition - null if none are found.
+     * @return {ClassDeclaration} the closest extending concrete class definition.
      * @throws {Error} if no concrete subclasses exist.
      */
     findConcreteSubclass(declaration) {
@@ -178,14 +176,15 @@ class InstanceGenerator {
      * @private
      */
     visitRelationshipDeclaration(relationshipDeclaration, parameters) {
-        const classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
+        let classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
+        classDeclaration = this.findConcreteSubclass(classDeclaration);
         const identifierFieldName = classDeclaration.getIdentifierFieldName();
         const factory = parameters.factory;
         const valueSupplier = () => {
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
             const id = `${identifierFieldName}:${idx}`;
-            return factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
+            return factory.newRelationship(classDeclaration.getNamespace(), classDeclaration.getName(), id);
         };
         if (relationshipDeclaration.isArray()) {
             return parameters.valueGenerator.getArray(valueSupplier);

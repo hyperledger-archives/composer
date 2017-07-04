@@ -289,7 +289,7 @@ describe('InstanceGenerator', () => {
                 o String id
                 o BaseConcept aConcept
             }`);
-            resource.aConcept.$type.should.match(/^MyConcept$/);
+            resource.aConcept.getType().should.equal('MyConcept');
         });
 
         it('should throw an error when trying to generate a resource from a model that uses an Abstract type with no concrete Implementing type', () => {
@@ -325,6 +325,15 @@ describe('InstanceGenerator', () => {
                 o String theValue optional
             }`);
             resource.theValue.should.be.a('String');
+        });
+
+        it('should generate concrete subclass for abstract reference', function() {
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by id {
+                o String id
+                --> Asset theValue
+            }`);
+            resource.theValue.getType().should.equal('MyAsset');
         });
 
     });

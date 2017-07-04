@@ -231,7 +231,7 @@ class ClassDeclaration {
             // we now validate the field, however to ensure that
             // imports are resolved correctly we validate in the context
             // of the declared type of the field for non-primitives in a different namespace
-            if(field.isPrimitive() || this.isEnum() || field.getNamespace() === this.getModelFile().getNamespace() ) {
+            if(field.isPrimitive() || this.isEnum() || field.getNamespace() === this.getNamespace() ) {
                 field.validate(this);
             }
             else {
@@ -304,7 +304,7 @@ class ClassDeclaration {
      * @return {boolean} true if the class may be pointed to by a relationship
      */
     isSystemType() {
-        return ModelUtil.getSystemNamespace() === this.modelFile.getNamespace();
+        return ModelUtil.getSystemNamespace() === this.getNamespace();
     }
 
     /**
@@ -318,13 +318,21 @@ class ClassDeclaration {
     }
 
     /**
+     * Return the namespace of this class.
+     * @return {String} namespace - a namespace.
+     */
+    getNamespace() {
+        return this.modelFile.getNamespace();
+    }
+
+    /**
      * Returns the fully qualified name of this class.
      * The name will include the namespace if present.
      *
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.modelFile.getNamespace() + '.' + this.name;
+        return this.getNamespace() + '.' + this.name;
     }
 
     /**
