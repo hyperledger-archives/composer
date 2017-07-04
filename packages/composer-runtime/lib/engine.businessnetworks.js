@@ -102,7 +102,8 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition, compiledScriptBundle, compiledQueryBundle;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         return Promise.resolve()
             .then(() => {
 
@@ -133,6 +134,11 @@ class EngineBusinessNetworks {
                 LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
                 Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
 
+                // Cache the compiled ACL bundle.
+                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
                 return dataService.getCollection('$sysdata');
@@ -155,6 +161,7 @@ class EngineBusinessNetworks {
                     businessNetworkDefinition: businessNetworkDefinition,
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
+                    compiledAclBundle: compiledAclBundle,
                     reinitialize: true
                 });
 
