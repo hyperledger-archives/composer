@@ -14,7 +14,9 @@
 
 'use strict';
 
+const AclCompiler = require('../lib/aclcompiler');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledAclBundle = require('../lib/compiledaclbundle');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Container = require('../lib/container');
@@ -135,8 +137,14 @@ describe('EngineBusinessNetworks', () => {
             let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
             mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
             mockContext.getQueryCompiler.returns(mockQueryCompiler);
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.returns(mockCompiledAclBundle);
+            mockContext.getAclCompiler.returns(mockAclCompiler);
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
+            sandbox.stub(Context, 'cacheCompiledQueryBundle');
+            sandbox.stub(Context, 'cacheCompiledAclBundle');
             mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ='])
                 .then((result) => {
@@ -146,6 +154,10 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
+                    sinon.assert.calledOnce(Context.cacheCompiledQueryBundle);
+                    sinon.assert.calledWith(Context.cacheCompiledQueryBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledQueryBundle);
+                    sinon.assert.calledOnce(Context.cacheCompiledAclBundle);
+                    sinon.assert.calledWith(Context.cacheCompiledAclBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
                     sinon.assert.calledTwice(mockContext.initialize);
                     // Initialize.
                     sinon.assert.calledWith(mockContext.initialize);
@@ -154,6 +166,7 @@ describe('EngineBusinessNetworks', () => {
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
+                        compiledAclBundle: mockCompiledAclBundle,
                         reinitialize: true
                     });
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
