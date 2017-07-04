@@ -378,15 +378,14 @@ class AccessController {
      */
     matchPredicate(resource, participant, transaction, aclRule) {
         const method = 'matchPredicate';
-        const entry = Math.random() * 1000;
-        LOG.entry(method + entry, resource, participant, transaction, aclRule);
+        LOG.entry(method, resource, participant, transaction, aclRule);
 
         // We want to permit access to related assets and participants, so prepare the resources.
         const compiledAclBundle = this.context.getCompiledAclBundle();
         const resolver = this.context.getResolver();
         let resolverPromise = Promise.resolve(), resolverCallbackCalled = false;
         const resolverCallback = (resolverPromise_) => {
-            LOG.debug(method + entry, 'Got resolver callback');
+            LOG.debug(method, 'Got resolver callback');
             resolverCallbackCalled = true;
             resolverPromise = resolverPromise.then(() => {
                 return resolverPromise_;
@@ -407,6 +406,7 @@ class AccessController {
 
                 // We should always have a participant to prepare.
                 return resolver.prepare(participant, resolverCallback);
+
             })
             .then((preparedParticipant_) => {
 
@@ -426,7 +426,7 @@ class AccessController {
 
                 // Now all the resources are prepared, loop until we are no longer resolving anything.
                 const iteration = () => {
-                    LOG.debug(method + entry, 'Executing compiled ACL predicate');
+                    LOG.debug(method, 'Executing compiled ACL predicate');
                     resolverCallbackCalled = false;
                     const result = compiledAclBundle.execute(aclRule, preparedResource, preparedParticipant, preparedTransaction);
                     if (resolverCallbackCalled) {
@@ -443,7 +443,7 @@ class AccessController {
             .then((result) => {
 
                 // Return the result, which should be a boolean.
-                LOG.exit(method + entry, result);
+                LOG.exit(method, result);
                 return result;
 
             });
