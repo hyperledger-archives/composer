@@ -65,7 +65,9 @@ func NewDataService(vm *duktape.Context, context *Context, stub shim.ChaincodeSt
 	vm.PushGoFunction(result.getCollection)    // [ global composer theDataService getCollection ]
 	vm.PutPropString(-2, "_getCollection")     // [ global composer theDataService ]
 	vm.PushGoFunction(result.existsCollection) // [ global composer theDataService existsCollection ]
-	vm.PutPropString(-2, "existsCollection")   // [ global composer theDataService ]
+	vm.PutPropString(-2, "_existsCollection")  // [ global composer theDataService ]
+	vm.PushGoFunction(result.executeQuery)     // [ global composer theDataService executeQuery ]
+	vm.PutPropString(-2, "_executeQuery")      // [ global composer theDataService ]
 
 	// Return the new data service.
 	return result
@@ -299,6 +301,65 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 	return 0
 }
 
+// executeQuery executes a query against the data in the world state.
+func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataService.executeQuery", vm)
+	defer func() { logger.Debug("Exiting DataService.executeQuery", result) }()
+
+	// argument 0 is the CouchDB queryString
+	queryString := vm.RequireString(0)
+	logger.Debug("CouchDB query string", queryString)
+
+	// argument 1 is the callback function (err,response)
+	vm.RequireFunction(1)
+
+	resultsIterator, err := dataService.Stub.GetQueryResult(queryString)
+	if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
+			panic(err)
+		}
+		return 0
+	}
+	defer resultsIterator.Close()
+
+	logger.Debug("Got an iterator", resultsIterator)
+
+	arrIdx := vm.PushArray()
+	arrNum := uint(0)
+	for resultsIterator.HasNext() {
+		current, err := resultsIterator.Next()
+		if err != nil {
+			vm.Dup(1)
+			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
+			if vm.Pcall(1) == duktape.ExecError {
+				panic(err)
+			}
+			return 0
+		}
+
+		logger.Debug("Element index", arrNum)
+		logger.Debug("-- key.Key", current.Key)
+		logger.Debug("-- key.Value", string(current.Value))
+
+		// we have to remove nulls from the key (which delimit a compound key)
+		vm.PushString(string(current.Value))
+		vm.JsonDecode(-1)
+		vm.PutPropIndex(arrIdx, arrNum)
+		arrNum++
+	}
+
+	// Call the callback.
+	vm.Dup(1)
+	vm.PushNull() // no error
+	vm.Dup(arrIdx)
+	if vm.Pcall(2) == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
+	return 0
+}
+
 // clearCollection is called to clear all objects from a collection.
 func (dataService *DataService) clearCollection(collectionID string) (err error) {
 	logger.Debug("Entering DataService.clearCollection", collectionID)
@@ -318,15 +379,13 @@ func (dataService *DataService) clearCollection(collectionID string) (err error)
 	for iterator.HasNext() {
 
 		// Read the current key.
-		key, _, err := iterator.Next()
-		// kv, err := iterator.Next()
+		kv, err := iterator.Next()
 		if err != nil {
 			return err
 		}
 
 		// Delete the current key.
-		err = dataService.Stub.DelState(key)
-		// err = dataService.Stub.DelState(kv.Key)
+		err = dataService.Stub.DelState(kv.Key)
 		if err != nil {
 			return err
 		}

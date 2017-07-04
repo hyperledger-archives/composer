@@ -18,25 +18,27 @@ const AccessController = require('../lib/accesscontroller');
 const AclManager = require('composer-common').AclManager;
 const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledQueryBundle = require('../lib/compiledquerybundle');
+const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const EventService = require('../lib/eventservice');
-const HTTPService = require('../lib/httpservice');
 const Factory = require('composer-common').Factory;
+const HTTPService = require('../lib/httpservice');
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
 const Introspector = require('composer-common').Introspector;
-const JSTransactionExecutor = require('../lib/jstransactionexecutor');
 const ModelManager = require('composer-common').ModelManager;
+const QueryCompiler = require('../lib/querycompiler');
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
+const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
-const TransactionExecutor = require('../lib/transactionexecutor');
 const TransactionLogger = require('../lib/transactionlogger');
 
 const chai = require('chai');
@@ -71,9 +73,9 @@ describe('Context', () => {
 
     });
 
-    describe('#loadBusinessNetworkDefinition', () => {
+    describe('#loadBusinessNetworkRecord', () => {
 
-        it('should load the business network if it is not already in the cache', () => {
+        it('should load the business record', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
@@ -81,40 +83,10 @@ describe('Context', () => {
             sandbox.stub(context, 'getDataService').returns(mockDataService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkDefinition()
-                .then(() => {
-                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
-                        return archive.compare(Buffer.from('hello world')) === 0;
-                    }));
+            return context.loadBusinessNetworkRecord()
+                .then((businessNetworkRecord) => {
+                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
                 });
-        });
-
-        it('should not load the business network if it is already in the cache', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
-            return context.loadBusinessNetworkDefinition()
-                .then(() => {
-                    sinon.assert.notCalled(BusinessNetworkDefinition.fromArchive);
-                });
-        });
-
-        it('should handle any errors thrown loading the business network', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').rejects(new Error('such error'));
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkDefinition()
-                .should.be.rejectedWith(/such error/);
         });
 
         it('should throw an error if the business network has been undeployed', () => {
@@ -125,8 +97,121 @@ describe('Context', () => {
             sandbox.stub(context, 'getDataService').returns(mockDataService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkDefinition()
+            return context.loadBusinessNetworkRecord()
                 .should.be.rejectedWith(/The business network has been undeployed/);
+        });
+
+    });
+
+    describe('#loadBusinessNetworkDefinition', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        let mockBusinessNetworkDefinition;
+
+        beforeEach(() => {
+            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        });
+
+        it('should load the business network if it is not already in the cache', () => {
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
+                .then((businessNetworkDefinition) => {
+                    businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
+                });
+        });
+
+        it('should not load the business network if it is already in the cache', () => {
+            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
+            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
+                .then((businessNetworkDefinition) => {
+                    businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
+                });
+        });
+
+        it('should handle any errors thrown loading the business network', () => {
+            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects(new Error('such error'));
+            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
+    describe('#loadCompiledScriptBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        let mockScriptCompiler;
+        let mockCompiledScriptBundle;
+
+        beforeEach(() => {
+            mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            context.scriptCompiler = mockScriptCompiler;
+        });
+
+        it('should load the compiled script bundle if it is not already in the cache', () => {
+            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledScriptBundle) => {
+                    compiledScriptBundle.should.equal(mockCompiledScriptBundle);
+                });
+        });
+
+        it('should not load the compiled script bundle if it is already in the cache', () => {
+            Context.cacheCompiledScriptBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
+            mockScriptCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledScriptBundle) => {
+                    compiledScriptBundle.should.equal(mockCompiledScriptBundle);
+                });
+        });
+
+        it('should handle any errors thrown loading the compiled script bundle', () => {
+            Context.cacheCompiledScriptBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
+            mockScriptCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
+    describe('#loadCompiledQueryBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        let mockQueryCompiler;
+        let mockCompiledQueryBundle;
+
+        beforeEach(() => {
+            mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            context.queryCompiler = mockQueryCompiler;
+        });
+
+        it('should load the compiled query bundle if it is not already in the cache', () => {
+            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledQueryBundle) => {
+                    compiledQueryBundle.should.equal(mockCompiledQueryBundle);
+                });
+        });
+
+        it('should not load the compiled query bundle if it is already in the cache', () => {
+            Context.cacheCompiledQueryBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledQueryBundle);
+            mockQueryCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledQueryBundle) => {
+                    compiledQueryBundle.should.equal(mockCompiledQueryBundle);
+                });
+        });
+
+        it('should handle any errors thrown loading the compiled query bundle', () => {
+            Context.cacheCompiledQueryBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
+            mockQueryCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
+                .should.be.rejectedWith(/such error/);
         });
 
     });
@@ -172,17 +257,115 @@ describe('Context', () => {
 
     });
 
-    describe('#initialize', () => {
+    describe('#findBusinessNetworkDefinition', () => {
 
-        let mockBusinessNetwork, mockSystemRegistries, mockSystemIdentities;
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
 
         beforeEach(() => {
-            mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sinon.stub(context, 'loadBusinessNetworkDefinition').resolves(mockBusinessNetwork);
+            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
+            sinon.stub(context, 'loadBusinessNetworkDefinition').resolves(businessNetworkDefinition);
+        });
+
+        it('should load the business network definition if not specified', () => {
+            return context.findBusinessNetworkDefinition()
+                .then((foundBusinessNetworkDefinition) => {
+                    sinon.assert.calledOnce(context.loadBusinessNetworkDefinition);
+                    sinon.assert.calledWith(context.loadBusinessNetworkDefinition, businessNetworkRecord);
+                    foundBusinessNetworkDefinition.should.equal(businessNetworkDefinition);
+                });
+        });
+
+        it('should use the business network definition in the options', () => {
+            const options = {
+                businessNetworkDefinition: sinon.createStubInstance(BusinessNetworkDefinition)
+            };
+            return context.findBusinessNetworkDefinition(options)
+                .then((foundBusinessNetworkDefinition) => {
+                    foundBusinessNetworkDefinition.should.equal(options.businessNetworkDefinition);
+                });
+        });
+
+    });
+
+    describe('#findCompiledScriptBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        const compiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+
+        beforeEach(() => {
+            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
+            sinon.stub(context, 'loadCompiledScriptBundle').resolves(compiledScriptBundle);
+        });
+
+        it('should load the compiled script bundle if not specified', () => {
+            return context.findCompiledScriptBundle(businessNetworkDefinition)
+                .then((foundCompiledScriptBundle) => {
+                    sinon.assert.calledOnce(context.loadCompiledScriptBundle);
+                    sinon.assert.calledWith(context.loadCompiledScriptBundle, businessNetworkRecord, businessNetworkDefinition);
+                    foundCompiledScriptBundle.should.equal(compiledScriptBundle);
+                });
+        });
+
+        it('should use the compiled script bundle in the options', () => {
+            const options = {
+                compiledScriptBundle: sinon.createStubInstance(CompiledScriptBundle)
+            };
+            return context.findCompiledScriptBundle(businessNetworkDefinition, options)
+                .then((foundCompiledScriptBundle) => {
+                    foundCompiledScriptBundle.should.equal(options.compiledScriptBundle);
+                });
+        });
+
+    });
+
+    describe('#findCompiledQueryBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        const compiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+
+        beforeEach(() => {
+            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
+            sinon.stub(context, 'loadCompiledQueryBundle').resolves(compiledQueryBundle);
+        });
+
+        it('should load the compiled query bundle if not specified', () => {
+            return context.findCompiledQueryBundle(businessNetworkDefinition)
+                .then((foundCompiledQueryBundle) => {
+                    sinon.assert.calledOnce(context.loadCompiledQueryBundle);
+                    sinon.assert.calledWith(context.loadCompiledQueryBundle, businessNetworkRecord, businessNetworkDefinition);
+                    foundCompiledQueryBundle.should.equal(compiledQueryBundle);
+                });
+        });
+
+        it('should use the compiled query bundle in the options', () => {
+            const options = {
+                compiledQueryBundle: sinon.createStubInstance(CompiledQueryBundle)
+            };
+            return context.findCompiledQueryBundle(businessNetworkDefinition, options)
+                .then((foundCompiledQueryBundle) => {
+                    foundCompiledQueryBundle.should.equal(options.compiledQueryBundle);
+                });
+        });
+
+    });
+
+    describe('#initialize', () => {
+
+        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockSystemIdentities;
+
+        beforeEach(() => {
+            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            sinon.stub(context, 'findBusinessNetworkDefinition').resolves(mockBusinessNetworkDefinition);
+            sinon.stub(context, 'findCompiledScriptBundle').resolves(mockCompiledScriptBundle);
+            sinon.stub(context, 'findCompiledQueryBundle').resolves(mockCompiledQueryBundle);
             sinon.stub(context, 'loadCurrentParticipant').resolves(null);
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
-            sinon.stub(context, 'addTransactionExecutor');
             mockSystemRegistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
             mockSystemIdentities = sinon.createStubInstance(DataCollection);
@@ -190,25 +373,22 @@ describe('Context', () => {
         });
 
         it('should initialize the context', () => {
-            return context.initialize()
+            const options = {};
+            return context.initialize(options)
                 .then(() => {
-                    sinon.assert.calledOnce(context.loadBusinessNetworkDefinition);
-                    context.businessNetworkDefinition.should.equal(mockBusinessNetwork);
+                    sinon.assert.calledOnce(context.findBusinessNetworkDefinition);
+                    sinon.assert.calledWith(context.findBusinessNetworkDefinition, options);
+                    sinon.assert.calledOnce(context.findCompiledScriptBundle);
+                    sinon.assert.calledWith(context.findCompiledScriptBundle, mockBusinessNetworkDefinition, options);
+                    sinon.assert.calledOnce(context.findCompiledQueryBundle);
+                    sinon.assert.calledWith(context.findCompiledQueryBundle, mockBusinessNetworkDefinition, options);
+                    context.businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
+                    context.compiledScriptBundle.should.equal(mockCompiledScriptBundle);
+                    context.compiledQueryBundle.should.equal(mockCompiledQueryBundle);
                     sinon.assert.calledOnce(context.loadCurrentParticipant);
                     should.equal(context.participant, null);
-                    sinon.assert.calledOnce(context.addTransactionExecutor);
-                    sinon.assert.calledWith(context.addTransactionExecutor, sinon.match.instanceOf(JSTransactionExecutor));
                     context.sysregistries.should.equal(mockSystemRegistries);
                     context.sysidentities.should.equal(mockSystemIdentities);
-                });
-        });
-
-        it('should initialize the context with a specified business network definition', () => {
-            let mockBusinessNetwork2 = sinon.createStubInstance(BusinessNetworkDefinition);
-            return context.initialize({ businessNetworkDefinition: mockBusinessNetwork2 })
-                .then(() => {
-                    sinon.assert.notCalled(context.loadBusinessNetworkDefinition);
-                    context.businessNetworkDefinition.should.equal(mockBusinessNetwork2);
                 });
         });
 
@@ -246,6 +426,27 @@ describe('Context', () => {
                 .then(() => {
                     context.sysidentities.should.equal(mockSystemIdentities2);
                 });
+        });
+
+    });
+
+    describe('#getServices', () => {
+
+        it('should return all of the services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            context.getServices().should.deep.equal([
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ]);
         });
 
     });
@@ -447,6 +648,8 @@ describe('Context', () => {
             sinon.stub(context, 'getEventService').returns(mockEventService);
             let mockHTTPService = sinon.createStubInstance(HTTPService);
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
             context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
@@ -572,63 +775,6 @@ describe('Context', () => {
 
     });
 
-    describe('#addTransactionExecutor', () => {
-
-        it('should add a new transaction executor', () => {
-            let mockTransactionExecutor = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor.getType.returns('JS');
-            context.addTransactionExecutor(mockTransactionExecutor);
-            context.transactionExecutors.should.have.lengthOf(1);
-            context.transactionExecutors[0].should.equal(mockTransactionExecutor);
-        });
-
-        it('should ignore an existing transaction executor of a different type', () => {
-            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor1.getType.returns('GO');
-            context.addTransactionExecutor(mockTransactionExecutor1);
-            context.transactionExecutors.should.have.lengthOf(1);
-            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
-            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor2.getType.returns('JS');
-            context.addTransactionExecutor(mockTransactionExecutor2);
-            context.transactionExecutors.should.have.lengthOf(2);
-            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
-            context.transactionExecutors[1].should.equal(mockTransactionExecutor2);
-        });
-
-        it('should replace an existing transaction executor of the same type', () => {
-            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor1.getType.returns('JS');
-            context.addTransactionExecutor(mockTransactionExecutor1);
-            context.transactionExecutors.should.have.lengthOf(1);
-            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
-            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor2.getType.returns('JS');
-            context.addTransactionExecutor(mockTransactionExecutor2);
-            context.transactionExecutors.should.have.lengthOf(1);
-            context.transactionExecutors[0].should.equal(mockTransactionExecutor2);
-        });
-
-    });
-
-    describe('#getTransactionExecutors', () => {
-
-        it('should return no transaction executors by default', () => {
-            let transactionExecutors = context.getTransactionExecutors();
-            transactionExecutors.should.have.lengthOf(0);
-        });
-
-        it('should return the transaction executors', () => {
-            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor1.getType.returns('JS');
-            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
-            mockTransactionExecutor2.getType.returns('dogelang');
-            context.transactionExecutors = [mockTransactionExecutor1, mockTransactionExecutor2];
-            context.getTransactionExecutors().should.deep.equal([mockTransactionExecutor1, mockTransactionExecutor2]);
-        });
-
-    });
-
     describe('#getAccessController', () => {
 
         it('should return a new access controller', () => {
@@ -690,10 +836,175 @@ describe('Context', () => {
         });
     });
 
-    describe('#toJSON', () => {
+    describe('#getScriptCompiler', () => {
 
-        it('should return an empty object', () => {
-            context.toJSON().should.deep.equal({});
+        it('should return a new script compiler', () => {
+            context.getScriptCompiler().should.be.an.instanceOf(ScriptCompiler);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            context.scriptCompiler = mockScriptCompiler;
+            context.getScriptCompiler().should.equal(mockScriptCompiler);
+        });
+
+    });
+
+    describe('#getCompiledScriptBundle', () => {
+
+        it('should return the compiled script bundle', () => {
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            context.compiledScriptBundle = mockCompiledScriptBundle;
+            context.getCompiledScriptBundle().should.equal(mockCompiledScriptBundle);
+        });
+
+    });
+
+    describe('#getQueryCompiler', () => {
+
+        it('should return a new query compiler', () => {
+            context.getQueryCompiler().should.be.an.instanceOf(QueryCompiler);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            context.queryCompiler = mockQueryCompiler;
+            context.getQueryCompiler().should.equal(mockQueryCompiler);
+        });
+
+    });
+
+    describe('#getCompiledQueryBundle', () => {
+
+        it('should return the compiled query bundle', () => {
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            context.compiledQueryBundle = mockCompiledQueryBundle;
+            context.getCompiledQueryBundle().should.equal(mockCompiledQueryBundle);
+        });
+
+    });
+
+    describe('#transactionStart', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionStart(true)
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionStart);
+                        sinon.assert.calledWith(service.transactionStart, true);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionPrepare', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionPrepare()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionPrepare);
+                        sinon.assert.calledWith(service.transactionPrepare);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionRollback', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionRollback()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionRollback);
+                        sinon.assert.calledWith(service.transactionRollback);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionCommit', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionCommit()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionCommit);
+                        sinon.assert.calledWith(service.transactionCommit);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionEnd', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionEnd()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionEnd);
+                        sinon.assert.calledWith(service.transactionEnd);
+                    });
+                });
         });
 
     });

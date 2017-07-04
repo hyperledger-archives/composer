@@ -510,11 +510,13 @@ describe('LoopbackVisitor', () => {
                     }]);
                 });
 
+                // TODO: Added a timestamp here as that is now added most model parse...
+                // when System models are ready remove this.
+                // GITHUB: composer/issues/920
                 it('should generate a schema for a transaction with just an identifier', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
-                    transaction MyTransaction identified by transactionId {
-                        o String transactionId
+                    transaction MyTransaction{
                     }
                     `);
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
@@ -560,14 +562,18 @@ describe('LoopbackVisitor', () => {
                     }]);
                 });
 
+
+                // TODO: Added a timestamp here as that is now added most model parse...
+                // when System models are ready remove this.
+                // GITHUB: composer/issues/920
                 it('should generate two schemas for a transaction that extends another transaction', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
-                    transaction MyBaseTransaction identified by transactionId {
-                        o String transactionId
+                    transaction MyBaseTransaction {
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue
+
                     }
                     `);
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
@@ -656,11 +662,13 @@ describe('LoopbackVisitor', () => {
                     }]);
                 });
 
+                // TODO: Added a timestamp here as that is now added most model parse...
+                // when System models are ready remove this.
+                // GITHUB: composer/issues/920
                 it('should generate one schema for a transaction that extends an abstract transaction', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
-                    abstract transaction MyBaseTransaction identified by transactionId {
-                        o String transactionId
+                    abstract transaction MyBaseTransaction {
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue
@@ -934,7 +942,11 @@ describe('LoopbackVisitor', () => {
                                 },
                                 value: {
                                     type: 'string',
-                                    required: true
+                                    required: true,
+                                    enum: [
+                                        'SOME_VALUE',
+                                        'SOME_OTHER_VALUE'
+                                    ]
                                 }
                             },
                             validations: [],

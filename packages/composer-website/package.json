@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.7.4",
+  "version": "0.9.1",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -11,10 +11,12 @@
     "doc": "npm run docpub && ./scripts/generate-uml.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
-    "jekyllserve": "cd ./jekylldocs && jekyll serve",
+    "jekyllserve": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
     "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
-    "changelog": "./scripts/changelog.sh"
+    "changelog": "./scripts/changelog.sh",
+    "linkcheck:prod": "./scripts/linkcheck.sh prod",
+    "linkcheck:unstable": "./scripts/linkcheck.sh unstable"
   },
   "repository": {
     "type": "git",
@@ -28,10 +30,10 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "^0.7.4",
-    "composer-client": "^0.7.4",
-    "composer-common": "^0.7.4",
-    "composer-runtime": "^0.7.4",
+    "composer-admin": "^0.9.1",
+    "composer-client": "^0.9.1",
+    "composer-common": "^0.9.1",
+    "composer-runtime": "^0.9.1",
     "jsdoc": "^3.4.3",
     "node-plantuml": "^0.5.0",
     "sanitize-html": "^1.14.1"

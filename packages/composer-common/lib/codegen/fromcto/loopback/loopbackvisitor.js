@@ -435,23 +435,18 @@ class LoopbackVisitor {
         // Is this an enumeration?
         } else if (field.isTypeEnum()) {
 
-            // Render the type as JSON Schema.
-            jsonSchema = {
-                type: 'string'
-            };
+            // Look up the type of the property.
+            let type = field.getParent().getModelFile().getType(field.getType());
+
+            // Visit it, and grab the schema.
+            jsonSchema = type.accept(this, parameters);
 
             // If this field has a default value, add it.
             if (field.getDefaultValue()) {
                 jsonSchema.default = field.getDefaultValue();
             }
 
-            // Look up the type of the property.
-            let type = field.getParent().getModelFile().getType(field.getType());
-
-            // Visit it, but ignore the response.
-            type.accept(this, parameters);
-
-        // Not primitive, so must be a class or enumeration!
+        // Not primitive, so must be a class!
         } else {
 
             // Render the type as JSON Schema.
@@ -491,13 +486,18 @@ class LoopbackVisitor {
     visitEnumDeclaration(enumDeclaration, parameters) {
         debug('entering visitEnumDeclaration', enumDeclaration.getName());
 
+        // Create the schema.
+        let jsonSchema = {
+            type: 'string'
+        };
+
         // Walk over all of the properties which should just be enum value declarations.
-        enumDeclaration.getProperties().forEach((property) => {
-            property.accept(this, parameters);
+        jsonSchema.enum = enumDeclaration.getProperties().map((property) => {
+            return property.accept(this, parameters);
         });
 
         // Return the schema.
-        return null;
+        return jsonSchema;
 
     }
 
@@ -512,7 +512,7 @@ class LoopbackVisitor {
         debug('entering visitEnumValueDeclaration', enumValueDeclaration.getName());
 
         // The schema in this case is just the name of the value.
-        return null;
+        return enumValueDeclaration.getName();
 
     }
 

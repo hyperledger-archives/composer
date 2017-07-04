@@ -34,14 +34,14 @@ describe('Transaction (participant specific) system tests', () => {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.cto'), 'utf8')
+            { fileName: 'models/transactions.participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.cto'), 'utf8') }
         ];
         const scriptFiles=  [
             { identifier: 'transactions.participants.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions.participants@0.0.1', 'The network for the transaction (participant specific) system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions-participants@0.0.1', 'The network for the transaction (participant specific) system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
@@ -50,7 +50,7 @@ describe('Transaction (participant specific) system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.transactions.participants')
+                return TestUtil.getClient('systest-transactions-participants')
                     .then((result) => {
                         client = result;
                     });
@@ -60,9 +60,9 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that contains participants', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'SimpleTransactionWithParticipants');
-        transaction.stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        transaction.stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.stringParticipant.stringValue = 'party parrot in hursley';
-        transaction.integerParticipant = factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
+        transaction.integerParticipant = factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
         transaction.integerParticipant.integerValue = 5318008;
         return client.submitTransaction(transaction);
     });
@@ -71,14 +71,14 @@ describe('Transaction (participant specific) system tests', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'SimpleTransactionWithParticipantArrays');
         transaction.stringParticipants = [
-            factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1'),
-            factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2')
+            factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1'),
+            factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2')
         ];
         transaction.stringParticipants[0].stringValue = 'party parrot in hursley';
         transaction.stringParticipants[1].stringValue = 'party parrot in san francisco';
         transaction.integerParticipants = [
-            factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1'),
-            factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant2')
+            factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1'),
+            factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant2')
         ];
         transaction.integerParticipants[0].integerValue = 5318008;
         transaction.integerParticipants[1].integerValue = 56373351;
@@ -87,9 +87,9 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that contains relationships to participants', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
-        let integerParticipant = factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
+        let integerParticipant = factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
         integerParticipant.integerValue = 5318008;
         let transaction = factory.newTransaction('systest.transactions.participants', 'SimpleTransactionWithParticipantRelationships');
         transaction.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
@@ -122,13 +122,13 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that contains arrays of relationships to participants', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let stringParticipant1 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant1 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant1.stringValue = 'party parrot in hursley';
-        let stringParticipant2 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
+        let stringParticipant2 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
         stringParticipant2.stringValue = 'party parrot in san francisco';
-        let integerParticipant1 = factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
+        let integerParticipant1 = factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant1');
         integerParticipant1.integerValue = 5318008;
-        let integerParticipant2 = factory.newInstance('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant2');
+        let integerParticipant2 = factory.newResource('systest.transactions.participants', 'SimpleIntegerParticipant', 'integerParticipant2');
         integerParticipant2.integerValue = 56373351;
         let transaction = factory.newTransaction('systest.transactions.participants', 'SimpleTransactionWithParticipantRelationshipArrays');
         transaction.stringParticipants = [
@@ -157,9 +157,9 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that gets all participants from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant1 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant1 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant1.stringValue = 'party parrot in hursley';
-        let participant2 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
+        let participant2 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
         participant2.stringValue = 'party parrot in san francisco';
         let transaction = factory.newTransaction('systest.transactions.participants', 'GetAllParticipantsFromParticipantRegistryTransaction');
         return client
@@ -180,7 +180,7 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that gets an participant from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.participants', 'GetParticipantFromParticipantRegistryTransaction');
         return client
@@ -211,7 +211,7 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that adds an participant in the transaction to an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'AddParticipantInTransactionToParticipantRegistryTransaction');
-        transaction.stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        transaction.stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.stringParticipant.stringValue = 'party parrot in hursley';
         return client
             .submitTransaction(transaction)
@@ -230,9 +230,9 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that adds an participant with a relationship in the transaction to an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'AddParticipantWithRelationshipInTransactionToParticipantRegistryTransaction');
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
-        let relationshipParticipant = factory.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+        let relationshipParticipant = factory.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
         relationshipParticipant.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.relationshipParticipant = relationshipParticipant;
         return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
@@ -275,7 +275,7 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that adds a new participant with a relationship to an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'AddNewParticipantWithRelationshipToParticipantRegistryTransaction');
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
         return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
             .then((participantRegistry) => {
@@ -299,10 +299,10 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that updates an participant in the transaction in an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.participants', 'UpdateParticipantInTransactionInParticipantRegistryTransaction');
-        transaction.stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        transaction.stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.stringParticipant.stringValue = 'party parrot in san francisco';
         return client
             .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
@@ -327,11 +327,11 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that updates an participant with a relationship in the transaction in an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'UpdateParticipantWithRelationshipInTransactionInParticipantRegistryTransaction');
-        let stringParticipant1 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant1 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant1.stringValue = 'party parrot in hursley';
-        let stringParticipant2 = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
+        let stringParticipant2 = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
         stringParticipant2.stringValue = 'party parrot in hursley';
-        let relationshipParticipant = factory.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+        let relationshipParticipant = factory.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
         relationshipParticipant.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.relationshipParticipant = relationshipParticipant;
         return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
@@ -364,7 +364,7 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that updates a new participant in an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.participants', 'UpdateNewParticipantInParticipantRegistryTransaction');
         return client
@@ -390,9 +390,9 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that updates a new participant with a relationship in an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'UpdateNewParticipantWithRelationshipToParticipantRegistryTransaction');
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
-        let relationshipParticipant = factory.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+        let relationshipParticipant = factory.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
         relationshipParticipant.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
             .then((participantRegistry) => {
@@ -422,10 +422,10 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that removes an participant in the transaction from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.participants', 'RemoveParticipantInTransactionInParticipantRegistryTransaction');
-        transaction.stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        transaction.stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.stringParticipant.stringValue = 'party parrot in san francisco';
         return client
             .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
@@ -452,9 +452,9 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that removes an participant with a relationship in the transaction from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'RemoveParticipantWithRelationshipInTransactionInParticipantRegistryTransaction');
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
-        let relationshipParticipant = factory.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+        let relationshipParticipant = factory.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
         relationshipParticipant.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         transaction.relationshipParticipant = relationshipParticipant;
         return client
@@ -493,7 +493,7 @@ describe('Transaction (participant specific) system tests', () => {
 
     it('should submit and execute a transaction that removes a new participant from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         participant.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.participants', 'RemoveNewParticipantInParticipantRegistryTransaction');
         return client
@@ -521,9 +521,9 @@ describe('Transaction (participant specific) system tests', () => {
     it('should submit and execute a transaction that removes a new participant with a relationship from an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'RemoveNewParticipantWithRelationshipInParticipantRegistryTransaction');
-        let stringParticipant = factory.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        let stringParticipant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         stringParticipant.stringValue = 'party parrot in hursley';
-        let relationshipParticipant = factory.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+        let relationshipParticipant = factory.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
         relationshipParticipant.stringParticipant = factory.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
         return client
             .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
@@ -556,6 +556,71 @@ describe('Transaction (participant specific) system tests', () => {
             })
             .then((participantRegistry) => {
                 return participantRegistry.get('stringParticipant1');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an participant add is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantAddIsAtomic');
+        return client
+            .submitTransaction(transaction)
+            .should.be.rejected
+            .then(() => {
+                return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant');
+            })
+            .then((participantRegistry) => {
+                return participantRegistry.exists('stringParticipant1');
+            })
+            .then((exists) => {
+                exists.should.be.false;
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an participant update is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        participant.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantUpdateIsAtomic');
+        let participantRegistry;
+        return client
+            .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+            .then((participantRegistry_) => {
+                participantRegistry = participantRegistry_;
+                return participantRegistry.add(participant);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return participantRegistry.get('stringParticipant1');
+            })
+            .then((participant) => {
+                participant.stringValue.should.equal('party parrot in hursley');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an participant remove is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        participant.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantRemoveIsAtomic');
+        let participantRegistry;
+        return client
+            .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+            .then((participantRegistry_) => {
+                participantRegistry = participantRegistry_;
+                return participantRegistry.add(participant);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return participantRegistry.exists('stringParticipant1');
+            })
+            .then((exists) => {
+                exists.should.be.true;
             });
     });
 

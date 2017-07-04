@@ -15,9 +15,11 @@
 'use strict';
 
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
+const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const ParseException = require('../../lib/introspect/parseexception');
@@ -33,10 +35,23 @@ describe('ModelFile', () => {
     const carLeaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
 
     let mockModelManager;
+    let mockClassDeclaration;
+    let mockSystemModelFile;
+    let mockSystemAsset;
     let sandbox;
 
     beforeEach(() => {
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
         sandbox = sinon.sandbox.create();
     });
 
@@ -155,7 +170,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.MyAsset2/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if a wildcard import exists for an invalid namespace', () => {
@@ -168,7 +183,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.\*/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if an import exists for a type that does not exist in a valid namespace', () => {
@@ -188,7 +203,7 @@ describe('ModelFile', () => {
             let modelFile2 = new ModelFile(mockModelManager, model2);
             (() => {
                 modelFile2.validate();
-            }).should.throw(/No type MyAsset3 in namespace org.acme.ext/);
+            }).should.throw(IllegalModelException, /MyAsset3/);
         });
 
         it('should not throw if an import exists for a type that exists in a valid namespace', () => {
@@ -206,7 +221,7 @@ describe('ModelFile', () => {
             let modelFile1 = new ModelFile(mockModelManager, model1);
             mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
             let modelFile2 = new ModelFile(mockModelManager, model2);
-            modelFile2.validate();
+            (() => modelFile2.validate()).should.not.throw();
         });
 
         it('should not throw if a wildcard import exists for a valid namespace', () => {
@@ -224,7 +239,7 @@ describe('ModelFile', () => {
             let modelFile1 = new ModelFile(mockModelManager, model1);
             mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
             let modelFile2 = new ModelFile(mockModelManager, model2);
-            modelFile2.validate();
+            (() => modelFile2.validate()).should.not.throw();
         });
 
     });
@@ -338,6 +353,13 @@ describe('ModelFile', () => {
 
     describe('#resolveImport', () => {
 
+        it('should find the fully qualified name of a type in the system namespace', () => {
+            const model = `
+            namespace org.acme`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.resolveImport('Asset').should.equal('org.hyperledger.composer.system.Asset');
+        });
+
         it('should find the fully qualified name of the import', () => {
             const model = `
             namespace org.acme
@@ -414,6 +436,22 @@ describe('ModelFile', () => {
             }).should.throw(/Coin/);
         });
 
+        it('relatioship to an asset that does not exist', () => {
+            const model2 = `
+            namespace org.acme
+
+            asset MyAsset identified by assetId {
+                o String assetId
+                --> DontExist relationship
+            }`;
+
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            (() => {
+                modelFile2.validate();
+            }).should.throw(/DontExist/);
+        });
+
+
     });
 
     describe('#getType', () => {
@@ -426,16 +464,6 @@ describe('ModelFile', () => {
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new ModelFile(mockModelManager, 'fake definitions');
             mf.getType('String').should.equal('String');
-        });
-
-    });
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
-            let parsed = modelFile.toJSON();
-            parsed.should.deep.equal({});
         });
 
     });

@@ -12,6 +12,22 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.9.0 {d0b9ae5179276e20604874624fe9529d} 2017-06-23
+- Removed useless toJSON methods everywhere
+- Removed deprecated Factory.newInstance method
+- Removed deprecated ModelFile.getFileName method
+
+Version 0.8.1 {5ac120d6a9f42683dfcd729fea3ea1c9} 2017-06-20
+- Added BaseModelException to standardise model errors
+
+Version 0.8.0 {1dbfded54f54b7861b8eadb64d95f82a} 2017-06-14
+- Added TypeNotFoundException
+- Corrected JSDoc for IllegalModelException.constructor
+- Corrected JSDoc for Factory.newRelationship
+
+Version 0.7.5 {b2c1c30d370b04c153426500a03c3061} 2017-06-07
+- Added optional JSZip options parameter to toArchive
+
 Version 0.7.4 {ebaf2453e8e5af80aa8e2d36a7513b63} 2017-05-30
 - Fixed Factory.newEvent to accept optional event ID
 

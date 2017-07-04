@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Identity Issue Command
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Hyperledger Composer Identity Issue Command
 ---

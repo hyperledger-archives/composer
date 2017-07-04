@@ -58,16 +58,7 @@ class Engine {
             log: (level, method, msg, args) => {
                 args = args || [];
                 let formattedArguments = args.map((arg) => {
-                    if (arg === Object(arg)) {
-                        // It's an object, array, or function, so serialize it as JSON.
-                        try {
-                            return JSON.stringify(arg);
-                        } catch (e) {
-                            return arg;
-                        }
-                    } else {
-                        return arg;
-                    }
+                    return String(arg);
                 }).join(', ');
                 switch (level) {
                 case 'debug':
@@ -84,7 +75,7 @@ class Engine {
             }
         };
         Logger.setFunctionalLogger(loggingProxy);
-        Logger._envDebug = 'concerto:*';
+        Logger._envDebug = 'composer:*';
     }
 
     /**
@@ -97,16 +88,30 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
+        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
-        } else if (args.length !== 1) {
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive']));
+        } else if (args.length !== 2) {
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive', 'initArgs']));
         }
+
+        // see if there are any init options and process
+        const initOptions = JSON.parse(args[1]);
+        if (initOptions.logLevel && context.getParticipant() === null) {
+            this.getContainer().getLoggingService().setLogLevel(initOptions.logLevel);
+        }
+
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition, compiledScriptBundle, compiledQueryBundle;
         let sysregistries, sysidentities;
         return Promise.resolve()
+            .then(() => {
+
+                // Start the transaction.
+                return context.transactionStart(false);
+
+            })
             .then(() => {
 
                 // Load, validate, and hash the business network definition.
@@ -116,6 +121,14 @@ class Engine {
                 let sha256 = createHash('sha256');
                 businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
                 LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
+
+                // Create the business network record.
+                businessNetworkRecord = {
+                    data: businessNetworkBase64,
+                    hash: businessNetworkHash
+                };
+
+                // Load the business network.
                 return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
 
             })
@@ -126,41 +139,32 @@ class Engine {
                 LOG.debug(method, 'Loaded business network definition, storing in cache');
                 Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
 
+                // Cache the compiled script bundle.
+                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+
+                // Cache the compiled query bundle.
+                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
+                Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                return dataService.getCollection('$sysdata')
-                    .then((sysdata) => {
-                        LOG.debug(method, 'The $sysdata collection already exists');
-                        return sysdata;
-                    })
-                    .catch((error) => {
-                        LOG.debug(method, 'The $sysdata collection does not exist, creating');
-                        return dataService.createCollection('$sysdata');
-                    });
+                return dataService.ensureCollection('$sysdata');
 
             })
             .then((sysdata) => {
 
                 // Add the business network definition to the sysdata collection.
-                return sysdata.add('businessnetwork', {
-                    data: businessNetworkBase64,
-                    hash: businessNetworkHash
-                });
+                return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })
             .then(() => {
 
                 // Ensure that the system registries collection exists.
                 LOG.debug(method, 'Ensuring that sysregistries collection exists');
-                return dataService.getCollection('$sysregistries')
-                    .then((sysregistries_) => {
-                        LOG.debug(method, 'The $sysregistries collection already exists');
-                        return sysregistries_;
-                    })
-                    .catch((error) => {
-                        LOG.debug(method, 'The $sysregistries collection does not exist, creating');
-                        return dataService.createCollection('$sysregistries');
-                    })
+                return dataService.ensureCollection('$sysregistries')
                     .then((sysregistries_) => {
                         sysregistries = sysregistries_;
                     });
@@ -170,15 +174,7 @@ class Engine {
 
                 // Ensure that the system identities collection exists.
                 LOG.debug(method, 'Ensuring that sysidentities collection exists');
-                return dataService.getCollection('$sysidentities')
-                    .then((sysidentities_) => {
-                        LOG.debug(method, 'The $sysidentities collection already exists');
-                        return sysidentities_;
-                    })
-                    .catch((error) => {
-                        LOG.debug(method, 'The $sysidentities collection does not exist, creating');
-                        return dataService.createCollection('$sysidentities');
-                    })
+                return dataService.ensureCollection('$sysidentities')
                     .then((sysidentities_) => {
                         sysidentities = sysidentities_;
                     });
@@ -190,6 +186,8 @@ class Engine {
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
                     businessNetworkDefinition: businessNetworkDefinition,
+                    compiledScriptBundle: compiledScriptBundle,
+                    compiledQueryBundle: compiledQueryBundle,
                     sysregistries: sysregistries,
                     sysidentities: sysidentities
                 });
@@ -207,20 +205,27 @@ class Engine {
 
                 // Create the default transaction registry if it does not exist.
                 let registryManager = context.getRegistryManager();
-                return registryManager
-                    .get('Transaction', 'default')
-                    .then(() => {
-                        LOG.debug(method, 'The default transaction registry already exists');
-                    })
-                    .catch((error) => {
-                        LOG.debug(method, 'The default transaction registry does not exist, creating');
-                        return registryManager.add('Transaction', 'default', 'Default Transaction Registry');
-                    });
+                return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');
 
+            })
+            .then(() => {
+                return context.transactionPrepare()
+                    .then(() => {
+                        return context.transactionCommit();
+                    })
+                    .then(() => {
+                        return context.transactionEnd();
+                    });
             })
             .catch((error) => {
                 LOG.error(method, 'Caught error, rethrowing', error);
-                throw error;
+                return context.transactionRollback()
+                    .then(() => {
+                        return context.transactionEnd();
+                    })
+                    .then(() => {
+                        throw error;
+                    });
             })
             .then(() => {
                 LOG.exit(method);
@@ -260,12 +265,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(false);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);
@@ -310,12 +336,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(true);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);
@@ -372,14 +419,6 @@ class Engine {
         return Promise.resolve(result);
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 /**
@@ -397,8 +436,10 @@ function mixin(sourceClass) {
 
 mixin(require('./engine.businessnetworks'));
 mixin(require('./engine.identities'));
+mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));
 mixin(require('./engine.transactions'));
+mixin(require('./engine.logging'));
 
 module.exports = Engine;

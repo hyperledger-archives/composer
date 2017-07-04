@@ -14,15 +14,15 @@
 
 'use strict';
 
-const Serializer = require('composer-common').Serializer;
 const Context = require('composer-runtime').Context;
-const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
-const IdentityService = require('composer-runtime').IdentityService;
-const EventService = require('composer-runtime').EventService;
-const HTTPService = require('composer-runtime').HTTPService;
+const Serializer = require('composer-common').Serializer;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
+const WebDataService = require('..').WebDataService;
+const WebEventService = require('..').WebEventService;
+const WebHTTPService = require('..').WebHTTPService;
+const WebIdentityService = require('..').WebIdentityService;
 
 require('chai').should();
 const sinon = require('sinon');
@@ -30,16 +30,14 @@ const sinon = require('sinon');
 describe('WebContext', () => {
 
     let mockWebContainer;
-    let mockDataService;
     let mockSerializer;
     let mockEngine;
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
-        mockDataService = sinon.createStubInstance(DataService);
+        mockWebContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
-        mockWebContainer.getDataService.returns(mockDataService);
         mockSerializer = sinon.createStubInstance(Serializer);
     });
 
@@ -56,7 +54,7 @@ describe('WebContext', () => {
 
         it('should return the container logging service', () => {
             let context = new WebContext(mockEngine, 'bob1');
-            context.getDataService().should.be.an.instanceOf(DataService);
+            context.getDataService().should.be.an.instanceOf(WebDataService);
         });
 
     });
@@ -65,7 +63,7 @@ describe('WebContext', () => {
 
         it('should return the container identity service', () => {
             let context = new WebContext(mockEngine, 'bob1');
-            context.getIdentityService().should.be.an.instanceOf(IdentityService);
+            context.getIdentityService().should.be.an.instanceOf(WebIdentityService);
             context.getIdentityService().getCurrentUserID().should.equal('bob1');
         });
 
@@ -76,27 +74,29 @@ describe('WebContext', () => {
         it('should return the container event service', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.getSerializer = sinon.stub().returns(mockSerializer);
-            context.getEventService().should.be.an.instanceOf(EventService);
+            context.getEventService().should.be.an.instanceOf(WebEventService);
         });
 
         it('should return this.eventService if it is set', () => {
+            const mockWebEventService = sinon.createStubInstance(WebEventService);
             let context = new WebContext(mockEngine, 'bob1');
-            context.eventService = {};
-            context.getEventService().should.deep.equal({});
+            context.eventService = mockWebEventService;
+            context.getEventService().should.equal(mockWebEventService);
         });
     });
 
     describe('#getHTTPService', () => {
 
-        it('should return the container event service', () => {
+        it('should return the container http service', () => {
             let context = new WebContext(mockEngine, 'bob1');
-            context.getHTTPService().should.be.an.instanceOf(HTTPService);
+            context.getHTTPService().should.be.an.instanceOf(WebHTTPService);
         });
 
         it('should return this.httpService if it is set', () => {
+            const mockWebHTTPService = sinon.createStubInstance(WebHTTPService);
             let context = new WebContext(mockEngine, 'bob1');
-            context.httpService = {};
-            context.getHTTPService().should.deep.equal({});
+            context.httpService = mockWebHTTPService;
+            context.getHTTPService().should.equal(mockWebHTTPService);
         });
     });
 

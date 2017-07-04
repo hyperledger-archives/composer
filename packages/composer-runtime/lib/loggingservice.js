@@ -14,13 +14,15 @@
 
 'use strict';
 
+const Service = require('./service');
+
 /**
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class LoggingService {
+class LoggingService extends Service {
 
     /**
      * Write a critical message to the log.
@@ -77,11 +79,20 @@ class LoggingService {
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
+     * Set the log level for the runtime.
+     * @abstract
+     * @param {string} newLogLevel The new log level to apply.
      */
-    toJSON() {
-        return {};
+    setLogLevel(newLogLevel) {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Get the current log level for the runtime.
+     * @abstract
+     */
+    getLogLevel() {
+        throw new Error('abstract function called');
     }
 
 }

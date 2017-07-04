@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 let should = chai.should();
 
@@ -198,10 +198,10 @@ describe('ConnectionProfileComponent', () => {
         it('should set connection profiles', () => {
             let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
             let mockSetCurrentProfile = sinon.stub(component, 'setCurrentProfile');
-            component.profileUpdated({updated: true, connectionProfile: 'bob'});
+            component.profileUpdated({updated: true, connectionProfile: {name : 'bob'}});
 
             mockUpdateConnectionProfiles.should.not.have.been.called;
-            mockSetCurrentProfile.should.have.been.calledWith('bob');
+            mockSetCurrentProfile.should.have.been.calledWith({name : 'bob'});
         });
 
         it('should update connection profiles', () => {
@@ -214,14 +214,28 @@ describe('ConnectionProfileComponent', () => {
         });
 
         it('should switch to the previous connection profile', () => {
-            component['previousConnectionProfile'] = 'bob';
+            component['previousConnectionProfile'] = {name : 'bob'};
 
             let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
             component.profileUpdated(null);
 
-            component['currentConnectionProfile'].should.equal('bob');
+            component['currentConnectionProfile'].should.deep.equal({name : 'bob'});
 
             mockUpdateConnectionProfiles.should.have.been.called;
+        });
+
+        it('should switch back to in use profile if previous was a new connection profile', () => {
+            component['previousConnectionProfile'] = {name : 'New Connection Profile'};
+            mockConnectionProfileService.getCurrentConnectionProfile.returns('bob');
+
+            component['connectionProfiles'] = [{name : 'fred'}, {name : 'bob'}];
+            let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
+            let mockSetCurrentProfile = sinon.stub(component, 'setCurrentProfile');
+            component.profileUpdated(null);
+
+            mockUpdateConnectionProfiles.should.not.have.been.called;
+            mockSetCurrentProfile.should.have.been.calledOnce;
+            mockSetCurrentProfile.should.have.been.calledWith({name : 'bob'});
         });
     });
 });

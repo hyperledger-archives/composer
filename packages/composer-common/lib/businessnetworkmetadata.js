@@ -47,6 +47,10 @@ class BusinessNetworkMetadata {
             throw new Error('package.json is required and must be an object');
         }
 
+        if (!packageJson.name || !this._validName(packageJson.name)) {
+            throw new Error ('business network name can only contain lowercase alphanumerics, _ or -');
+        }
+
         this.packageJson = packageJson;
 
         if(readme && typeof(readme) !== 'string') {
@@ -56,6 +60,28 @@ class BusinessNetworkMetadata {
 
         this.readme = readme;
         LOG.exit(method);
+    }
+
+    /**
+     * check to see if it is a valid name. for some reason regex is not working when this executes
+     * inside the chaincode runtime, which is why regex hasn't been used.
+     *
+     * @param {string} name the business network name to check
+     * @returns {boolean} true if valid, false otherwise
+     *
+     * @memberOf BusinessNetworkMetadata
+     * @private
+     */
+    _validName(name) {
+        const validChars = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+            '0','1','2','3','4','5','6','7','8','9','-','_'];
+        for (let i = 0; i<name.length; i++){
+            const strChar = name.charAt(i);
+            if ( validChars.indexOf(strChar) === -1 ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -61,6 +61,8 @@ describe('AdminConnection', () => {
         mockConnection.login.resolves(mockSecurityContext);
         mockConnection.deploy.resolves();
         mockConnection.ping.resolves();
+        mockConnection.queryChainCode.resolves();
+        mockConnection.invokeChainCode.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
@@ -68,6 +70,7 @@ describe('AdminConnection', () => {
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+        sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
@@ -198,7 +201,7 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext,  true, businessNetworkDefinition);
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition);
             });
         });
     });
@@ -242,6 +245,32 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#getLogLevel', () => {
+        it('should not fail', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            mockConnection.queryChainCode.resolves('"WARNING"');
+            return adminConnection.getLogLevel()
+            .then((result) => {
+                sinon.assert.calledOnce(mockConnection.queryChainCode);
+                sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'getLogLevel', []);
+                result.should.equal('WARNING');
+            });
+        });
+    });
+
+    describe('#setLogLevel', () => {
+        it('should invoke ', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.setLogLevel('ERROR')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'setLogLevel', ['ERROR']);
+            });
+        });
+    });
+
     describe('#list', () => {
 
         it('should list all deployed business networks', () => {
@@ -250,6 +279,30 @@ describe('AdminConnection', () => {
             return adminConnection.list()
                 .should.eventually.be.deep.equal(['biznet1', 'biznet2']);
         });
+
+    });
+
+    describe('#importIdentity', () => {
+        it('should be able to import an identity', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                sinon.assert.calledWith(mockConnectionManager.importIdentity, config, 'anid', 'acerttosign', 'akey');
+            });
+        });
+
+        it('should throw an error if import fails', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            mockConnectionManager.importIdentity.rejects(new Error('no identity imported'));
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            .should.be.rejectedWith(/no identity imported/);
+        });
+
 
     });
 

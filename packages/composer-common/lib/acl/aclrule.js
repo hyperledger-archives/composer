@@ -16,7 +16,9 @@
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
 const ModelBinding = require('./modelbinding');
+const ParticipantDeclaration = require('../introspect/participantdeclaration');
 const Predicate = require('./predicate');
+const TransactionDeclaration = require('../introspect/transactiondeclaration');
 
 /**
  * AclRule captures the details of an Access Control Rule. It is defined in terms of
@@ -112,17 +114,27 @@ class AclRule {
         const foundVerbs = {};
         this.verbs.forEach((verb) => {
             if (foundVerbs[verb]) {
-                throw new Error(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
+                throw new IllegalModelException(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
             }
             foundVerbs[verb] = true;
         });
 
         if(this.participant) {
             this.participant.validate();
+
+            let participantClassDeclaration = this.participant.getClassDeclaration();
+            if (participantClassDeclaration && !(participantClassDeclaration instanceof ParticipantDeclaration)) {
+                throw new IllegalModelException(`The participant '${participantClassDeclaration.getName()}' must be a participant`);
+            }
         }
 
         if(this.transaction) {
             this.transaction.validate();
+
+            let transactionClassDeclaration = this.transaction.getClassDeclaration();
+            if (transactionClassDeclaration && !(transactionClassDeclaration instanceof TransactionDeclaration)) {
+                throw new IllegalModelException(`The transaction '${transactionClassDeclaration.getName()}' must be a transaction`);
+            }
         }
 
         if(this.predicate) {
@@ -204,23 +216,6 @@ class AclRule {
         return this.description;
     }
 
-    /**
-     * Returns a new object representing this Acl Rule that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            name: this.name,
-            noun: this.noun,
-            verb: this.verb,
-            participant: this.participant,
-            predicate: this.predicate,
-            action: this.action,
-            description: this.description
-        };
-        return result;
-    }
 }
 
 module.exports = AclRule;

@@ -21,10 +21,14 @@ const AssetDeclaration = require('composer-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
+const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
+const Query = require('../lib/query');
+const QueryFile = require('composer-common').QueryFile;
+const QueryManager = require('composer-common').QueryManager;
 const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
@@ -47,6 +51,8 @@ describe('BusinessNetworkConnection', () => {
     let mockConnection;
     let mockBusinessNetworkDefinition;
     let mockModelManager;
+    let mockQueryManager;
+    let mockQueryFile;
     let mockFactory;
     let mockSerializer;
 
@@ -59,6 +65,10 @@ describe('BusinessNetworkConnection', () => {
         businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
         mockModelManager = sinon.createStubInstance(ModelManager);
         businessNetworkConnection.businessNetwork.getModelManager.returns(mockModelManager);
+        mockQueryManager = sinon.createStubInstance(QueryManager);
+        businessNetworkConnection.businessNetwork.getQueryManager.returns(mockQueryManager);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockQueryManager.createQueryFile.returns(mockQueryFile);
         mockFactory = sinon.createStubInstance(Factory);
         businessNetworkConnection.businessNetwork.getFactory.returns(mockFactory);
         mockSerializer = sinon.createStubInstance(Serializer);
@@ -125,6 +135,7 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
                 businessNetworkConnection.connection.should.equal(mockConnection);
                 result.should.be.an.instanceOf(BusinessNetworkDefinition);
+                businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
             });
         });
 
@@ -152,6 +163,7 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
                 businessNetworkConnection.connection.should.equal(mockConnection);
                 result.should.be.an.instanceOf(BusinessNetworkDefinition);
+                businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
             });
         });
 
@@ -276,21 +288,6 @@ describe('BusinessNetworkConnection', () => {
 
         });
 
-    });
-
-    describe('#existsAssetRegistry', () => {
-        it('should call assetRegistryExists', () => {
-            // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
-            sandbox.stub(AssetRegistry, 'assetRegistryExists').resolves({});
-
-            // Invoke the function.
-            return businessNetworkConnection
-                .existsAssetRegistry('wowsuchregistry')
-                .then(() => {
-                    sinon.assert.calledOnce(stub);
-                });
-        });
     });
 
     describe('#assetRegistryExists', () => {
@@ -735,6 +732,103 @@ describe('BusinessNetworkConnection', () => {
                     error.should.match(/failed to invoke chain-code/);
                 });
 
+        });
+
+    });
+
+    describe('#buildQuery', () => {
+
+        it('should build the query', () => {
+            const mockCommonQuery = sinon.createStubInstance(commonQuery);
+            businessNetworkConnection.dynamicQueryFile = mockQueryFile;
+            mockQueryFile.buildQuery.withArgs('Dynamic query', 'Dynamic query', 'SELECT doge').returns(mockCommonQuery);
+            const result = businessNetworkConnection.buildQuery('SELECT doge');
+            result.should.be.an.instanceOf(Query);
+            result.getIdentifier().should.equal('SELECT doge');
+            sinon.assert.calledOnce(mockCommonQuery.validate);
+        });
+
+    });
+
+    describe('#query', () => {
+
+        let mockResource1, mockResource2;
+
+        beforeEach(() => {
+            mockResource1 = sinon.createStubInstance(Resource);
+            mockResource1.$identifier = 'ASSET_1';
+            mockResource2 = sinon.createStubInstance(Resource);
+            mockResource2.$identifier = 'ASSET_2';
+            mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_1' }).returns(mockResource1);
+            mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_2' }).returns(mockResource2);
+        });
+
+        it('should throw for an invalid query', () => {
+            (() => {
+                businessNetworkConnection.query(3.124);
+            }).should.throw(/Invalid query; expecting a built query or the name of a query/);
+        });
+
+        it('should submit a built query', () => {
+            const query = new Query('SELECT doge');
+            const response = [
+                { $identifier: 'ASSET_1' },
+                { $identifier: 'ASSET_2' }
+            ];
+            const buffer = Buffer.from(JSON.stringify(response));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{}']).resolves(buffer);
+            return businessNetworkConnection.query(query)
+                .then((response) => {
+                    response.should.have.lengthOf(2);
+                    response[0].should.equal(mockResource1);
+                    response[1].should.equal(mockResource2);
+                });
+        });
+
+        it('should submit a built query with parameters', () => {
+            const query = new Query('SELECT doge');
+            const response = [
+                { $identifier: 'ASSET_1' },
+                { $identifier: 'ASSET_2' }
+            ];
+            const buffer = Buffer.from(JSON.stringify(response));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{"param1":true}']).resolves(buffer);
+            return businessNetworkConnection.query(query, { param1: true })
+                .then((response) => {
+                    response.should.have.lengthOf(2);
+                    response[0].should.equal(mockResource1);
+                    response[1].should.equal(mockResource2);
+                });
+        });
+
+        it('should submit a named query', () => {
+            const response = [
+                { $identifier: 'ASSET_1' },
+                { $identifier: 'ASSET_2' }
+            ];
+            const buffer = Buffer.from(JSON.stringify(response));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{}']).resolves(buffer);
+            return businessNetworkConnection.query('Q1')
+                .then((response) => {
+                    response.should.have.lengthOf(2);
+                    response[0].should.equal(mockResource1);
+                    response[1].should.equal(mockResource2);
+                });
+        });
+
+        it('should submit a named query with parameters', () => {
+            const response = [
+                { $identifier: 'ASSET_1' },
+                { $identifier: 'ASSET_2' }
+            ];
+            const buffer = Buffer.from(JSON.stringify(response));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{"param1":true}']).resolves(buffer);
+            return businessNetworkConnection.query('Q1', { param1: true })
+                .then((response) => {
+                    response.should.have.lengthOf(2);
+                    response[0].should.equal(mockResource1);
+                    response[1].should.equal(mockResource2);
+                });
         });
 
     });

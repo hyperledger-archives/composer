@@ -6,7 +6,7 @@
 <body class="{{ page.class }}">
 
   {% if page.category != 404 %}
-  {% include navbar.html %}
+  <!-- % include navbar.html % -->
   {% endif %}
 
   <div class="SiteWrapper">
@@ -17,29 +17,13 @@
     {% endif %}
 
     {% if page.category != 404 %}
-    {% include docsfooter.html %}
+
     {% endif %}
+
+
   </div>
 </body>
 
 <!-- jQuery -->
 <script src="{{site.baseurl}}/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="{{site.baseurl}}/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>

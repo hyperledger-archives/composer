@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Archive List CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Archive List CLI
 ---

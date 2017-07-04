@@ -6,9 +6,12 @@ class AdminConnection {
    + Promise getProfile(string) 
    + Promise getAllProfiles() 
    + Promise disconnect() 
-   + Promise deploy(BusinessNetworkDefinition) 
+   + Promise deploy(BusinessNetworkDefinition,Object) 
    + Promise undeploy(string) 
    + Promise update(BusinessNetworkDefinition) 
    + Promise ping() 
+   + Promise setLogLevel(any) 
+   + Promise getLogLevel() 
    + Promise list() 
+   + Promise importIdentity(string,string,string,string) 
 }

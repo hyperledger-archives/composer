@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Archive Create CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Archive Create CLI
 ---

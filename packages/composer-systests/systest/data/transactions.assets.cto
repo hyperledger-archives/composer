@@ -27,8 +27,7 @@ asset SimpleRelationshipsAsset identified by assetId {
     --> SimpleStringAsset[] stringAssets
 }
 
-transaction SimpleTransactionWithPrimitiveTypes identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithPrimitiveTypes {
     o String stringValue
     o Double doubleValue
     o Integer integerValue
@@ -38,8 +37,8 @@ transaction SimpleTransactionWithPrimitiveTypes identified by transactionId {
     o SimpleEnum enumValue
 }
 
-transaction SimpleTransactionWithPrimitiveTypeArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithPrimitiveTypeArrays {
+
     o String[] stringValues
     o Double[] doubleValues
     o Integer[] integerValues
@@ -49,108 +48,120 @@ transaction SimpleTransactionWithPrimitiveTypeArrays identified by transactionId
     o SimpleEnum[] enumValues
 }
 
-transaction SimpleTransactionWithAssets identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithAssets {
+
     o SimpleStringAsset stringAsset
     o SimpleIntegerAsset integerAsset
 }
 
-transaction SimpleTransactionWithAssetArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithAssetArrays {
+
     o SimpleStringAsset[] stringAssets
     o SimpleIntegerAsset[] integerAssets
 }
 
-transaction SimpleTransactionWithAssetRelationships identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithAssetRelationships {
+
     --> SimpleStringAsset stringAsset
     --> SimpleIntegerAsset integerAsset
 }
 
-transaction SimpleTransactionWithAssetRelationshipArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithAssetRelationshipArrays {
+
     --> SimpleStringAsset[] stringAssets
     --> SimpleIntegerAsset[] integerAssets
 }
 
-transaction GetAllAssetsFromAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction GetAllAssetsFromAssetRegistryTransaction {
+
 }
 
-transaction GetAssetFromAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction GetAssetFromAssetRegistryTransaction {
+
 }
 
-transaction ExistsAssetInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction ExistsAssetInAssetRegistryTransaction {
+
 }
 
-transaction AddAssetInTransactionToAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddAssetInTransactionToAssetRegistryTransaction {
+
     o SimpleStringAsset stringAsset
 }
 
-transaction AddAssetWithRelationshipInTransactionToAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddAssetWithRelationshipInTransactionToAssetRegistryTransaction {
+
     o SimpleRelationshipAsset relationshipAsset
 }
 
-transaction AddNewAssetToAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddNewAssetToAssetRegistryTransaction {
+
 }
 
-transaction AddNewAssetWithRelationshipToAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddNewAssetWithRelationshipToAssetRegistryTransaction {
+
 }
 
-transaction UpdateAssetInTransactionInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateAssetInTransactionInAssetRegistryTransaction {
+
     o SimpleStringAsset stringAsset
 }
 
-transaction UpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction {
+
     o SimpleRelationshipAsset relationshipAsset
 }
 
-transaction UpdateNewAssetInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateNewAssetInAssetRegistryTransaction {
+
 }
 
-transaction UpdateNewAssetWithRelationshipToAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateNewAssetWithRelationshipToAssetRegistryTransaction {
+
 }
 
-transaction RemoveAssetInTransactionInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveAssetInTransactionInAssetRegistryTransaction {
+
     o SimpleStringAsset stringAsset
 }
 
-transaction RemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction {
+
     o SimpleRelationshipAsset relationshipAsset
 }
 
-transaction RemoveNewAssetInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveNewAssetInAssetRegistryTransaction {
+
 }
 
-transaction RemoveNewAssetWithRelationshipInAssetRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveNewAssetWithRelationshipInAssetRegistryTransaction {
+
 }
 
-transaction SingleAnnotatedTransaction identified by transactionId {
-    o String transactionId
+transaction SingleAnnotatedTransaction {
+
     o String stringValue
 }
 
-transaction MultipleAnnotatedTransaction identified by transactionId {
-    o String transactionId
+transaction MultipleAnnotatedTransaction {
+
     o String stringValue1
     o String stringValue2
 }
 
-transaction TransactionUsingUtilityFunctions identified by transactionId {
-    o String transactionId
+transaction TransactionUsingUtilityFunctions {
+
     o String stringValue
+}
+
+transaction AssetAddIsAtomic {
+
+}
+
+transaction AssetUpdateIsAtomic {
+
+}
+
+transaction AssetRemoveIsAtomic {
+
 }

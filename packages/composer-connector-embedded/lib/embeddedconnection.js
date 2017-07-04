@@ -128,7 +128,7 @@ class EmbeddedConnection extends Connection {
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
-        this.fabricDataService = new EmbeddedDataService();
+        this.dataService = new EmbeddedDataService(null, true);
     }
 
     /**
@@ -170,12 +170,12 @@ class EmbeddedConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetwork) {
+    deploy(securityContext, businessNetwork, deployOptions) {
         let container = EmbeddedConnection.createContainer();
         let userID = securityContext.getUserID();
         let chaincodeUUID = container.getUUID();
@@ -183,9 +183,10 @@ class EmbeddedConnection extends Connection {
         EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
         let context = new EmbeddedContext(engine, userID, this);
-        return businessNetwork.toArchive()
+        return businessNetwork.toArchive({ date: new Date(545184000000) })
             .then((businessNetworkArchive) => {
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
+                const initArgs = {};
+                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
             })
             .then(() => {
                 securityContext.setChaincodeID(chaincodeUUID);
@@ -202,7 +203,7 @@ class EmbeddedConnection extends Connection {
      * artifacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
+        return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
             .then((buffer) => {
                 return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
             });
@@ -277,12 +278,12 @@ class EmbeddedConnection extends Connection {
      * @return {DataCollection} The data collection that stores identities.
      */
     getIdentities() {
-        return this.fabricDataService.existsCollection('identities')
+        return this.dataService.existsCollection('identities')
             .then((exists) => {
                 if (exists) {
-                    return this.fabricDataService.getCollection('identities');
+                    return this.dataService.getCollection('identities');
                 } else {
-                    return this.fabricDataService.createCollection('identities');
+                    return this.dataService.createCollection('identities');
                 }
             });
     }

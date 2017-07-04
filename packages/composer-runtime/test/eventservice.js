@@ -43,56 +43,23 @@ describe('EventService', () => {
         });
     });
 
-    describe('#eventService', () => {
-
-        it('should call _commit and handle no error', () => {
-            sinon.stub(eventService, '_commit').yields(null, {});
-            return eventService.commit()
-                .then(() => {
-                    sinon.assert.calledWith(eventService._commit);
-                });
-        });
-
-
-        it('should call _commit and handle an error', () => {
-            sinon.stub(eventService, '_commit').yields(new Error('error'));
-            return eventService.commit()
-                .then((result) => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    sinon.assert.calledWith(eventService._commit);
-                    error.should.match(/error/);
-                });
-        });
-
-    });
-
-    describe('#_commit', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                eventService._commit();
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#serializeBuffer', () => {
+    describe('#getEvents', () => {
         it('should return the list of events that are to be comitted', () => {
             let event = {'$class': 'much.wow'};
             eventService.eventBuffer = [ event ];
 
-            eventService.serializeBuffer().should.equal('[{"$class":"much.wow"}]');
+            eventService.getEvents().should.deep.equal([{'$class':'much.wow'}]);
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            eventService.toJSON().should.deep.equal({});
+    describe('#transactionStart', () => {
+        it ('should clear the list of events', () => {
+            eventService.eventBuffer = [ 1, 2, 3 ];
+            return eventService.transactionStart(true)
+                .then(() => {
+                    eventService.eventBuffer.should.deep.equal([]);
+                });
         });
-
     });
 
 });

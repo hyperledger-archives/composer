@@ -38,15 +38,16 @@ describe('Access control system tests', () => {
     let aliceCar, bobCar;
 
     before(function () {
+        // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')
+            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')}
         ];
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.accesscontrols@0.0.1', 'The network for the access controls system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-accesscontrols@0.0.1', 'The network for the access controls system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
@@ -57,7 +58,7 @@ describe('Access control system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.accesscontrols')
+                return TestUtil.getClient('systest-accesscontrols')
                     .then((result) => {
                         client = result;
                     });
@@ -87,14 +88,14 @@ describe('Access control system tests', () => {
                 return client.issueIdentity(alice, aliceIdentity);
             })
             .then((identity) => {
-                return TestUtil.getClient('systest.accesscontrols', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-accesscontrols', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 aliceClient = result;
                 return client.issueIdentity(bob, bobIdentity);
             })
             .then((identity) => {
-                return TestUtil.getClient('systest.accesscontrols', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-accesscontrols', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 bobClient = result;
@@ -124,7 +125,7 @@ describe('Access control system tests', () => {
     });
 
     afterEach(() => {
-        return TestUtil.getClient('systest.accesscontrols')
+        return TestUtil.getClient('systest-accesscontrols')
             .then((result) => {
                 client = result;
             });

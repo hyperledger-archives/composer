@@ -82,12 +82,25 @@ describe('LoggingService', () => {
 
     });
 
-    describe('#toJSON', () => {
+    describe('#setLogLevel', () => {
 
-        it('should return an empty object', () => {
-            loggingService.toJSON().should.deep.equal({});
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.setLogLevel('wow such log');
+            }).should.throw(/abstract function called/);
         });
 
     });
+
+    describe('#getLogLevel', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.getLogLevel();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
 
 });

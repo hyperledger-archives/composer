@@ -33,14 +33,14 @@ describe('HTTP POST system tests', () => {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/post.cto'), 'utf8')
+            { fileName: 'models/post.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/post.cto'), 'utf8') }
         ];
         const scriptFiles=  [
             { identifier: 'post.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/post.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.post@0.0.1', 'The network for the HTTP POST system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-post@0.0.1', 'The network for the HTTP POST system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
@@ -49,7 +49,7 @@ describe('HTTP POST system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.post')
+                return TestUtil.getClient('systest-post')
                     .then((result) => {
                         client = result;
                     });

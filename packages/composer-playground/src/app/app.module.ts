@@ -1,10 +1,8 @@
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
-import { RouterModule, PreloadAllModules } from '@angular/router';
 import { removeNgStyles, createNewHosts, createInputTransfer } from '@angularclass/hmr';
-import { ModalModule, TooltipModule } from 'ng2-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageModule } from 'angular-2-local-storage';
 
@@ -14,57 +12,17 @@ import { APP_BASE_HREF } from '@angular/common';
  * Platform and Environment providers/directives/pipes
  */
 import { ENV_PROVIDERS } from './environment';
-import { ROUTES } from './app.routes';
+import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
-import { EditorComponent } from './editor';
-import { EditorFileComponent } from './editor-file';
-import { TestComponent } from './test';
-import { RegistryComponent } from './registry';
-import { AddIdentityComponent } from './add-identity';
-import { IssueIdentityComponent } from './issue-identity';
-import { IdentityIssuedComponent } from './identity-issued';
-import { SwitchIdentityComponent } from './switch-identity';
 import { AboutComponent } from './about';
-import { BusyComponent } from './basic-modals/busy';
-import { ErrorComponent } from './basic-modals/error';
-import { SuccessComponent } from './basic-modals/success';
-import { FileImporterComponent } from './file-importer';
-import { ImportComponent } from './import';
-import { ResourceComponent } from './resource';
-import { AddFileComponent } from './add-file';
-import { TransactionComponent } from './transaction';
-import { IdentityComponent } from './identity';
+import { BasicModalsModule } from './basic-modals/basic-models.module';
 import { WelcomeComponent } from './welcome';
-import { ConfirmComponent } from './basic-modals/confirm';
-import { DeleteComponent } from './basic-modals/delete-confirm';
-import { ReplaceComponent } from './basic-modals/replace-confirm';
-import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
-import { CodemirrorModule } from 'ng2-codemirror';
 import { VersionCheckComponent } from './version-check';
-import { ConnectionProfileComponent } from './connection-profile';
-import { ConnectionProfileDataComponent } from './connection-profile-data';
-import { AddConnectionProfileComponent } from './add-connection-profile';
-import { DeleteConnectionProfileComponent } from './delete-connection-profile';
-import { AddCertificateComponent } from './add-certificate';
-import { ViewCertificateComponent } from './view-certificate';
-import { FileDragDropDirective } from './directives/file-drag-drop';
-import { CheckOverFlowDirective } from './directives/check-overflow';
-import { FocusHereDirective } from './directives/focus-here';
-
-import { AdminService } from './services/admin.service';
-import { ClientService } from './services/client.service';
-import { ConnectionProfileService } from './services/connectionprofile.service';
-import { WalletService } from './services/wallet.service';
-import { IdentityService } from './services/identity.service';
-import { InitializationService } from './services/initialization.service';
-import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
-import { AboutService } from './services/about.service';
-import { AlertService } from './services/alert.service';
-import { EditorService } from './services/editor.service';
+import { ServicesModule } from './services/services.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -93,93 +51,33 @@ type StoreType = {
 @NgModule({
     bootstrap: [AppComponent],
     entryComponents: [
-        ImportComponent,
-        ErrorComponent,
-        SuccessComponent,
-        ConfirmComponent,
-        DeleteComponent,
-        ReplaceComponent,
-        ResourceComponent,
-        TransactionComponent,
-        AddFileComponent,
-        AddConnectionProfileComponent,
-        AddCertificateComponent,
-        DeleteConnectionProfileComponent,
-        ViewCertificateComponent,
-        AddIdentityComponent,
-        IssueIdentityComponent,
-        IdentityIssuedComponent,
-        WelcomeComponent,
         VersionCheckComponent,
-        BusyComponent,
-        SwitchIdentityComponent
+        WelcomeComponent
     ],
     declarations: [
-        AppComponent,
-        FileImporterComponent,
-        EditorComponent,
-        EditorFileComponent,
-        TestComponent,
-        RegistryComponent,
-        AddIdentityComponent,
-        IssueIdentityComponent,
-        IdentityIssuedComponent,
-        SwitchIdentityComponent,
-        BusyComponent,
-        ErrorComponent,
-        SuccessComponent,
-        ConfirmComponent,
-        DeleteComponent,
-        ReplaceComponent,
-        ImportComponent,
-        GithubComponent,
-        NoContentComponent,
         AboutComponent,
-        FileDragDropDirective,
-        ConnectionProfileComponent,
-        ConnectionProfileDataComponent,
-        AddConnectionProfileComponent,
-        DeleteConnectionProfileComponent,
-        AddCertificateComponent,
-        ViewCertificateComponent,
-        IdentityComponent,
-        ResourceComponent,
-        TransactionComponent,
-        CheckOverFlowDirective,
-        AddFileComponent,
-        WelcomeComponent,
+        AppComponent,
+        NoContentComponent,
         VersionCheckComponent,
-        FocusHereDirective
+        WelcomeComponent
     ],
     imports: [ // import Angular's modules
+        AppRoutingModule,
+        BasicModalsModule,
+        BrowserAnimationsModule,
         BrowserModule,
-        FormsModule,
-        ReactiveFormsModule,
         HttpModule,
-        RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
-        CodemirrorModule,
-        ModalModule.forRoot(),
-        TooltipModule.forRoot(),
-        NgbModule.forRoot(),
+        ServicesModule,
         LocalStorageModule.withConfig({
             prefix: '',
             storageType: 'localStorage'
-        })
+        }),
+        NgbModule.forRoot(),
     ],
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
         APP_PROVIDERS,
         {provide: APP_BASE_HREF, useValue: '/'},
-        AdminService,
-        ClientService,
-        ConnectionProfileService,
-        WalletService,
-        IdentityService,
-        InitializationService,
-        SampleBusinessNetworkService,
-        AboutService,
-        AlertService,
-        EditorService
     ]
 })
 export class AppModule {
@@ -222,5 +120,4 @@ export class AppModule {
         store.disposeOldHosts();
         delete store.disposeOldHosts;
     }
-
 }

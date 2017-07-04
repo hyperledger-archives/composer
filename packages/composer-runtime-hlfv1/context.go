@@ -100,6 +100,7 @@ func (context *Context) getIdentityService(vm *duktape.Context) (result int) {
 }
 
 // getHTTPService returns the http service to use.
+
 func (context *Context) getHTTPService(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Context.getHTTPService", vm)
 	defer func() { logger.Debug("Exiting Context.getHTTPService", result) }()

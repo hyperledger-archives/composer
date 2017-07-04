@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Network Undeploy CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Network Undeploy CLI
 ---
@@ -12,7 +12,7 @@ excerpt: Composer Network Undeploy CLI
 
 The `composer network undeploy` command **permanently disables a business network**. Once a business network has been undeployed, it cannot be redeployed.
 
-**Please Note**: When using the `undeploy` command with a business network running on {{site.data.conrefs.hyperledger_fabric_full}} v1.0, the business network remains running, but will become unresponsive. The business network **cannot be redeployed or updated once the `undeploy` command has been issued.** This is because the business network is already deployed, but has been set to be unresponsive.
+**Please Note**: When using the `undeploy` command with a business network running on {{site.data.conrefs.hlf_full}} v1.0, the business network remains running, but will become unresponsive. The business network **cannot be redeployed or updated once the `undeploy` command has been issued.** This is because the business network is already deployed, but has been set to be unresponsive.
 
 ```
 composer network undeploy -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>

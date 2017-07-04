@@ -15,9 +15,11 @@
 'use strict';
 
 const Context = require('composer-runtime').Context;
+const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 const EmbeddedEventService = require('./embeddedeventservice');
 const EmbeddedHTTPService = require('./embeddedhttpservice');
+const EmbeddedScriptCompiler = require('./embeddedscriptcompiler');
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -33,7 +35,7 @@ class EmbeddedContext extends Context {
      */
     constructor(engine, userID, eventSink) {
         super(engine);
-        this.dataService = engine.getContainer().getDataService();
+        this.dataService = new EmbeddedDataService(engine.getContainer().getUUID());
         this.identityService = new EmbeddedIdentityService(userID);
         this.eventSink = eventSink;
     }
@@ -75,6 +77,17 @@ class EmbeddedContext extends Context {
             this.httpService = new EmbeddedHTTPService();
         }
         return this.httpService;
+    }
+
+    /**
+     * Get the script compiler.
+     * @return {ScriptCompiler} scriptCompiler The script compiler.
+     */
+    getScriptCompiler() {
+        if (!this.scriptCompiler) {
+            this.scriptCompiler = new EmbeddedScriptCompiler();
+        }
+        return this.scriptCompiler;
     }
 }
 

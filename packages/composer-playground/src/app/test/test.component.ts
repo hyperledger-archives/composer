@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { AlertService } from '../services/alert.service';
-import { TransactionComponent } from '../transaction/transaction.component';
+import { AlertService } from '../basic-modals/alert.service';
+import { TransactionComponent } from './transaction/transaction.component';
 
 @Component({
     selector: 'app-test',

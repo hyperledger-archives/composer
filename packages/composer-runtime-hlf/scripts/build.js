@@ -22,10 +22,10 @@ const zlib = require('zlib');
 
 const sourceFile = require.resolve('composer-runtime');
 const sourcePolyfill = require.resolve('babel-polyfill/dist/polyfill.min.js');
-const targetFile = path.resolve(__dirname, '..', 'concerto.js.go');
-const targetFile2 = path.resolve(__dirname, '..', 'concerto.js.map');
-const targetFile3 = path.resolve(__dirname, '..', 'concerto.js');
-const targetFile4 = path.resolve(__dirname, '..', 'concerto.min.js');
+const targetFile = path.resolve(__dirname, '..', 'composer.js.go');
+const targetFile2 = path.resolve(__dirname, '..', 'composer.js.map');
+const targetFile3 = path.resolve(__dirname, '..', 'composer.js');
+const targetFile4 = path.resolve(__dirname, '..', 'composer.min.js');
 
 fs.ensureFileSync(targetFile);
 fs.ensureFileSync(targetFile2);
@@ -88,21 +88,7 @@ return Promise.resolve()
 })
 .then(() => {
     return new Promise((resolve, reject) => {
-        const rstream = browserify(sourceFile, { standalone: 'concerto', debug: true })
-            .transform('browserify-replace', { replace: [
-                // These ugly hacks are due to Go and Otto only supporting Go regexes.
-                // Go regexes do not support PCRE features such as lookahead.
-                {
-                    // This ugly hack changes a JavaScript only regex used by acorn into something safe for Go.
-                    from: /\[\^\]/g,
-                    to: '[^\\x{FFFF}]'
-                },
-                {
-                    // This ugly hack changes a JavaScript only regex used by thenify into something safe for Go.
-                    from: /\/\\s\|bound\(\?!\$\)\/g/g,
-                    to: '/(\s)|(bound)./g'
-                }
-            ], global: true })
+        const rstream = browserify(sourceFile, { standalone: 'composer', debug: true })
             // The ignore is to workaround these issues:
             //   https://github.com/Starcounter-Jack/JSON-Patch/issues/140
             .transform('babelify', { presets: [ 'latest' ], global: true, ignore: /fast-json-patch/ })
@@ -127,13 +113,13 @@ return Promise.resolve()
 })
 .then(() => {
     return new Promise((resolve, reject) => {
-        wstream.write('\nconst concertoJavaScriptSource = "');
+        wstream.write('\nconst composerJavaScriptSource = "');
         const rstream = fs.createReadStream(targetFile4);
         const gzip = zlib.createGzip();
         const cstream = rstream.pipe(gzip);
         cstream.setEncoding('base64');
         cstream.on('end', () => {
-            wstream.write('"\n\nvar concertoJavaScript = parseEmbeddedData(concertoJavaScriptSource)\n');
+            wstream.write('"\n\nvar composerJavaScript = parseEmbeddedData(composerJavaScriptSource)\n');
             wstream.end();
             resolve();
         });

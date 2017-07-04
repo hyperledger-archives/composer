@@ -56,6 +56,8 @@ class Script {
             functionDeclaration.validate();
             this.functions.push( functionDeclaration );
         }
+
+        this.tokens = parser.getTokens();
     }
 
     /**
@@ -112,15 +114,13 @@ class Script {
     }
 
     /**
-     * Return a JSON safe representation of this object, primarily for logging.
-     * @return {object} A JSON safe representation of this object.
+     * Returns the tokens of the script
+     * @return {Object[]} the tokens of the script
      */
-    toJSON() {
-        return {
-            identifier: this.identifier,
-            language: this.language
-        };
+    getTokens() {
+        return this.tokens;
     }
+
 }
 
 module.exports = Script;

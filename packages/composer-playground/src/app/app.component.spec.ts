@@ -15,7 +15,7 @@ import { InitializationService } from './services/initialization.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
 import { IdentityService } from './services/identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { AlertService } from './services/alert.service';
+import { AlertService } from './basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { BusinessNetworkConnection } from 'composer-client';
@@ -208,10 +208,10 @@ describe('AppComponent', () => {
         .compileComponents();
     }));
 
-    beforeEach(() => {
+    beforeEach(async(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
-    });
+    }));
 
     function updateComponent() {
         // trigger initial data binding
@@ -234,14 +234,14 @@ describe('AppComponent', () => {
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockUpdateConnectionData = sinon.stub(component, 'updateConnectionData');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
-        });
+        }));
 
         it('should create', () => {
             updateComponent();
@@ -340,13 +340,13 @@ describe('AppComponent', () => {
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
-        });
+        }));
 
         it('can get RouterLinks from template', () => {
             activatedRoute.testParams = {};
@@ -354,9 +354,9 @@ describe('AppComponent', () => {
             updateComponent();
 
             links.length.should.equal(3);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
         });
 
         it('can get RouterLinks from template when using locally', () => {
@@ -367,10 +367,10 @@ describe('AppComponent', () => {
             updateComponent();
 
             links.length.should.equal(4);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
-            links[3].linkParams.should.deep.equal(['./profile']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
+            links[3].linkParams.should.deep.equal(['profile']);
         });
 
         it('can click test link in template', () => {
@@ -384,7 +384,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./test']);
+            testLink.navigatedTo.should.deep.equal(['test']);
         });
 
         it('can click editor link in template', () => {
@@ -398,7 +398,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./editor']);
+            testLink.navigatedTo.should.deep.equal(['editor']);
         });
 
         it('can click identity link in template', () => {
@@ -412,7 +412,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./identity']);
+            testLink.navigatedTo.should.deep.equal(['identity']);
         });
 
         it('can click profile link in template', () => {
@@ -428,7 +428,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./profile']);
+            testLink.navigatedTo.should.deep.equal(['profile']);
         });
     });
 
@@ -438,14 +438,14 @@ describe('AppComponent', () => {
         let mockOnError;
         let errorStatusSpy;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockWallet = sinon.createStubInstance(FileWallet);
             routerStub.navigate.returns(Promise.resolve(false));
 
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
-        });
+        }));
 
         it('should deal with an invitation when already in wallet', fakeAsync(() => {
             mockIdentityService.setIdentity.returns(Promise.resolve());
@@ -557,10 +557,10 @@ describe('AppComponent', () => {
             component['participantFQI'].should.equal('bob');
 
             links.length.should.equal(4);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
-            links[3].linkParams.should.deep.equal(['./profile']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
+            links[3].linkParams.should.deep.equal(['profile']);
         }));
 
         it('should load the connection profiles but get no info from ping', fakeAsync(() => {
@@ -599,11 +599,11 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-        });
+        }));
 
         it('should update the connection profile data', fakeAsync(() => {
             mockAdminConnection.getAllProfiles.returns(Promise.resolve(Promise.resolve({bob: {type: 'web'}})));
@@ -630,12 +630,12 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}, close: sinon.stub()});
-        });
+        }));
 
         it('should not show if in web mode', () => {
             mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
@@ -730,13 +730,13 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
-        });
+        }));
 
         it('should deal with error status', () => {
             activatedRoute.testParams = {};
@@ -769,13 +769,13 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
-        });
+        }));
 
         it('should open the welcome modal', fakeAsync(() => {
             let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
@@ -815,13 +815,13 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
-        });
+        }));
 
         it('should open version modal', () => {
             activatedRoute.testParams = {};
@@ -839,12 +839,12 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
-        });
+        }));
 
         it('should check the version return true', fakeAsync(() => {
             let getPlayGroundDetailsStub = sinon.stub(component, 'getPlaygroundDetails').returns(null);
@@ -912,12 +912,12 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
-        });
+        }));
 
         it('should set the playground details', fakeAsync(() => {
             mockAboutService.getVersions.returns(Promise.resolve({playground: {version: 1.0}}));
@@ -940,12 +940,12 @@ describe('AppComponent', () => {
         let mockOnError;
         let mockQueryParamsUpdated;
 
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
-        });
+        }));
 
         it('should get the playground details', () => {
             mockLocalStorageService.get.returns('1.0');

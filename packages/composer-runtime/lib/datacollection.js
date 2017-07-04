@@ -142,7 +142,7 @@ class DataCollection {
      * @abstract
      * @param {string} id The ID of the object.
      * @param {Object} object The object.
-     * @param {boolean} force whether to force creation without checking it already exists
+     * @param {boolean} force Whether to force creation without checking it already exists.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
@@ -247,14 +247,6 @@ class DataCollection {
      */
     _remove(id, callback) {
         throw new Error('abstract function called');
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

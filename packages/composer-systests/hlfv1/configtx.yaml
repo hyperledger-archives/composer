@@ -1,7 +1,12 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 ################################################################################
 #
-#   Profile - meant to be used with docker-2orgs-2peerseach-e2e.yml
+#   Profile
 #
 #   - Different configuration profiles may be encoded here to be specified
 #   as parameters to the configtxgen tool
@@ -9,15 +14,20 @@
 ################################################################################
 Profiles:
 
-    TwoOrgs:
+    ComposerOrdererGenesis:
         Orderer:
             <<: *OrdererDefaults
             Organizations:
                 - *OrdererOrg
-        Application: 
+        Consortiums:
+            ComposerConsortium:
+                Organizations:
+                    - *Org1
+    ComposerChannel:
+        Consortium: ComposerConsortium
+        Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org0
                 - *Org1
 
 ################################################################################
@@ -35,101 +45,36 @@ Organizations:
     - &OrdererOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: OrdererMSP
+        Name: OrdererOrg
 
         # ID to load the MSP definition as
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
-        MSPDir: /Users/sstone1/go/src/github.com/hyperledger/fabric-sdk-node/test/fixtures/channel/crypto-config/ordererOrganizations/ordererOrg1/msp
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
 
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                Hash: SHA2
-                Security: 256
-                # Location of Key Store. If this is unset, a location will 
-                # be chosen using 'MSPDir'/keystore
-                FileKeyStore: 
-                    KeyStore: 
-                
-    - &Org0
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: Org1MSP
-
-        # ID to load the MSP definition as
-        ID: Org1MSP
-
-        # MSPDir is the filesystem path which contains the MSP configuration
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
-        MSPDir: /Users/sstone1/go/src/github.com/hyperledger/fabric-sdk-node/test/fixtures/channel/crypto-config/peerOrganizations/peerOrg1/msp/
-
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                Hash: SHA2
-                Security: 256
-                # Location of Key Store. If this is unset, a location will 
-                # be chosen using 'MSPDir'/keystore
-                FileKeyStore: 
-                    KeyStore: 
-                
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0
-              Port: 7051
-            - Host: peer1
-              Port: 7056
+        # turn off security for the channel
+        AdminPrincipal: Role.ADMIN
 
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: Org2MSP
+        Name: Org1
 
         # ID to load the MSP definition as
-        ID: Org2MSP
+        ID: Org1MSP
 
-        # MSPDir is the filesystem path which contains the MSP configuration
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
-        MSPDir: /Users/sstone1/go/src/github.com/hyperledger/fabric-sdk-node/test/fixtures/channel/crypto-config/peerOrganizations/peerOrg2/msp/
+        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
 
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                Hash: SHA2
-                Security: 256
-                # Location of Key Store. If this is unset, a location will 
-                # be chosen using 'MSPDir'/keystore
-                FileKeyStore: 
-                    KeyStore: 
-                
+        # turn off security for the peer
+        AdminPrincipal: Role.ADMIN
+
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer2
-              Port: 8051
-            - Host: peer3
-              Port: 8056
+            - Host: peer0.org1.example.com
+              Port: 7051
 
 ################################################################################
 #
@@ -146,7 +91,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - orderer0:7050
+        - orderer.example.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 250ms
@@ -159,7 +104,7 @@ Orderer: &OrdererDefaults
 
         # Absolute Max Bytes: The absolute maximum number of bytes allowed for
         # the serialized messages in a batch.
-        AbsoluteMaxBytes: 99 MB
+        AbsoluteMaxBytes: 98 MB
 
         # Preferred Max Bytes: The preferred maximum number of bytes allowed for
         # the serialized messages in a batch. A message larger than the preferred
@@ -170,7 +115,7 @@ Orderer: &OrdererDefaults
         # Brokers: A list of Kafka brokers to which the orderer connects
         # NOTE: Use IP:port notation
         Brokers:
-            - orderer0:9092
+            - 127.0.0.1:9092
 
     # Organizations is the list of orgs which are defined as participants on
     # the orderer side of the network

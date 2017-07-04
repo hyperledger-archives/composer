@@ -66,7 +66,7 @@ class ModelFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException( 'Syntax error in file ' + this.fileName + '. ' + err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column );
+                throw new ParseException(err.message, err.location);
             }
             else {
                 throw err;
@@ -77,6 +77,14 @@ class ModelFile {
 
         if(this.ast.imports) {
             this.imports = this.ast.imports;
+        }
+
+        // if we are not in the system namespace we add imports to all the system types
+        if(!this.isSystemModelFile()) {
+            const systemTypes = this.modelManager.getSystemTypes();
+            for(let n=0; n < systemTypes.length; n++) {
+                this.imports.unshift(systemTypes[n].getFullyQualifiedName());
+            }
         }
 
         for(let n=0; n < this.ast.body.length; n++ ) {
@@ -108,6 +116,9 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+
+
+
     }
 
     /**
@@ -154,9 +165,9 @@ class ModelFile {
             const modelFile = this.getModelManager().getModelFile(importNamespace);
             if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
+                throw new IllegalModelException(formatter({
                     type: importName
-                }));
+                }), this);
             }
             if (ModelUtil.isWildcardName(importName)) {
                 // This is a wildcard import, org.acme.*
@@ -165,7 +176,11 @@ class ModelFile {
             }
             const importShortName = ModelUtil.getShortName(importName);
             if (!modelFile.isLocalType(importShortName)) {
-                throw new Error('No type ' + importShortName + ' in namespace ' + importNamespace);
+                let formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+                throw new IllegalModelException(formatter({
+                    type: importShortName,
+                    namespace: importNamespace
+                }), this);
             }
         });
 
@@ -248,8 +263,6 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
-
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {
@@ -437,15 +450,6 @@ class ModelFile {
     /**
      * Get the filename for this model file. Note that this may be null.
      * @return {string} The filename for this model file
-     * @deprecated
-     */
-    getFileName() {
-        return this.fileName;
-    }
-
-    /**
-     * Get the filename for this model file. Note that this may be null.
-     * @return {string} The filename for this model file
      */
     getName() {
         return this.fileName;
@@ -532,13 +536,12 @@ class ModelFile {
     }
 
     /**
-     * Return an object suitable for serialization.
-     * @return {Object} An object suitable for serialization.
+     * Returns true if this ModelFile is a system model
+     * @return {boolean} true of this ModelFile is a system model
      */
-    toJSON() {
-        return {};
+    isSystemModelFile() {
+        return ModelUtil.getSystemNamespace() === this.getNamespace();
     }
-
 }
 
 module.exports = ModelFile;

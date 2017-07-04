@@ -53,35 +53,35 @@ func NewEventService(vm *duktape.Context, context *Context, stub shim.ChaincodeS
 	vm.Pop()                             // [ global composer theEventService ]
 
 	// Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.commit) // [ global composer theEventService commit ]
-	vm.PushString("bind")            // [ global composer theEventService commit "bind" ]
-	vm.Dup(-3)                       // [ global composer theEventService commit "bind" theEventService ]
-	vm.PcallProp(-3, 1)              // [ global composer theEventService commit boundCommit ]
-	vm.PutPropString(-3, "_commit")  // [ global composer theEventService commit ]
+	vm.PushGoFunction(result.transactionCommit) // [ global composer theEventService transactionCommit ]
+	vm.PushString("bind")                       // [ global composer theEventService transactionCommit "bind" ]
+	vm.Dup(-3)                                  // [ global composer theEventService transactionCommit "bind" theEventService ]
+	vm.PcallProp(-3, 1)                         // [ global composer theEventService transactionCommit boundTransactionCommit ]
+	vm.PutPropString(-3, "_transactionCommit")  // [ global composer theEventService transactionCommit ]
 
 	// Return a new event service
 	return result
 }
 
 // Serializes the buffered events and emits them
-func (eventService *EventService) commit(vm *duktape.Context) (result int) {
-	logger.Debug("Entering EventService.commit", vm)
-	defer func() { logger.Debug("Exiting EventService.commit", result) }()
+func (eventService *EventService) transactionCommit(vm *duktape.Context) (result int) {
+	logger.Debug("Entering EventService.transactionCommit", vm)
+	defer func() { logger.Debug("Exiting EventService.transactionCommit", result) }()
 
 	// Validate the arguments from JavaScript.
 	vm.RequireFunction(0)
 
-	vm.PushThis()                           // [ theEventService ]
-	vm.GetPropString(-1, "serializeBuffer") // [ theEventService, serializeBuffer ]
-	vm.RequireFunction(-1)                  // [ theEventService, serializeBuffer ]
-	vm.Dup(-2)                              // [ theEventService, serializeBuffer, theEventService ]
-	vm.CallMethod(0)                        // [ theEventService, returnValue ]
-	vm.RequireObjectCoercible(-1)           // [ theEventService, returnValue ]
-	vm.JsonEncode(-1)                       // [ theEventService, returnValue ]
-	value := vm.RequireString(-1)           // [ theEventService, returnValue ]
+	vm.PushThis()                     // [ theEventService ]
+	vm.GetPropString(-1, "getEvents") // [ theEventService, getEvents ]
+	vm.RequireFunction(-1)            // [ theEventService, getEvents ]
+	vm.Dup(-2)                        // [ theEventService, getEvents, theEventService ]
+	vm.CallMethod(0)                  // [ theEventService, returnValue ]
+	vm.RequireObjectCoercible(-1)     // [ theEventService, returnValue ]
+	vm.JsonEncode(-1)                 // [ theEventService, returnValue ]
+	value := vm.RequireString(-1)     // [ theEventService, returnValue ]
 
 	if len(value) > 0 {
-		logger.Debug("Emitting event from EventService.commit", value)
+		logger.Debug("Emitting event from EventService.transactionCommit", value)
 		eventService.Stub.SetEvent("composer", []byte(value))
 	}
 

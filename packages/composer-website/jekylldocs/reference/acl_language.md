@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Access Contol Language
-category: reference
+title: Access Control Language
+section: reference
+index-order: 3
 sidebar: sidebars/reference.md
-excerpt: Guide to the Hyperledger Composer access control language
+excerpt: The [**Hyperledger Composer access control language**](./acl_language.html) provides declarative access control over the elements of the domain model. Access control rules define actions that individual participants or participant groups can perform on resources in the business network, including conditional actions.
 ---
 
 # {{site.data.conrefs.composer_full}} Access Control Language
@@ -18,32 +19,32 @@ Access control for a business network is defined by an ordered set of ACL rules.
 
 ACL rules are defined in a file called `permissions.acl` in the root of the business network. If this file is missing from the business network then all access is **permitted**.
 
-### Access Control Rule Grammer
+### Access Control Rule Grammar
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset`.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset`.
 
 ````
 rule SimpleRule {
     description: "Description of the ACL rule"
-    participant: "org.acme.SampleParticipant"
+    participant: "org.example.SampleParticipant"
     operation: ALL
-    resource: "org.acme.SampeAsset"
+    resource: "org.example.SampeAsset"
     action: ALLOW
 }
 ````
 
 Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset` IF the participant is the owner of the asset.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset` IF the participant is the owner of the asset.
 
 ````
 rule SampleConditionalRule {
     description: "Description of the ACL rule"
-    participant(m): "org.acme.SampleParticipant"
+    participant(m): "org.example.SampleParticipant"
     operation: ALL
-    resource(v): "org.acme.SampeAsset"
+    resource(v): "org.example.SampeAsset"
     condition: (v.owner.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -51,14 +52,13 @@ rule SampleConditionalRule {
 
 Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.
 
-**Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.
+**Resource** defines the things that the ACL rule applies to. This can be a class, all classes within a namespace, or all classes under a namespace. It can also be an instance of a class.
 
 Resource Examples:
-- Namespace: org.acme
-- Class in namespace: org.acme.Car
-- Property on class: org.acme.Car.owner
-- Instance of a class: org.acme.Car#ABC123
-- Property on an instance of a class: org.acme.Car.owner#ABC123
+- Namespace: org.example.*
+- Namespace (recursive): org.example.**
+- Class in namespace: org.example.Car
+- Instance of a class: org.example.Car#ABC123
 
 **Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
 
@@ -75,43 +75,42 @@ Example ACL rules (in evaluation order):
 ```
 rule R1 {
     description: "Fred can DELETE the car ABC123"
-    participant: "org.acme.Driver#Fred"
+    participant: "org.example.Driver#Fred"
     operation: DELETE
-    resource: "org.acme.Car#ABC123"
+    resource: "org.example.Car#ABC123"
     action: ALLOW
 }
 
 rule R2 {
     description: "regulator with ID Bill can not update a Car if they own it"
-    participant(r): "org.acme.Regulator#Bill"
+    participant(r): "org.example.Regulator#Bill"
     operation: UPDATE
-    resource(c): "org.acme.Car"
+    resource(c): "org.example.Car"
     condition: (c.owner == r)
     action: DENY
 }
 
 rule R3 {
-    description: "Driver can change the ownership of a car that they own"
-    participant(d): "org.acme.Driver"
-    operation: UPDATE
-    resource(o): "org.acme.Car.owner"
-    condition: (o == d)
+    description: "regulators can perform all operations on Cars"
+    participant: "org.example.Regulator"
+    operation: ALL
+    resource: "org.example.Car"
     action: ALLOW
 }
 
 rule R4 {
-    description: "regulators can perform all operations on Cars"
-    participant: "org.acme.Regulator"
-    operation: ALL
-    resource: "org.acme.Car"
+    description: "Everyone can read all resources in the org.example namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.example.*"
     action: ALLOW
 }
 
 rule R5 {
-    description: "Everyone can read all resources in the org.acme namespace"
+    description: "Everyone can read all resources under the org.example namespace"
     participant: "ANY"
     operation: READ
-    resource: "org.acme"
+    resource: "org.example.**"
     action: ALLOW
 }
 ```

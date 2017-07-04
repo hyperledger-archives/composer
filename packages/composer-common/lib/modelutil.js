@@ -15,6 +15,7 @@
 'use strict';
 
 const Globalize = require('./globalize');
+const COMPOSER_SYSTEM_NAMESPACE = 'org.hyperledger.composer.system';
 
 /**
  * Internal Model Utility Class
@@ -44,13 +45,49 @@ class ModelUtil {
     }
 
     /**
-     * Returns true if the specified name is a wildcard.
+     * Returns true if the specified name is a wildcard
      * @param {string} fqn - the source string
-     * @return {boolean} true if the specified name is a wildcard.
+     * @return {boolean} true if the specified name is a wildcard
      * @private
      */
     static isWildcardName(fqn) {
         return ModelUtil.getShortName(fqn) === '*';
+    }
+
+    /**
+     * Returns true if the specified name is a recusive wildcard
+     * @param {string} fqn - the source string
+     * @return {boolean} true if the specified name is a recusive wildcard
+     * @private
+     */
+    static isRecursiveWildcardName(fqn) {
+        return ModelUtil.getShortName(fqn) === '**';
+    }
+
+    /**
+     * Returns true if a type matches the required fully qualified name. The required
+     * name may be a wildcard or recursive wildcard
+     * @param {Typed} type - the type to test
+     * @param {string} fqn - required fully qualified name
+     * @return {boolean} true if the specified type and namespace match
+     * @private
+     */
+    static isMatchingType(type, fqn) {
+        let ns = ModelUtil.getNamespace(fqn);
+        let typeNS = type.getNamespace();
+
+        if (type.instanceOf(fqn)) {
+            // matching type or subtype
+        } else if (ModelUtil.isWildcardName(fqn) && typeNS === ns) {
+            // matching namespace
+        } else if (ModelUtil.isRecursiveWildcardName(fqn) && (typeNS + '.').startsWith(ns + '.')) {
+            // matching recursive namespace
+        } else {
+            // does not match
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -75,14 +112,23 @@ class ModelUtil {
     }
 
     /**
+     * Returns the system namespace
+     * @return {string} - namespace of system types
+     * @private
+     */
+    static getSystemNamespace() {
+        return COMPOSER_SYSTEM_NAMESPACE;
+    }
+
+    /**
      * Returns true if the type is a primitive type
-     * @param {string} type - the name of the type
+     * @param {string} typeName - the name of the type
      * @return {boolean} - true if the type is a primitive
      * @private
      */
-    static isPrimitiveType(type) {
+    static isPrimitiveType(typeName) {
         const primitiveTypes = ['Boolean', 'String', 'DateTime', 'Double', 'Integer', 'Long'];
-        return (primitiveTypes.indexOf(type) >= 0);
+        return (primitiveTypes.indexOf(typeName) >= 0);
     }
 
     /**
@@ -109,8 +155,7 @@ class ModelUtil {
         }
 
         return typeDeclaration.getAllSuperTypeDeclarations().
-            map(type => type.getFullyQualifiedName()).
-            includes(propertyTypeName);
+            some(type => type.getFullyQualifiedName() === propertyTypeName);
     }
 
     /**
@@ -133,6 +178,20 @@ class ModelUtil {
         const modelFile = field.getParent().getModelFile();
         const typeDeclaration = modelFile.getType(field.getType());
         return (typeDeclaration !== null && typeDeclaration.isEnum());
+    }
+
+    /**
+     * Get the fully qualified name of a type.
+     * @param {string} namespace - namespace of the type.
+     * @param {string} type - short name of the type.
+     * @returns {string} the fully qualified type name.
+     */
+    static getFullyQualifiedName(namespace, type) {
+        if (namespace) {
+            return namespace + '.' + type;
+        } else {
+            return type;
+        }
     }
 
 }

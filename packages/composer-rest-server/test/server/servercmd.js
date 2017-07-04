@@ -57,7 +57,7 @@ describe('servercmd', () => {
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
-            '-n', 'org.acme.biznet',
+            '-n', 'org-acme-biznet',
             '-i', 'admin',
             '-s', 'adminpw'
         ];
@@ -89,7 +89,7 @@ describe('servercmd', () => {
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
-            '-n', 'org.acme.biznet',
+            '-n', 'org-acme-biznet',
             '-i', 'admin',
             '-s', 'adminpw'
         ];

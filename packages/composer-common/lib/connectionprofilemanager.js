@@ -98,6 +98,7 @@ class ConnectionProfileManager {
 
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
+            LOG.debug(METHOD,data);
             let connectionManager  = connectionManagers[data.type];
             if(!connectionManager) {
                 const mod = `composer-connector-${data.type}`;
@@ -133,6 +134,7 @@ class ConnectionProfileManager {
                                     return true;
                                 } catch (e) {
                                     // Search the next one.
+                                    LOG.debug(METHOD,e);
                                     return false;
                                 }
                             });
@@ -145,6 +147,7 @@ class ConnectionProfileManager {
                         }
                     }
                 } catch (e) {
+                    LOG.debug(METHOD,e);
                     throw new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}"`);
                 }
                 connectionManagers[data.type] = connectionManager;
@@ -166,7 +169,6 @@ class ConnectionProfileManager {
      * @abstract
      */
     connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
-
         LOG.info('connect','Connecting using ' + connectionProfile, businessNetworkIdentifier);
 
         let connectOptions;
@@ -181,14 +183,6 @@ class ConnectionProfileManager {
             .then((connectionManager) => {
                 return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
             });
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
     /**

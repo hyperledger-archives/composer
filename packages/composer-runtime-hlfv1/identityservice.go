@@ -19,6 +19,7 @@ import (
 	"strings"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 
@@ -65,53 +66,58 @@ func NewIdentityService(vm *duktape.Context, context *Context, stub shim.Chainco
 	return result
 }
 
-// getCurrentUserID retrieves the userID attribute from the users certificate.
-func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (result int) {
-	logger.Debug("Entering IdentityService.getCurrentUserID", vm)
-	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
-
-	creator, err := identityService.Stub.GetCreator()
+// extract the common name from the creator x509 certificate
+// Although we should really use protobufs to correctly locate the certificate
+// this would have meant pulling in a load of vendor dependencies as they aren't
+// in the chaincode container and it isn't worth it.
+func extractNameFromCreator(stub shim.ChaincodeStubInterface) (result string, errResp error) {
+	logger.Debug("Entering extractNameFromCreator", &stub)
+	defer func() {logger.Debug("Exiting extractNameFromCreator", result, errResp)}()
+	creator, err := stub.GetCreator()
 	if err != nil {
-		logger.Debug("Error received on GetCreator", err)
-		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
-		vm.Throw()
-		return 0
+		return "", err
 	}
-	//var ucert *x509.Certificate
 	logger.Debug("creator", string(creator))
-	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
+	certStart := bytes.Index(creator,[]byte("-----BEGIN CERTIFICATE-----"))
 	if certStart == -1 {
-		logger.Debug("No certificate found")
-		vm.PushErrorObjectVa(duktape.ErrError, "%s", "No certificate found")
-		vm.Throw()
-		return 0
+		return "", errors.New("No Certificate found")
 	}
 	certText := creator[certStart:]
 	block, _ := pem.Decode(certText)
 	if block == nil {
-		logger.Debug("Error received on pem.Decode of certificate", certText)
-		vm.PushErrorObjectVa(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
-		vm.Throw()
-		return 0
+		return "", errors.New("Error received on pem.Decode of certificate:" + string(certText))
 	}
 
 	ucert, err := x509.ParseCertificate(block.Bytes)
 
 	if err != nil {
-		logger.Debug("Error received on ParseCertificate", err)
+		return "", err
+	}
+
+	return ucert.Subject.CommonName, nil
+}
+
+// getCurrentUserID retrieves the userID attribute from the users certificate.
+func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getCurrentUserID", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
+
+	creatorName, err := extractNameFromCreator(identityService.Stub)
+	if err != nil {
 		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		vm.Throw()
 		return 0
 	}
 
-	logger.Debug("Common Name", ucert.Subject.CommonName)
+	logger.Debug("Common Name", creatorName)
 
-	// TODO: temporary for V1 admin user returns null to give them
-	// full authority
-	if strings.Contains(strings.ToLower(ucert.Subject.CommonName), "admin") {
+	// TODO: Will be upgraded to a new security model soon. 
+	// returning Null grants any common name with the word admin in
+	// it to have all authority
+	if strings.Contains(strings.ToLower(creatorName), "admin") {
 		vm.PushNull()
 		return 1
 	}
-	vm.PushString(ucert.Subject.CommonName)
+	vm.PushString(creatorName)
 	return 1
 }

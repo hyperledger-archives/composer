@@ -15,19 +15,19 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
+
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 )
 
 // HTTPService is a go wrapper around the HTTPService JavaScript class
 type HTTPService struct {
-	This *otto.Object
+	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
 
@@ -38,76 +38,62 @@ type HTTPResponse struct {
 }
 
 // NewHTTPService creates a Go wrapper around a new instance of the HTTPService JavaScript class.
-func NewHTTPService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInterface) (result *HTTPService) {
-	logger.Debug("Entering NewHTTPService", vm, context, &stub)
-	defer func() { logger.Debug("Exiting NewHTTPService", result) }()
+func NewHTTPService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *HTTPService) {
+	logger.Debug("Entering HTTPService", vm, context, &stub)
+	defer func() { logger.Debug("Exiting HTTPService", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new concerto.HTTPService", nil, context.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of HTTPService JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of HTTPService JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &HTTPService{This: temp.Object(), Stub: stub}
-	err = object.Set("$this", result)
+	// Create a new http service
+	result = &HTTPService{VM: vm, Stub: stub}
+
+	//Create a new instance of the JavaScript HTTPService class.
+	vm.PushGlobalObject()               // [ global ]
+	vm.GetPropString(-1, "composer")    // [ global composer ]
+	vm.GetPropString(-1, "HTTPService") // [ global composer HTTPService ]
+	err := vm.Pnew(0)                   // [ global composer theHTTPService ]
 	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in HTTPService JavaScript object: %v", err))
+		panic(err)
 	}
+
+	// Store the http service into the global stash.
+	vm.PushGlobalStash()                // [ global composer theHTTPService stash ]
+	vm.Dup(-2)                          // [ global composer theHTTPService stash theHTTPService ]
+	vm.PutPropString(-2, "httpService") // [ global composer theHTTPService stash ]
+	vm.Pop()                            // [ global composer theHTTPService ]
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("_post", result.post)
+	vm.PushGoFunction(result.post) // [ global composer theHTTPService post ]
+	vm.PushString("bind")          // [ global composer theHTTPService post "bind" ]
+	vm.Dup(-3)                     // [ global composer theHTTPService post "bind" theHTTPService ]
+	vm.PcallProp(-3, 1)            // [ global composer theHTTPService post boundCommit ]
+	vm.PutPropString(-3, "_post")  // [ global composer theHTTPService _post ]
+
+	// Return a new http service
 	return result
 }
 
-// HTTP POST to an external REST service and return a Promise to the results
-func (httpService *HTTPService) post(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering HTTPService.post", call)
+// HTTP POST to a URL and return a Promise to the reponse to the caller
+func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
+	logger.Debug("Entering HTTPService.post", vm)
 	defer func() { logger.Debug("Exiting HTTPService.post", result) }()
 
-	urlValue, err := call.This.Object().Get("url")
-
-	if err != nil {
-		panic(err)
-	}
-
-	url, err := urlValue.ToString()
-
-	if err != nil {
-		panic(err)
-	}
-
-	dataValue, err := call.This.Object().Get("data")
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// data, err := dataValue.ToString()
-
-	if err != nil {
-		panic(err)
-	}
-
-	dataJSONValue, err := call.Otto.Call("JSON.stringify", nil, dataValue)
-
-	if err != nil {
-		panic(err)
-	}
-
-	dataJSON, err := dataJSONValue.ToString()
-
-	if err != nil {
-		panic(err)
-	}
-
-	logger.Debug("HTTPService.post data", dataJSON)
+	vm.PushThis()         // [ theHttpService ]
+	vm.PushString("data") // [ theHttpService data ]
+	vm.GetProp(-2)        // [ theHttpService theData ]
+	vm.JsonEncode(-1)     // [ theHttpService theDataJson ]
+	data := vm.RequireString(-1)
+	logger.Debug("HTTPService.post data", data)
+	vm.Pop()                    // [ theHttpService ]
+	vm.PushString("url")        // [ theHttpService url ]
+	vm.GetProp(-2)              // [ theHttpService theURL ]
+	url := vm.RequireString(-1) // [ theHttpService, theUrl ]
 	logger.Debug("HTTPService.post url", url)
+	vm.Pop() // [ theHttpService ]
 
-	req, err := http.NewRequest("POST", url, strings.NewReader(dataJSON))
+	var jsonStr = []byte(data)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Composer-Version", version)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -137,11 +123,10 @@ func (httpService *HTTPService) post(call otto.FunctionCall) (result otto.Value)
 
 	logger.Info("JSON response " + string(jsonResponse))
 
-	promise, err := call.Otto.Call("Promise.resolve", nil, string(jsonResponse))
+	// push a Promise that resolves to the JSON response as a string
+	vm.PushString("Promise.resolve(" + string(jsonResponse) + ")")
+	vm.Eval()
 
-	if err != nil {
-		panic(err)
-	}
-
-	return promise
+	// a return code of 1 signifies that the top of the stack should be returned to the caller
+	return 1
 }

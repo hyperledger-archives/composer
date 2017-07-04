@@ -14,39 +14,45 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseModelException = require('./basemodelexception');
 
 /**
  * Exception throws when a composer file is semantically invalid
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseModelException
+ * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
  * @class
  * @memberof module:composer-common
  */
-class IllegalModelException extends BaseException {
+class IllegalModelException extends BaseModelException {
 
     /**
-     * Create an IllegalModelException
-     * @param {string} message - the message for the exception
-     * @param {string} modelFile - the optional modelfile associated with the exception
-     * @param {string} fileLocation - the optional file location associated with the exception
+     * Create an IllegalModelException.
+     * @param {String} message - the message for the exception
+     * @param {ModelFile} [modelFile] - the optional modelfile associated with the exception
+     * @param {Object} [fileLocation] - location details of the error within the model file.
+     * @param {String} fileLocation.start.line - start line of the error location.
+     * @param {String} fileLocation.start.column - start column of the error location.
+     * @param {String} fileLocation.end.line - end line of the error location.
+     * @param {String} fileLocation.end.column - end column of the error location.
      */
     constructor(message, modelFile, fileLocation) {
 
-        let messagePrefix = '';
-        if(modelFile && modelFile.getFileName()) {
-            messagePrefix = 'File \'' + modelFile.getFileName() + '\': ' ;
+        let messageSuffix = '';
+        if(modelFile && modelFile.getName()) {
+            messageSuffix = 'File \'' + modelFile.getName() + '\': ' ;
         }
 
         if(fileLocation) {
-            messagePrefix = messagePrefix + 'line ' + fileLocation.start.line + ' column ' +
+            messageSuffix = messageSuffix + 'line ' + fileLocation.start.line + ' column ' +
                 fileLocation.start.column + ', to line ' + fileLocation.end.line + ' column ' +
                 fileLocation.end.column + '. ';
         }
 
-        super(messagePrefix + message);
+        // First character to be uppercase
+        messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
+
+        super(message, fileLocation, message + ' ' + messageSuffix);
         this.modelFile = modelFile;
-        this.fileLocation = fileLocation;
     }
 
     /**
@@ -55,14 +61,6 @@ class IllegalModelException extends BaseException {
      */
     getModelFile() {
         return this.modelFile;
-    }
-
-    /**
-     * Returns the file location associated with the exception or null
-     * @return {string} the optional location associated with the exception
-     */
-    getFileLocation() {
-        return this.fileLocation;
     }
 }
 

@@ -18,7 +18,7 @@ We welcome contributions to the code base. If you are interested in becoming a c
 - [raising an issue](/contrib-notes/raising-issues.md)
 - [submitting a pull request](/contrib-notes/submitting-pull-request.md)
 
-There is a [specific channel](https://chat.hyperledger.org/channel/composer-dev) on RocketChat for contributors*
+There is a [specific channel](https://chat.hyperledger.org/channel/composer-dev) on RocketChat for contributors.
 
 
 # Getting started with building an application
@@ -32,3 +32,16 @@ Suggested reading list is:
 - [Quick Start](https://hyperledger.github.io/composer/installing/quickstart.html)
 - [Quick Start Video](https://www.youtube.com/watch?v=pEHBIfb_iqc&t=5s)
 - [Tutorials](https://hyperledger.github.io/composer/tutorials/tutorialindex.html)
+
+# Getting in touch
+
+If you have a *question on using Hyperledger Composer*
+  - Rocket.Chat [discussion channels](https://chat.hyperledger.org/channel/composer)
+  - [Stack Overflow](http://stackoverflow.com/questions/tagged/hyperledger-composer), where the question should be tagged with 'hyperledger-composer'.
+
+If you have found a defect or want to raise a feature requests
+  - All tracked on Github - please read [how to raise](./contrib-notes/raising-issues,md)
+
+If you want to contribute to the develop of Hyperledger Composer
+  - Come introduce yourself on the contributors [RocketChat channel](https://chat.hyperledger.org/channel/composer-dev)
+  - Please read the [contributing guide](./CONTRIBUTING.md)

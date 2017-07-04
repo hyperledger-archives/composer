@@ -1,21 +1,20 @@
 ---
 layout: default
-title: Task - Add a participant
+title: Adding participants
 category: tasks
+section: managing
 sidebar: sidebars/managing.md
-excerpt: How to add a participant
+excerpt: "[**Participants must be added to a business network**](../managing/participant-add.html) before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions."
+index-order: 2
 ---
 
-# Add a participant
+# Adding participants
 
----
-
-A participant can be added to a participant registry using either the API or the
-command line.
+A participant can be added to a participant registry using either the API or the command line.
 
 ## Before you start
 
-Before you follow these steps, you must have modelled a participant in a Business
+Before you follow these steps, you must have modeled a participant in a Business
 Network Definition and deployed it as a Business Network.
 
 The procedure below shows an example using the following model of a participant

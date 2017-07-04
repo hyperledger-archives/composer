@@ -15,6 +15,8 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
+const Service = require('./service');
+
 const LOG = Logger.getLog('HTTPService');
 
 /**
@@ -23,13 +25,7 @@ const LOG = Logger.getLog('HTTPService');
  * @abstract
  * @memberof module:composer-runtime
  */
-class HTTPService {
-
-    /**
-     * Constructor.
-     */
-    constructor() {
-    }
+class HTTPService extends Service {
 
     /**
      * HTTP POST of a typed instance to a URL. The instance is serialized to JSON
@@ -89,14 +85,6 @@ class HTTPService {
      */
     _post() {
         throw new Error('abstract function called');
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

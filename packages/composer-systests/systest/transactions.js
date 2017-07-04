@@ -33,15 +33,15 @@ describe('Transaction system tests', () => {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/transactions.cto'), 'utf8')
+            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.cto'), 'utf8') }
         ];
         const scriptFiles=  [
             { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.js'), 'utf8') },
             { identifier: 'transactions.utility.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.utility.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions@0.0.1', 'The network for the transaction system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions@0.0.1', 'The network for the transaction system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
@@ -50,7 +50,7 @@ describe('Transaction system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.transactions')
+                return TestUtil.getClient('systest-transactions')
                     .then((result) => {
                         client = result;
                     });

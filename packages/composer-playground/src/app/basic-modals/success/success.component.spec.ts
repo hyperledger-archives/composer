@@ -1,8 +1,7 @@
 /* tslint:disable:no-unused-expression */
 import { ComponentFixture, TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, EventEmitter, Output, Input } from '@angular/core';
 import { SuccessComponent } from './success.component';
-import { AlertService } from '../../services/alert.service';
+import { AlertService } from '../alert.service';
 
 import * as chai from 'chai';
 
@@ -11,7 +10,6 @@ let should = chai.should();
 describe('SuccessComponent', () => {
     let component: SuccessComponent;
     let fixture: ComponentFixture<SuccessComponent>;
-    let mockAlertConfig;
 
     let messageTimeout = 4000;
 

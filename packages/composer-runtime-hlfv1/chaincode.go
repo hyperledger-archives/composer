@@ -16,38 +16,8 @@ package main
 
 import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
-import "os"
-import "strings"
 
-// enable logging based on either world state or env variable.
-// default to INFO if neither have a value.
-func EnableLogging(stub shim.ChaincodeStubInterface) {
-	var levelStr string
-	levelBytes, err := stub.GetState("ComposerLogLevel")
-	if err != nil || levelBytes == nil {
-		var isSet bool
-		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
-		if !isSet {
-			levelStr = "INFO"
-		}
-	} else {
-		levelStr = string(levelBytes)
-	}
 
-	level, _ := shim.LogLevel(levelStr)
-	logger.SetLevel(level)
-}
-
-// explicitly set the logging to a specific level
-func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
-	//We could check that the levelStr is valid but
-	//currently if it isn't then I think shim.LogLevel will return a default of loglevel of Error.
-	newLevel := strings.ToUpper(levelStr)
-	stub.PutState("ComposerLogLevel", []byte(newLevel))
-	level, _ := shim.LogLevel(newLevel)
-	logger.SetLevel(level)
-	logger.Warning("Setting loglevel to", newLevel)
-}
 
 // Chaincode is the chaincode class. It is an implementation of the
 // Chaincode interface.
@@ -83,16 +53,6 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	// Execute the init function.
 	function, arguments := stub.GetFunctionAndParameters()
 
-	// look for -d loglevel and set log and remove
-	// from arguments
-	var loglevel string
-	for i, value := range arguments {
-		if value == "-d" && (i+1) < len(arguments) {
-			loglevel = arguments[i+1]
-			arguments = append(arguments[:i], arguments[i+2:]...)
-		}
-	}
-	SetLogging(stub, loglevel)
 	payload, err := composer.Init(stub, function, arguments)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -117,14 +77,9 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 
 	// Execute the invoke function.
 	function, arguments := stub.GetFunctionAndParameters()
-	if strings.ToLower(function) == "logging" {
-		SetLogging(stub, arguments[0])
-		return shim.Success(nil)
-	} else {
-		payload, err := composer.Invoke(stub, function, arguments)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		return shim.Success(payload)
+	payload, err := composer.Invoke(stub, function, arguments)
+	if err != nil {
+		return shim.Error(err.Error())
 	}
+	return shim.Success(payload)
 }

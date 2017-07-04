@@ -220,12 +220,13 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    deploy(businessNetworkDefinition) {
+    deploy(businessNetworkDefinition, deployOptions) {
         Util.securityCheck(this.securityContext);
-        return this.connection.deploy(this.securityContext, true, businessNetworkDefinition);
+        return this.connection.deploy(this.securityContext, businessNetworkDefinition, deployOptions);
     }
 
     /**
@@ -295,6 +296,54 @@ class AdminConnection {
     }
 
     /**
+     * Set the logging level of a business network. The connection must
+     * be connected for this method to succeed.
+     * @example
+     * // Set the logging level of a business network.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.setLogLevel('DEBUG')
+     * .then(() => {
+     *     console.log('log level set to DEBUG');
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {any} newLogLevel new logging level
+     * @returns {Promise} A promise that resolves if successful.
+     * @memberof AdminConnection
+     */
+    setLogLevel(newLogLevel) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.invokeChainCode(this.securityContext, 'setLogLevel' , [newLogLevel]);
+    }
+
+    /**
+     * Get the current logging level of a business network. The connection must
+     * be connected for this method to succeed.
+     * @example
+     * // Get the current logging level of a business network.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.getLogLevel()
+     * .then((currentLogLevel) => {
+     *     console.log('current log level is ' + currentLogLevel);
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @returns {Promise} A promise that resolves with the current logging level if successful.
+     * @memberof AdminConnection
+     */
+    getLogLevel() {
+        Util.securityCheck(this.securityContext);
+        return this.connection.queryChainCode(this.securityContext, 'getLogLevel', [])
+            .then((response) => {
+                return Promise.resolve(JSON.parse(response));
+            });
+    }
+
+    /**
      * List all of the deployed business networks. The connection must
      * be connected for this method to succeed.
      * @example
@@ -316,6 +365,44 @@ class AdminConnection {
     list() {
         Util.securityCheck(this.securityContext);
         return this.connection.list(this.securityContext);
+    }
+
+    /**
+     * Import an identity into a profiles' wallet. No connection needs to be established
+     * for this method to succeed.
+    * @example
+     * // Import an identity into a profiles' wallet
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.import('hlfv1', 'PeerAdmin', publicKey, privateKey)
+     * .then(() => {
+     *     // Identity imported
+     *     console.log('identity imported successfully');
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {string} connectionProfile Name of the connection profile
+     * @param {string} id The id to associate with this identity
+     * @param {string} publicKey The signer cert in PEM format
+     * @param {string} privateKey The private key in PEM format
+     * @returns {Promise} A promise which is resolved when the identity is imported
+     *
+     * @memberOf AdminConnection
+     */
+    importIdentity(connectionProfile, id, publicKey, privateKey) {
+        let savedConnectionManager;
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                savedConnectionManager = connectionManager;
+                return this.getProfile(connectionProfile);
+            })
+            .then((profileData) => {
+                return savedConnectionManager.importIdentity(profileData, id, publicKey, privateKey);
+            })
+            .catch((error) => {
+                throw new Error('failed to import identity. ' + error.message);
+            });
     }
 
 }

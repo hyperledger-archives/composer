@@ -30,8 +30,34 @@ describe('Globalization', function() {
     beforeEach(function() {
     });
 
-    describe.skip('#check globalization library works', function() {
-        it('check formatters', function() {
+    describe('#check globalization library works', function() {
+        it('numbered variables using Array', function() {
+            const formatter = Globalize('en').messageFormatter('test-hello-array');
+            formatter([ 'Wolfgang', 'Amadeus', 'Mozart' ]).should.equal('Hello, Wolfgang Amadeus Mozart');
+        });
+
+        it('named variables using Object key-value pairs', function() {
+            const formatter = Globalize('en').messageFormatter('test-hello-object');
+            formatter({
+                first: 'Wolfgang',
+                middle: 'Amadeus',
+                last: 'Mozart'
+            }).should.equal('Hello, Wolfgang Amadeus Mozart');
+        });
+
+        it('repeated numbered variables using Array', function() {
+            const formatter = Globalize('en').messageFormatter('test-repeat-array');
+            formatter([ 'Bonkers' ]).should.equal('Bonkers Bonkers Bonkers');
+        });
+
+        it('repeated named variables using Object key-value pairs', function() {
+            const formatter = Globalize('en').messageFormatter('test-repeat-object');
+            formatter({
+                value: 'Bonkers'
+            }).should.equal('Bonkers Bonkers Bonkers');
+        });
+
+        it.skip('check formatters', function() {
             // Use Globalize to format a message with plural inflection.
             let like = Globalize.messageFormatter('like');
             like(0).should.equal('Be the first to like this');
@@ -72,7 +98,7 @@ describe('Globalization', function() {
 
             let modelFile = modelManager.getModelFile('concerto');
             modelFile.getNamespace().should.equal('concerto');
-            let classDeclaration = modelFile.getType('concerto.Participant');
+            let classDeclaration = modelFile.getType('concerto.MyParticipant');
             classDeclaration.should.not.be.undefined;
 
             expect(function(){
@@ -196,8 +222,8 @@ describe('Globalization', function() {
         });
     });
 
-    describe('#check Factory messages are correct', function() {
-        describe('check messages in newInstance()', function() {
+    describe.skip('#check Factory messages are correct', function() {
+        describe('check messages in newResource()', function() {
             it('where namespace hasn\'t been registered in the model manager', function() {
                 let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
                 formatter({
@@ -228,7 +254,7 @@ describe('Globalization', function() {
 
                 expect(function() {
                     let factory = new Factory(modelManager);
-                    factory.newInstance('foo', 'bar', '123');
+                    factory.newResource('foo', 'bar', '123');
                 }).to.throw(Error, 'Type bar is not declared in namespace foo');
             });
         });
@@ -306,7 +332,7 @@ describe('Globalization', function() {
         });
     });
 
-    describe('#check ModelManager messages are correct', function() {
+    describe('ModelManager messages', function() {
         describe('check messages in resolveType()', function() {
             it('when no namespace is registered for type', function(){
                 let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
@@ -334,26 +360,26 @@ describe('Globalization', function() {
             });
         });
 
-        describe('check messages in getType()', function() {
-            it('check no type in namespace', function() {
+        describe('#getType()', function() {
+            it('Namespace does not exist', function() {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
                 formatter({
-                    type: 'foo'
-                }).should.equal('No registered namespace for type foo');
+                    type: 'TYPE'
+                }).should.equal('Namespace is not defined for type TYPE');
 
                 const modelManager = new ModelManager();
 
                 expect(function() {
-                    modelManager.getType('foo');
-                }).to.throw(Error, 'No registered namespace for type foo');
+                    modelManager.getType('NAMESPACE.TYPE');
+                }).to.throw(Error, 'Namespace is not defined for type NAMESPACE.TYPE');
             });
 
             it('check type exists in namespace', function() {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
                 formatter({
-                    type: 'foo',
-                    namespace: 'bar'
-                }).should.equal('No type foo in namespace bar');
+                    type: 'TYPE',
+                    namespace: 'NAMESPACE'
+                }).should.equal('Type TYPE is not defined in namespace NAMESPACE');
 
                 // Cannot be tested - will throw error on line 139 modelmanager.js first
             });

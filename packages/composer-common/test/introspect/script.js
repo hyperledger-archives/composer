@@ -17,7 +17,9 @@
 const ModelManager = require('../../lib/modelmanager');
 const Script = require('../../lib/introspect/script');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('Script', () => {
@@ -155,16 +157,16 @@ describe('Script', () => {
         });
     });
 
-    describe('#toJSON', () => {
+    describe('#getTokens', () => {
 
-        it('should return an object', () => {
-            const FUNC_TEXT = 'function foo() {return 0;}';
-            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
-            script.toJSON().should.deep.equal({
-                identifier: 'SCRIPT_001',
-                language: 'JS'
-            });
+        it('should return all of the tokens', () => {
+            const source = 'eval(true)';
+            const script = new Script(modelManager, 'SCRIPT_001', 'JS', source);
+            const tokens = script.getTokens();
+            tokens.should.have.lengthOf(5);
+            tokens.should.all.have.property('loc');
         });
 
     });
+
 });

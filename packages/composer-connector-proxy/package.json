@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.7.4",
+  "version": "0.9.1",
   "description": "The proxying client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -14,7 +14,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "nyc mocha --recursive -t 5000"
+    "test": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -54,7 +54,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.7.4",
+    "composer-common": "^0.9.1",
     "socket.io-client": "^1.7.3"
   },
   "nyc": {

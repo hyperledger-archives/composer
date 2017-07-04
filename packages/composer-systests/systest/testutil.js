@@ -73,7 +73,23 @@ class TestUtil {
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabric() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy();
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf.*');
+    }
+
+    /**
+     * Check to see if running in Hyperledger Fabric mode.
+     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
+     */
+    static isHyperledgerFabricV06() {
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf$');
+    }
+
+    /**
+     * Check to see if running in Hyperledger Fabric mode.
+     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
+     */
+    static isHyperledgerFabricV1() {
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlfv1.*');
     }
 
     /**
@@ -201,9 +217,8 @@ class TestUtil {
                 } else if (TestUtil.isHyperledgerFabric()) {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
-                    let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
-                    if (process.env.SYSTEST.match('^hlfv1')) {
+                    if (TestUtil.isHyperledgerFabricV1()) {
                         if (process.env.SYSTEST.match('tls$')) {
                             console.log('setting up TLS Connection Profile for HLF V1');
                             adminOptions = {
@@ -211,30 +226,26 @@ class TestUtil {
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
-                                        cert: './hlfv1/tls/orderer/ca-cert.pem',
-                                        hostnameOverride: 'orderer0'
+                                        hostnameOverride: 'orderer.example.com',
+                                        cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
                                     }
                                 ],
-                                ca: 'https://localhost:7054',
+                                ca: {
+                                    url: 'https://localhost:7054',
+                                    name: 'ca.org1.example.com'
+                                },
                                 peers: [
                                     {
                                         requestURL: 'grpcs://localhost:7051',
                                         eventURL: 'grpcs://localhost:7053',
-                                        cert: './hlfv1/tls/peers/peer0/ca-cert.pem',
-                                        hostnameOverride: 'peer0'
-                                    },
-                                    {
-                                        requestURL: 'grpcs://localhost:7056',
-                                        eventURL: 'grpcs://localhost:7058',
-                                        cert: './hlfv1/tls/peers/peer1/ca-cert.pem',
-                                        hostnameOverride: 'peer1'
+                                        hostnameOverride: 'peer0.org1.example.com',
+                                        cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                     }
                                 ],
-                                keyValStore: keyValStoreV1,
-                                channel: 'mychannel',
+                                keyValStore: keyValStore,
+                                channel: 'composerchannel',
                                 mspID: 'Org1MSP',
-                                deployWaitTime: '300',
-                                invokeWaitTime: '100'
+                                timeout: '300'
                             };
                         } else {
                             console.log('setting up Non-TLS Connection Profile for HLF V1');
@@ -243,22 +254,20 @@ class TestUtil {
                                 orderers: [
                                     'grpc://localhost:7050'
                                 ],
-                                ca: 'http://localhost:7054',
+                                ca: {
+                                    url: 'http://localhost:7054',
+                                    name: 'ca.org1.example.com'
+                                },
                                 peers: [
                                     {
                                         requestURL: 'grpc://localhost:7051',
                                         eventURL: 'grpc://localhost:7053'
-                                    },
-                                    {
-                                        requestURL: 'grpc://localhost:7056',
-                                        eventURL: 'grpc://localhost:7058'
                                     }
                                 ],
-                                channel: 'mychannel',
+                                channel: 'composerchannel',
                                 mspID: 'Org1MSP',
-                                deployWaitTime: '300',
-                                invokeWaitTime: '100',
-                                keyValStore: keyValStoreV1
+                                timeout: '300',
+                                keyValStore: keyValStore
                             };
                         }
                     } else {
@@ -281,19 +290,37 @@ class TestUtil {
                     adminOptions.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
                     console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
+                if (process.env.COMPOSER_TIMEOUT_SECS) {
+                    adminOptions.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
+                    console.log('COMPOSER_TIMEOUT_SECS set, using: ', adminOptions.timeout);
+                }
+
                 console.log('Calling AdminConnection.createProfile() ...');
                 return adminConnection.createProfile('composer-systests', adminOptions);
             })
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
+                if (TestUtil.isHyperledgerFabricV1()) {
+                    let fs = dynamicRequire('fs');
+                    let org = 'org1';
+                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk');
+                    let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/signcerts/Admin@org1.example.com-cert.pem');
+                    let signerCert = fs.readFileSync(certPath).toString();
+                    let key = fs.readFileSync(keyPath).toString();
+                    console.log('Calling AdminConnection.importIdentity() ...');
+                    return adminConnection.importIdentity('composer-systests', 'Org1PeerAdmin', signerCert, key);
+                }
+            })
+            .then(function () {
+                console.log('Called AdminConnection.importIdentity() ...');
                 console.log('Calling AdminConnection.connect() ...');
-                let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
-                return adminConnection.connect('composer-systests', 'admin', password);
+                let user = TestUtil.isHyperledgerFabricV1() ? 'Org1PeerAdmin' : 'admin';
+                let password = TestUtil.isHyperledgerFabricV1() ? 'NOTNEEDED' : 'Xurw3yU9zI0l';
+                return adminConnection.connect('composer-systests', user, password);
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
                 console.log('');
-                return Promise.resolve();
             });
     }
 
@@ -306,10 +333,10 @@ class TestUtil {
         if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
-        console.log('Calling BusinessNetworkConnection.disconnect() ...');
+        console.log('Calling adminConnection.disconnect() ...');
         return adminConnection.disconnect()
             .then(function () {
-                console.log('Called BusinessNetworkConnection.disconnect()');
+                console.log('Called adminConnection.disconnect()');
             });
     }
 

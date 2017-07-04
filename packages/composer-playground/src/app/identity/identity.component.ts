@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AddIdentityComponent } from '../add-identity';
-import { IssueIdentityComponent } from '../issue-identity';
-import { IdentityIssuedComponent } from '../identity-issued';
-import { AlertService } from '../services/alert.service';
+import { AddIdentityComponent } from './add-identity';
+import { IssueIdentityComponent } from './issue-identity';
+import { IdentityIssuedComponent } from './identity-issued';
+import { AlertService } from '../basic-modals/alert.service';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
+import { WalletService } from '../services/wallet.service';
 
 @Component({
     selector: 'identity',
@@ -24,7 +26,9 @@ export class IdentityComponent implements OnInit {
     constructor(private modalService: NgbModal,
                 private alertService: AlertService,
                 private identityService: IdentityService,
-                private clientService: ClientService) {
+                private clientService: ClientService,
+                private connectionProfileService: ConnectionProfileService,
+                private walletService: WalletService) {
 
     }
 
@@ -34,17 +38,17 @@ export class IdentityComponent implements OnInit {
 
     loadIdentities() {
         return this.identityService.getCurrentIdentities()
-        .then((currentIdentities) => {
-            this.identities = currentIdentities;
+            .then((currentIdentities) => {
+                this.identities = currentIdentities;
 
-            return this.identityService.getCurrentIdentity();
-        })
-        .then((currentIdentity) => {
-            this.currentIdentity = currentIdentity;
-        })
-        .catch((error) => {
-            this.alertService.errorStatus$.next(error);
-        });
+                return this.identityService.getCurrentIdentity();
+            })
+            .then((currentIdentity) => {
+                this.currentIdentity = currentIdentity;
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     addId() {
@@ -71,11 +75,11 @@ export class IdentityComponent implements OnInit {
                 this.alertService.errorStatus$.next(reason);
             }
         })
-        .then(() => {
-            return this.loadIdentities();
-        }, (reason) => {
-            this.alertService.errorStatus$.next(reason);
-        });
+            .then(() => {
+                return this.loadIdentities();
+            }, (reason) => {
+                this.alertService.errorStatus$.next(reason);
+            });
     }
 
     setCurrentIdentity(newIdentity: string) {
@@ -97,4 +101,14 @@ export class IdentityComponent implements OnInit {
             });
     }
 
+    removeIdentity(userID: string) {
+        let profileName = this.connectionProfileService.getCurrentConnectionProfile();
+        return this.walletService.removeFromWallet(profileName, userID)
+            .then(() => {
+                return this.loadIdentities();
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
+    }
 }

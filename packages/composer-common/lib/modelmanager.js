@@ -18,6 +18,28 @@ const Globalize = require('./globalize');
 const IllegalModelException = require('./introspect/illegalmodelexception');
 const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
+const TypeNotFoundException = require('./typenotfoundexception');
+
+// const ENCODING = 'utf8';
+
+const LOG = require('./log/logger').getLog('ModelManager');
+const SYSTEM_MODEL_CONTENTS = `
+    namespace org.hyperledger.composer.system
+
+    abstract asset Asset {  }
+
+    abstract participant Participant {   }
+
+    abstract transaction Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+
+    abstract event Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+`;
 
 /**
  * <p>
@@ -47,7 +69,26 @@ class ModelManager {
      * </p>
      */
     constructor() {
+        LOG.entry('constructor');
         this.modelFiles = {};
+        this.addSystemModels();
+        LOG.exit('constructor');
+    }
+
+    /**
+     * Add the system models to the model manager
+     * @private
+     */
+    addSystemModels() {
+        LOG.entry('addSystemModels');
+
+        // add the system model
+        LOG.info('info', SYSTEM_MODEL_CONTENTS);
+        let m = new ModelFile(this, SYSTEM_MODEL_CONTENTS);
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+
+        LOG.exit('addSystemModels');
     }
 
     /**
@@ -95,16 +136,25 @@ class ModelManager {
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
+        const NAME = 'addModelFile';
+        LOG.info(NAME,'addModelFile',modelFile,fileName);
+
+        let m = null;
+
         if (typeof modelFile === 'string') {
-            let m = new ModelFile(this, modelFile, fileName);
-            m.validate();
-            this.modelFiles[m.getNamespace()] = m;
-            return m;
-        } else {
-            modelFile.validate();
-            this.modelFiles[modelFile.getNamespace()] = modelFile;
-            return modelFile;
+            m = new ModelFile(this, modelFile, fileName);
         }
+        else {
+            m = modelFile;
+        }
+
+        if(m.isSystemModelFile()) {
+            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+        }
+
+        m.validate();
+        this.modelFiles[m.getNamespace()] = m;
+        return m;
     }
 
     /**
@@ -118,8 +168,13 @@ class ModelManager {
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {
+        const NAME = 'updateModelFile';
+        LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
+            if (m.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[m.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -127,6 +182,9 @@ class ModelManager {
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
+            if (modelFile.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[modelFile.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -144,6 +202,9 @@ class ModelManager {
     deleteModelFile(namespace) {
         if (!this.modelFiles[namespace]) {
             throw new Error('model file does not exist');
+        } else if (namespace === ModelUtil.getSystemNamespace()) {
+            throw new Error('Cannot delete system namespace');
+
         }
         delete this.modelFiles[namespace];
     }
@@ -157,6 +218,8 @@ class ModelManager {
      * @returns {Object[]} The newly added model files (internal).
      */
     addModelFiles(modelFiles, fileNames) {
+        const NAME = 'addModelFiles';
+        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -173,9 +236,15 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
+                    if (m.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
+                    if (modelFile.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }
@@ -193,11 +262,18 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
+        } finally{
+            LOG.exit(NAME,newModelFiles);
         }
     }
 
     /**
      * Get the array of model file instances
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
+     *
      * @return {ModelFile[]} The ModelFiles registered
      * @private
      */
@@ -215,41 +291,37 @@ class ModelManager {
     /**
      * Check that the type is valid and returns the FQN of the type.
      * @param {string} context - error reporting context
-     * @param {string} type - a short type name
+     * @param {string} type - fully qualified type name
      * @return {string} - the resolved type name (fully qualified)
      * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
     resolveType(context, type) {
         // is the type a primitive?
-        if (!ModelUtil.isPrimitiveType(type)) {
-
-            let ns = ModelUtil.getNamespace(type);
-            let modelFile = this.getModelFile(ns);
-
-            if (!modelFile) {
-                let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
-                throw new IllegalModelException(formatter({
-                    type: type,
-                    context: context
-                }));
-            }
-
-            if (!modelFile.isLocalType(type)) {
-                let formatter = Globalize.messageFormatter('modelmanager-resolvetype-notypeinnsforcontext');
-                throw new IllegalModelException(formatter({
-                    context: context,
-                    type: type,
-                    namespace: modelFile.getNamespace()
-                }));
-            }
-            else {
-                return type;
-            }
-        }
-        else {
+        if (ModelUtil.isPrimitiveType(type)) {
             return type;
         }
+
+        let ns = ModelUtil.getNamespace(type);
+        let modelFile = this.getModelFile(ns);
+        if (!modelFile) {
+            let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
+            throw new IllegalModelException(formatter({
+                type: type,
+                context: context
+            }));
+        }
+
+        if (modelFile.isLocalType(type)) {
+            return type;
+        }
+
+        let formatter = Globalize.messageFormatter('modelmanager-resolvetype-notypeinnsforcontext');
+        throw new IllegalModelException(formatter({
+            context: context,
+            type: type,
+            namespace: modelFile.getNamespace()
+        }));
     }
 
     /**
@@ -257,10 +329,15 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
+        this.addSystemModels();
     }
 
     /**
      * Get the ModelFile associated with a namespace
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
      * @param {string} namespace - the namespace containing the ModelFile
      * @return {ModelFile} registered ModelFile for the namespace or null
      * @private
@@ -280,35 +357,42 @@ class ModelManager {
     /**
      * Look up a type in all registered namespaces.
      *
-     * @param {string} type - the fully qualified name of a type
-     * @return {ClassDeclaration} - the class declaration or null for primitive types
-     * @throws {Error} - if the type cannot be found
+     * @param {string} qualifiedName - fully qualified type name.
+     * @return {ClassDeclaration} - the class declaration for the specified type.
+     * @throws {TypeNotFoundException} - if the type cannot be found or is a primitive type.
      * @private
      */
-    getType(type) {
-        // is the type a primitive?
-        if (!ModelUtil.isPrimitiveType(type)) {
-            let ns = ModelUtil.getNamespace(type);
-            let modelFile = this.getModelFile(ns);
+    getType(qualifiedName) {
 
-            if (!modelFile) {
-                let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
-                    type: type
-                }));
-            }
+        const namespace = ModelUtil.getNamespace(qualifiedName);
 
-            let classDecl = modelFile.getType(type);
-
-            if (!classDecl) {
-                throw new Error('No type ' + type + ' in namespace ' + modelFile.getNamespace());
-            }
-
-            return classDecl;
+        const modelFile = this.getModelFile(namespace);
+        if (!modelFile) {
+            const formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
+            throw new TypeNotFoundException(qualifiedName, formatter({
+                type: qualifiedName
+            }));
         }
-        else {
-            return null;
+
+        const classDecl = modelFile.getType(qualifiedName);
+        if (!classDecl) {
+            const formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+            throw new TypeNotFoundException(qualifiedName, formatter({
+                type: ModelUtil.getShortName(qualifiedName),
+                namespace: namespace
+            }));
         }
+
+        return classDecl;
+    }
+
+
+    /**
+     * Get all class declarations from system namespaces
+     * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
+     */
+    getSystemTypes() {
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
     }
 
     /**
@@ -370,15 +454,6 @@ class ModelManager {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
     }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = ModelManager;

@@ -30,6 +30,7 @@ describe('AccessController', () => {
     let aclManager;
     let factory;
     let asset;
+    let asset2;
     let participant;
     let participant2;
     let transaction;
@@ -57,7 +58,10 @@ describe('AccessController', () => {
         asset TestAsset identified by assetId extends BaseAsset {
             o String assetId
         }
-        asset TestAsset2 identified by assetId extends BaseAsset {
+        asset TestAsset2 extends TestAsset {
+
+        }
+        asset TestAsset3 identified by assetId extends BaseAsset {
             o String assetId
         }
         participant TestParticipant identified by participantId extends BaseParticipant {
@@ -69,31 +73,30 @@ describe('AccessController', () => {
         participant TestParticipant3 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction extends BaseTransaction {
         }
         transaction TestTransaction2 extends TestTransaction {
 
         }
-        transaction TestTransaction3 identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction3 extends BaseTransaction {
         }`);
         modelManager.addModelFile(`
         namespace org.acme.test2
         import org.acme.base.BaseAsset
         import org.acme.base.BaseParticipant
+        import org.acme.base.BaseTransaction
         asset TestAsset2 identified by assetId extends BaseAsset {
             o String assetId
         }
         participant TestParticipant2 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction2 identified by transactionId extends BaseParticipant {
-            o String transactionId
+        transaction TestTransaction2 extends BaseTransaction {
         }`);
         aclManager = new AclManager(modelManager);
         factory = new Factory(modelManager);
         asset = factory.newResource('org.acme.test', 'TestAsset', 'A1234');
+        asset2 = factory.newResource('org.acme.test', 'TestAsset2', 'A4321');
         participant = factory.newResource('org.acme.test', 'TestParticipant', 'P5678');
         participant2 = factory.newResource('org.acme.test', 'TestParticipant2', 'P7890');
         transaction = factory.newResource('org.acme.test', 'TestTransaction', 'T9012');
@@ -185,7 +188,7 @@ describe('AccessController', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
                 'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -195,8 +198,8 @@ describe('AccessController', () => {
         it('should not throw if there is two non-matching DENY access control rules followed by one matching ALLOW access control rule', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -206,8 +209,8 @@ describe('AccessController', () => {
         it('should throw if there is two non-matching ALLOW access control rules followed by one matching DENY access control rule', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
@@ -219,8 +222,8 @@ describe('AccessController', () => {
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching ALLOW access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -230,8 +233,8 @@ describe('AccessController', () => {
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching DENY access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -241,8 +244,8 @@ describe('AccessController', () => {
         it('should throw if there is one matching DENY access control rule followed by two non-matching ALLOW access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
@@ -325,7 +328,13 @@ describe('AccessController', () => {
         });
 
         it('should return true if the ACL rule specifies a matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.*" action: ALLOW}');
+            controller.matchNoun(asset, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return true if the ACL rule specifies a matching recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.**" action: ALLOW}');
             controller.matchNoun(asset, aclManager.getAclRules()[0])
                 .should.be.true;
         });
@@ -343,7 +352,27 @@ describe('AccessController', () => {
         });
 
         it('should return false if the ACL rule specifies a non-matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test2" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test2.*" action: ALLOW}');
+            controller.matchNoun(asset, aclManager.getAclRules()[0])
+                .should.be.false;
+        });
+
+        it('should return false if the ACL rule specifies a non-matching recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test2.**" action: ALLOW}');
+            controller.matchNoun(asset, aclManager.getAclRules()[0])
+                .should.be.false;
+        });
+
+        it('should return true if the ACL rule specifies a fully qualified name of a nested supertype', () => {
+            // Test with TestAsset2 which extends TestAsset which extends BaseAsset.
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.base.BaseAsset" action: ALLOW}');
+            controller.matchNoun(asset2, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return false if the ACL rule specifies a fully qualified name of a subtype', () => {
+            // Test with TestAsset which is extended by TestAsset3.
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset3" action: ALLOW}');
             controller.matchNoun(asset, aclManager.getAclRules()[0])
                 .should.be.false;
         });
@@ -404,7 +433,13 @@ describe('AccessController', () => {
         });
 
         it('should return true if the ACL rule specifies a matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.*" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return true if the ACL rule specifies a matching recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.**" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             controller.matchParticipant(participant, aclManager.getAclRules()[0])
                 .should.be.true;
         });
@@ -422,7 +457,13 @@ describe('AccessController', () => {
         });
 
         it('should return false if the ACL rule specifies a non-matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test2" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test2.*" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant, aclManager.getAclRules()[0])
+                .should.be.false;
+        });
+
+        it('should return false if the ACL rule specifies a non-matching recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test2.**" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             controller.matchParticipant(participant, aclManager.getAclRules()[0])
                 .should.be.false;
         });
@@ -472,7 +513,13 @@ describe('AccessController', () => {
         });
 
         it('should return true if the ACL rule specifies a matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.*" action: ALLOW}');
+            controller.matchTransaction(transaction, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return true if the ACL rule specifies a matching recusive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.**" action: ALLOW}');
             controller.matchTransaction(transaction, aclManager.getAclRules()[0])
                 .should.be.true;
         });
@@ -484,7 +531,13 @@ describe('AccessController', () => {
         });
 
         it('should return false if the ACL rule specifies a non-matching namespace', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test2" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test2.*" action: ALLOW}');
+            controller.matchTransaction(transaction, aclManager.getAclRules()[0])
+                .should.be.false;
+        });
+
+        it('should return false if the ACL rule specifies a non-matching recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test2.**" action: ALLOW}');
             controller.matchTransaction(transaction, aclManager.getAclRules()[0])
                 .should.be.false;
         });

@@ -27,8 +27,8 @@ participant SimpleRelationshipsParticipant identified by participantId {
     --> SimpleStringParticipant[] stringParticipants
 }
 
-transaction SimpleTransactionWithPrimitiveTypes identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithPrimitiveTypes  {
+
     o String stringValue
     o Double doubleValue
     o Integer integerValue
@@ -38,8 +38,8 @@ transaction SimpleTransactionWithPrimitiveTypes identified by transactionId {
     o SimpleEnum enumValue
 }
 
-transaction SimpleTransactionWithPrimitiveTypeArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithPrimitiveTypeArrays  {
+
     o String[] stringValues
     o Double[] doubleValues
     o Integer[] integerValues
@@ -49,108 +49,120 @@ transaction SimpleTransactionWithPrimitiveTypeArrays identified by transactionId
     o SimpleEnum[] enumValues
 }
 
-transaction SimpleTransactionWithParticipants identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithParticipants  {
+
     o SimpleStringParticipant stringParticipant
     o SimpleIntegerParticipant integerParticipant
 }
 
-transaction SimpleTransactionWithParticipantArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithParticipantArrays  {
+
     o SimpleStringParticipant[] stringParticipants
     o SimpleIntegerParticipant[] integerParticipants
 }
 
-transaction SimpleTransactionWithParticipantRelationships identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithParticipantRelationships  {
+
     --> SimpleStringParticipant stringParticipant
     --> SimpleIntegerParticipant integerParticipant
 }
 
-transaction SimpleTransactionWithParticipantRelationshipArrays identified by transactionId {
-    o String transactionId
+transaction SimpleTransactionWithParticipantRelationshipArrays  {
+
     --> SimpleStringParticipant[] stringParticipants
     --> SimpleIntegerParticipant[] integerParticipants
 }
 
-transaction GetAllParticipantsFromParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction GetAllParticipantsFromParticipantRegistryTransaction  {
+
 }
 
-transaction GetParticipantFromParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction GetParticipantFromParticipantRegistryTransaction  {
+
 }
 
-transaction ExistsParticipantInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction ExistsParticipantInParticipantRegistryTransaction  {
+
 }
 
-transaction AddParticipantInTransactionToParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddParticipantInTransactionToParticipantRegistryTransaction  {
+
     o SimpleStringParticipant stringParticipant
 }
 
-transaction AddParticipantWithRelationshipInTransactionToParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddParticipantWithRelationshipInTransactionToParticipantRegistryTransaction  {
+
     o SimpleRelationshipParticipant relationshipParticipant
 }
 
-transaction AddNewParticipantToParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddNewParticipantToParticipantRegistryTransaction  {
+
 }
 
-transaction AddNewParticipantWithRelationshipToParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction AddNewParticipantWithRelationshipToParticipantRegistryTransaction  {
+
 }
 
-transaction UpdateParticipantInTransactionInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateParticipantInTransactionInParticipantRegistryTransaction  {
+
     o SimpleStringParticipant stringParticipant
 }
 
-transaction UpdateParticipantWithRelationshipInTransactionInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateParticipantWithRelationshipInTransactionInParticipantRegistryTransaction  {
+
     o SimpleRelationshipParticipant relationshipParticipant
 }
 
-transaction UpdateNewParticipantInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateNewParticipantInParticipantRegistryTransaction  {
+
 }
 
-transaction UpdateNewParticipantWithRelationshipToParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction UpdateNewParticipantWithRelationshipToParticipantRegistryTransaction  {
+
 }
 
-transaction RemoveParticipantInTransactionInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveParticipantInTransactionInParticipantRegistryTransaction  {
+
     o SimpleStringParticipant stringParticipant
 }
 
-transaction RemoveParticipantWithRelationshipInTransactionInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveParticipantWithRelationshipInTransactionInParticipantRegistryTransaction  {
+
     o SimpleRelationshipParticipant relationshipParticipant
 }
 
-transaction RemoveNewParticipantInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveNewParticipantInParticipantRegistryTransaction  {
+
 }
 
-transaction RemoveNewParticipantWithRelationshipInParticipantRegistryTransaction identified by transactionId {
-    o String transactionId
+transaction RemoveNewParticipantWithRelationshipInParticipantRegistryTransaction  {
+
 }
 
-transaction SingleAnnotatedTransaction identified by transactionId {
-    o String transactionId
+transaction SingleAnnotatedTransaction  {
+
     o String stringValue
 }
 
-transaction MultipleAnnotatedTransaction identified by transactionId {
-    o String transactionId
+transaction MultipleAnnotatedTransaction  {
+
     o String stringValue1
     o String stringValue2
 }
 
-transaction TransactionUsingUtilityFunctions identified by transactionId {
-    o String transactionId
+transaction TransactionUsingUtilityFunctions  {
+
     o String stringValue
+}
+
+transaction ParticipantAddIsAtomic  {
+
+}
+
+transaction ParticipantUpdateIsAtomic  {
+
+}
+
+transaction ParticipantRemoveIsAtomic  {
+
 }

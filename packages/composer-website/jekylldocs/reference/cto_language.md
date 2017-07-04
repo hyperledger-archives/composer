@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Modeling Language
-category: reference
+title: Modeling Language
+section: reference
+index-order: 2
 sidebar: sidebars/reference.md
-excerpt: Guide to the Hyperledger Composer modeling language
+excerpt: The [**Hyperledger Composer modeling language**](./cto_language.html) is an object-oriented language which defines the business network model containing assets, participants, and transactions.
 ---
 
 # {{site.data.conrefs.composer_full}} Modeling Language
@@ -20,7 +21,16 @@ in this namespace.
 2. Optional import declarations that import resources from other namespaces.
 3. A set of resource definitions (see below).
 
-### Declarations of enumerated types
+## Imports
+
+Use the `import` keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the `.*` notation to import all the types from another namespace.
+
+```
+import org.example.MyAsset
+import org.example2.*
+```
+
+## Declarations of enumerated types
 
 ```
 /**
@@ -34,11 +44,12 @@ o DEER_OTHER
 }
 ```
 
-### Declarations of Assets, Events, Participants, Transactions
+
+## Declarations of Assets, Events, Participants, Transactions
 
 Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.
 
-A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.
+A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has an Asset Definition.
 
 A resource definition has the following properties:
 
@@ -106,7 +117,33 @@ but that may be referenced from the resource. Relationships are unidirectional.
     }
     ```
 
-### Concepts
+
+
+## {{site.data.conrefs.composer_full}} System Namespace
+
+As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.
+
+Represented as a `.cto` model file, the system namespace is as follows:
+
+```
+    namespace org.hyperledger.composer.system
+    abstract asset Asset {  }
+    abstract participant Participant {   }
+    abstract transaction Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+    abstract event Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+```
+
+In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.
+
+>If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.
+
+## Concepts
 
 Concepts are complex types (classes) that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.
 
@@ -126,7 +163,7 @@ concept UnitedStatesAddress extends Address {
 ```
 
 
-### Primitive types
+## Primitive types
 
 Composer resources are defined in terms of the following primitive types:
 
@@ -138,7 +175,7 @@ Composer resources are defined in terms of the following primitive types:
 and UTZ offset
 6. Boolean : a Boolean value, either true or false.
 
-### Arrays
+## Arrays
 
 All types in Composer may be declared as arrays using the [] notation. Hence
 
@@ -151,7 +188,7 @@ Is an array of Integers stored in a field called 'integerArray'. While
 Is an array of relationships to the Animal type, stored in a field called
 'incoming'.
 
-### Relationships
+## Relationships
 
 A relationship in the Composer language is a tuple composed of:
 
@@ -160,9 +197,9 @@ A relationship in the Composer language is a tuple composed of:
 3. The identifier of the instance being referenced
 
 Hence a relationship could be to:
-    org.acme.Vehicle#123456
+    org.example.Vehicle#123456
 
-This would be a relationship to the Vehicle type declared in the org.acme
+This would be a relationship to the Vehicle type declared in the org.example
 namespace with the identifier 123456.
 
 Relationships are unidirectional and deletes do not cascade, ie. removing the relationship has no impact on the thing that is being pointed to. Removing the thing being pointed to does not invalidate the relationship.
@@ -171,7 +208,7 @@ Relationships must be *resolved* to retrieve an instance of the object being
 referenced. The act of resolution may result in null, if the object no longer
 exists or the information in the relationship is invalid.
 
-### Field Validators
+## Field Validators
 
 String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.
 

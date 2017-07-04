@@ -126,6 +126,19 @@
             color: $secondary-text;
         }
 
+        &.clear {
+            background-color: transparent;
+            border: 1px solid $fifth-highlight;
+            box-shadow: none;
+            border-radius: 5px;
+            padding: 0;
+            font-size: 0.75em;
+            line-height: 25px;
+            color: $secondary-text;
+            min-width: 0;
+            padding: 0 $space-smedium;
+        }
+
         &.action {
             border-bottom: 2px solid transparent;
             background-color: transparent;

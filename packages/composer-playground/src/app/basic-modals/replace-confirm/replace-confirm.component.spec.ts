@@ -2,9 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReplaceComponent } from './replace-confirm.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -13,7 +11,7 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
-describe('DeleteComponent', () => {
+describe('ReplaceComponent', () => {
     let component: ReplaceComponent;
     let fixture: ComponentFixture<ReplaceComponent>;
 
@@ -22,7 +20,7 @@ describe('DeleteComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [ReplaceComponent],
-            providers: [ {provide: NgbActiveModal, useValue: mockActiveModal} ]
+            providers: [{provide: NgbActiveModal, useValue: mockActiveModal}]
         });
         fixture = TestBed.createComponent(ReplaceComponent);
         component = fixture.componentInstance;
@@ -31,4 +29,5 @@ describe('DeleteComponent', () => {
     it('should create', () => {
         component.should.be.ok;
     });
+
 });

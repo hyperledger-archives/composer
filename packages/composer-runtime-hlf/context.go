@@ -15,15 +15,13 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
 // Context is a Go wrapper around an instance of the Context JavaScript class.
 type Context struct {
-	This            *otto.Object
+	VM              *duktape.Context
 	DataService     *DataService
 	IdentityService *IdentityService
 	EventService    *EventService
@@ -31,25 +29,15 @@ type Context struct {
 }
 
 // NewContext creates a Go wrapper around a new instance of the Context JavaScript class.
-func NewContext(vm *otto.Otto, engine *Engine, stub shim.ChaincodeStubInterface) (result *Context) {
-	logger.Debug("Entering NewContext", vm, engine, stub)
+func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInterface) (result *Context) {
+	logger.Debug("Entering NewContext", vm, engine, &stub)
 	defer func() { logger.Debug("Exiting NewContext", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new concerto.Context", nil, engine.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of Context JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of Context JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &Context{This: object}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in Context JavaScript object: %v", err))
-	}
+	// Create the new logging service.
+	result = &Context{VM: vm}
 
 	// Create the services.
 	result.DataService = NewDataService(vm, result, stub)
@@ -57,44 +45,78 @@ func NewContext(vm *otto.Otto, engine *Engine, stub shim.ChaincodeStubInterface)
 	result.EventService = NewEventService(vm, result, stub)
 	result.HTTPService = NewHTTPService(vm, result, stub)
 
+	// Find the JavaScript engine object.
+	vm.PushGlobalStash()           // [ stash ]
+	vm.GetPropString(-1, "engine") // [ stash theEngine ]
+
+	// Create a new instance of the JavaScript Context class.
+	vm.PushGlobalObject()            // [ stash theEngine global ]
+	vm.GetPropString(-1, "composer") // [ stash theEngine global composer ]
+	vm.GetPropString(-1, "Context")  // [ stash theEngine global composer Context ]
+	vm.Dup(-4)                       // [ stash theEngine global composer Context theEngine ]
+	err := vm.Pnew(1)                // [ stash theEngine global composer theContext ]
+	if err != nil {
+		panic(err)
+	}
+
+	// Store the context into the global stash.
+	vm.DupTop()                     // [ stash theEngine global composer theContext theContext ]
+	vm.PutPropString(-6, "context") // [ stash theEngine global composer theContext ]
+
 	// Bind the methods into the JavaScript object.
-	result.This.Set("getDataService", result.getDataService)
-	result.This.Set("getIdentityService", result.getIdentityService)
-	result.This.Set("getEventService", result.getEventService)
-	result.This.Set("getHTTPService", result.getHTTPService)
+	vm.PushGoFunction(result.getDataService)     // [ stash theEngine global composer theContext getDataService ]
+	vm.PutPropString(-2, "getDataService")       // [ stash theEngine global composer theContext ]
+	vm.PushGoFunction(result.getIdentityService) // [ stash theEngine global composer theContext getIdentityService ]
+	vm.PutPropString(-2, "getIdentityService")   // [ stash theEngine global composer theContext ]
+	vm.PushGoFunction(result.getEventService)    // [ stash theEngine global composer theContext getEventService ]
+	vm.PutPropString(-2, "getEventService")      // [ stash theEngine global composer theContext ]
+	vm.PushGoFunction(result.getHTTPService)     // [ stash theEngine global composer theContext getHTTPService ]
+	vm.PutPropString(-2, "getHTTPService")       // [ stash theEngine global composer theContext ]
 
+	// Return the new context.
 	return result
-
 }
 
-// getDataService ...
-func (context *Context) getDataService(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Context.getDataService", call)
+// getDataService returns the data service to use.
+func (context *Context) getDataService(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Context.getDataService", vm)
 	defer func() { logger.Debug("Exiting Context.getDataService", result) }()
 
-	return context.DataService.This.Value()
+	// Return the JavaScript object from the global stash.
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "dataService")
+	return 1
 }
 
-// getIdentityService ...
-func (context *Context) getIdentityService(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Context.getIdentityService", call)
+// getIdentityService returns the identity service to use.
+func (context *Context) getIdentityService(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Context.getIdentityService", vm)
 	defer func() { logger.Debug("Exiting Context.getIdentityService", result) }()
 
-	return context.IdentityService.This.Value()
+	// Return the JavaScript object from the global stash.
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "identityService")
+	return 1
 }
 
-// getEventService ...
-func (context *Context) getEventService(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Context.getEventService", call)
-	defer func() { logger.Debug("Exiting Context.getEventService", result) }()
-
-	return context.EventService.This.Value()
-}
-
-// getHTTPService ...
-func (context *Context) getHTTPService(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Context.getHTTPService", call)
+// getHTTPService returns the http service to use.
+func (context *Context) getHTTPService(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Context.getHTTPService", vm)
 	defer func() { logger.Debug("Exiting Context.getHTTPService", result) }()
 
-	return context.HTTPService.This.Value()
+	// Return the JavaScript object from the global stash.
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "httpService")
+	return 1
+}
+
+// getEventService returns the event service to use.
+func (context *Context) getEventService(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Context.getEventService", vm)
+	defer func() { logger.Debug("Exiting Context.getEventService", result) }()
+
+	// Return the JavaScript object from the global stash.
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "eventService")
+	return 1
 }

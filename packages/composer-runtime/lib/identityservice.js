@@ -14,13 +14,15 @@
 
 'use strict';
 
+const Service = require('./service');
+
 /**
  * Base class representing the identity service provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class IdentityService {
+class IdentityService extends Service {
 
     /**
      * Retrieve the current user ID.
@@ -30,14 +32,6 @@ class IdentityService {
      */
     getCurrentUserID() {
         throw new Error('abstract function called');
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

@@ -1,5 +1,0 @@
-{
-    "eslint.enable": true,
-    "eslint.autoFixOnSave": true,
-    "vsicons.presets.angular": true
-}
