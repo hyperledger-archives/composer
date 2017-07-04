@@ -103,7 +103,8 @@ class Engine {
         }
 
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition, compiledScriptBundle, compiledQueryBundle;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
+        let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysidentities;
         return Promise.resolve()
             .then(() => {
@@ -149,6 +150,11 @@ class Engine {
                 LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
                 Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
 
+                // Cache the compiled ACL bundle.
+                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
                 return dataService.ensureCollection('$sysdata');
@@ -188,6 +194,7 @@ class Engine {
                     businessNetworkDefinition: businessNetworkDefinition,
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
+                    compiledAclBundle: compiledAclBundle,
                     sysregistries: sysregistries,
                     sysidentities: sysidentities
                 });

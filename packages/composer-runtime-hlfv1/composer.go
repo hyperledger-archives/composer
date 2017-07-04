@@ -52,7 +52,7 @@ func (composer *Composer) createJavaScript() {
 	defer func() { logger.Debug("Exiting Composer.createJavaScript") }()
 
 	// Create a new JavaScript virtual machine.
-	vm := duktape.New()
+	vm := duktape.NewWithFlags(&duktape.Flags{Console: duktape.FlagConsoleFlush})
 	if vm == nil {
 		panic("Failed to create JavaScript virtual machine")
 	}

@@ -31,6 +31,18 @@ describe('ProxyUtil', () => {
             }).should.throw(TypeError, /some type error/);
         });
 
+        it('should inflate an unrecognized error', () => {
+            const expectedError = new TypeError('some type error');
+            const serializedError = serializerr(expectedError);
+            (() => {
+                throw ProxyUtil.inflaterr({
+                    name: 'FooBarError',
+                    message: serializedError.message,
+                    stack: serializedError.stack
+                });
+            }).should.throw(Error, /some type error/);
+        });
+
     });
 
 });
