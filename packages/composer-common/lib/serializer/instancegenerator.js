@@ -130,10 +130,7 @@ class InstanceGenerator {
             parameters.stack.push(concept);
             return classDeclaration.accept(this, parameters);
         } else {
-            let identifierFieldName = classDeclaration.getIdentifierFieldName();
-            let idx = Math.round(Math.random() * 9999).toString();
-            idx = leftPad(idx, 4, '0');
-            let id = `${identifierFieldName}:${idx}`;
+            const id = this.generateRandomId(classDeclaration);
             let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
             parameters.stack.push(resource);
             return classDeclaration.accept(this, parameters);
@@ -171,19 +168,16 @@ class InstanceGenerator {
     /**
      * Visitor design pattern
      * @param {RelationshipDeclaration} relationshipDeclaration - the object being visited
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
+     * @param {Object} parameters - the parameter
+     * @return {Relationship} the result of visiting
      * @private
      */
     visitRelationshipDeclaration(relationshipDeclaration, parameters) {
         let classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
         classDeclaration = this.findConcreteSubclass(classDeclaration);
-        const identifierFieldName = classDeclaration.getIdentifierFieldName();
         const factory = parameters.factory;
         const valueSupplier = () => {
-            let idx = Math.round(Math.random() * 9999).toString();
-            idx = leftPad(idx, 4, '0');
-            const id = `${identifierFieldName}:${idx}`;
+            const id = this.generateRandomId(classDeclaration);
             return factory.newRelationship(classDeclaration.getNamespace(), classDeclaration.getName(), id);
         };
         if (relationshipDeclaration.isArray()) {
@@ -191,6 +185,18 @@ class InstanceGenerator {
         } else {
             return valueSupplier();
         }
+    }
+
+    /**
+     * Generate a random ID for a given type.
+     * @param {ClassDeclaration} classDeclaration - class declaration for a type.
+     * @return {String} an ID.
+     */
+    generateRandomId(classDeclaration) {
+        const prefix = classDeclaration.getIdentifierFieldName();
+        let index = Math.round(Math.random() * 9999).toString();
+        index = leftPad(index, 4, '0');
+        return `${prefix}:${index}`;
     }
 
 }
