@@ -18,6 +18,7 @@ const AccessController = require('../lib/accesscontroller');
 const AccessException = require('../lib/accessexception');
 const AclFile = require('composer-common').AclFile;
 const AclManager = require('composer-common').AclManager;
+const CompiledAclBundle = require('../lib/compiledaclbundle');
 const Factory = require('composer-common').Factory;
 const ModelManager = require('composer-common').ModelManager;
 
@@ -36,6 +37,7 @@ describe('AccessController', () => {
     let transaction;
     let transaction2;
     let controller;
+    let mockCompiledAclBundle;
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -101,7 +103,9 @@ describe('AccessController', () => {
         participant2 = factory.newResource('org.acme.test', 'TestParticipant2', 'P7890');
         transaction = factory.newResource('org.acme.test', 'TestTransaction', 'T9012');
         transaction2 = factory.newResource('org.acme.test', 'TestTransaction2', 'T0123');
-        controller = new AccessController(aclManager);
+        mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+        mockCompiledAclBundle.execute.returns(true);
+        controller = new AccessController(aclManager, mockCompiledAclBundle);
         controller.setParticipant(participant);
         controller.setTransaction(transaction);
     });
@@ -291,6 +295,7 @@ describe('AccessController', () => {
         });
 
         it('should return false if the predicate is not matched', () => {
+            mockCompiledAclBundle.execute.returns(false);
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (false) action: ALLOW}');
             let spy = sinon.spy(controller, 'matchPredicate');
             controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
@@ -567,95 +572,12 @@ describe('AccessController', () => {
 
     describe('#matchPredicate', () => {
 
-        it('should return true if the ACL rule specifies a predicate of (true)', () => {
+        it('should call the compiled ACL bundle', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+            controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
                 .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate of (false)', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (false) action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.TestTransaction" condition: ((3 + 6) / 3 === 3) action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.TestTransaction" condition: ((3 + 3) / 3 === 3) action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that accesses the bound resource and returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" condition: (asset.getFullyQualifiedIdentifier() === \'org.acme.test.TestAsset#A1234\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that accesses the bound resource and returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" condition: (asset.getFullyQualifiedIdentifier() !== \'org.acme.test.TestAsset#A1234\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that accesses the bound participant and returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (participant.getFullyQualifiedIdentifier() === \'org.acme.test.TestParticipant#P5678\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that accesses the bound participant and returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (participant.getFullyQualifiedIdentifier() !== \'org.acme.test.TestParticipant#P5678\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that accesses the bound transaction and returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction(tx): "org.acme.test.TestTransaction" condition: (tx.getFullyQualifiedIdentifier() === \'org.acme.test.TestTransaction#T9012\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that accesses the bound transaction and returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction(tx): "org.acme.test.TestTransaction" condition: (tx.getFullyQualifiedIdentifier() !== \'org.acme.test.TestTransaction#T9012\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that accesses the bound resource and participant and returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" condition: (asset.getFullyQualifiedIdentifier() !== participant.getFullyQualifiedIdentifier()) action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that accesses the bound resource and participant and returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" condition: (asset.getFullyQualifiedIdentifier() === participant.getFullyQualifiedIdentifier()) action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should return true if the ACL rule specifies a predicate that accesses the bound resource, participant, and transaction and returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" transaction(tx): "org.acme.test.TestTransaction" condition: ((asset.getFullyQualifiedIdentifier() !== participant.getFullyQualifiedIdentifier()) && tx.getFullyQualifiedIdentifier() === \'org.acme.test.TestTransaction#T9012\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-        });
-
-        it('should return false if the ACL rule specifies a predicate that accesses the bound resource, participant, and transaction and returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant(participant): "org.acme.test.TestParticipant" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" transaction(tx): "org.acme.test.TestTransaction" condition: ((asset.getFullyQualifiedIdentifier() === participant.getFullyQualifiedIdentifier()) && tx.getFullyQualifiedIdentifier() !== \'org.acme.test.TestTransaction#T9012\') action: ALLOW}');
-            controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-        });
-
-        it('should throw if the ACL rule specifies a predicate that is faulty and causes an exception to be thrown', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource(asset): "org.acme.test.TestAsset#A1234" condition: (asset.not.a.real.property = {}) action: ALLOW}');
-            (() => {
-                controller.matchPredicate(asset, 'READ', participant, transaction, aclManager.getAclRules()[0]);
-            }).should.throw(AccessException, /does not have/);
+            sinon.assert.calledOnce(mockCompiledAclBundle.execute);
+            sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset, participant, transaction);
         });
 
     });

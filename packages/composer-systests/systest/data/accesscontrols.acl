@@ -24,3 +24,21 @@ rule R3 {
     condition: (p.getIdentifier() === po.getIdentifier())
     action: ALLOW
 }
+
+rule R4 {
+    description: "The owner of a vehicle can delete the vehicle"
+    participant(p): "systest.accesscontrols.SampleParticipant"
+    operation: DELETE
+    resource(a): "systest.accesscontrols.SampleAsset"
+    condition: (testOwnership(a, p))
+    action: ALLOW
+}
+
+rule R5 {
+    description: "A participant can delete themselves"
+    participant(p1): "systest.accesscontrols.SampleParticipant"
+    operation: DELETE
+    resource(p2): "systest.accesscontrols.SampleParticipant"
+    condition: (participantsAreEqual(p1, p2))
+    action: ALLOW
+}
