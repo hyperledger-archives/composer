@@ -42,3 +42,21 @@ rule R5 {
     condition: (participantsAreEqual(p1, p2))
     action: ALLOW
 }
+
+rule R6 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant(p): "systest.accesscontrols.SampleParticipant"
+    operation: UPDATE
+    resource(a): "systest.accesscontrols.SampleAsset"
+    condition: (p.firstName === a.owner.firstName && p.lastName === a.owner.lastName)
+    action: ALLOW
+}
+
+rule R7 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant(p1): "systest.accesscontrols.SampleParticipant"
+    operation: UPDATE
+    resource(p2): "systest.accesscontrols.SampleParticipant"
+    condition: (p1.asset.owner.firstName === p2.asset.owner.firstName && p1.asset.owner.asset.owner.lastName === p2.asset.owner.asset.owner.lastName)
+    action: ALLOW
+}

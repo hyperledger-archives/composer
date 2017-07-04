@@ -68,14 +68,18 @@ class Registry extends EventEmitter {
                 return objects.map((object) => {
                     object = Registry.removeInternalProperties(object);
                     return this.serializer.fromJSON(object);
-                }).filter((resource) => {
-                    try {
-                        this.accessController.check(resource, 'READ');
-                        return true;
-                    } catch (e) {
-                        return false;
-                    }
-                });
+                }).reduce((promise, resource) => {
+                    return promise.then((resources) => {
+                        return this.accessController.check(resource, 'READ')
+                            .then(() => {
+                                resources.push(resource);
+                                return resources;
+                            })
+                            .catch((error) => {
+                                return resources;
+                            });
+                    });
+                }, Promise.resolve([]));
             });
     }
 
@@ -90,12 +94,13 @@ class Registry extends EventEmitter {
             .then((object) => {
                 object = Registry.removeInternalProperties(object);
                 let result = this.serializer.fromJSON(object);
-                try {
-                    this.accessController.check(result, 'READ');
-                    return result;
-                } catch (e) {
-                    throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
-                }
+                return this.accessController.check(result, 'READ')
+                    .then(() => {
+                        return result;
+                    })
+                    .catch((error) => {
+                        throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
+                    });
             });
     }
 
@@ -115,12 +120,13 @@ class Registry extends EventEmitter {
                     .then((object) => {
                         object = Registry.removeInternalProperties(object);
                         let result = this.serializer.fromJSON(object);
-                        try {
-                            this.accessController.check(result, 'READ');
-                            return true;
-                        } catch (e) {
-                            return false;
-                        }
+                        return this.accessController.check(result, 'READ');
+                    })
+                    .then(() => {
+                        return true;
+                    })
+                    .catch((error) => {
+                        return false;
                     });
             });
     }
@@ -162,14 +168,16 @@ class Registry extends EventEmitter {
      * with an error.
      */
     add(resource, options) {
-        this.accessController.check(resource, 'CREATE');
-        options = options || {};
-        let id = resource.getIdentifier();
-        let object = this.serializer.toJSON(resource, {
-            convertResourcesToRelationships: options.convertResourcesToRelationships
-        });
-        object = this.addInternalProperties(object);
-        return this.dataCollection.add(id, object)
+        return this.accessController.check(resource, 'CREATE')
+            .then(() => {
+                options = options || {};
+                let id = resource.getIdentifier();
+                let object = this.serializer.toJSON(resource, {
+                    convertResourcesToRelationships: options.convertResourcesToRelationships
+                });
+                object = this.addInternalProperties(object);
+                return this.dataCollection.add(id, object);
+            })
             .then(() => {
                 this.emit('resourceadded', {
                     registry: this,
@@ -228,8 +236,10 @@ class Registry extends EventEmitter {
             })
             .then((oldResource) => {
                 // We must perform access control checks on the old version of the resource!
-                this.accessController.check(oldResource, 'UPDATE');
-                return this.dataCollection.update(id, object)
+                return this.accessController.check(oldResource, 'UPDATE')
+                    .then(() => {
+                        return this.dataCollection.update(id, object);
+                    })
                     .then(() => {
                         this.emit('resourceupdated', {
                             registry: this,
@@ -287,9 +297,11 @@ class Registry extends EventEmitter {
                 }
             })
             .then((resource) => {
-                this.accessController.check(resource, 'DELETE');
                 let id = resource.getIdentifier();
-                return this.dataCollection.remove(id)
+                return this.accessController.check(resource, 'DELETE')
+                    .then(() => {
+                        return this.dataCollection.remove(id);
+                    })
                     .then(() => {
                         this.emit('resourceremoved', {
                             registry: this,

@@ -31,14 +31,12 @@ class AccessController {
 
     /**
      * Constructor.
-     * @param {AclManager} aclManager The ACL manager to use.
-     * @param {CompiledAclBundle} compiledAclBundle The compiled ACL bundle to use.
+     * @param {Context} context The transaction context.
      */
-    constructor(aclManager, compiledAclBundle) {
+    constructor(context) {
         const method = 'constructor';
-        LOG.entry(method, aclManager);
-        this.aclManager = aclManager;
-        this.compiledAclBundle = compiledAclBundle;
+        LOG.entry(method, context);
+        this.context = context;
         this.participant = null;
         this.transaction = null;
         LOG.exit(method);
@@ -82,58 +80,65 @@ class AccessController {
      * @param {Resource} resource The resource.
      * @param {string} access The level of access.
      * @param {Resource} participant The participant.
-     * @throws {AccessException} If the specified participant
-     * does not have the specified level of access to the specified
-     * resource.
+     * @return {Promise} A promise that is resolved if the specified
+     * participant has the specified level of access to the specified
+     * resource, or rejected otherwise.
      */
     check(resource, access) {
         const method = 'check';
         LOG.entry(method, resource.getFullyQualifiedIdentifier(), access);
-        try {
 
-            // Check to see if a participant has been set. If not, then ACL
-            // enforcement is not enabled.
-            let participant = this.participant;
-            if (!participant) {
-                LOG.debug(method, 'No participant');
-                LOG.exit(method);
-                return;
-            }
+        // Check to see if a participant has been set. If not, then ACL
+        // enforcement is not enabled.
+        let participant = this.participant;
+        if (!participant) {
+            LOG.debug(method, 'No participant');
+            LOG.exit(method);
+            return Promise.resolve();
+        }
 
-            // Grab the transaction. Does not matter if this is null.
-            let transaction = this.transaction;
+        // Grab the transaction. Does not matter if this is null.
+        let transaction = this.transaction;
 
-            // Check to see if an ACL file was supplied. If not, then ACL
-            // enforcement is not enabled.
-            if (!this.aclManager.getAclFile()) {
-                LOG.debug(method, 'No ACL file');
-                LOG.exit(method);
-                return;
-            }
+        // Check to see if an ACL file was supplied. If not, then ACL
+        // enforcement is not enabled.
+        let aclManager = this.context.getAclManager();
+        if (!aclManager.getAclFile()) {
+            LOG.debug(method, 'No ACL file');
+            LOG.exit(method);
+            return Promise.resolve();
+        }
 
-            // Iterate over the ACL rules in order, but stop at the first rule
-            // that permits the action.
-            let aclRules = this.aclManager.getAclRules();
-            let result = aclRules.some((aclRule) => {
+        // Iterate over the ACL rules in order, but stop at the first rule
+        // that permits the action.
+        let aclRules = aclManager.getAclRules();
+        return aclRules.reduce((promise, aclRule) => {
+            return promise.then((result) => {
+                if (result) {
+                    return result;
+                }
                 LOG.debug(method, 'Processing rule', aclRule);
                 let value = this.checkRule(resource, access, participant, transaction, aclRule);
                 LOG.debug(method, 'Processed rule', value);
                 return value;
             });
+        }, Promise.resolve(false))
+            .then((result) => {
 
-            // If a ACL rule permitted the action, return.
-            if (result) {
-                LOG.exit(method);
-                return;
-            }
+                // If a ACL rule permitted the action, return.
+                if (result) {
+                    LOG.exit(method);
+                    return;
+                }
 
-            // Otherwise no ACL rule permitted the action.
-            throw new AccessException(resource, access, participant, transaction);
+                // Otherwise no ACL rule permitted the action.
+                throw new AccessException(resource, access, participant, transaction);
 
-        } catch (e) {
-            LOG.error(method, e);
-            throw e;
-        }
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
     }
 
     /**
@@ -155,47 +160,53 @@ class AccessController {
         if (!this.matchNoun(resource, aclRule)) {
             LOG.debug(method, 'Noun does not match');
             LOG.exit(method, false);
-            return false;
+            return Promise.resolve(false);
         }
 
         // Is the ACL rule relevant to the specified verb?
         if (!this.matchVerb(access, aclRule)) {
             LOG.debug(method, 'Verb does not match');
             LOG.exit(method, false);
-            return false;
+            return Promise.resolve(false);
         }
 
         // Is the ACL rule relevant to the specified participant?
         if (!this.matchParticipant(participant, aclRule)) {
             LOG.debug(method, 'Participant does not match');
             LOG.exit(method, false);
-            return false;
+            return Promise.resolve(false);
         }
 
         // Is the ACL rule relevant to the specified transaction?
         if (!this.matchTransaction(transaction, aclRule)) {
             LOG.debug(method, 'Transaction does not match');
             LOG.exit(method, false);
-            return false;
+            return Promise.resolve(false);
         }
 
         // Is the predicate met?
-        if (!this.matchPredicate(resource, participant, transaction, aclRule)) {
-            LOG.debug(method, 'Predicate does not match');
-            LOG.exit(method, false);
-            return false;
-        }
+        return this.matchPredicate(resource, participant, transaction, aclRule)
+            .then((result) => {
 
-        // Yes, is this an allow or deny rule?
-        if (aclRule.getAction() === 'ALLOW') {
-            LOG.exit(method, true);
-            return true;
-        }
+                // No, predicate not met.
+                if (!result) {
+                    LOG.debug(method, 'Predicate does not match');
+                    LOG.exit(method, false);
+                    return false;
+                }
 
-        // This must be an explicit deny rule, so throw.
-        let e = new AccessException(resource, access, participant, transaction);
-        LOG.error(method, e);
-        throw e;
+                // Yes, predicate met, is this an allow or deny rule?
+                if (aclRule.getAction() === 'ALLOW') {
+                    LOG.exit(method, true);
+                    return true;
+                }
+
+                // This must be an explicit deny rule, so throw.
+                let e = new AccessException(resource, access, participant, transaction);
+                LOG.error(method, e);
+                throw e;
+
+            });
 
     }
 
@@ -362,19 +373,80 @@ class AccessController {
      * @param {Resource} participant The participant.
      * @param {Resource} transaction The transaction.
      * @param {AclRule} aclRule The ACL rule.
-     * @returns {boolean} True if the specified ACL rule permits
-     * the specified level of access to the specified resource.
+     * @returns {Promise} A promise that will be resolved with true if the specified ACL rule permits
+     * the specified level of access to the specified resource, or false otherwise.
      */
     matchPredicate(resource, participant, transaction, aclRule) {
         const method = 'matchPredicate';
-        LOG.entry(method, resource, participant, transaction, aclRule);
+        const entry = Math.random() * 1000;
+        LOG.entry(method + entry, resource, participant, transaction, aclRule);
 
-        // Compile and execute the function.
-        const result = this.compiledAclBundle.execute(aclRule, resource, participant, transaction);
+        // We want to permit access to related assets and participants, so prepare the resources.
+        const compiledAclBundle = this.context.getCompiledAclBundle();
+        const resolver = this.context.getResolver();
+        let resolverPromise = Promise.resolve(), resolverCallbackCalled = false;
+        const resolverCallback = (resolverPromise_) => {
+            LOG.debug(method + entry, 'Got resolver callback');
+            resolverCallbackCalled = true;
+            resolverPromise = resolverPromise.then(() => {
+                return resolverPromise_;
+            });
+        };
+        let preparedResource, preparedParticipant, preparedTransaction;
+        return Promise.resolve()
+            .then(() => {
 
-        // Return the result, which should be a boolean.
-        LOG.exit(method, result);
-        return result;
+                // We should always have a resource to prepare.
+                return resolver.prepare(resource, resolverCallback);
+
+            })
+            .then((preparedResource_) => {
+
+                // Save the prepared resource.
+                preparedResource = preparedResource_;
+
+                // We should always have a participant to prepare.
+                return resolver.prepare(participant, resolverCallback);
+            })
+            .then((preparedParticipant_) => {
+
+                // Save the prepared participant.
+                preparedParticipant = preparedParticipant_;
+
+                // We may not have a transaction to prepare.
+                if (transaction) {
+                    return resolver.prepare(transaction, resolverCallback);
+                }
+
+            })
+            .then((preparedTransaction_) => {
+
+                // Save the prepared transaction.
+                preparedTransaction = preparedTransaction_;
+
+                // Now all the resources are prepared, loop until we are no longer resolving anything.
+                const iteration = () => {
+                    LOG.debug(method + entry, 'Executing compiled ACL predicate');
+                    resolverCallbackCalled = false;
+                    const result = compiledAclBundle.execute(aclRule, preparedResource, preparedParticipant, preparedTransaction);
+                    if (resolverCallbackCalled) {
+                        return resolverPromise.then(() => {
+                            return iteration();
+                        });
+                    } else {
+                        return result;
+                    }
+                };
+                return iteration();
+
+            })
+            .then((result) => {
+
+                // Return the result, which should be a boolean.
+                LOG.exit(method + entry, result);
+                return result;
+
+            });
     }
 
 }

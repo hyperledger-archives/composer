@@ -68,17 +68,24 @@ class EngineQueries {
         const accessController = context.getAccessController();
         return context.getCompiledQueryBundle().execute(dataService, identifier, parameters)
             .then((objects) => {
-                const resources = objects.map((object) => {
+                return objects.map((object) => {
                     object = Registry.removeInternalProperties(object);
                     return serializer.fromJSON(object);
-                }).filter((resource) => {
-                    try {
-                        accessController.check(resource, 'READ');
-                        return true;
-                    } catch (e) {
-                        return false;
-                    }
-                }).map((resource) => {
+                }).reduce((resources, resource) => {
+                    return resources.then((resources) => {
+                        return accessController.check(resource, 'READ')
+                            .then(() => {
+                                resources.push(resource);
+                                return resources;
+                            })
+                            .catch((error) => {
+                                return resources;
+                            });
+                    });
+                }, Promise.resolve([]));
+            })
+            .then((resources) => {
+                resources = resources.map((resource) => {
                     return serializer.toJSON(resource);
                 });
                 LOG.exit(method, resources);
