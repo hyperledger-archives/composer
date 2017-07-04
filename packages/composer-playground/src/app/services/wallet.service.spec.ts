@@ -23,23 +23,6 @@ describe('WalletService', () => {
         });
     });
 
-    // describe('#getWallet', () => {
-    //     it('should create a wallet', inject([WalletService], (service: WalletService) => {
-    //         const name = 'wallet';
-    //         service['fileWallets'] = mockFileWallets;
-
-    //         mockFileWallets.has.returns(false);
-    //         service.getWallet(name);
-    //         mockFileWallets.set.should.have.been.calledWith(name, sinon.match.instanceOf(FileWallet));
-    //         mockFileWallets.get.should.have.been.calledWith(name);
-    //     }));
-
-    //     it('should get a FileWallet from fileWallets', () => {
-    //         // mockFileWallets['fileWallet'] = mockFileWallet;
-
-    //     });
-    // });
-
     describe('removeFromWallet', () => {
         it('should remove an identity from the wallet', fakeAsync(inject([WalletService], (service: WalletService) => {
             let mockGetWallet = sinon.stub(service, 'getWallet').returns(mockFileWallet);

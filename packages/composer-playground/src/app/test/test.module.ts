@@ -9,12 +9,13 @@ import { ResourceComponent } from './resource/resource.component';
 import { TestRoutingModule } from './test-routing.module';
 import { RegistryComponent } from './registry/registry.component';
 import { TransactionComponent } from './transaction/transaction.component';
+import { ViewTransactionComponent } from './view-transaction/view-transaction.component';
 import { DirectivesModule } from '../directives/directives.module';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, CodemirrorModule, DirectivesModule, TestRoutingModule],
-    entryComponents: [ResourceComponent, TransactionComponent],
-    declarations: [RegistryComponent, ResourceComponent, TransactionComponent, TestComponent],
+    entryComponents: [ResourceComponent, TransactionComponent, ViewTransactionComponent],
+    declarations: [RegistryComponent, ResourceComponent, TransactionComponent, TestComponent, ViewTransactionComponent],
     providers: []
 })
 

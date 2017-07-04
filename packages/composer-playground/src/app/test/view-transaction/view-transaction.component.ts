@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from '../services/client.service';
-import { TransactionService } from '../services/transaction.service';
-import { InitializationService } from '../services/initialization.service';
+import { ClientService } from '../../services/client.service';
+import { TransactionService } from '../../services/transaction.service';
+import { InitializationService } from '../../services/initialization.service';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';

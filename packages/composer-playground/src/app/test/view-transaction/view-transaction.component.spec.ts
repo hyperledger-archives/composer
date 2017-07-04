@@ -10,9 +10,9 @@ import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@an
 import { ViewTransactionComponent } from './view-transaction.component';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
-import { TransactionService } from '../services/transaction.service';
+import { ClientService } from '../../services/client.service';
+import { InitializationService } from '../../services/initialization.service';
+import { TransactionService } from '../../services/transaction.service';
 
 import {
     TransactionDeclaration,

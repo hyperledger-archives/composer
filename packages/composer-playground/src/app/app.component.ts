@@ -17,7 +17,7 @@ import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
 import { TransactionService } from './services/transaction.service';
-import { ViewTransactionComponent } from './view-transaction';
+import { ViewTransactionComponent } from './test/view-transaction';
 
 /* tslint:disable-next-line:no-var-requires */
 const LZString = require('lz-string');
