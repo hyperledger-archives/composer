@@ -1,0 +1,10 @@
+/**
+ * Import access control list.
+ */
+rule myNewRule {
+    description: "Newly imported ACL file"
+    participant: "org.acme.sample.SampleParticipant"
+    operation: ALL
+    resource: "org.acme.sample.*"
+    action: ALLOW
+}
