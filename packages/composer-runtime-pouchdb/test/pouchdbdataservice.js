@@ -16,7 +16,7 @@
 
 const DataService = require('composer-runtime').DataService;
 const pouchCollate = require('pouchdb-collate');
-const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb-core');
 const PouchDBDataCollection = require('..').PouchDBDataCollection;
 const PouchDBDataService = require('..').PouchDBDataService;
 
