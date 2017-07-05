@@ -1,9 +1,9 @@
 # Contributing to Composer
-* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
-* [Suggested IDE setup](./contrib-notes/ide-setup.md)
-* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
-* Currently reading -> [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
-* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+* [Step-by-step developement environment setup](./getting-started.md)
+* [Suggested IDE setup](./ide-setup.md)
+* [Coding Guidelines](./coding-guidelines.md)
+* Currently reading -> [Pull Request Guidelines](./submitting-pull-request.md)
+* [Release process](./release-process/weekly-qa-validation.md)
 
 
 # Submitting a Pull Request
@@ -17,4 +17,4 @@
 - Pull requests that have associated builds that are not 100% clean will be closed.
 
 # Next step
-Move on to read [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+Move on to read [Release process](./release-process/weekly-qa-validation.md)

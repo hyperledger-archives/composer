@@ -76,6 +76,8 @@ class OrderBy {
             for(let n=0; n < this.ast.sort.length; n++) {
                 this.sortCriteria.push( new Sort(this, this.ast.sort[n]));
             }
+        } else {
+            throw new IllegalModelException('Invalid AST');
         }
     }
 

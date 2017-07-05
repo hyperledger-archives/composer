@@ -41,8 +41,7 @@ const LogLevel = require('./loglevel');
  */
 class Deploy {
 
-
-  /**
+   /**
     * Command process for deploy command
     * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
@@ -123,7 +122,10 @@ class Deploy {
         .then((result) => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
-                const deployOptions = loglevel ? {'logLevel': loglevel} : undefined;
+                let deployOptions = cmdUtil.parseOptions(argv);
+                if (loglevel) {
+                    deployOptions.logLevel = loglevel;
+                }
                 return adminConnection.deploy(businessNetworkDefinition, deployOptions);
             } else {
                 spinner = ora('Updating business network definition. This may take a few seconds...').start();
