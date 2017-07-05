@@ -490,7 +490,7 @@ describe('AddConnectionProfileComponent', () => {
                 cert: ''
             }]);
             component['addConnectionProfileKeyValStore'].should.equal('/tmp/keyValStore');
-            component['addConnectionProfileChannel'].should.equal('mychannel');
+            component['addConnectionProfileChannel'].should.equal('composerchannel');
             component['addConnectionProfileMspId'].should.equal('Org1MSP');
             component['addConnectionProfileTimeout'].should.equal(300);
         }
