@@ -129,7 +129,7 @@ class EngineTransactions {
 
         // Find the default transaction registry.
         let registryManager = context.getRegistryManager();
-        let transaction = null, resolvedTransaction = null;
+        let transaction = null;
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
@@ -140,17 +140,14 @@ class EngineTransactions {
         // First we parse *our* copy, that is not resolved. This is the copy that gets added to the
         // transaction registry, and is the one in the context (for adding log entries).
         transaction = context.getSerializer().fromJSON(transactionData);
-        // Then we parse the *users* copy, that is resolved, and they can modify to their hearts content.
-        // This is only given to the user, and is discarded afterwards.
-        resolvedTransaction = context.getSerializer().fromJSON(transactionData);
 
         // Store the transaction in the context.
         context.setTransaction(transaction);
 
         // Resolve the users copy of the transaction.
-        LOG.debug(method, 'Parsed transaction, resolving it', resolvedTransaction);
-        return context.getResolver().resolve(resolvedTransaction)
-            .then(() => {
+        LOG.debug(method, 'Parsed transaction, resolving it', transaction);
+        return context.getResolver().resolve(transaction)
+            .then((resolvedTransaction) => {
 
                 // Execute the transaction.
                 let api = context.getApi();
