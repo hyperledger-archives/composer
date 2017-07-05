@@ -1,0 +1,37 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+app-footer {
+    display: flex;
+    width: 100%;
+
+    .footer-main{
+        flex: 1;
+        padding: 22px 10px 22px 10px;
+        border-top: solid 1px #D0DADA;
+        color: $secondary-text ;
+        font-size: 12px;
+        display: flex;
+
+        .footer-left, .footer-right{
+            flex:1;
+            display:flex;
+
+            .footer-item{
+                flex-shrink: 1;
+                padding-right:30px;
+                a {
+                    color: $secondary-text;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+        .footer-right {
+            justify-content: flex-end;
+        }
+    }
+}
