@@ -60,3 +60,5 @@ packages/composer-runtime-hlfv1/vendor/gopkg.in/sourcemap.v1/
 
 packages/composer-website/installers/fabric-dev-servers.zip
 packages/composer-website/installers/hlfv*/fabric-dev-servers/
+
+packages/composer-playground/e2e/downloads/*
