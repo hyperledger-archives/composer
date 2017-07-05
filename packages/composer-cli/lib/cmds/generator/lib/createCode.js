@@ -17,8 +17,6 @@
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 
-
-
 const fs = require('fs');
 
 const CodeGen = require('composer-common').CodeGen;
@@ -26,6 +24,7 @@ const GoLangVisitor = CodeGen.GoLangVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
+const JavaVisitor = CodeGen.JavaVisitor;
 const FileWriter = CodeGen.FileWriter;
 /**
  * Composer Create Archive command
@@ -36,7 +35,7 @@ const FileWriter = CodeGen.FileWriter;
  */
 class Create {
 
-  /**
+    /**
     * Command process for deploy command
     * @param {string} argv argument list from composer command
 
@@ -65,6 +64,9 @@ class Create {
                     break;
                 case 'Typescript':
                     visitor = new TypescriptVisitor();
+                    break;
+                case 'Java':
+                    visitor = new JavaVisitor();
                     break;
                 case 'JSONSchema':
                     visitor = new JSONSchemaVisitor();
