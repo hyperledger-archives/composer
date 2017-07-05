@@ -52,7 +52,7 @@ func (composer *Composer) createJavaScript() {
 	defer func() { logger.Debug("Exiting Composer.createJavaScript") }()
 
 	// Create a new JavaScript virtual machine.
-	vm := duktape.New()
+	vm := duktape.NewWithFlags(&duktape.Flags{Console: duktape.FlagConsoleFlush})
 	if vm == nil {
 		panic("Failed to create JavaScript virtual machine")
 	}
@@ -127,6 +127,8 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 		vm.Lock()
 		defer vm.Unlock()
 
+		composer.Container.setStub(stub)
+
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)
 
@@ -158,6 +160,8 @@ func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function stri
 		vm := composer.VM
 		vm.Lock()
 		defer vm.Unlock()
+
+		composer.Container.setStub(stub)
 
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)

@@ -15,6 +15,7 @@
 'use strict';
 
 const prompt = require('prompt');
+const fs = require('fs');
 const Admin = require('composer-admin');
 const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
@@ -25,6 +26,41 @@ const BusinessNetworkConnection = Client.BusinessNetworkConnection;
  * @private
  */
 class CmdUtil {
+
+    /**
+     * Parse connector specific options.
+     * @static
+     * @param {any} argv cli arguments
+     * @returns {Object} an object representing the options from optionsFile & option properties given
+     * @memberof Deploy
+     */
+    static parseOptions(argv) {
+        // command line will override file
+        // all options are merged
+        let mergedOptions = {};
+        let cliOptions;
+
+        if (argv.optionsFile) {
+            if (fs.existsSync(argv.optionsFile)) {
+                mergedOptions = JSON.parse(fs.readFileSync(argv.optionsFile));
+            } else {
+                console.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
+            }
+        }
+
+        if (argv.option) {
+            if (!Array.isArray(argv.option)) {
+                cliOptions = [argv.option];
+            } else {
+                cliOptions = argv.option;
+            }
+            cliOptions.forEach((cliOpt) => {
+                let pair = cliOpt.split('=');
+                mergedOptions[pair[0]] = pair[1];
+            });
+        }
+        return mergedOptions;
+    }
 
       /**
        * Promise based wrapper for a call to the prompt module.

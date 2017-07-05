@@ -29,6 +29,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 const ora = require('ora');
 const chalk = require('chalk');
+const LogLevel = require('./loglevel');
 
 
 /**
@@ -40,7 +41,7 @@ const chalk = require('chalk');
  */
 class Deploy {
 
-  /**
+   /**
     * Command process for deploy command
     * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
@@ -60,6 +61,17 @@ class Deploy {
         let connectionProfileName = Deploy.getDefaultProfileName(argv);
         let businessNetworkName;
         let spinner;
+        let loglevel;
+
+        if (argv.loglevel) {
+            // validate log level as yargs cannot at this time
+            // https://github.com/yargs/yargs/issues/849
+            loglevel = argv.loglevel.toUpperCase();
+            if (!LogLevel.validLogLevel(loglevel)) {
+                return Promise.reject(new Error('loglevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
+            }
+        }
+
         return (() => {
             console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
 
@@ -84,7 +96,7 @@ class Deploy {
             let archiveFileContents = null;
             // Read archive file contents
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
-            // Get the connection ioptions
+            // Get the connection options
             try {
                 connectOptions = Deploy.getConnectOptions(connectionProfileName);
             } catch (error) {
@@ -110,7 +122,11 @@ class Deploy {
         .then((result) => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
-                return adminConnection.deploy(businessNetworkDefinition);
+                let deployOptions = cmdUtil.parseOptions(argv);
+                if (loglevel) {
+                    deployOptions.logLevel = loglevel;
+                }
+                return adminConnection.deploy(businessNetworkDefinition, deployOptions);
             } else {
                 spinner = ora('Updating business network definition. This may take a few seconds...').start();
                 return adminConnection.update(businessNetworkDefinition);

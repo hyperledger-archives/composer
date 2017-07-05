@@ -29,15 +29,11 @@ module.exports.builder = function (yargs){
 module.exports.handler = (argv) => {
 
     argv.thePromise = Create.handler(argv)
-        .then(() => {
-            console.log ('Command completed successfully.');
-
+    .then(() => {
+        return;
         })
         .catch((error) => {
-            console.log(error.stack);
-            console.log(error+ '\nCommand failed.');
             throw error;
-
         });
     return argv.thePromise;
 };

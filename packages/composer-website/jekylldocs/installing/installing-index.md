@@ -12,7 +12,7 @@ excerpt: Tutorials
 
 <a href="../installing/getting-started-with-playground.html"><img src='../assets/img/Install01.svg' width="30%"/></a> <a href="../installing/using-playground-locally.html"><img src='../assets/img/Install02.svg' width="30%"/></a> <a href="../installing/development-tools.html"><img src='../assets/img/Install03.svg' width="30%"/></a>
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'installing' and page.title != "Installing Index" %}
 ### {{ page.title }}

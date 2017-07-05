@@ -78,6 +78,11 @@ if [ -z "${TRAVIS_TAG}" ]; then
     echo "Pushing with tag unstable"
     lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish --tag=unstable 2>&1 | tee
 
+	# quick check to see if the latest npm module has been published
+	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+	  sleep 10
+	done
+
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
 
@@ -110,6 +115,11 @@ else
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
     lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish 2>&1 | tee
+
+	# quick check to see if the latest npm module has been published
+	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+	  sleep 10
+	done
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do

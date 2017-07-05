@@ -7,8 +7,10 @@ import { Directive, Input } from '@angular/core';
 import { TestComponent } from './test.component';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { AlertService } from '../services/alert.service';
+import { TransactionService } from '../services/transaction.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Resource } from 'composer-common';
 
 import * as sinon from 'sinon';
 
@@ -35,16 +37,26 @@ describe('TestComponent', () => {
     let mockClientService;
     let mockInitializationService;
     let mockAlertService;
+    let mockTransactionService;
     let mockModal;
 
     let mockBusinessNetworkConnection;
 
+    let sandbox;
+
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+
         mockClientService = sinon.createStubInstance(ClientService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockModal = sinon.createStubInstance(NgbModal);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
+        mockTransactionService = sinon.createStubInstance(TransactionService);
+        mockBusinessNetworkConnection.listenerCount.returns(0);
+        mockBusinessNetworkConnection.on = sinon.stub();
+        mockBusinessNetworkConnection.removeAllListeners = sinon.stub();
+        mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
         TestBed.configureTestingModule({
             declarations: [TestComponent, MockRegistryDirective],
@@ -52,7 +64,8 @@ describe('TestComponent', () => {
                 {provide: NgbModal, useValue: mockModal},
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: ClientService, useValue: mockClientService}
+                {provide: ClientService, useValue: mockClientService},
+                {provide: TransactionService, useValue: mockTransactionService}
             ]
         });
 
@@ -60,7 +73,15 @@ describe('TestComponent', () => {
         component = fixture.componentInstance;
     });
 
+    afterEach(() => {
+        sandbox.reset();
+    });
+
     describe('ngOnInit', () => {
+        beforeEach(() => {
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+        });
+
         it('should create', () => {
             component.should.be.ok;
         });
@@ -160,6 +181,7 @@ describe('TestComponent', () => {
 
         it('should handle error', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.reject('some error'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             mockAlertService.errorStatus$ = {next: sinon.stub()};
 
@@ -171,6 +193,13 @@ describe('TestComponent', () => {
         }));
     });
 
+    describe('ngOnDestroy', () => {
+        it('should remove all event listeners', () => {
+            component.ngOnDestroy();
+            mockBusinessNetworkConnection.removeAllListeners.should.have.been.called;
+        });
+    });
+
     describe('setChosenRegistry', () => {
         it('should set the chosen registry', () => {
             component.setChosenRegistry({id: 'bob'});
@@ -180,9 +209,16 @@ describe('TestComponent', () => {
     });
 
     describe('submitTransaction', () => {
+        let mockTransaction;
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.getIdentifier.returns(1);
+        });
+
         it('should submit a transaction', fakeAsync(() => {
+            component['eventsTriggered'] = ['event', 'event'];
             mockAlertService.successStatus$ = {next: sinon.stub()};
-            mockModal.open.returns({result: Promise.resolve()});
+            mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
             component['chosenRegistry'] = 'assetRegistry';
             component['transactionRegistry'] = 'transactionRegistry';
@@ -194,12 +230,31 @@ describe('TestComponent', () => {
             component['chosenRegistry'].should.equal('transactionRegistry');
             component['registryReload'].should.equal(false);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: 'A transaction was successfully submitted', icon: '#icon-transaction'});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '2 events triggered', linkCallback: sinon.match.func});
+        }));
+
+        it('should submit a transaction with 1 event', fakeAsync(() => {
+            mockBusinessNetworkConnection.listenerCount.returns(1);
+            component['eventsTriggered'] = ['event'];
+            mockAlertService.successStatus$ = {next: sinon.stub()};
+            mockModal.open.returns({result: Promise.resolve(mockTransaction)});
+
+            component['chosenRegistry'] = 'assetRegistry';
+            component['transactionRegistry'] = 'transactionRegistry';
+
+            component.submitTransaction();
+
+            tick();
+
+            component['chosenRegistry'].should.equal('transactionRegistry');
+            component['registryReload'].should.equal(false);
+
+            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '1 event triggered', linkCallback: sinon.match.func});
         }));
 
         it('should update transaction registry view', fakeAsync(() => {
             mockAlertService.successStatus$ = {next: sinon.stub()};
-            mockModal.open.returns({result: Promise.resolve()});
+            mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
             component['transactionRegistry'] = 'transactionRegistry';
             component['chosenRegistry'] = 'transactionRegistry';
@@ -211,7 +266,7 @@ describe('TestComponent', () => {
             component['chosenRegistry'].should.equal('transactionRegistry');
             component['registryReload'].should.equal(true);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: 'A transaction was successfully submitted', icon: '#icon-transaction'});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: null, linkCallback: null});
         }));
 
     });

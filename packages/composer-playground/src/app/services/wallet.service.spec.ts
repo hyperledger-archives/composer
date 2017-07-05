@@ -10,10 +10,13 @@ import { FileWallet } from 'composer-common';
 describe('WalletService', () => {
 
     let mockFileWallet;
+    let mockFileWallets;
 
     beforeEach(() => {
         mockFileWallet = sinon.createStubInstance(FileWallet);
         mockFileWallet.list.returns(Promise.resolve(['identity2', 'identity1']));
+
+        mockFileWallets = sinon.createStubInstance(Map);
 
         TestBed.configureTestingModule({
             providers: [WalletService]

@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'composer-common';
@@ -99,7 +99,7 @@ export class ClientService {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = this.createModelFile(content, original.getFileName());
+                let modelFile = this.createModelFile(content, original.getName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
@@ -332,20 +332,39 @@ export class ClientService {
         return this.getBusinessNetworkConnection().revokeIdentity(userID);
     }
 
-    private createNewBusinessNetwork(name, version, description, packageJson, readme) {
-        let oldBusinessNetwork = this.getBusinessNetwork();
+    createNewBusinessNetwork(name, version, description, packageJson, readme) {
 
-        this.currentBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-        this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
-
-        oldBusinessNetwork.getScriptManager().getScripts().forEach((script) => {
-            this.currentBusinessNetwork.getScriptManager().addScript(script);
+        this.alertService.busyStatus$.next({
+            title: 'Updating Business Network',
+            text: 'Updating Business Network ' + name
         });
 
-        if (oldBusinessNetwork.getAclManager().getAclFile()) {
-            this.currentBusinessNetwork.getAclManager().setAclFile(oldBusinessNetwork.getAclManager().getAclFile());
-        }
+        try {
+            let newBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
+            let modelFiles = this.filterModelFiles(this.getBusinessNetwork().getModelManager().getModelFiles());
 
-        this.businessNetworkChanged$.next(true);
+            newBusinessNetwork.getModelManager().addModelFiles(modelFiles);
+
+            this.getBusinessNetwork().getScriptManager().getScripts().forEach((script) => {
+                newBusinessNetwork.getScriptManager().addScript(script);
+            });
+
+            if (this.getBusinessNetwork().getAclManager().getAclFile()) {
+                newBusinessNetwork.getAclManager().setAclFile(this.getBusinessNetwork().getAclManager().getAclFile());
+            }
+
+            this.currentBusinessNetwork = newBusinessNetwork;
+            this.alertService.busyStatus$.next(null);
+            this.businessNetworkChanged$.next(true);
+        } catch (error) {
+            this.alertService.busyStatus$.next(null);
+            this.alertService.errorStatus$.next(`Failed to Update Business Network: ${error}`);
+        }
+    }
+
+    filterModelFiles(files) {
+        return files.filter((model) => {
+                return !model.isSystemModelFile();
+            });
     }
 }

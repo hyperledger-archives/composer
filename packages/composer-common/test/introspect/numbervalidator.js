@@ -27,13 +27,13 @@ describe('NumberValidator', () => {
     let mockField;
 
     // valid test parms
-    let VALID_UPPER_AND_LOWER_BOUND_AST = {'lower' : { 'type' : 'Literal' , 'value' : 0 }, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
-    let NO_LOWER_BOUND_AST = {'lower' : null, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
-    let NO_UPPER_BOUND_AST = {'lower' : { 'type' : 'Literal' , 'value' : 0 }, 'upper' : null };
+    let VALID_UPPER_AND_LOWER_BOUND_AST = {'lower' : '0', 'upper' : '100' };
+    let NO_LOWER_BOUND_AST = {'lower' : null, 'upper' : '100' };
+    let NO_UPPER_BOUND_AST = {'lower' : '0' , 'upper' : null };
 
     // error parms
     let NO_PARMS_IN_AST = {'lower' : null, 'upper' : null };
-    let LOWER_IS_HIGHER_THAN_UPPER = {'lower' : { 'type' : 'Literal' , 'value' : 200 }, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
+    let LOWER_IS_HIGHER_THAN_UPPER = {'lower' : '200', 'upper' : '100' };
 
     beforeEach(() => {
         mockField = sinon.createStubInstance(Field);
@@ -43,19 +43,19 @@ describe('NumberValidator', () => {
     describe('#constructor', () => {
         it('should accept valid constructor parms VALID_UPPER_AND_LOWER_BOUND_AST', () => {
             let validator = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
-            validator.lowerBound.value.should.equal(0);
-            validator.upperBound.value.should.equal(100);
+            validator.lowerBound.should.equal(0);
+            validator.upperBound.should.equal(100);
         });
 
         it('should accept valid constructor parms NO_LOWER_BOUND_AST', () => {
             let validator = new NumberValidator(mockField, NO_LOWER_BOUND_AST);
             should.equal(validator.lowerBound, null);
-            validator.upperBound.value.should.equal(100);
+            validator.upperBound.should.equal(100);
         });
 
         it('should accept valid constructor parms NO_UPPER_BOUND_AST', () => {
             let validator = new NumberValidator(mockField, NO_UPPER_BOUND_AST);
-            validator.lowerBound.value.should.equal(0);
+            validator.lowerBound.should.equal(0);
             should.equal(validator.upperBound, null);
         });
 

@@ -308,6 +308,15 @@ class ClassDeclaration {
     }
 
     /**
+     * Returns true if this class is a system type
+     *
+     * @return {boolean} true if the class is part of the system namespace
+     */
+    isSystemType() {
+        return ModelUtil.getSystemNamespace() === this.modelFile.getNamespace();
+    }
+
+    /**
      * Returns the short name of a class. This name does not include the
      * namespace from the owning ModelFile.
      *

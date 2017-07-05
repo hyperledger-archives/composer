@@ -22,7 +22,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Logger = require('composer-common').Logger;
 const Util = require('./lib/util');
-const githubRoute = require('./routes/github');
+const npmRoute = require('./routes/npm');
 
 const LOG = Logger.getLog('PlaygroundAPI');
 
@@ -32,13 +32,13 @@ const LOG = Logger.getLog('PlaygroundAPI');
  * @param {number} port The port for the Express.js application.
  * @return {Object} The Express.js application.
  */
-function createServer(port) {
+function createServer (port) {
     const method = 'createServer';
     LOG.entry(method, port);
 
     const app = Util.createApp();
 
-    githubRoute(app);
+    npmRoute(app);
 
     const connectionProfileStore = new FSConnectionProfileStore(fs);
     const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);

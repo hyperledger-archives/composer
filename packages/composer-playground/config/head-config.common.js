@@ -33,7 +33,7 @@ module.exports = {
     { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/assets/icon/favicon.ico' },
     { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/assets/icon/favicon.ico' },
     { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/assets/icon/favicon.ico' },
-    
+
 
     /** <link> tags for a Web App Manifest **/
     { rel: 'manifest', href: '/assets/manifest.json' }

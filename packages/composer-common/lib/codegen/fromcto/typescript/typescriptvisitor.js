@@ -104,7 +104,16 @@ class TypescriptVisitor {
     visitModelFile(modelFile, parameters) {
         parameters.fileWriter.openFile(modelFile.getNamespace() + '.ts');
 
-        // TODO (DCS) don't yet understand namespaces...
+        // if this is not the system model file we have to import the system types
+        // so that they can be extended
+        if( !modelFile.isSystemModelFile() ) {
+            const systemTypes = modelFile.getModelManager().getSystemTypes();
+
+            for(let n=0; n < systemTypes.length; n++) {
+                const systemType = systemTypes[n];
+                parameters.fileWriter.writeLine(0, 'import {' + systemType.getName() + '} from \'./org.hyperledger.composer.system\';');
+            }
+        }
         parameters.fileWriter.writeLine(0, '// export namespace ' + modelFile.getNamespace() + '{');
 
         modelFile.getAllDeclarations().forEach((decl) => {

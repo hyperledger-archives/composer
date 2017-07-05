@@ -29,7 +29,7 @@ describe('IllegalModelException', function () {
 
     beforeEach(function () {
         modelFile = sinon.createStubInstance(ModelFile);
-        modelFile.getFileName.returns('model.cto');
+        modelFile.getName.returns('model.cto');
     });
 
     describe('#constructor', function () {

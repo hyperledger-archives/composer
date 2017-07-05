@@ -26,10 +26,11 @@ const Factory = require('../lib/api/factory');
 const ParticipantRegistry = require('../lib/api/participantregistry');
 const Query = require('../lib/api/query');
 const realFactory = require('composer-common').Factory;
+const realSerializer = require('composer-common').Serializer;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
-const Serializer = require('composer-common').Serializer;
+const Serializer = require('../lib/api/serializer');
 
 const chai = require('chai');
 chai.should();
@@ -56,7 +57,7 @@ describe('Api', () => {
         mockContext = sinon.createStubInstance(Context);
         mockFactory = sinon.createStubInstance(realFactory);
         mockContext.getFactory.returns(mockFactory);
-        mockSerializer = sinon.createStubInstance(Serializer);
+        mockSerializer = sinon.createStubInstance(realSerializer);
         mockContext.getSerializer.returns(mockSerializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockContext.getParticipant.returns(mockParticipant);
@@ -69,6 +70,7 @@ describe('Api', () => {
         mockDataService = sinon.createStubInstance(DataService);
         mockContext.getDataService.returns(mockDataService);
         mockAccessController = sinon.createStubInstance(AccessController);
+        mockAccessController.check.resolves();
         mockContext.getAccessController.returns(mockAccessController);
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
         mockContext.getCompiledQueryBundle.returns(mockCompiledQueryBundle);
@@ -250,7 +252,7 @@ describe('Api', () => {
                 resource.$identifier = 'id' + i;
                 mockSerializer.fromJSON.withArgs(filteredObject).returns(resource);
                 if (i % 2 === 0) {
-                    mockAccessController.check.withArgs(resource, 'READ').throws(new Error('access denied'));
+                    mockAccessController.check.withArgs(resource, 'READ').rejects(new Error('access denied'));
                 } else {
                     mockResources.push(resource);
                 }

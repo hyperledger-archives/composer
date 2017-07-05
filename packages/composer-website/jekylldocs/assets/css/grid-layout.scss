@@ -232,11 +232,13 @@ $callout: #FFD640;
             margin-top: 1.3rem;
 
             code {
-              background-color: #272B36;
+              background-color: white;
+              border: 1px solid $keyline-highlight;
               padding-top: 1px;
               padding-bottom: 2px;
               padding-left: 4px;
-              color: white;
+              color: $primary-text;
+              border-radius:1px;
             }
           }
 

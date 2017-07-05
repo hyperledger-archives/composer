@@ -27,14 +27,14 @@ const SYSTEM_MODEL_CONTENTS = `
     namespace org.hyperledger.composer.system
 
     abstract asset Asset {  }
-    
+
     abstract participant Participant {   }
-    
+
     abstract transaction Transaction identified by transactionId{
       o String transactionId
       o DateTime timestamp
     }
-    
+
     abstract event Event identified by eventId{
       o String eventId
       o DateTime timestamp
@@ -172,6 +172,9 @@ class ModelManager {
         LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
+            if (m.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[m.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -179,6 +182,9 @@ class ModelManager {
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
+            if (modelFile.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[modelFile.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -230,9 +236,15 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
+                    if (m.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
+                    if (modelFile.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }
@@ -257,6 +269,11 @@ class ModelManager {
 
     /**
      * Get the array of model file instances
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
+     *
      * @return {ModelFile[]} The ModelFiles registered
      * @private
      */
@@ -317,6 +334,10 @@ class ModelManager {
 
     /**
      * Get the ModelFile associated with a namespace
+     * Note - this is an internal method and therefore will return the system model
+     * as well as any network defined models.
+     *
+     * It is the callers responsibility to remove this before the data leaves an external API
      * @param {string} namespace - the namespace containing the ModelFile
      * @return {ModelFile} registered ModelFile for the namespace or null
      * @private
