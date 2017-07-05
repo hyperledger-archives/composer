@@ -22,12 +22,16 @@ const targetFile = path.resolve(__dirname, '..', 'lib','systemModel.js');
 const templatePath = path.resolve(__dirname, '..', 'lib','_template');
 const modelFile = path.resolve(__dirname, '..', 'lib','system.cto');
 
+// nunjucks is already used in other parts of the codebase
+// that is the primary reason for choosing it!
+// Note autoescape false - otherwise the --> in the cto file is replaced with --&gt;
 let env = nunjucks.configure(templatePath,{autoescape:false});
 
 // get the template file
 let model = fs.readFileSync(modelFile,  { encoding: 'utf8' });
-// let template = fs.readFileSync(templateFile,  { encoding: 'utf8' });
 
+// render the model
 let jsModel = env.render('systemModel.njk',{ systemmodel: model});
 
+// and write out the file
 fs.writeFileSync(targetFile, jsModel, { encoding: 'utf8' });
