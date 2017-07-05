@@ -15,7 +15,7 @@ As a summary:
  - All public API methods must be documented.
  - Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
-## Github usage
+## GitHub usage
 
 Here is the preferred workflow involved in making a pull request to the Composer Project - this is based around making a change in the `hyperledger/composer repository`. The same would apply for any of the other related repositories.
 
