@@ -10,6 +10,7 @@ participant SampleParticipant identified by email {
   o String email
   o String firstName
   o String lastName
+  --> SampleAsset asset
 }
 
 transaction SampleTransaction {
