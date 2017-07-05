@@ -25,19 +25,19 @@ module.exports.builder = {
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     newUserId: { alias: 'u', required: true, describe: 'The user ID for the new identity', type: 'string' },
     participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
-    issuer: { alias: 'x', required: true, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' }
+    issuer: { alias: 'x', required: true, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' },
+    option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+    optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
 
     argv.thePromise =  Issue.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
-
+        return;
     })
     .catch((error) => {
-        console.log(error+ '\nCommand failed.');
-
+        throw error;
     });
     return argv.thePromise;
 };

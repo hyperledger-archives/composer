@@ -65,7 +65,9 @@ class Issue {
             return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
         })
         .then(() => {
-            return businessNetworkConnection.issueIdentity(participantId, newUserId, { issuer: issuer });
+            let issueOptions = cmdUtil.parseOptions(argv);
+            issueOptions.issuer = issuer;
+            return businessNetworkConnection.issueIdentity(participantId, newUserId, issueOptions);
         })
         .then((result) => {
             console.log(`An identity was issued to the participant '${participantId}'`);

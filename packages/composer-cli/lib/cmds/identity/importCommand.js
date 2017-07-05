@@ -28,7 +28,10 @@ module.exports.builder = {
 module.exports.handler = (argv) => {
     argv.thePromise =  Import.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
+        return;
+    })
+    .catch((error) => {
+        throw error;
     });
     return argv.thePromise;
 };
