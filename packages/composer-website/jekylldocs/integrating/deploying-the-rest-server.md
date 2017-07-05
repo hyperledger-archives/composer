@@ -42,7 +42,7 @@ The REST server can be configured using environment variables, instead of supply
               "name": "hlfv1",
               "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
-              "keyValStore": "/home/composer/.composer-wallet",
+              "keyValStore": "/home/composer/.composer-credentials",
               "timeout": 300,
               "orderers": [
                 {
@@ -200,7 +200,7 @@ The examples are based on the business network that is deployed to Hyperledger F
               "name": "hlfv1",
               "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
-              "keyValStore": "/home/composer/.composer-wallet",
+              "keyValStore": "/home/composer/.composer-credentials",
               "timeout": 300,
               "orderers": [
                 {
