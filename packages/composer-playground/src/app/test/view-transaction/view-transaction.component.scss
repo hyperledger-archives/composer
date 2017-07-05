@@ -24,8 +24,8 @@ transaction-modal {
                         color: $primary-text;
                     }
                     .action {
-                        margin-left: 1rem;
-                        margin-right: 1rem;
+                        margin-left: $space-smedium;
+                        margin-right: $space-smedium;
                         line-height: 63px;
                         color: $primary-text;
                         transition: none;
@@ -77,8 +77,8 @@ transaction-modal {
         text-align: left;
         border-top:1px solid #e3ecec;
         .CodeMirror {
-          height: 13vh;
-          min-height: none;
+          height: 200px;
+          min-height: 0;
           max-width: none;
           .CodeMirror-scroll {
             max-width: 0;
