@@ -380,7 +380,7 @@ class TestUtil {
             enrollmentID = enrollmentID || 'admin';
             let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
-            console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
+            // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
         })
         .then(() => {

@@ -621,7 +621,7 @@ class Context {
      */
     getResolver() {
         if (!this.resolver) {
-            this.resolver = new Resolver(this.getIntrospector(), this.getRegistryManager());
+            this.resolver = new Resolver(this.getFactory(), this.getIntrospector(), this.getRegistryManager());
         }
         return this.resolver;
     }
@@ -706,7 +706,7 @@ class Context {
      */
     getAccessController() {
         if (!this.accessController) {
-            this.accessController = new AccessController(this.getAclManager(), this.getCompiledAclBundle());
+            this.accessController = new AccessController(this);
         }
         return this.accessController;
     }
