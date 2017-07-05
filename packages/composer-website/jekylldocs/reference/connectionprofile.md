@@ -68,8 +68,8 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
                     "cert": ""
                 }
             ],
-            "keyValStore": "/YOUR_HOME_DIR/.hfc-key-store",
-            "channel": "mychannel",
+            "keyValStore": "/YOUR_HOME_DIR/.composer-credentials",
+            "channel": "composerchannel",
             "mspID": "Org1MSP",
             "timeout": 300,
             "globalcert": "",
@@ -97,8 +97,8 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
                 "eventURL": "grpc://localhost:7058"
             }
         ],
-        "keyValStore": "/home/.hfc-key-store",
-        "channel": "mychannel",
+        "keyValStore": "/home/.composer-credentials",
+        "channel": "composerchannel",
         "mspID": "Org1MSP",
         "timeout": 300,
         "globalcert": "",

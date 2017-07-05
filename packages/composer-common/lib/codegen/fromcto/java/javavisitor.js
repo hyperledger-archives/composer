@@ -27,16 +27,15 @@ const FunctionDeclaration = require('../../../introspect/functiondeclaration');
 const util = require('util');
 
 /**
- * Convert the contents of a ModelManager to Go Lang code.
- * All generated code is placed into the 'main' package. Set a
- * fileWriter property (instance of FileWriter) on the parameters
+ * Convert the contents of a BusinessNetworkDefinition to Java code.
+ * Set a fileWriter property (instance of FileWriter) on the parameters
  * object to control where the generated code is written to disk.
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class TypescriptVisitor {
+class JavaVisitor {
     /**
      * Visitor design pattern
      * @param {Object} thing - the object being visited
@@ -45,6 +44,7 @@ class TypescriptVisitor {
      * @private
      */
     visit(thing, parameters) {
+
         if (thing instanceof BusinessNetworkDefinition) {
             return this.visitBusinessNetworkDefinition(thing, parameters);
         } else if (thing instanceof ModelManager) {
@@ -102,29 +102,43 @@ class TypescriptVisitor {
      * @private
      */
     visitModelFile(modelFile, parameters) {
-        parameters.fileWriter.openFile(modelFile.getNamespace() + '.ts');
-
-        // if this is not the system model file we have to import the system types
-        // so that they can be extended
-        if( !modelFile.isSystemModelFile() ) {
-            const systemTypes = modelFile.getModelManager().getSystemTypes();
-
-            for(let n=0; n < systemTypes.length; n++) {
-                const systemType = systemTypes[n];
-                parameters.fileWriter.writeLine(0, 'import {' + systemType.getName() + '} from \'./org.hyperledger.composer.system\';');
-            }
-        }
-        parameters.fileWriter.writeLine(0, '// export namespace ' + modelFile.getNamespace() + '{');
 
         modelFile.getAllDeclarations().forEach((decl) => {
             decl.accept(this, parameters);
         });
 
-        parameters.fileWriter.writeLine(0, '// }');
-        parameters.fileWriter.closeFile();
-
         return null;
     }
+
+    /**
+     * Write a Java class file header. The class file will be created in
+     * a file/folder based on the namespace of the class.
+     * @param {ClassDeclaration} clazz - the clazz being visited
+     * @param {Object} parameters  - the parameter
+     * @private
+     */
+    startClassFile(clazz, parameters) {
+        parameters.fileWriter.openFile( clazz.getModelFile().getNamespace().replace(/\./g, '/') + '/' + clazz.getName() + '.java');
+        parameters.fileWriter.writeLine(0, '// this code is generated and should not be modified');
+        parameters.fileWriter.writeLine(0, 'package ' + clazz.getModelFile().getNamespace() + ';');
+        parameters.fileWriter.writeLine(0, '');
+
+        if(!clazz.isSystemType()) {
+            parameters.fileWriter.writeLine(0, 'import org.hyperledger.composer.system.*;');
+            parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.*;');
+        }
+    }
+
+    /**
+     * Close a Java class file
+     * @param {ClassDeclaration} clazz - the clazz being visited
+     * @param {Object} parameters  - the parameter
+     * @private
+     */
+    endClassFile(clazz, parameters) {
+        parameters.fileWriter.closeFile();
+    }
+
 
     /**
      * Visitor design pattern
@@ -135,13 +149,20 @@ class TypescriptVisitor {
      */
     visitEnumDeclaration(enumDeclaration, parameters) {
 
-        parameters.fileWriter.writeLine(1, 'export enum ' + enumDeclaration.getName() + ' {' );
+        this.startClassFile(enumDeclaration, parameters);
+
+        parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.JsonIgnoreProperties;');
+        parameters.fileWriter.writeLine(0, '@JsonIgnoreProperties({"$class"})');
+        parameters.fileWriter.writeLine(0, 'public enum ' + enumDeclaration.getName() + ' {' );
 
         enumDeclaration.getOwnProperties().forEach((property) => {
             property.accept(this,parameters);
         });
 
-        parameters.fileWriter.writeLine(1, '}' );
+        parameters.fileWriter.writeLine(0, '}' );
+
+        this.endClassFile(enumDeclaration, parameters);
+
         return null;
     }
 
@@ -154,13 +175,14 @@ class TypescriptVisitor {
      */
     visitClassDeclaration(classDeclaration, parameters) {
 
+        this.startClassFile(classDeclaration, parameters);
 
         let isAbstract = '';
         if( classDeclaration.isAbstract() ) {
-            isAbstract = 'export abstract ';
+            isAbstract = 'abstract ';
         }
         else {
-            isAbstract = 'export ';
+            isAbstract = '';
         }
 
         let superType = '';
@@ -168,13 +190,18 @@ class TypescriptVisitor {
             superType = ' extends ' + ModelUtil.getShortName(classDeclaration.getSuperType());
         }
 
-        parameters.fileWriter.writeLine(1, isAbstract + 'class ' + classDeclaration.getName() + superType + ' {' );
+        parameters.fileWriter.writeLine(0, 'public ' + isAbstract + 'class ' + classDeclaration.getName() + superType + ' {' );
+
+        // add the magic $class property
+        parameters.fileWriter.writeLine(1, 'public String $class;' );
 
         classDeclaration.getOwnProperties().forEach((property) => {
             property.accept(this,parameters);
         });
 
-        parameters.fileWriter.writeLine(1, '}' );
+        parameters.fileWriter.writeLine(0, '}' );
+        this.endClassFile(classDeclaration, parameters);
+
         return null;
     }
 
@@ -192,7 +219,7 @@ class TypescriptVisitor {
             array = '[]';
         }
 
-        parameters.fileWriter.writeLine(2, field.getName() + ': ' + this.toTsType(field.getType()) + array + ';' );
+        parameters.fileWriter.writeLine(1, 'public ' + this.toJavaType(field.getType()) + array + ' ' + field.getName() + ';' );
         return null;
     }
 
@@ -204,7 +231,7 @@ class TypescriptVisitor {
      * @private
      */
     visitEnumValueDeclaration(enumValueDeclaration, parameters) {
-        parameters.fileWriter.writeLine(2, enumValueDeclaration.getName() + ',' );
+        parameters.fileWriter.writeLine(1, enumValueDeclaration.getName() + ',' );
         return null;
     }
 
@@ -223,35 +250,35 @@ class TypescriptVisitor {
         }
 
         // we export all relationships by capitalizing them
-        parameters.fileWriter.writeLine(2, relationship.getName() + ': ' + this.toTsType(relationship.getType()) + array + ';' );
+        parameters.fileWriter.writeLine(1, 'public ' + this.toJavaType(relationship.getType()) + array + ' ' + relationship.getName() + ';' );
         return null;
     }
 
     /**
-     * Converts a Composer type to a Typescript  type. Primitive types are converted
+     * Converts a Composer type to a Java type. Primitive types are converted
      * everything else is passed through unchanged.
      * @param {string} type  - the composer type
-     * @return {string} the corresponding type in Typescript
+     * @return {string} the corresponding type in Java
      * @private
      */
-    toTsType(type) {
+    toJavaType(type) {
         switch(type) {
         case 'DateTime':
-            return 'Date';
+            return 'java.util.Date';
         case 'Boolean':
             return 'boolean';
         case 'String':
-            return 'string';
+            return 'String';
         case 'Double':
-            return 'number';
+            return 'double';
         case 'Long':
-            return 'number';
+            return 'long';
         case 'Integer':
-            return 'number';
+            return 'int';
         default:
             return type;
         }
     }
 }
 
-module.exports = TypescriptVisitor;
+module.exports = JavaVisitor;
