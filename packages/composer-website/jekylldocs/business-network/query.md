@@ -3,7 +3,8 @@ layout: default
 title: Querying Business Network Data
 category: tasks
 section: business-network
-sidebar: sidebars/businessnetworks.md
+index-order: 7
+sidebar: sidebars/accordion-toc.md
 excerpt: Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
 ---
 

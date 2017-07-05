@@ -2,7 +2,9 @@
 layout: default
 title: Emitting Events
 category: tasks
-sidebar: sidebars/businessnetworks.md
+section: business-network
+index-order: 4
+sidebar: sidebars/accordion-toc.md
 excerpt: Emitting Events from Transaction Processor Functions
 ---
 

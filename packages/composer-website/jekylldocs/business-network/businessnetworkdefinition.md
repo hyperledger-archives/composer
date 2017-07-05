@@ -2,7 +2,9 @@
 layout: default
 title: Hyperledger Composer - Business Network Definition
 category: concepts
-sidebar: sidebars/businessnetworks.md
+section: business-network
+index-order: 1
+sidebar: sidebars/accordion-toc.md
 excerpt: Overview of the Business Network Definition
 ---
 

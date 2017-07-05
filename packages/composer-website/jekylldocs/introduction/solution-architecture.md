@@ -1,8 +1,9 @@
 ---
 layout: default
-title: Solution Architecture
-sidebar: sidebars/introduction.md
-excerpt:
+title: Typical Solution Architecture
+sidebar: sidebars/accordion-toc.md
+section: introduction
+index-order: 2.5
 ---
 
 # Typical {{site.data.conrefs.composer_full}} Solution Architecture

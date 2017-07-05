@@ -4,7 +4,7 @@ title: Developer Guide
 category: tutorials
 section: tutorials
 index-order: 2
-sidebar: sidebars/tutorials.md
+sidebar: sidebars/accordion-toc.md
 excerpt: "The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric."
 ---
 

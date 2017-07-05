@@ -3,7 +3,7 @@ layout: default
 title: Revoking the identity of a participant
 category: tasks
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc.md
 excerpt: "[**An identity can be revoked from a participant using either the API or the command line**](../managing/identity-revoke.html). Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant."
 index-order: 4
 ---

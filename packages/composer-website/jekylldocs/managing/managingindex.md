@@ -4,7 +4,7 @@ title: Managing Index
 category: concepts
 section: managing
 index-order: 0
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc.md
 excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 ---
 

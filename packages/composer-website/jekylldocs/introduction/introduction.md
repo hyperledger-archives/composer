@@ -1,8 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer -  Overview
+title: Introduction
 category: overview
-sidebar: sidebars/introduction.md
+section: introduction
+index-order: 0
+sidebar: sidebars/accordion-toc.md
 excerpt: Hyperledger Composer overview
 ---
 

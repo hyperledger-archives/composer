@@ -4,7 +4,7 @@ title: Integrating Index
 category: concepts
 section: integrating
 index-order: 0
-sidebar: sidebars/integrating.md
+sidebar: sidebars/accordion-toc.md
 excerpt: How to create a new Connection Profile
 ---
 

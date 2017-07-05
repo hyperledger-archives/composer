@@ -2,7 +2,9 @@
 layout: default
 title: Task - Testing Business Networks
 category: tasks
-sidebar: sidebars/businessnetworks.md
+section: business-network
+index-order: 5
+sidebar: sidebars/accordion-toc.md
 excerpt: How to test business networks
 ---
 

@@ -1,11 +1,12 @@
 ---
 layout: default
-title: Key Concepts in Hyperledger Composer
-sidebar: sidebars/introduction.md
-excerpt:
+title: Key Concepts
+sidebar: sidebars/accordion-toc.md
+section: introduction
+index-order: 1
 ---
 
-# Features and Concepts in {{site.data.conrefs.composer_full}}
+# Key Concepts in {{site.data.conrefs.composer_full}}
 
 {{site.data.conrefs.composer_full}} is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow **participants** to send **transactions** that exchange **assets**.
 

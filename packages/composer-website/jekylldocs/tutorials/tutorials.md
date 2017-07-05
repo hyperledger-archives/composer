@@ -3,7 +3,7 @@ layout: default
 title: Tutorials Index
 category: tutorials
 section: tutorials
-sidebar: sidebars/tutorials.md
+sidebar: sidebars/accordion-toc.md
 index-order: 0
 excerpt: Tutorials
 ---
