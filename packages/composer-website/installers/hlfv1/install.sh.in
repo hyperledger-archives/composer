@@ -68,8 +68,8 @@ docker tag hyperledger/composer-playground:{{ENV_VER}} hyperledger/composer-play
 docker-compose -p composer -f docker-compose-playground.yml up -d
 # copy over pre-imported admin credentials
 cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
-docker exec composer mkdir /home/composer/.hfc-key-store
-tar -cv * | docker exec -i composer tar x -C /home/composer/.hfc-key-store
+docker exec composer mkdir /home/composer/.composer-wallet
+tar -cv * | docker exec -i composer tar x -C /home/composer/.composer-wallet
 
 # Wait for playground to start
 sleep 5

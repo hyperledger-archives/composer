@@ -255,7 +255,7 @@ export class ConnectionProfileDataComponent {
                     this.initOrderers()
                 ),
                 channel: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.channel : 'mychannel',
+                    this.connectionProfileData ? this.connectionProfileData.profile.channel : 'composerchannel',
                     [Validators.required]
                 ],
                 mspID: [
