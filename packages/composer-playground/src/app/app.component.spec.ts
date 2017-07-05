@@ -22,6 +22,7 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { WalletService } from './services/wallet.service';
 import { AboutService } from './services/about.service';
+import { TransactionService } from './services/transaction.service';
 
 import { FileWallet } from 'composer-common';
 
@@ -147,6 +148,7 @@ describe('AppComponent', () => {
     let mockAlertService: MockAlertService;
     let mockModal;
     let mockAdminService;
+    let mockTransactionService;
     let mockConnectionProfileService;
     let mockBusinessNetworkConnection;
     let mockWalletService;
@@ -175,6 +177,8 @@ describe('AppComponent', () => {
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
+        mockTransactionService = sinon.createStubInstance(TransactionService);
+        mockTransactionService.event$ = new BehaviorSubject<string>(null);
 
         mockAlertService = new MockAlertService();
 
@@ -201,7 +205,8 @@ describe('AppComponent', () => {
                 {provide: WalletService, useValue: mockWalletService},
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
-                {provide: AboutService, useValue: mockAboutService}
+                {provide: AboutService, useValue: mockAboutService},
+                {provide: TransactionService, useValue: mockTransactionService}
             ]
         })
 
@@ -229,18 +234,22 @@ describe('AppComponent', () => {
     describe('ngOnInit', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnEvent;
         let mockUpdateConnectionData;
         let mockQueryParamUpdated;
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
+        let eventSubscribeSpy;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnEvent = sinon.stub(component, 'onEvent');
             mockUpdateConnectionData = sinon.stub(component, 'updateConnectionData');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
+            eventSubscribeSpy = sinon.spy(mockTransactionService.event$, 'subscribe');
         }));
 
         it('should create', () => {

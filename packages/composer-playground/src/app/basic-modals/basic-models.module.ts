@@ -9,9 +9,10 @@ import { ErrorComponent } from './error/error.component';
 import { ReplaceComponent } from './replace-confirm/replace-confirm.component';
 import { SuccessComponent } from './success/success.component';
 import { AlertService } from './alert.service';
+import { TestModule } from './../test/test.module';
 
 @NgModule({
-    imports: [CommonModule, NgbModule],
+    imports: [CommonModule, NgbModule, TestModule],
     entryComponents: [BusyComponent, ConfirmComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent],
     declarations: [BusyComponent, ConfirmComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent],
     providers: [AlertService],

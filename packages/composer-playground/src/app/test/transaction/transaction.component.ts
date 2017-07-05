@@ -29,6 +29,7 @@ export class TransactionComponent implements OnInit {
     private selectedTransaction = null;
     private selectedTransactionName: string = null;
     private hiddenTransactionItems = new Map();
+    private submittedTransaction = null;
 
     private resourceDefinition: string = null;
     private submitInProgress: boolean = false;
@@ -150,18 +151,17 @@ export class TransactionComponent implements OnInit {
         .then(() => {
             let json = JSON.parse(this.resourceDefinition);
             let serializer = this.clientService.getBusinessNetwork().getSerializer();
-            let resource = serializer.fromJSON(json);
-            return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);
+            this.submittedTransaction = serializer.fromJSON(json);
+            return this.clientService.getBusinessNetworkConnection().submitTransaction(this.submittedTransaction);
         })
         .then(() => {
             this.submitInProgress = false;
             this.definitionError = null;
-            this.activeModal.close();
+            this.activeModal.close(this.submittedTransaction);
         })
         .catch((error) => {
             this.definitionError = error.toString();
             this.submitInProgress = false;
         });
     }
-
 }

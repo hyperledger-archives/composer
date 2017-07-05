@@ -26,6 +26,7 @@ export class EditorFileComponent {
     private code: string = null;
     private readme = null;
     private previousCode: string = null;
+
     private codeConfig = {
         lineNumbers: true,
         lineWrapping: true,

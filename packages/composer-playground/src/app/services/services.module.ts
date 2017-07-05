@@ -12,11 +12,12 @@ import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './samplebusinessnetwork.service';
 import { WalletService } from './wallet.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { TransactionService } from './transaction.service';
 
 @NgModule({
     imports: [CommonModule],
     declarations: [],
-    providers: [AboutService, AlertService, AdminService, ClientService, ConnectionProfileService, IdentityService, InitializationService, SampleBusinessNetworkService, WalletService],
+    providers: [AboutService, AlertService, AdminService, ClientService, ConnectionProfileService, IdentityService, InitializationService, SampleBusinessNetworkService, WalletService, TransactionService],
     exports: []
 })
 
