@@ -42,18 +42,18 @@ The REST server can be configured using environment variables, instead of supply
               "name": "hlfv1",
               "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
-              "keyValStore": "/home/composer/.hfc-key-store",
+              "keyValStore": "/home/composer/.composer-credentials",
               "timeout": 300,
               "orderers": [
                 {
                   "url": "grpc://orderer.example.com:7050"
                 }
               ],
-              "channel": "mychannel",
+              "channel": "composerchannel",
               "mspID": "Org1MSP",
               "ca": {
-                "url": "http://ca.example.com:7054",
-                "name": "ca.example.com"
+                "url": "http://ca.org1.example.com:7054",
+                "name": "ca.org1.example.com"
               },
               "peers": [
                 {
@@ -200,18 +200,18 @@ The examples are based on the business network that is deployed to Hyperledger F
               "name": "hlfv1",
               "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
-              "keyValStore": "/home/composer/.hfc-key-store",
+              "keyValStore": "/home/composer/.composer-credentials",
               "timeout": 300,
               "orderers": [
                 {
                   "url": "grpc://orderer.example.com:7050"
                 }
               ],
-              "channel": "mychannel",
+              "channel": "composerchannel",
               "mspID": "Org1MSP",
               "ca": {
-                "url": "http://ca.example.com:7054",
-                "name": "ca.example.com"
+                "url": "http://ca.org1.example.com:7054",
+                "name": "ca.org1.example.com"
               },
               "peers": [
                 {

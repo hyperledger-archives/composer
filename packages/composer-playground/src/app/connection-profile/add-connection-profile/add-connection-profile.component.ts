@@ -305,7 +305,7 @@ export class AddConnectionProfileComponent {
                 cert: ''
             }];
             this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
-            this.addConnectionProfileChannel = 'mychannel';
+            this.addConnectionProfileChannel = 'composerchannel';
             this.addConnectionProfileMspId = 'Org1MSP';
             this.addConnectionProfileTimeout = 5 * 60;
         });
