@@ -2,7 +2,7 @@
 
 We welcome contributions to the code base. There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/composer-dev) that we would encourage you to join and introduce yourself on.
 
-There are multiple components within Composer, which can be conceptually viewed using the mindmap
+There are multiple components within Composer, which can be conceptually viewed using the mindmap.
 
 ![alt text](./contrib-notes/Features.png "Composer Mindmap")
 
@@ -26,7 +26,7 @@ If you find a bug in the source code, an error in any documentation, or would li
 
 ## Getting Started
 
-In order to assist anybody starting from scratch, we have produced guides on setting up a a development environment.
+In order to assist anybody starting from scratch, we have produced guides on setting up a development environment.
 
 
 * [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
