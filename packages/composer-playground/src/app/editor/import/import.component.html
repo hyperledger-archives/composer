@@ -94,10 +94,10 @@
     </div>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+    <button id="import_cancel" type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="deploy()" [disabled]="!chosenNetwork && !currentBusinessNetwork">
+    <button id="import_confirm" type="button" class="primary" (click)="deploy()" [disabled]="!chosenNetwork && !currentBusinessNetwork">
       <span *ngIf="!deployInProgress">Deploy</span>
       <div *ngIf="deployInProgress" class="ibm-spinner-indeterminate small loop">
         <div class="loader">

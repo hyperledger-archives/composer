@@ -1,4 +1,4 @@
-<section class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
+<section id="success_notify" class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
     <button class="icon close" (click)="close(messagesIndex)">
         <svg class="ibm-icon" aria-hidden="true">
             <use xlink:href="#icon-close_new"></use>
