@@ -14,6 +14,7 @@
 
 'use strict';
 
+const AclCompiler = require('./aclcompiler');
 const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
@@ -32,6 +33,7 @@ const LOG = Logger.getLog('Context');
 const businessNetworkCache = LRU(8);
 const compiledScriptBundleCache = LRU(8);
 const compiledQueryBundleCache = LRU(8);
+const compiledAclBundleCache = LRU(8);
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -78,6 +80,18 @@ class Context {
     }
 
     /**
+     * Store a compiled ACL bundle in the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @param {CompiledAclBundle} compiledAclBundle The compiled ACL bundle.
+     */
+    static cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle) {
+        const method = 'cacheCompiledAclBundle';
+        LOG.entry(method, businessNetworkHash, compiledAclBundle);
+        compiledAclBundleCache.set(businessNetworkHash, compiledAclBundle);
+        LOG.exit(method);
+    }
+
+    /**
      * Constructor.
      * @param {Engine} engine The chaincode engine that owns this context.
      */
@@ -99,6 +113,8 @@ class Context {
         this.compiledScriptBundle = null;
         this.queryCompiler = null;
         this.compiledQueryBundle = null;
+        this.aclCompiler = null;
+        this.compiledAclBundle = null;
     }
 
     /**
@@ -206,6 +222,36 @@ class Context {
                 Context.cacheCompiledQueryBundle(businessNetworkRecord.hash, compiledQueryBundle);
                 LOG.exit(method, compiledQueryBundle);
                 return compiledQueryBundle;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    /**
+     * Load or compile the compiled ACL bundle.
+     * @param {Object} businessNetworkRecord The business network record.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
+     */
+    loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition) {
+        const method = 'loadCompiledAclBundle';
+        LOG.entry(method);
+        LOG.debug(method, 'Looking in cache for compiled ACL bundle', businessNetworkRecord.hash);
+        let compiledAclBundle = compiledAclBundleCache.get(businessNetworkRecord.hash);
+        if (compiledAclBundle) {
+            LOG.debug(method, 'Compiled ACL bundle is in cache');
+            return Promise.resolve(compiledAclBundle);
+        }
+        LOG.debug(method, 'Compiled ACL bundle is not in cache, loading');
+        return Promise.resolve()
+            .then(() => {
+                let compiledAclBundle = this.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                Context.cacheCompiledAclBundle(businessNetworkRecord.hash, compiledAclBundle);
+                LOG.exit(method, compiledAclBundle);
+                return compiledAclBundle;
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -336,6 +382,37 @@ class Context {
     }
 
     /**
+     * Get the compiled ACL bundle to use.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition to use.
+     * @param {Object} [options] The options to use.
+     * @param {CompiledAclBundle} [options.compiledAclBundle] The business network definition to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    findCompiledAclBundle(businessNetworkDefinition, options) {
+        const method = 'findCompiledAclBundle';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.compiledAclBundle) {
+                    LOG.debug(method, 'Compiled ACL bundle already specified');
+                    return options.compiledAclBundle;
+                } else {
+                    LOG.debug(method, 'Compiled ACL bundle not specified, loading from world state');
+                    return this.loadBusinessNetworkRecord()
+                        .then((businessNetworkRecord) => {
+                            return this.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition);
+                        });
+                }
+            })
+            .then((compiledAclBundle) => {
+                LOG.exit(method, compiledAclBundle);
+                return compiledAclBundle;
+            });
+    }
+
+    /**
      * Initialize the context for use.
      * @param {Object} [options] The options to use.
      * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
@@ -368,6 +445,11 @@ class Context {
             .then((compiledQueryBundle) => {
                 LOG.debug(method, 'Got compiled query bundle');
                 this.compiledQueryBundle = compiledQueryBundle;
+                return this.findCompiledAclBundle(this.businessNetworkDefinition, options);
+            })
+            .then((compiledAclBundle) => {
+                LOG.debug(method, 'Got compiled ACL bundle');
+                this.compiledAclBundle = compiledAclBundle;
                 LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
                 if (options.sysregistries) {
                     this.sysregistries = options.sysregistries;
@@ -539,7 +621,7 @@ class Context {
      */
     getResolver() {
         if (!this.resolver) {
-            this.resolver = new Resolver(this.getIntrospector(), this.getRegistryManager());
+            this.resolver = new Resolver(this.getFactory(), this.getIntrospector(), this.getRegistryManager());
         }
         return this.resolver;
     }
@@ -624,7 +706,7 @@ class Context {
      */
     getAccessController() {
         if (!this.accessController) {
-            this.accessController = new AccessController(this.getAclManager());
+            this.accessController = new AccessController(this);
         }
         return this.accessController;
     }
@@ -699,10 +781,29 @@ class Context {
 
     /**
      * Get the compiled query bundle.
-     * @return {CompiledScriptBundle} compiledQueryBundle The compiled query bundle.
+     * @return {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
      */
     getCompiledQueryBundle() {
         return this.compiledQueryBundle;
+    }
+
+    /**
+     * Get the ACL compiler.
+     * @return {AclCompiler} aclCompiler The ACL compiler.
+     */
+    getAclCompiler() {
+        if (!this.aclCompiler) {
+            this.aclCompiler = new AclCompiler();
+        }
+        return this.aclCompiler;
+    }
+
+    /**
+     * Get the compiled ACL bundle.
+     * @return {CompiledAclBundle} compiledAclBundle The compiled ACL bundle.
+     */
+    getCompiledAclBundle() {
+        return this.compiledAclBundle;
     }
 
     /**

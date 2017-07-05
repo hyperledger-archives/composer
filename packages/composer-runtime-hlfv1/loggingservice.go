@@ -17,7 +17,44 @@ package main
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
+    "os"
+    "strings"
 )
+
+// enable logging based on either world state or env variable.
+// default to INFO if neither have a value.
+func EnableLogging(stub shim.ChaincodeStubInterface) {
+	level, _ := shim.LogLevel(getLogging(stub))
+	logger.SetLevel(level)
+}
+
+// get the currently defined logging level
+func getLogging(stub shim.ChaincodeStubInterface) (string) {
+	logger.Debug("Entering getLogging", &stub)	
+	var levelStr string
+	levelBytes, err := stub.GetState("ComposerLogLevel")
+	if err != nil || levelBytes == nil {
+		var isSet bool
+		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGGING_LEVEL")
+		if !isSet {
+			levelStr = "INFO"
+		}
+	} else {
+		levelStr = string(levelBytes)
+	}
+	return levelStr
+}
+
+// explicitly set the logging to a specific level
+func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
+	//We could check that the levelStr is valid but
+	//currently if it isn't then I think shim.LogLevel will return a default of loglevel of Error.
+	newLevel := strings.ToUpper(levelStr)
+	stub.PutState("ComposerLogLevel", []byte(newLevel))
+	level, _ := shim.LogLevel(newLevel)
+	logger.SetLevel(level)
+	logger.Warning("Setting loglevel to", newLevel)
+}
 
 // LoggingService is a Go wrapper around an instance of the LoggingService JavaScript class.
 type LoggingService struct {
@@ -65,8 +102,18 @@ func NewLoggingService(vm *duktape.Context, container *Container, stub shim.Chai
 	vm.PushGoFunction(result.logWarning)  // [ global composer theLoggingService logWarning ]
 	vm.PutPropString(-2, "logWarning")    // [ global composer theLoggingService ]
 
+	vm.PushGoFunction(result.getLogLevel)  // [ global composer theLoggingService getLogLevel ]
+	vm.PutPropString(-2, "getLogLevel")    // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.setLogLevel)  // [ global composer theLoggingService setLogLevel ]
+	vm.PutPropString(-2, "setLogLevel")    // [ global composer theLoggingService ]
+
 	// Return the new logging service.
 	return result
+}
+
+// save the current chaincode stub
+func (loggingService *LoggingService) setStub(stub shim.ChaincodeStubInterface) {
+	loggingService.Stub = stub
 }
 
 // getLogInserts extracts the list of JavaScript arguments and converts them into a Go array.
@@ -118,5 +165,19 @@ func (loggingService *LoggingService) logNotice(vm *duktape.Context) (result int
 func (loggingService *LoggingService) logWarning(vm *duktape.Context) (result int) {
 	strings := loggingService.getLogInserts(vm)
 	logger.Warning(strings...)
+	return 0
+}
+
+// getLogLevel returns the current log level of the runtime.
+func (loggingService *LoggingService) getLogLevel(vm *duktape.Context) (result int) {
+	loglevel := getLogging(loggingService.Stub);
+	vm.PushString(loglevel)
+	return 1
+}
+
+// setLogLevel sets the log level for the runtime.
+func (loggingService *LoggingService) setLogLevel(vm *duktape.Context) (result int) {
+	newLevel := vm.ToString(0)
+	SetLogging(loggingService.Stub, newLevel)
 	return 0
 }

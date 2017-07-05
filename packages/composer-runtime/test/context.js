@@ -14,10 +14,12 @@
 
 'use strict';
 
+const AclCompiler = require('../lib/aclcompiler');
 const AccessController = require('../lib/accesscontroller');
 const AclManager = require('composer-common').AclManager;
 const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledAclBundle = require('../lib/compiledaclbundle');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Context = require('../lib/context');
@@ -216,6 +218,45 @@ describe('Context', () => {
 
     });
 
+    describe('#loadCompiledAclBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        let mockAclCompiler;
+        let mockCompiledAclBundle;
+
+        beforeEach(() => {
+            mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.returns(mockCompiledAclBundle);
+            context.aclCompiler = mockAclCompiler;
+        });
+
+        it('should load the compiled ACL bundle if it is not already in the cache', () => {
+            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledAclBundle) => {
+                    compiledAclBundle.should.equal(mockCompiledAclBundle);
+                });
+        });
+
+        it('should not load the compiled ACL bundle if it is already in the cache', () => {
+            Context.cacheCompiledAclBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
+            mockAclCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
+                .then((compiledAclBundle) => {
+                    compiledAclBundle.should.equal(mockCompiledAclBundle);
+                });
+        });
+
+        it('should handle any errors thrown loading the compiled ACL bundle', () => {
+            Context.cacheCompiledAclBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
+            mockAclCompiler.compile.throws(new Error('such error'));
+            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
     describe('#loadCurrentParticipant', () => {
 
         it('should return null if no identity is specified', () => {
@@ -352,17 +393,51 @@ describe('Context', () => {
 
     });
 
+    describe('#findCompiledAclBundle', () => {
+
+        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
+        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        const compiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+
+        beforeEach(() => {
+            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
+            sinon.stub(context, 'loadCompiledAclBundle').resolves(compiledAclBundle);
+        });
+
+        it('should load the compiled ACL bundle if not specified', () => {
+            return context.findCompiledAclBundle(businessNetworkDefinition)
+                .then((foundCompiledAclBundle) => {
+                    sinon.assert.calledOnce(context.loadCompiledAclBundle);
+                    sinon.assert.calledWith(context.loadCompiledAclBundle, businessNetworkRecord, businessNetworkDefinition);
+                    foundCompiledAclBundle.should.equal(compiledAclBundle);
+                });
+        });
+
+        it('should use the compiled ACL bundle in the options', () => {
+            const options = {
+                compiledAclBundle: sinon.createStubInstance(CompiledAclBundle)
+            };
+            return context.findCompiledAclBundle(businessNetworkDefinition, options)
+                .then((foundCompiledAclBundle) => {
+                    foundCompiledAclBundle.should.equal(options.compiledAclBundle);
+                });
+        });
+
+    });
+
     describe('#initialize', () => {
 
-        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockSystemIdentities;
+        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockSystemIdentities, mockCompiledAclBundle;
 
         beforeEach(() => {
             mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
             mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
             sinon.stub(context, 'findBusinessNetworkDefinition').resolves(mockBusinessNetworkDefinition);
             sinon.stub(context, 'findCompiledScriptBundle').resolves(mockCompiledScriptBundle);
             sinon.stub(context, 'findCompiledQueryBundle').resolves(mockCompiledQueryBundle);
+            sinon.stub(context, 'findCompiledAclBundle').resolves(mockCompiledAclBundle);
             sinon.stub(context, 'loadCurrentParticipant').resolves(null);
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
@@ -382,9 +457,12 @@ describe('Context', () => {
                     sinon.assert.calledWith(context.findCompiledScriptBundle, mockBusinessNetworkDefinition, options);
                     sinon.assert.calledOnce(context.findCompiledQueryBundle);
                     sinon.assert.calledWith(context.findCompiledQueryBundle, mockBusinessNetworkDefinition, options);
+                    sinon.assert.calledOnce(context.findCompiledAclBundle);
+                    sinon.assert.calledWith(context.findCompiledAclBundle, mockBusinessNetworkDefinition, options);
                     context.businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
                     context.compiledScriptBundle.should.equal(mockCompiledScriptBundle);
                     context.compiledQueryBundle.should.equal(mockCompiledQueryBundle);
+                    context.compiledAclBundle.should.equal(mockCompiledAclBundle);
                     sinon.assert.calledOnce(context.loadCurrentParticipant);
                     should.equal(context.participant, null);
                     context.sysregistries.should.equal(mockSystemRegistries);
@@ -624,6 +702,8 @@ describe('Context', () => {
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockIntrospector = sinon.createStubInstance(Introspector);
             sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
             context.getResolver().should.be.an.instanceOf(Resolver);
         });
 
@@ -842,7 +922,7 @@ describe('Context', () => {
             context.getScriptCompiler().should.be.an.instanceOf(ScriptCompiler);
         });
 
-        it('should return an existing registry manager', () => {
+        it('should return an existing script compiler', () => {
             let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
             context.scriptCompiler = mockScriptCompiler;
             context.getScriptCompiler().should.equal(mockScriptCompiler);
@@ -866,7 +946,7 @@ describe('Context', () => {
             context.getQueryCompiler().should.be.an.instanceOf(QueryCompiler);
         });
 
-        it('should return an existing registry manager', () => {
+        it('should return an existing query compiler', () => {
             let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
             context.queryCompiler = mockQueryCompiler;
             context.getQueryCompiler().should.equal(mockQueryCompiler);
@@ -883,6 +963,31 @@ describe('Context', () => {
         });
 
     });
+
+    describe('#getAclCompiler', () => {
+
+        it('should return a new ACL compiler', () => {
+            context.getAclCompiler().should.be.an.instanceOf(AclCompiler);
+        });
+
+        it('should return an existing ACL compiler', () => {
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            context.aclCompiler = mockAclCompiler;
+            context.getAclCompiler().should.equal(mockAclCompiler);
+        });
+
+    });
+
+    describe('#getCompiledAclBundle', () => {
+
+        it('should return the compiled query bundle', () => {
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            context.compiledAclBundle = mockCompiledAclBundle;
+            context.getCompiledAclBundle().should.equal(mockCompiledAclBundle);
+        });
+
+    });
+
 
     describe('#transactionStart', () => {
 

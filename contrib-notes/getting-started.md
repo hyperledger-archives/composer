@@ -1,10 +1,10 @@
 # Contributing to Composer
 
-* Currently reading -> [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
-* [Suggested IDE setup](./contrib-notes/ide-setup.md)
-* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
-* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
-* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+* Currently reading -> [Step-by-step development environment setup](./getting-started.md)
+* [Suggested IDE setup](./ide-setup.md)
+* [Coding Guidelines](./coding-guidelines.md)
+* [Pull Request Guidelines](./submitting-pull-request.md)
+* [Release process](./release-process/weekly-qa-validation.md)
 
 
 # Getting Started Developing Hyperledger Composer
@@ -17,12 +17,12 @@ After reading this guide, move on to reading the [coding-guidelines](./coding-gu
 
 ## Setup Scripts
 
-The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](./prerequisites.md)  
+The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](./prerequisites.md)
 
 If you wish to install manually or review the individual tool's own documentation the details are below.
 
 ## Tool Chain Reference Details
-This is a summary of the tools that will be required to work on Hyperledger Composer. Other tools are required but these will be installed automatically.  
+This is a summary of the tools that will be required to work on Hyperledger Composer. Other tools are required but these will be installed automatically.
 
 - **Git** This is probably already installed on most Linux machines. Setup is well documented on the [ibm.git website](https://help.github.com/enterprise/2.7/user/articles/set-up-git/) . Pay particular attention to[ setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.
 
@@ -95,7 +95,7 @@ You are now ready to try out your local clone of the Hyperledger Composer projec
 
 ## Testing your local environment
 
-To verify that your local environment is ready for development and to confirm later that the updates are good, run the built-in unit tests provided with the Hyperledger Composer project.  
+To verify that your local environment is ready for development and to confirm later that the updates are good, run the built-in unit tests provided with the Hyperledger Composer project.
 
     $ lerna run test
 
@@ -104,5 +104,5 @@ This will run the unit tests that are associated with all the modules.
 ## Next step
 Moving on to read
 
-* [Suggested IDE setup](./contrib-notes/ide-setup.md)
-* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
+* [Suggested IDE setup](./ide-setup.md)
+* [Coding Guidelines](./coding-guidelines.md)

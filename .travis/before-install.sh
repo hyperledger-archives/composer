@@ -10,7 +10,7 @@ sudo rm /usr/local/bin/docker-compose
 curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
 sudo mv docker-compose /usr/local/bin
-echo "Docker-compose version: " 
+echo "Docker-compose version: "
 docker-compose --version
 
 # Update docker
@@ -22,10 +22,16 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get update
 sudo apt-get install docker-ce
-echo "Docker version: " 
+echo "Docker version: "
 docker --version
 
-sudo apt-get install linkchecker
+# Install using pip as apt-get pulls the wrong version on Travis' trusty image
+# python requests 2.9.2 is essential prereq for linkchecker
+
+sudo pip install linkchecker
+sudo pip install linkchecker --upgrade
+sudo pip install requests==2.9.2
+linkchecker --version
 
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
@@ -85,17 +91,17 @@ elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
     git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  >> changedfiles.log   || echo Fail
 fi
 
-RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }') 
-if [ "${RESULT}" == "" ];
+RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }')
+if [ "${RESULT}" == "" ] && [ "$TRAVIS_TAG" == "" ];
 then
 
     # Check of the task current executing
     if [ "${FC_TASK}" != "docs" ]; then
-        echo "ABORT_BUILD=true" > ${DIR}/build.cfg
-        echo "ABORT_CODE=0" >> ${DIR}/build.cfg
+#        echo "ABORT_BUILD=true" > ${DIR}/build.cfg
+#        echo "ABORT_CODE=0" >> ${DIR}/build.cfg
         echo 'Docs only build - no pointing bothering with anything more'
         exit 0
-    fi 
+    fi
 
 else
   echo "More than docs changes"

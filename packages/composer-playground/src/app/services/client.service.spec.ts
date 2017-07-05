@@ -12,7 +12,7 @@ let should = chai.should();
 let expect = chai.expect;
 
 import { AdminService } from './admin.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ModelFile, Script, AclFile } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { BusinessNetworkConnection } from 'composer-client';
@@ -932,5 +932,85 @@ describe('ClientService', () => {
             connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
             businessNetworkConnectionMock.should.have.been.called;
         })));
+    });
+
+    describe('createNewBusinessNetwork', () => {
+        it('should alert on failure', inject([ClientService], (service: ClientService) => {
+            // Set up mocks
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork(null, null, null, null, null);
+
+            // Check expected
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
+            alertMock.errorStatus$.next.should.have.been.called;
+        }));
+
+        it('should not update the business network on failure', inject([ClientService], (service: ClientService) => {
+            // Set up mocks
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork(null, null, null, null, null);
+
+            // Check expected
+            businessNetworkChangedSpy.should.not.have.been.called;
+        }));
+
+        it('should create a new business network and notify on success', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            let filterSpy = sinon.spy(service, 'filterModelFiles');
+
+            let mockFile0 = sinon.createStubInstance(ModelFile);
+            mockFile0.isSystemModelFile.returns(false);
+            let mockFile1 = sinon.createStubInstance(ModelFile);
+            mockFile1.isSystemModelFile.returns(false);
+            let mockFile2 = sinon.createStubInstance(ModelFile);
+            mockFile2.isSystemModelFile.returns(false);
+            let mockFile3 = sinon.createStubInstance(ModelFile);
+            mockFile3.isSystemModelFile.returns(false);
+            let mockFile4 = sinon.createStubInstance(ModelFile);
+            mockFile4.isSystemModelFile.returns(true);
+
+            let modelManagerMock = {
+                getModelFiles: sinon.stub().returns([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]),
+                addModelFiles: sinon.stub()
+            };
+
+            let aclManagerMock = {
+                setAclFile: sinon.stub(),
+                getAclFile: sinon.stub().returns(aclFileMock)
+            };
+
+            let scriptManagerMock = {
+                getScripts: sinon.stub().returns([scriptFileMock, scriptFileMock]),
+                addScript: sinon.stub()
+            };
+
+            businessNetworkDefMock.getModelManager.returns(modelManagerMock);
+            businessNetworkDefMock.getScriptManager.returns(scriptManagerMock);
+            businessNetworkDefMock.getAclManager.returns(aclManagerMock);
+
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork('myBND', '1.0', 'description', '{}', null);
+
+            // We filter system namespaces
+            filterSpy.should.have.been.calledWith([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]);
+            let filterReturn = filterSpy.returnValues[0];
+            filterReturn.should.deep.equal([mockFile0, mockFile1, mockFile2, mockFile3]);
+
+            // We alert on success
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
     });
 });

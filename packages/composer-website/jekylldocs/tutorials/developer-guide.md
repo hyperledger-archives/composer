@@ -114,8 +114,7 @@ participant Trader identified by tradeId {
     o String firstName
     o String lastName
 }
-transaction Trade identified by transactionId {
-    o String transactionId
+transaction Trade {
     --> Commodity commodity
     --> Trader newOwner
 }

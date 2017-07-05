@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AddIdentityComponent } from '../add-identity';
-import { IssueIdentityComponent } from '../issue-identity';
-import { IdentityIssuedComponent } from '../identity-issued';
-import { AlertService } from '../services/alert.service';
+import { AddIdentityComponent } from './add-identity';
+import { IssueIdentityComponent } from './issue-identity';
+import { IdentityIssuedComponent } from './identity-issued';
+import { AlertService } from '../basic-modals/alert.service';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 import { ConnectionProfileService } from '../services/connectionprofile.service';

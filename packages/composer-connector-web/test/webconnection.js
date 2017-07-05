@@ -182,14 +182,14 @@ describe('WebConnection', () => {
             sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
                         context.should.be.an.instanceOf(Context);
                         context.getIdentityService().getCurrentUserID().should.equal('bob1');
                         return true;
-                    }), 'init', ['aGVsbG8gd29ybGQ=']);
+                    }), 'init', ['aGVsbG8gd29ybGQ=', '{}']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, '133c00a3-8555-4aa5-9165-9de9a8f8a838');

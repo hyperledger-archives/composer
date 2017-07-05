@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AddConnectionProfileComponent } from '../add-connection-profile/add-connection-profile.component.ts';
+import { AddConnectionProfileComponent } from './add-connection-profile/add-connection-profile.component.ts';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 @Component({
     selector: 'connection-profile',

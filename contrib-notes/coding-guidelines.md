@@ -1,9 +1,9 @@
 # Contributing to Composer
-* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
-* [Suggested IDE setup](./contrib-notes/ide-setup.md)
-* Currently reading ->  [Coding Guidelines](./contrib-notes/coding-guidelines.md)
-* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
-* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+* [Step-by-step developement environment setup](./getting-started.md)
+* [Suggested IDE setup](./ide-setup.md)
+* Currently reading ->  [Coding Guidelines](./coding-guidelines.md)
+* [Pull Request Guidelines](./submitting-pull-request.md)
+* [Release process](./release-process/weekly-qa-validation.md)
 
 # Coding Guidelines
 
@@ -15,7 +15,7 @@ As a summary:
  - All public API methods must be documented.
  - Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
-## Github usage
+## GitHub usage
 
 Here is the preferred workflow involved in making a pull request to the Composer Project - this is based around making a change in the `hyperledger/composer repository`. The same would apply for any of the other related repositories.
 
@@ -29,7 +29,7 @@ $ git clone git@github.com:MyGitName/composer.git
 - This will configure the `origin` to be your fork of the Composer repository. You must create an `upstream` target to refer to main Composer repository. [the terms origin and upstream are convetions and could be anything. But as in any convetion the purpose is to avoid confusion]
 ```
 $ git remote add upstream git@github.com:hyperledger/composer.git
-```  
+```
 - As this is just forked it will be up-to-date. But if you did this previously and now starting on something new, the the next step is to update your master branch.
 
   *This is the point you would come to generally when starting anything new, a new clone/fork everytime is not necassary*
@@ -119,4 +119,4 @@ Hyperledger Composer tests use an assertion library called [chai](http://chaijs.
 The Hyperledger Composer project uses a code coverage tool called [Istanbul](https://gotwarlost.github.io/istanbul/) to ensure that all the code is tested, including statements, branches, and functions. This helps to improve the quality of the Hyperledger Composer tests. The output of Istanbul can be used to see where any specific tests need to be added to ensure complete code coverage.
 
 # Next step
-Move on to read [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
+Move on to read [Pull Request Guidelines](./submitting-pull-request.md)

@@ -3,12 +3,13 @@ const spawn = require('child_process').spawn;
 const snowWhite = require('sleep');
 
 // Note that this script is called via npm run e2e:main/nobuild and consequently all
-// paths are relative to that calling location (two directories up)
+// paths are relative to that calling location (~/composer-playground)
 
-let protractorRC = null;
+// Start the api server as a spawned child process
+let childAPI = spawn('node', ['../composer-playground-api/cli.js']);
 
 // Start the target test server as a spawned child process
-let childServer = spawn('http-server', ['./dist', '-p 3001', '--cors', '--push-state']);
+let childServer = spawn('node', ['cli.js', '-p', '3001']);
 
 // Execute protractor and attach to listeners
 var childProtractor = exec('webdriver-manager update && protractor -- protractor.conf.js');
@@ -28,6 +29,7 @@ childProtractor.stderr.on('data', function(data) {
 // Capture Protactor return code
 childProtractor.on('close', function(code) {
     console.log('Return code: ', code);
+    childAPI.kill();
     childServer.kill();
-    process.exit(protractorRC);
+    process.exit(code);
 });

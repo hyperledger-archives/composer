@@ -92,11 +92,19 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
-        } else if (args.length !== 1) {
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive']));
+        } else if (args.length !== 2) {
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive', 'initArgs']));
         }
+
+        // see if there are any init options and process
+        const initOptions = JSON.parse(args[1]);
+        if (initOptions.logLevel && context.getParticipant() === null) {
+            this.getContainer().getLoggingService().setLogLevel(initOptions.logLevel);
+        }
+
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition, compiledScriptBundle, compiledQueryBundle;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
+        let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysidentities;
         return Promise.resolve()
             .then(() => {
@@ -142,6 +150,11 @@ class Engine {
                 LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
                 Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
 
+                // Cache the compiled ACL bundle.
+                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
                 return dataService.ensureCollection('$sysdata');
@@ -181,6 +194,7 @@ class Engine {
                     businessNetworkDefinition: businessNetworkDefinition,
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
+                    compiledAclBundle: compiledAclBundle,
                     sysregistries: sysregistries,
                     sysidentities: sysidentities
                 });
@@ -433,5 +447,6 @@ mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));
 mixin(require('./engine.transactions'));
+mixin(require('./engine.logging'));
 
 module.exports = Engine;

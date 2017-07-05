@@ -70,6 +70,7 @@ describe('Api', () => {
         mockDataService = sinon.createStubInstance(DataService);
         mockContext.getDataService.returns(mockDataService);
         mockAccessController = sinon.createStubInstance(AccessController);
+        mockAccessController.check.resolves();
         mockContext.getAccessController.returns(mockAccessController);
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
         mockContext.getCompiledQueryBundle.returns(mockCompiledQueryBundle);
@@ -251,7 +252,7 @@ describe('Api', () => {
                 resource.$identifier = 'id' + i;
                 mockSerializer.fromJSON.withArgs(filteredObject).returns(resource);
                 if (i % 2 === 0) {
-                    mockAccessController.check.withArgs(resource, 'READ').throws(new Error('access denied'));
+                    mockAccessController.check.withArgs(resource, 'READ').rejects(new Error('access denied'));
                 } else {
                     mockResources.push(resource);
                 }

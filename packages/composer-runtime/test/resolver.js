@@ -14,17 +14,13 @@
 
 'use strict';
 
-const AssetDeclaration = require('composer-common').AssetDeclaration;
-const ClassDeclaration = require('composer-common').ClassDeclaration;
+const Factory = require('composer-common').Factory;
 const Introspector = require('composer-common').Introspector;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
-const Property = require('composer-common').Property;
+const InvalidRelationship = require('../lib/invalidrelationship');
+const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Relationship = require('composer-common').Relationship;
 const Resolver = require('../lib/resolver');
-const Resource = require('composer-common').Resource;
-const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 
 const chai = require('chai');
 chai.should();
@@ -34,29 +30,84 @@ require('sinon-as-promised');
 
 describe('Resolver', () => {
 
+    let modelManager;
+    let factory;
+    let introspector;
     let mockRegistryManager;
-    let mockIntrospector;
     let resolver;
 
     beforeEach(() => {
+        modelManager = new ModelManager();
+        modelManager.addModelFile(`
+        namespace org.doge
+
+        concept DogeConcept {
+            o String value optional
+        }
+
+        asset DogeAsset identified by dogeId {
+            o String dogeId
+            o String value optional
+            o String[] values optional
+            o DogeConcept concept optional
+            o DogeConcept[] concepts optional
+            o DogeTransaction resource optional
+            o DogeTransaction[] resources optional
+            --> DogeParticipant relationship optional
+            --> DogeParticipant[] relationships optional
+        }
+
+        participant DogeParticipant identified by dogeId {
+            o String dogeId
+            o String value optional
+        }
+
+        transaction DogeTransaction {
+            o String dogeId
+            o String value optional
+        }`);
+        factory = new Factory(modelManager);
+        introspector = new Introspector(modelManager);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        mockIntrospector = sinon.createStubInstance(Introspector);
-        resolver = new Resolver(mockIntrospector, mockRegistryManager);
+        resolver = new Resolver(factory, introspector, mockRegistryManager);
+    });
+
+    describe('#prepare', () => {
+
+        it('should prepare resources', () => {
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            sinon.stub(resolver, 'resolveResourceOrConcept').resolves(resource);
+            const cb = sinon.stub();
+            return resolver.prepare(resource, cb).should.eventually.equal(resource)
+                .then(() => {
+                    const resolveState = resolver.resolveResourceOrConcept.args[0][1];
+                    resolveState.prepare.should.be.true;
+                    resolveState.prepareCallback.should.equal(cb);
+                    resolveState.preparePromise.should.be.an.instanceOf(Promise);
+                });
+        });
+
+        it('should throw for unrecognized types', () => {
+            (() => {
+                resolver.prepare('hello world');
+            }).should.throw(/unsupported type for identifiable/);
+        });
+
     });
 
     describe('#resolve', () => {
 
         it('should resolve resources', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
-            resolver.resolve(mockResource).should.eventually.equal(mockResource);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            sinon.stub(resolver, 'resolveResourceOrConcept').resolves(resource);
+            return resolver.resolve(resource).should.eventually.equal(resource);
         });
 
         it('should resolve relationships', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            sinon.stub(resolver, 'resolveRelationship').resolves(mockResource);
-            resolver.resolve(mockRelationship).should.eventually.equal(mockResource);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
+            sinon.stub(resolver, 'resolveRelationship').resolves(resource);
+            return resolver.resolve(relationship).should.eventually.equal(resource);
         });
 
         it('should throw for unrecognized types', () => {
@@ -67,152 +118,385 @@ describe('Resolver', () => {
 
     });
 
-    describe('#resolveResource', () => {
+    describe('#resolveResourceOrConcept', () => {
+
+        it('should immediately return an already cached resource', () => {
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            resource.value = 'hello world';
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            let resolvedResource;
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource_) => {
+                    resolvedResource = resolvedResource_;
+                    return resolver.resolveResourceOrConcept(resource, resolveState);
+                })
+                .then((resolvedResource_) => {
+                    resolvedResource.should.equal(resolvedResource_);
+                });
+        });
 
         it('should ignore any primitive valued properties', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
-            mockResource.prop1 = 'hello world';
-            return resolver.resolve(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.equal('hello world');
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            resource.value = 'hello world';
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.value.should.equal('hello world');
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
                 });
         });
 
         it('should ignore any arrays of primitive valued properties', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
-            mockResource.prop1 = ['hello world', 3.142];
-            return resolver.resolve(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.deep.equal(['hello world', 3.142]);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            resource.values = [ 'hello world', 'such meme' ];
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.values.should.deep.equal(['hello world', 'such meme']);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
+                });
+        });
+
+        it('should resolve any concept valued properties', () => {
+            // We want to see what else got resolved.
+            sinon.spy(resolver, 'resolveResourceOrConcept');
+            // Create the parent resource.
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            // Create the child resource.
+            let concept = factory.newConcept('org.doge', 'DogeConcept');
+            // Assign the child resource to the parent resource.
+            resource.concept = concept;
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.concept.should.deep.equal(concept);
+                    sinon.assert.calledTwice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, concept);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
+                });
+        });
+
+        it('should resolve any arrays of concept valued properties', () => {
+            // We want to see what else got resolved.
+            sinon.spy(resolver, 'resolveResourceOrConcept');
+            // Create the parent resource.
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            // Create the child resources.
+            let concept1 = factory.newConcept('org.doge', 'DogeConcept');
+            let concept2 = factory.newConcept('org.doge', 'DogeConcept');
+            // Assign the child resources to the parent resource.
+            resource.concepts = [concept1, concept2];
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.concepts.should.deep.equal([concept1, concept2]);
+                    sinon.assert.calledThrice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, concept1);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, concept2);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
                 });
         });
 
         it('should resolve any resource valued properties', () => {
             // We want to see what else got resolved.
-            sinon.spy(resolver, 'resolveResource');
+            sinon.spy(resolver, 'resolveResourceOrConcept');
             // Create the parent resource.
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
             // Create the child resource.
-            let mockChildResource = sinon.createStubInstance(Resource);
-            mockChildResource.$identifier = 'DOGE_1';
-            let mockChildClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockChildResource.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildClassDeclaration.getProperties.returns([]);
+            let childResource = factory.newResource('org.doge', 'DogeTransaction', 'DOGE_1');
             // Assign the child resource to the parent resource.
-            mockResource.prop1 = mockChildResource;
-            return resolver.resolveResource(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.equal(mockChildResource);
-                    sinon.assert.calledTwice(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockChildResource);
+            resource.resource = childResource;
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.resource.should.deep.equal(childResource);
+                    sinon.assert.calledTwice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, childResource);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
                 });
         });
 
         it('should resolve any arrays of resource valued properties', () => {
             // We want to see what else got resolved.
-            sinon.spy(resolver, 'resolveResource');
+            sinon.spy(resolver, 'resolveResourceOrConcept');
             // Create the parent resource.
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
             // Create the child resources.
-            let mockChildResource1 = sinon.createStubInstance(Resource);
-            mockChildResource1.$identifier = 'DOGE_1';
-            let mockChildResource2 = sinon.createStubInstance(Resource);
-            mockChildResource2.$identifier = 'DOGE_2';
-            let mockChildClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockChildResource1.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildResource2.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildClassDeclaration.getProperties.returns([]);
+            let childResource1 = factory.newResource('org.doge', 'DogeTransaction', 'DOGE_1');
+            let childResource2 = factory.newResource('org.doge', 'DogeTransaction', 'DOGE_2');
             // Assign the child resources to the parent resource.
-            mockResource.prop1 = [mockChildResource1, mockChildResource2];
-            return resolver.resolveResource(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.deep.equal([mockChildResource1, mockChildResource2]);
-                    sinon.assert.calledThrice(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockChildResource1);
-                    sinon.assert.calledWith(resolver.resolveResource, mockChildResource2);
+            resource.resources = [childResource1, childResource2];
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.resources.should.deep.equal([childResource1, childResource2]);
+                    sinon.assert.calledThrice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, childResource1);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, childResource2);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
                 });
         });
 
         it('should resolve any relationship valued properties', () => {
             // Create the parent resource.
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
             // Create the child (resolved) resource.
-            let mockChildResource = sinon.createStubInstance(Resource);
-            mockChildResource.$identifier = 'DOGE_1';
-            let mockChildClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockChildResource.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildClassDeclaration.getProperties.returns([]);
+            let childResource = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
             // Stub the resolveRelationship call to return the resource.
-            sinon.stub(resolver, 'resolveRelationship').resolves(mockChildResource);
+            sinon.stub(resolver, 'resolveRelationship').resolves(childResource);
             // Create the child relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
+            let relationship = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
             // Assign the child relationship to the parent resource.
-            mockResource.prop1 = mockRelationship;
-            return resolver.resolveResource(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.equal(mockChildResource);
+            resource.relationship = relationship;
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.relationship.should.equal(childResource);
                     sinon.assert.calledOnce(resolver.resolveRelationship);
-                    sinon.assert.calledWith(resolver.resolveRelationship, mockRelationship);
+                    sinon.assert.calledWith(resolver.resolveRelationship, relationship);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
                 });
         });
 
         it('should resolve any arrays of relationship valued properties', () => {
             // Create the parent resource.
-            let mockResource = sinon.createStubInstance(Resource);
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockResource.getClassDeclaration.returns(mockClassDeclaration);
-            let mockProperty = sinon.createStubInstance(Property); mockProperty.getName.returns('prop1');
-            mockClassDeclaration.getProperties.returns([mockProperty]);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
             // Create the child (resolved) resource.
-            let mockChildResource1 = sinon.createStubInstance(Resource);
-            mockChildResource1.$identifier = 'DOGE_1';
-            let mockChildResource2 = sinon.createStubInstance(Resource);
-            mockChildResource2.$identifier = 'DOGE_2';
-            let mockChildClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockChildResource1.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildResource2.getClassDeclaration.returns(mockChildClassDeclaration);
-            mockChildClassDeclaration.getProperties.returns([]);
+            let childResource1 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
+            let childResource2 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_2');
             // Stub the resolveRelationship call to return the resource.
             sinon.stub(resolver, 'resolveRelationship');
-            resolver.resolveRelationship.onFirstCall().resolves(mockChildResource1);
-            resolver.resolveRelationship.onSecondCall().resolves(mockChildResource2);
+            resolver.resolveRelationship.onFirstCall().resolves(childResource1);
+            resolver.resolveRelationship.onSecondCall().resolves(childResource2);
             // Create the child relationship.
-            let mockRelationship1 = sinon.createStubInstance(Relationship);
-            mockRelationship1.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship1.getIdentifier.returns('DOGE_1');
-            let mockRelationship2 = sinon.createStubInstance(Relationship);
-            mockRelationship2.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship2.getIdentifier.returns('DOGE_2');
+            let relationship1 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
+            let relationship2 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_2');
             // Assign the child relationship to the parent resource.
-            mockResource.prop1 = [mockRelationship1, mockRelationship2];
-            return resolver.resolveResource(mockResource)
-                .then((mockResource) => {
-                    mockResource.prop1.should.deep.equal([mockChildResource1, mockChildResource2]);
+            resource.relationships = [relationship1, relationship2];
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource) => {
+                    resolvedResource.relationships.should.deep.equal([childResource1, childResource2]);
                     sinon.assert.calledTwice(resolver.resolveRelationship);
-                    sinon.assert.calledWith(resolver.resolveRelationship, mockRelationship1);
-                    sinon.assert.calledWith(resolver.resolveRelationship, mockRelationship2);
+                    sinon.assert.calledWith(resolver.resolveRelationship, relationship1);
+                    sinon.assert.calledWith(resolver.resolveRelationship, relationship2);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
+                });
+        });
+
+        it('should lazily resolve any relationship valued properties', () => {
+            // Create the parent resource.
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            // Create the child (resolved) resource.
+            let childResource = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
+            childResource.value = 'woop woop';
+            // Stub the resolveRelationship call to return the resource.
+            sinon.stub(resolver, 'resolveRelationship').resolves(childResource);
+            // Create the child relationship.
+            let relationship = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
+            // Assign the child relationship to the parent resource.
+            resource.relationship = relationship;
+            let cb = sinon.stub();
+            let resolveState = {
+                cachedResources: new Map(),
+                prepare: true,
+                prepareCallback: cb,
+                preparePromise: Promise.resolve()
+            };
+            let resolvedResource;
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource_) => {
+                    resolvedResource = resolvedResource_;
+                    sinon.assert.notCalled(resolver.resolveRelationship);
+                    sinon.assert.notCalled(cb);
+                    return resolvedResource.relationship.value;
+                })
+                .then((resolvedValue) => {
+                    resolvedValue.should.equal('woop woop');
+                    sinon.assert.calledOnce(resolver.resolveRelationship);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, resolveState.preparePromise);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
+                });
+        });
+
+        it('should lazily resolve any arrays of relationship valued properties', () => {
+            // Create the parent resource.
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            // Create the child (resolved) resource.
+            let childResource1 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
+            childResource1.value = 'woop woop';
+            let childResource2 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_2');
+            childResource2.value = 'meep meep';
+            // Stub the resolveRelationship call to return the resource.
+            sinon.stub(resolver, 'resolveRelationship');
+            resolver.resolveRelationship.onFirstCall().resolves(childResource1);
+            resolver.resolveRelationship.onSecondCall().resolves(childResource2);
+            // Create the child relationship.
+            let relationship1 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
+            let relationship2 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_2');
+            // Assign the child relationship to the parent resource.
+            resource.relationships = [relationship1, relationship2];
+            let cb = sinon.stub();
+            let resolveState = {
+                cachedResources: new Map(),
+                prepare: true,
+                prepareCallback: cb,
+                preparePromise: Promise.resolve()
+            };
+            let resolvedResource;
+            return resolver.resolveResourceOrConcept(resource, resolveState)
+                .then((resolvedResource_) => {
+                    resolvedResource = resolvedResource_;
+                    sinon.assert.notCalled(resolver.resolveRelationship);
+                    sinon.assert.notCalled(cb);
+                    return resolvedResource.relationships[0].value;
+                })
+                .then((resolvedValue) => {
+                    resolvedValue.should.equal('woop woop');
+                    sinon.assert.calledOnce(resolver.resolveRelationship);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, resolveState.preparePromise);
+                    return resolvedResource.relationships[1].value;
+                })
+                .then((resolvedValue) => {
+                    resolvedValue.should.equal('meep meep');
+                    sinon.assert.calledTwice(resolver.resolveRelationship);
+                    sinon.assert.calledTwice(cb);
+                    sinon.assert.calledWith(cb, resolveState.preparePromise);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resolvedResource);
+                });
+        });
+
+    });
+
+    describe('#resolveArray', () => {
+
+        it('should ignore any arrays of primitive valued properties', () => {
+            return resolver.resolveArray(['hello world', 3.142], {})
+                .then((newArray) => {
+                    newArray.should.deep.equal(['hello world', 3.142]);
+                });
+        });
+
+        it('should resolve any arrays of concept valued properties', () => {
+            // We want to see what else got resolved.
+            sinon.spy(resolver, 'resolveResourceOrConcept');
+            // Create the child resources.
+            let concept1 = factory.newConcept('org.doge', 'DogeConcept');
+            let concept2 = factory.newConcept('org.doge', 'DogeConcept');
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveArray([concept1, concept2], resolveState)
+                .then((newArray) => {
+                    newArray.should.deep.equal([concept1, concept2]);
+                    sinon.assert.calledTwice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, concept1);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, concept2);
+                });
+        });
+
+        it('should resolve any arrays of resource valued properties', () => {
+            // We want to see what else got resolved.
+            sinon.spy(resolver, 'resolveResourceOrConcept');
+            // Create the child resources.
+            let childResource1 = factory.newResource('org.doge', 'DogeTransaction', 'DOGE_1');
+            let childResource2 = factory.newResource('org.doge', 'DogeTransaction', 'DOGE_2');
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveArray([childResource1, childResource2], resolveState)
+                .then((newArray) => {
+                    newArray.should.deep.equal([childResource1, childResource2]);
+                    sinon.assert.calledTwice(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, childResource1);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, childResource2);
+                });
+        });
+
+        it('should resolve any arrays of relationship valued properties', () => {
+            // Create the child (resolved) resource.
+            let childResource1 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
+            let childResource2 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_2');
+            // Stub the resolveRelationship call to return the resource.
+            sinon.stub(resolver, 'resolveRelationship');
+            resolver.resolveRelationship.onFirstCall().resolves(childResource1);
+            resolver.resolveRelationship.onSecondCall().resolves(childResource2);
+            // Create the child relationship.
+            let relationship1 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
+            let relationship2 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_2');
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveArray([relationship1, relationship2], resolveState)
+                .then((newArray) => {
+                    newArray.should.deep.equal([childResource1, childResource2]);
+                    sinon.assert.calledTwice(resolver.resolveRelationship);
+                    sinon.assert.calledWith(resolver.resolveRelationship, relationship1);
+                    sinon.assert.calledWith(resolver.resolveRelationship, relationship2);
+                });
+        });
+
+        it('should lazily resolve any arrays of relationship valued properties', () => {
+            // Create the child (resolved) resource.
+            let childResource1 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_1');
+            childResource1.value = 'woop woop';
+            let childResource2 = factory.newResource('org.doge', 'DogeParticipant', 'DOGE_2');
+            childResource2.value = 'meep meep';
+            // Stub the resolveRelationship call to return the resource.
+            sinon.stub(resolver, 'resolveRelationship');
+            resolver.resolveRelationship.onFirstCall().resolves(childResource1);
+            resolver.resolveRelationship.onSecondCall().resolves(childResource2);
+            // Create the child relationship.
+            let relationship1 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
+            let relationship2 = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_2');
+            // Assign the child relationship to the parent resource.
+            let cb = sinon.stub();
+            let resolveState = {
+                cachedResources: new Map(),
+                prepare: true,
+                prepareCallback: cb,
+                preparePromise: Promise.resolve()
+            };
+            let array;
+            return resolver.resolveArray([relationship1, relationship2], resolveState)
+                .then((array_) => {
+                    array = array_;
+                    sinon.assert.notCalled(resolver.resolveRelationship);
+                    sinon.assert.notCalled(cb);
+                    return array[0].value;
+                })
+                .then((resolvedValue) => {
+                    resolvedValue.should.equal('woop woop');
+                    sinon.assert.calledOnce(resolver.resolveRelationship);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, resolveState.preparePromise);
+                    return array[1].value;
+                })
+                .then((resolvedValue) => {
+                    resolvedValue.should.equal('meep meep');
+                    sinon.assert.calledTwice(resolver.resolveRelationship);
+                    sinon.assert.calledTwice(cb);
+                    sinon.assert.calledWith(cb, resolveState.preparePromise);
                 });
         });
 
@@ -222,15 +506,10 @@ describe('Resolver', () => {
 
         it('should look for the resource in the default asset registry', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockAssetDeclaration);
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').resolves(mockRegistry);
-            return resolver.getRegistryForRelationship(mockRelationship)
+            mockRegistryManager.get.withArgs('Asset', 'org.doge.DogeAsset').resolves(mockRegistry);
+            return resolver.getRegistryForRelationship(relationship)
                 .then((registry) => {
                     registry.should.equal(mockRegistry);
                 });
@@ -238,15 +517,10 @@ describe('Resolver', () => {
 
         it('should look for the resource in the default participant registry', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockParticipantDeclaration);
+            let relationship = factory.newRelationship('org.doge', 'DogeParticipant', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
-            return resolver.getRegistryForRelationship(mockRelationship)
+            mockRegistryManager.get.withArgs('Participant', 'org.doge.DogeParticipant').resolves(mockRegistry);
+            return resolver.getRegistryForRelationship(relationship)
                 .then((registry) => {
                     registry.should.equal(mockRegistry);
                 });
@@ -254,16 +528,10 @@ describe('Resolver', () => {
 
         it('should look for the resource in the default transaction registry', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            let mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
-            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockTransactionDeclaration);
+            let relationship = factory.newRelationship('org.doge', 'DogeTransaction', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
-            mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
-            return resolver.getRegistryForRelationship(mockRelationship)
+            return resolver.getRegistryForRelationship(relationship)
                 .then((registry) => {
                     registry.should.equal(mockRegistry);
                 });
@@ -271,16 +539,11 @@ describe('Resolver', () => {
 
         it('should throw for an unsupported resource class declaration', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockClassDeclaration);
+            let relationship = factory.newRelationship('org.doge', 'DogeConcept', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
             (() => {
-                resolver.getRegistryForRelationship(mockRelationship);
+                resolver.getRegistryForRelationship(relationship);
             }).should.throw(/Unsupported class declaration type/);
         });
 
@@ -290,80 +553,86 @@ describe('Resolver', () => {
 
         it('should look for the resource in the correct registry', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
-            sinon.stub(resolver, 'getRegistryForRelationship').withArgs(mockRelationship).resolves(mockRegistry);
+            sinon.stub(resolver, 'getRegistryForRelationship').withArgs(relationship).resolves(mockRegistry);
             // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            mockRegistry.get.withArgs('DOGE_1').resolves(resource);
+            // Stub the resolveResourceOrConcept call.
+            sinon.stub(resolver, 'resolveResourceOrConcept').resolves(resource);
             let resolveState = {
                 cachedResources: new Map()
             };
-            return resolver.resolveRelationship(mockRelationship, resolveState)
+            return resolver.resolveRelationship(relationship, resolveState)
                 .then((resource) => {
                     sinon.assert.calledOnce(resolver.getRegistryForRelationship);
-                    sinon.assert.calledWith(resolver.getRegistryForRelationship, mockRelationship);
-                    resource.should.equal(mockResource);
-                    sinon.assert.calledOnce(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockResource);
-                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+                    sinon.assert.calledWith(resolver.getRegistryForRelationship, relationship);
+                    resource.should.equal(resource);
+                    sinon.assert.calledOnce(resolver.resolveResourceOrConcept);
+                    sinon.assert.calledWith(resolver.resolveResourceOrConcept, resource);
                 });
         });
 
         it('should not look for a cached resource', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').rejects();
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
+            mockRegistryManager.get.withArgs('Asset', 'org.doge.DogeAsset').rejects();
             // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').rejects();
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            // Stub the resolveResourceOrConcept call.
+            sinon.stub(resolver, 'resolveResourceOrConcept').rejects();
             let resolveState = {
                 cachedResources: new Map()
             };
-            resolveState.cachedResources.set('org.doge.Doge#DOGE_1', mockResource);
-            return resolver.resolveRelationship(mockRelationship, resolveState)
-                .then((mockRelationship) => {
-                    mockRelationship.should.equal(mockResource);
-                    sinon.assert.notCalled(resolver.resolveResource);
+            resolveState.cachedResources.set('org.doge.DogeAsset#DOGE_1', resource);
+            return resolver.resolveRelationship(relationship, resolveState)
+                .then((relationship) => {
+                    relationship.should.equal(resource);
+                    sinon.assert.notCalled(resolver.resolveResourceOrConcept);
                 });
         });
 
         it('should not resolve the resource if option is specified', () => {
             // Create the parent relationship.
-            let mockRelationship = sinon.createStubInstance(Relationship);
-            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
-            mockRelationship.getIdentifier.returns('DOGE_1');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockAssetDeclaration);
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').resolves(mockRegistry);
+            mockRegistryManager.get.withArgs('Asset', 'org.doge.DogeAsset').resolves(mockRegistry);
             // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').rejects();
+            let resource = factory.newResource('org.doge', 'DogeAsset', 'DOGE_1');
+            mockRegistry.get.withArgs('DOGE_1').resolves(resource);
+            // Stub the resolveResourceOrConcept call.
+            sinon.stub(resolver, 'resolveResourceOrConcept').rejects();
             let resolveState = {
                 cachedResources: new Map(),
                 skipRecursion: true
             };
-            return resolver.resolveRelationship(mockRelationship, resolveState)
-                .then((mockRelationship) => {
-                    mockRelationship.should.equal(mockResource);
-                    sinon.assert.notCalled(resolver.resolveResource);
-                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+            return resolver.resolveRelationship(relationship, resolveState)
+                .then((relationship) => {
+                    relationship.should.equal(resource);
+                    sinon.assert.notCalled(resolver.resolveResourceOrConcept);
+                    resolveState.cachedResources.get('org.doge.DogeAsset#DOGE_1').should.equal(resource);
+                });
+        });
+
+        it('should return an invalid relationship if the resource cannot be found', () => {
+            // Create the parent relationship.
+            let relationship = factory.newRelationship('org.doge', 'DogeAsset', 'DOGE_1');
+            let mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(resolver, 'getRegistryForRelationship').withArgs(relationship).resolves(mockRegistry);
+            // Create the resource it points to.
+            mockRegistry.get.withArgs('DOGE_1').rejects(new Error('such error'));
+            let resolveState = {
+                cachedResources: new Map()
+            };
+            return resolver.resolveRelationship(relationship, resolveState)
+                .then((resource) => {
+                    sinon.assert.calledOnce(resolver.getRegistryForRelationship);
+                    sinon.assert.calledWith(resolver.getRegistryForRelationship, relationship);
+                    resource.should.be.an.instanceOf(InvalidRelationship);
+                    (() => {
+                        resource.value === true;
+                    }).should.throw(/such error/);
                 });
         });
 
