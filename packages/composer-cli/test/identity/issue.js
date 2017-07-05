@@ -22,6 +22,11 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const sinon = require('sinon');
 require('sinon-as-promised');
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
+
+const fs = require('fs');
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
@@ -37,7 +42,7 @@ describe('composer identity issue CLI unit tests', () => {
         sandbox = sinon.sandbox.create();
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockBusinessNetworkConnection.connect.resolves();
-        mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false }).resolves({
+        mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', sinon.match.object).resolves({
             userID: 'dogeid1',
             userSecret: 'suchsecret'
         });
@@ -85,6 +90,54 @@ describe('composer identity issue CLI unit tests', () => {
 
             });
     });
+
+    it('should handle optional arguments', () => {
+        let argv = {
+            connectionProfileName: 'someOtherProfile',
+            businessNetworkName: BUSINESS_NETWORK_NAME,
+            enrollId: ENROLL_ID,
+            enrollSecret: ENROLL_SECRET,
+            newUserId: 'dogeid1',
+            participantId: 'org.doge.Doge#DOGE_1',
+            option: ['opt1=value1', 'opt2=value2']
+        };
+        return Issue.handler(argv)
+            .then((res) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { opt1: 'value1', opt2: 'value2', issuer: false });
+
+            });
+    });
+
+    it('should handle optional arguments file', () => {
+        let argv = {
+            connectionProfileName: 'someOtherProfile',
+            businessNetworkName: BUSINESS_NETWORK_NAME,
+            enrollId: ENROLL_ID,
+            enrollSecret: ENROLL_SECRET,
+            newUserId: 'dogeid1',
+            participantId: 'org.doge.Doge#DOGE_1',
+            optionsFile: '/path/to/options.json'
+        };
+        const optionsObject = {
+            affiliation: 'example.com',
+            role: 'admin'
+        };
+        const optionFileContents = JSON.stringify(optionsObject);
+        sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
+        sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
+
+        return Issue.handler(argv)
+            .then((res) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { affiliation: 'example.com', role: 'admin', issuer: false });
+            });
+    });
+
 
     it('should prompt for the enrollment secret if not specified', () => {
         sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
@@ -137,13 +190,7 @@ describe('composer identity issue CLI unit tests', () => {
             participantId: 'org.doge.Doge#DOGE_1'
         };
         return Issue.handler(argv)
-            .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-
-            });
+            .should.be.rejectedWith(/such error/);
     });
 
 });
