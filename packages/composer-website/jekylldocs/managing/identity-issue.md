@@ -3,7 +3,7 @@ layout: default
 title: Issuing an identity to a participant
 category: tasks
 section: managing
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/managing.md
 excerpt: "[**An identity can be issued to a participant using either the API or the command line**](../managing/identity-issue.html). Once an identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant."
 index-order: 3
 ---

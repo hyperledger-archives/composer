@@ -5,7 +5,7 @@ category: start
 section: integrating
 status: experimental
 index-order: 4
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/integrating.md
 excerpt: "[**Transaction processor functions can be used to call external REST services**](./call-out.html). This allows you to move complex computation off the blockchain."
 ---
 

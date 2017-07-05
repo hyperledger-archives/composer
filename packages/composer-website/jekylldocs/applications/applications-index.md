@@ -4,7 +4,7 @@ title: Developing Applications
 section: applications
 category: start
 index-order: 0
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/applications.md
 excerpt: Writing a node.js application
 ---
 

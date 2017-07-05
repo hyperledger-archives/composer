@@ -4,7 +4,7 @@ title: Writing a Node.js application
 section: applications
 category: start
 index-order: 1
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/applications.md
 excerpt: "[**Developing Node.js applications to work with Hyperledger Composer**](./node.html) allows you to  programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions."
 ---
 

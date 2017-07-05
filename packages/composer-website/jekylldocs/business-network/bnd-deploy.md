@@ -4,7 +4,7 @@ title: Task - Deploying and Updating Business Networks
 category: tasks
 section: business-network
 index-order: 3
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to deploy or update Business Networks
 ---
 

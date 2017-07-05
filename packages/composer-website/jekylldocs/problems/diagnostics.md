@@ -2,7 +2,7 @@
 layout: default
 title: Task - Diagnosing Problems
 category: tasks
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/problems.md
 excerpt: Diagnosing Problems
 section: diagnostics
 index-order: 0

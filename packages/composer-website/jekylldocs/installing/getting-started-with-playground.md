@@ -2,7 +2,7 @@
 layout: default
 title: Using the Playground online
 category: tasks
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/installing.md
 section: installing
 excerpt: To jump into the online Playground, click [**Try Online Playground**](../installing/getting-started-with-playground.html) here or in the table of contents on the left.
 index-order: 1

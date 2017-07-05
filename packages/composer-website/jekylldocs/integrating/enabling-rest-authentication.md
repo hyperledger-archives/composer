@@ -4,7 +4,7 @@ title: Enabling REST API authentication for a business network
 category: start
 section: integrating
 index-order: 2
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/integrating.md
 excerpt: By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By [**enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.**](./enabling-rest-authentication.html)
 ---
 

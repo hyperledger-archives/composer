@@ -4,7 +4,7 @@ title: Integrating with Node-RED
 category: integrating
 section: integrating
 index-order: 5
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/integrating.md
 excerpt: "[Node-RED](http://nodered.org) includes a number of [**Hyperledger Composer _nodes_ allowing you to submit transactions, read, update and delete assets and participants, and subscribe to events.**](./node-red.html)"
 ---
 

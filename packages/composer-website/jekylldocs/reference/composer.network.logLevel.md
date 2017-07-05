@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Network logLevel
 section: reference-command
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/reference.md
 excerpt: Composer Network logLevel
 ---
 

@@ -4,7 +4,7 @@ title: Introduction
 category: overview
 section: introduction
 index-order: 0
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/introduction.md
 excerpt: Hyperledger Composer overview
 ---
 

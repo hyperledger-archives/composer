@@ -2,7 +2,7 @@
 layout: default
 title: Support
 category: start
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/support.md
 excerpt: Get support with Hyperledger Composer
 section: support
 index-order: 0

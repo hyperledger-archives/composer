@@ -4,7 +4,7 @@ title: Emitting Events
 category: tasks
 section: business-network
 index-order: 4
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/businessnetworks.md
 excerpt: Emitting Events from Transaction Processor Functions
 ---
 

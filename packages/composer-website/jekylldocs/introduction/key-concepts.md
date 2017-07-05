@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Key Concepts
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/introduction.md
 section: introduction
 index-order: 1
 ---

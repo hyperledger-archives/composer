@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Typical Solution Architecture
-sidebar: sidebars/accordion-toc.md
+sidebar: sidebars/introduction.md
 section: introduction
 index-order: 2.5
 ---
