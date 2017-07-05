@@ -5,6 +5,7 @@ import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
+import { TransactionDeclaration } from 'composer-common';
 
 @Component({
     selector: 'app-test',
@@ -16,6 +17,7 @@ import { TransactionComponent } from './transaction/transaction.component';
 
 export class TestComponent implements OnInit {
 
+    hasTransactions = false;
     private assetRegistries = [];
     private participantRegistries = [];
     private transactionRegistry = null;
@@ -31,6 +33,16 @@ export class TestComponent implements OnInit {
     ngOnInit(): Promise<any> {
         return this.initializationService.initialize()
         .then(() => {
+
+            let introspector = this.clientService.getBusinessNetwork().getIntrospector();
+            let modelClassDeclarations = introspector.getClassDeclarations();
+            modelClassDeclarations.forEach((modelClassDeclaration) => {
+                // Generate list of all known (non-abstract) transaction types
+                if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
+                    this.hasTransactions = true;
+                }
+            });
+
             return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()
             .then((assetRegistries) => {
                 assetRegistries.forEach((assetRegistry) => {
@@ -95,4 +107,5 @@ export class TestComponent implements OnInit {
 
         });
     }
+
 }

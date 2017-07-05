@@ -36,7 +36,7 @@
 
   <div class="side-button">
     <div class="button-item">
-    <button type="button" class="primary" (click)="submitTransaction()">
+    <button [disabled]="!hasTransactions" type="button" class="primary" (click)="submitTransaction()">
       <span>Submit Transaction</span>
     </button>
     </div>
