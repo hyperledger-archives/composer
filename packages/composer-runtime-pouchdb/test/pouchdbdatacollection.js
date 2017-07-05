@@ -15,7 +15,7 @@
 'use strict';
 
 const DataCollection = require('composer-runtime').DataCollection;
-const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb-core');
 const PouchDBDataCollection = require('..').PouchDBDataCollection;
 const PouchDBDataService = require('..').PouchDBDataService;
 const pouchCollate = require('pouchdb-collate');

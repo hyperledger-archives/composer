@@ -17,13 +17,14 @@
 const DataService = require('composer-runtime').DataService;
 const Logger = require('composer-common').Logger;
 const pouchCollate = require('pouchdb-collate');
-const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb-core');
 const PouchDBDataCollection = require('./pouchdbdatacollection');
 const PouchDBUtils = require('./pouchdbutils');
 
 const LOG = Logger.getLog('PouchDBDataService');
 
 // Install the PouchDB plugins.
+PouchDB.plugin(require('pouchdb-adapter-idb'));
 PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-find'));
 
