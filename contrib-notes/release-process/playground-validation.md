@@ -30,48 +30,9 @@ To obtain the unstable local image:
 
  - Get and run the install script
 ``` 
- curl -O https://hyperledger.github.io/composer/install-hlfv1.sh
- cat install-hlfv1.sh | bash
+ $ mkdir ~/composer && cd ~/composer
+ $ curl -sSL https://hyperledger.github.io/composer/unstable/install-hlfv1-unstable.sh | bash
 ```
-
-We now need to swap out the underlying stable docker image, with the unstable. We can do this by modifying the files that were pulled down via the install script. 
- - Remove existing containers
-```
- docker ps -aq | xargs docker rm -f
-```
- - Remove the composer playground image only
-```
- docker rmi hyperledger/composer-playground 
-```
- - Edit composer-data/docker-compose.yaml file to point to tag :unstable for the composer image within the yaml file
- ```
- composer:
-    container_name: composer
-    image: hyperledger/composer-playground:unstable
-
- ```
- - Edit composer.sh to comment out lines that would cause overwriting the composer-data directory and contents
-```
-    # Create a work directory for extracting files into.
-    WORKDIR="$(pwd)/composer-data"
-    # rm -rf "${WORKDIR}" && mkdir -p "${WORKDIR}"
-    cd "${WORKDIR}"
-
-    # Find the PAYLOAD: marker in this script.
-    # PAYLOAD_LINE=$(grep -a -n '^PAYLOAD:$' "${SOURCE}" | cut -d ':' -f 1)
-    # echo PAYLOAD_LINE=${PAYLOAD_LINE}
-
-    # Find and extract the payload in this script.
-    # PAYLOAD_START=$((PAYLOAD_LINE + 1))
-    # echo PAYLOAD_START=${PAYLOAD_START}
-    # tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
-
-    # Pull the latest Docker images from Docker Hub.
-```
- - Run the composer.sh script to install the new image
- ```
-  ./composer.sh
- ```
  - You should now be able to see that the docker image for hyperledger/composer-playground is tagged with unstable.
  ```
     user@uvm:$ docker images
@@ -102,54 +63,10 @@ Check that all page links are linking correctly (no 404s)
 The define page is used to manage files and file content. Through the side navigation menu it is possible to perform working file selection/creation, and lifecycle actions such as import, export and deploy.
 
 Start with the basic sample network loaded
- - Click on "Export", this should should export the current basic-sample-network to the downloads directory
-    - BNA should contain script files in lib directory
-    - BNA should contain model files in models directory
-    - BNA should contain ACL file in parent directory
-    - BNA should contain README.md in parent directory
- - Add file button should bring up AddFile modal. If a file is added, it should become the focal item and be indicated as selected (blue side bar)
-    - Should be able to close modal via cancel button
-    - Should be able to close modal via “x” icon (top right)
-    - Should be able to select model/script file and cancel out, without the file being added
-    - Upon each instance of adding a new file, the editor should show as dirty, indicated by enabling the “deploy” button
-    - Should be able to add a script file via radio button and view the new file in the side navigation
-    - Should be able to add additional script files, with their name incrementing
-    - Should be able to add a Model file via radio button option and view the new file in the side navigation
-    - Should be able to add a script or model file via browse option, upon selection item should appear in navigation bar with the correct name and extension.
-    - Should be able to add a script file or model file via a drag and drop operation on the AddFile modal. Files should appear on side navigation with correct name and extension.
-    - All loaded files should show correct content upon selection.
+
  - Import/replace button should bring up the Import/replace modal
-    - Should be able to import previously exported BNA via browse option
-    - Should be able to import previously exported BNA via drag and drop action
-    - Should be able to authenticate with github and have access to all samples
-    - All samples should import
-Following from reset to basic sample network by import of the basic sample network 
- - Add script file, deploy button should enable. Following clicking the deploy button
-    - success notification should show
-    - deploy button no longer active
-    - All files previously visible remain in navigation
- - Add model file, deploy button should enable. Following clicking the deploy button
-    - success notification should show
-    - deploy button no longer active
-    - All files previously visible remain in navigation
- - Repeat to add another script and model file
- - Add a ReadMe file via the "AddFile" option and browsing to a ReadMe file on disc
-    - On selection the modal should indicate that a Readme file is to be imported
-    - On confirmation a warning modal should inform that the current readme will be overwritten
-    - On confirm, the existing readme should be replaced with that selected (only one readme should ever be present)
- - Add a ReadMe file via the "AddFile" option and drag/drop action of a ReadMe file on disc
-    - On selection the modal should indicate that a Readme file is to be imported
-    - On confirmation a warning modal should inform that the current readme will be overwritten
-    - On confirm, the existing readme should be replaced with that selected (only one readme should ever be present)
- - Add an ACL rule file via the "AddFile" option and browsing to a rule file on disc
-    - On selection the modal should indicate that an ACL file is to be imported
-    - On confirmation a warning modal should inform that the current rule file will be overwritten
-    - On confirm, the existing rule file should be replaced with that selected (only one rule file should ever be present)
- - Add an ACL rule file via the "AddFile" option and drag/drop action of a rule file on disc
-    - On selection the modal should indicate that a rule file is to be imported
-    - On confirmation a warning modal should inform that the current rule file will be overwritten
-    - On confirm, the existing rule file should be replaced with that selected (only one rule file should ever be present)
- - On export, exported BNA should contain the newly added files (2 script, 2 model, new readme, new rules)
+    - Should have access to all samples
+    - All samples should import 
 
 ### Define Page (File-Editor)
 This page is the main file editor page, where it is possible to edit resources. We need to ensure that the linking between the side navigation menu and the file editor is consistent, that validation errors report correctly for each file type and that file specific edit options are enabled. 

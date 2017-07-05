@@ -23,17 +23,17 @@
       </ul>
     </perfect-scrollbar>
     <div class="add-file">
-      <button class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
+      <button id="editor_addfile" class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
     </div>
     <div>
-      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
+      <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
         Deploy
       </button>
     </div>
   </div>
   <div class="actions">
     <div>
-      <button type="button" class="action" (click)="openImportModal()">
+      <button id="editor_import" type="button" class="action" (click)="openImportModal()">
         <svg class="standard-icon" aria-hidden="true">
           <use xlink:href="#icon-download_32"></use>
         </svg>
@@ -41,7 +41,7 @@
       </button>
     </div>
     <div>
-      <button type="button" class="action" (click)="exportBNA()">
+      <button id="editor_export" type="button" class="action" (click)="exportBNA()">
         <svg class="standard-icon" aria-hidden="true">
           <use xlink:href="#icon-upload_32"></use>
         </svg>
@@ -58,7 +58,7 @@
     <div *ngIf="!editActive && !editingPackage" class="business-network-details">
       <div style="flex-shrink:1;align-self: center">
         <h1 *ngIf="currentFile && fileType(currentFile)!='Readme'" class="margin-right">{{ fileType(currentFile) }} File</h1>
-        <h1 *ngIf="currentFile && fileType(currentFile)=='Readme'" class="margin-right">{{ deployedPackageName }}</h1>
+        <h1 id="editor_deployedPackageName" *ngIf="currentFile && fileType(currentFile)=='Readme'" class="margin-right">{{ deployedPackageName }}</h1>
       </div>
       <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
       <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>

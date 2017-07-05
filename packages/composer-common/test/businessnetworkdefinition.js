@@ -112,7 +112,11 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.aclManager.getAclRules().should.have.length(4);
                 businessNetwork.queryManager.getQueries().should.have.length(6);
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(29);
+                // remove system types and make sure the 25 model types are presents
+                let classDecl = intro.getClassDeclarations().filter( (element) => {
+                    return !element.isSystemType();
+                });
+                classDecl.length.should.equal(25);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -126,7 +130,13 @@ describe('BusinessNetworkDefinition', () => {
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(29);
+
+                // remove system types and make sure the 25 model types are presents
+                let classDecl = intro.getClassDeclarations().filter( (element) => {
+                    return !element.isSystemType();
+                });
+
+                classDecl.length.should.equal(25);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -153,7 +163,11 @@ describe('BusinessNetworkDefinition', () => {
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(17);
+                // remove system types and make sure the 25 model types are presents
+                let classDecl = intro.getClassDeclarations().filter( (element) => {
+                    return !element.isSystemType();
+                });
+                classDecl.length.should.equal(13);
                 businessNetwork.getModelManager().getModelFiles().length.should.equal(3);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);

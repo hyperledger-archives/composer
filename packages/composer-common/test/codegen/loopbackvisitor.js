@@ -99,7 +99,6 @@ describe('LoopbackVisitor', () => {
                         ];
                     }
                     schemas.should.have.lengthOf(expectedFiles.length);
-                    sinon.assert.callCount(mockFileWriter.openFile, expectedFiles.length);
 
                     expectedFiles.forEach((expectedFile) => {
                         sinon.assert.calledWith(mockFileWriter.openFile, expectedFile);

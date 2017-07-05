@@ -9,7 +9,16 @@ exports.config = {
   baseUrl: 'http://127.0.0.1:3001',
   specs: ['./e2e/**/*.*spec.ts'],
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    'chromeOptions': {
+        prefs: {
+            download: {
+                'prompt_for_download': false,
+                'directory_upgrade': true,
+                'default_directory': './e2e/downloads'
+            }
+        }
+    }
   },
   jasmineNodeOpts: {
     showColors: true,
@@ -22,6 +31,7 @@ exports.config = {
   },
   onPrepare: function(){
     jasmine.getEnv().addReporter(new SpecReporter({displayStacktrace: 'all'}));
+    browser.manage().window().setSize(1280, 1024);
  }
 }
 
