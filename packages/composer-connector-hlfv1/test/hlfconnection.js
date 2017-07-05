@@ -13,8 +13,10 @@
  */
 
 'use strict';
+const sinon = require('sinon');
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Logger = require('composer-common').Logger;
 
 const Channel = require('fabric-client/lib/Channel');
 const Peer = require('fabric-client/lib/Peer');
@@ -31,6 +33,7 @@ const HLFSecurityContext = require('../lib/hlfsecuritycontext');
 
 const path = require('path');
 const semver = require('semver');
+const fs = require('fs-extra');
 
 const connectorPackageJSON = require('../package.json');
 const originalVersion = connectorPackageJSON.version;
@@ -38,7 +41,6 @@ const originalVersion = connectorPackageJSON.version;
 const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
-const sinon = require('sinon');
 require('sinon-as-promised');
 
 const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
@@ -49,10 +51,12 @@ describe('HLFConnection', () => {
     let mockConnectionManager, mockChannel, mockClient, mockEventHub, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork, mockPeer;
     let connectOptions;
     let connection;
-    let mockEventHubDef, mockTransactionID;
+    let mockEventHubDef, mockTransactionID, logWarnSpy;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        const LOG = Logger.getLog('HLFConnection');
+        logWarnSpy = sandbox.spy(LOG, 'warn');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
         mockPeer = sinon.createStubInstance(Peer);
         mockChannel = sinon.createStubInstance(Channel);
@@ -487,7 +491,7 @@ describe('HLFConnection', () => {
 
         });
 
-        it('should throw if verifyProposal returns false', () => {
+        it('should log warning if verifyProposal returns false', () => {
             const responses = [
                 {
                     response: {
@@ -499,10 +503,14 @@ describe('HLFConnection', () => {
 
             mockChannel.verifyProposalResponse.returns(false);
             mockChannel.compareProposalResponseResults.returns(true);
+            connection._validateResponses(responses, true);
+            sinon.assert.calledWith(logWarnSpy, 'Response from peer was not valid');
 
-            (function() {
-                connection._validateResponses(responses, true);
-            }).should.throw(/Response from peer was not valid/);
+
+            //(function() {
+            //    connection._validateResponses(responses, true);
+            //}).should.throw(/Response from peer was not valid/);
+
         });
 
         it('should throw if compareProposals returns false', () => {
@@ -517,10 +525,14 @@ describe('HLFConnection', () => {
 
             mockChannel.verifyProposalResponse.returns(true);
             mockChannel.compareProposalResponseResults.returns(false);
+            connection._validateResponses(responses, true);
+            sinon.assert.calledWith(logWarnSpy, 'Peers do not agree, Read Write sets differ');
 
-            (function() {
-                connection._validateResponses(responses, true);
-            }).should.throw(/Peers do not agree/);
+
+            //(function() {
+            //    connection._validateResponses(responses, true);
+            //}).should.throw(/Peers do not agree/);
+
         });
 
         it('should not try to check proposal responses if not a response from a proposal', () => {
@@ -611,6 +623,263 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
                 });
         });
+
+        it('should deploy the business network with endorsement policy object', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policy = {
+                identities: [
+                    { role: { name: 'member', mspId: 'Org1MSP' }},
+                    { role: { name: 'member', mspId: 'Org2MSP' }},
+                    { role: { name: 'admin', mspId: 'Org1MSP' }}
+                ],
+                policy: {
+                    '1-of': [
+                        { 'signed-by': 2},
+                        { '2-of': [{ 'signed-by': 0}, { 'signed-by': 1 }]}
+                    ]
+                }
+            };
+            const deployOptions = {
+                endorsementPolicy : policy
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        'endorsement-policy' : policy
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should deploy the business network with endorsement policy string', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            const policy = JSON.parse(policyString);
+            const deployOptions = {
+                endorsementPolicy : policyString
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        'endorsement-policy' : policy
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should deploy the business network with endorsement policy file', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
+            const deployOptions = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        'endorsement-policy' : JSON.parse(policyString)
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should throw an error if the policy string isn\'t valid json', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+
+            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
+            const deployOptions = {
+                endorsementPolicy : policyString
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            .should.be.rejectedWith(/Error trying parse endorsement policy/);
+        });
+
+        it('should throw an error if the policy file doesn\'t exist', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').throws(new Error('ENOENT'));
+            const deployOptions = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            .should.be.rejectedWith(/Error trying parse endorsement policy/);
+        });
+
+        it('should throw an error if the policy file isn\'t valid json', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+
+            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
+            const deployOptions = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            .should.be.rejectedWith(/Error trying parse endorsement policy/);
+        });
+
 
         it('should deploy the business network with no debug level specified', () => {
             sandbox.stub(global, 'setTimeout');

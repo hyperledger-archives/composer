@@ -309,7 +309,7 @@ class HLFConnection extends Connection {
      */
     _install(securityContext, businessNetwork, deployOptions) {
         const method = '_install';
-        LOG.entry(method, securityContext, businessNetwork);
+        LOG.entry(method, securityContext, businessNetwork, deployOptions);
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
@@ -394,15 +394,14 @@ class HLFConnection extends Connection {
      *
      * @param {any} securityContext the security context
      * @param {any} businessNetwork the business network
-     * @param {object} deployOptions an optional connection specific set of deployment options
-     * @param {string} deployOptions.logLevel the level of logging for the composer runtime
+     * @param {Object} deployOptions an optional connection specific set of deployment options (see deploy for details)
      * @returns {Promise} a promise for instantiation completion
      *
      * @memberOf HLFConnection
      */
     _instantiate(securityContext, businessNetwork, deployOptions) {
         const method = '_instantiate';
-        LOG.entry(method, securityContext, businessNetwork);
+        LOG.entry(method, securityContext, businessNetwork, deployOptions);
 
         let businessNetworkArchive;
         let finalTxId;
@@ -431,6 +430,24 @@ class HLFConnection extends Connection {
                     fcn: 'init',
                     args: [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]
                 };
+
+                if (deployOptions) {
+                    // endorsementPolicy overrides endorsementPolicyFile
+                    try {
+                        if (deployOptions.endorsementPolicy) {
+                            request['endorsement-policy'] =
+                                (typeof deployOptions.endorsementPolicy === 'string') ? JSON.parse(deployOptions.endorsementPolicy) : deployOptions.endorsementPolicy;
+                        } else if (deployOptions.endorsementPolicyFile) {
+                            // we don't check for existence so that the error handler will report the file not found
+                            request['endorsement-policy'] = JSON.parse(fs.readFileSync(deployOptions.endorsementPolicyFile));
+                        }
+                    } catch (error) {
+                        const newError = new Error('Error trying parse endorsement policy. ' + error);
+                        LOG.error(method, newError);
+                        throw newError;
+                    }
+                }
+                LOG.debug('sending instantiate proposal', request);
                 return this.channel.sendInstantiateProposal(request);
             })
             .then((results) => {
@@ -474,12 +491,15 @@ class HLFConnection extends Connection {
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
      * @param {Object} deployOptions connector specific deployment options
+     * @param {string} deployOptions.logLevel the level of logging for the composer runtime
+     * @param {any} deployOptions.endorsementPolicy the endorsement policy (either a JSON string or Object) as defined by fabric node sdk
+     * @param {String} deployOptions.endorsementPolicyFile the endorsement policy json file containing the endorsement policy
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
     deploy(securityContext, businessNetwork, deployOptions) {
         const method = 'deploy';
-        LOG.entry(method, securityContext, businessNetwork);
+        LOG.entry(method, securityContext, businessNetwork, deployOptions);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -543,7 +563,10 @@ class HLFConnection extends Connection {
 
                 // not an error, if it is from a proposal, verify the response
                 if (isProposal && !this.channel.verifyProposalResponse(responseContent)) {
-                    throw new Error('Response from peer was not valid');
+                    // the node-sdk doesn't provide any external utilities from parsing the responseContent.
+                    // there are internal ones which may do what is needed or we would have to decode the
+                    // protobufs ourselves but it should really be the node sdk doing this.
+                    LOG.warn('Response from peer was not valid');
                 }
                 if (responseContent.response.status !== 200) {
                     throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
@@ -553,8 +576,11 @@ class HLFConnection extends Connection {
         });
 
         // if it was a proposal and all the responses were good, check that they compare
+        // but we can't reject it as we don't know if it would pass the endorsement policy
+        // and if we did this would allow a malicious peer to stop transactions so we
+        // issue a warning so that it get's logged, but we don't know which peer it was
         if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
-            throw new Error('Peers do not agree, RW sets differ');
+            LOG.warn('Peers do not agree, Read Write sets differ');
         }
         LOG.exit(method);
     }

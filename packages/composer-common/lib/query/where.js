@@ -40,7 +40,6 @@ class Where {
 
         this.ast = ast;
         this.select = select;
-        this.process();
     }
 
     /**

@@ -1,0 +1,43 @@
+namespace org.hyperledger.composer.system
+
+abstract asset Asset {  }
+
+abstract participant Participant {   }
+
+abstract transaction Transaction identified by transactionId{
+  o String transactionId
+  o DateTime timestamp
+}
+
+abstract event Event identified by eventId{
+  o String eventId
+  o DateTime timestamp
+}
+
+asset Registry identified by registryID {
+  o String registryID
+}
+
+asset AssetRegistry extends Registry {
+
+}
+
+asset ParticipantRegistry extends Registry {
+
+}
+
+asset TransactionRegistry extends Registry {
+
+}
+
+asset IdentityRegistry extends Registry {
+
+}
+
+asset Identity identified by userID {
+  o String userID
+  o DateTime issued
+  --> Participant participant
+  o Boolean activated
+  o Boolean revoked
+}

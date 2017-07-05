@@ -41,6 +41,7 @@ describe('Registry', () => {
         mockDataCollection = sinon.createStubInstance(DataCollection);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockAccessController = sinon.createStubInstance(AccessController);
+        mockAccessController.check.resolves();
         mockParticipant = sinon.createStubInstance(Resource);
         registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
     });
@@ -111,7 +112,7 @@ describe('Registry', () => {
         });
 
         it('should not throw or leak information about resources that cannot be accessed', () => {
-            mockAccessController.check.withArgs(mockResource2, 'READ').throws(new AccessException(mockResource2, 'READ', mockParticipant));
+            mockAccessController.check.withArgs(mockResource2, 'READ').rejects(new AccessException(mockResource2, 'READ', mockParticipant));
             return registry.getAll()
                 .then((resources) => {
                     sinon.assert.calledTwice(mockAccessController.check);
@@ -156,7 +157,7 @@ describe('Registry', () => {
         });
 
         it('should not throw or leak information about resources that cannot be accessed', () => {
-            mockAccessController.check.withArgs(mockResource, 'READ').throws(new AccessException(mockResource, 'READ', mockParticipant));
+            mockAccessController.check.withArgs(mockResource, 'READ').rejects(new AccessException(mockResource, 'READ', mockParticipant));
             return registry.get('doge1')
                 .should.be.rejectedWith(/does not exist/);
         });
@@ -203,7 +204,7 @@ describe('Registry', () => {
         });
 
         it('should not throw or leak information about resources that cannot be accessed', () => {
-            mockAccessController.check.withArgs(mockResource, 'READ').throws(new AccessException(mockResource, 'READ', mockParticipant));
+            mockAccessController.check.withArgs(mockResource, 'READ').rejects(new AccessException(mockResource, 'READ', mockParticipant));
             return registry.exists('doge1')
                 .should.eventually.equal(false)
                 .then(() => {
@@ -278,7 +279,7 @@ describe('Registry', () => {
         it('should throw if the access controller throws an exception', () => {
             mockDataCollection.add.resolves();
             // End of resources.
-            mockAccessController.check.withArgs(mockResource2, 'CREATE').throws(new AccessException(mockResource2, 'CREATE', mockParticipant));
+            mockAccessController.check.withArgs(mockResource2, 'CREATE').rejects(new AccessException(mockResource2, 'CREATE', mockParticipant));
             return registry.addAll([mockResource1, mockResource2])
                 .should.be.rejectedWith(AccessException);
         });
@@ -328,11 +329,10 @@ describe('Registry', () => {
         });
 
         it('should throw if the access controller throws an exception', () => {
-            mockAccessController.check.withArgs(mockResource, 'CREATE').throws(new AccessException(mockResource, 'CREATE', mockParticipant));
+            mockAccessController.check.withArgs(mockResource, 'CREATE').rejects(new AccessException(mockResource, 'CREATE', mockParticipant));
             mockDataCollection.add.resolves();
-            (() => {
-                registry.add(mockResource);
-            }).should.throw(AccessException);
+            return registry.add(mockResource)
+                .should.be.rejectedWith(AccessException);
         });
 
         it('should return errors from the data service', () => {
@@ -432,7 +432,7 @@ describe('Registry', () => {
         });
 
         it('should throw if the access controller throws an exception', () => {
-            mockAccessController.check.withArgs(mockOldResource2, 'UPDATE').throws(new AccessException(mockOldResource2, 'UPDATE', mockParticipant));
+            mockAccessController.check.withArgs(mockOldResource2, 'UPDATE').rejects(new AccessException(mockOldResource2, 'UPDATE', mockParticipant));
             mockDataCollection.update.resolves();
             return registry.updateAll([mockResource1, mockResource2])
                 .should.be.rejectedWith(AccessException);
@@ -500,7 +500,7 @@ describe('Registry', () => {
         });
 
         it('should throw if the access controller throws an exception', () => {
-            mockAccessController.check.withArgs(mockOldResource, 'UPDATE').throws(new AccessException(mockOldResource, 'UPDATE', mockParticipant));
+            mockAccessController.check.withArgs(mockOldResource, 'UPDATE').rejects(new AccessException(mockOldResource, 'UPDATE', mockParticipant));
             mockDataCollection.update.resolves();
             return registry.update(mockResource)
                 .should.be.rejectedWith(AccessException);
@@ -565,7 +565,7 @@ describe('Registry', () => {
         });
 
         it('should throw if the access controller throws an exception', () => {
-            mockAccessController.check.withArgs(mockResource2, 'DELETE').throws(new AccessException(mockResource2, 'DELETE', mockParticipant));
+            mockAccessController.check.withArgs(mockResource2, 'DELETE').rejects(new AccessException(mockResource2, 'DELETE', mockParticipant));
             mockDataCollection.remove.resolves();
             return registry.removeAll([mockResource1, mockResource2])
                 .should.be.rejectedWith(AccessException);
@@ -632,7 +632,7 @@ describe('Registry', () => {
         });
 
         it('should throw if the access controller throws an exception', () => {
-            mockAccessController.check.withArgs(mockResource, 'DELETE').throws(new AccessException(mockResource, 'DELETE', mockParticipant));
+            mockAccessController.check.withArgs(mockResource, 'DELETE').rejects(new AccessException(mockResource, 'DELETE', mockParticipant));
             mockDataCollection.remove.resolves();
             return registry.remove(mockResource)
                 .should.be.rejectedWith(AccessException);

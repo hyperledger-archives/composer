@@ -4,7 +4,7 @@
      [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
   <div class="modal-header">
     <h1>Add a file</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">
+    <button id="add-file_exit" class="icon modal-exit" (click)="activeModal.dismiss()">
       <svg class="ibm-icon" aria-hidden="true">
         <use xlink:href="#icon-close_new"></use>
       </svg>
@@ -60,10 +60,10 @@
     </form>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+    <button id="add-file_cancel" type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="activeModal.close(currentFile);" [disabled]="!currentFile">
+    <button id="add-file_confirm"type="button" class="primary" (click)="activeModal.close(currentFile);" [disabled]="!currentFile">
       <span>Add</span>
     </button>
   </footer>

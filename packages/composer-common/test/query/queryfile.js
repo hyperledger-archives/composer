@@ -83,22 +83,30 @@ describe('QueryFile', () => {
                 new QueryFile('test.acl', modelManager, invalidQuery);
             }).should.throw(/such error/);
         });
-    });
-
-    describe('#constructor', () => {
 
         it('should parse a query correctly', () => {
             const queryContents = `query Q1 {
                 description: "Select all cars"
                 statement: SELECT org.acme.Car
+            }
+            query Q2 {
+                description: "Select all regulators"
+                statement: SELECT org.acme.Regulator FROM mycustomer.Registry
             }`;
             const queryFile = new QueryFile('test.qry', modelManager, queryContents);
             queryFile.getIdentifier().should.equal('test.qry');
-            queryFile.getQueries().length.should.equal(1);
+            queryFile.getQueries().length.should.equal(2);
             queryFile.getDefinitions().should.equal(queryContents);
-            const q1 = queryFile.getQueries()[0];
-            q1.getName().should.equal('Q1');
-            q1.getDescription().should.equal('Select all cars');
+            for(let n=0; n < queryFile.getQueries().length; n++ ) {
+                let q = queryFile.getQueries()[n];
+                if( n === 0 ){
+                    q.getName().should.equal('Q1');
+                    q.getDescription().should.equal('Select all cars');
+                } else if( n === 1){
+                    q.getName().should.equal('Q2');
+                    q.getDescription().should.equal('Select all regulators');
+                }
+            }
         });
     });
 
@@ -144,6 +152,7 @@ describe('QueryFile', () => {
     describe('#buildQuery', () => {
 
         it('should programatically add a query to the query file', () => {
+
             const queryFile = new QueryFile('generated.qry', modelManager, '');
             const query = queryFile.buildQuery('GEN1', 'Generated query 1', 'SELECT org.acme.Car');
             query.should.be.an.instanceOf(Query);

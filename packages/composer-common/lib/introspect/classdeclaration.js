@@ -303,6 +303,15 @@ class ClassDeclaration {
      *
      * @return {boolean} true if the class may be pointed to by a relationship
      */
+    isSystemRelationshipTarget() {
+        return this.isRelationshipTarget();
+    }
+
+    /**
+     * Returns true if this class is a system type
+     *
+     * @return {boolean} true if the class is part of the system namespace
+     */
     isSystemType() {
         return ModelUtil.getSystemNamespace() === this.modelFile.getNamespace();
     }

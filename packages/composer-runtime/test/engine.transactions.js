@@ -28,7 +28,7 @@ const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
-const should = chai.should();
+chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
@@ -86,33 +86,19 @@ describe('EngineTransactions', () => {
 
         it('should execute the transaction', () => {
             const fakeJSON = { fake: 'data' };
-            let mockTransaction1 = sinon.createStubInstance(Resource);
-            let mockTransaction2 = sinon.createStubInstance(Resource);
-            mockSerializer.fromJSON.withArgs(fakeJSON).onFirstCall().returns(mockTransaction1);
-            mockSerializer.fromJSON.withArgs(fakeJSON).onSecondCall().returns(mockTransaction2);
-            mockResolver.resolve.withArgs(sinon.match((transaction) => {
-                if (transaction) {
-                    // Mark the transaction as resolved so we can test it later.
-                    transaction.$resolved = true;
-                }
-                return true;
-            })).resolves();
+            let mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.$resolved = false;
+            let mockResolvedTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.$resolved = true;
+            mockSerializer.fromJSON.withArgs(fakeJSON).onFirstCall().returns(mockTransaction);
+            mockResolver.resolve.withArgs(mockTransaction).resolves(mockResolvedTransaction);
             return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledScriptBundle.execute);
-                    sinon.assert.calledWith(mockCompiledScriptBundle.execute, mockApi, sinon.match((resolvedTransaction) => {
-                        // First transaction should be resolved.
-                        resolvedTransaction.should.be.an.instanceOf(Resource);
-                        resolvedTransaction.$resolved.should.be.true;
-                        return true;
-                    }));
+                    mockCompiledScriptBundle.execute.args[0][0].should.equal(mockApi);
+                    mockCompiledScriptBundle.execute.args[0][1].should.equal(mockResolvedTransaction);
                     sinon.assert.calledOnce(mockRegistry.add);
-                    sinon.assert.calledWith(mockRegistry.add, sinon.match((transaction) => {
-                        // We should persist the unresolved transaction.
-                        transaction.should.be.an.instanceOf(Resource);
-                        should.equal(transaction.$resolved, undefined);
-                        return true;
-                    }));
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
                 });
         });
 

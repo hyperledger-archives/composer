@@ -37,10 +37,8 @@ class Skip {
         if(!select || !ast) {
             throw new IllegalModelException('Invalid Select or AST');
         }
-
         this.ast = ast;
         this.select = select;
-        this.process();
     }
 
     /**

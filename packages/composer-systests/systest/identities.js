@@ -27,6 +27,8 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
+process.setMaxListeners(Infinity);
+
 describe('Identity system tests', () => {
 
     let businessNetworkDefinition;

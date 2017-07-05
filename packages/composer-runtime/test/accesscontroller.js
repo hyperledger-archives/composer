@@ -19,11 +19,16 @@ const AccessException = require('../lib/accessexception');
 const AclFile = require('composer-common').AclFile;
 const AclManager = require('composer-common').AclManager;
 const CompiledAclBundle = require('../lib/compiledaclbundle');
+const Context = require('../lib/context');
 const Factory = require('composer-common').Factory;
 const ModelManager = require('composer-common').ModelManager;
+const Resolver = require('../lib/resolver');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('AccessController', () => {
 
@@ -38,6 +43,8 @@ describe('AccessController', () => {
     let transaction2;
     let controller;
     let mockCompiledAclBundle;
+    let mockResolver;
+    let mockContext;
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -105,7 +112,12 @@ describe('AccessController', () => {
         transaction2 = factory.newResource('org.acme.test', 'TestTransaction2', 'T0123');
         mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
         mockCompiledAclBundle.execute.returns(true);
-        controller = new AccessController(aclManager, mockCompiledAclBundle);
+        mockResolver = sinon.createStubInstance(Resolver);
+        mockContext = sinon.createStubInstance(Context);
+        mockContext.getAclManager.returns(aclManager);
+        mockContext.getCompiledAclBundle.returns(mockCompiledAclBundle);
+        mockContext.getResolver.returns(mockResolver);
+        controller = new AccessController(mockContext);
         controller.setParticipant(participant);
         controller.setTransaction(transaction);
     });
@@ -155,11 +167,11 @@ describe('AccessController', () => {
 
         it('should do nothing if there is no participant', () => {
             controller.setParticipant(null);
-            controller.check(asset, 'READ');
+            return controller.check(asset, 'READ');
         });
 
         it('should do nothing if there is no access control file', () => {
-            controller.check(asset, 'READ');
+            return controller.check(asset, 'READ');
         });
 
         it('should throw if there are no access control rules', () => {
@@ -167,25 +179,27 @@ describe('AccessController', () => {
             // an ACL file, and then stub the ACL manager to pretend like no rules exist.
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW }');
             sinon.stub(aclManager, 'getAclRules').returns([]);
-            (() => {
-                controller.check(asset, 'READ');
-            }).should.throw(AccessException, /does not have/);
+            return controller.check(asset, 'READ')
+                .should.be.rejectedWith(AccessException, /does not have/);
         });
 
         it('should not throw if there is one matching ALLOW access control rule', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ');
-            sinon.assert.calledOnce(spy);
+            return controller.check(asset, 'READ')
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should throw if there is one matching DENY access control rule', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}');
             let spy = sinon.spy(controller, 'checkRule');
-            (() => {
-                controller.check(asset, 'READ');
-            }).should.throw(AccessException, /does not have/);
-            sinon.assert.calledOnce(spy);
+            return controller.check(asset, 'READ')
+                .should.be.rejectedWith(AccessException, /does not have/)
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should not throw if there is two non-matching ALLOW access control rules followed by one matching ALLOW access control rule', () => {
@@ -195,8 +209,10 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ');
-            sinon.assert.calledThrice(spy);
+            return controller.check(asset, 'READ')
+                .then(() => {
+                    sinon.assert.calledThrice(spy);
+                });
         });
 
         it('should not throw if there is two non-matching DENY access control rules followed by one matching ALLOW access control rule', () => {
@@ -206,8 +222,10 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ');
-            sinon.assert.calledThrice(spy);
+            return controller.check(asset, 'READ')
+                .then(() => {
+                    sinon.assert.calledThrice(spy);
+                });
         });
 
         it('should throw if there is two non-matching ALLOW access control rules followed by one matching DENY access control rule', () => {
@@ -217,10 +235,11 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            (() => {
-                controller.check(asset, 'READ');
-            }).should.throw(AccessException, /does not have/);
-            sinon.assert.calledThrice(spy);
+            return controller.check(asset, 'READ')
+                .should.be.rejectedWith(AccessException, /does not have/)
+                .then(() => {
+                    sinon.assert.calledThrice(spy);
+                });
         });
 
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching ALLOW access control rules', () => {
@@ -230,8 +249,10 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ');
-            sinon.assert.calledOnce(spy);
+            return controller.check(asset, 'READ')
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching DENY access control rules', () => {
@@ -241,8 +262,10 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ');
-            sinon.assert.calledOnce(spy);
+            return controller.check(asset, 'READ')
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should throw if there is one matching DENY access control rule followed by two non-matching ALLOW access control rules', () => {
@@ -252,10 +275,11 @@ describe('AccessController', () => {
                 'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            (() => {
-                controller.check(asset, 'READ');
-            }).should.throw(AccessException, /does not have/);
-            sinon.assert.calledOnce(spy);
+            return controller.check(asset, 'READ')
+                .should.be.rejectedWith(AccessException, /does not have/)
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
     });
@@ -265,55 +289,64 @@ describe('AccessController', () => {
         it('should return false if the noun is not matched', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A5678" action: ALLOW}');
             let spy = sinon.spy(controller, 'matchNoun');
-            controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-            sinon.assert.calledOnce(spy);
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.false
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should return false if the verb is not matched', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             let spy = sinon.spy(controller, 'matchVerb');
-            controller.checkRule(asset, 'CREATE', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-            sinon.assert.calledOnce(spy);
+            return controller.checkRule(asset, 'CREATE', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.false
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should return false if the participant is not matched', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P1234" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             let spy = sinon.spy(controller, 'matchParticipant');
-            controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-            sinon.assert.calledOnce(spy);
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.false
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should return false if the transaction is not matched', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.TestTransaction3" action: ALLOW}');
             let spy = sinon.spy(controller, 'matchTransaction');
-            controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-            sinon.assert.calledOnce(spy);
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.false
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should return false if the predicate is not matched', () => {
             mockCompiledAclBundle.execute.returns(false);
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (false) action: ALLOW}');
             let spy = sinon.spy(controller, 'matchPredicate');
-            controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.false;
-            sinon.assert.calledOnce(spy);
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.false
+                .then(() => {
+                    sinon.assert.calledOnce(spy);
+                });
         });
 
         it('should return true if the rule matches and ALLOW is specified', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (true) action: ALLOW}');
-            controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.true;
         });
 
         it('should throw if the rule matches and DENY is specified', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}');
-            (() => {
-                controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0]);
-            }).should.throw(AccessException, /does not have/);
+            return controller.checkRule(asset, 'READ', participant, transaction, aclManager.getAclRules()[0])
+                .should.be.rejectedWith(AccessException, /does not have/);
         });
 
     });
@@ -572,12 +605,52 @@ describe('AccessController', () => {
 
     describe('#matchPredicate', () => {
 
-        it('should call the compiled ACL bundle', () => {
+        it('should call the compiled ACL bundle with an asset, participant, and transaction', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
-            controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
-                .should.be.true;
-            sinon.assert.calledOnce(mockCompiledAclBundle.execute);
-            sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset, participant, transaction);
+            mockResolver.prepare.withArgs(asset).resolves(asset2);
+            mockResolver.prepare.withArgs(participant).resolves(participant2);
+            mockResolver.prepare.withArgs(transaction).resolves(transaction2);
+            return controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.true
+                .then(() => {
+                    sinon.assert.calledOnce(mockCompiledAclBundle.execute);
+                    sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset2, participant2, transaction2);
+                });
+        });
+
+        it('should call the compiled ACL bundle with an asset and participant', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            mockResolver.prepare.withArgs(asset).resolves(asset2);
+            mockResolver.prepare.withArgs(participant).resolves(participant2);
+            return controller.matchPredicate(asset, participant, undefined, aclManager.getAclRules()[0])
+                .should.eventually.be.true
+                .then(() => {
+                    sinon.assert.calledOnce(mockCompiledAclBundle.execute);
+                    sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset2, participant2, undefined);
+                });
+        });
+
+        it('should call the compiled ACL bundle and lazily resolve relationships as they are accessed', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            mockResolver.prepare.withArgs(asset).resolves(asset2);
+            mockResolver.prepare.withArgs(participant).resolves(participant2);
+            mockResolver.prepare.withArgs(transaction).resolves(transaction2);
+            const originalExecute = mockCompiledAclBundle.execute;
+            let iterations = 3;
+            mockCompiledAclBundle.execute = (aclRule, asset, participant, transaction) => {
+                if (iterations) {
+                    iterations--;
+                    mockResolver.prepare.args[iterations][1](Promise.resolve());
+                }
+                return originalExecute(aclRule, asset, participant, transaction);
+            };
+            return controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
+                .should.eventually.be.true
+                .then(() => {
+                    mockCompiledAclBundle.execute = originalExecute;
+                    sinon.assert.callCount(mockCompiledAclBundle.execute, 4);
+                    sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset2, participant2, transaction2);
+                });
         });
 
     });
