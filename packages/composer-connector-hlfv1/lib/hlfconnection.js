@@ -851,6 +851,8 @@ class HLFConnection extends Connection {
      * permissions to create additional new identities. False by default.
      * @param {string} [options.affiliation] Specify the affiliation for the new
      * identity. Defaults to 'org1'.
+     * @param {string} [options.maxEnrollments] Specify the maximum number of enrollments. Defaults to 0.
+     * @param {string} [options.role] Specify the role of the new identity. Defaults to 'client'.
      * @param {object} [options.attributes] Specify other attributes for the identity
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
@@ -889,11 +891,23 @@ class HLFConnection extends Connection {
                 //    value: 'client'
                 //});
             }
-            for (let attribute in options.attributes) {
+
+            let idAttributes = options.attributes;
+            if (typeof idAttributes === 'string') {
+                try {
+                    idAttributes = JSON.parse(idAttributes);
+                } catch(error) {
+                    const newError = new Error('attributes provided are not valid JSON. ' + error);
+                    LOG.error(method, newError);
+                    throw newError;
+                }
+            }
+
+            for (let attribute in idAttributes) {
                 LOG.debug(method, 'Adding attribute to request', attribute);
                 registerRequest.attrs.push({
                     name: attribute,
-                    value: options.attributes[attribute]
+                    value: idAttributes[attribute]
                 });
             }
 
@@ -907,7 +921,7 @@ class HLFConnection extends Connection {
                 })
                 .catch((error) => {
                     LOG.error(method, 'Register request failed trying to create identity', error);
-                    return reject(error);
+                    reject(error);
                 });
         });
     }
