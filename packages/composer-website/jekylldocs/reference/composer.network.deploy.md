@@ -18,12 +18,15 @@ composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enr
 
 ### Options
 ```
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+--help                       Show help  [boolean]
+--version, -v                Show version number  [boolean]
+--archiveFile, -a            The business network archive file name  [string] [required]
+--connectionProfileName, -p  The connection profile name  [string]
+--enrollId, -i               The enrollment ID of the user  [string] [required]
+--loglevel, -l               The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+--option, -o                 Options that are specific specific to a connection. Multiple options are specified by repeating this option  [string]
+--optionsFile, -O            A file containing options that are specific to connection  [string]
+--enrollSecret, -s           The enrollment secret of the user  [string]
 ```
 
 ## Example Output
@@ -37,3 +40,21 @@ Business network definition:
 Deploying business network definition. This may take a minute...
 Command completed successfully.
 ```
+
+## {{site.data.conrefs.hlf_full}} Endorsement Policies
+
+The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} RC endorsement policies can be sent using the `-o` and `-O` options in several ways.
+
+- Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
+
+        composer network deploy -o endorsementPolicy='{"endorsementPolicy": {"identities": [.... }'
+
+- Using the `-o` option, the endorsement policy can be sent as a file path as follows:
+
+        composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+
+- Using the `-O` option, the endorsement policy can be sent as a file path as follows:
+
+        composer network deploy -O /path/to/file/options.json
+
+For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
