@@ -2,16 +2,21 @@
 @import '../../assets/styles/base/_variables.scss';
 
 app-footer {
+    position: relative;
     display: flex;
     width: 100%;
+    bottom: -($space-large);
 
     .footer-main{
+        position: relative;
+        bottom: 0;
         flex: 1;
         padding: 22px 10px 22px 10px;
         border-top: solid 1px #D0DADA;
         color: $secondary-text ;
         font-size: 12px;
         display: flex;
+        height: 62px;
 
         .footer-left, .footer-right{
             flex:1;
