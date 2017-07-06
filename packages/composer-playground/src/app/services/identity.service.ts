@@ -55,17 +55,13 @@ export class IdentityService {
         let key = `currentIdentity:${connectionProfile}`;
         let result = this.localStorageService.get<string>(key);
         return this.getIdentities(connectionProfile)
-        .then((identities) => {
-            if (identities.indexOf(result) > -1) {
-                return result;
-            } else if (identities.length > 0) {
-                result = identities[0];
-                this.setIdentity(connectionProfile, result);
-                return result;
-            } else {
-                return null;
-            }
-        });
+            .then((identities) => {
+                if (identities.indexOf(result) > -1) {
+                    return result;
+                } else {
+                    return null;
+                }
+            });
     }
 
     setCurrentIdentity(identity: string) {
@@ -93,4 +89,13 @@ export class IdentityService {
         });
     }
 
+    setLoggedIn(loggedIn: boolean) {
+        let key = `loggedIn`;
+        this.localStorageService.set(key, loggedIn);
+    }
+
+    getLoggedIn() {
+        let key = `loggedIn`;
+        return this.localStorageService.get<string>(key);
+    }
 }

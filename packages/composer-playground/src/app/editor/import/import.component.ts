@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AdminService } from '../../services/admin.service';
@@ -19,6 +19,9 @@ const fabricComposerRepository = 'composer-sample-networks';
     styleUrls: ['./import.component.scss'.toString()]
 })
 export class ImportComponent implements OnInit {
+
+    // choose whether to deploy or update the business network
+    @Input() deployNetwork: boolean;
 
     private deployInProgress: boolean = false;
     private gitHubInProgress: boolean = false;
@@ -57,15 +60,15 @@ export class ImportComponent implements OnInit {
                 public activeModal: NgbActiveModal,
                 public modalService: NgbModal,
                 private sampleBusinessNetworkService: SampleBusinessNetworkService,
-                private alertService: AlertService) {
+                private alertService: AlertService,
+                private adminService: AdminService) {
 
     }
 
     ngOnInit(): Promise<any> {
-        // TODO: try and do this when we close modal
         this.currentBusinessNetwork = null;
 
-        return this.clientService.ensureConnected(false)
+        return this.adminService.connectWithoutNetwork(false)
             .then(() => {
                 this.onShow();
             });
@@ -114,14 +117,15 @@ export class ImportComponent implements OnInit {
                 this.deployInProgress = true;
                 let deployPromise;
                 if (this.currentBusinessNetwork) {
-                    deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
+                    deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.deployNetwork);
                 } else {
                     deployPromise = this.deployFromNpm();
                 }
 
                 deployPromise.then(() => {
                     this.deployInProgress = false;
-                    this.activeModal.close();
+                    let deployedBusinessNetwork = this.currentBusinessNetwork ? this.currentBusinessNetwork.getName() : this.chosenNetwork;
+                    this.activeModal.close(deployedBusinessNetwork);
                 })
                     .catch((error) => {
                         this.deployInProgress = false;
@@ -183,7 +187,7 @@ export class ImportComponent implements OnInit {
             };
             let emptyBizNetDef = new BusinessNetworkDefinition('', '', packageJson, readme);
             this.currentBusinessNetwork = emptyBizNetDef;
-            return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
+            return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.deployNetwork);
 
         } else {
 
@@ -191,7 +195,7 @@ export class ImportComponent implements OnInit {
                 return sampleNetwork.name === this.chosenNetwork;
             });
 
-            return this.sampleBusinessNetworkService.deployChosenSample(chosenSampleNetwork);
+            return this.sampleBusinessNetworkService.deployChosenSample(chosenSampleNetwork, this.deployNetwork);
 
         }
     }

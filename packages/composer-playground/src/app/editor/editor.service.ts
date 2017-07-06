@@ -12,5 +12,4 @@ export class EditorService {
     setCurrentFile(cf: any) {
         this.currentFile = cf;
     }
-
 }

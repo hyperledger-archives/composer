@@ -45,7 +45,6 @@ describe('TestComponent', () => {
     let fixture: ComponentFixture<TestComponent>;
 
     let mockClientService;
-    let mockInitializationService;
     let mockAlertService;
     let mockModal;
     let mockIntrospector;
@@ -65,7 +64,6 @@ describe('TestComponent', () => {
         sandbox = sinon.sandbox.create();
 
         mockClientService = sinon.createStubInstance(ClientService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockModal = sinon.createStubInstance(NgbModal);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -84,7 +82,6 @@ describe('TestComponent', () => {
             declarations: [TestComponent, MockRegistryDirective, MockFooterComponent],
             providers: [
                 {provide: NgbModal, useValue: mockModal},
-                {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ClientService, useValue: mockClientService}
             ],
@@ -99,7 +96,6 @@ describe('TestComponent', () => {
     });
 
     describe('ngOnInit', () => {
-
         beforeEach(() => {
             mockIntrospector.getClassDeclarations.returns([mockTransaction]);
             mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -110,7 +106,7 @@ describe('TestComponent', () => {
         });
 
         it('should load all the registries and hasTransactions should be true', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
@@ -148,7 +144,7 @@ describe('TestComponent', () => {
         }));
 
         it('should load all the registries and hasTransactions should be false', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
@@ -187,7 +183,7 @@ describe('TestComponent', () => {
         }));
 
         it('should set chosen registry to first asset one if no participant registries', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
@@ -218,7 +214,7 @@ describe('TestComponent', () => {
         }));
 
         it('should set chosen registry to historian registry if no asset or participant registries', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
@@ -246,7 +242,7 @@ describe('TestComponent', () => {
         }));
 
         it('should handle error on initialization', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.reject('some error'));
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -259,7 +255,7 @@ describe('TestComponent', () => {
         }));
 
         it('should handle error on retrieving a registry', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.reject('some error'));
