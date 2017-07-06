@@ -36,7 +36,8 @@ connection-profile {
     overflow-y: auto;
     background-color: $fourth-highlight;
     padding: $space-large $space-large $space-medium $space-large;
-    overflow-y:auto;
+    display: flex;
+    flex-direction: column;
 
     .playground-profile-warning {
       background-color: $white;

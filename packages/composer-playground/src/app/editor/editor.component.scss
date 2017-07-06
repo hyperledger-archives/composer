@@ -43,6 +43,8 @@ app-editor {
   }
 
   .main-view {
+    display: flex;
+    flex-direction: column;
     .business-network-details {
       display: flex;
       height:50px;

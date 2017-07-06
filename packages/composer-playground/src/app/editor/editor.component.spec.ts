@@ -3,7 +3,7 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -41,6 +41,14 @@ class MockEditorFileDirective {
 class MockPerfectScrollBarDirective {
 }
 
+@Component({
+    selector: 'app-footer',
+    template: ''
+})
+class MockFooterComponent {
+
+}
+
 describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
@@ -70,7 +78,7 @@ describe('EditorComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective, MockFooterComponent],
             providers: [
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
