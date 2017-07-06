@@ -44,6 +44,10 @@ Permanently disable a business network definition: [composer network undeploy](.
 
 List the contents of a deployed Business Network: [composer network list](./composer.network.list.md)
 
+`composer network logLevel`
+
+Return or update the log level for the composer runtime: [`composer network logLevel`](./composer.network.logLevel.md)
+
 `composer network ping`
 
 Test the connection to a deployed a Business Network: [composer network ping](./composer.network.ping.md)
