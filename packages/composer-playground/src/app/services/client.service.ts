@@ -44,6 +44,7 @@ export class ClientService {
         return this.getBusinessNetwork().getScriptManager().createScript(id, type, content);
     }
 
+    // horrible hack for tests
     createQueryFile(id, content) {
       return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
@@ -124,6 +125,9 @@ export class ClientService {
             } else if (type === 'acl') {
                 let aclFile = this.createAclFile(id, content);
                 this.getBusinessNetwork().getAclManager().setAclFile(aclFile);
+            } else if (type === 'query') {
+                let query = this.createQueryFile(id, content);
+                this.getBusinessNetwork().getQueryManager().setQueryFile(query);
             }
 
             this.businessNetworkChanged$.next(true);
@@ -362,6 +366,10 @@ export class ClientService {
 
             if (this.getBusinessNetwork().getAclManager().getAclFile()) {
                 newBusinessNetwork.getAclManager().setAclFile(this.getBusinessNetwork().getAclManager().getAclFile());
+            }
+
+            if (this.getBusinessNetwork().getQueryManager().getQueryFile()) {
+                newBusinessNetwork.getQueryManager().setQueryFile(this.getBusinessNetwork().getQueryManager().getQueryFile());
             }
 
             this.currentBusinessNetwork = newBusinessNetwork;

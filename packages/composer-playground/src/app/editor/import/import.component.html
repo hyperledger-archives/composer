@@ -46,6 +46,9 @@
             <li *ngIf="currentBusinessNetwork.getAclManager().getAclFile()">
               {{currentBusinessNetwork.getAclManager().getAclFile().getIdentifier()}}
             </li>
+            <li *ngIf="currentBusinessNetwork.getQueryManager().getQueryFile()">
+              {{currentBusinessNetwork.getQueryManager().getQueryFile().getIdentifier()}}
+            </li>
             <li *ngIf="currentBusinessNetwork.getMetadata().getREADME()">README.md</li>
           </ul>
         </div>

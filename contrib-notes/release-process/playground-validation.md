@@ -67,7 +67,9 @@ Start with the basic sample network loaded
  - Import/replace button should bring up the Import/replace modal
     - Should have access to all samples
     - All samples should import 
-
+ - Add file button should bring up add file modal
+    - Should be able to add query file from disk
+     
 ### Define Page (File-Editor)
 This page is the main file editor page, where it is possible to edit resources. We need to ensure that the linking between the side navigation menu and the file editor is consistent, that validation errors report correctly for each file type and that file specific edit options are enabled. 
 

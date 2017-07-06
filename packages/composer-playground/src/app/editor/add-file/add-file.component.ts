@@ -158,19 +158,6 @@ export class AddFileComponent {
             }
             this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
             this.currentFileName = scriptName;
-        } else if (this.fileType === 'qry') {
-          // let existingQueryFiles = this.clientService.getQueryFiles();
-          let increment = 0;
-
-          let code =
-              `/**
-* New query file
-*/
-`;
-
-          let fileName = 'queries.qry';
-          this.currentFile = this.clientService.createQueryFile(fileName, code);
-          this.currentFileName = fileName;
         } else {
             let existingModels = this.clientService.getModelFiles();
             let increment = 0;

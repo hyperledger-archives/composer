@@ -22,6 +22,7 @@
             <use xlink:href="#icon-CTO_File" *ngIf="fileType==='cto'"></use>
             <use xlink:href="#icon-JS_File" *ngIf="fileType==='js'"></use>
             <use xlink:href="#icon-MD_File" *ngIf="fileType==='md'"></use>
+            <use xlink:href="#icon-QRY_File" *ngIf="fileType==='qry'"></use>
           </svg>
           <div class="file-title">
             <div class="title">{{currentFileName}}</div>
@@ -55,14 +56,6 @@
         <label class="radio-label" for="file-type-js">Script File (.js)</label>
         <div class="description">
           Define the logic of transaction executions using JavaScript.
-        </div>
-      </div>
-      <div class="file-types-list-item">
-        <input type="radio" id="file-type-qry" name="file-type" [(ngModel)]="fileType" value="qry"
-               (change)="changeCurrentFileType()">
-        <label class="radio-label" for="file-type-qry">Query File (.qry)</label>
-        <div class="description">
-          Define the Query stuff in here.
         </div>
       </div>
     </form>

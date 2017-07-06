@@ -125,6 +125,8 @@ export class EditorFileComponent {
                 type = 'script';
             } else if (this._editorFile.acl) {
                 type = 'acl';
+            } else if (this._editorFile.query) {
+                type = 'query';
             } else if (this._editorFile.package) {
                 let packageObject = JSON.parse(this.editorContent);
                 this.clientService.setBusinessNetworkPackageJson(packageObject);

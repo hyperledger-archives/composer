@@ -12,7 +12,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -294,48 +294,32 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.dirty = true;
     }
 
-    addQueryFile(queryFile = null) {
-      let query;
-      let fileName = 'queries.qry';
-      if (!queryFile) {
-        // let existingQueryFiles = this.clientService.getQueryFiles();
-        let increment = 0;
-
-        query =
-            `/**
-            * New query file
-            */`;
-
-      } else {
-        query = queryFile;
-      }
-
-      let isQuery = false;
-      this.files.forEach((file) => {
-        if (file.query) {
-          isQuery = true;
+    addQueryFile(query) {
+        if (this.files.findIndex((file) => file.query === true) !== -1) {
+            const confirmModalRef = this.modalService.open(ReplaceComponent);
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaces.';
+            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+            confirmModalRef.result.then((result) => {
+                this.processQueryFileAddition(query);
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
+        } else {
+            this.processQueryFileAddition(query);
         }
-      });
-
-      if (isQuery) {
-        const confirmModalRef = this.modalService.open(ReplaceComponent);
-        confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
-        confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
-        confirmModalRef.result.then((result) => {
-          let queryManager = this.clientService.getBusinessNetwork().getQueryManager();
-          queryManager.setQueryFile(query);
-          this.updateFiles();
-      }, (reason) => {
-          if (reason && reason !== 1) {
-              this.alertService.errorStatus$.next(reason);
-          }
-      });
-    } else {
-      let queryManager = this.clientService.getBusinessNetwork().getQueryManager();
-      queryManager.setQueryFile(query);
-      this.updateFiles();
     }
-  }
+
+    processQueryFileAddition(query) {
+        let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+        let queryManager: QueryManager = businessNetworkDefinition.getQueryManager();
+        queryManager.setQueryFile(query);
+        this.updateFiles();
+        let index = this.findFileIndex(true, query.getIdentifier());
+        this.setCurrentFile(this.files[index]);
+        this.dirty = true;
+    }
 
     addReadme(readme) {
         if (this.files[0].readme) {
@@ -632,8 +616,18 @@ export class EditorComponent implements OnInit, OnDestroy {
             return 'Script';
         } else if (resource.acl) {
             return 'ACL';
+        } else if (resource.query) {
+            return 'Query';
         } else {
             return 'Readme';
+        }
+    }
+
+    preventNameEdit(resource: any): boolean {
+        if (resource.acl || resource.query) {
+            return true;
+        } else {
+            return false;
         }
     }
 

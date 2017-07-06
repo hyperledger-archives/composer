@@ -63,7 +63,7 @@
       </div>
       <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
       <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
-      <div *ngIf="currentFile && fileType(currentFile)!='ACL'" class="edit_icon">
+      <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
         <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>

@@ -4,13 +4,13 @@
 add-file-modal {
     .import {
         width: 700px;
-        height: 600px;
+        height: 520px;
 
         display: flex;
         flex-direction: column;
 
         .file-types-list {
-            max-height: 350px;
+            max-height: 250px;
             margin-top: 16px;
 
             .file-types-list-item {
@@ -19,10 +19,6 @@ add-file-modal {
                 width: 100%;
                 &:nth-child(even) {
                     background-color: $white;
-                }
-
-                &:last-child {
-                    margin-bottom: 0px;
                 }
 
                 .description {
