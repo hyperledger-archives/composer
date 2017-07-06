@@ -80,7 +80,7 @@ type StoreType = {
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
         APP_PROVIDERS,
-        {provide: APP_BASE_HREF, useValue: '/'},
+        {provide: APP_BASE_HREF, useValue: '/'}
     ]
 })
 export class AppModule {

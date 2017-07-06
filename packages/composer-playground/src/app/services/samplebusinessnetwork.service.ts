@@ -15,6 +15,10 @@ export class SampleBusinessNetworkService {
                 private http: Http) {
     }
 
+    createNewBusinessDefinition(name, description, packageJson, readme) {
+        return new BusinessNetworkDefinition(name, description, packageJson, readme);
+    }
+
     public getSampleList() {
         return this.http.get(PLAYGROUND_API + '/api/getSampleList')
             .toPromise()
@@ -26,7 +30,7 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public deployChosenSample(chosenNetwork: object): Promise<void> {
+    public deployChosenSample(chosenNetwork: object, deployNetwork: boolean): Promise<void> {
         let params: URLSearchParams = new URLSearchParams();
 
         let paramNames = Object.keys(chosenNetwork);
@@ -44,17 +48,43 @@ export class SampleBusinessNetworkService {
                 return BusinessNetworkDefinition.fromArchive((<any> response)._body);
             })
             .then((businessNetwork) => {
-                return this.deployBusinessNetwork(businessNetwork);
+                return this.deployBusinessNetwork(businessNetwork, deployNetwork);
             })
             .catch((error) => {
                 throw(error);
             });
     }
 
-    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
-        return this.adminService.update(businessNetworkDefinition)
+    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, deployNetwork: boolean): Promise<any> {
+        let deployPromise;
+
+        if (deployNetwork) {
+            deployPromise = this.adminService.deploy(businessNetworkDefinition);
+        } else {
+            let currentBusinessNetworkName = this.clientService.getBusinessNetworkName();
+
+            let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
+            packageJson.name = currentBusinessNetworkName;
+
+            let newNetwork = this.createNewBusinessDefinition(currentBusinessNetworkName, businessNetworkDefinition.getDescription(), packageJson, businessNetworkDefinition.getMetadata().getREADME());
+
+            let modelFiles = this.clientService.filterModelFiles(businessNetworkDefinition.getModelManager().getModelFiles());
+
+            newNetwork.getModelManager().addModelFiles(modelFiles);
+            businessNetworkDefinition.getScriptManager().getScripts().forEach((script) => {
+                newNetwork.getScriptManager().addScript(script);
+            });
+
+            if (businessNetworkDefinition.getAclManager().getAclFile()) {
+                newNetwork.getAclManager().setAclFile(businessNetworkDefinition.getAclManager().getAclFile());
+            }
+
+            deployPromise = this.adminService.update(newNetwork);
+        }
+
+        return deployPromise
             .then(() => {
-                return this.clientService.refresh();
+                return this.clientService.refresh(businessNetworkDefinition.getName());
             })
             .then(() => {
                 return this.clientService.reset();

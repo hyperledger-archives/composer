@@ -8,7 +8,7 @@ matrix:
         - env: SYSTEST=embedded,proxy,web FC_TASK=systest
         - env: SYSTEST=hlf FC_TASK=systest
         - env: SYSTEST=hlfv1_tls FC_TASK=systest
-        - env: SYSTEST=e2e FC_TASK=systest
+        # - env: SYSTEST=e2e FC_TASK=systest
 dist: trusty
 addons:
     apt:

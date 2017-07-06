@@ -8,7 +8,6 @@ import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
@@ -59,7 +58,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
-                private initializationService: InitializationService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
                 private editorService: EditorService) {
@@ -67,7 +65,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
+        return this.clientService.ensureConnected()
             .then(() => {
                 this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
                     .subscribe((noError) => {
@@ -96,6 +94,9 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     this.setInitialFile();
                 }
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
             });
     }
 
@@ -374,7 +375,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        this.modalService.open(ImportComponent).result.then((result) => {
+        const importModalRef = this.modalService.open(ImportComponent);
+        // only want to update here not deploy
+        importModalRef.componentInstance.deployNetwork = false;
+        importModalRef.result.then((result) => {
             this.updatePackageInfo();
             this.updateFiles();
             if (this.files.length) {
@@ -452,7 +456,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.dirty = false;
                 this.deploying = false;
-                return this.clientService.refresh();
+                return this.clientService.refresh(this.clientService.getBusinessNetworkName());
             })
             .then(() => {
                 this.updatePackageInfo();
@@ -489,16 +493,6 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     toggleEditActive() {
         this.editActive = !this.editActive;
-    }
-
-    /*
-     * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageName() {
-        if (this.deployedPackageName !== this.inputPackageName) {
-            this.deployedPackageName = this.inputPackageName;
-            this.clientService.setBusinessNetworkName(this.deployedPackageName);
-        }
     }
 
     /*

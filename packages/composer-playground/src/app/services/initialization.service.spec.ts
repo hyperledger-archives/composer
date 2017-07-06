@@ -20,6 +20,7 @@ import { WalletService } from './wallet.service';
 import { FileWallet } from 'composer-common';
 
 import * as sinon from 'sinon';
+import { IdentityService } from './identity.service';
 
 describe('InitializationService', () => {
 
@@ -27,6 +28,7 @@ describe('InitializationService', () => {
     let mockAlertService;
     let mockConnectionProfileService;
     let mockWalletService;
+    let mockIdentityService;
 
     beforeEach(() => {
 
@@ -34,6 +36,7 @@ describe('InitializationService', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockWalletService = sinon.createStubInstance(WalletService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
 
         TestBed.configureTestingModule({
             imports: [HttpModule],
@@ -42,6 +45,7 @@ describe('InitializationService', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
+                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: WalletService, useValue: mockWalletService},
                 {provide: XHRBackend, useClass: MockBackend}
             ]
@@ -67,6 +71,8 @@ describe('InitializationService', () => {
         })));
 
         it('should initialize and deploy sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
+            mockCreateSample.returns(Promise.resolve());
 
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
@@ -76,9 +82,10 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
+
+            mockIdentityService.getLoggedIn.returns(false);
 
             service.initialize();
 
@@ -87,11 +94,13 @@ describe('InitializationService', () => {
 
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
-            mockClientService.ensureConnected.should.be.called;
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.called;
+            mockCreateSample.should.be.called;
         })));
 
-        it('should initialize and continue if sample is already deployed', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+        it('should initialize and not deploy sample as logged in', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
+            mockCreateSample.returns(Promise.resolve());
 
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
@@ -101,45 +110,20 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
+
+            mockIdentityService.getLoggedIn.returns(true);
 
             service.initialize();
 
             tick();
-
             stubLoadConfig.should.be.called;
+
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
             mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
-            mockClientService.ensureConnected.should.be.called;
-        })));
-
-        it('should connect to profile specified in config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({defaultConnectionProfile: 'myProfile'}));
-
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
-
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-
-            service.initialize();
-
-            tick();
-            stubLoadConfig.should.be.called;
-
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-            mockClientService.ensureConnected.should.be.called;
+            mockCreateSample.should.not.have.been.called;
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -273,6 +257,16 @@ describe('InitializationService', () => {
             let result = service.isWebOnly();
             tick();
             result.should.equal(true);
+        })));
+    });
+
+    describe('deployInitialSample', () => {
+        it('should deploy the initial sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            service.deployInitialSample();
+
+            tick();
+
+            mockClientService.deployInitialSample.should.have.been.called;
         })));
     });
 });

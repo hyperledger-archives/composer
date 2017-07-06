@@ -1,0 +1,46 @@
+<section *ngIf="!editingConectionProfile" class="main-view">
+    <header class="flex-container">
+        <h1 class="flex">My Wallet</h1>
+
+        <button type="button" class="secondary">
+            <span>Import ID Card</span>
+        </button>
+    </header>
+
+    <div class="connection-profile" *ngFor="let connectionProfile of connectionProfiles; let profileIndex = index">
+        <h2>Identities for {{connectionProfile.name === '$default' ? 'Web Browser' : connectionProfile.name }}
+            <div class="connection-profile-buttons">
+                <button  *ngIf="connectionProfile.name !== '$default'" id="editConnectionProfileButton" type="button" class="action circular"
+                        (click)="editConnectionProfile(connectionProfile)">
+                    <svg class="ibm-icon vertical-top" aria-hidden="true">
+                        <use xlink:href="#icon-edit_24"></use>
+                    </svg>
+                </button>
+                <button id="deployButton" type="button" class="action circular">
+                    <svg class="ibm-icon vertical-top" aria-hidden="true">
+                        <use xlink:href="#icon-deploy_24"></use>
+                    </svg>
+                </button>
+            </div>
+        </h2>
+        <div class="identities">
+            <identity-card *ngFor="let identity of connectionProfile.identities" [identity]="identity"
+                           (onConnect)="changeIdentity(connectionProfile.name, identity.userId)"
+                           (onDelete)="removeIdentity(connectionProfile.name, identity.userId)">
+            </identity-card>
+        </div>
+    </div>
+</section>
+<section class="edit-connection-profile" *ngIf="editingConectionProfile">
+    <div class="header">
+        <button type="button" class="action" (click)="finishedEditingConnectionProfile()">
+            <svg class="ibm-icon vertical-top rotate" aria-hidden="true">
+                <use xlink:href="#icon-forward_16"></use>
+            </svg>
+            <span>My Wallet</span>
+        </button>
+    </div>
+    <connection-profile (profileUpdated)="finishedEditingConnectionProfile()"
+                             [connectionProfile]="editingConectionProfile"></connection-profile>
+</section>
+<app-footer></app-footer>
