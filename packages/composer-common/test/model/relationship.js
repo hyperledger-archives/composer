@@ -124,5 +124,18 @@ describe('Relationship', function () {
             rel.getType().should.equal('Person');
             rel.getIdentifier().should.equal('123');
         });
+
+        it('check invalid name space gets error', function() {
+            (function () {
+                Relationship.fromURI(modelManager, '123', 'org.acme.empty', 'Person' );
+            }).should.throw(/Cannot create relationship as namespace org.acme.empty is not known/);
+        });
+
+        it('check that relationships can be created from a URI', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'resource:org.acme.l1.Unkown#123' );
+            }).should.throw(/Cannot instantiate Type Unkown in namespace org.acme.l1/);
+        });
+
     });
 });
