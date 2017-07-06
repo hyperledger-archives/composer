@@ -31,7 +31,6 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     # Delete any existing configuration.
     rm -rf ${HOME}/.composer-connection-profiles/composer-systests
     rm -rf ${HOME}/.composer-credentials/composer-systests
-    rm -rf ${HOME}/.hfc-key-store
 
     # Pull any required Docker images.
     if [ "${SYSTEST}" = "hlf"  ]; then
@@ -96,7 +95,6 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     # Delete any written configuration.
     rm -rf ${HOME}/.composer-connection-profiles/composer-systests
     rm -rf ${HOME}/.composer-credentials/composer-systests
-    rm -rf ${HOME}/.hfc-key-store
 
     # Delete any crypto-config material
     if [ -d ./hlfv1/crypto-config ]; then

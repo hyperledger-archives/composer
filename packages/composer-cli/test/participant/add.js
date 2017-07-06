@@ -28,6 +28,9 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const sinon = require('sinon');
 require('sinon-as-promised');
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 
 const NAMESPACE = 'net.biz.TestNetwork';
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
@@ -128,13 +131,7 @@ describe('composer participant add CLI unit tests', () => {
             data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
-            .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockParticipantRegistry.add);
-                sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-
-            });
+            .should.be.rejectedWith(/such error/);
     });
 
 });

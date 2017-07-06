@@ -485,7 +485,7 @@ describe('ConnectionProfileDataComponent', () => {
                     url: ['grpc://localhost:7050', Validators.required],
                     cert: ['']
                 })]),
-                channel: ['mychannel', [Validators.required]],
+                channel: ['composerchannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
                 ca: ['http://localhost:7054', [Validators.required]],
                 eventHubURL: ['grpc://localhost:7053', [Validators.required]],
@@ -553,7 +553,7 @@ describe('ConnectionProfileDataComponent', () => {
                     url: 'grpc://localhost:7050',
                     cert: ''
                 }],
-                channel: 'mychannel',
+                channel: 'composerchannel',
                 mspID: 'Org1MSP',
                 ca: {
                     url: 'http://localhost:7054',
@@ -576,7 +576,7 @@ describe('ConnectionProfileDataComponent', () => {
                     url: 'grpc://localhost:7050',
                     cert: ''
                 }],
-                channel: 'mychannel',
+                channel: 'composerchannel',
                 mspID: 'Org1MSP',
                 ca: {
                     url: 'http://localhost:7054',
@@ -608,7 +608,7 @@ describe('ConnectionProfileDataComponent', () => {
                     url: ['grpc://localhost:7050', Validators.required],
                     cert: ['']
                 })]),
-                channel: ['mychannel', [Validators.required]],
+                channel: ['composerchannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
                 ca: component['fb'].group({
                     url: ['http://localhost:7054', [Validators.required]],

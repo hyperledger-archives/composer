@@ -2,6 +2,8 @@
 layout: default
 title: Task - Publish Models or Business Network Definitions
 category: tasks
+section: business-network
+index-order: 6
 sidebar: sidebars/businessnetworks.md
 excerpt: How to publish a model or business network definition for use by applications
 ---

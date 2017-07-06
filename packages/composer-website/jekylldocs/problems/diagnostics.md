@@ -4,6 +4,8 @@ title: Task - Diagnosing Problems
 category: tasks
 sidebar: sidebars/problems.md
 excerpt: Diagnosing Problems
+section: diagnostics
+index-order: 0
 ---
 
 # Diagnosing Problems
