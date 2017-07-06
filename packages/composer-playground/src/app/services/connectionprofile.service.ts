@@ -46,14 +46,14 @@ export class ConnectionProfileService {
         console.log('Currently running version ' + version);
         console.log('Checking for $default connection profile');
         return this.getAdminConnection().getProfile('$default')
-        .catch((error) => {
-            // It doesn't exist, so create it.
-            console.log('$default connection profile does not exist, creating');
-            return this.getAdminConnection().createProfile('$default', {type: 'web'})
-            .then(() => {
-                return this.walletService.getWallet('$default').add('admin', 'adminpw');
+            .catch((error) => {
+                // It doesn't exist, so create it.
+                console.log('$default connection profile does not exist, creating');
+                return this.getAdminConnection().createProfile('$default', {type: 'web'})
+                    .then(() => {
+                        return this.walletService.getWallet('$default').add('admin', 'adminpw');
+                    });
             });
-        });
     };
 
     getAllProfiles(): Promise<any> {

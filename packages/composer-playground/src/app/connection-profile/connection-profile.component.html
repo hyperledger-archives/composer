@@ -172,28 +172,28 @@
                                         (click)="openAddCertificateModal(i,'orderers');">
                                     <svg class="standard-icon" aria-hidden="true">
                                         <use xlink:href="#icon-data-quality_16"></use>
-            </svg>
+                                    </svg>
                                 </button>
-            </div>
-          </div>
+                            </div>
+                        </div>
 
 
                         <div *ngIf="v1FormErrors.orderers.cert" class="error-message">
                             {{ v1FormErrors.orderers.cert }}
-    </div>
+                        </div>
                     </div>
 
                     <div class="profile-buttons">
                         <button type="button" class="secondary" (click)="addOrderer()">+ Add another</button>
                         <button type="button" class="secondary" *ngIf="v1Form.controls.orderers.controls.length > 1"
                                 (click)="removeOrderer((v1Form.controls.orderers.controls.length - 1))">Remove orderer
-        </button>
-      </div>
-    </div>
+                        </button>
+                    </div>
+                </div>
                 <div class="profile-row">
                     <div class="profile-property">
                         Channel*
-  </div>
+                    </div>
                     <div class="profile-value">
                         <input [ngClass]="{'error-underline': v1FormErrors.channel}" type="text"
                                formControlName="channel">
@@ -266,26 +266,26 @@
                                             (click)="openAddCertificateModal(i,'peers');">
                                         <svg class="standard-icon" aria-hidden="true">
                                             <use xlink:href="#icon-data-quality_16"></use>
-        </svg>
+                                        </svg>
                                     </button>
 
-      </div>
+                                </div>
                                 <div class="nested-row">
                                     <div class="nested-property">
                                         Peer Event URL*
-      </div>
+                                    </div>
                                     <div class="nested-value">
                                         <input [ngClass]="{'error-underline': v1FormErrors.peers.eventURL}"
                                                class="margin-right" type="text" formControlName="eventURL">
                                         <div *ngIf="v1FormErrors.peers.eventURL" class="error-message">
                                             {{ v1FormErrors.peers.eventURL }}
-      </div>
+                                        </div>
 
                                         <input hidden type="text" formControlName="cert">
-    </div>
+                                    </div>
 
-  </div>
-  </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -310,8 +310,7 @@
                         </div>
                     </div>
                 </div>
-
-</section>
+            </section>
             <section>
                 <div class="section-title">Advanced</div>
                 <div class="profile-row">
