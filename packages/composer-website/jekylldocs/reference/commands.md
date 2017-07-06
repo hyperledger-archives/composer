@@ -48,6 +48,10 @@ List the contents of a deployed Business Network: [composer network list](./comp
 
 Return or update the log level for the composer runtime: [`composer network logLevel`](./composer.network.logLevel.html)
 
+`composer network logLevel`
+
+Return or update the log level for the composer runtime: [`composer network logLevel`](./composer.network.logLevel.md)
+
 `composer network ping`
 
 Test the connection to a deployed a Business Network: [composer network ping](./composer.network.ping.html)
@@ -67,6 +71,18 @@ Deploy a business network archive to a {{site.data.conrefs.hlf_full}} peer that 
 `composer runtime install`
 
 Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} peer: [composer runtime install](./composer.runtime.install.html)
+
+`composer network upgrade`
+
+Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.md)
+
+`composer network start`
+
+Deploy a business network archive to a {{site.data.conrefs.hlf_full}} endorsing peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
+
+`composer runtime install`
+
+Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} endorsing peer: [composer runtime install](./composer.runtime.install.md)
 
 ## Participant and Identity management
 

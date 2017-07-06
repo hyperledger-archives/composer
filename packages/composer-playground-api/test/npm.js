@@ -248,8 +248,8 @@ describe('npm routes', () => {
             beforeEach(() => {
 
                 mock = {
-                    'composer-common/package.json': {
-                        version: composerVersion
+                    'composer-common/package.json' : {
+                        version : composerVersion
                     },
                     'npm-registry-client' : RegClient
                 };
@@ -276,6 +276,8 @@ describe('npm routes', () => {
                                 name : 'bob',
                                 description : 'bob package',
                                 version : '1.0',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                                 tarball : 'my tar'
                             }]);
                         });
@@ -293,17 +295,23 @@ describe('npm routes', () => {
                                 name : 'ant',
                                 description : 'ant package',
                                 version : '1.0',
-                                tarball : 'my tar'
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
                             }, {
                                 name : 'bat',
                                 description : 'bat package',
                                 version : '1.0',
-                                tarball : 'my tar'
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
                             }, {
                                 name : 'cat',
                                 description : 'cat package',
                                 version : '1.0',
-                                tarball : 'my tar'
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
                             }]);
                         });
                 });
@@ -362,9 +370,6 @@ describe('npm routes', () => {
                         });
                 });
             });
-
         });
-
     });
-
 });

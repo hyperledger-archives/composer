@@ -1,331 +1,165 @@
-import { Component, Input } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { BusinessNetworkDefinition } from 'composer-common';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ConnectionProfileService } from '../../services/connectionprofile.service';
+import { IdentityService } from '../../services/identity.service';
 
 @Component({
     selector: 'add-connection-profile',
     templateUrl: './add-connection-profile.component.html',
     styleUrls: ['./add-connection-profile.component.scss'.toString()]
 })
-export class AddConnectionProfileComponent {
+export class AddConnectionProfileComponent implements OnInit {
 
-    @Input() businessNetwork: BusinessNetworkDefinition;
+    @Input() connectionProfiles: any = [];
+    @Output() profileToUse = new EventEmitter<any>();
+    @Output() profileToEdit = new EventEmitter<any>();
+    @Output() cancelAdd = new EventEmitter<any>();
 
-    currentFile = null;
-    currentFileName = null;
-    version = '';
+    private newDefault = true;
 
-    expandInput: boolean = false;
-
-    maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.json'];
-
-    error = null;
-
-    private connectionProfiles: any = [];
-    private newConnectionProfile: any;
-    private addConnectionProfileName: string = null;
-    private addConnectionProfileDescription: string = null;
-    private addConnectionProfileType: string = null;
-    private addConnectionProfilePeerURL: string = null;
-    private addConnectionProfileMembershipServicesURL: string = null;
-    private addConnectionProfileEventHubURL: string = null;
-    private addConnectionProfileKeyValStore: string = null;
-    private addConnectionProfileDeployWaitTime: number = null;
-    private addConnectionProfileInvokeWaitTime: number = null;
-    private addConnectionProfileTimeout: number = null;
-    private addConnectionProfileCertificate: string = null;
-    private addConnectionProfileCertificatePath: string = null;
-
-    // V1 attributes
-    private addConnectionProfileOrderers: any[] = null;
-    private addConnectionProfilePeers: any[] = null;
-    private addConnectionProfileCertificateAuthority: any = null;
-    private addConnectionProfileChannel: string = null;
-    private addConnectionProfileMspId: string = null;
+    // Common attributes
+    private connectionProfile: any = null;
 
     constructor(private alertService: AlertService,
-                public activeModal: NgbActiveModal,
-                private connectionProfileService: ConnectionProfileService) {
+                private connectionProfileService: ConnectionProfileService,
+                private identityService: IdentityService) {
     }
 
-    removeFile() {
-        this.expandInput = false;
-        this.currentFile = null;
-        this.currentFileName = null;
-        this.version = '';
-    }
-
-    fileDetected() {
-        this.expandInput = true;
-    }
-
-    fileLeft() {
-        this.expandInput = false;
-    }
-
-    fileAccepted(file: File) {
-        let type = file.name.substr(file.name.lastIndexOf('.') + 1);
-        this.getDataBuffer(file)
-        .then((data) => {
-            if (type === 'json') {
-                this.expandInput = true;
-                this.createProfile(data);
-            } else {
-                throw new Error('Unexpected File Type');
-            }
-        })
-        .catch((err) => {
-            this.fileRejected(err);
-        });
-    }
-
-    getDataBuffer(file: File) {
-        return new Promise((resolve, reject) => {
-            let fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file);
-            fileReader.onload = () => {
-                let dataBuffer = Buffer.from(fileReader.result);
-                resolve(dataBuffer);
-            };
-            fileReader.onerror = (err) => {
-                reject(err);
-            };
-        });
-    }
-
-    createProfile(profileBuffer) {
-
-        let profileData;
-        // Converts buffer to string
-        try {
-            profileData = JSON.parse(profileBuffer.toString());
-        } catch (e) {
-            throw new Error('Parse error: ' + e.message);
-        }
-
-        // Set defaults
-        if (profileData.type === 'hlf') {
-            return this.setV06Defaults().then(() => {
-                this.addConnectionProfileDescription = profileData.description;
-                this.addConnectionProfileType = profileData.type;
-                this.addConnectionProfileMembershipServicesURL = profileData.membershipServicesURL;
-                this.addConnectionProfilePeerURL = profileData.peerURL;
-                this.addConnectionProfileEventHubURL = profileData.eventHubURL;
-                this.addConnectionProfileKeyValStore = profileData.keyValStore;
-                this.addConnectionProfileDeployWaitTime = profileData.deployWaitTime;
-                this.addConnectionProfileInvokeWaitTime = profileData.invokeWaitTime;
-                this.addConnectionProfileCertificate = profileData.certificate;
-                this.addConnectionProfileCertificatePath = profileData.certificatePath;
-                this.addConnectionProfile();
-            });
-        } else if (profileData.type === 'hlfv1') {
-            return this.setV1Defaults().then(() => {
-                this.addConnectionProfileDescription = profileData.description;
-                this.addConnectionProfileType = profileData.type;
-                this.addConnectionProfileOrderers = profileData.orderers;
-
-                this.addConnectionProfileCertificateAuthority = profileData.ca;
-                this.addConnectionProfilePeers = profileData.peers;
-                this.addConnectionProfileKeyValStore = profileData.keyValStore;
-                this.addConnectionProfileChannel = profileData.channel;
-                this.addConnectionProfileMspId = profileData.mspID;
-                this.addConnectionProfileTimeout = profileData.timeout;
-                this.addConnectionProfile();
-            });
-        } else {
-            throw new Error('Invalid type in profile: ' + profileData.type);
-        }
-    }
-
-    fileRejected(reason: string) {
-        this.alertService.errorStatus$.next(reason);
-    }
-
-    changeCurrentFileType() {
-        this.currentFile = null;
-
-        if (this.version === 'v06' || this.addConnectionProfileType === 'hlf') {
-            return this.setV06Defaults().then(() => {
-                this.newConnectionProfile = {
-                    description: this.addConnectionProfileDescription,
-                    type: 'hlf',
-                    membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
-                    peerURL: this.addConnectionProfilePeerURL,
-                    eventHubURL: this.addConnectionProfileEventHubURL,
-                    keyValStore: this.addConnectionProfileKeyValStore,
-                    deployWaitTime: this.addConnectionProfileDeployWaitTime,
-                    invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
-                    certificate: this.addConnectionProfileCertificate,
-                    certificatePath: this.addConnectionProfileCertificatePath
-                };
-            });
-
-        } else if (this.version === 'v1') {
-
-            return this.setV1Defaults().then(() => {
-                this.newConnectionProfile = {
-                    description: this.addConnectionProfileDescription,
-                    type: 'hlfv1',
-                    orderers: this.addConnectionProfileOrderers,
-                    ca: this.addConnectionProfileCertificateAuthority,
-                    peers: this.addConnectionProfilePeers,
-                    keyValStore: this.addConnectionProfileKeyValStore,
-                    channel: this.addConnectionProfileChannel,
-                    mspID: this.addConnectionProfileMspId,
-                    timeout: this.addConnectionProfileTimeout,
-                };
-            });
-        } else {
-            throw new Error('Unsupported version');
-        }
-    }
-
-    addConnectionProfile(): void {
-        let connectionProfile;
-
-        if (this.version === 'v06' || this.addConnectionProfileType === 'hlf') {
-            // Do we have a connection profile certificate?
-            if (this.addConnectionProfileCertificate) {
-                // That isn't just whitespace?
-                if (this.addConnectionProfileCertificate.trim()) {
-                    let end = this.addConnectionProfileCertificate.slice(-1);
-                    if (end !== '\n') {
-                        this.addConnectionProfileCertificate += '\n';
-                    }
-                }
-            }
-            connectionProfile = {
-                description: this.addConnectionProfileDescription,
-                type: 'hlf',
-                membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
-                peerURL: this.addConnectionProfilePeerURL,
-                eventHubURL: this.addConnectionProfileEventHubURL,
-                keyValStore: this.addConnectionProfileKeyValStore,
-                deployWaitTime: this.addConnectionProfileDeployWaitTime,
-                invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
-                certificate: this.addConnectionProfileCertificate,
-                certificatePath: this.addConnectionProfileCertificatePath
-            };
-        } else if (this.version === 'v1' || this.addConnectionProfileType === 'hlfv1') {
-
-            // If the orderers are a list of strings, we need to convert it to a list of objects.
-            // Doing this allows the rest of the code to work as usual
-            let newOrderersList = [];
-            for (let x = 0; x < this.addConnectionProfileOrderers.length; x++) {
-                if (typeof this.addConnectionProfileOrderers[x] === 'string') {
-                    newOrderersList.push({url: this.addConnectionProfileOrderers[x], cert: ''});
-                } else {
-                    newOrderersList.push(this.addConnectionProfileOrderers[x]);
-                }
-            }
-
-            connectionProfile = {
-                description: this.addConnectionProfileDescription,
-                type: 'hlfv1',
-                orderers: newOrderersList,
-                ca: this.addConnectionProfileCertificateAuthority,
-                peers: this.addConnectionProfilePeers,
-                keyValStore: this.addConnectionProfileKeyValStore,
-                channel: this.addConnectionProfileChannel,
-                mspID: this.addConnectionProfileMspId,
-                timeout: this.addConnectionProfileTimeout
-            };
-        } else {
-            throw new Error('Unknown connection profile version selected');
-        }
-
-        let completeConnectionProfile = {
-            name: this.addConnectionProfileName,
-            profile: connectionProfile,
-            default: this.addConnectionProfileName === '$default'
-        };
-        this.activeModal.close(completeConnectionProfile);
-
-    }
-
-    setV06Defaults(): Promise<any> {
-        return this.updateConnectionProfiles().then(() => {
-            let connectionProfileBase = 'New Connection Profile';
-            let connectionProfileName = connectionProfileBase;
-            let counter = 1;
-
-            while (this.connectionProfiles.some((cp) => {
-                return cp.name === connectionProfileName;
-            })) {
-                counter++;
-                connectionProfileName = connectionProfileBase + ' ' + counter;
-            }
-
-            this.addConnectionProfileName = connectionProfileName;
-            this.addConnectionProfileDescription = 'A description for a V0.6 Profile';
-            this.addConnectionProfileType = 'hlf';
-            this.addConnectionProfilePeerURL = 'grpc://localhost:7051';
-            this.addConnectionProfileMembershipServicesURL = 'grpc://localhost:7054';
-            this.addConnectionProfileEventHubURL = 'grpc://localhost:7053';
-            this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
-            this.addConnectionProfileDeployWaitTime = 5 * 60;
-            this.addConnectionProfileInvokeWaitTime = 30;
-            this.addConnectionProfileCertificate = null;
-            this.addConnectionProfileCertificatePath = null;
-        });
-    }
-
-    setV1Defaults(): Promise<any> {
-        return this.updateConnectionProfiles().then(() => {
-            let connectionProfileBase = 'New Connection Profile';
-            let connectionProfileName = connectionProfileBase;
-            let counter = 1;
-
-            while (this.connectionProfiles.some((cp) => {
-                return cp.name === connectionProfileName;
-            })) {
-                counter++;
-                connectionProfileName = connectionProfileBase + ' ' + counter;
-            }
-
-            this.addConnectionProfileName = connectionProfileName;
-            this.addConnectionProfileDescription = 'A description for a V1 Profile';
-            this.addConnectionProfileType = 'hlfv1';
-            this.addConnectionProfileOrderers = [{
-                url: 'grpc://localhost:7050',
-                cert: ''
-            }];
-
-            this.addConnectionProfileCertificateAuthority = {
-                url: 'http://localhost:7054',
-                name: ''
-            };
-            this.addConnectionProfilePeers = [{
-                requestURL: 'grpc://localhost:7051',
-                eventURL: 'grpc://localhost:7053',
-                cert: ''
-            }];
-            this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
-            this.addConnectionProfileChannel = 'composerchannel';
-            this.addConnectionProfileMspId = 'Org1MSP';
-            this.addConnectionProfileTimeout = 5 * 60;
-        });
-
+    ngOnInit() {
+        return this.updateConnectionProfiles();
     }
 
     updateConnectionProfiles(): Promise<any> {
-        let newConnectionProfiles = [];
         return this.connectionProfileService.getAllProfiles()
-        .then((connectionProfiles) => {
-            let keys = Object.keys(connectionProfiles).sort();
+        .then((profiles) => {
+            let newConnectionProfiles = [];
+            let keys = Object.keys(profiles).sort();
             keys.forEach((key) => {
-                let connectionProfile = connectionProfiles[key];
-                newConnectionProfiles.push({
-                    name: key,
-                    profile: connectionProfile,
-                    default: key === '$default'
+                return this.identityService.getIdentities(key)
+                    .then((identities) => {
+                        let identityList = [];
+                        identities.forEach((identity) => {
+                            identityList.push({
+                                userId: identity,
+                                businessNetwork: 'org-acme-biznet'
+                            });
+                        });
+
+                        let connectionProfile = profiles[key];
+                        newConnectionProfiles.push({
+                            name: key,
+                            profile: connectionProfile,
+                            default: key === '$default',
+                            description: 'Default connection profile',
+                            identities: identityList
+                        });
                 });
             });
             this.connectionProfiles = newConnectionProfiles;
         });
+    }
+
+    generateProfileName(): string {
+        let connectionProfileBase = 'New Connection Profile';
+        let connectionProfileName = connectionProfileBase;
+        let increment = 1;
+
+        while ( this.connectionProfiles.findIndex((cp) => cp === connectionProfileName) !== -1 ) {
+            connectionProfileName = connectionProfileBase + increment;
+            increment++;
+        }
+
+        return connectionProfileName;
+    }
+
+    retrieveConnectionProfileByName(name: string): Promise<any>  {
+        return this.connectionProfileService.getAllProfiles()
+        .then((connectionProfiles) => {
+            let newConnectionProfile;
+            let keys = Object.keys(connectionProfiles).sort();
+            keys.forEach((key) => {
+                if (key === name) {
+                    newConnectionProfile =  connectionProfiles[key];
+                }
+            });
+            if (newConnectionProfile) {
+                return newConnectionProfile;
+
+            } else {
+                throw new Error('Unknown connection profile name: ' + name);
+            }
+        });
+    }
+
+    setConnectionProfile(name: string) {
+        return this.updateConnectionProfiles().then(() => {
+            let profile;
+            if (name.valueOf() === '_$v06') {
+                // Wish to work with new V06
+                this.newDefault = true;
+                profile = {
+                    description: 'A description for a V0.6 Profile',
+                    type: 'hlf',
+                    membershipServicesURL: 'grpc://localhost:7054',
+                    peerURL: 'grpc://localhost:7051',
+                    eventHubURL: 'grpc://localhost:7053',
+                    keyValStore: '/tmp/keyValStore',
+                    deployWaitTime: 5 * 60,
+                    invokeWaitTime: 30,
+                    certificate: null,
+                    certificatePath: null
+                };
+            } else if (name.valueOf() === '_$v1') {
+                // Wish to work with new V1
+                this.newDefault = true;
+                profile = {
+                    description: 'A description for a V1 Profile',
+                    type: 'hlfv1',
+                    orderers: [{
+                                url: 'grpc://localhost:7050',
+                                cert: ''
+                                }],
+                    ca: {
+                            url: 'http://localhost:7054',
+                            name: ''
+                        },
+                    peers: [{
+                                requestURL: 'grpc://localhost:7051',
+                                eventURL: 'grpc://localhost:7053',
+                                cert: ''
+                            }],
+                    keyValStore: '/tmp/keyValStore',
+                    channel: 'composerchannel',
+                    mspID: 'Org1MSP',
+                    timeout: 5 * 60,
+                };
+            } else {
+                // Wish to work with existing
+                this.newDefault = false;
+                // Retrieve details
+                profile = this.retrieveConnectionProfileByName(name);
+            }
+            return profile;
+        })
+        .then((profile) => {
+            this.connectionProfile = {
+                name: this.newDefault ? this.generateProfileName() : name,
+                profile: profile,
+                default: this.newDefault ? false : true,
+            };
+        });
+    }
+
+    dismiss() {
+        this.cancelAdd.emit(true);
+    }
+
+    initiateAddToProfile() {
+        this.profileToUse.emit(this.connectionProfile.name);
+    }
+
+    initiateAddWithProfile() {
+        this.profileToEdit.emit(this.connectionProfile);
     }
 }

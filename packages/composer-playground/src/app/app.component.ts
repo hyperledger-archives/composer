@@ -45,9 +45,13 @@ export class AppComponent implements OnInit, OnDestroy {
     private subs: any = null;
 
     private usingLocally = false;
+    private showHeaderLinks = false;
+    private showWelcome = true;
+    private dropListActive = false;
 
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
+    private composerBanner = ['Hyperledger', 'Composer Playground'];
 
     private busyModalRef = null;
 
@@ -82,16 +86,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.onEvent(eventStatus);
             }),
             this.router.events.filter((e) => e instanceof NavigationEnd).subscribe((e) => {
-                if (e['url'] === '/') {
-                    this.openWelcomeModal();
-                } else {
-                    return this.checkVersion().then((success) => {
-                        if (!success) {
-                            this.openVersionModal();
-                        }
-                    });
-                }
-
+                this.processRouteEvent(e);
             })
         ];
     }
@@ -102,97 +97,87 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    queryParamsUpdated(queryParams: Object): Promise<any> {
-        // Check for the invitation if specified.
-        let invitation = queryParams['invitation'];
-        if (invitation) {
-            let invitationData = JSON.parse(LZString.decompressFromEncodedURIComponent(invitation));
-            let connectionProfileName = invitationData.connectionProfileName;
-            let connectionProfile = invitationData.connectionProfile;
-            let userID = invitationData.userID;
-            let userSecret = invitationData.userSecret;
-            // Create the connection profile and set it as the default.
-            this.adminService.getAdminConnection().createProfile(connectionProfileName, connectionProfile);
-            this.connectionProfileService.setCurrentConnectionProfile(connectionProfileName);
-            // Add the credentials to the wallet.
-            let wallet = this.walletService.getWallet(connectionProfileName);
-            return wallet.contains(userID)
-            .then((exists) => {
-                if (exists) {
-                    return wallet.update(userID, userSecret);
-                } else {
-                    return wallet.add(userID, userSecret);
+    logout() {
+        this.clientService.disconnect();
+        this.identityService.setCurrentIdentity(null);
+        this.connectionProfileService.setCurrentConnectionProfile(null);
+        this.identityService.setLoggedIn(false);
+        this.composerBanner = ['Hyperledger', 'Composer Playground'];
+        this.showWelcome = false;
+
+        return this.router.navigate(['/login']);
+    }
+
+    processRouteEvent(event): Promise<void> {
+        let welcomePromise;
+        if (event['url'] === '/login' && this.showWelcome) {
+            welcomePromise = this.openWelcomeModal();
+        } else {
+            welcomePromise = this.checkVersion().then((success) => {
+                if (!success) {
+                    this.openVersionModal();
                 }
-            })
-            .then(() => {
-                return this.identityService.setIdentity(connectionProfileName, userID);
-            })
-            .then(() => {
-                return this.router.navigate(['/editor'])
-                .then((result) => {
-                    if (result) {
-                        window.location.reload();
-                    } else {
-                        throw new Error('Failed to navigate to main page');
-                    }
-                });
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(error);
             });
         }
 
+        if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
+            this.showHeaderLinks = false;
+        } else {
+            this.showHeaderLinks = true;
+            this.clientService.ensureConnected()
+            .then(() => {
+                let profileName = this.connectionProfileService.getCurrentConnectionProfile() === '$default' ? 'Web' : this.connectionProfileService.getCurrentConnectionProfile();
+                let busNetName = this.clientService.getBusinessNetworkName();
+                this.composerBanner = [profileName, busNetName];
+            });
+        }
+
+        return welcomePromise;
+    }
+
+    queryParamsUpdated(queryParams: Object): Promise<any> {
         // We load the connection profiles now, so we can immediately populate the menu.
         this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         return this.updateConnectionData()
-        .then(() => {
-            return this.initializationService.initialize();
-        })
-        .then(() => {
-            return this.clientService.getBusinessNetworkConnection().ping();
-        })
-        .then((ping) => {
-            this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
-            this.participantFQI = ping.participant || this.participantFQI;
-            // We then load the connection profiles again, as the connect calls may have
-            // created versions of the default connection profiles.
-            return this.updateConnectionData();
-        })
-        .then(() => {
-            return this.identityService.getCurrentIdentity();
-        })
-        .then((currentIdentity) => {
-            this.currentIdentity = currentIdentity;
-            return this.initializationService.isWebOnly();
-        })
-        .then((webOnly) => {
-            if (webOnly) {
-                this.usingLocally = false;
-            } else {
-                this.usingLocally = true;
-            }
-        });
+            .then(() => {
+                return this.initializationService.initialize();
+            })
+            .then(() => {
+                // We then load the connection profiles again, as the connect calls may have
+                // created versions of the default connection profiles.
+                return this.updateConnectionData();
+            })
+            .then(() => {
+                return this.initializationService.isWebOnly();
+            })
+            .then((webOnly) => {
+                if (webOnly) {
+                    this.usingLocally = false;
+                } else {
+                    this.usingLocally = true;
+                }
+            });
     }
 
     updateConnectionData(): Promise<any> {
         let newConnectionProfiles = [];
         return this.adminService.getAdminConnection().getAllProfiles()
-        .then((connectionProfiles) => {
-            let keys = Object.keys(connectionProfiles).sort();
-            keys.forEach((key) => {
-                let connectionProfile = connectionProfiles[key];
-                newConnectionProfiles.push({
-                    name: key,
-                    profile: connectionProfile,
-                    default: key === '$default'
+            .then((connectionProfiles) => {
+                let keys = Object.keys(connectionProfiles).sort();
+                keys.forEach((key) => {
+                    let connectionProfile = connectionProfiles[key];
+                    newConnectionProfiles.push({
+                        name: key,
+                        profile: connectionProfile,
+                        default: key === '$default'
+                    });
                 });
+                this.connectionProfiles = newConnectionProfiles;
+                return this.identityService.getCurrentIdentities();
+            })
+            .then((identities) => {
+                this.identities = identities;
             });
-            this.connectionProfiles = newConnectionProfiles;
-            return this.identityService.getCurrentIdentities();
-        })
-        .then((identities) => {
-            this.identities = identities;
-        });
     }
 
     onBusyStatus(busyStatus) {
@@ -225,6 +210,14 @@ export class AppComponent implements OnInit, OnDestroy {
             let transactionModalRef = this.modalService.open(ViewTransactionComponent);
             transactionModalRef.componentInstance.transaction = this.transactionService.lastTransaction;
             transactionModalRef.componentInstance.events = this.transactionService.events;
+        }
+    }
+
+    onToggle(open) {
+        if (open) {
+            this.dropListActive = true;
+        } else {
+            this.dropListActive = false;
         }
     }
 

@@ -67,16 +67,6 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    addId() {
-        this.modalService.open(AddIdentityComponent).result.then((result) => {
-            return this.loadAllIdentities();
-        }, (reason) => {
-            if (reason && reason !== 1) { // someone hasn't pressed escape
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
-    }
-
     issueNewId() {
         this.modalService.open(IssueIdentityComponent).result.then((result) => {
             if (result) {
@@ -107,7 +97,7 @@ export class IdentityComponent implements OnInit {
         this.currentIdentity = newIdentity;
 
         this.alertService.busyStatus$.next({title: 'Reconnecting...', text: 'Using identity ' + this.currentIdentity});
-        return this.clientService.ensureConnected(true)
+        return this.clientService.ensureConnected(null, true)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 return this.loadAllIdentities();

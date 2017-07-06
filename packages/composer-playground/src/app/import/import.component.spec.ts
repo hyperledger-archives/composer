@@ -9,15 +9,16 @@ import { By } from '@angular/platform-browser';
 
 import { ImportComponent } from './import.component';
 
-import { AdminService } from '../../services/admin.service';
-import { ClientService } from '../../services/client.service';
-import { SampleBusinessNetworkService } from '../../services/samplebusinessnetwork.service';
+import { AdminService } from '../services/admin.service';
+import { ClientService } from '../services/client.service';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AlertService } from '../../basic-modals/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ClassDeclaration } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
 
 let should = chai.should();
 
@@ -80,21 +81,16 @@ describe('ImportComponent', () => {
     let mockAdminService;
     let mockAlertService;
     let mockClientService;
-    let mockActiveModal;
     let mockNgbModal;
-
-    const EMPTY_NETWORK = {
-        name: 'Empty Business Network',
-        description: 'Start from scratch with a blank business network'
-    };
+    let mockConnectionProfileService;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockNgbModal = sinon.createStubInstance(NgbModal);
+        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -111,9 +107,9 @@ describe('ImportComponent', () => {
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: NgbActiveModal, useValue: mockActiveModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: NgbModal, useValue: mockNgbModal}]
+                {provide: NgbModal, useValue: mockNgbModal},
+                {provide: ConnectionProfileService, useValue: mockConnectionProfileService}],
         });
 
         sandbox = sinon.sandbox.create();
@@ -131,38 +127,11 @@ describe('ImportComponent', () => {
         sandbox.restore();
     });
 
-    describe('currentBusinessNetwork', () => {
-        let mockBusinessNetworkDefinition;
-        let stub1 = sinon.createStubInstance(ClassDeclaration);
-        beforeEach(() => {
-            stub1.isAbstract.returns(true);
-            stub1.isSystemType.returns(false);
-
-            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.getModelManager.returns({
-                getAssetDeclarations: () => {
-                    return [stub1];
-                },
-                getParticipantDeclarations: () => {
-                    return [stub1];
-                },
-                getTransactionDeclarations: () => {
-                    return [stub1];
-                }
-            });
-        });
-
-        it('should set the correct values for _currentBusinessNetwork', () => {
-            component['currentBusinessNetwork'] = mockBusinessNetworkDefinition;
-            component['currentAssets'].should.deep.equal([]);
-        });
-    });
-
     describe('ngInit', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });
 
@@ -182,14 +151,18 @@ describe('ImportComponent', () => {
 
     describe('onShow', () => {
         it('should get the list of sample networks', fakeAsync(() => {
-            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelOne'}]));
+            let selectNetworkStub = sinon.stub(component, 'selectNetwork');
+            let addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
+            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
 
             component.onShow();
-            component['gitHubInProgress'].should.equal(true);
+            component['npmInProgress'].should.equal(true);
             tick();
 
-            component['gitHubInProgress'].should.equal(false);
-            component['sampleNetworks'].should.deep.equal([EMPTY_NETWORK, {name: 'modelOne'}]);
+            addEmptyNetworkOption.should.have.been.calledWith([{name: 'modelTwo'}, {name: 'modelOne'}]);
+            selectNetworkStub.should.have.been.calledWith({name: 'modelOne'});
+            component['npmInProgress'].should.equal(false);
+            component['sampleNetworks'].should.deep.equal([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -197,10 +170,10 @@ describe('ImportComponent', () => {
 
             component.onShow();
 
-            component['gitHubInProgress'].should.equal(true);
+            component['npmInProgress'].should.equal(true);
             tick();
 
-            component['gitHubInProgress'].should.equal(false);
+            component['npmInProgress'].should.equal(false);
 
             mockAlertService.errorStatus$.next.should.have.been.called;
         }));
@@ -253,7 +226,16 @@ describe('ImportComponent', () => {
         });
 
         it('should read a file', fakeAsync(() => {
-            mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve({network: 'mockNetwork'}));
+            let metaDataMock = {
+                getPackageJson: sinon.stub().returns({json: 'some json'})
+            };
+
+            let businessNetworkMock = {
+                network: 'mockNetwork',
+                getMetadata: sinon.stub().returns(metaDataMock)
+            };
+
+            mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve(businessNetworkMock));
 
             mockDragDropComponent.fileDragDropFileAccepted.emit(file);
 
@@ -264,9 +246,10 @@ describe('ImportComponent', () => {
             tick();
 
             mockClientService.getBusinessNetworkFromArchive.should.have.been.called;
-
-            component['currentBusinessNetwork'].should.deep.equal({network: 'mockNetwork'});
-            component['expandInput'].should.equal(true);
+            component['currentBusinessNetwork'].network.should.equal('mockNetwork');
+            component['expandInput'].should.equal(false);
+            component['chosenNetwork'].should.deep.equal({json: 'some json'});
+            component['sampleDropped'].should.equal(true);
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -307,102 +290,145 @@ describe('ImportComponent', () => {
     });
 
     describe('deploy', () => {
-        it('should deploy a business network from github', fakeAsync(() => {
+        let finishedSampleImportSpy;
 
-            let deployNpmMock = sinon.stub(component, 'deployFromNpm').returns(Promise.resolve());
-
+        beforeEach(() => {
             mockNgbModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
+            });
+
+            finishedSampleImportSpy = sinon.spy(component.finishedSampleImport, 'emit');
+        });
+
+        it('should deploy a business network', fakeAsync(() => {
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            component['networkName'] = 'newNetwork';
+            component['networkDescription'] = 'myDescription';
+            component['deployNetwork'] = true;
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: true});
             });
 
             component.deploy();
 
             tick();
 
-            deployNpmMock.should.have.been.called;
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'}, 'newNetwork', 'myDescription');
+
+            mockNgbModal.open.should.not.have.been.called;
 
             component['deployInProgress'].should.equal(false);
-            mockActiveModal.close.should.have.been.called;
+
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: true});
         }));
 
-        it('should deploy a business network from business network', fakeAsync(() => {
-
-            mockNgbModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
-            });
-
+        it('should update a business network from business network', fakeAsync(() => {
+            component['deployNetwork'] = false;
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
-            component.deploy();
-
-            tick();
-
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
-
-            component['deployInProgress'].should.equal(false);
-            mockActiveModal.close.should.have.been.called;
-        }));
-
-        it('should handle rate limit error', fakeAsync(() => {
-
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true),
-                componentInstance: {}
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: true});
             });
 
+            component.deploy();
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            mockBusinessNetworkService.updateBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+
+            component['deployInProgress'].should.equal(false);
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: true});
+        }));
+
+        it('should do nothing if not replace', fakeAsync(() => {
+            component['deployNetwork'] = false;
             component['currentBusinessNetwork'] = {network: 'my network'};
-            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'API rate limit exceeded'}));
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(false)
+            });
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false});
+            });
 
             component.deploy();
 
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            mockNgbModal.open.should.have.been.called;
+
+            mockBusinessNetworkService.updateBusinessNetwork.should.not.have.been.called;
+            mockBusinessNetworkService.deployBusinessNetwork.should.not.have.been.called;
+
             component['deployInProgress'].should.equal(false);
-            component.modalService.open.should.have.been.called;
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: false});
         }));
 
         it('should handle error', fakeAsync(() => {
+            component['deployNetwork'] = true;
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject('some error'));
 
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true),
-                componentInstance: {}
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false, error: 'some error'});
             });
 
-            component['currentBusinessNetwork'] = {network: 'my network'};
-            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'some error'}));
-
-            component.deploy();
+            let deployPromise = component.deploy();
 
             tick();
 
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
             component['deployInProgress'].should.equal(false);
-            component.modalService.open.should.have.been.called;
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: 'some error'});
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
     });
 
-    describe('deployFromNpm', () => {
-        it('should deploy from npm', () => {
-            component['sampleNetworks'] = [{name: 'bob'}, {name: 'fred'}];
-            component['chosenNetwork'] = 'fred';
-
-            component.deployFromNpm();
-
-            mockBusinessNetworkService.deployChosenSample.should.have.been.calledWith({name: 'fred'});
+    describe('deployEmptyNetwork', () => {
+        beforeEach(() => {
+            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
         });
 
-        it('should deploy the empty business network if chosen', () => {
-            component['sampleNetworks'] = [EMPTY_NETWORK];
-            component['chosenNetwork'] = EMPTY_NETWORK.name;
-            component['owner'] = 'my owner';
-            component['repository'] = 'my repository';
-            // TODO: figure out why this causes Error: Cannot find module "."
-            // component.deployFromGitHub();
-            // mockBusinessNetworkService.deploySample.should.have.been.calledWith('my owner', 'my repository', EMPTY_NETWORK);
+        it('should create the empty business network if chosen', fakeAsync(() => {
+
+            component['deployNetwork'] = true;
+            component['networkName'] = 'myName';
+            component['networkDescription'] = 'myDescription';
+
+            mockBusinessNetworkService.createNewBusinessDefinition.returns({network : 'myNetwork'});
+
+            component.deployEmptyNetwork();
+
+            tick();
+            mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
+            component['currentBusinessNetwork'].should.deep.equal({network : 'myNetwork'});
+        }));
+    });
+
+    describe('selectNetwork', () => {
+        it('should select the network', fakeAsync(() => {
+            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve({network: 'myNetwork'}));
+            component.selectNetwork('bob');
+
+            tick();
+
+            component['chosenNetwork'];
+            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+        }));
+
+        it('should select the empty network', () => {
+            let empty = sinon.stub(component, 'deployEmptyNetwork');
+
+            component.selectNetwork({name : 'Empty Business Network'});
+
+            empty.should.have.been.called;
         });
     });
 
@@ -416,11 +442,38 @@ describe('ImportComponent', () => {
             let INPUT_NETWORKS = [{name: BASIC_SAMPLE}, {name: BAR}, {name: FOO}];
             let result = component.addEmptyNetworkOption(INPUT_NETWORKS);
             result.length.should.equal(4);
-            result[0].name.should.equal(EMPTY_NETWORK.name);
+            result[0].name.should.equal('Empty Business Network');
             result[1].name.should.equal(BASIC_SAMPLE);
             result[2].name.should.equal(BAR);
             result[3].name.should.equal(FOO);
         });
     });
 
+    describe('closeSample', (() => {
+        it('should set the dragged sample back to empty', () => {
+            let selectStub = sinon.stub(component, 'selectNetwork');
+            component['sampleDropped'] = true;
+
+            component['sampleNetworks'] = [{network: 'one'}, {network: 'two'}];
+
+            component.closeSample();
+
+            component['sampleDropped'].should.equal(false);
+            selectStub.should.have.been.calledWith({network: 'two'});
+        });
+    }));
+
+    describe('cancel', () => {
+        it('should close importing', () => {
+            let emitSpy = sinon.spy(component.finishedSampleImport, 'emit');
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false});
+            });
+
+            component.cancel();
+
+            emitSpy.should.have.been.calledWith({deployed: false});
+        });
+    });
 });
