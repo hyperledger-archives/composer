@@ -4,37 +4,40 @@
             <div class="navlogo">
                 <p><b>Hyperledger</b> Composer Playground</p>
             </div>
-            <ul class="links navleft">
-                <li>
-                    <button class="action" [routerLink]="['editor']" [routerLinkActive]="['active']">Define</button>
-                </li>
-                <li>
-                    <button class="action" [routerLink]="['test']" [routerLinkActive]="['active']">Test</button>
-                </li>
-            </ul>
-            <ul class="links navright">
-                <li class="withseparator">
-                    <button class="action" [routerLink]="['identity']" [routerLinkActive]="['active']">
-                        <span class="currentid" title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
-                    </button>
-                </li>
-                <li *ngIf="!usingLocally">
-                    <a href="https://hyperledger.github.io/composer/installing/using-playground-locally.html"
-                       target="_blank">
-                        <svg class="nav-icon" aria-hidden="true">
-                            <use xlink:href="#icon-simple_docker"></use>
-                        </svg>
-                        <span>Get local version</span>
-                    </a>
-                </li>
-                <li *ngIf="usingLocally">
-                    <button class="action" [routerLink]="['profile']" [routerLinkActive]="['active']">
-                        <svg class="nav-icon" aria-hidden="true">
-                            <use xlink:href="#icon-world_24"></use>
-                        </svg>
-                    </button>
-                </li>
-            </ul>
+            <div *ngIf="showHeaderLinks" class="flex-container flex">
+                <ul class="links navleft">
+                    <li>
+                        <button class="action" [routerLink]="['editor']" [routerLinkActive]="['active']">Define
+                        </button>
+                    </li>
+                    <li>
+                        <button class="action" [routerLink]="['test']" [routerLinkActive]="['active']">Test</button>
+                    </li>
+                </ul>
+                <ul class="links navright">
+                    <li class="withseparator">
+                        <button class="action" [routerLink]="['identity']" [routerLinkActive]="['active']">
+                            <span class="currentid" title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
+                        </button>
+                    </li>
+                    <li *ngIf="!usingLocally">
+                        <a href="https://hyperledger.github.io/composer/installing/using-playground-locally.html"
+                           target="_blank">
+                            <svg class="nav-icon" aria-hidden="true">
+                                <use xlink:href="#icon-simple_docker"></use>
+                            </svg>
+                            <span>Get local version</span>
+                        </a>
+                    </li>
+                    <li *ngIf="usingLocally">
+                        <button class="action" [routerLink]="['profile']" [routerLinkActive]="['active']">
+                            <svg class="nav-icon" aria-hidden="true">
+                                <use xlink:href="#icon-world_24"></use>
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 </header>

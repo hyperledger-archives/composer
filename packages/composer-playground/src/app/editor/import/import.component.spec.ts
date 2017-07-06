@@ -134,7 +134,7 @@ describe('ImportComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });
 
@@ -279,7 +279,7 @@ describe('ImportComponent', () => {
     });
 
     describe('deploy', () => {
-        it('should deploy a business network from github', fakeAsync(() => {
+        it('should deploy a business network from npm', fakeAsync(() => {
 
             let deployNpmMock = sinon.stub(component, 'deployFromNpm').returns(Promise.resolve());
 
@@ -305,36 +305,39 @@ describe('ImportComponent', () => {
                 result: Promise.resolve(true)
             });
 
-            component['currentBusinessNetwork'] = {network: 'my network'};
+            component['deployNetwork'] = true;
+            component['currentBusinessNetwork'] = {network: 'my network', getName : sinon.stub()};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
             component.deploy();
 
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network', getName : sinon.match.func}, true);
 
             component['deployInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
         }));
 
-        it('should handle rate limit error', fakeAsync(() => {
+        it('should update a business network from business network', fakeAsync(() => {
 
             mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true),
-                componentInstance: {}
+                componentInstance: {},
+                result: Promise.resolve(true)
             });
 
-            component['currentBusinessNetwork'] = {network: 'my network'};
-            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'API rate limit exceeded'}));
+            component['deployNetwork'] = false;
+            component['currentBusinessNetwork'] = {network: 'my network', getName : sinon.stub()};
+            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
             component.deploy();
 
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network', getName : sinon.match.func}, false);
+
             component['deployInProgress'].should.equal(false);
-            component.modalService.open.should.have.been.called;
+            mockActiveModal.close.should.have.been.called;
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -344,27 +347,38 @@ describe('ImportComponent', () => {
                 componentInstance: {}
             });
 
-            component['currentBusinessNetwork'] = {network: 'my network'};
+            component['currentBusinessNetwork'] = {network: 'my network', getName : sinon.stub()};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'some error'}));
 
             component.deploy();
 
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network', getName : sinon.match.func});
             component['deployInProgress'].should.equal(false);
             component.modalService.open.should.have.been.called;
         }));
     });
 
     describe('deployFromNpm', () => {
-        it('should deploy from npm', () => {
+        it('should get sample from npm and deploy', () => {
             component['sampleNetworks'] = [{name: 'bob'}, {name: 'fred'}];
             component['chosenNetwork'] = 'fred';
+            component['deployNetwork'] = true;
 
             component.deployFromNpm();
 
-            mockBusinessNetworkService.deployChosenSample.should.have.been.calledWith({name: 'fred'});
+            mockBusinessNetworkService.deployChosenSample.should.have.been.calledWith({name: 'fred'}, true);
+        });
+
+        it('should get sample from npm and update', () => {
+            component['sampleNetworks'] = [{name: 'bob'}, {name: 'fred'}];
+            component['chosenNetwork'] = 'fred';
+            component['deployNetwork'] = false;
+
+            component.deployFromNpm();
+
+            mockBusinessNetworkService.deployChosenSample.should.have.been.calledWith({name: 'fred'}, false);
         });
 
         it('should deploy the empty business network if chosen', () => {

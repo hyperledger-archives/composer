@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
+import { LocalStorageService } from 'angular-2-local-storage';
 
 import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
@@ -26,7 +27,8 @@ export class ClientService {
     constructor(private adminService: AdminService,
                 private connectionProfileService: ConnectionProfileService,
                 private identityService: IdentityService,
-                private alertService: AlertService) {
+                private alertService: AlertService,
+                private localStorageService: LocalStorageService) {
     }
 
     // horrible hack for tests
@@ -218,33 +220,48 @@ export class ClientService {
         this.createNewBusinessNetwork(name, version, description, packageJson, readme);
     }
 
-    ensureConnected(force: boolean = true): Promise<any> {
+    ensureConnected(name: string = null, force: boolean = false): Promise<any> {
         if (this.isConnected && !force) {
             return Promise.resolve();
         } else if (this.connectingPromise) {
             return this.connectingPromise;
         }
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        this.alertService.busyStatus$.next({
-            title: 'Establishing connection',
-            text: 'Using the connection profile ' + connectionProfile
-        });
-        console.log('Connecting to connection profile', connectionProfile);
-        this.connectingPromise = this.adminService.ensureConnected(force)
+
+        let businessNetworkName: string;
+        let userId;
+        this.connectingPromise = this.identityService.getUserID()
+            .then((userID) => {
+                userId = userID;
+                if (!name) {
+                    try {
+                        businessNetworkName = this.getBusinessNetworkName();
+                    } catch (error) {
+                        console.log('business network name not set yet so using from local storage');
+                    } finally {
+                        if (!businessNetworkName) {
+                            businessNetworkName = this.getSavedBusinessNetworkName(userId);
+                        }
+                    }
+                } else {
+                    businessNetworkName = name;
+                }
+
+                let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+                this.alertService.busyStatus$.next({
+                    title: 'Establishing connection',
+                    text: 'Using the connection profile ' + connectionProfile
+                });
+                console.log('Connecting to connection profile', connectionProfile);
+                return this.adminService.connect(businessNetworkName, force);
+            })
             .then(() => {
-                return this.refresh();
+                return this.refresh(businessNetworkName);
             })
             .then(() => {
                 console.log('connected');
                 this.isConnected = true;
                 this.connectingPromise = null;
-            })
-            .then(() => {
-                if (this.adminService.isInitialDeploy()) {
-                    return this.deployInitialSample();
-                }
-            })
-            .then(() => {
+                this.setSavedBusinessNetworkName(userId);
                 this.alertService.busyStatus$.next(null);
             })
             .catch((error) => {
@@ -258,14 +275,11 @@ export class ClientService {
     }
 
     reset(): Promise<any> {
-        return this.ensureConnected()
-            .then(() => {
-                // TODO: hack hack hack, this should be in the admin API.
-                return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
-            });
+        // TODO: hack hack hack, this should be in the admin API.
+        return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
     }
 
-    refresh(): Promise<any> {
+    refresh(businessNetworkName): Promise<any> {
         this.currentBusinessNetwork = null;
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         this.alertService.busyStatus$.next({
@@ -282,8 +296,14 @@ export class ClientService {
                 return this.identityService.getUserSecret();
             })
             .then((userSecret) => {
-                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org-acme-biznet', userID, userSecret);
+                return this.getBusinessNetworkConnection().connect(connectionProfile, businessNetworkName, userID, userSecret);
             });
+    }
+
+    public disconnect() {
+        this.isConnected = false;
+        this.adminService.disconnect();
+        return this.getBusinessNetworkConnection().disconnect();
     }
 
     public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
@@ -296,12 +316,28 @@ export class ClientService {
             text: 'deploying sample business network'
         });
 
+        let businessNetwork: BusinessNetworkDefinition;
         return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
             .then((sampleBusinessNetworkDefinition) => {
-                return this.adminService.update(sampleBusinessNetworkDefinition);
+                businessNetwork = sampleBusinessNetworkDefinition;
+                return this.adminService.createNewBusinessNetwork(businessNetwork.getName(), businessNetwork.getDescription())
+                    .catch((error) => {
+                        // if it already exists we just carry on otherwise we need to throw the error that happened
+                        if (error.message !== 'businessNetwork with name ' + businessNetwork.getName() + ' already exists') {
+                            throw error;
+                        }
+                    });
             })
             .then(() => {
-                return this.refresh();
+                if (this.adminService.isInitialDeploy()) {
+                    return this.adminService.update(businessNetwork);
+                }
+            })
+            .then(() => {
+                return this.getBusinessNetworkConnection().disconnect();
+            })
+            .then(() => {
+                return this.getBusinessNetworkConnection().connect('$default', businessNetwork.getName(), 'admin', 'adminpw');
             })
             .then(() => {
                 return this.reset();
@@ -366,5 +402,15 @@ export class ClientService {
         return files.filter((model) => {
                 return !model.isSystemModelFile();
             });
+    }
+
+    private getSavedBusinessNetworkName(identity: string): string {
+        let key = `currentBusinessNetwork:${identity}`;
+        return this.localStorageService.get<string>(key);
+    }
+
+    private setSavedBusinessNetworkName(identity: string): void {
+        let key = `currentBusinessNetwork:${identity}`;
+        this.localStorageService.set(key, this.getBusinessNetworkName());
     }
 }

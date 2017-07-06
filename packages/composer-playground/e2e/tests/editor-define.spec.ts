@@ -10,7 +10,6 @@ import { dragDropFile, waitForFileToExist, retrieveZipContentList } from '../uti
 
 import * as chai from 'chai';
 import * as  fs from 'fs';
-import * as JSZip from 'jszip';
 
 let should = chai.should();
 
@@ -18,7 +17,7 @@ describe('Editor Define', (() => {
 
   // Navigate to Editor base page and move past welcome splash
   beforeAll(() =>  {
-    OperationsHelper.navigatePastWelcome();
+    OperationsHelper.navigatePastWelcomeAndLogin();
   });
 
   describe('On initialise', (() => {
@@ -183,7 +182,7 @@ describe('Editor Define', (() => {
             // ExportBND appears to kick off processes that cause timeout in protractor
             // -current work around is to refresh the page before continuing tests
             // -this was previously at the start as a beforeEach, but consumes time
-            OperationsHelper.navigatePastWelcome();
+            OperationsHelper.navigatePastWelcomeAndLogin();
         });
     }));
   }));
@@ -256,7 +255,7 @@ describe('Editor Define', (() => {
         });
     }));
 
-    it('should enable the addition of a script file via radio button selection', (() => {
+    fit('should enable the addition of a script file via radio button selection', (() => {
         let startFiles = EditorHelper.retrieveNavigatorFileNames()
         .then((names) => {
             startFiles = names;
@@ -275,22 +274,27 @@ describe('Editor Define', (() => {
             .then((list: any) => {
                 // Previous files should still exist
                 startFiles.forEach((element) => {
+                    console.log('CAZ', list);
+                    console.log('ISAAC', element);
                     list.includes(element).should.be.true;
                 });
                 // We should have added one file
                 list.length.should.be.equal(startFiles.length + 1);
+                console.log('BOB');
                 list.includes('Script File\nlib/script.js').should.be.true;
                 browser.waitForAngularEnabled(true);
             });
             // -deploy enabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
+                console.log('CAKE');
                 array[1].enabled.should.be.equal(true);
             });
             // -active file
             EditorHelper.retrieveNavigatorActiveFile()
             .then((list: any) => {
                 list.length.should.equal(1);
+                console.log('FISH');
                 list.includes('Script File\nlib/script.js').should.be.true;
             });
             // deploy new item
