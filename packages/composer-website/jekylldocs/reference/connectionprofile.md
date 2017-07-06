@@ -4,7 +4,7 @@ title: Connection Profiles
 section: reference
 index-order: 6
 sidebar: sidebars/reference.md
-excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0-beta.
+excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0-RC.
 ---
 
 # Connection Profiles
@@ -36,7 +36,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "peerURL": <your-peer-url>,
             "eventHubURL": <your-event-hub-url>
         }
-  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0 beta, use the following format:
+  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0 RC, use the following format:
 
         {
             "type": "hlfv1",
@@ -106,7 +106,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         "maxRecvSize": 15
         }
 
-  - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0-beta is must be `hlfv1`.
+  - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0-RC is must be `hlfv1`.
   - `orderers` is an array of objects which describe the orderes to communicate with. Within `orderers`, you must define the `url` of each orderer. If you are connecting via TLS, all `url` properties in your connection profile must begin with `grpcs://` and must also contain the correct TLS certificate in the `cert` property.
   - `peers` is an array of objects describing the peers to communicate with. Each `peer` must have a defined `requestURL` and a defined `eventURL`. If you are connecting using TLS, each `peer` must also have the correct TLS certificate in the `cert` property.
 
@@ -117,5 +117,6 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
   - `mspid` is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.
   - `timeout` is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.
+  - `globalcert` defines the TLS certificate which is used for all peers and orderers if no `cert` property is specified. If a `cert` property is specified, it overrides the `globalcert` property only for the peer or orderer it is specified for.
   - `maxSendSize` is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
   - `maxRecvSize` is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
