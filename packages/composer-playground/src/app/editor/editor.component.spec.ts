@@ -282,6 +282,16 @@ describe('EditorComponent', () => {
 
             fileSpy.should.have.been.called;
         }));
+
+        it('should handle error', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
+
+            component.ngOnInit();
+
+            tick();
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
     });
 
     describe('ngOnDestroy', () => {
@@ -1301,8 +1311,7 @@ describe('EditorComponent', () => {
 
         it('should open add file modal and handle cancel', fakeAsync(() => {
             mockModal.open = sinon.stub().returns({
-                componentInstance: {
-                },
+                componentInstance: {},
                 result: Promise.reject(1)
             });
 

@@ -281,7 +281,6 @@ export class ClientService {
             })
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
                 this.isConnected = false;
                 this.connectingPromise = null;
                 throw error;
