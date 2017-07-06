@@ -58,6 +58,7 @@
     "istanbul-lib-instrument": "^1.7.2",
     "pouchdb-adapter-idb": "^6.2.0",
     "pouchdb-adapter-memory": "^6.2.0",
+    "pouchdb-adapter-websql": "^6.2.0",
     "pouchdb-collate": "^6.2.0",
     "pouchdb-core": "^6.2.0",
     "pouchdb-find": "^6.2.0",
