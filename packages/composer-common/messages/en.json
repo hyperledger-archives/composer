@@ -39,6 +39,8 @@
         "factory-newinstance-missingidentifier": "Missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-abstracttype": "Cannot instantiate Abstract Type {type} in namespace {namespace}",
+        "factory-newrelationship-notregisteredwithmm" : "Cannot create relationship as namespace {namespace} is not known",
+        "factory-newinstance-typenotdeclaredinns" : "Cannot instantiate Type {type} in namespace {namespace}",
 
         "instancegenerator-newinstance-noconcreteclass": "No concrete extending type for {type}",
 
