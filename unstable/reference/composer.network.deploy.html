@@ -143,15 +143,12 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a &lt;business-network-archive&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">--help                       Show help  [boolean]
---version, -v                Show version number  [boolean]
---archiveFile, -a            The business network archive file name  [string] [required]
---connectionProfileName, -p  The connection profile name  [string]
---enrollId, -i               The enrollment ID of the user  [string] [required]
---loglevel, -l               The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
---option, -o                 Options that are specific specific to a connection. Multiple options are specified by repeating this option  [string]
---optionsFile, -O            A file containing options that are specific to connection  [string]
---enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">  --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
+  --archiveFile, -a            The business network archive file name  [string] [required]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.zip -i WebAppAdmin -s DJY27pEnl16d
@@ -162,35 +159,6 @@ Business network definition:
 Deploying business network definition. This may take a minute...
 Command completed successfully.
 </code></pre></div>
-<h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
-
-<p>The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option allow connection specific information to be sent. Hyperledger Fabric RC endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
-
-<ul>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicy='{"identities": [.... }'
-</code></pre></div></li>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
-</code></pre></div>
-<p>In this case, the endorsement policy file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="nt">"identities"</span><span class="p">:[</span><span class="err">...</span><span class="p">],</span><span class="w">
-    </span><span class="nt">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">}}</span><span class="w">
-</span></code></pre></div></li>
-<li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -O /path/to/file/options.json
-</code></pre></div>
-<p>In this case, the options file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">        </span><span class="p">{</span><span class="nt">"endorsementPolicy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"Identities"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span><span class="err">.</span><span class="w">
-            </span><span class="s2">"policy: {...}"</span><span class="w">
-          </span><span class="p">},</span><span class="w">
-          </span><span class="nt">"someOtherOption"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A Value"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
-</ul>
-
-<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric node SDK documentation</a>.</p>
-
             
           </section>
         </div>
