@@ -25,31 +25,34 @@
   </div>
 </section>
 <section class="main-view">
-  <div class="playground-profile-warning" *ngIf="warningVisible">
-    <div class="profile-warning-content">
-      <div>
-        <svg class="ibm-icon blue-icon" aria-hidden="true">
-          <use xlink:href="#icon-world_24"></use>
-        </svg>
-      </div>
-      <div class="profile-warning-text">
-        <h3>Connection Profiles are not available in Web Playground</h3>
-        <p>
-          It is not possible to add Connection Profiles in the Web Playground version of Hyperledger Composer.
-          If you like what you see, you can install a a local version of Hyperledger Composer.
-          The local version offers the same UI, or a CLI experience, and can be used to deploy Business Network Definitions to running Hyperledger Fabric instances.
-        </p>
-        <p>And of course it's still 100% open source</p>
-        <p><a href="https://hyperledger.github.io/composer/">Learn more in the docs</a></p>
-      </div>
-      <div>
-        <button type="button" class="button secondary" (click)="hideWarning()">Hide</button>
-      </div>
+    <div class="flex">
+        <div class="playground-profile-warning" *ngIf="warningVisible">
+            <div class="profile-warning-content">
+            <div>
+                <svg class="ibm-icon blue-icon" aria-hidden="true">
+                <use xlink:href="#icon-world_24"></use>
+                </svg>
+            </div>
+            <div class="profile-warning-text">
+                <h3>Connection Profiles are not available in Web Playground</h3>
+                <p>
+                It is not possible to add Connection Profiles in the Web Playground version of Hyperledger Composer.
+                If you like what you see, you can install a a local version of Hyperledger Composer.
+                The local version offers the same UI, or a CLI experience, and can be used to deploy Business Network Definitions to running Hyperledger Fabric instances.
+                </p>
+                <p>And of course it's still 100% open source</p>
+                <p><a href="https://hyperledger.github.io/composer/">Learn more in the docs</a></p>
+            </div>
+            <div>
+                <button type="button" class="button secondary" (click)="hideWarning()">Hide</button>
+            </div>
+            </div>
+
+        </div>
+
+        <div class="current-profile">
+            <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
+        </div>
     </div>
-
-  </div>
-
-  <div class="current-profile">
-    <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
-  </div>
+    <app-footer></app-footer>
 </section>
