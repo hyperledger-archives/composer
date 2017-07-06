@@ -11,9 +11,10 @@ import { RegistryComponent } from './registry/registry.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { ViewTransactionComponent } from './view-transaction/view-transaction.component';
 import { DirectivesModule } from '../directives/directives.module';
+import { FooterModule } from '../footer/footer.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, CodemirrorModule, DirectivesModule, TestRoutingModule],
+    imports: [CommonModule, FormsModule, NgbModule, CodemirrorModule, DirectivesModule, TestRoutingModule, FooterModule],
     entryComponents: [ResourceComponent, TransactionComponent, ViewTransactionComponent],
     declarations: [RegistryComponent, ResourceComponent, TransactionComponent, TestComponent, ViewTransactionComponent],
     providers: []

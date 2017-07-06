@@ -13,9 +13,10 @@ import { AddFileComponent } from './add-file/add-file.component';
 import { ImportComponent } from './import/import.component';
 import { FileImporterModule } from '../file-importer/file-importer.module';
 import { DirectivesModule } from '../directives/directives.module';
+import { FooterModule } from '../footer/footer.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, PerfectScrollbarModule, CodemirrorModule, DirectivesModule, FileImporterModule, EditorRoutingModule],
+    imports: [CommonModule, FormsModule, NgbModule, PerfectScrollbarModule, CodemirrorModule, DirectivesModule, FileImporterModule, EditorRoutingModule, FooterModule],
     entryComponents: [AddFileComponent, ImportComponent],
     declarations: [EditorComponent, EditorFileComponent, AddFileComponent, ImportComponent],
     providers: [EditorService]
