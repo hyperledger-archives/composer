@@ -31,7 +31,7 @@ class WebDataService extends PouchDBDataService {
      * @param {boolean} [autocommit] Should this data service auto commit?
      */
     constructor(uuid, autocommit) {
-        super(uuid, autocommit, { adapter: 'idb' });
+        super(uuid, autocommit);
         const method = 'constructor';
         LOG.entry(method, uuid, autocommit);
         LOG.exit(method);

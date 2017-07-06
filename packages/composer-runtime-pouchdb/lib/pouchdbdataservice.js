@@ -23,8 +23,9 @@ const PouchDBUtils = require('./pouchdbutils');
 
 const LOG = Logger.getLog('PouchDBDataService');
 
-// Install the PouchDB plugins.
+// Install the PouchDB plugins. The order of the adapters is important!
 PouchDB.plugin(require('pouchdb-adapter-idb'));
+PouchDB.plugin(require('pouchdb-adapter-websql'));
 PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-find'));
 
