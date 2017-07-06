@@ -82,8 +82,11 @@ class Serializer {
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
         // validate the resource against the model
-        options = options || { validate: true };
-        if(options.validate === true) {
+        options = options || {};
+        if(options.validate === undefined) {
+            options.validate = true;
+        }
+        if(options.validate) {
             const validator = new ResourceValidator();
             classDeclaration.accept(validator, parameters);
         }
