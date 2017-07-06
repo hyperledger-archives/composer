@@ -42,13 +42,27 @@ describe('Asset system tests', function () {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-assets')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return admin.deploy(businessNetworkDefinition)
+                .then(() => {
+                    return TestUtil.getClient('systest-assets')
+                        .then((result) => {
+                            client = result;
+                        });
+                });
+        } else {
+            console.log('doing 2 step deploy');
+            return admin.install(businessNetworkDefinition.getName())
+                .then(() => {
+                    return admin.start(businessNetworkDefinition);
+                })
+                .then(() => {
+                    return TestUtil.getClient('systest-assets')
+                        .then((result) => {
+                            client = result;
+                        });
+                });
+        }
     });
 
     let createAsset = (assetId) => {

@@ -728,4 +728,22 @@ describe('HFCConnection', () => {
 
     });
 
+    describe('#install', () => {
+        it('should throw an error if invoked', () => {
+            return connection
+                .install(mockSecurityContext, 'anything')
+                .should.be.rejectedWith(/Install is not/);
+
+        });
+    });
+
+    describe('#start', () => {
+        it('should throw an error if invoked', () => {
+            return connection
+                .start(mockSecurityContext, 'anything')
+                .should.be.rejectedWith(/Start is not/);
+
+        });
+    });
+
 });

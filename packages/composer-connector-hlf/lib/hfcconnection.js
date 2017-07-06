@@ -356,6 +356,29 @@ class HFCConnection extends Connection {
         }
     }
 
+    /**
+     * This method is not supported by this connector. Use deploy instead
+     *
+     * @param {any} securityContext the security context
+     * @param {any} businessNetwork the business network
+     * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
+     * @returns {Promise} a promise for instantiation completion
+     */
+    start(securityContext, businessNetwork, startOptions) {
+        return Promise.reject(new Error('Start is not supported by this connector, use deploy instead'));
+    }
+
+    /**
+     * This method is not supported by this connector. Use deploy instead
+     *
+     * @param {any} securityContext the security context
+     * @param {string} businessNetworkName the business network
+     * @param {object} installOptions any relevant install options
+     * @returns {Promise} a promise for install completion
+     */
+    install(securityContext, businessNetworkName, installOptions) {
+        return Promise.reject(new Error('Install is not supported by this connector, use deploy instead'));
+    }
 }
 
 module.exports = HFCConnection;

@@ -61,7 +61,7 @@ describe('composer deploy network CLI unit tests', function () {
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
 
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
+        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
     });

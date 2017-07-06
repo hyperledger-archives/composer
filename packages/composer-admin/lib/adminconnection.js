@@ -208,6 +208,55 @@ class AdminConnection {
     }
 
     /**
+     * Installs a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
+     * be connected for this method to succeed.
+     * @example
+     * // Install a Business Network Definition
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.install(businessNetworkDefinition)
+     * .then(function(){
+     *     // Business network definition installed
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network to install.
+     * @param {Object} installOptions connector specific install options
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * deployed.
+     */
+    install(businessNetworkIdentifier, installOptions) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.install(this.securityContext, businessNetworkIdentifier, installOptions);
+    }
+
+    /**
+     * Starts a previously installed but not started BusinessNetworkDefinition to the Hyperledger Fabric.
+     * The connection must be connected for this method to succeed.
+     * @example
+     * // Install a Business Network Definition
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.start(businessNetworkDefinition)
+     * .then(function(){
+     *     // Business network definition is started
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
+     * @param {Object} startOptions connector specific start options
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * deployed.
+     */
+    start(businessNetworkDefinition, startOptions) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.start(this.securityContext, businessNetworkDefinition, startOptions);
+    }
+
+
+    /**
      * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
      * be connected for this method to succeed.
      * @example

@@ -88,6 +88,32 @@ class Connection extends EventEmitter {
     }
 
     /**
+     * Install a business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
+     * @param {Object} installOptions connector specific installation options
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been installed, or rejected with an error.
+     */
+    install(securityContext, businessNetworkDefinition, installOptions) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Start a business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
+     * @param {Object} startOptions connector specific installation options
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been installed, or rejected with an error.
+     */
+    start(securityContext, businessNetworkDefinition, startOptions) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
