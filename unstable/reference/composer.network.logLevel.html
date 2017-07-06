@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Issue Command | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network logLevel | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Identity Issue Command</p>
+          <p>Hyperledger Composer Network logLevel</p>
           </div>
 
           <nav class="context-nav">
@@ -135,70 +135,20 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-identity-issue">Composer Identity Issue</h1>
+              <h1 id="hyperledger-composer-network-loglevel">Hyperledger Composer Network logLevel</h1>
 
-<hr>
-
-<p>The <code>composer identity issue</code> command issues a new identity to a participant in a
-participant registry. See the task <a href="../managing/identity-issue.html">Issue an Identity to a Participant</a>
-for a walkthrough of using this command or the API.</p>
-
-<h2 id="syntax">Syntax</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">$ composer identity issue
-composer identity issue [options]
-
-Options:
-  --help                       Show help  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --newUserId, -u              The user ID for the new identity  [string] [required]
-  --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --issuer, -x                 If the new identity should be able to issue other new identities  [boolean] [required]
-  --option, -o                 Options that are specific specific to a connection. Multiple options are specified by repeating this option  [string]
-  --optionFile, -O             A file containing options that are specific to connection  [string]
+<p>The <code>composer network logLevel</code> command is used to return or define the log level of the composer runtime. If the <code>newlevel</code> option is specified it will change the current level to the specified value. If <code>newlevel</code> is not specified, this command will return the current logging level.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network logLevel -n &lt;business-network-name&gt; -p &lt;connection-profile-name&gt; -l &lt;new-log-level&gt; -i &lt;enrollment-ID&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
-<h2 id="options">Options</h2>
-
-<p><code>--connectionProfileName, -p</code></p>
-
-<p>The connection profile name.<br>
-Example: <code>defaultProfile</code></p>
-
-<p><code>--businessNetworkName, -n</code></p>
-
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
-
-<p><code>--enrollId, -i</code></p>
-
-<p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
-
-<p><code>--enrollSecret, -s</code></p>
-
-<p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
-
-<p><code>--newUserId, -u</code></p>
-
-<p>The user ID of the new identity that should be issued.<br>
-Example: <code>lennyid1</code></p>
-
-<p><code>--participantId, -a</code></p>
-
-<p>The fully qualified identifier of the participant that the identity should be issued to.<br>
-Example: <code>net.biz.digitalPropertyNetwork.Person#lenny@biznet.org</code></p>
-
-<p><code>--issuer, -x</code></p>
-
-<p>Specify this option if the participant is trusted, and should be permitted to use
-the new identity to issue other new identities.</p>
-
+<h3 id="options">Options</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">--help                       Show help  [boolean]
+-v, --version                Show version number  [boolean]
+--businessNetworkName, -n    The business network name  [string] [required]
+--connectionProfileName, -p  The connection profile name  [string] [required]
+--newlevel, -l               the new logging level (INFO/WARNING/ERROR/DEBUG)  [string]
+--enrollId, -i               The enrollment ID of the user  [string] [required]
+--enrollSecret, -s           The enrollment secret of the user  [string]
+</code></pre></div>
             
           </section>
         </div>

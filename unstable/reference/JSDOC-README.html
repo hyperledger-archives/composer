@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>API Documentation | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-12">
+          <section class="content-chunk">
+            
+              <h1 id="hyperledger-composer-api">Hyperledger Composer API</h1>
+
+<p>Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>The major components of Hyperledger Composer are:</p>
+
+<ol>
+<li>The Hyperledger Composer language for describing the structure of resources (assets, participants
+and transactions) that participate in a blockchain backed business network.</li>
+<li>JavaScript APIs to query, create, update and delete resources and submit transactions
+from client applications. Hyperledger Composer resources are stored on the Blockchain.</li>
+<li>JavaScript transaction processor functions that runs on Hyperledger Fabric when transactions are
+submitted for processing. These functions may update the state of resources
+stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
+</ol>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+<li><a href="https://hyperledger.github.io/composer/">Documentation</a></li>
+<li><a href="https://www.npmjs.com/search?q=hyperledger-composer">npm modules</a></li>
+<li><a href="https://github.com/hyperledger/composer">GitHub repositories</a></li>
+</ul>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>To read more about the community and guidelines for submitting pull requests,
+please read the <a href="https://github.com/hyperledger/composer/blob/master/CONTRIBUTING.md">Contributing document</a>.</p>
+
+            
+          </section>
+        </div>
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+
+    
+
+    
+
+
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/composer/unstable/assets/js/jquery.js"></script>
+</html>
