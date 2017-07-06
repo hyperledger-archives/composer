@@ -8,7 +8,6 @@ import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
@@ -59,7 +58,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
-                private initializationService: InitializationService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
                 private editorService: EditorService) {
@@ -67,36 +65,35 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
-            .then(() => {
-                this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
-                    .subscribe((noError) => {
-                        if (this.editorFilesValidate() && noError) {
-                            this.noError = noError;
-                            this.dirty = true;
-                        } else {
-                            this.noError = false;
-                        }
-                    });
+        return this.clientService.ensureConnected().then(() => {
+            this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
+                .subscribe((noError) => {
+                    if (this.editorFilesValidate() && noError) {
+                        this.noError = noError;
+                        this.dirty = true;
+                    } else {
+                        this.noError = false;
+                    }
+                });
 
-                this.clientService.namespaceChanged$.takeWhile(() => this.alive)
-                    .subscribe((newName) => {
-                        if (this.currentFile !== null) {
-                            this.updateFiles();
-                            let index = this.findFileIndex(true, newName);
-                            this.setCurrentFile(this.files[index]);
-                        }
-                    });
+            this.clientService.namespaceChanged$.takeWhile(() => this.alive)
+                .subscribe((newName) => {
+                    if (this.currentFile !== null) {
+                        this.updateFiles();
+                        let index = this.findFileIndex(true, newName);
+                        this.setCurrentFile(this.files[index]);
+                    }
+                });
 
-                this.updatePackageInfo();
-                this.updateFiles();
+            this.updatePackageInfo();
+            this.updateFiles();
 
-                if (this.editorService.getCurrentFile() !== null) {
-                    this.setCurrentFile(this.editorService.getCurrentFile());
-                } else {
-                    this.setInitialFile();
-                }
-            });
+            if (this.editorService.getCurrentFile() !== null) {
+                this.setCurrentFile(this.editorService.getCurrentFile());
+            } else {
+                this.setInitialFile();
+            }
+        });
     }
 
     ngOnDestroy() {
@@ -374,7 +371,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        this.modalService.open(ImportComponent).result.then((result) => {
+        const importModalRef = this.modalService.open(ImportComponent);
+        // only want to update here not deploy
+        importModalRef.componentInstance.deployNetwork = false;
+        importModalRef.result.then((result) => {
             this.updatePackageInfo();
             this.updateFiles();
             if (this.files.length) {
@@ -452,7 +452,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.dirty = false;
                 this.deploying = false;
-                return this.clientService.refresh();
+                return this.clientService.refresh(this.clientService.getBusinessNetworkName());
             })
             .then(() => {
                 this.updatePackageInfo();
