@@ -87,7 +87,7 @@ class Serializer {
             options.validate = true;
         }
         if(options.validate) {
-            const validator = new ResourceValidator();
+            const validator = new ResourceValidator(options);
             classDeclaration.accept(validator, parameters);
         }
 

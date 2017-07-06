@@ -46,6 +46,19 @@ const Globalize = require('../globalize');
  * @memberof module:composer-common
  */
 class ResourceValidator {
+
+    /**
+     * ResourceValidator constructor
+     * @param {Object} options - the optional serialization options.
+     * @param {boolean} options.validate - validate the structure of the Resource
+     * with its model prior to serialization (default to true)
+     * @param {boolean} options.convertResourcesToRelationships - Convert resources that
+     * are specified for relationship fields into relationships, false by default.
+     * @param {boolean} options.permitResourcesForRelationships - Permit resources in the
+     */
+    constructor(options) {
+        this.options = options || {};
+    }
     /**
      * Visitor design pattern.
      *
@@ -370,7 +383,11 @@ class ResourceValidator {
      * @private
      */
     checkRelationship(parameters, relationshipDeclaration, obj) {
-        if(!(obj instanceof Relationship)) {
+        if(obj instanceof Relationship) {
+            // All good..
+        } else if (obj instanceof Resource && (this.options.convertResourcesToRelationships || this.options.permitResourcesForRelationships)) {
+            // All good.. Again
+        } else {
             ResourceValidator.reportNotRelationshipViolation(parameters.rootResourceIdentifier, relationshipDeclaration, obj);
         }
 
