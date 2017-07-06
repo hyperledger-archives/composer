@@ -10,7 +10,7 @@
     <title>Connection Profiles | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -18,21 +18,21 @@
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
+ga('create', 'UA-91314349-1', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
 
   
@@ -57,7 +57,7 @@ ga('send', 'pageview');
             <!-- Navigation -->
   <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <div class="top-nav-docs">
@@ -120,7 +120,7 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -162,7 +162,7 @@ ga('send', 'pageview');
     </span><span class="nt">"eventHubURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-event-hub-url&gt;</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>If you are creating a connection profile for Hyperledger Fabric v1.0 beta, use the following format:</p>
+<p>If you are creating a connection profile for Hyperledger Fabric v1.0 RC, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
@@ -233,7 +233,7 @@ ga('send', 'pageview');
 </ol>
 
 <ul>
-<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0-beta is must be <code>hlfv1</code>.</li>
+<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0-RC is must be <code>hlfv1</code>.</li>
 <li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
 <li><p><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</p></li>
 <li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
@@ -241,6 +241,7 @@ ga('send', 'pageview');
 </code></pre></div></li>
 <li><p><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p></li>
 <li><p><code>timeout</code> is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.</p></li>
+<li><p><code>globalcert</code> defines the TLS certificate which is used for all peers and orderers if no <code>cert</code> property is specified. If a <code>cert</code> property is specified, it overrides the <code>globalcert</code> property only for the peer or orderer it is specified for.</p></li>
 <li><p><code>maxSendSize</code> is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
 <li><p><code>maxRecvSize</code> is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
 </ul>
@@ -308,5 +309,5 @@ ga('send', 'pageview');
 </body>
 
 <!-- jQuery -->
-<script src="/composer/unstable/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 </html>

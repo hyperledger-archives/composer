@@ -10,7 +10,7 @@
     <title>Developer Guide | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -18,21 +18,21 @@
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
+ga('create', 'UA-91314349-1', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
 
   
@@ -57,7 +57,7 @@ ga('send', 'pageview');
             <!-- Navigation -->
   <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <div class="top-nav-docs">
@@ -112,7 +112,7 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -144,7 +144,7 @@ ga('send', 'pageview');
 <p>After installation, launch VSCode and select <code>View &gt; Command Palette...</code> then type <code>extensions</code> and select the <code>Extensions: Install Extensions</code> option. In the &quot;Search Extensions in Marketplace&quot; text field type <code>Composer</code> and install the Hyperledger Composer extension. You may have to &#39;Reload&#39; the extension (if prompted) to activate it.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/developer/vs_code_install.mp4" type="video/mp4" />
+<source src="/composer/assets/img/tutorials/developer/vs_code_install.mp4" type="video/mp4" />
 </video>
 
 <h2 id="create-a-business-network-definition">Create a Business Network Definition</h2>
@@ -160,7 +160,7 @@ ga('send', 'pageview');
 <p>You should now have a folder called <code>my-network</code> (as the basis for our project) that we can start to modify. Using VSCode,  open the <code>my-network</code> folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
+<source src="/composer/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
 </video>
 
 <h3 id="update-your-package-json-file">Update your package.json file</h3>
@@ -487,7 +487,7 @@ Commodity Trading
 <p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current sample definition in Playground.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
+<source src="/composer/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
 </video>
 
 <p>You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.</p>
@@ -653,7 +653,7 @@ npm start
 <p>If you navigate to this URL and press the &quot;Assets&quot; drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the Hyperledger Fabric in the table (we have not stored them on blockchain yet!). You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
+<source src="/composer/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
 </video>
 
 <h1 id="congratulations">Congratulations!</h1>
@@ -729,5 +729,5 @@ npm start
 </body>
 
 <!-- jQuery -->
-<script src="/composer/unstable/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 </html>
