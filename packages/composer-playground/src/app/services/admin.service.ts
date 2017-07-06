@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
@@ -11,15 +10,11 @@ import WebConnectionManager = require('composer-connector-web');
 @Injectable()
 export class AdminService {
     private adminConnection: AdminConnection = null;
+
     private isConnected: boolean = false;
     private connectingPromise: Promise<any> = null;
-    private initialDeploy: boolean = false;
 
-    private madeItToConnect = false;
-    private connectionProfile;
-    private userID;
-    private userSecret;
-    private deployed = false;
+    private initialDeploy: boolean = false;
 
     constructor(private connectionProfileService: ConnectionProfileService,
                 private identityService: IdentityService,
@@ -40,7 +35,7 @@ export class AdminService {
         ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
     }
 
-    getAdminConnection() {
+    getAdminConnection(): AdminConnection {
         if (!this.adminConnection) {
             this.adminConnection = new AdminConnection();
         }
@@ -48,7 +43,7 @@ export class AdminService {
         return this.adminConnection;
     }
 
-    public ensureConnected(force: boolean = false): Promise<any> {
+    connect(businessNetworkName: string, force = false): Promise<void> {
         if (this.isConnected && !force) {
             return Promise.resolve();
         } else if (this.connectingPromise) {
@@ -56,96 +51,185 @@ export class AdminService {
         }
 
         console.log('Establishing admin connection ...');
-        this.connectingPromise = Promise.resolve()
-            .then(() => {
-                return this.connect();
-            })
-            .catch((error) => {
-                // If we didn't make it to connect, then the business network is probably not deployed.
-                // Try again with a admin connection with no business network specified so we can deploy it.
-                if (!this.madeItToConnect) {
-                    throw error;
-                }
 
-                return this.connectWithOutID();
-            })
-            .then(() => {
-                console.log('Connected');
-                this.isConnected = true;
-                this.connectingPromise = null;
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
-                this.isConnected = false;
-                this.connectingPromise = null;
-                throw error;
-            });
-        return this.connectingPromise;
-    }
+        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
 
-    connect(): Promise<any> {
-        this.connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        console.log('Connecting to connection profile (w/ business network ID)', this.connectionProfile);
-        return this.identityService.getUserID()
+        this.alertService.busyStatus$.next({
+            title: 'Connecting to Business Network ' + businessNetworkName,
+            text: 'using connection profile ' + connectionProfile
+        });
+
+        let userID;
+        this.connectingPromise = this.identityService.getUserID()
             .then((userId) => {
-                this.userID = userId;
+                userID = userId;
                 return this.identityService.getUserSecret();
             })
             .then((userSecret) => {
-                this.userSecret = userSecret;
-                this.madeItToConnect = true;
-                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org-acme-biznet');
+                console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfile, userID);
+                return this.getAdminConnection().connect(connectionProfile, userID, userSecret, businessNetworkName);
+            })
+            .then(() => {
+                this.isConnected = true;
+                this.connectingPromise = null;
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.connectingPromise = null;
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
+
+        return this.connectingPromise;
+    }
+
+    connectWithoutNetwork(force = false) {
+        if (this.isConnected && !force) {
+            return Promise.resolve();
+        } else if (this.connectingPromise) {
+            return this.connectingPromise;
+        }
+
+        console.log('Establishing admin connection ...');
+
+        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+
+        this.alertService.busyStatus$.next({
+            title: 'Connecting without a business network',
+            text: 'using connection profile ' + connectionProfile
+        });
+
+        let userID;
+        this.connectingPromise = this.identityService.getUserID()
+            .then((userId) => {
+                userID = userId;
+                return this.identityService.getUserSecret();
+            })
+            .then((userSecret) => {
+                console.log('Connecting with connection profile %s with id %s', connectionProfile, userID);
+                return this.getAdminConnection().connect(connectionProfile, userID, userSecret);
+            })
+            .then(() => {
+                this.isConnected = true;
+                this.connectingPromise = null;
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.connectingPromise = null;
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
+
+        return this.connectingPromise;
+
+    }
+
+    public createNewBusinessNetwork(name: string, description: string): Promise<void> {
+        this.alertService.busyStatus$.next({
+            title: 'Checking Business Network',
+            text: 'checking if ' + name + ' exists'
+        });
+
+        let userSecret;
+        let connectionProfile;
+        let userId;
+        return this.list()
+            .then((businessNetworks) => {
+                // check if business network already exists
+                let deployed = businessNetworks.some((businessNetwork) => {
+                    return businessNetwork === name;
+                });
+                if (deployed) {
+                    this.initialDeploy = false;
+                    this.alertService.busyStatus$.next(null);
+                    throw Error('businessNetwork with name ' + name + ' already exists');
+                }
+
+                this.alertService.busyStatus$.next({
+                    title: 'Creating Business Network',
+                    text: 'creating business network ' + name
+                });
+                connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+                return this.identityService.getUserID();
+            })
+            .then((userID) => {
+                userId = userID;
+                return this.identityService.getUserSecret();
+            })
+            .then((secret) => {
+                userSecret = secret;
+                return this.getAdminConnection().connect(connectionProfile, userId, userSecret);
+            })
+            .then(() => {
+                let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
+                return this.getAdminConnection().deploy(businessNetworkDefinition);
+            })
+            .then(() => {
+                this.initialDeploy = true;
+                return this.getAdminConnection().disconnect();
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Connecting to Business Network ' + name,
+                    text: 'using connection profile, connectionProfile'
+                });
+
+                console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfile, userId);
+                return this.getAdminConnection().connect(connectionProfile, userId, userSecret, name);
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                if (error.message.startsWith('businessNetwork with name')) {
+                    throw error;
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                }
             });
     }
 
-    connectWithOutID(): Promise<any> {
-        console.log('Connecting to connection profile (w/o business network ID)', this.connectionProfile);
-        return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret)
+    public  list(): Promise<string[]> {
+        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        let userId;
+        let userSecret;
+        return this.identityService.getUserID()
+            .then((userID) => {
+                userId = userID;
+                return this.identityService.getUserSecret();
+            })
+            .then((secret) => {
+                userSecret = secret;
+                return this.getAdminConnection().connect(connectionProfile, userId, userSecret);
+            })
             .then(() => {
                 return this.getAdminConnection().list();
             })
             .then((businessNetworks) => {
-                console.log('Got business networks', businessNetworks);
-                this.deployed = businessNetworks.some((businessNetwork) => {
-                    return businessNetwork === 'org-acme-biznet';
-                });
-                if (!this.deployed) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Creating Business Network',
-                        text: 'creating business network org-acme-biznet'
-                    });
-                    let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
-                    return this.getAdminConnection().deploy(businessNetworkDefinition)
-                        .then(() => {
-                            this.initialDeploy = true;
-                        });
-                }
-            })
-            .then(() => {
-                return this.getAdminConnection().disconnect();
-            })
-            .then(() => {
-                console.log('Connecting to connection profile (w/ business network ID)', this.connectionProfile);
-                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org-acme-biznet');
+                this.disconnect();
+                return businessNetworks;
             });
     }
 
-    public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
-        return this.ensureConnected()
-            .then(() => {
-                return this.adminConnection.deploy(businessNetworkDefinition);
-            });
+    public disconnect(): void {
+        this.isConnected = false;
+        this.getAdminConnection().disconnect();
     }
 
-    public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
-        return this.ensureConnected()
-            .then(() => {
-                return this.adminConnection.update(businessNetworkDefinition);
-            });
+    public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        return this.connect(businessNetworkDefinition.getName()).then(() => {
+            return this.getAdminConnection().deploy(businessNetworkDefinition);
+        });
+
     }
 
-    generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-        let businessNetworkDefinition = new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network');
+    public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        return this.getAdminConnection().update(businessNetworkDefinition);
+    }
+
+    generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {
+        let businessNetworkDefinition = new BusinessNetworkDefinition(name + '@0.0.1', description);
         return businessNetworkDefinition;
     }
 

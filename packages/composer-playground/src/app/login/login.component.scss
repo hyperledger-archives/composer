@@ -1,0 +1,125 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+login {
+    width: 100vw;
+    padding: $space-large $space-medium;
+    background-color: $fourth-highlight;
+
+    .header {
+        margin-bottom: $space-medium;
+    }
+
+    .main-view {
+        overflow-y: auto;
+        height: 80vh;
+    }
+
+    div.connection-profile:first-child {
+        margin-top: 0;
+    }
+
+    div.connection-profile {
+        margin-top: $space-large;
+
+        .connection-profile-buttons {
+            display: inline-block;
+            margin-left: $space-medium;
+        }
+
+        .identities {
+            display: flex;
+            flex-wrap: wrap;
+
+            .identity {
+                background-color: $white;
+                padding: $space-large 0 $space-smedium 0;
+                box-shadow: 3px 6px 15px 0 rgba(0, 0, 0, 0.20);
+                margin-left: $space-large;
+                margin-bottom: $space-large;
+                width: 275px;
+
+                .top-section {
+
+                    padding: 0 $space-large;
+
+                    & > * {
+                        margin-top: $space-medium;
+                    }
+
+                    .userId-image {
+                        background-color: $keyline-highlight;
+                        border: 1px solid $keyline-highlight;
+                        border-radius: 50%;
+                        width: 75px;
+                        height: 75px;
+                        margin: 0 auto;
+                        position: relative;
+
+                        span {
+                            position: absolute;
+                            top: 26px;
+                            right: 26px;
+                            color: $second-highlight;
+                            text-transform: uppercase;
+                        }
+                    }
+
+                    .userId {
+                        text-align: center;
+                    }
+
+                    .action-buttons {
+                        display: flex;
+                        justify-content: center;
+
+                        button:first-child {
+                            margin-right: $space-large;
+                        }
+
+                        svg {
+                            fill: $second-highlight;
+                        }
+                    }
+                }
+
+                .bottom-section {
+
+                    & > * {
+                        padding: 0 $space-large;
+                        text-align: center;
+                    }
+
+                    .business-network {
+                        border-top: 1px solid $fourth-highlight;
+                        text-align: center;
+                        color: $secondary-text;
+                        font-size: x-small;
+                        padding-top: $space-medium;
+                    }
+
+                    .connect {
+                        margin-top: $space-medium;
+                        border-top: 1px solid $fourth-highlight;
+                        text-align: center;
+                        padding-top: $space-small;
+
+                        button {
+                            span {
+                                color: $second-highlight;
+                                margin-right: $space-smedium;
+                            }
+                            svg {
+                                fill: $second-highlight;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+

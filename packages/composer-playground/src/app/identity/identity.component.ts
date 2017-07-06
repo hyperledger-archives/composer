@@ -91,7 +91,7 @@ export class IdentityComponent implements OnInit {
         this.currentIdentity = newIdentity;
 
         this.alertService.busyStatus$.next({title: 'Reconnecting...', text: 'Using identity ' + this.currentIdentity});
-        return this.clientService.ensureConnected(true)
+        return this.clientService.ensureConnected(null, true)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
             })

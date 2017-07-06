@@ -1,8 +1,6 @@
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
 import { TransactionDeclaration } from 'composer-common';
@@ -27,16 +25,15 @@ export class TestComponent implements OnInit, OnDestroy {
     private eventsTriggered = [];
 
     constructor(private clientService: ClientService,
-                private initializationService: InitializationService,
                 private alertService: AlertService,
                 private transactionService: TransactionService,
                 private modalService: NgbModal) {
     }
 
     ngOnInit(): Promise<any> {
-        this.initializeEventListener();
-        return this.initializationService.initialize()
-        .then(() => {
+        return this.clientService.ensureConnected()
+            .then(() => {
+                this.initializeEventListener();
 
             let introspector = this.clientService.getBusinessNetwork().getIntrospector();
             let modelClassDeclarations = introspector.getClassDeclarations();
@@ -55,36 +52,37 @@ export class TestComponent implements OnInit, OnDestroy {
                     assetRegistry.displayName = displayName;
                 });
 
-                this.assetRegistries = assetRegistries.sort((a, b) => {
-                    return a.id.localeCompare(b.id);
-                });
+                        this.assetRegistries = assetRegistries.sort((a, b) => {
+                            return a.id.localeCompare(b.id);
+                        });
 
-                return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries();
-            })
-            .then((participantRegistries) => {
-                participantRegistries.forEach((participantRegistry) => {
-                    let index = participantRegistry.id.lastIndexOf('.');
-                    let displayName = participantRegistry.id.substring(index + 1);
-                    participantRegistry.displayName = displayName;
-                });
+                        return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries();
+                    })
+                    .then((participantRegistries) => {
+                        participantRegistries.forEach((participantRegistry) => {
+                            let index = participantRegistry.id.lastIndexOf('.');
+                            let displayName = participantRegistry.id.substring(index + 1);
+                            participantRegistry.displayName = displayName;
+                        });
 
-                this.participantRegistries = participantRegistries.sort((a, b) => {
-                    return a.id.localeCompare(b.id);
-                });
+                        this.participantRegistries = participantRegistries.sort((a, b) => {
+                            return a.id.localeCompare(b.id);
+                        });
 
-                return this.clientService.getBusinessNetworkConnection().getTransactionRegistry();
-            })
-            .then((transactionRegistry) => {
-                this.transactionRegistry = transactionRegistry;
+                        return this.clientService.getBusinessNetworkConnection().getTransactionRegistry();
+                    })
+                    .then((transactionRegistry) => {
+                        this.transactionRegistry = transactionRegistry;
 
-                // set the default registry selection
-                if (this.participantRegistries.length !== 0) {
-                    this.chosenRegistry = this.participantRegistries[0];
-                } else if (this.assetRegistries.length !== 0) {
-                    this.chosenRegistry = this.assetRegistries[0];
-                } else {
-                    this.chosenRegistry = this.transactionRegistry;
-                }
+                        // set the default registry selection
+                        if (this.participantRegistries.length !== 0) {
+                            this.chosenRegistry = this.participantRegistries[0];
+                        } else if (this.assetRegistries.length !== 0) {
+                            this.chosenRegistry = this.assetRegistries[0];
+                        } else {
+                            this.chosenRegistry = this.transactionRegistry;
+                        }
+                    });
             })
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
@@ -105,7 +103,6 @@ export class TestComponent implements OnInit, OnDestroy {
 
     submitTransaction() {
          const modalRef = this.modalService.open(TransactionComponent);
-
          modalRef.result.then((transaction) => {
             // refresh current resource list
              if (this.chosenRegistry === this.transactionRegistry) {
