@@ -47,14 +47,27 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 
-        composer network deploy -o endorsementPolicy='{"endorsementPolicy": {"identities": [.... }'
+        composer network deploy -o endorsementPolicy='{"identities": [.... }'
 
 - Using the `-o` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 
+	In this case, the endorsement policy file should follow this format:
+
+		{"identities":[...],
+			"policy": {...}}
+
 - Using the `-O` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -O /path/to/file/options.json
+
+	In this case, the options file should follow this format:
+
+				{"endorsementPolicy": {"Identities": [...].
+				    "policy: {...}"
+				  },
+				  "someOtherOption": "A Value"
+				}
 
 For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
