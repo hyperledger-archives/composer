@@ -12,6 +12,7 @@
   - [Enabling OAuth using GitHub](../managing/github-oauth.html)
   - [Enabling access control using the current participant](../managing/current-participant.html)
   - [Updating {{site.data.conrefs.composer_full}}](../managing/updating-composer.html)
+  - [Connector Specific Information](../managing/connector-information.html)
 - [Diagnosing Problems](../problems/diagnostics.html)
 - [Reference](../reference/reference-index.html)
 - [Support](../support/index.html)

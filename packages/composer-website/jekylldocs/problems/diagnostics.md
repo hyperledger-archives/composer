@@ -10,13 +10,27 @@ index-order: 0
 
 # Diagnosing Problems
 
+Composer uses the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
+
+The config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
+
+
+## User Applications - Dan
+## Business Networks - Liam/Matthew
+## CLI - David
+## Rest Server - Simon
+## Playground - Caroline
+## Composer Runtime - David
+## {{site.data.conrefs.hlf_full}} RC1 - David
+
+<!--
+# Diagnosing Problems
+
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 
 Let's look at the `digitalproperty-app` sample, and use that to explain how to get diagnostics out of the framework.
 
->Please note: This is a framework - so your application will need to have it's own logging framework. Also, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging. Composer uses the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
-
-The config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
+>Please note: This is a framework - so your application will need to have it's own logging framework. Also, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging.
 
 There are two containers that are relevant to logging;
 
@@ -129,3 +143,4 @@ cat ~/.composer-connection-profiles/defaultProfile/connection.json
 };
 ```
 By inspection, the ids match for the carauction-network therefore we know now which chaincode container is which.
+-->
