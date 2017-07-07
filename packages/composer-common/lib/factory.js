@@ -54,36 +54,6 @@ class Factory {
      */
     constructor(modelManager) {
         this.modelManager = modelManager;
-
-        this.initializeNewObject = (newObject, classDeclaration, clientOptions) => {
-            const generateParams = this.parseGenerateOptions(clientOptions);
-            if (generateParams) {
-                generateParams.stack = new TypedStack(newObject);
-                const visitor = new InstanceGenerator();
-                classDeclaration.accept(visitor, generateParams);
-            }
-        };
-
-        this.parseGenerateOptions = (clientOptions) => {
-            if (!clientOptions.generate) {
-                return null;
-            }
-
-            const generateParams = { };
-            generateParams.modelManager = this.modelManager;
-            generateParams.factory = this;
-
-            if ((/^empty$/i).test(clientOptions.generate)) {
-                generateParams.valueGenerator = ValueGeneratorFactory.empty();
-            } else {
-                // Allow any other value for backwards compatibility with previous (truthy) behavior
-                generateParams.valueGenerator = ValueGeneratorFactory.sample();
-            }
-
-            generateParams.includeOptionalFields = clientOptions.includeOptionalFields ? true : false;
-
-            return generateParams;
-        };
     }
 
     /**
@@ -287,6 +257,54 @@ class Factory {
         event.timestamp = new Date();
 
         return event;
+    }
+
+    /**
+     * PRIVATE IMPLEMENTATION. DO NOT CALL FROM OUTSIDE THIS CLASS.
+     *
+     * Initialize the state of a newly created resource
+     * @private
+     * @param {Typed} newObject - resource to initialize.
+     * @param {ClassDeclaration} classDeclaration - class declaration for the resource.
+     * @param {Object} clientOptions - field generation options supplied by the caller.
+     */
+    initializeNewObject(newObject, classDeclaration, clientOptions) {
+        const generateParams = this.parseGenerateOptions(clientOptions);
+        if (generateParams) {
+            generateParams.stack = new TypedStack(newObject);
+            const visitor = new InstanceGenerator();
+            classDeclaration.accept(visitor, generateParams);
+        }
+    }
+
+    /**
+     * PRIVATE IMPLEMENTATION. DO NOT CALL FROM OUTSIDE THIS CLASS.
+     *
+     * Parse the client-supplied field generation options and return a corresponding set of InstanceGenerator
+     * options that can be used to initialize a resource.
+     * @private
+     * @param {Object} clientOptions - field generation options supplied by the caller.
+     * @return {Object} InstanceGenerator options.
+     */
+    parseGenerateOptions(clientOptions) {
+        if (!clientOptions.generate) {
+            return null;
+        }
+
+        const generateParams = { };
+        generateParams.modelManager = this.modelManager;
+        generateParams.factory = this;
+
+        if ((/^empty$/i).test(clientOptions.generate)) {
+            generateParams.valueGenerator = ValueGeneratorFactory.empty();
+        } else {
+            // Allow any other value for backwards compatibility with previous (truthy) behavior
+            generateParams.valueGenerator = ValueGeneratorFactory.sample();
+        }
+
+        generateParams.includeOptionalFields = clientOptions.includeOptionalFields ? true : false;
+
+        return generateParams;
     }
 
 }
