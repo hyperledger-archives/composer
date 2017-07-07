@@ -257,49 +257,30 @@ class BusinessNetworkConnector extends Connector {
                 let filterKeys = Object.keys(filter);
 
                 if(filterKeys.indexOf('where') >= 0) {
-                    debug('where', JSON.stringify(filter.where));
-                    let whereKeys = Object.keys(filter.where);
-                    debug('where keys', whereKeys);
+                    const keys = Object.keys(filter.where);
+                    if (keys.length === 0) {
+                        throw new Error('The destroyAll operation without a where clause is not supported');
+                    }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    debug('identifierField', identifierField);
+                    if(!filter.where[identifierField]) {
+                        throw new Error('The specified filter does not match the identifier in the model');
+                    }
 
                     // Check we have the right identifier for the object type
-                    if(whereKeys.indexOf(identifierField) >= 0) {
-                        let objectId = filter.where[identifierField];
-                        if(doResolve) {
-                            return registry.resolve(objectId)
-                                .then((result) => {
-                                    debug('Got Result:', result);
-                                    return [ result ];
-                                })
-                                .catch((error) => {
-                                    // check the error - it might be ok just an error indicating that the object doesn't exist
-                                    debug('all: error ', error);
-                                    if(error.toString().indexOf('does not exist') >= 0) {
-                                        return {};
-                                    } else {
-                                        throw error;
-                                    }
-                                });
+                    let objectId = filter.where[identifierField];
+                    if(doResolve) {
+                        return registry.resolve(objectId)
+                            .then((result) => {
+                                debug('Got Result:', result);
+                                return [ result ];
+                            });
 
-                        } else {
-                            return registry.get(objectId)
-                                .then((result) => {
-                                    debug('Got Result:', result);
-                                    return [ this.serializer.toJSON(result) ];
-                                })
-                                .catch((error) => {
-                                    // check the error - it might be ok just an error indicating that the object doesn't exist
-                                    debug('all: error ', error);
-                                    if(error.toString().indexOf('does not exist') >= 0) {
-                                        return {};
-                                    } else {
-                                        throw error;
-                                    }
-                                });
-                        }
                     } else {
-                        throw new Error('The specified filter does not match the identifier in the model');
+                        return registry.get(objectId)
+                            .then((result) => {
+                                debug('Got Result:', result);
+                                return [ this.serializer.toJSON(result) ];
+                            });
                     }
                 } else if(doResolve) {
                     debug('no where filter, about to resolve on all');
@@ -326,6 +307,10 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
+                if (error.message.match(/does not exist/)) {
+                    callback(null, []);
+                    return;
+                }
                 callback(error);
             });
     }
@@ -469,13 +454,21 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
-        let resource;
+        let registry;
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                resource = this.serializer.fromJSON(data);
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
-            .then((registry) => {
+            .then((registry_) => {
+                registry = registry_;
+                return registry.get(objectId);
+            })
+            .then((resource) => {
+                const object = this.serializer.toJSON(resource);
+                Object.keys(data).forEach((key) => {
+                    object[key] = data[key];
+                });
+                resource = this.serializer.fromJSON(object);
                 return registry.update(resource);
             })
             .then(() => {
@@ -667,13 +660,14 @@ class BusinessNetworkConnector extends Connector {
      * Update an instance of an object in Composer. For assets, this method
      * updates the asset to the default asset registry.
      * @param {string} lbModelName the fully qualified model name.
+     * @param {string} where The filter to identify the asset or participant to be removed.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    update(lbModelName, data, options, callback) {
-        debug('update', lbModelName, data, options);
+    update(lbModelName, where, data, options, callback) {
+        debug('update', lbModelName, where, data, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
         // If the $class property has not been provided, add it now.
@@ -681,17 +675,28 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
+        let idField;
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                const keys = Object.keys(where);
+                if (keys.length === 0) {
+                    throw new Error('The update operation without a where clause is not supported');
+                }
+                idField = keys[0];
+                if(!this.isValidId(composerModelName, idField)) {
+                    throw new Error('The specified filter does not match the identifier in the model');
+                }
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry) => {
+
                 // Convert the JSON data into a resource.
                 let serializer = this.businessNetworkDefinition.getSerializer();
                 let resource = serializer.fromJSON(data);
-
-                // The create action is based on the type of the resource.
-                return this.getRegistryForModel(businessNetworkConnection, composerModelName)
-                    .then((registry) => {
-                        return registry.update(resource);
-                    });
+                if (resource.getIdentifier() !== where[idField]) {
+                    throw new Error('The specified resource does not match the identifier in the filter');
+                }
+                return registry.update(resource);
 
             })
             .then(() => {
@@ -721,12 +726,15 @@ class BusinessNetworkConnector extends Connector {
         let idField, registry;
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                idField = Object.keys(where)[0];
-                if(this.isValidId(composerModelName, idField)) {
-                    return this.getRegistryForModel(businessNetworkConnection, composerModelName);
-                } else {
-                    callback(new Error('The specified filter does not match the identifier in the model'));
+                const keys = Object.keys(where);
+                if (keys.length === 0) {
+                    throw new Error('The destroyAll operation without a where clause is not supported');
                 }
+                idField = keys[0];
+                if(!this.isValidId(composerModelName, idField)) {
+                    throw new Error('The specified filter does not match the identifier in the model');
+                }
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry_) => {
                 registry = registry_;
