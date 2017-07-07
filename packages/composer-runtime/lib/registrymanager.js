@@ -181,14 +181,25 @@ class RegistryManager extends EventEmitter {
      * Add a new registry with the specified type, ID, and name.
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
-     * @param {string} name The name of the registry.
+     * @param {string} name The name of the registry.curl http://127.0.0.1:8000/logs
      * @param {boolean} force true to force the creation of the collection without checking
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
      */
     add(type, id, name, force) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force)
+
+        let r = { '$class' : 'org.hyperledger.composer.system.Registry',
+            'registryID' : id,
+            'type': type, 'id': id, 'name': name};
+
+        
+        let resource = this.serializer.fromJSON(r);
+ 
+        return this.accessController.check(resource,'CREATE')
+        .then (() => {
+            this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force)
+        } )         
             .then(() => {
                 return this.dataService.createCollection(collectionID, force);
             })
