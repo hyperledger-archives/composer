@@ -40,7 +40,7 @@ export class EditorFileComponent {
         },
         foldGutter: true,
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        scrollbarStyle: 'simple'
+        scrollbarStyle: 'native'
     };
 
     private currentError: string = null;
@@ -130,6 +130,7 @@ export class EditorFileComponent {
     }
 
     onCodeChanged() {
+        console.log("onCodeChanged");
         if (this.changingCurrentFile) {
             return;
         } else if (this.editorContent === this.previousCode) {
