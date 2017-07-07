@@ -49,6 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
+    private composerBanner = ['Hyperledger', 'Composer Playground'];
 
     private busyModalRef = null;
 
