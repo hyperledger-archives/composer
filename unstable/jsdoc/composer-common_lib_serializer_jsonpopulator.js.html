@@ -225,12 +225,12 @@ class JSONPopulator {
 
             // if this is identifiable, then we create a resource
             if(!classDeclaration.isConcept()) {
-                subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
+                subResource = parameters.factory.newResource(classDeclaration.getNamespace(),
               classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
             }
             else {
               // otherwise we create a concept
-                subResource = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(),
+                subResource = parameters.factory.newConcept(classDeclaration.getNamespace(),
                             classDeclaration.getName() );
             }
 
@@ -318,7 +318,7 @@ class JSONPopulator {
                     const classDeclaration = parameters.modelManager.getType(jsonItem.$class);
 
                     // create a new instance, using the identifier field name as the ID.
-                    let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
+                    let subResource = parameters.factory.newResource(classDeclaration.getNamespace(),
                         classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
                     parameters.jsonStack.push(jsonItem);
                     parameters.resourceStack.push(subResource);
@@ -343,7 +343,7 @@ class JSONPopulator {
                 const classDeclaration = parameters.modelManager.getType(jsonObj.$class);
 
                 // create a new instance, using the identifier field name as the ID.
-                let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
+                let subResource = parameters.factory.newResource(classDeclaration.getNamespace(),
                     classDeclaration.getName(), jsonObj[classDeclaration.getIdentifierFieldName()] );
                 parameters.jsonStack.push(jsonObj);
                 parameters.resourceStack.push(subResource);
