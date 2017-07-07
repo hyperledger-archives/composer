@@ -57,7 +57,7 @@ class RelationshipDeclaration extends Property {
         if(ModelUtil.isPrimitiveType(this.getType())) {
             throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
         } else {
-            let namespace = this.getParent().getModelFile().getNamespace();
+            let namespace = this.getParent().getNamespace();
 
             // we first try to get the type from our own model file
             // because during validate we have not yet been added to the model manager
@@ -77,11 +77,8 @@ class RelationshipDeclaration extends Property {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             }
 
-
             if ((namespace === ModelUtil.getSystemNamespace()) && classDecl.isEvent()) {
                 // Transaction relationship in event, continue
-            } else if((namespace === ModelUtil.getSystemNamespace()) && classDeclaration.isSystemRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset, participant or transaction, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             } else if(classDeclaration.isRelationshipTarget() === false) {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             }

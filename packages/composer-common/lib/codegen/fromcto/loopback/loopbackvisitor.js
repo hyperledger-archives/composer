@@ -326,7 +326,7 @@ class LoopbackVisitor {
 
         // Add information from the class declaration into the composer section.
         if (jsonSchema.options && jsonSchema.options.composer) {
-            jsonSchema.options.composer.namespace = classDeclaration.getModelFile().getNamespace();
+            jsonSchema.options.composer.namespace = classDeclaration.getNamespace();
             jsonSchema.options.composer.name = classDeclaration.getName();
             jsonSchema.options.composer.fqn = classDeclaration.getFullyQualifiedName();
         }

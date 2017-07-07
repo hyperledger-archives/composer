@@ -24,10 +24,44 @@ const sinon = require('sinon');
 
 describe('EventDeclaration', () => {
 
+    let mockModelManager;
+    let mockSystemEvent;
+
+    /**
+     * Load an arbitrary number of model files.
+     * @param {String[]} modelFileNames array of model file names.
+     * @param {ModelManager} modelManager the model manager to which the created model files will be registered.
+     * @return {ModelFile[]} array of loaded model files, matching the supplied arguments.
+     */
+    const loadModelFiles = (modelFileNames, modelManager) => {
+        const modelFiles = [];
+        for (let modelFileName of modelFileNames) {
+            const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
+            const modelFile = new ModelFile(modelManager, modelDefinitions);
+            modelFiles.push(modelFile);
+        }
+        modelManager.addModelFiles(modelFiles, modelFileNames);
+        return modelFiles;
+    };
+
+    const loadModelFile = (modelFileName) => {
+        return loadModelFiles([modelFileName], mockModelManager)[0];
+    };
+
+    const loadLastDeclaration = (modelFileName, type) => {
+        const modelFile = loadModelFile(modelFileName);
+        const declarations = modelFile.getDeclarations(type);
+        return declarations[declarations.length - 1];
+    };
+
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockSystemEvent = sinon.createStubInstance(EventDeclaration);
+        mockSystemEvent.getFullyQualifiedName.returns('org.hyperledger.composer.system.Event');
+        mockModelManager.getSystemTypes.returns([mockSystemEvent]);
     });
 
     afterEach(() => {
@@ -50,6 +84,15 @@ describe('EventDeclaration', () => {
         });
     });
 
+    describe('#validate', () => {
+        it('should throw if event is not a system type but named event', () => {
+            let event = loadLastDeclaration('test/data/parser/eventdeclaration.systypename.cto', EventDeclaration);
+            event.superType = null;
+            (() => {
+                event.validate();
+            }).should.throw(/Event is a reserved type name./);
+        });
+    });
 
 
     describe('#parse', () => {

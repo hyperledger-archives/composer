@@ -15,6 +15,7 @@
 'use strict';
 
 const Field = require('../introspect/field');
+const ModelUtil = require('../modelutil');
 
 /**
  * Object is an instance with a namespace and a type.
@@ -76,7 +77,7 @@ class Typed {
      * @return {string} The fully-qualified type name of this object
      */
     getFullyQualifiedType() {
-        return this.$namespace + '.' + this.$type;
+        return ModelUtil.getFullyQualifiedName(this.$namespace, this.$type);
     }
 
     /**

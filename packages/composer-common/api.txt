@@ -26,11 +26,11 @@ class BusinessNetworkMetadata {
 }
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newResource(string,string,string,Object,boolean,string) throws TypeNotFoundException
-   + Resource newConcept(string,string,Object,boolean,string) throws TypeNotFoundException
+   + Resource newResource(string,string,string,Object,boolean,string,boolean) throws TypeNotFoundException
+   + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string) 
-   + Resource newEvent(string,string,string,Object,string) 
+   + Resource newTransaction(string,string,string,Object,string,boolean) 
+   + Resource newEvent(string,string,string,Object,string,boolean) 
 }
 class FileWallet extends Wallet {
    + string getHomeDirectory() 

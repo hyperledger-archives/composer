@@ -16,6 +16,7 @@
 
 const ModelManager = require('../../lib/modelmanager');
 const sinon = require('sinon');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
 // const ModelUtil = require('../../lib/modelutil');
 
@@ -26,6 +27,7 @@ chai.use(require('chai-things'));
 describe('RelationshipDeclaration', function () {
 
     let modelManager;
+    let mockClassDeclaration;
 
     const levelOneModel = `namespace org.acme.l1
     participant Person identified by ssn {
@@ -38,11 +40,11 @@ describe('RelationshipDeclaration', function () {
 
     `;
 
-    before(function () {
-        modelManager = new ModelManager();
-    });
-
     beforeEach(function () {
+        modelManager = new ModelManager();
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockClassDeclaration.getModelFile.returns(mockClassDeclaration);
+
     });
 
     afterEach(function () {
@@ -60,11 +62,59 @@ describe('RelationshipDeclaration', function () {
             (function () {
                 field.validate(vehicleDeclaration);
             }).should.throw(/Relationship must have a type/);
-
-
         });
 
+        it('should throw if relationship points to a missing type', () => {
+            const model = `
+            namespace org.acme.l1
+            participant Person identified by ssn {
+            o String ssn
+            }
+            `;
+            const model2 = `
+            namespace org.acme.l2
+            import org.acme.l1.*
 
+            asset Car identified by vin {
+            o String vin
+            -->Person owner
+            }
+            `;
 
+            modelManager.addModelFile(model);
+            modelManager.addModelFile(model2);
+            const vehicleDeclaration = modelManager.getType('org.acme.l2.Car');
+            const field = vehicleDeclaration.getProperty('owner');
+            (field instanceof RelationshipDeclaration).should.be.true;
+            modelManager.getType = () => { return null; };
+
+            (function () {
+                field.validate(vehicleDeclaration);
+            }).should.throw(/Relationship owner points to a missing type org.acme.l1./);
+        });
+
+        it('should throw if relationship is not a relationship target', () => {
+            const model = `
+            namespace org.acme.l1
+            participant Person identified by ssn {
+            o String ssn
+            }
+
+            asset Car identified by vin {
+            o String vin
+            -->Person owner
+            }
+            `;
+            modelManager.addModelFile(model);
+            const vehicleDeclaration = modelManager.getType('org.acme.l1.Car');
+            const field = vehicleDeclaration.getProperty('owner');
+            (field instanceof RelationshipDeclaration).should.be.true;
+            mockClassDeclaration.isRelationshipTarget.returns(false);
+            field.getParent().getModelFile().getType = () => {return mockClassDeclaration;};
+
+            (function () {
+                field.validate(vehicleDeclaration);
+            }).should.throw(/Relationship owner must be to an asset or participant/);
+        });
     });
 });
