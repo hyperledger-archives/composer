@@ -11,7 +11,7 @@
       height: 100%;
 
       .navlogo {
-        min-width: 19rem;
+        min-width: 0;
         max-width: 19rem;
         background-color: $first-highlight;
         padding-left: 1.5rem;
@@ -19,9 +19,8 @@
         display: flex;
         align-items: center;
         position: relative;
-        flex: 1;
+        min-width: 0;
         p {
-            min-width: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -30,6 +29,30 @@
 
       .navlogo:hover .tooltiptext {
         visibility: visible;
+        opacity: 0.8;
+      }
+
+      .navlogo .tooltiptext {
+        visibility: hidden;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 12px 12px;
+        border-radius: 6px;
+        position: absolute;
+        left: 5rem;
+        top : 3rem;
+      }
+
+      .navlogo .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%;
+        left: 10%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent black transparent;
       }
 
       .drop-select{
