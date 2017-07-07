@@ -445,7 +445,7 @@ module.exports = yeoman.Base.extend({
 
                         assetList.push({
                             'name': asset.name,
-                            'namespace': asset.getModelFile().getNamespace(),
+                            'namespace': asset.getNamespace(),
                             'properties': tempList,
                             'identifier': asset.getIdentifierFieldName()
                         });
