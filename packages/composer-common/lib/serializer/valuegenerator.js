@@ -107,6 +107,15 @@ class EmptyValueGenerator {
     getEnum(enumValues) {
         return enumValues[0];
     }
+
+    /**
+     * Get an array using the supplied callback to obtain array values.
+     * @param {Function} valueSupplier - callback to obtain values.
+     * @return {Array} an array
+     */
+    getArray(valueSupplier) {
+        return [ ];
+    }
 }
 
 /**
@@ -169,6 +178,15 @@ class SampleValueGenerator extends EmptyValueGenerator {
      */
     getEnum(enumValues) {
         return enumValues[Math.floor(Math.random() * enumValues.length)];
+    }
+
+    /**
+     * Get an array using the supplied callback to obtain array values.
+     * @param {Function} valueSupplier - callback to obtain values.
+     * @return {Array} an array
+     */
+    getArray(valueSupplier) {
+        return [ valueSupplier() ];
     }
 }
 
