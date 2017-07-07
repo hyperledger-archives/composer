@@ -25,7 +25,7 @@
 
             <div class="resource-list" *ngIf="isEvent">
                 <div class="resource-dropdown" *ngFor="let event of events; let i = index">
-                    <button class="resource-open" (click)="selectEvent(event, i)">
+                    <button class="resource-open" (click)="selectEvent(event, i)" [ngClass]="{'open': showEvent(i)}">
                         <div class="resource-title">
                             <span class="title">{{event.getFullyQualifiedType()}}#{{event.getIdentifier()}}</span>
                         </div>
