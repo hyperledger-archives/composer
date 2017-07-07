@@ -114,5 +114,17 @@ describe('NumberValidator', () => {
                 v.validate('id', 101);
             }).should.throw(/org.acme.myField: Value is outside upper bound 101/);
         });
+
+        it('should do nothing if no value is given', () => {
+            let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
+            v.validate();
+        });
+    });
+
+    describe('#toString', () => {
+        it('should return the correct string', () => {
+            let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
+            v.toString().should.equal(`NumberValidator lower: ${VALID_UPPER_AND_LOWER_BOUND_AST.lower} upper: ${VALID_UPPER_AND_LOWER_BOUND_AST.upper}`);
+        });
     });
 });

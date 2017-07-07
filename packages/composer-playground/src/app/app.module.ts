@@ -22,6 +22,7 @@ import { BasicModalsModule } from './basic-modals/basic-models.module';
 import { WelcomeComponent } from './welcome';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
+import { FooterComponent } from './footer';
 import { ServicesModule } from './services/services.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);

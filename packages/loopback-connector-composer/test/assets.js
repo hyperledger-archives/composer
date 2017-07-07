@@ -22,6 +22,7 @@ const connector = require('..');
 const fs = require('fs');
 const loopback = require('loopback');
 const path = require('path');
+const Util = require('composer-common').Util;
 
 const chai = require('chai');
 const should = chai.should();
@@ -213,6 +214,20 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             });
         });
 
+        beforeEach(() => {
+            return Util.invokeChainCode(businessNetworkConnection.securityContext, 'resetBusinessNetwork', [])
+                .then(() => {
+                    return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
+                })
+                .then((assetRegistry_) => {
+                    assetRegistry = assetRegistry_;
+                    return assetRegistry.addAll([
+                        serializer.fromJSON(assetData[0]),
+                        serializer.fromJSON(assetData[1])
+                    ]);
+                });
+        });
+
         describe(`#count namespaces[${namespaces}]`, () => {
 
             it('should count all of the assets', () => {
@@ -248,7 +263,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .then((asset) => {
                         let json = serializer.toJSON(asset);
                         json.should.deep.equal(assetData[2]);
-                        return assetRegistry.remove('ISIN_3');
                     });
             });
 
@@ -261,7 +275,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         let json = serializer.toJSON(asset);
                         delete json.$class;
                         json.should.deep.equal(assetData[3]);
-                        return assetRegistry.remove('ISIN_4');
                     });
             });
 
@@ -285,7 +298,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .then((asset) => {
                     let json = serializer.toJSON(asset);
                     json.should.deep.equal(assetData[2]);
-                    return assetRegistry.remove('ISIN_3');
                 })
                 .then(() => {
                     return assetRegistry.get('ISIN_4');
@@ -294,7 +306,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     let json = serializer.toJSON(asset);
                     delete json.$class;
                     json.should.deep.equal(assetData[3]);
-                    return assetRegistry.remove('ISIN_4');
                 });
             });
 
@@ -302,9 +313,45 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe(`#destroyAll namespaces[${namespaces}]`, () => {
 
+            it('should throw without a where clause as it is unsupported', () => {
+                return app.models[prefix + 'BondAsset'].destroyAll()
+                    .should.be.rejectedWith(/is not supported/);
+
+            });
+
+            it('should remove a single specified asset', () => {
+                return app.models[prefix + 'BondAsset'].destroyAll({ ISINCode: 'ISIN_1' })
+                    .then(() => {
+                        return assetRegistry.exists('ISIN_1');
+                    })
+                    .then((exists) => {
+                        exists.should.be.false;
+                    });
+            });
+
+            it('should return an error if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].destroyAll({ ISINCode: 'ISIN_999' })
+                    .should.be.rejected;
+            });
+
         });
 
         describe(`#destroyById namespaces[${namespaces}]`, () => {
+
+            it('should delete the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].destroyById('ISIN_1')
+                    .then(() => {
+                        return assetRegistry.exists('ISIN_1');
+                    })
+                    .then((exists) => {
+                        exists.should.be.false;
+                    });
+            });
+
+            it('should return an error if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].destroyById('ISIN_999')
+                    .should.be.rejected;
+            });
 
         });
 
@@ -410,7 +457,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .then((asset) => {
                         let json = serializer.toJSON(asset);
                         json.should.deep.equal(assetData[2]);
-                        return assetRegistry.remove('ISIN_3');
                     });
             });
 
@@ -422,7 +468,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .then((asset) => {
                         let json = serializer.toJSON(asset);
                         json.should.deep.equal(assetData[2]);
-                        return assetRegistry.remove('ISIN_3');
                     });
             });
 
@@ -430,37 +475,372 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe(`#replaceById namespaces[${namespaces}]`, () => {
 
+            const updatedAsset = {
+                $class: 'org.acme.bond.BondAsset',
+                ISINCode: 'ISIN_1',
+                bond: {
+                    $class: 'org.acme.bond.Bond',
+                    dayCountFraction: 'EOM',
+                    exchangeId: [
+                        'NYSE'
+                    ],
+                    faceAmount: 1000,
+                    instrumentId: [
+                        'AliceNewCorp'
+                    ],
+                    issuer: 'resource:org.acme.bond.Issuer#1',
+                    maturity: '2018-02-27T21:03:52.000Z',
+                    parValue: 1000,
+                    paymentFrequency: {
+                        $class: 'org.acme.bond.PaymentFrequency',
+                        period: 'MONTH',
+                        periodMultiplier: 6
+                    }
+                }
+            };
+
+            it('should update the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].replaceById('ISIN_1', updatedAsset)
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
+            it('should return an error if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].replaceById('ISIN_999', updatedAsset)
+                    .should.be.rejected;
+            });
+
         });
 
         describe(`#replaceOrCreate namespaces[${namespaces}]`, () => {
+
+            const updatedAsset = {
+                $class: 'org.acme.bond.BondAsset',
+                ISINCode: 'ISIN_1',
+                bond: {
+                    $class: 'org.acme.bond.Bond',
+                    dayCountFraction: 'EOM',
+                    exchangeId: [
+                        'NYSE'
+                    ],
+                    faceAmount: 1000,
+                    instrumentId: [
+                        'AliceNewCorp'
+                    ],
+                    issuer: 'resource:org.acme.bond.Issuer#1',
+                    maturity: '2018-02-27T21:03:52.000Z',
+                    parValue: 1000,
+                    paymentFrequency: {
+                        $class: 'org.acme.bond.PaymentFrequency',
+                        period: 'MONTH',
+                        periodMultiplier: 6
+                    }
+                }
+            };
+
+            it('should update the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].replaceOrCreate(updatedAsset)
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
+            it('should create a new asset if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].replaceOrCreate(assetData[2])
+                    .then(() => {
+                        return assetRegistry.get('ISIN_3');
+                    })
+                    .then((asset) => {
+                        let json = serializer.toJSON(asset);
+                        json.should.deep.equal(assetData[2]);
+                    });
+            });
 
         });
 
         describe(`#updateAll namespaces[${namespaces}]`, () => {
 
+            const updatedAsset = {
+                $class: 'org.acme.bond.BondAsset',
+                ISINCode: 'ISIN_1',
+                bond: {
+                    $class: 'org.acme.bond.Bond',
+                    dayCountFraction: 'EOM',
+                    exchangeId: [
+                        'NYSE'
+                    ],
+                    faceAmount: 1000,
+                    instrumentId: [
+                        'AliceNewCorp'
+                    ],
+                    issuer: 'resource:org.acme.bond.Issuer#1',
+                    maturity: '2018-02-27T21:03:52.000Z',
+                    parValue: 1000,
+                    paymentFrequency: {
+                        $class: 'org.acme.bond.PaymentFrequency',
+                        period: 'MONTH',
+                        periodMultiplier: 6
+                    }
+                }
+            };
+
+            it('should throw without a where clause as it is unsupported', () => {
+                return app.models[prefix + 'BondAsset'].updateAll(updatedAsset)
+                    .should.be.rejectedWith(/is not supported/);
+
+            });
+
+            it('should remove a single specified asset', () => {
+                return app.models[prefix + 'BondAsset'].updateAll({ ISINCode: 'ISIN_1' }, updatedAsset)
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
+            it('should return an error if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].updateAll({ ISINCode: 'ISIN_999' }, updatedAsset)
+                    .should.be.rejected;
+            });
+
         });
 
         describe(`#upsert namespaces[${namespaces}]`, () => {
+
+            const updatedAsset = {
+                $class: 'org.acme.bond.BondAsset',
+                ISINCode: 'ISIN_1',
+                bond: {
+                    $class: 'org.acme.bond.Bond',
+                    dayCountFraction: 'EOM',
+                    exchangeId: [
+                        'NYSE'
+                    ],
+                    faceAmount: 1000,
+                    instrumentId: [
+                        'AliceNewCorp'
+                    ],
+                    issuer: 'resource:org.acme.bond.Issuer#1',
+                    maturity: '2018-02-27T21:03:52.000Z',
+                    parValue: 1000,
+                    paymentFrequency: {
+                        $class: 'org.acme.bond.PaymentFrequency',
+                        period: 'MONTH',
+                        periodMultiplier: 6
+                    }
+                }
+            };
+
+            it('should update the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].upsert(updatedAsset)
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
+            it('should create a new asset if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].upsert(assetData[2])
+                    .then(() => {
+                        return assetRegistry.get('ISIN_3');
+                    })
+                    .then((asset) => {
+                        let json = serializer.toJSON(asset);
+                        json.should.deep.equal(assetData[2]);
+                    });
+            });
 
         });
 
         describe(`#upsertWithWhere namespaces[${namespaces}]`, () => {
 
+            const updatedAsset = {
+                $class: 'org.acme.bond.BondAsset',
+                ISINCode: 'ISIN_1',
+                bond: {
+                    $class: 'org.acme.bond.Bond',
+                    dayCountFraction: 'EOM',
+                    exchangeId: [
+                        'NYSE'
+                    ],
+                    faceAmount: 1000,
+                    instrumentId: [
+                        'AliceNewCorp'
+                    ],
+                    issuer: 'resource:org.acme.bond.Issuer#1',
+                    maturity: '2018-02-27T21:03:52.000Z',
+                    parValue: 1000,
+                    paymentFrequency: {
+                        $class: 'org.acme.bond.PaymentFrequency',
+                        period: 'MONTH',
+                        periodMultiplier: 6
+                    }
+                }
+            };
+
+            it('should throw without a where clause as it is unsupported', () => {
+                return app.models[prefix + 'BondAsset'].upsertWithWhere({}, updatedAsset)
+                    .should.be.rejectedWith(/is not supported/);
+
+            });
+
+            it('should update the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].upsertWithWhere({ ISINCode: 'ISIN_1' }, updatedAsset)
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
+            it('should create a new asset if the specified asset does not exist', () => {
+                return app.models[prefix + 'BondAsset'].upsertWithWhere({ ISINCode: 'ISIN_3' }, assetData[2])
+                    .then(() => {
+                        return assetRegistry.get('ISIN_3');
+                    })
+                    .then((asset) => {
+                        let json = serializer.toJSON(asset);
+                        json.should.deep.equal(assetData[2]);
+                    });
+            });
+
         });
 
         describe(`#destroy namespaces[${namespaces}]`, () => {
+
+            it('should delete the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].findById('ISIN_1')
+                    .then((asset) => {
+                        return asset.destroy();
+                    })
+                    .then(() => {
+                        return assetRegistry.exists('ISIN_1');
+                    })
+                    .then((exists) => {
+                        exists.should.be.false;
+                    });
+            });
 
         });
 
         describe(`#replaceAttributes namespaces[${namespaces}]`, () => {
 
+            it('should replace attributes in the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].findById('ISIN_1')
+                    .then((asset) => {
+                        return asset.replaceAttributes({
+                            bond: {
+                                $class: 'org.acme.bond.Bond',
+                                dayCountFraction: 'EOM',
+                                exchangeId: [
+                                    'NYSE'
+                                ],
+                                faceAmount: 1000,
+                                instrumentId: [
+                                    'AliceNewCorp'
+                                ],
+                                issuer: 'resource:org.acme.bond.Issuer#1',
+                                maturity: '2018-02-27T21:03:52.000Z',
+                                parValue: 1000,
+                                paymentFrequency: {
+                                    $class: 'org.acme.bond.PaymentFrequency',
+                                    period: 'MONTH',
+                                    periodMultiplier: 6
+                                }
+                            }
+                        });
+                    })
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
         });
 
         describe(`#updateAttribute namespaces[${namespaces}]`, () => {
 
+            it('should replace attribute in the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].findById('ISIN_1')
+                    .then((asset) => {
+                        return asset.updateAttribute('bond', {
+                            $class: 'org.acme.bond.Bond',
+                            dayCountFraction: 'EOM',
+                            exchangeId: [
+                                'NYSE'
+                            ],
+                            faceAmount: 1000,
+                            instrumentId: [
+                                'AliceNewCorp'
+                            ],
+                            issuer: 'resource:org.acme.bond.Issuer#1',
+                            maturity: '2018-02-27T21:03:52.000Z',
+                            parValue: 1000,
+                            paymentFrequency: {
+                                $class: 'org.acme.bond.PaymentFrequency',
+                                period: 'MONTH',
+                                periodMultiplier: 6
+                            }
+                        });
+                    })
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
+
         });
 
         describe(`#updateAttributes namespaces[${namespaces}]`, () => {
+
+            it('should replace attributes in the specified asset', () => {
+                return app.models[prefix + 'BondAsset'].findById('ISIN_1')
+                    .then((asset) => {
+                        return asset.updateAttributes({
+                            bond: {
+                                $class: 'org.acme.bond.Bond',
+                                dayCountFraction: 'EOM',
+                                exchangeId: [
+                                    'NYSE'
+                                ],
+                                faceAmount: 1000,
+                                instrumentId: [
+                                    'AliceNewCorp'
+                                ],
+                                issuer: 'resource:org.acme.bond.Issuer#1',
+                                maturity: '2018-02-27T21:03:52.000Z',
+                                parValue: 1000,
+                                paymentFrequency: {
+                                    $class: 'org.acme.bond.PaymentFrequency',
+                                    period: 'MONTH',
+                                    periodMultiplier: 6
+                                }
+                            }
+                        });
+                    })
+                    .then(() => {
+                        return assetRegistry.get('ISIN_1');
+                    })
+                    .then((asset) => {
+                        asset.bond.instrumentId.should.deep.equal([ 'AliceNewCorp' ]);
+                    });
+            });
 
         });
 

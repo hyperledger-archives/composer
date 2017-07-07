@@ -14,6 +14,7 @@
 
 'use strict';
 
+const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const EnumDeclaration = require('../../lib/introspect/enumdeclaration');
@@ -139,6 +140,17 @@ describe('ClassDeclaration', () => {
             }).should.throw(/Duplicate class/);
         });
 
+        it('should throw when not abstract, not enum and not concept without an identifier', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.noidentifier.cto', TransactionDeclaration);
+            asset.superType = null;
+            try {
+                asset.validate();
+            } catch (err) {
+                err.should.be.an.instanceOf(IllegalModelException);
+                should.exist(err.message);
+                err.message.should.match(/Class Transaction is not declared as abstract. It must define an identifying field./);
+            }
+        });
     });
 
     describe('#accept', () => {
@@ -309,4 +321,40 @@ describe('ClassDeclaration', () => {
         });
     });
 
+    describe('#isEvent', () => {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.participantwithparents.parent.cto',
+            'test/data/parser/classdeclaration.participantwithparents.child.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+        it('should return false', () => {
+            const testClass = modelManager.getType('com.testing.child.Sub');
+            testClass.isEvent().should.be.false;
+
+        });
+    });
+
+    describe('#isRelationshipTarget', () => {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.isrelationshiptarget.cto',
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+        it('should return false', () => {
+            const testClass = modelManager.getType('com.testing.Test');
+            testClass.isRelationshipTarget().should.be.false;
+
+        });
+    });
 });

@@ -11,9 +11,10 @@ import { AddIdentityComponent } from './add-identity/add-identity.component';
 import { IdentityIssuedComponent } from './identity-issued/identity-issued.component';
 import { IssueIdentityComponent } from './issue-identity/issue-identity.component';
 import { IdentityComponent } from './identity.component';
+import { FooterModule } from '../footer/footer.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule],
+    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule],
     entryComponents: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent],
     declarations: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
     providers: []
