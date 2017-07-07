@@ -21,12 +21,21 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
+const TYPE_MAP = {
+    'Asset': 'org.hyperledger.composer.system.AssetRegistry',
+    'Participant': 'org.hyperledger.composer.system.ParticipantRegistry',
+    'Transaction': 'org.hyperledger.composer.system.TransactionRegistry',
+    'Identity': 'org.hyperledger.composer.system.IdentityRegistry'
+};
+
 
 /**
  * A class for managing and persisting registries.
  * @protected
  */
 class RegistryManager extends EventEmitter {
+
+
 
     /**
      * Constructor.
@@ -89,22 +98,42 @@ class RegistryManager extends EventEmitter {
             .then(() => {
                 return assetDeclarations.reduce((result, assetDeclaration) => {
                     let fqn = assetDeclaration.getFullyQualifiedName();
-                    if (force) {
-                        return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
-                    } else {
-                        return this.ensure('Asset', fqn, `Asset registry for ${fqn}`);
+                    if (!assetDeclaration.isSystemType()) {
+                        if (force) {
+                            return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
+                        } else {
+                            return this.ensure('Asset', fqn, `Asset registry for ${fqn}`);
+                        }
                     }
                 }, Promise.resolve());
             })
             .then(() => {
                 return participantDeclarations.reduce((result, participantDeclaration) => {
                     let fqn = participantDeclaration.getFullyQualifiedName();
-                    if (force) {
-                        return this.add('Participant', fqn, `Participant registry for ${fqn}`, true);
-                    } else {
-                        return this.ensure('Participant', fqn, `Participant registry for ${fqn}`);
+                    if (!participantDeclaration.isSystemType()) {
+                        if (force) {
+                            return this.add('Participant', fqn, `Participant registry for ${fqn}`, true);
+                        } else {
+                            return this.ensure('Participant', fqn, `Participant registry for ${fqn}`);
+                        }
                     }
                 }, Promise.resolve());
+            }).then(() => {
+                // FUTURE:
+                // let file = ['namespace org.composer.runtime', 'import org.hyperledger.composer.system.AssetRegistry'];
+
+                // let runtimeModel = assetDeclarations.reduce((result, assetDeclaration) => {
+                //     let fqn = assetDeclaration.getName();
+                //     if (!assetDeclaration.isSystemType()) {
+                //         result.push('asset ' + fqn + 'Registry extends AssetRegistry {}');
+                //     }
+
+                //     return result;
+                // }, file);
+                // LOG.debug('createDefaults', runtimeModel.join('\n'));
+                // // console.log(runtimeModel.join('\n'));
+                // this.introspector.getModelManager().addModelFile(runtimeModel.join('\n'));
+                return;
             });
     }
 
@@ -122,13 +151,29 @@ class RegistryManager extends EventEmitter {
                 });
                 return registries.reduce((prev, registry) => {
                     let collectionID = registry.type + ':' + registry.id;
-                    return prev.then((result) => {
-                        return this.dataService.getCollection(collectionID)
-                            .then((dataCollection) => {
-                                result.push(this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name));
-                                return result;
-                            });
-                    });
+
+                    let regType = TYPE_MAP[registry.type];
+                    let r = {
+                        '$class': regType,
+                        'registryID': registry.id,
+                        'type': type, 'id': registry.id
+                    };
+
+                    let resource = this.serializer.fromJSON(r);
+
+                    return this.accessController.check(resource, 'READ').then(() => {
+
+                        return prev;
+                    })
+
+
+                        .then((result) => {
+                            return this.dataService.getCollection(collectionID)
+                                .then((dataCollection) => {
+                                    result.push(this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name));
+                                    return result;
+                                });
+                        });
                 }, Promise.resolve([]));
             });
     }
@@ -142,7 +187,19 @@ class RegistryManager extends EventEmitter {
      */
     get(type, id) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.get(collectionID)
+
+        let regType = TYPE_MAP[type];
+        let r = {
+            '$class': regType,
+            'registryID': id,
+            'type': type, 'id': id
+        };
+
+        let resource = this.serializer.fromJSON(r);
+
+        return this.accessController.check(resource, 'READ').then(() => {
+            return this.sysregistries.get(collectionID);
+        })
             .then((registry) => {
                 return this.dataService.getCollection(collectionID)
                     .then((dataCollection) => {
@@ -160,7 +217,20 @@ class RegistryManager extends EventEmitter {
      */
     exists(type, id) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.exists(collectionID)
+
+        let regType = TYPE_MAP[type];
+        let r = {
+            '$class': regType,
+            'registryID': id,
+            'type': type, 'id': id
+        };
+
+        let resource = this.serializer.fromJSON(r);
+
+        return this.accessController.check(resource, 'READ')
+            .then(() => {
+                return this.sysregistries.exists(collectionID);
+            })
             .then((exists) => {
                 return exists;
             });
@@ -181,7 +251,7 @@ class RegistryManager extends EventEmitter {
      * Add a new registry with the specified type, ID, and name.
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
-     * @param {string} name The name of the registry.curl http://127.0.0.1:8000/logs
+     * @param {string} name The name of the registry.
      * @param {boolean} force true to force the creation of the collection without checking
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
@@ -189,17 +259,21 @@ class RegistryManager extends EventEmitter {
     add(type, id, name, force) {
         let collectionID = type + ':' + id;
 
-        let r = { '$class' : 'org.hyperledger.composer.system.Registry',
-            'registryID' : id,
-            'type': type, 'id': id, 'name': name};
+        // TODO: map the regsitry to the correct type here
+        let regType = TYPE_MAP[type];
+        let r = {
+            '$class': regType,
+            'registryID': id,
+            'type': type, 'id': id, 'name': name
+        };
 
-        
+        LOG.debug('add', 'Creating new registry ', r.type, r.name, r.id);
         let resource = this.serializer.fromJSON(r);
- 
-        return this.accessController.check(resource,'CREATE')
-        .then (() => {
-            this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force)
-        } )         
+
+        return this.accessController.check(resource, 'CREATE')
+            .then(() => {
+                this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force);
+            })
             .then(() => {
                 return this.dataService.createCollection(collectionID, force);
             })

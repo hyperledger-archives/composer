@@ -87,13 +87,11 @@ class AccessController {
     check(resource, access) {
         const method = 'check';
         LOG.entry(method, resource.getFullyQualifiedIdentifier(), access);
-        console.log(resource.getFullyQualifiedIdentifier())
         // Check to see if a participant has been set. If not, then ACL
         // enforcement is not enabled.
         let participant = this.participant;
         if (!participant) {
             LOG.debug(method, 'No participant');
-            console.log('no partic');
             LOG.exit(method);
             return Promise.resolve();
         }
