@@ -42,6 +42,13 @@ success {
                 height: 24px;
                 margin-right: $space-medium;
             }
+        
+            .transaction-link {
+                color:$tertiary-text;
+                &:visited {
+                    color:$tertiary-text;
+                }
+            }
         }
     }
 }

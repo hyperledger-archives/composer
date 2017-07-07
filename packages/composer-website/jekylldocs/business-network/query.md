@@ -3,6 +3,7 @@ layout: default
 title: Querying Business Network Data
 category: tasks
 section: business-network
+index-order: 7
 sidebar: sidebars/businessnetworks.md
 excerpt: Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
 ---
@@ -15,7 +16,7 @@ Queries are used to return data about the blockchain world-state; for example, y
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0-beta runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with the {{site.data.conrefs.hlf_full}} v0.6 runtime.
+Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0-RC runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with the {{site.data.conrefs.hlf_full}} v0.6 runtime.
 
 ## Writing Queries
 

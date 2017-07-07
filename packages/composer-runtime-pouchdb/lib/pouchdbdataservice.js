@@ -17,13 +17,15 @@
 const DataService = require('composer-runtime').DataService;
 const Logger = require('composer-common').Logger;
 const pouchCollate = require('pouchdb-collate');
-const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb-core');
 const PouchDBDataCollection = require('./pouchdbdatacollection');
 const PouchDBUtils = require('./pouchdbutils');
 
 const LOG = Logger.getLog('PouchDBDataService');
 
-// Install the PouchDB plugins.
+// Install the PouchDB plugins. The order of the adapters is important!
+PouchDB.plugin(require('pouchdb-adapter-idb'));
+PouchDB.plugin(require('pouchdb-adapter-websql'));
 PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-find'));
 

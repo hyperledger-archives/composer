@@ -58,6 +58,7 @@ describe('EngineQueries', () => {
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
         mockContext.getCompiledQueryBundle.returns(mockCompiledQueryBundle);
         mockAccessController = sinon.createStubInstance(AccessController);
+        mockAccessController.check.resolves();
         mockContext.getAccessController.returns(mockAccessController);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockContext.getSerializer.returns(mockSerializer);
@@ -105,7 +106,7 @@ describe('EngineQueries', () => {
         });
 
         it('should return the results of a built query with an ACL limiting the results', () => {
-            mockAccessController.check.withArgs(mockResource2, 'READ').throws(new Error('no access'));
+            mockAccessController.check.withArgs(mockResource2, 'READ').rejects(new Error('no access'));
             return engine.query(mockContext, 'executeQuery', ['build', 'SELECT doge', '{"param1":true}'])
                 .then((resources) => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
@@ -135,7 +136,7 @@ describe('EngineQueries', () => {
         });
 
         it('should return the results of a named query with an ACL limiting the results', () => {
-            mockAccessController.check.withArgs(mockResource2, 'READ').throws(new Error('no access'));
+            mockAccessController.check.withArgs(mockResource2, 'READ').rejects(new Error('no access'));
             return engine.query(mockContext, 'executeQuery', ['named', 'Q1', '{"param1":true}'])
                 .then((resources) => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);

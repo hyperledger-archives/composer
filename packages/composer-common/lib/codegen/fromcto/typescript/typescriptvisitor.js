@@ -14,6 +14,7 @@
 
 'use strict';
 
+const BusinessNetworkDefinition = require('../../../businessnetworkdefinition');
 const ModelManager = require('../../../modelmanager');
 const ModelUtil = require('../../../modelutil');
 const ModelFile = require('../../../introspect/modelfile');
@@ -44,7 +45,9 @@ class TypescriptVisitor {
      * @private
      */
     visit(thing, parameters) {
-        if (thing instanceof ModelManager) {
+        if (thing instanceof BusinessNetworkDefinition) {
+            return this.visitBusinessNetworkDefinition(thing, parameters);
+        } else if (thing instanceof ModelManager) {
             return this.visitModelManager(thing, parameters);
         } else if (thing instanceof ModelFile) {
             return this.visitModelFile(thing, parameters);
@@ -63,6 +66,18 @@ class TypescriptVisitor {
         } else {
             throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 2 }));
         }
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitBusinessNetworkDefinition(businessNetworkDefinition, parameters) {
+        businessNetworkDefinition.getModelManager().accept(this,parameters);
+        return null;
     }
 
     /**

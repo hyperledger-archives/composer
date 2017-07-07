@@ -1676,7 +1676,7 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should issue a request with user supplied attributes', () => {
+        it('should issue a request with user supplied attributes object', () => {
             mockCAClient.register.resolves('asecret');
             return connection.createIdentity(mockSecurityContext, 'auser', {attributes: {attr1: 'value1', attr2: 'value2'}})
                 .then((result) => {
@@ -1690,6 +1690,27 @@ describe('HLFConnection', () => {
                         attrs: [
                             {name: 'attr1', value: 'value1'},
                             {name: 'attr2', value: 'value2'}
+                        ],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with user supplied attributes JSON string', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {attributes: '{"attr1": "value1", "attr2": 20}'})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [
+                            {name: 'attr1', value: 'value1'},
+                            {name: 'attr2', value: 20}
                         ],
                         maxEnrollments: 0,
                         role: 'client'

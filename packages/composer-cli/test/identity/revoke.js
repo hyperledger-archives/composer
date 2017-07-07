@@ -22,6 +22,9 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const sinon = require('sinon');
 require('sinon-as-promised');
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
@@ -104,12 +107,7 @@ describe('composer identity revoke CLI unit tests', () => {
             userId: 'dogeid1'
         };
         return Revoke.handler(argv)
-            .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-            });
+            .should.be.rejectedWith(/such error/);
     });
 
 });

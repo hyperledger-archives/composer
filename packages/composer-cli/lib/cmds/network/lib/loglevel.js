@@ -84,7 +84,7 @@ class LogLevel {
             if (newlevel) {
                 console.log(chalk.blue.bold('The logging level was successfully changed for: ')+businessNetworkName);
             } else {
-                console.log(chalk.blue.bold('current logging level is: ')+result);
+                console.log(chalk.blue.bold('The current logging level is: ')+result);
             }
         }).catch((error) => {
             throw error;

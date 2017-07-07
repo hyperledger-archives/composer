@@ -191,5 +191,11 @@
     .notification-text {
       font-size: 0.8rem;
       margin-top: 0.5rem;
+
+      b {
+        font-family: $font-stack;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
     }
 }

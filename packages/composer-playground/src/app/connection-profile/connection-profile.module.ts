@@ -12,9 +12,10 @@ import { DeleteConnectionProfileComponent } from './delete-connection-profile/de
 import { ViewCertificateComponent } from './view-certificate/view-certificate.component';
 import { FileImporterModule } from '../file-importer/file-importer.module';
 import { SwitchIdentityComponent } from '../test/switch-identity/switch-identity.component';
+import { FooterModule } from '../footer/footer.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, ReactiveFormsModule, FileImporterModule, ConnectionProfileRoutingModule],
+    imports: [CommonModule, FormsModule, NgbModule, ReactiveFormsModule, FileImporterModule, ConnectionProfileRoutingModule, FooterModule],
     entryComponents: [AddCertificateComponent, AddConnectionProfileComponent, DeleteConnectionProfileComponent, ViewCertificateComponent, SwitchIdentityComponent],
     declarations: [ConnectionProfileComponent, ConnectionProfileDataComponent, AddCertificateComponent, AddConnectionProfileComponent, DeleteConnectionProfileComponent, ViewCertificateComponent, SwitchIdentityComponent],
     providers: []

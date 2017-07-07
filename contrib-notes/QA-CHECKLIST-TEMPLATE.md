@@ -3,7 +3,7 @@
 ## Platform & version
   - [ ] ubuntu 16.04
   - [ ] ubuntu 14.0
-  - [ ] MacOs
+  - [ ] macOS
   - [ ] Windows 10
 
 ## Hyperledger Composer
@@ -31,7 +31,7 @@
 - [ ] Look over the support pages, and the getting started tutorials; are their omissions broken links etc.  
 
 
-## Plaground
+## Playground
 
 - [ ] Running the Car Auction scenario to validate the Playground
 

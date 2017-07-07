@@ -1,11 +1,12 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
 import { TransactionDeclaration } from 'composer-common';
+import { TransactionService } from '../services/transaction.service';
 
 @Component({
     selector: 'app-test',
@@ -15,7 +16,7 @@ import { TransactionDeclaration } from 'composer-common';
     ]
 })
 
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
 
     hasTransactions = false;
     private assetRegistries = [];
@@ -23,14 +24,17 @@ export class TestComponent implements OnInit {
     private transactionRegistry = null;
     private chosenRegistry = null;
     private registryReload = false;
+    private eventsTriggered = [];
 
     constructor(private clientService: ClientService,
                 private initializationService: InitializationService,
                 private alertService: AlertService,
+                private transactionService: TransactionService,
                 private modalService: NgbModal) {
     }
 
     ngOnInit(): Promise<any> {
+        this.initializeEventListener();
         return this.initializationService.initialize()
         .then(() => {
 
@@ -81,12 +85,20 @@ export class TestComponent implements OnInit {
                 } else {
                     this.chosenRegistry = this.transactionRegistry;
                 }
+            })
+            .catch((error) => {
+                console.log('Caught error');
+                this.alertService.errorStatus$.next(error);
             });
-
         })
         .catch((error) => {
+            console.log('Caught error');
             this.alertService.errorStatus$.next(error);
         });
+    }
+
+    ngOnDestroy() {
+        this.clientService.getBusinessNetworkConnection().removeAllListeners('event');
     }
 
     setChosenRegistry(chosenRegistry) {
@@ -94,18 +106,47 @@ export class TestComponent implements OnInit {
     }
 
     submitTransaction() {
-        const modalRef = this.modalService.open(TransactionComponent);
-        modalRef.result.then(() => {
+         const modalRef = this.modalService.open(TransactionComponent);
+
+         modalRef.result.then((transaction) => {
             // refresh current resource list
-            if (this.chosenRegistry === this.transactionRegistry) {
+             if (this.chosenRegistry === this.transactionRegistry) {
                 this.registryReload = !this.registryReload;
             } else {
                 this.chosenRegistry = this.transactionRegistry;
             }
 
-            this.alertService.successStatus$.next({title: 'Submit Transaction Successful', text: 'A transaction was successfully submitted', icon: '#icon-transaction'});
+             this.transactionService.reset(transaction, this.eventsTriggered);
+             let plaural = (this.eventsTriggered.length > 1) ? 's' : '';
 
+             let txMessage = `<p>Transaction ID <b>${transaction.getIdentifier()}</b> was submitted</p>`;
+             let message = {
+                title: 'Submit Transaction Successful',
+                text: txMessage.toString(),
+                icon: '#icon-transaction',
+                link: null,
+                linkCallback: null
+            };
+
+             if (this.eventsTriggered.length > 0) {
+                 message.link = `${this.eventsTriggered.length} event${plaural} triggered`;
+                 message.linkCallback = () => {
+                    this.transactionService.event$.next('event');
+                };
+                 this.eventsTriggered = [];
+            }
+
+             this.alertService.successStatus$.next(message);
         });
     }
 
+    initializeEventListener() {
+        const businessNetworkConnection = this.clientService.getBusinessNetworkConnection();
+        // Prevent multiple listeners being created
+        if (businessNetworkConnection.listenerCount('event') === 0) {
+            businessNetworkConnection.on('event', (event) => {
+                this.eventsTriggered.push(event);
+            });
+        }
+    }
 }
