@@ -1,0 +1,5 @@
+namespace com.testing
+
+participant Participant identified by participantId {
+  o String participantId
+}

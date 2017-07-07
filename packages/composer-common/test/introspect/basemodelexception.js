@@ -43,6 +43,11 @@ describe('BaseModelException', function () {
             exc.stack.should.be.a('string');
         });
 
+        it('should use messahe over fulMessage', () => {
+            let exc = new BaseModelException('message', {start: 1, end: 2});
+            exc.message.should.equal('message');
+        });
+
         it('should handle a lack of support for stack traces', function () {
             let captureStackTrace = Error.captureStackTrace;
             Error.captureStackTrace = null;
