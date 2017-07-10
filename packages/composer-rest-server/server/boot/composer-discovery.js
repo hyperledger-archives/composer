@@ -219,8 +219,14 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     // will generate the web form to enter them
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
+
         accepts.push( {arg: param.name, type: param.type, required: true, http: {verb : 'get', source: 'query'}} );
+        accepts.push( {arg: param.name, type: param.type, required: true, http: {source :'path'} } );
+        pathWithPrameters = pathWithPrameters + '/:' + param.name;
     }
+    accepts.push({arg: 'options', type: 'object', http: 'optionsFromRequest' });
+
+    console.log( '**** PARAM FOR QUERY ' + query.getName() + '=' + JSON.stringify(accepts) );
 
     // Define and register dynamic query method
     const queryMethod = {
@@ -244,7 +250,8 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
             },
             http: {
                 verb: 'get',
-                path: '/' + query.getName()
+                // path: '/' + query.getName();
+                path: pathWithPrameters
             }
         }
     );
