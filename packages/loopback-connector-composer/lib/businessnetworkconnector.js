@@ -821,6 +821,72 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Get all of the assets from the asset registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllRedVehicles(options, callback) {
+        debug('getAllRedVehicles', options);
+        let actualOptions = null, actualCallback = null;
+        if (arguments.length === 1) {
+            // LoopBack API, called with (callback).
+            actualCallback = options;
+        } else {
+            // Composer API, called with (options, callback).
+            actualOptions = options;
+            actualCallback = callback;
+        }
+        debug('getAllRedVehicles', actualOptions);
+        return this.ensureConnected(actualOptions)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.query('selectAllRedVehicles');
+            })
+            .then((result) => {
+                actualCallback(null, result);
+            })
+            .catch((error) => {
+                debug('getAllRedVehicles', 'error thrown doing query', error);
+                actualCallback(error);
+            });
+    }
+
+     /**
+     * Get all of the assets from the asset registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllActiveVehicles(options, callback) {
+        debug('getAllActiveVehicles', options);
+        let actualOptions = null, actualCallback = null;
+        if (arguments.length === 1) {
+            // LoopBack API, called with (callback).
+            actualCallback = options;
+        } else {
+            // Composer API, called with (options, callback).
+            actualOptions = options;
+            actualCallback = callback;
+        }
+        debug('getAllRedVehicles', actualOptions);
+        return this.ensureConnected(actualOptions)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.query('selectAllActiveVehicles');
+            })
+            .then((queryResult) => {
+                const result = queryResult.map((item) => {
+                    return this.serializer.toJSON(item);
+                });
+                actualCallback(null, result);
+            })
+            .catch((error) => {
+                console.log(error);
+                debug('getAllActiveVehicles', 'error thrown doing query', error);
+                actualCallback(error);
+            });
+    }
+
+    /**
      * Get the transaction with the specified ID from the transaction registry.
      * @param {string} id The ID for the transaction.
      * @param {Object} options The LoopBack options.

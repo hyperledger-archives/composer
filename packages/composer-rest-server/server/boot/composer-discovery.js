@@ -111,6 +111,33 @@ function createSystemModel(app, dataSource) {
 }
 
 /**
+ * Create all of the Composer system models.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function createQueryModel(app, dataSource) {
+
+    // Create the query model schema.
+    let modelSchema = {
+        name: 'Query',
+        description: 'Rich Query Methods',
+        plural: '/query',
+        base: 'Model'
+    };
+    modelSchema = updateModelSchema(modelSchema);
+
+    // Create the query model which is an anchor for all query methods.
+    const Query = app.loopback.createModel(modelSchema);
+
+    // Register the query model.
+    app.model(Query, {
+        dataSource: dataSource,
+        public: true
+    });
+
+}
+
+/**
  * Register all of the Composer system methods.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
@@ -133,6 +160,95 @@ function registerSystemMethods(app, dataSource) {
         registerMethod(app, dataSource, System, connector);
     });
 
+}
+
+/**
+ * Register all of the Composer query methods.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function registerQueryMethods(app, dataSource) {
+
+    // Grab the query model.
+    const Query = app.models.Query;
+    const connector = dataSource.connector;
+
+    // Register all query methods
+    const registerMethods = [
+        registerGetAllRedVehiclesMethod,
+        registerGetAllActiveVehiclesMethod
+
+    ];
+    registerMethods.forEach((registerMethod) => {
+        registerMethod(app, dataSource, Query, connector);
+    });
+
+}
+
+/**
+ * Register the 'getAllRedVehicles' Composer query method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} Query The Query model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetAllRedVehiclesMethod(app, dataSource, Query, connector) {
+
+     // Define and register the method.
+    Query.getAllRedVehicles = (options, callback) => {
+        connector.getAllRedVehicles(options, callback);
+    };
+    Query.remoteMethod(
+        'getAllRedVehicles', {
+            description: 'Get all red vehicles from the asset registry',
+            accepts: [{
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/getAllRedVehicles'
+            }
+        }
+    );
+}
+
+/**
+ * Register the 'getAllRedVehicles' Composer query method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} Query The Query model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetAllActiveVehiclesMethod(app, dataSource, Query, connector) {
+
+     // Define and register the method.
+    Query.getAllActiveVehicles = (options, callback) => {
+        connector.getAllActiveVehicles(options, callback);
+    };
+    Query.remoteMethod(
+        'getAllActiveVehicles', {
+            description: 'Get all active vehicles from the asset registry',
+            accepts: [{
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/getAllActiveVehicles'
+            }
+        }
+    );
 }
 
 /**
@@ -556,6 +672,12 @@ module.exports = function (app, callback) {
 
         // Register the system methods.
         registerSystemMethods(app, dataSource);
+
+        // Create the query model.
+        createQueryModel(app, dataSource);
+
+        // Register the query methods.
+        registerQueryMethods(app, dataSource);
 
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
