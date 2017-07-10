@@ -18,12 +18,26 @@ The config module does write out a warning, if there are no configuration files 
 ## User Applications - Dan
 ## Business Networks - Liam/Matthew
 ## CLI - David
+
+- `DEBUG=composer:* composer network deploy` <-- debugs the command. dumps soem debug info to console. tracefile written to logs directory of CurrentWorkingDir. sort by date and look for recent.
+
 ## Rest Server - Simon
 ## Playground - Caroline
+
+
 ## Composer Runtime - David
+
+- logLevel -> network deploy and loglevel designed for doing this shit.
+- docker command to get logs out `docker logs <chaincode container>` <-- this gets more complex. chaincode names dev-<businessnetworkname><composerruntimeversion>
+
+- composer runtime < should loglevel be here. (mebs next week)
+- advice: set loglevel to debug on deploy because if deploy breaks you want the logs.
+
+
 ## {{site.data.conrefs.hlf_full}} RC1 - David
 
-<!--
+
+
 # Diagnosing Problems
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?

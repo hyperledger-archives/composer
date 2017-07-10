@@ -22,7 +22,7 @@ For example:
 
 To update the definition of an already deployed business network use the `composer network update` CLI command.
 
-## Deploying business networks to {{site.data.conrefs.hlf_full}} v1.0 RC 1
+## Deploying business networks to {{site.data.conrefs.hlf_full}} RC 1
 
 In {{site.data.conrefs.hlf_full}} v1.0 RC 1 peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
 
@@ -33,6 +33,7 @@ Due to many breaking API changes between {{site.data.conrefs.hlf_full}} alpha 1 
 ### Deploying business networks using Playground locally
 
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 RC 1 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
+
 
 ## References
 
