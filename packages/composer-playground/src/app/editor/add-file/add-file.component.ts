@@ -20,7 +20,7 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl', '.qry'];
 
     addModelNamespace: string = 'org.acme.model';
     addModelFileName: string = 'models/org.acme.model';
@@ -72,6 +72,10 @@ export class AddFileComponent {
                     this.expandInput = true;
                     this.createRules(data);
                     break;
+                case 'qry':
+                    this.expandInput = true;
+                    this.createQuery(data);
+                    break;
                 default:
                     throw new Error('Unexpected File Type: ' + type);
             }
@@ -121,6 +125,13 @@ export class AddFileComponent {
         let filename = 'permissions.acl';
         this.currentFile = this.clientService.createAclFile(filename, dataBuffer.toString());
         this.currentFileName = filename;
+    }
+
+    createQuery(dataBuffer) {
+      this.fileType = 'qry';
+      let filename = 'queries.qry';
+      this.currentFile = this.clientService.createQueryFile(filename, dataBuffer.toString());
+      this.currentFileName = filename;
     }
 
     fileRejected(reason: string) {
