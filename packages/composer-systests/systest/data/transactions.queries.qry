@@ -17,3 +17,23 @@ query participants_stringValueParameter {
     description: ""
     statement: SELECT systest.transactions.queries.SampleParticipant WHERE (stringValue == _$inputStringValue)
 }
+
+query assets_nestedStringValue {
+    description: ""
+    statement: SELECT systest.transactions.queries.SampleAsset WHERE (conceptValue.stringValue == 'string 0')
+}
+
+query participants_nestedStringValue {
+    description: ""
+    statement: SELECT systest.transactions.queries.SampleParticipant WHERE (conceptValue.stringValue == 'string 0')
+}
+
+query assets_nestedStringValueParameter {
+    description: ""
+    statement: SELECT systest.transactions.queries.SampleAsset WHERE (conceptValue.stringValue == _$inputStringValue)
+}
+
+query participants_nestedStringValueParameter {
+    description: ""
+    statement: SELECT systest.transactions.queries.SampleParticipant WHERE (conceptValue.stringValue == _$inputStringValue)
+}
