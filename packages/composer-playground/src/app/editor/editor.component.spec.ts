@@ -14,7 +14,7 @@ import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclFile } from 'composer-common';
+import { ModelFile, Script, AclManager, AclFile, QueryFile } from 'composer-common';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
 
 import * as sinon from 'sinon';
@@ -60,6 +60,7 @@ describe('EditorComponent', () => {
     let mockModelFile;
     let mockScriptFile;
     let mockRuleFile;
+    let mockQueryFile;
     let editorService;
 
     beforeEach(() => {
@@ -70,7 +71,10 @@ describe('EditorComponent', () => {
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
         editorService = new EditorService();
+
+        mockClientService.getQueryFile.returns(mockQueryFile);
 
         mockAlertService.successStatus$ = {next: sinon.stub()};
         mockAlertService.busyStatus$ = {next: sinon.stub()};
@@ -421,8 +425,10 @@ describe('EditorComponent', () => {
                 getREADME: sinon.stub().returns('readme')
             });
 
+            mockQueryFile.getIdentifier.returns('query 1');
+
             component.updateFiles();
-            component['files'].length.should.equal(6);
+            component['files'].length.should.equal(7);
 
             component['files'][0].should.deep.equal({
                 readme: true,
@@ -458,6 +464,12 @@ describe('EditorComponent', () => {
                 acl: true,
                 id: 'acl',
                 displayID: 'acl',
+            });
+
+            component['files'][6].should.deep.equal({
+                query: true,
+                id: 'query 1',
+                displayID: 'query 1',
             });
         });
     });
@@ -821,6 +833,80 @@ describe('EditorComponent', () => {
         }));
     });
 
+    describe('addQueryFile', () => {
+        it('should not open confirm modal if no query file present', fakeAsync(() => {
+            let mockProcessQuery = sinon.stub(component, 'processQueryFileAddition');
+            component['files'] = [{id: 'random'}, {id: 'script'}];
+
+            component.addQueryFile(mockQueryFile);
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+        }));
+
+        it('should call processQueryFileAddition if no existing rules present', fakeAsync(() => {
+            let mockProcessQuery = sinon.stub(component, 'processQueryFileAddition');
+            component['files'] = [{id: 'zero-index'}, {id: 'script'}];
+
+            component.addQueryFile(mockQueryFile);
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+            mockProcessQuery.should.have.been.calledWith(mockQueryFile);
+        }));
+
+        it('should open confirm modal if query file present and handle error', fakeAsync(() => {
+            let mockProcessQuery = sinon.stub(component, 'processQueryFileAddition');
+            component['files'] = [{query: true}, {id: 'queries.qry'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            component.addQueryFile(mockQueryFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+            mockProcessQuery.should.not.have.been.called;
+        }));
+
+        it('should handle confirm modal cancel', fakeAsync(() => {
+            let mockProcessQuery = sinon.stub(component, 'processQueryFileAddition');
+            component['files'] = [{query: true}, {id: 'queries.qry'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(1)
+            });
+
+            component.addQueryFile(mockQueryFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockProcessQuery.should.not.have.been.called;
+        }));
+
+        it('should call processQueryFileAddition on modal confirm', fakeAsync(() => {
+            let mockProcessQuery = sinon.stub(component, 'processQueryFileAddition');
+            component['files'] = [{query: true}, {id: 'queries.qry'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve()
+            });
+
+            component.addQueryFile(mockQueryFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockProcessQuery.should.have.been.calledWith(mockQueryFile);
+        }));
+    });
+
     describe('processRuleFileAddition', () => {
 
         it('should set the aclFile as that passed in', () => {
@@ -861,6 +947,50 @@ describe('EditorComponent', () => {
 
             mockUpdateFiles.should.have.been.called;
             mockSetCurrentFile.should.have.been.calledWith({acl: true});
+            component['dirty'].should.be.equal(true);
+        });
+    });
+
+    describe('processQueryFileAddition', () => {
+
+        it('should set the queryFile as that passed in', () => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.returns(7);
+
+            let queryManagerMock = {
+                setQueryFile: sinon.stub()
+            };
+
+            mockClientService.getBusinessNetwork.returns({
+                getQueryManager: sinon.stub().returns(queryManagerMock)
+            });
+
+            component.processQueryFileAddition(mockQueryFile);
+
+            queryManagerMock.setQueryFile.should.have.been.calledWith(mockQueryFile);
+        });
+
+        it('should call updateFiles, setCurrentFile and set editor dirty', () => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.returns(0);
+            component['files'] = [{query: true}];
+
+            let queryManagerMock = {
+                setQueryFile: sinon.stub()
+            };
+
+            mockClientService.getBusinessNetwork.returns({
+                getQueryManager: sinon.stub().returns(queryManagerMock)
+            });
+
+            component.processQueryFileAddition(mockQueryFile);
+
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({query: true});
             component['dirty'].should.be.equal(true);
         });
     });
@@ -1022,6 +1152,7 @@ describe('EditorComponent', () => {
         let mockAddScript;
         let mockAddReadme;
         let mockAddRule;
+        let mockAddQuery;
 
         beforeEach(() => {
             mockModal.open = sinon.stub().returns({
@@ -1039,6 +1170,7 @@ describe('EditorComponent', () => {
             mockAddScript = sinon.stub(component, 'addScriptFile');
             mockAddReadme = sinon.stub(component, 'addReadme');
             mockAddRule = sinon.stub(component, 'addRuleFile');
+            mockAddQuery = sinon.stub(component, 'addQueryFile');
         });
 
         it('should open add file modal', fakeAsync(() => {
@@ -1111,6 +1243,22 @@ describe('EditorComponent', () => {
             tick();
 
             mockAddRule.should.have.been.called;
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        }));
+
+        it('should open AddFileComponent modal and call addQueryFile if query file returned', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {
+                    businessNetwork: {}
+                },
+                result: Promise.resolve(mockQueryFile)
+            });
+
+            component.openAddFileModal();
+
+            tick();
+
+            mockAddQuery.should.have.been.called;
             mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
         }));
 
@@ -1438,6 +1586,14 @@ describe('EditorComponent', () => {
             result.should.equal('ACL');
         });
 
+        it('should identify Query file via parameters', () => {
+            let testItem = {query: true, displayID: 'test_name'};
+
+            let result = component['fileType'](testItem);
+
+            result.should.equal('Query');
+        });
+
         it('should identify unknown file via parameters as README', () => {
             let testItem = {displayID: 'test_name'};
 
@@ -1454,6 +1610,7 @@ describe('EditorComponent', () => {
             mockClientService.getModelFile.returns({getDefinitions: sinon.stub().returns({})});
             mockClientService.getScriptFile.returns({getContents: sinon.stub().returns({})});
             mockClientService.getAclFile.returns({getDefinitions: sinon.stub().returns({})});
+            mockClientService.getQueryFile.returns({getDefinitions: sinon.stub().returns({})});
         });
 
         it('should validate model files', () => {
@@ -1489,6 +1646,17 @@ describe('EditorComponent', () => {
             result.should.equal(true);
         });
 
+        it('should validate query files', () => {
+            let fileArray = [];
+            fileArray.push({query: true, displayID: 'test_name'});
+            component['files'] = fileArray;
+
+            let result = component['editorFilesValidate']();
+
+            mockClientService.getQueryFile.should.have.been.called;
+            result.should.equal(true);
+        });
+
         it('should fail validation for invalid model files', () => {
             let fileArray = [];
             fileArray.push({model: true, displayID: 'test_name'});
@@ -1514,6 +1682,17 @@ describe('EditorComponent', () => {
         it('should fail validation for invalid script files', () => {
             let fileArray = [];
             fileArray.push({script: true, displayID: 'test_name'});
+            component['files'] = fileArray;
+
+            mockClientService.validateFile.returns('error');
+
+            let result = component['editorFilesValidate']();
+            result.should.equal(false);
+        });
+
+        it('should fail validation for invalid query files', () => {
+            let fileArray = [];
+            fileArray.push({query: true, displayID: 'test_name'});
             component['files'] = fileArray;
 
             mockClientService.validateFile.returns('error');
@@ -1952,6 +2131,58 @@ describe('EditorComponent', () => {
             }
         });
 
+    });
+
+    describe('preventNameEdit', () => {
+        it('should prevent name edit of acl', () => {
+            let resource = {
+                acl: true
+            };
+
+            let response = component.preventNameEdit(resource);
+
+            response.should.be.true;
+        });
+
+        it('should prevent name edit of query', () => {
+            let resource = {
+                query: true
+            };
+
+            let response = component.preventNameEdit(resource);
+
+            response.should.be.true;
+        });
+
+        it('should permit name edit of unknown', () => {
+            let resource = {
+                wombat: true
+            };
+
+            let response = component.preventNameEdit(resource);
+
+            response.should.be.false;
+        });
+
+        it('should permit name edit of model', () => {
+            let resource = {
+                model: true
+            };
+
+            let response = component.preventNameEdit(resource);
+
+            response.should.be.false;
+        });
+
+        it('should permit name edit of script', () => {
+            let resource = {
+                script: true
+            };
+
+            let response = component.preventNameEdit(resource);
+
+            response.should.be.false;
+        });
     });
 
 });

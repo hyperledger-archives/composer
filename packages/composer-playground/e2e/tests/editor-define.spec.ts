@@ -119,7 +119,7 @@ describe('Editor Define', (() => {
 
     it('should enable populated BNA import via file selection', (() => {
         // Select BNA
-        ImportModalHelper.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+        ImportModalHelper.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/importBNA.bna');
 
         // Replace confirm should show, confirm it
         ReplaceModalHelper.confirmReplace();
@@ -129,10 +129,10 @@ describe('Editor Define', (() => {
         browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
         // -success message
         browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-        // -expected files in navigator (Just a readme)
+        // -expected files in navigator
         EditorHelper.retrieveNavigatorFileNames()
         .then( (list: any) => {
-            let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+            let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl', 'Query File\nqueries.qry'];
             list.should.be.deep.equal(expectedFiles);
         });
         // -deploy not enabled
@@ -171,7 +171,8 @@ describe('Editor Define', (() => {
                                      'models/',
                                      'models/sample.cto',
                                      'lib/',
-                                     'lib/sample.js' ];
+                                     'lib/sample.js',
+                                     'queries.qry' ];
             contents.length.should.be.equal(expectedContents.length);
             expectedContents.forEach((element) => {
                 contents.includes(element).should.be.true;
@@ -217,6 +218,14 @@ describe('Editor Define', (() => {
         .then((array: any) => {
             array[1].enabled.should.be.equal(false);
         });
+    }));
+
+    it('should prevent the addition of a file with an invalid file extension', (() => {
+        let inputFileElement = element(by.id('file-importer_input'));
+        dragDropFile(inputFileElement, './e2e/data/files/importBanned.wombat');
+        browser.wait(ExpectedConditions.visibilityOf(element(by.css('.error'))), 10000);
+        element(by.id('error_close')).click();
+        AddFileModalHelper.exitAdd();
     }));
 
     it('should enable the cancelling of script file addition part way through without completing the file addition', (() => {
@@ -569,12 +578,39 @@ describe('Editor Define', (() => {
         });
     }));
 
-    it('should prevent the addition of a file with an invalid file extension', (() => {
-        let inputFileElement = element(by.id('file-importer_input'));
-        dragDropFile(inputFileElement, './e2e/data/files/importBanned.wombat');
-        browser.wait(ExpectedConditions.visibilityOf(element(by.css('.error'))), 10000);
-        element(by.id('error_close')).click();
+    it('should warn about replacing current query file when adding new query file', (() => {
+        AddFileModalHelper.exitAdd();
+
+        EditorHelper.importBND()
+        .then(() => {
+            ImportModalHelper.waitForImportModalToAppear();
+        })
+        .then(() => {
+            ImportModalHelper.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/importBNA.bna');
+            ReplaceModalHelper.confirmReplace();
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+        })
+        .then(() => {
+            EditorHelper.addFile()
+            .then(() => {
+                AddFileModalHelper.waitForAddFileModalToAppear();
+            });
+        })
+        .then(() => {
+            let startFiles;
+            EditorHelper.retrieveNavigatorFileNames()
+            .then((names) => {
+                startFiles = names;
+            });
+        })
+        .then(() => {
+            AddFileModalHelper.selectFromFile('./e2e/data/files/importQuery.qry');
+        })
+        .then(() => {
+            ReplaceModalHelper.confirmReplace();
+        });
     }));
+
   }));
 
 }));
