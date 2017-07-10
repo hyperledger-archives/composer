@@ -82,9 +82,12 @@ class Serializer {
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
         // validate the resource against the model
-        options = options || { validate: true };
-        if(options.validate === true) {
-            const validator = new ResourceValidator();
+        options = options || {};
+        if(options.validate === undefined) {
+            options.validate = true;
+        }
+        if(options.validate) {
+            const validator = new ResourceValidator(options);
             classDeclaration.accept(validator, parameters);
         }
 
@@ -136,15 +139,15 @@ class Serializer {
         // create a new instance, using the identifier field name as the ID.
         let resource;
         if (classDeclaration instanceof TransactionDeclaration) {
-            resource = this.factory.newTransaction( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newTransaction( classDeclaration.getNamespace(),
                                                     classDeclaration.getName(),
                                                     jsonObject[classDeclaration.getIdentifierFieldName()] );
         } else if (classDeclaration instanceof EventDeclaration) {
-            resource = this.factory.newEvent( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newEvent( classDeclaration.getNamespace(),
                                               classDeclaration.getName(),
                                               jsonObject[classDeclaration.getIdentifierFieldName()] );
         } else {
-            resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
+            resource = this.factory.newResource( classDeclaration.getNamespace(),
                                                  classDeclaration.getName(),
                                                  jsonObject[classDeclaration.getIdentifierFieldName()] );
         }
