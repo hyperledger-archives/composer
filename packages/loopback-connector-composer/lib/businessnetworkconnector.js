@@ -24,6 +24,7 @@ const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+const util = require('util');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -822,37 +823,31 @@ class BusinessNetworkConnector extends Connector {
 
     /**
      * Execute a named query and returns the results
+     * @param {string} queryName The name of the query to execute
+     * @param {object} queryParameters The query parameters
      * @param {Object} options The LoopBack options.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    executeQuery(options, callback) {
+    executeQuery( queryName, queryParameters, options, callback) {
         debug('executeQuery', options);
-        let actualOptions = null, actualCallback = null;
-        if (arguments.length === 1) {
-            // LoopBack API, called with (callback).
-            actualCallback = options;
-        } else {
-            // Composer API, called with (options, callback).
-            actualOptions = options;
-            actualCallback = callback;
-        }
-        debug('executeQuery', actualOptions);
-        return this.ensureConnected(actualOptions)
+        debug('queryName', queryName);
+        debug('queryParameters', util.inspect(queryParameters));
+
+        return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                console.log( '***** executeQuery with options: ' + JSON.stringify(options) );
-                return businessNetworkConnection.query(options.query);
+                return businessNetworkConnection.query(queryName, queryParameters);
             })
             .then((queryResult) => {
                 const result = queryResult.map((item) => {
                     return this.serializer.toJSON(item);
                 });
-                actualCallback(null, result);
+                callback(null, result);
             })
             .catch((error) => {
                 console.log(error);
                 debug('executeQuery', 'error thrown doing query', error);
-                actualCallback(error);
+                callback(error);
             });
     }
 

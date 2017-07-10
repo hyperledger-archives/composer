@@ -17,6 +17,8 @@
 const connector = require('loopback-connector-composer');
 const LoopBackWallet = require('../../lib/loopbackwallet');
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
+const ModelUtil = require('composer-common').ModelUtil;
+const util = require('util');
 
 /**
  * Find or create the system wallet for storing identities in.
@@ -182,7 +184,6 @@ function registerQueryMethods(app, dataSource) {
             }
 
             queries.forEach((query) => {
-                console.log('Registering query: ' + query.getName() );
                 registerQueryMethod(app, dataSource, Query, connector, query);
             });
 
@@ -192,39 +193,53 @@ function registerQueryMethods(app, dataSource) {
 }
 
 /**
- * Register the 'getAllRedVehicles' Composer query method.
+ * Register a composer named query method.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
- * @param {Object} Query The Query model class.
+ * @param {Object} Query The LoopBack Query model
  * @param {Object} connector The LoopBack connector.
- * @param {Query} query the query instance
+ * @param {Query} query the named Composer query to register
  */
 function registerQueryMethod(app, dataSource, Query, connector, query) {
 
     const analyzer = new QueryAnalyzer();
     const parameters = analyzer.analyze(query);
+    const returnType = dataSource.settings.namespace
+        ? query.getSelect().getResource()
+            : ModelUtil.getShortName(query.getSelect().getResource());
 
+    // declare the arguments to the query method
     let accepts = [];
 
+    // we need the HTTP request so we can get the named parameters off the query string
+    accepts.push({'arg': 'req', 'type': 'object', 'http': {source: 'req'}});
+    accepts.push({'arg': 'options', 'type': 'object', 'http': 'optionsFromRequest'});
+
+    // we need to declare the parameters and types so that the LoopBack UI
+    // will generate the web form to enter them
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
-        accepts.push( {arg: param.name, type: param.type, required: true, http: 'optionsFromRequest' } );
+        accepts.push( {arg: param.name, type: param.type, required: true, http: {verb : 'get', source: 'query'}} );
     }
 
-    console.log( '**** PARAM FOR QUERY ' + query.getName() + '=' + JSON.stringify(accepts) );
-
-     // Define and register the method.
-    Query[query.getName()] = (options, callback) => {
-        console.log('**** options: ' + JSON.stringify(options));
-        options.query = query.getName();
-        connector.executeQuery(options, callback);
+    // Define and register dynamic query method
+    const queryMethod = {
+        [query.getName()]() {
+            const args = [].slice.apply(arguments);
+            const httpRequest = args[0];
+            const options = args[1];
+            const callback = args[args.length-1];
+            connector.executeQuery( query.getName(), httpRequest.query, options, callback);
+        }
     };
+    Object.assign(Query, queryMethod);
+
     Query.remoteMethod(
         query.getName(), {
             description: query.getDescription(),
             accepts: accepts,
             returns: {
-                type: [ query.getSelect().getResource() ],
+                type : [ returnType ],
                 root: true
             },
             http: {
