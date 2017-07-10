@@ -82,6 +82,7 @@ module.exports.OrderBy = require('./lib/query/orderby');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');
 module.exports.Property = require('./lib/introspect/property');
 module.exports.Query = require('./lib/query/query');
+module.exports.QueryAnalyzer = require('./lib/query/queryanalyzer.js');
 module.exports.QueryFile = require('./lib/query/queryfile');
 module.exports.QueryManager = require('./lib/querymanager');
 module.exports.Relationship = require('./lib/model/relationship');

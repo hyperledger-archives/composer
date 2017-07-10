@@ -16,6 +16,7 @@
 
 const connector = require('loopback-connector-composer');
 const LoopBackWallet = require('../../lib/loopbackwallet');
+const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 
 /**
  * Find or create the system wallet for storing identities in.
@@ -181,6 +182,7 @@ function registerQueryMethods(app, dataSource) {
             }
 
             queries.forEach((query) => {
+                console.log('Registering query: ' + query.getName() );
                 registerQueryMethod(app, dataSource, Query, connector, query);
             });
 
@@ -199,25 +201,35 @@ function registerQueryMethods(app, dataSource) {
  */
 function registerQueryMethod(app, dataSource, Query, connector, query) {
 
+    const analyzer = new QueryAnalyzer();
+    const parameters = analyzer.analyze(query);
+
+    let accepts = [];
+
+    for(let n=0; n < parameters.length; n++) {
+        const param = parameters[n];
+        accepts.push( {arg: param.name, type: param.type, required: true, http: 'optionsFromRequest' } );
+    }
+
+    console.log( '**** PARAM FOR QUERY ' + query.getName() + '=' + JSON.stringify(accepts) );
+
      // Define and register the method.
-    Query.executeQuery = (options, callback) => {
+    Query[query.getName()] = (options, callback) => {
+        console.log('**** options: ' + JSON.stringify(options));
+        options.query = query.getName();
         connector.executeQuery(options, callback);
     };
     Query.remoteMethod(
         query.getName(), {
             description: query.getDescription(),
-            accepts: [{
-                arg: 'options',
-                type: 'object',
-                http: 'optionsFromRequest'
-            }],
+            accepts: accepts,
             returns: {
-                type: [ 'object' ],
+                type: [ query.getSelect().getResource() ],
                 root: true
             },
             http: {
                 verb: 'get',
-                path: query.getName()
+                path: '/' + query.getName()
             }
         }
     );

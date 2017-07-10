@@ -1013,40 +1013,16 @@ class BusinessNetworkConnector extends Connector {
                     }
                 }
 
-                // Then look for the item as a query
-                let query = null;
-                if (!classDeclaration) {
-                    let matchingQuery = this.businessNetworkDefinition.getQueryManager().getQueries()
-                        .filter((query) => {
-                            return query.getName() === object;
-                        });
-                    if (matchingQuery.length > 1) {
-                        throw new Error(`Found multiple queries for ${object}`);
-                    } else if (matchingQuery.length === 1) {
-                        query = matchingQuery[0];
-                    }
-                }
-
                 // If we didn't find it, throw!
-                if (!classDeclaration && !query) {
+                if (!classDeclaration) {
                     throw new Error(`Failed to find type definition for ${object}`);
                 }
 
                 // Generate a LoopBack schema for the type.
-                let schema = null;
-
-                if(classDeclaration) {
-                    schema = classDeclaration.accept(this.visitor, {
-                        first : true,
-                        modelFile : classDeclaration.getModelFile()
-                    });
-                }
-                else {
-                    schema = query.accept(this.visitor, {
-                        first : true,
-                        modelFile : classDeclaration.getModelFile()
-                    });
-                }
+                let schema = classDeclaration.accept(this.visitor, {
+                    first : true,
+                    modelFile : classDeclaration.getModelFile()
+                });
 
                 callback(null, schema);
             })
