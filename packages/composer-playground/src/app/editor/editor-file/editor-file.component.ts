@@ -40,7 +40,7 @@ export class EditorFileComponent {
         },
         foldGutter: true,
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        scrollbarStyle: 'native'
+        scrollbarStyle: 'simple'
     };
 
     private currentError: string = null;
