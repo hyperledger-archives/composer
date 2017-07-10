@@ -205,11 +205,16 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     const parameters = analyzer.analyze(query);
 
     let accepts = [];
+    let pathWithPrameters = '/' + query.getName();
 
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
-        accepts.push( {arg: param.name, type: param.type, required: true, http: 'optionsFromRequest' } );
+
+        // accepts.push( {arg: param.name, type: param.type, required: true, http: 'optionsFromRequest' } );
+        accepts.push( {arg: param.name, type: param.type, required: true, http: {source :'path'} } );
+        pathWithPrameters = pathWithPrameters + '/:' + param.name;
     }
+    accepts.push({arg: 'options', type: 'object', http: 'optionsFromRequest' });
 
     console.log( '**** PARAM FOR QUERY ' + query.getName() + '=' + JSON.stringify(accepts) );
 
@@ -229,7 +234,8 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
             },
             http: {
                 verb: 'get',
-                path: '/' + query.getName()
+                // path: '/' + query.getName();
+                path: pathWithPrameters
             }
         }
     );
