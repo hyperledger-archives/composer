@@ -821,13 +821,13 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Get all of the assets from the asset registry.
+     * Execute a named query and returns the results
      * @param {Object} options The LoopBack options.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    getAllRedVehicles(options, callback) {
-        debug('getAllRedVehicles', options);
+    executeQuery(options, callback) {
+        debug('executeQuery', options);
         let actualOptions = null, actualCallback = null;
         if (arguments.length === 1) {
             // LoopBack API, called with (callback).
@@ -837,41 +837,11 @@ class BusinessNetworkConnector extends Connector {
             actualOptions = options;
             actualCallback = callback;
         }
-        debug('getAllRedVehicles', actualOptions);
+        debug('executeQuery', actualOptions);
         return this.ensureConnected(actualOptions)
             .then((businessNetworkConnection) => {
-                return businessNetworkConnection.query('selectAllRedVehicles');
-            })
-            .then((result) => {
-                actualCallback(null, result);
-            })
-            .catch((error) => {
-                debug('getAllRedVehicles', 'error thrown doing query', error);
-                actualCallback(error);
-            });
-    }
-
-     /**
-     * Get all of the assets from the asset registry.
-     * @param {Object} options The LoopBack options.
-     * @param {function} callback The callback to call when complete.
-     * @returns {Promise} A promise that is resolved when complete.
-     */
-    getAllActiveVehicles(options, callback) {
-        debug('getAllActiveVehicles', options);
-        let actualOptions = null, actualCallback = null;
-        if (arguments.length === 1) {
-            // LoopBack API, called with (callback).
-            actualCallback = options;
-        } else {
-            // Composer API, called with (options, callback).
-            actualOptions = options;
-            actualCallback = callback;
-        }
-        debug('getAllRedVehicles', actualOptions);
-        return this.ensureConnected(actualOptions)
-            .then((businessNetworkConnection) => {
-                return businessNetworkConnection.query('selectAllActiveVehicles');
+                console.log( '***** executeQuery with options: ' + JSON.stringify(options) );
+                return businessNetworkConnection.query(options.query);
             })
             .then((queryResult) => {
                 const result = queryResult.map((item) => {
@@ -881,7 +851,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 console.log(error);
-                debug('getAllActiveVehicles', 'error thrown doing query', error);
+                debug('executeQuery', 'error thrown doing query', error);
                 actualCallback(error);
             });
     }
@@ -994,6 +964,25 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Retrieve the list of all named queries in the business network
+     * @param {Object} options the options provided by Loopback.
+     * @param {function} callback the callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    discoverQueries(options, callback) {
+        debug('discoverQueries', options);
+        return this.ensureConnected(options)
+            .then(() => {
+                const queries = this.businessNetworkDefinition.getQueryManager().getQueries();
+                callback(null, queries);
+            })
+            .catch((error) => {
+                debug('discoverQueries', 'error thrown discovering list of query declarations', error);
+                callback(error);
+            });
+    }
+
+    /**
      * Retrieve the model definition for the specified model name.
      * @param {string} object The name of the model.
      * @param {Object} options The options provided by Loopback.
@@ -1024,18 +1013,42 @@ class BusinessNetworkConnector extends Connector {
                     }
                 }
 
-                // If we didn't find it, throw!
+                // Then look for the item as a query
+                let query = null;
                 if (!classDeclaration) {
+                    let matchingQuery = this.businessNetworkDefinition.getQueryManager().getQueries()
+                        .filter((query) => {
+                            return query.getName() === object;
+                        });
+                    if (matchingQuery.length > 1) {
+                        throw new Error(`Found multiple queries for ${object}`);
+                    } else if (matchingQuery.length === 1) {
+                        query = matchingQuery[0];
+                    }
+                }
+
+                // If we didn't find it, throw!
+                if (!classDeclaration && !query) {
                     throw new Error(`Failed to find type definition for ${object}`);
                 }
 
                 // Generate a LoopBack schema for the type.
-                let schema = classDeclaration.accept(this.visitor, {
-                    first : true,
-                    modelFile : classDeclaration.getModelFile()
-                });
-                callback(null, schema);
+                let schema = null;
 
+                if(classDeclaration) {
+                    schema = classDeclaration.accept(this.visitor, {
+                        first : true,
+                        modelFile : classDeclaration.getModelFile()
+                    });
+                }
+                else {
+                    schema = query.accept(this.visitor, {
+                        first : true,
+                        modelFile : classDeclaration.getModelFile()
+                    });
+                }
+
+                callback(null, schema);
             })
             .catch((error) => {
                 debug('discoverSchemas', 'error thrown generating schema', error);

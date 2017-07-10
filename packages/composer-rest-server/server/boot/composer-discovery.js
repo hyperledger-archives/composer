@@ -120,8 +120,8 @@ function createQueryModel(app, dataSource) {
     // Create the query model schema.
     let modelSchema = {
         name: 'Query',
-        description: 'Rich Query Methods',
-        plural: '/query',
+        description: 'Content-based Query Methods',
+        plural: '/queries',
         base: 'Model'
     };
     modelSchema = updateModelSchema(modelSchema);
@@ -166,6 +166,7 @@ function registerSystemMethods(app, dataSource) {
  * Register all of the Composer query methods.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
+ * @returns {Promise} a promise when complete
  */
 function registerQueryMethods(app, dataSource) {
 
@@ -173,49 +174,19 @@ function registerQueryMethods(app, dataSource) {
     const Query = app.models.Query;
     const connector = dataSource.connector;
 
-    // Register all query methods
-    const registerMethods = [
-        registerGetAllRedVehiclesMethod,
-        registerGetAllActiveVehiclesMethod
-
-    ];
-    registerMethods.forEach((registerMethod) => {
-        registerMethod(app, dataSource, Query, connector);
-    });
-
-}
-
-/**
- * Register the 'getAllRedVehicles' Composer query method.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- * @param {Object} Query The Query model class.
- * @param {Object} connector The LoopBack connector.
- */
-function registerGetAllRedVehiclesMethod(app, dataSource, Query, connector) {
-
-     // Define and register the method.
-    Query.getAllRedVehicles = (options, callback) => {
-        connector.getAllRedVehicles(options, callback);
-    };
-    Query.remoteMethod(
-        'getAllRedVehicles', {
-            description: 'Get all red vehicles from the asset registry',
-            accepts: [{
-                arg: 'options',
-                type: 'object',
-                http: 'optionsFromRequest'
-            }],
-            returns: {
-                type: [ 'object' ],
-                root: true
-            },
-            http: {
-                verb: 'get',
-                path: '/getAllRedVehicles'
+    return new Promise((resolve, reject) => {
+        connector.discoverQueries(null, (error, queries) => {
+            if (error) {
+                return reject(error);
             }
-        }
-    );
+
+            queries.forEach((query) => {
+                registerQueryMethod(app, dataSource, Query, connector, query);
+            });
+
+            resolve(queries);
+        });
+    });
 }
 
 /**
@@ -224,16 +195,17 @@ function registerGetAllRedVehiclesMethod(app, dataSource, Query, connector) {
  * @param {Object} dataSource The LoopBack data source.
  * @param {Object} Query The Query model class.
  * @param {Object} connector The LoopBack connector.
+ * @param {Query} query the query instance
  */
-function registerGetAllActiveVehiclesMethod(app, dataSource, Query, connector) {
+function registerQueryMethod(app, dataSource, Query, connector, query) {
 
      // Define and register the method.
-    Query.getAllActiveVehicles = (options, callback) => {
-        connector.getAllActiveVehicles(options, callback);
+    Query.executeQuery = (options, callback) => {
+        connector.executeQuery(options, callback);
     };
     Query.remoteMethod(
-        'getAllActiveVehicles', {
-            description: 'Get all active vehicles from the asset registry',
+        query.getName(), {
+            description: query.getDescription(),
             accepts: [{
                 arg: 'options',
                 type: 'object',
@@ -245,7 +217,7 @@ function registerGetAllActiveVehiclesMethod(app, dataSource, Query, connector) {
             },
             http: {
                 verb: 'get',
-                path: '/getAllActiveVehicles'
+                path: query.getName()
             }
         }
     );
