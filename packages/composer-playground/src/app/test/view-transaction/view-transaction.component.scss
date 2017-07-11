@@ -88,6 +88,13 @@
           height: 0;
         }
       }
+      .resource-open.open {
+           &::after {
+               transform: rotate(180deg);
+               bottom: 10%;
+               right: 3%;
+           }
+      }
       .resource-content {
         .CodeMirror {
           height: 200px;

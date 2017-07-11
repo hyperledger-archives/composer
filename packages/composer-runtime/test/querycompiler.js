@@ -137,6 +137,12 @@ describe('QueryCompiler', () => {
                 SELECT org.acme.sample.SampleAsset
                     ORDER BY [foo ASC, bar DESC]
         }
+        query Q14 {
+            description: "Select all drivers aged older than PARAM"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (baa.moo.neigh.meow.woof == _$animalNoise)
+        }
         `);
         queryFile1.validate();
         queries = {};
@@ -164,7 +170,7 @@ describe('QueryCompiler', () => {
             const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
             compiledQueryBundle.compiledQueries.should.be.an('array');
-            compiledQueryBundle.compiledQueries.should.have.lengthOf(13);
+            compiledQueryBundle.compiledQueries.should.have.lengthOf(14);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
             compiledQueryBundle.compiledQueries.should.all.have.property('hash');
             compiledQueryBundle.compiledQueries.should.all.have.property('generator');
@@ -177,7 +183,7 @@ describe('QueryCompiler', () => {
         it('should visit all of the things', () => {
             const compiled = queryCompiler.visit(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(13);
+            compiled.should.have.lengthOf(14);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -196,7 +202,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query manager', () => {
             const compiled = queryCompiler.visitQueryManager(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(13);
+            compiled.should.have.lengthOf(14);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -216,7 +222,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query file', () => {
             const compiled = queryCompiler.visitQueryFile(queryFile1, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(13);
+            compiled.should.have.lengthOf(14);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -250,6 +256,14 @@ describe('QueryCompiler', () => {
             compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
             compiled.generator({ foo: 'Black hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Black hat"}}}');
             compiled.generator({ foo: 'Red hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Red hat"}}}');
+        });
+
+        it('should compile a query with nested parameters', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q14, {});
+            compiled.name.should.equal('Q14');
+            compiled.hash.should.equal('951f2465d94148ffbe2e4c081fe6c8f73f95056ccdb8be3dcb8180ba6f3d9098');
+            compiled.generator.should.be.a('function');
+            compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
         });
 
     });
@@ -985,6 +999,66 @@ describe('QueryCompiler', () => {
 
         it('should return the literal value', () => {
             queryCompiler.visitLiteral({ type: 'Literal', value: 1234 }, {}).should.equal(1234);
+        });
+
+    });
+
+    describe('#visitMemberExpression', () => {
+
+        it('should return a nested property value', () => {
+            const ast = {
+                type: 'MemberExpression',
+                object: {
+                    type: 'Identifier',
+                    name: 'baa'
+                },
+                property: {
+                    type: 'Identifier',
+                    name: 'moo'
+                },
+                computed: false
+            };
+            queryCompiler.visitMemberExpression(ast, {}).should.equal('baa.moo');
+        });
+
+        it('should return a deeply nested property value', () => {
+            const ast = {
+                type: 'MemberExpression',
+                object: {
+                    type: 'MemberExpression',
+                    object: {
+                        type: 'MemberExpression',
+                        object: {
+                            type: 'MemberExpression',
+                            object: {
+                                type: 'Identifier',
+                                name: 'baa'
+                            },
+                            property: {
+                                type: 'Identifier',
+                                name: 'moo'
+                            },
+                            computed: false
+                        },
+                        property: {
+                            type: 'Identifier',
+                            name: 'neigh'
+                        },
+                        computed: false
+                    },
+                    property: {
+                        type: 'Identifier',
+                        name: 'meow'
+                    },
+                    computed: false
+                },
+                property: {
+                    type: 'Identifier',
+                    name: 'woof'
+                },
+                computed: false
+            };
+            queryCompiler.visitMemberExpression(ast, {}).should.equal('baa.moo.neigh.meow.woof');
         });
 
     });
