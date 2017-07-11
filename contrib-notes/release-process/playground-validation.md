@@ -117,6 +117,10 @@ Select ACL file
  - Reverse change to resource field
  - Error message should disappear
 
+Add a query file - a dummy file can be found at composer/packages/composer-playground/e2e/data/files/importQuery.qry
+ - It should become the focal item and contents should show in the editor
+ - Edit the file to cause a breakage, it should show an error message under the editor. Repair the file and the error message should disappear.
+
 Select the main model file and delete it
  - Deploy button should not be active
  - ACL file navigation menu should be shown in error (via red indicators)
