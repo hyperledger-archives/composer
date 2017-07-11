@@ -72,6 +72,10 @@
 
     .alert-message{
       flex:1;
-      color: #8C9696;
+      color: $secondary-text;
       padding-left:1rem;
+
+      p {
+        margin-top: 5px;
+      }
     }
