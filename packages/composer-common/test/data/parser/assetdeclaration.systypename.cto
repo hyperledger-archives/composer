@@ -1,0 +1,5 @@
+namespace com.testing
+
+asset Asset identified by id {
+  o String id
+}

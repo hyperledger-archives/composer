@@ -11,6 +11,7 @@
                     <h3 [class.error]="file.invalid" *ngIf="file.script">Script File</h3>
                     <h3 [class.error]="file.invalid" *ngIf="file.acl">Access Control</h3>
                     <h3 [class.error]="file.invalid" *ngIf="file.readme">About</h3>
+                    <h3 [class.error]="file.invalid" *ngIf="file.query">Query File</h3>
                     <div [class.error]="file.invalid">{{file.displayID}}</div>
                 </div>
                 <div *ngIf="file.invalid" class="error_dot">
@@ -62,7 +63,7 @@
       </div>
       <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
       <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
-      <div *ngIf="currentFile && fileType(currentFile)!='ACL'" class="edit_icon">
+      <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
         <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>
@@ -112,5 +113,8 @@
     </div>
   </div>
 
-  <editor-file [editorFile]="currentFile"></editor-file>
+  <div class="flex"><editor-file [editorFile]="currentFile"></editor-file></div>
+
+  <app-footer></app-footer>
+
 </section>

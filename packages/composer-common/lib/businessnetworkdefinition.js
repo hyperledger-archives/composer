@@ -532,7 +532,7 @@ class BusinessNetworkDefinition {
             }
         }
 
-         // grab the query.qry
+         // grab the queries.qry
         const queryPath = fsPath.resolve(path, 'queries.qry');
         if(fs.existsSync(queryPath)) {
             let queryContents = fs.readFileSync( queryPath, ENCODING);

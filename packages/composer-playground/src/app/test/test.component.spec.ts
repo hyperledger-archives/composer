@@ -3,8 +3,9 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, Component } from '@angular/core';
 import { TestComponent } from './test.component';
+import { FooterComponent } from '../footer/footer.component';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { TransactionService } from '../services/transaction.service';
@@ -18,6 +19,14 @@ import * as chai from 'chai';
 import { BusinessNetworkConnection } from 'composer-client';
 
 let should = chai.should();
+
+@Component({
+    selector: 'app-footer',
+    template: ''
+})
+class MockFooterComponent {
+
+}
 
 @Directive({
     selector: 'registry'
@@ -59,14 +68,14 @@ describe('TestComponent', () => {
         mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
         TestBed.configureTestingModule({
-            declarations: [TestComponent, MockRegistryDirective],
+            declarations: [TestComponent, MockRegistryDirective, MockFooterComponent],
             providers: [
                 {provide: NgbModal, useValue: mockModal},
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: TransactionService, useValue: mockTransactionService}
-            ]
+            ],
         });
 
         fixture = TestBed.createComponent(TestComponent);

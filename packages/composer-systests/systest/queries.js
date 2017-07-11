@@ -230,6 +230,56 @@ describe('Query system tests', () => {
                     });
             });
 
+            it('should execute a named query on a nested string property', () => {
+                return client.query(`${type}_nestedStringValue`)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringValue === 'string 0';
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string property', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringValue == 'string 0')`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringValue === 'string 0';
+                        }));
+                    });
+            });
+
+            it('should execute a named query on a nested string property using a parameter', () => {
+                return client.query(`${type}_nestedStringValueParameter`, { inputStringValue: 'string 1' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringValue === 'string 1';
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string property using a parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringValue == _$inputStringValue)`);
+                return client.query(query, { inputStringValue: 'string 1' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringValue === 'string 1';
+                        }));
+                    });
+            });
+
         });
 
     });

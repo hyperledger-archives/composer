@@ -43,5 +43,7 @@ app-test {
 
   .main-view {
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
 }

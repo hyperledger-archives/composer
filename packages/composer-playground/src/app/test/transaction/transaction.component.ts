@@ -30,6 +30,7 @@ export class TransactionComponent implements OnInit {
     private selectedTransactionName: string = null;
     private hiddenTransactionItems = new Map();
     private submittedTransaction = null;
+    private includeOptionalFields: boolean = false;
 
     private resourceDefinition: string = null;
     private submitInProgress: boolean = false;
@@ -121,7 +122,10 @@ export class TransactionComponent implements OnInit {
     private generateTransactionDeclaration(withSampleData?: boolean): void {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let factory = businessNetworkDefinition.getFactory();
-        const generateParameters = {generate: withSampleData ? 'sample' : 'empty'};
+        const generateParameters = {
+            generate: withSampleData ? 'sample' : 'empty',
+            includeOptionalFields: this.includeOptionalFields
+        };
         let resource = factory.newTransaction(
             this.selectedTransaction.getModelFile().getNamespace(),
             this.selectedTransaction.getName(),

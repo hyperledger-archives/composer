@@ -33,6 +33,12 @@
                             (ngModelChange)="onDefinitionChanged()"
                             width="100%" height="100%" ngDefaultControl>
                 </codemirror>
+                <div>
+                    <label>Optional Properties
+                        <input type="checkbox" name="include-optional" value="true"
+                            [(ngModel)]="includeOptionalFields" (change)="generateTransactionDeclaration(false)">
+                    </label>
+                </div>
                 <div class="resource-error-text" ng-if="definitionError!=null">
                     <p>{{definitionError}}</p>
                 </div>

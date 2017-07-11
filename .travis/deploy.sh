@@ -34,6 +34,12 @@ if [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
     exit 0
 fi
 
+# Check that if this is not a tagged build, then we only deploy master.
+if [ "${TRAVIS_TAG}" = "" -a "${TRAVIS_BRANCH}" != "master" ]; then
+    echo Not executing as not building a tag and not building from master
+    exit 0
+fi
+
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
   if [ -z "${TRAVIS_TAG}" ]; then

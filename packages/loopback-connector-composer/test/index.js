@@ -74,6 +74,7 @@ describe('loopback-connector-composer', () => {
                     sinon.assert.calledOnce(connectorModule.createConnector);
                     sinon.assert.calledWith(connectorModule.createConnector, dataSource.settings);
                     sinon.assert.calledOnce(mockBusinessNetworkConnector.connect);
+                    mockBusinessNetworkConnector.connecting = true;
                 });
         });
 
@@ -94,6 +95,7 @@ describe('loopback-connector-composer', () => {
                     sinon.assert.calledOnce(connectorModule.createConnector);
                     sinon.assert.calledWith(connectorModule.createConnector, {});
                     sinon.assert.calledOnce(mockBusinessNetworkConnector.connect);
+                    mockBusinessNetworkConnector.connecting = true;
                 });
         });
 
@@ -102,6 +104,10 @@ describe('loopback-connector-composer', () => {
                 settings : {}
             };
             connectorModule.initialize(dataSource);
+            dataSource.connector.should.be.an.instanceOf(BusinessNetworkConnector);
+            sinon.assert.calledOnce(connectorModule.createConnector);
+            sinon.assert.calledWith(connectorModule.createConnector, {});
+            mockBusinessNetworkConnector.connecting = false;
         });
     });
 });

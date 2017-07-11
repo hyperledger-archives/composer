@@ -35,7 +35,7 @@ export class ViewTransactionComponent implements OnInit, OnDestroy {
     private codeConfig = {
         lineNumbers: true,
         lineWrapping: true,
-        readOnly: false,
+        readOnly: true,
         mode: 'javascript',
         autofocus: true,
         extraKeys: {

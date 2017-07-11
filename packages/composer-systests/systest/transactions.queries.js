@@ -226,6 +226,48 @@ describe('Transaction (query specific) system tests', () => {
                 return client.submitTransaction(tx);
             });
 
+            it('should execute a named query on a nested string property', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.namedQuery = `${type}_nestedStringValue`;
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 0';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a dynamic query on a nested string property', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.dynamicQuery = `SELECT ${resource} WHERE (conceptValue.stringValue == 'string 0')`;
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 0';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a named query on a nested string property using a parameter', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.namedQuery = `${type}_stringValueParameter`;
+                tx.parameters = JSON.stringify({
+                    inputStringValue: 'string 1'
+                });
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 1';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a dynamic query on a nested string property using a parameter', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.dynamicQuery = `SELECT ${resource} WHERE (stringValue == _$inputStringValue)`;
+                tx.parameters = JSON.stringify({
+                    inputStringValue: 'string 1'
+                });
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 1';
+                }));
+                return client.submitTransaction(tx);
+            });
+
         });
 
     });
