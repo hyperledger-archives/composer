@@ -71,6 +71,7 @@ Multiple ACL rules may be defined that conceptually define a decision table. The
 **Resource** defines the things that the ACL rule applies to. This can be a class, all classes within a namespace, or all classes under a namespace. It can also be an instance of a class.
 
 Resource Examples:
+
 - Namespace: org.example.*
 - Namespace (recursive): org.example.**
 - Class in namespace: org.example.Car

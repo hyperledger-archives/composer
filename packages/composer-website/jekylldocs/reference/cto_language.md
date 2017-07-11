@@ -11,57 +11,92 @@ excerpt: The [**Hyperledger Composer modeling language**](./cto_language.html) i
 
 ---
 
-{{site.data.conrefs.composer_full}} includes an Object-Oriented modeling language that is used to define
-the domain model for a business network definition.
+{{site.data.conrefs.composer_full}} includes an object-oriented modeling language that is used to define the domain model for a business network definition.
 
 A {{site.data.conrefs.composer_full}} CTO file is composed of the following elements:
 
-1. A single namespace. All resource declarations within the file are implicitly
-in this namespace.
-2. Optional import declarations that import resources from other namespaces.
-3. A set of resource definitions (see below).
+1. A single namespace. All resource declarations within the file are implicitly in this namespace.
+2. A set of resource definitions, encompassing assets, transactions, participants, and events.
+3. Optional import declarations that import resources from other namespaces.
 
-## Imports
+## Organization and {{site.data.conrefs.composer_full}} System Namespaces
 
-Use the `import` keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the `.*` notation to import all the types from another namespace.
+Your organization namespace is defined in the namespace line of your model (`.cto`) file, and all resources created are implicitly part of this namespace.
 
-```
-import org.example.MyAsset
-import org.example2.*
-```
+As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.
 
-## Declarations of enumerated types
+Represented as a `.cto` model file, the system namespace is as follows:
 
 ```
-/**
-* An enumerated type
-*/
-enum AnimalType {
-o SHEEP_GOAT
-o CATTLE
-o PIG
-o DEER_OTHER
-}
+    namespace org.hyperledger.composer.system
+    abstract asset Asset {  }
+    abstract participant Participant {   }
+    abstract transaction Transaction {
+      o DateTime timestamp
+    }
+    abstract event Event {
+      o DateTime timestamp
+    }
 ```
 
+In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.
 
-## Declarations of Assets, Events, Participants, Transactions
+>If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.
+
+
+## Declarations of resources
+
+Resources in {{site.data.conrefs.composer_full}} include:
+
+- Assets, Participants, Transactions, and Events.
+- Enumerated Types.
+- Concepts.
+-
 
 Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.
 
-A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has an Asset Definition.
+A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition, therefore an asset instance has an Asset Definition.
 
 A resource definition has the following properties:
 
-1. A name
-2. A namespace defined by the namespace of its parent file
-3. An identifying field. For example, the Vehicle asset might be identified by
-the vin field. Identifying fields must be Strings.
-4. An optional super-type, which the resource definition extends.
-5. An optional 'abstract' declaration, to indicate that this type cannot be created
-6. A set of named fields (data owned by the resource, using a has-a relationship)
-7. A set of relationships to other Composer types that are not owned by the resource
-but that may be referenced from the resource. Relationships are unidirectional.
+1. A namespace defined by the namespace of its parent file. The namespace of a `.cto` file implicitly applies to all resources created in it.
+2. A name, for example `Vehicle`. If the resource is an asset or participant, it is followed by it's identifying field, if the resource is an event or transaction, the identifying field is set automatically. In this example, the asset is named `Vehicle` and the identifying field is `vin`.
+
+        ```
+        /**
+         * A vehicle asset.
+         */
+        asset Vehicle identified by vin {
+          o String vin
+        }
+        ```
+
+3. An identifying field. For example, the Vehicle asset might be identified by the `vin` field. Identifying fields must be Strings. *Note*: Events and transactions do not require an identifying field to be set, the identifying fields `eventId` and `transactionId` will be created automatically.
+4. An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.
+
+        ```
+        /**
+         * A car asset. A car is related to a list of parts
+         */
+        asset Car extends Vehicle {
+          o String model
+          --> Part[] Parts
+        }
+        ```
+
+5. An optional 'abstract' declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset `Vehicle` defined above should never be created, as there should be more specific asset classes defined to extend it.
+
+        ```
+        /**
+        * An abstract Vehicle asset.
+        */
+        abstract asset Vehicle identified by vin {
+          o String vin
+        }
+        ```
+
+6. A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a `Car` asset has a `vin`, and a `model` property, both of which are strings.
+7. A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.
 
     ```
     /**
@@ -93,8 +128,7 @@ but that may be referenced from the resource. Relationships are unidirectional.
     /**
      * An abstract event type
      */
-    event BasicEvent identified by eventId {
-    o String eventId
+    event BasicEvent {
     }
     ```
 
@@ -102,8 +136,7 @@ but that may be referenced from the resource. Relationships are unidirectional.
     /**
      * An abstract transaction type for animal movements
      */
-    abstract transaction AnimalMovement identified by transactionId {
-      o String transactionId
+    abstract transaction AnimalMovement {
         --> Animal animal
     }
     ```
@@ -117,35 +150,33 @@ but that may be referenced from the resource. Relationships are unidirectional.
     }
     ```
 
+### Declarations of enumerated types
 
-
-## {{site.data.conrefs.composer_full}} System Namespace
-
-As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.
-
-Represented as a `.cto` model file, the system namespace is as follows:
+Enumerated types are to define the potential content of properties of other resources. By using enumerated types, the expected content in a field can be restricted and controlled, reducing unexpected data. The following enumerated type declaration contains a list of roles.
 
 ```
-    namespace org.hyperledger.composer.system
-    abstract asset Asset {  }
-    abstract participant Participant {   }
-    abstract transaction Transaction identified by transactionId{
-      o String transactionId
-      o DateTime timestamp
-    }
-    abstract event Event identified by eventId{
-      o String eventId
-      o DateTime timestamp
-    }
+/**
+* An enumerated type
+*/
+enum product {
+o DAIRY
+o BEEF
+o VEGETABLES
+}
 ```
 
-In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.
+When another resource is created, for example, a participant, a property of that resource can be defined to expect one of the enumerated types.
 
->If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.
+```
+participant Farmer identified by farmerId {
+    o String farmerId
+    o product primaryProduct
+```
 
-## Concepts
 
-Concepts are complex types (classes) that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.
+### Concepts
+
+Concepts are abstract classes that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.
 
 For example, below an abstract concept `Address` is defined, and then specialized into a `UnitedStatesAddress`. Note that concepts do not have an `identified by` field as they cannot be directly stored in registries or referenced in relationships.
 
@@ -163,21 +194,20 @@ concept UnitedStatesAddress extends Address {
 ```
 
 
-## Primitive types
+### Primitive types
 
 Composer resources are defined in terms of the following primitive types:
 
-1. String : a UTF8 encoded String
-2. Double : a double precision 64 bit numeric value
-3. Integer : a 32 bit signed whole number
-4. Long : a 64 bit signed whole number
-5. DateTime : an ISO-8601 compatible time instance, with optional time zone
-and UTZ offset
-6. Boolean : a Boolean value, either true or false.
+1. String: a UTF8 encoded String.
+2. Double: a double precision 64 bit numeric value.
+3. Integer: a 32 bit signed whole number.
+4. Long: a 64 bit signed whole number.
+5. DateTime: an ISO-8601 compatible time instance, with optional time zone and UTZ offset.
+6. Boolean: a Boolean value, either true or false.
 
-## Arrays
+### Arrays
 
-All types in Composer may be declared as arrays using the [] notation. Hence
+All types in Composer may be declared as arrays using the [] notation.
 
     Integer[] integerArray
 
@@ -188,7 +218,7 @@ Is an array of Integers stored in a field called 'integerArray'. While
 Is an array of relationships to the Animal type, stored in a field called
 'incoming'.
 
-## Relationships
+### Relationships
 
 A relationship in the Composer language is a tuple composed of:
 
@@ -208,7 +238,7 @@ Relationships must be *resolved* to retrieve an instance of the object being
 referenced. The act of resolution may result in null, if the object no longer
 exists or the information in the relationship is invalid.
 
-## Field Validators
+### Field Validators
 
 String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.
 
@@ -249,4 +279,13 @@ asset Vehicle extends Base {
   --> Participant[] previousOwners optional // Nary relationship
   o Customer customer
 }
+```
+
+## Imports
+
+Use the `import` keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the `.*` notation to import all the types from another namespace.
+
+```
+import org.example.MyAsset
+import org.example2.*
 ```
