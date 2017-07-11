@@ -95,7 +95,22 @@ describe('ModelManager', () => {
             modelManager.modelFiles['org.doge'].should.equal(mf1);
             res.should.equal(mf1);
         });
-
+        it('should return error for duplicate namespaces for a string', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(modelBase);
+            }).should.throw(/namespace already exists/);
+        });
+        it('should return error for duplicate namespaces from an object', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/namespace already exists/);
+        });
     });
 
     describe('#addModelFiles', () => {
@@ -127,7 +142,8 @@ describe('ModelManager', () => {
         it('should add to existing model files from strings', () => {
             modelManager.addModelFile(modelBase);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.addModelFiles([modelBase, concertoModel, farm2fork]);
+            modelManager.updateModelFile(modelBase);
+            modelManager.addModelFiles([concertoModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
         });
@@ -180,6 +196,22 @@ describe('ModelManager', () => {
             should.equal(modelManager.modelFiles['org.fry'], undefined);
         });
 
+        it('should return an error for duplicate namespace from strings', () => {
+            (() => {
+                modelManager.addModelFiles([concertoModel, modelBase, farm2fork, modelBase]);
+            }).should.throw(/namespace already exists/);
+        });
+
+        it('should return an error for duplicate namespace from objects', () => {
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.doge');
+            let mf2 = sinon.createStubInstance(ModelFile);
+            mf2.getNamespace.returns('org.doge.base');
+            modelManager.addModelFiles([mf1,mf2]);
+            (() => {
+                modelManager.addModelFiles([mf1]);
+            }).should.throw(/namespace already exists/);
+        });
     });
 
     describe('#updateModelFile', () => {

@@ -50,7 +50,7 @@ describe('ClassDeclaration', () => {
             const modelFile = new ModelFile(modelManager, modelDefinitions);
             modelFiles.push(modelFile);
         }
-        modelManager.addModelFiles(modelFiles, modelFileNames);
+        //modelManager.addModelFiles(modelFiles, modelFileNames);
         return modelFiles;
     };
 

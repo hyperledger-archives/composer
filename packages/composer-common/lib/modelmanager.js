@@ -97,12 +97,20 @@ class ModelManager {
     addModelFile(modelFile, fileName) {
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
-            m.validate();
-            this.modelFiles[m.getNamespace()] = m;
+            if (!this.modelFiles[m.getNamespace()]) {
+                m.validate();
+                this.modelFiles[m.getNamespace()] = m;
+            } else {
+                throw new Error('namespace already exists');
+            }
             return m;
         } else {
-            modelFile.validate();
-            this.modelFiles[modelFile.getNamespace()] = modelFile;
+            if (!this.modelFiles[modelFile.getNamespace()]) {
+                modelFile.validate();
+                this.modelFiles[modelFile.getNamespace()] = modelFile;
+            } else {
+                throw new Error('namespace already exists');
+            }
             return modelFile;
         }
     }
@@ -173,11 +181,21 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
-                    this.modelFiles[m.getNamespace()] = m;
-                    newModelFiles.push(m);
+                    if (!this.modelFiles[m.getNamespace()]) {
+                        this.modelFiles[m.getNamespace()] = m;
+                        newModelFiles.push(m);
+                    }
+                    else {
+                        throw new Error('namespace already exists');
+                    }
                 } else {
-                    this.modelFiles[modelFile.getNamespace()] = modelFile;
-                    newModelFiles.push(modelFile);
+                    if (!this.modelFiles[modelFile.getNamespace()]) {
+                        this.modelFiles[modelFile.getNamespace()] = modelFile;
+                        newModelFiles.push(modelFile);
+                    }
+                    else {
+                        throw new Error('namespace already exists');
+                    }
                 }
             }
 
