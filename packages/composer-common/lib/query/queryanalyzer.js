@@ -71,6 +71,8 @@ class QueryAnalyzer {
             result = this.visitIdentifier(thing, parameters);
         } else if (thing.type === 'Literal') {
             result = this.visitLiteral(thing, parameters);
+        } else if (thing.type === 'MemberExpression') {
+            result = this.visitMemberExpression(thing, parameters);
         } else {
             throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
         }
@@ -325,6 +327,29 @@ class QueryAnalyzer {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
         const result = [];
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Visitor design pattern; handle a member expression.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitMemberExpression(ast, parameters) {
+        const method = 'visitMemberExpression';
+        LOG.entry(method, ast, parameters);
+        const result = [];
+
+        const property = this.visit(ast.property, parameters);
+        result.concat(property);
+
+        const object = this.visit(ast.object, parameters);
+
+        result.concat(object);
+        // const selector = `${object}.${property}`;
         LOG.exit(method, result);
         return result;
     }
