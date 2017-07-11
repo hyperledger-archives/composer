@@ -150,30 +150,12 @@ class RegistryManager extends EventEmitter {
                     return registry.type === type;
                 });
                 return registries.reduce((prev, registry) => {
-                    let collectionID = registry.type + ':' + registry.id;
-
-                    let regType = TYPE_MAP[registry.type];
-                    let r = {
-                        '$class': regType,
-                        'registryID': registry.id,
-                        'type': type, 'id': registry.id
-                    };
-
-                    let resource = this.serializer.fromJSON(r);
-
-                    return this.accessController.check(resource, 'READ').then(() => {
-
-                        return prev;
-                    })
-
-
+                    this.get(registry.type, registry.registryID)
                         .then((result) => {
-                            return this.dataService.getCollection(collectionID)
-                                .then((dataCollection) => {
-                                    result.push(this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name));
-                                    return result;
-                                });
+                            prev.push(result);
+                            return prev;
                         });
+
                 }, Promise.resolve([]));
             });
     }
@@ -187,25 +169,42 @@ class RegistryManager extends EventEmitter {
      */
     get(type, id) {
         let collectionID = type + ':' + id;
+        let resource;
 
-        let regType = TYPE_MAP[type];
-        let r = {
-            '$class': regType,
-            'registryID': id,
-            'type': type, 'id': id
-        };
-
-        let resource = this.serializer.fromJSON(r);
-
-        return this.accessController.check(resource, 'READ').then(() => {
-            return this.sysregistries.get(collectionID);
-        })
-            .then((registry) => {
-                return this.dataService.getCollection(collectionID)
-                    .then((dataCollection) => {
-                        return this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name);
-                    });
+        // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
+        return this.sysregistries.get(collectionID)
+            .then((result) => {
+                // do we have permission to be looking at this??
+                resource = this.serializer.fromJSON(result);
+                return this.accessController.check(resource, 'READ');
+            })
+            .then(() => {
+                // if we got here then, we the accessController.check was OK, get the dataCollection with the actual information
+                // for the require registry
+                return this.dataService.getCollection(collectionID);
+            }).then((dataCollection) => {
+                // and form up the actual registry object
+                // TODO: Does this really need to take the the 3 parametrs type,registryID and name??
+                return this.createRegistry(dataCollection, this.serializer, this.accessController, resource.type, resource.registryID, resource.name);
             });
+
+        // let regType = TYPE_MAP[type];
+        // let r = {
+        //     '$class': regType,
+        //     'registryID': id,
+        //     'type': type
+        // };
+        // // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
+        // let resource = this.serializer.fromJSON(r);
+        // return this.accessController.check(resource, 'READ').then(() => {
+        //     return this.sysregistries.get(collectionID);
+        // })
+        //     .then((registry) => {
+        //         return this.dataService.getCollection(collectionID)
+        //             .then((dataCollection) => {
+        //                 return this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.registryID, registry.name);
+        //             });
+        //     });
     }
 
     /**
@@ -217,23 +216,34 @@ class RegistryManager extends EventEmitter {
      */
     exists(type, id) {
         let collectionID = type + ':' + id;
+        let resource;
 
+        // firstly form up a 'fake' object to test IF one did exist, would you in theory
+        // be able to see it?
         let regType = TYPE_MAP[type];
         let r = {
             '$class': regType,
             'registryID': id,
-            'type': type, 'id': id
+            'type': type
         };
 
-        let resource = this.serializer.fromJSON(r);
-
-        return this.accessController.check(resource, 'READ')
+        let litmusResource = this.serializer.fromJSON(r);
+        return this.accessController.check(litmusResource, 'READ')
             .then(() => {
-                return this.sysregistries.exists(collectionID);
+                // yes we can see this type of registry - in theory
+                return this.sysregistries.get(collectionID);
             })
-            .then((exists) => {
-                return exists;
+            .then((result) => {
+                // do we REALLY have permission to be looking at this??
+                resource = this.serializer.fromJSON(result);
+                return this.accessController.check(resource, 'READ');
+            }).then(() => {
+                // well we got here! so the resource is there and we can really really access it
+                return true;
+
             });
+
+
     }
 
     /**
@@ -259,26 +269,36 @@ class RegistryManager extends EventEmitter {
     add(type, id, name, force) {
         let collectionID = type + ':' + id;
 
-        // TODO: map the regsitry to the correct type here
+        // This map should be sufficient I hope!
         let regType = TYPE_MAP[type];
         let r = {
             '$class': regType,
             'registryID': id,
-            'type': type, 'id': id, 'name': name
+            'type': type,
+            'name': name
         };
 
         LOG.debug('add', 'Creating new registry ', r.type, r.name, r.id);
-        let resource = this.serializer.fromJSON(r);
 
+        // form this up into a resource and check if we are able to create this.
+        let resource = this.serializer.fromJSON(r);
         return this.accessController.check(resource, 'CREATE')
             .then(() => {
-                this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force);
+                // yes we can create an instance of this type; now add that to the sysregistries collection
+                // Note we haven't checked if we have update permission on the sysregristries collection
+                // but that is going a bit far really... 
+                this.sysregistries.add(collectionID, r, force);
             })
             .then(() => {
+                // create the collection that will hold the actual data in this registry
                 return this.dataService.createCollection(collectionID, force);
             })
             .then((dataCollection) => {
+                // and create the registry instance to be used
                 let result = this.createRegistry(dataCollection, this.serializer, this.accessController, type, id, name);
+
+                // event emitting
+                // TODO: not checked event emission privaledge.
                 this.emit('registryadded', {
                     registry: result,
                     registryType: type,
