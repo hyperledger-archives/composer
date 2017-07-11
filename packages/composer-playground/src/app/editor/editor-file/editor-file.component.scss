@@ -1,4 +1,4 @@
-@import '../../../assets/styles/base/colors';
+  @import '../../../assets/styles/base/colors';
 @import '../../../assets/styles/base/variables';
 
 editor-file {
@@ -25,13 +25,13 @@ editor-file {
     }
   }
 
-  .readme {
-    background-color: $white;
-    padding: $space-large;
-    min-height: 63vh;
-    max-height: 63vh;
-    overflow-y: scroll;
-  }
+  // .readme {
+  //   background-color: $white;
+  //   padding: $space-large;
+  //   min-height: 63vh;
+  //   max-height: 63vh;
+  //   overflow-y: scroll;
+  // }
 }
 
 .CodeMirror {
