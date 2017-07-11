@@ -56,7 +56,7 @@ The metadata (name, version, description) for the business network definition is
 
 Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
 
-Copy the whole extract below - replacing the equivalent section (beginning "name") in package.json (up to and including "test"):
+Copy the snippet below and replace the existing section in package.json (beginning with "name", ending with the delimiter below "test"):
 
 ```json
 
