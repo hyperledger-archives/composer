@@ -144,19 +144,29 @@ class RegistryManager extends EventEmitter {
      * objects when complete, or rejected with an error.
      */
     getAll(type) {
+        const METHOD = 'getAll';
+        LOG.entry(METHOD, type);
         return this.sysregistries.getAll()
             .then((registries) => {
                 registries = registries.filter((registry) => {
                     return registry.type === type;
                 });
+                LOG.debug(METHOD, 'Filtered registries down to', registries.length);
                 return registries.reduce((prev, registry) => {
-                    this.get(registry.type, registry.registryID)
-                        .then((result) => {
-                            prev.push(result);
-                            return prev;
-                        });
+                    return prev.then( (result) => {
+                        this.get(registry.type, registry.registryID)
+                            .then((r) => {
+                                LOG.debug(METHOD, 'reducing', r.name);
+                                result.push(r);
+                                return result;
+                            });
 
+                    });
                 }, Promise.resolve([]));
+            }).catch( (error) => {
+                console.log('>>>>>>>>');
+                console.log(error);
+                throw error;
             });
     }
 
