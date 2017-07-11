@@ -47,11 +47,11 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:x86_64-1.0.0-rc1
-        docker pull hyperledger/fabric-ca:x86_64-1.0.0-rc1
-        docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-rc1
-        docker pull hyperledger/fabric-orderer:x86_64-1.0.0-rc1
-        docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-rc1
+        docker pull hyperledger/fabric-peer:x86_64-1.0.0
+        docker pull hyperledger/fabric-ca:x86_64-1.0.0
+        docker pull hyperledger/fabric-ccenv:x86_64-1.0.0
+        docker pull hyperledger/fabric-orderer:x86_64-1.0.0
+        docker pull hyperledger/fabric-couchdb:x86_64-1.0.0
         if [ ! -d ./hlfv1/crypto-config ]; then
             cd hlfv1
             tar -xvf crypto-config.tar.gz
