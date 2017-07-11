@@ -39,6 +39,44 @@ const SYSTEM_MODEL_CONTENTS = `
       o String eventId
       o DateTime timestamp
     }
+
+    enum IdentityState {
+        o ISSUED
+        o BOUND
+        o ACTIVATED
+        o REVOKED
+    }
+
+    asset Identity identified by identifier extends Asset {
+        o String identifier
+        o String name
+        o String issuer
+        o String certificate
+        o IdentityState state
+        --> Participant participant
+    }
+
+    abstract transaction IdentityTransaction extends Transaction {
+
+    }
+
+    transaction IssueIdentity extends IdentityTransaction {
+        o String name
+        --> Participant participant
+    }
+
+    transaction BindIdentity extends IdentityTransaction {
+        o String identifier
+        --> Participant participant
+    }
+
+    transaction ActivateIdentity extends IdentityTransaction {
+
+    }
+
+    transaction RevokeIdentity extends IdentityTransaction {
+        o String identifier
+    }
 `;
 
 /**

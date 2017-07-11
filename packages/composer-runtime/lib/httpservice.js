@@ -53,7 +53,7 @@ class HTTPService extends Service {
                 else {
                     response = responseThing;
                 }
-                LOG.info('Reponse from URL ' + url, JSON.stringify(response));
+                LOG.info(method, 'Reponse from URL ' + url, JSON.stringify(response));
 
                 if(response.statusCode >= 200 && response.statusCode < 300) {
                     if(response.body && typeof response.body === 'string') {
@@ -61,13 +61,13 @@ class HTTPService extends Service {
                             response.body = JSON.parse(response.body);
                         }
                         catch(err) {
-                            LOG.warn('Body data could not be converted to JS object', response.body);
+                            LOG.warn(method, 'Body data could not be converted to JS object', response.body);
                         }
                     }
                     return Promise.resolve(response);
                 }
                 else {
-                    LOG.error('Error statusCode ', response.statusCode);
+                    LOG.error(method, 'Error statusCode ', response.statusCode);
                     return Promise.reject(JSON.stringify(response));
                 }
             })
