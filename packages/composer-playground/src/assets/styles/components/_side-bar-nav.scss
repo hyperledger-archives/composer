@@ -38,6 +38,6 @@
   .main-view {
     background-color: $fourth-highlight;
     width: 100%;
-    padding: $space-large;
+    padding: $space-large $space-large 0 $space-large;
   }
 }
