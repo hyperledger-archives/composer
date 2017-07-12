@@ -4,7 +4,7 @@ abstract asset Asset {  }
 
 abstract participant Participant {   }
 
-abstract transaction Transaction identified by transactionId{
+abstract transaction Transaction {
   o String transactionId
   o DateTime timestamp
 }

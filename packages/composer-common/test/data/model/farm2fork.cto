@@ -57,7 +57,7 @@ abstract transaction AnimalTransaction  {
     
 }
 
-transaction Foo extends Meat {
+transaction Foo {
   
 }
 
