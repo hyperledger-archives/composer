@@ -22,11 +22,41 @@ describe('IdentityService', () => {
 
     let identityService = new IdentityService();
 
-    describe('#getCurrentUserID', () => {
+    describe('#getIdentifier', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                identityService.getCurrentUserID();
+                identityService.getIdentifier();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getName', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                identityService.getName();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getIssuer', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                identityService.getIssuer();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getCertificate', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                identityService.getCertificate();
             }).should.throw(/abstract function called/);
         });
 
