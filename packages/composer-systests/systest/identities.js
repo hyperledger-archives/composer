@@ -127,7 +127,7 @@ describe('Identity system tests', () => {
                 client = result;
                 return client.ping();
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
     it('should issue an identity and make the participant available for transaction processor functions', () => {
@@ -180,7 +180,7 @@ describe('Identity system tests', () => {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
 });

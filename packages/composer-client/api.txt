@@ -24,6 +24,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise query(Object) 
    + Promise ping() 
    + Promise issueIdentity(string,object,boolean) 
+   + Promise bindIdentity(string) 
    + Promise revokeIdentity(string) 
 }
 class ParticipantRegistry extends Registry {

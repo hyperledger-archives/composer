@@ -322,7 +322,7 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
-                return this.connection.ping(this.securityContext);
+                return this.ping();
             })
             .then(() => {
                 return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
@@ -525,16 +525,64 @@ class BusinessNetworkConnection extends EventEmitter {
      * been tested. The promise will be rejected if the version is incompatible.
      */
     ping() {
-        Util.securityCheck(this.securityContext);
-        return this.connection.ping(this.securityContext);
+        const method = 'ping';
+        LOG.entry(method);
+        return this.pingInner()
+            .catch((error) => {
+                if (error.message.match(/ACTIVATION_REQUIRED/)) {
+                    LOG.debug(method, 'Activation required, activating ...');
+                    return this.activate()
+                        .then(() => {
+                            return this.pingInner();
+                        });
+                }
+                throw error;
+            })
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
     }
 
     /**
-     * Issue an identity with the specified user ID and map it to the specified
+     * Test the connection to the runtime and verify that the version of the
+     * runtime is compatible with this level of the client node.js module.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    pingInner() {
+        const method = 'pingInner';
+        LOG.entry(method);
+        Util.securityCheck(this.securityContext);
+        return this.connection.ping(this.securityContext)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Activate the current identity on the currently connected business network.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    activate() {
+        const method = 'activate';
+        LOG.entry(method);
+        return Util.invokeChainCode(this.securityContext, 'activateIdentity', [])
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Issue an identity with the specified name and map it to the specified
      * participant.
      * @param {Resource|string} participant The participant, or the fully qualified
      * identifier of the participant. The participant must already exist.
-     * @param {string} userID The user ID for the identity.
+     * @param {string} identityName The name for the new identity.
      * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should have
      * permissions to create additional new identities. False by default.
@@ -543,13 +591,13 @@ class BusinessNetworkConnection extends EventEmitter {
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    issueIdentity(participant, userID, options) {
+    issueIdentity(participant, identityName, options) {
         const method = 'issueIdentity';
-        LOG.entry(method, participant, userID);
+        LOG.entry(method, participant, identityName);
         if (!participant) {
             throw new Error('participant not specified');
-        } else if (!userID) {
-            throw new Error('userID not specified');
+        } else if (!identityName) {
+            throw new Error('identityName not specified');
         }
         let participantFQI;
         let participantId;
@@ -571,13 +619,13 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((exists) => {
                 if (exists) {
-                    return this.connection.createIdentity(this.securityContext, userID, options);
+                    return this.connection.createIdentity(this.securityContext, identityName, options);
                 } else {
                     throw new Error(`Participant '${participantFQI}' does not exist `);
                 }
             })
             .then((identity) => {
-                return Util.invokeChainCode(this.securityContext, 'addParticipantIdentity', [participantFQI, userID])
+                return Util.invokeChainCode(this.securityContext, 'issueIdentity', [participantFQI, identityName])
                     .then(() => {
                         LOG.exit(method, identity);
                         return identity;
@@ -586,23 +634,54 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
+     * Bind an existing identity to the specified participant.
+     * @param {Resource|string} participant The participant, or the fully qualified
+     * identifier of the participant. The participant must already exist.
+     * @param {string} certificate The certificate for the existing identity.
+     * @return {Promise} A promise that will be fulfilled when the identity has
+     * been added to the specified participant. The promise will be rejected if
+     * the participant does not exist, or if the identity is already mapped to
+     * another participant.
+     */
+    bindIdentity(participant, certificate) {
+        const method = 'bindIdentity';
+        LOG.entry(method, participant, certificate);
+        if (!participant) {
+            throw new Error('participant not specified');
+        } else if (!certificate) {
+            throw new Error('certificate not specified');
+        }
+        let participantFQI;
+        if (participant instanceof Resource) {
+            participantFQI = participant.getFullyQualifiedIdentifier();
+        } else {
+            participantFQI = participant;
+        }
+        Util.securityCheck(this.securityContext);
+        return Util.invokeChainCode(this.securityContext, 'bindIdentity', [participantFQI, certificate])
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
      * Revoke the specified identity by removing any existing mapping to a participant.
-     * @param {string} identity The identity, for example the enrollment ID.
+     * @param {string} identityId The identity, for example the enrollment ID.
      * @return {Promise} A promise that will be fulfilled when the identity has
      * been removed from the specified participant. The promise will be rejected if
      * the participant does not exist, or if the identity is not mapped to the
      * participant.
      */
-    revokeIdentity(identity) {
+    revokeIdentity(identityId) {
         const method = 'revokeIdentity';
-        LOG.entry(method, identity);
-        if (!identity) {
-            throw new Error('identity not specified');
+        LOG.entry(method, identityId);
+        if (!identityId) {
+            throw new Error('identityId not specified');
         }
         Util.securityCheck(this.securityContext);
         // It is not currently possible to revoke the certificate, so we just call
         // the runtime to remove the mapping.
-        return Util.invokeChainCode(this.securityContext, 'removeIdentity', [identity])
+        return Util.invokeChainCode(this.securityContext, 'revokeIdentity', [identityId])
           .then(() => {
               LOG.exit(method);
           });

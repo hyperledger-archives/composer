@@ -50,37 +50,73 @@ describe('EngineIdentities', () => {
         engine = new Engine(mockContainer);
     });
 
-    describe('#addParticipantIdentity', () => {
+    describe('#issueIdentity', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'addParticipantIdentity', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "addParticipantIdentity", expecting "\["participantId","userId"]"/);
+            let result = engine.invoke(mockContext, 'issueIdentity', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "issueIdentity", expecting "\["participantFQI","identityName"]"/);
         });
 
-        it('should add the identity mapping', () => {
-            mockIdentityManager.addIdentityMapping.withArgs('org.doge.Doge#DOGE_1', 'dogeid1').resolves();
-            return engine.invoke(mockContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1'])
+        it('should issue the identity', () => {
+            mockIdentityManager.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1').resolves();
+            return engine.invoke(mockContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1'])
                 .then(() => {
-                    sinon.assert.calledOnce(mockIdentityManager.addIdentityMapping);
-                    sinon.assert.calledWith(mockIdentityManager.addIdentityMapping, 'org.doge.Doge#DOGE_1', 'dogeid1');
+                    sinon.assert.calledOnce(mockIdentityManager.issueIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1');
                 });
         });
 
     });
 
-    describe('#removeIdentity', () => {
+    describe('#bindIdentity', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'removeIdentity', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "removeIdentity", expecting "\["userId"]"/);
+            let result = engine.invoke(mockContext, 'bindIdentity', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "bindIdentity", expecting "\["participantFQI","certificate"]"/);
         });
 
-        it('should remove the identity mapping', () => {
-            mockIdentityManager.removeIdentityMapping.withArgs('dogeid1').resolves();
-            return engine.invoke(mockContext, 'removeIdentity', ['dogeid1'])
+        it('should bind the identity', () => {
+            mockIdentityManager.bindIdentity.withArgs('org.doge.Doge#DOGE_1', '===== BEGIN CERTIFICATE =====').resolves();
+            return engine.invoke(mockContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', '===== BEGIN CERTIFICATE ====='])
                 .then(() => {
-                    sinon.assert.calledOnce(mockIdentityManager.removeIdentityMapping);
-                    sinon.assert.calledWith(mockIdentityManager.removeIdentityMapping, 'dogeid1');
+                    sinon.assert.calledOnce(mockIdentityManager.bindIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.bindIdentity);
+                });
+        });
+
+    });
+
+    describe('#activateIdentity', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.invoke(mockContext, 'activateIdentity', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "activateIdentity", expecting "\[]"/);
+        });
+
+        it('should activate the identity', () => {
+            mockIdentityManager.activateIdentity.resolves();
+            return engine.invoke(mockContext, 'activateIdentity', [])
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.activateIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.activateIdentity);
+                });
+        });
+
+    });
+
+    describe('#revokeIdentity', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.invoke(mockContext, 'revokeIdentity', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "revokeIdentity", expecting "\["identityId"]"/);
+        });
+
+        it('should revoke the identity', () => {
+            mockIdentityManager.revokeIdentity.withArgs('dogeid1').resolves();
+            return engine.invoke(mockContext, 'revokeIdentity', ['dogeid1'])
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.revokeIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.revokeIdentity, 'dogeid1');
                 });
         });
 
