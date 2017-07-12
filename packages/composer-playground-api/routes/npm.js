@@ -65,6 +65,7 @@ module.exports = (app) => {
 
             LOG.exit(method, data);
             return callback(null, data);
+
         });
     }
 
@@ -168,6 +169,63 @@ module.exports = (app) => {
     }
 
     /**
+     * Sort the samples into the correct order
+     * @param {Array} samples the array of samples
+     * @param {function} callback the function to call when done
+     * @returns {Array} The array of sorted samples
+     */
+    function sortSamples (samples, callback) {
+        const method = 'sortSamples';
+
+        // Define primary networks
+        let primarySampleNames = ['basic-sample-network'];
+        let sorted = [];
+
+        // Append primary networks to the list.
+        for (let i = 0; i < primarySampleNames.length; i++) {
+            let primaryName = primarySampleNames[i];
+            for (let j = 0; j < samples.length; j++) {
+                let network = samples[j];
+                if (primaryName === network.name) {
+                    sorted.push(network);
+                }
+            }
+        }
+
+        // Create an array of networks that are not classed as primary.
+        let nonPrimaryNetworks = [];
+        for (let i = 0; i < samples.length; i++) {
+            let network = samples[i];
+            if (primarySampleNames.indexOf(network.name) === -1) {
+                nonPrimaryNetworks.push(network);
+            }
+        }
+
+        // Sort non primary networks alphabetically.
+        let sortedNonPrimarySamples = nonPrimaryNetworks.sort((a, b) => {
+            let businessNetworkA = a.name.toLowerCase();
+            let businessNetworkB = b.name.toLowerCase();
+            if (businessNetworkA < businessNetworkB) {
+                return -1;
+            }
+            if (businessNetworkA > businessNetworkB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        // Append non primary networks to list.
+        for (let i = 0; i < sortedNonPrimarySamples.length; i++) {
+            let network = sortedNonPrimarySamples[i];
+            sorted.push(network);
+        }
+
+        LOG.exit(method, sorted);
+        return callback(null, sorted);
+    }
+
+    /**
      * Check if environment has client id and secret in
      */
     router.get('/api/getSampleList', (req, res, next) => {
@@ -177,6 +235,7 @@ module.exports = (app) => {
             getSampleNames,
             getSampleMetaData,
             downloadMetaData,
+            sortSamples
         ], function (err, result) {
             if (err) {
                 return res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : err});
