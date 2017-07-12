@@ -23,20 +23,17 @@ require('chai').should();
 const sinon = require('sinon');
 
 describe('TransactionDeclaration', () => {
-
-    let mockModelManager;
     let mockSystemTransaction;
     let mockClassDeclaration;
     let sandbox;
+    let modelManager;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockModelManager =  sinon.createStubInstance(ModelManager);
+        modelManager = new ModelManager();
         mockSystemTransaction = sinon.createStubInstance(TransactionDeclaration);
         mockSystemTransaction.getFullyQualifiedName.returns('org.hyperledger.composer.system.Transaction');
-        mockModelManager.getSystemTypes.returns([mockSystemTransaction]);
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-        mockModelManager.getType.returns(mockClassDeclaration);
         mockClassDeclaration.getProperties.returns([]);
     });
 
@@ -45,15 +42,15 @@ describe('TransactionDeclaration', () => {
     });
 
     describe('#validate', () => {
+
         it('should throw error name is Transaction', () => {
             const model = `
             namespace com.test
 
-            transaction Transaction identified by transactionId {
-                o String transactionId
+            transaction Transaction {
             }`;
 
-            const modelFile = new ModelFile(mockModelManager, model);
+            const modelFile = new ModelFile(modelManager, model);
             const p = modelFile.getTransactionDeclarations()[0];
 
             (() => {
