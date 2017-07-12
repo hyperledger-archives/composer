@@ -384,7 +384,7 @@ describe('ImportComponent', () => {
         const CAR_AUCTION = 'carauction-network';
         const FOO = 'foo';
         const BAR = 'bar';
-        const primaryNetworkNames = [BASIC_SAMPLE, CAR_AUCTION];
+        const primaryNetworkNames = [BASIC_SAMPLE];
 
         it('should return an array only allowing an empty project to be created when an empty array is input', () => {
             let result = component.orderGitHubProjects([]);
@@ -392,23 +392,41 @@ describe('ImportComponent', () => {
             result[0].name.should.equal('Empty Business Network');
         });
 
-        it('should order the list of networks correctly if a list of networks is passed in', () => {
+        it('should order the list of networks correctly (alphabetically) if a list of networks is passed in', () => {
             let INPUT_NETWORKS = [{name: FOO}, {name: BASIC_SAMPLE}, {name: CAR_AUCTION}];
             let result = component.orderGitHubProjects(INPUT_NETWORKS);
             result.length.should.equal(4);
-            result[0].name.should.equal(EMPTY_NETWORK.name);
-            result[1].name.should.equal(BASIC_SAMPLE);
+            result[0].name.should.equal(BASIC_SAMPLE);
+            result[1].name.should.equal(EMPTY_NETWORK.name);
             result[2].name.should.equal(CAR_AUCTION);
             result[3].name.should.equal(FOO);
         });
 
-        it('should order the list of networks correctly if a list of networks is passed in without the primary network names', () => {
+        it('should order the list of networks correctly (alphabetically) if a list of networks is passed in without the primary network names', () => {
             let INPUT_NETWORKS = [{name: FOO}, {name: BAR}];
             let result = component.orderGitHubProjects(INPUT_NETWORKS);
             result.length.should.equal(3);
             result[0].name.should.equal(EMPTY_NETWORK.name);
+            result[1].name.should.equal(BAR);
+            result[2].name.should.equal(FOO);
+        });
+
+        it('should deal with networks with the same name correctly', () => {
+            let INPUT_NETWORKS = [{name: FOO}, {name: FOO}];
+            let result = component.orderGitHubProjects(INPUT_NETWORKS);
+            result.length.should.equal(3);
+            result[0].name.should.equal(EMPTY_NETWORK.name);
             result[1].name.should.equal(FOO);
-            result[2].name.should.equal(BAR);
+            result[2].name.should.equal(FOO);
+        });
+
+        it('should deal with the case where two networks are correctly sorted', () => {
+            let INPUT_NETWORKS = [{name: BAR}, {name: FOO}];
+            let result = component.orderGitHubProjects(INPUT_NETWORKS);
+            result.length.should.equal(3);
+            result[0].name.should.equal(EMPTY_NETWORK.name);
+            result[1].name.should.equal(BAR);
+            result[2].name.should.equal(FOO);
         });
     });
 
