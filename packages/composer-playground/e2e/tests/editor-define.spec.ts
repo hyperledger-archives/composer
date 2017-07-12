@@ -1,4 +1,4 @@
-import { browser, element, by } from 'protractor';
+import { browser, element, by  } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper.ts';
 import { EditorHelper } from '../utils/editor-helper.ts';
@@ -16,12 +16,14 @@ let should = chai.should();
 
 describe('Editor Define', (() => {
 
-  // Navigate to Editor base page and move past welcome splash
-  beforeAll(() =>  {
-    OperationsHelper.navigatePastWelcome();
-  });
-
   describe('On initialise', (() => {
+
+    // Navigate to Editor base page and move past welcome splash
+    beforeAll(() =>  {
+        browser.get(browser.baseUrl);
+        OperationsHelper.navigatePastWelcome();
+    });
+
     it('should initialise the side navigation with basic sample network', (() => {
         // Check Files (Basic Sample Files) Present and clickable
         // -within <div class="side-bar-nav"><div class="flex-container">
@@ -59,6 +61,11 @@ describe('Editor Define', (() => {
   }));
 
   describe('Import BND button', (() => {
+    // Navigate to Editor base page and move past welcome splash
+    beforeAll(() =>  {
+        browser.get(browser.baseUrl);
+        OperationsHelper.navigatePastWelcome();
+    });
 
     // Press the 'Import' button
     beforeEach(() =>  {
@@ -147,6 +154,12 @@ describe('Editor Define', (() => {
 
   describe('Export BND button', (() => {
 
+    // Navigate to Editor base page and move past welcome splash
+    beforeAll(() =>  {
+        browser.get(browser.baseUrl);
+        OperationsHelper.navigatePastWelcome();
+    });
+
     it('should export BNA named as the package name', (() => {
         let filename;
         EditorHelper.retrieveDeployedPackageName()
@@ -191,11 +204,32 @@ describe('Editor Define', (() => {
 
   describe('Add File button', (() => {
 
-    // Press the 'AddFile' button
+    let startFiles = [  'About\nREADME.md',
+                        'Model File\nmodels/sample.cto',
+                        'Script File\nlib/sample.js',
+                        'Access Control\npermissions.acl'];
+
+    // Navigate to Editor base page and move past welcome splash
+    beforeAll(() =>  {
+        browser.get(browser.baseUrl);
+        OperationsHelper.navigatePastWelcome();
+    });
+
+    // Reset the BNA and then press the 'AddFile' button
     beforeEach(() =>  {
-        EditorHelper.addFile()
+
+        EditorHelper.importBND()
         .then(() => {
-            AddFileModalHelper.waitForAddFileModalToAppear();
+            ImportModalHelper.waitForImportModalToAppear();
+            ImportModalHelper.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+            ReplaceModalHelper.confirmReplace();
+            browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
+            browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 10000);
+
+            EditorHelper.addFile()
+            .then(() => {
+                AddFileModalHelper.waitForAddFileModalToAppear();
+            });
         });
     });
 
@@ -266,310 +300,252 @@ describe('Editor Define', (() => {
     }));
 
     it('should enable the addition of a script file via radio button selection', (() => {
-        let startFiles = EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectScriptRadioOption();
-        })
-        .then(() => {
-            // Add File
-            AddFileModalHelper.confirmAdd();
-        })
-        .then(() => {
-            browser.waitForAngularEnabled(false);
-            // Check extracted against new template file that we should have in the list
-            EditorHelper.retrieveNavigatorFileNames()
-            .then((list: any) => {
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
-                // We should have added one file
-                list.length.should.be.equal(startFiles.length + 1);
-                list.includes('Script File\nlib/script.js').should.be.true;
-                browser.waitForAngularEnabled(true);
+        AddFileModalHelper.selectScriptRadioOption();
+        AddFileModalHelper.confirmAdd();
+        browser.waitForAngularEnabled(false);
+        // Check extracted against new template file that we should have in the list
+        EditorHelper.retrieveNavigatorFileNames()
+        .then((list: any) => {
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.includes(element).should.be.true;
             });
-            // -deploy enabled
+            // We should have added one file
+            list.length.should.be.equal(startFiles.length + 1);
+            list.includes('Script File\nlib/script.js').should.be.true;
+            browser.waitForAngularEnabled(true);
+        });
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list.includes('Script File\nlib/script.js').should.be.true;
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('Script File\nlib/script.js').should.be.true;
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
 
     it('should enable the addition of a script file via file input event', (() => {
-        let startFiles;
+        AddFileModalHelper.selectFromFile('./e2e/data/files/importScript.js');
+        browser.waitForAngularEnabled(false);
+        // Check extracted against new file that we should have in the list
         EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectFromFile('./e2e/data/files/importScript.js');
-        })
-        .then(() => {
-            browser.waitForAngularEnabled(false);
-            // Check extracted against new file that we should have in the list
-            EditorHelper.retrieveNavigatorFileNames()
-            .then( (list: any) => {
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
-                // We should have added one file
-                list.length.should.be.equal(startFiles.length + 1);
-                list.includes('Script File\nlib/importScript.js').should.be.true;
-                browser.waitForAngularEnabled(true);
+        .then( (list: any) => {
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.includes(element).should.be.true;
             });
-            // -deploy enabled
+            // We should have added one file
+            list.length.should.be.equal(startFiles.length + 1);
+            list.includes('Script File\nlib/importScript.js').should.be.true;
+            browser.waitForAngularEnabled(true);
+        });
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list.includes('Script File\nlib/importScript.js').should.be.true;
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('Script File\nlib/importScript.js').should.be.true;
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
 
     it('should enable the addition of a model file via radio button selection', (() => {
-        let startFiles;
+        AddFileModalHelper.selectModelRadioOption();
+        AddFileModalHelper.confirmAdd();
+        browser.waitForAngularEnabled(false);
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list[0].should.be.equal('Model File\nmodels/org.acme.model.cto');
+            browser.waitForAngularEnabled(true);
+        });
+        // Check extracted against new template file that we should have in the list
         EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectModelRadioOption();
-        })
-        .then(() => {
-            // Add option becomes enabled
-            AddFileModalHelper.confirmAdd();
-        })
-        .then(() => {
-            browser.waitForAngularEnabled(false);
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('Model File\nmodels/org.acme.model.cto').should.be.true;
-                browser.waitForAngularEnabled(true);
+        .then( (list: any) => {
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.includes(element).should.be.true;
             });
-            // Check extracted against new template file that we should have in the list
-            EditorHelper.retrieveNavigatorFileNames()
-            .then( (list: any) => {
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
-                // We should have added one file
-                list.length.should.be.equal(startFiles.length + 1);
-                list.includes('Model File\nmodels/org.acme.model.cto').should.be.true;
-            });
-            // -deploy enabled
+            // We should have added one file
+            list.length.should.be.equal(startFiles.length + 1);
+            list.includes('Model File\nmodels/org.acme.model.cto').should.be.true;
+        });
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
 
     it('should enable the addition of a model file via file input event', (() => {
-        let startFiles;
+
+        AddFileModalHelper.selectFromFile('./e2e/data/files/importModel.cto');
+
+        browser.waitForAngularEnabled(false);
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list.includes('Model File\nmodels/importModel.cto').should.be.true;
+            browser.waitForAngularEnabled(true);
+        });
+        // Check extracted against new file that we should have in the list
         EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectFromFile('./e2e/data/files/importModel.cto');
-        })
-        .then(() => {
-            browser.waitForAngularEnabled(false);
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('Model File\nmodels/importModel.cto').should.be.true;
-                browser.waitForAngularEnabled(true);
+        .then( (list: any) => {
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.includes(element).should.be.true;
             });
-            // Check extracted against new file that we should have in the list
-            EditorHelper.retrieveNavigatorFileNames()
-            .then( (list: any) => {
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
-                // We should have added one file
-                list.length.should.be.equal(startFiles.length + 1);
-                list.includes('Model File\nmodels/importModel.cto').should.be.true;
-            });
-            // -deploy enabled
+            // We should have added one file
+            list.length.should.be.equal(startFiles.length + 1);
+            list.includes('Model File\nmodels/importModel.cto').should.be.true;
+        });
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
 
     it('should enable the addition of an ACL file via file input event', (() => {
-        let startFiles;
-        EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectFromFile('./e2e/data/files/importACL.acl');
-        })
-        .then(() => {
-            // Replace confirm modal should show
-            ReplaceModalHelper.confirmReplace();
-        })
-        .then(() => {
-            browser.waitForAngularEnabled(false);
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('Access Control\npermissions.acl').should.be.true;
-            });
-            // Check code mirror for new contents (we only have one permissions file)
-            EditorFileHelper.retrieveEditorCodeMirrorText()
-            .then((text) => {
-                text.should.contain('description: "Newly imported ACL file"');
-            });
+
+        AddFileModalHelper.selectFromFile('./e2e/data/files/importACL.acl');
+        ReplaceModalHelper.confirmReplace();
+
+        browser.waitForAngularEnabled(false);
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list.should.contain('Access Control\npermissions.acl');
             browser.waitForAngularEnabled(true);
-            // Check file list unchanged
-            EditorHelper.retrieveNavigatorFileNames()
-            .then( (list: any) => {
-                // No new file (names)
-                list.length.should.be.equal(startFiles.length);
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
+        });
+        // Check code mirror for new contents (we only have one permissions file)
+        EditorFileHelper.retrieveEditorCodeMirrorText()
+        .then((text) => {
+            text.should.contain('description: "Newly imported ACL file"');
+        });
+
+        // Check file list unchanged
+        EditorHelper.retrieveNavigatorFileNames()
+        .then( (list: any) => {
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.should.contain(element);
             });
-            // -deploy enabled
+        });
+
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
 
     it('should enable the addition of a Readme file via file input event', (() => {
-        let startFiles;
+
+        AddFileModalHelper.selectFromFile('./e2e/data/files/importReadMe.md');
+
+        // Replace confirm modal should show
+        ReplaceModalHelper.confirmReplace();
+        // Check for new contents (we only have one readme file)
+        // -active file
+        EditorHelper.retrieveNavigatorActiveFile()
+        .then((list: any) => {
+            list.length.should.equal(1);
+            list.includes('About\nREADME.md').should.be.true;
+        });
+        EditorFileHelper.retrieveEditorText()
+        .then((text) => {
+            text.should.contain('This is the NEW readme.');
+        });
+        // Check file list unchanged
         EditorHelper.retrieveNavigatorFileNames()
-        .then((names) => {
-            startFiles = names;
-        })
-        .then(() => {
-            AddFileModalHelper.selectFromFile('./e2e/data/files/importReadMe.md');
-        })
-        .then(() => {
-            // Replace confirm modal should show
-            ReplaceModalHelper.confirmReplace();
-        })
-        .then(() => {
-            // Check for new contents (we only have one readme file)
-            // -active file
-            EditorHelper.retrieveNavigatorActiveFile()
-            .then((list: any) => {
-                list.length.should.equal(1);
-                list.includes('About\nREADME.md').should.be.true;
+        .then( (list: any) => {
+            // No new file (names)
+            list.length.should.be.equal(startFiles.length);
+            // Previous files should still exist
+            startFiles.forEach((element) => {
+                list.includes(element).should.be.true;
             });
-            EditorFileHelper.retrieveEditorText()
-            .then((text) => {
-                text.should.contain('This is the NEW readme.');
-            });
-            // Check file list unchanged
-            EditorHelper.retrieveNavigatorFileNames()
-            .then( (list: any) => {
-                // No new file (names)
-                list.length.should.be.equal(startFiles.length);
-                // Previous files should still exist
-                startFiles.forEach((element) => {
-                    list.includes(element).should.be.true;
-                });
-            });
-            // -deploy enabled
+        });
+        // -deploy enabled
+        EditorHelper.retrieveNavigatorFileActionButtons()
+        .then((array: any) => {
+            array[1].enabled.should.be.equal(true);
+        });
+        // deploy new item
+        EditorHelper.deployBND()
+        .then(() => {
+            // -success message
+            browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
+            // -deploy disabled
             EditorHelper.retrieveNavigatorFileActionButtons()
             .then((array: any) => {
-                array[1].enabled.should.be.equal(true);
-            });
-            // deploy new item
-            EditorHelper.deployBND()
-            .then(() => {
-                // -success message
-                browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 10000);
-                // -deploy disabled
-                EditorHelper.retrieveNavigatorFileActionButtons()
-                .then((array: any) => {
-                    array[1].enabled.should.be.equal(false);
-                });
+                array[1].enabled.should.be.equal(false);
             });
         });
     }));
@@ -593,7 +569,6 @@ describe('Editor Define', (() => {
             });
         })
         .then(() => {
-            let startFiles;
             EditorHelper.retrieveNavigatorFileNames()
             .then((names) => {
                 startFiles = names;

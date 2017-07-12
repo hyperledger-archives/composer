@@ -1,7 +1,6 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 
-
 let scrollMe = (target) => {
     target.scrollIntoView(true);
 };
@@ -34,7 +33,7 @@ export class EditorHelper {
   static retrieveNavigatorFileNames() {
       // Due to scroll bar, need to scroll element into view in order to inspect text
       return element(by.css('.side-bar-nav')).all(by.css('.flex-container')).map((elm) => { browser.executeScript(scrollMe, elm);
-                                                                                            browser.wait(ExpectedConditions.visibilityOf(elm), 5000);
+                                                                                            browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
                                                                                             return elm.getText(); });
   }
 
@@ -61,8 +60,12 @@ export class EditorHelper {
   // Retrieve current 'active' file from navigator
   static retrieveNavigatorActiveFile() {
     return element(by.css('.files')).all(by.css('.active')).map((elm) => { browser.executeScript(scrollMe, elm);
-                                                                           browser.wait(ExpectedConditions.visibilityOf(elm), 5000);
+                                                                           browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
                                                                            return elm.getText(); });
   }
 
+  // Retrieve Editor Side Navigation File Elements
+  static clickNavigatorFileItem(name: string) {
+      return element(by.css('.side-bar-nav')).all(by.css('.flex-container')).filter((element) => { return element.getText().then((text) => { return text.indexOf(name) !== -1; }); }).click();
+  }
 }

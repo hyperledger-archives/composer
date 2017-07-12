@@ -167,6 +167,17 @@ class ClassDeclaration {
             if(classDecl===null) {
                 throw new IllegalModelException('Could not find super type ' + this.superType, this.modelFile, this.ast.location);
             }
+
+            // Prevent extending declaration with different type of declaration
+            const supertypeDeclaration = this.getModelFile().getType(this.superType);
+            if (supertypeDeclaration) {
+                if (this.constructor.name !== supertypeDeclaration.constructor.name) {
+                    let typeName = this.getSystemType();
+                    let superTypeName = supertypeDeclaration.getSystemType();
+                    throw new IllegalModelException(`${typeName} (${this.getName()}) cannot extend ${superTypeName} (${supertypeDeclaration.getName()})`, this.modelFile, this.ast.location);
+                }
+            }
+
             // TODO (DCS)
             // else {
             //     // check that assets only inherit from assets etc.
