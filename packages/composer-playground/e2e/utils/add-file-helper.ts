@@ -53,10 +53,10 @@ export class AddFileModalHelper {
   // Select Model file via Radio Button
   static selectModelRadioOption() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 1000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
     .then(() => {
         let selectElement = element(by.css('[for="file-type-cto"]'));
-        browser.wait(ExpectedConditions.elementToBeClickable(selectElement), 1000);
+        browser.wait(ExpectedConditions.elementToBeClickable(selectElement), 10000);
         return selectElement.click();
     });
   }
@@ -64,12 +64,12 @@ export class AddFileModalHelper {
   // Select BND from BNA file drop
   static selectFromFile(filePath: string) {
     // Import modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 1000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
     .then(() => {
         let inputFileElement = element(by.id('file-importer_input'));
         let importElement = element(by.id('add-file_confirm'));
         dragDropFile(inputFileElement, filePath);
-        browser.wait(ExpectedConditions.elementToBeClickable(importElement), 1000);
+        browser.wait(ExpectedConditions.elementToBeClickable(importElement), 10000);
         return importElement.click();
     });
   }

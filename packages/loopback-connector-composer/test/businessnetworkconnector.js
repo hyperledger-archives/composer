@@ -48,8 +48,7 @@ describe('BusinessNetworkConnector', () => {
     participant BaseParticipant identified by theValue {
         o String theValue
     }
-    transaction BaseTransaction identified by theValue {
-        o String theValue
+    transaction BaseTransaction {
     }`;
 
     let settings;
