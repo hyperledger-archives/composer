@@ -105,7 +105,6 @@ class Context {
         this.api = null;
         this.queryExecutor = null;
         this.identityManager = null;
-        this.identity = null;
         this.participant = null;
         this.transaction = null;
         this.accessController = null;
@@ -290,9 +289,6 @@ class Context {
         return this.getIdentityManager().getIdentity()
             .then((identity) => {
 
-                // Save the current identity.
-                this.identity = identity;
-
                 // Validate the identity.
                 try {
                     this.getIdentityManager().validateIdentity(identity);
@@ -300,7 +296,12 @@ class Context {
 
                     // Check for the case of activation required, and the user is trying to activate.
                     if (e.activationRequired && this.getFunction() === 'activateIdentity') {
-                        // Ignore.
+
+                        // Don't throw the error as we are activating the identity, but return null
+                        // so that the participant is not set because there is no current participant
+                        // until the identity is activated and not revoked.
+                        return null;
+
                     } else {
                         throw e;
                     }

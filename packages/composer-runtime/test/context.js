@@ -310,7 +310,7 @@ describe('Context', () => {
             error.activationRequired = true;
             mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
             return context.loadCurrentParticipant()
-                .should.eventually.be.equal(mockParticipant)
+                .should.eventually.be.null
                 .then(() => {
                     sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
                     sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);

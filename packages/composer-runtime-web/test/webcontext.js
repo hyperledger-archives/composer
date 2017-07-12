@@ -29,9 +29,18 @@ const sinon = require('sinon');
 
 describe('WebContext', () => {
 
+    const identity = {
+        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+        name: 'bob1',
+        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+        secret: 'suchsecret',
+        certificate: ''
+    };
+
     let mockWebContainer;
     let mockSerializer;
     let mockEngine;
+    let context;
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
@@ -39,12 +48,12 @@ describe('WebContext', () => {
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
         mockSerializer = sinon.createStubInstance(Serializer);
+        context = new WebContext(mockEngine, identity);
     });
 
     describe('#constructor', () => {
 
         it('should construct a new context', () => {
-            let context = new WebContext(mockEngine, 'bob1');
             context.should.be.an.instanceOf(Context);
         });
 
@@ -53,7 +62,6 @@ describe('WebContext', () => {
     describe('#getDataService', () => {
 
         it('should return the container logging service', () => {
-            let context = new WebContext(mockEngine, 'bob1');
             context.getDataService().should.be.an.instanceOf(WebDataService);
         });
 
@@ -62,9 +70,8 @@ describe('WebContext', () => {
     describe('#getIdentityService', () => {
 
         it('should return the container identity service', () => {
-            let context = new WebContext(mockEngine, 'bob1');
             context.getIdentityService().should.be.an.instanceOf(WebIdentityService);
-            context.getIdentityService().getCurrentUserID().should.equal('bob1');
+            context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
         });
 
     });
@@ -72,14 +79,12 @@ describe('WebContext', () => {
     describe('#getEventService', () => {
 
         it('should return the container event service', () => {
-            let context = new WebContext(mockEngine, 'bob1');
             context.getSerializer = sinon.stub().returns(mockSerializer);
             context.getEventService().should.be.an.instanceOf(WebEventService);
         });
 
         it('should return this.eventService if it is set', () => {
             const mockWebEventService = sinon.createStubInstance(WebEventService);
-            let context = new WebContext(mockEngine, 'bob1');
             context.eventService = mockWebEventService;
             context.getEventService().should.equal(mockWebEventService);
         });
@@ -88,13 +93,11 @@ describe('WebContext', () => {
     describe('#getHTTPService', () => {
 
         it('should return the container http service', () => {
-            let context = new WebContext(mockEngine, 'bob1');
             context.getHTTPService().should.be.an.instanceOf(WebHTTPService);
         });
 
         it('should return this.httpService if it is set', () => {
             const mockWebHTTPService = sinon.createStubInstance(WebHTTPService);
-            let context = new WebContext(mockEngine, 'bob1');
             context.httpService = mockWebHTTPService;
             context.getHTTPService().should.equal(mockWebHTTPService);
         });
