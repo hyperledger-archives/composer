@@ -56,7 +56,7 @@ RegClient.prototype.fetch = function (url, options, callback) {
     }
 };
 
-let forceSearchFail = false, forceMetadataFail = false;
+let forceSearchFail = false, forceMetadataFail = false, sortableList = false;
 
 // class methods
 RegClient.prototype.get = function (url, options, callback) {
@@ -64,7 +64,7 @@ RegClient.prototype.get = function (url, options, callback) {
         objects : [{
             package : {
                 name : 'bob'
-            }
+            },
         }]
     };
 
@@ -123,6 +123,44 @@ RegClient.prototype.get = function (url, options, callback) {
         }
     };
 
+    let getMetaDataUnsorted = {
+        versions : {
+            '0.1.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'cat',
+                description : 'cat package',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+            '0.2.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'ant',
+                description : 'ant package',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+            '0.3.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'bat',
+                description : 'bat package',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+        }
+    };
+
     if (url.startsWith('https://registry.npmjs.org/-/v1/search') && forceSearchFail) {
         forceSearchFail = false;
         return callback('some error');
@@ -133,8 +171,15 @@ RegClient.prototype.get = function (url, options, callback) {
     if (url.startsWith('https://registry.npmjs.org/bob') && forceMetadataFail) {
         forceMetadataFail = false;
         return callback('some error');
-    } else if (url.startsWith('https://registry.npmjs.org/bob')) {
+    } else if (url.startsWith('https://registry.npmjs.org/bob') && !sortableList) {
         return callback(null, getMetaData);
+    }
+
+    if (sortableList) {
+        console.log('CALLING UNSORTED - sortableList is:', sortableList);
+        sortableList = false;
+        console.log('LIST OF UNSORTED IS - ', getMetaDataUnsorted);
+        return callback(null, getMetaDataUnsorted);
     }
 };
 
@@ -165,7 +210,6 @@ describe('npm routes', () => {
 
                 app.listen();
 
-
             });
 
             describe('GET /api/getSampleList', () => {
@@ -179,6 +223,33 @@ describe('npm routes', () => {
                             res.body.should.deep.equal([{
                                 name : 'bob',
                                 description : 'bob package',
+                                version : '1.0',
+                                tarball : 'my tar'
+                            }]);
+                        });
+                });
+
+                it('should sort the list correctly', () => {
+                    sortableList = true;
+                    return chai.request(app)
+                        .get('/api/getSampleList')
+                        .then((res) => {
+                            res.should.have.status(200);
+                            res.should.be.json;
+                            res.body.should.be.an('array');
+                            res.body.should.deep.equal([{
+                                name : 'ant',
+                                description : 'ant package',
+                                version : '1.0',
+                                tarball : 'my tar'
+                            }, {
+                                name : 'bat',
+                                description : 'bat package',
+                                version : '1.0',
+                                tarball : 'my tar'
+                            }, {
+                                name : 'cat',
+                                description : 'cat package',
                                 version : '1.0',
                                 tarball : 'my tar'
                             }]);

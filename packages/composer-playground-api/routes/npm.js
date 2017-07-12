@@ -177,7 +177,7 @@ module.exports = (app) => {
     function sortSamples (samples, callback) {
         const method = 'sortSamples';
 
-        // Define primary networks
+        // Define primary networks.
         let primarySampleNames = ['basic-sample-network'];
         let sorted = [];
 

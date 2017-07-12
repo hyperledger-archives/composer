@@ -58,7 +58,7 @@ export class ImportComponent implements OnInit {
         this.gitHubInProgress = true;
         this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
-                this.sampleNetworks = this.orderGitHubProjects(sampleNetworkList);
+                this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
                 this.gitHubInProgress = false;
 
             })
@@ -68,51 +68,15 @@ export class ImportComponent implements OnInit {
             });
     }
 
-    orderGitHubProjects(networks: any[]): any[] {
+    addEmptyNetworkOption(networks: any[]): any[] {
 
         let newOrder = [];
-
-        // Append primary networks to the list.
-        for (let i = 0; i < this.primaryNetworkNames.length; i++) {
-            let primaryName = this.primaryNetworkNames[i];
-            for (let j = 0; j < networks.length; j++) {
-                let network = networks[j];
-                if (primaryName === network.name) {
-                    newOrder.push(network);
-                }
-            }
-        }
 
         // Append new network option to the list.
         newOrder.push(this.EMPTY_BIZNET);
 
-        // Create an array of networks that are not classed as primary.
-        let nonPrimaryNetworks = [];
         for (let i = 0; i < networks.length; i++) {
-            let network = networks[i];
-            if (this.primaryNetworkNames.indexOf(network.name) === -1) {
-                nonPrimaryNetworks.push(network);
-            }
-        }
-
-        // Sort the array of non primary networks in alphabetical order.
-        let nonPrimarySorted = nonPrimaryNetworks.sort((a, b) => {
-            let businessNetworkA = a.name.toLowerCase();
-            let businessNetworkB = b.name.toLowerCase();
-            if (businessNetworkA < businessNetworkB) {
-                return -1;
-            }
-            if (businessNetworkA > businessNetworkB) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
-        // Append non primary networks to list.
-        for (let i = 0; i < nonPrimaryNetworks.length; i++) {
-            let network = nonPrimaryNetworks[i];
-            newOrder.push(network);
+            newOrder.push(networks[i]);
         }
 
         return newOrder;
