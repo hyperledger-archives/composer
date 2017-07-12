@@ -1012,5 +1012,4 @@ describe('AppComponent', () => {
             routerStub.navigate.should.have.been.calledWith(['/login']);
         }));
     });
-
 });
