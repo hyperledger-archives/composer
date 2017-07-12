@@ -153,20 +153,21 @@ class RegistryManager extends EventEmitter {
                 });
                 LOG.debug(METHOD, 'Filtered registries down to', registries.length);
                 return registries.reduce((prev, registry) => {
-                    return prev.then( (result) => {
-                        this.get(registry.type, registry.registryID)
+                    return prev.then((result) => {
+
+                        return this.get(registry.type, registry.registryID)
                             .then((r) => {
+                                // console.log(r);
                                 LOG.debug(METHOD, 'reducing', r.name);
                                 result.push(r);
+                                return result;
+                            }).catch(() => {
+                                LOG.debug(METHOD, 'not worried about access failure');
                                 return result;
                             });
 
                     });
                 }, Promise.resolve([]));
-            }).catch( (error) => {
-                console.log('>>>>>>>>');
-                console.log(error);
-                throw error;
             });
     }
 
@@ -180,10 +181,13 @@ class RegistryManager extends EventEmitter {
     get(type, id) {
         let collectionID = type + ':' + id;
         let resource;
+        let simpledata;
+        LOG.entry('get', collectionID);
 
         // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
         return this.sysregistries.get(collectionID)
             .then((result) => {
+                simpledata = result;
                 // do we have permission to be looking at this??
                 resource = this.serializer.fromJSON(result);
                 return this.accessController.check(resource, 'READ');
@@ -195,7 +199,8 @@ class RegistryManager extends EventEmitter {
             }).then((dataCollection) => {
                 // and form up the actual registry object
                 // TODO: Does this really need to take the the 3 parametrs type,registryID and name??
-                return this.createRegistry(dataCollection, this.serializer, this.accessController, resource.type, resource.registryID, resource.name);
+                // TODO: this really doens't seem right
+                return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryID, simpledata.name);
             });
 
         // let regType = TYPE_MAP[type];
@@ -296,7 +301,7 @@ class RegistryManager extends EventEmitter {
             .then(() => {
                 // yes we can create an instance of this type; now add that to the sysregistries collection
                 // Note we haven't checked if we have update permission on the sysregristries collection
-                // but that is going a bit far really... 
+                // but that is going a bit far really...
                 this.sysregistries.add(collectionID, r, force);
             })
             .then(() => {

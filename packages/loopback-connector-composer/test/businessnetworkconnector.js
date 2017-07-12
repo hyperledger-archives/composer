@@ -2056,7 +2056,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.deep.equal([{
+                result.should.include.deep.members([{
                     type: 'table',
                     name: 'org.acme.base.BaseConcept'
                 }, {
@@ -2086,7 +2086,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.deep.equal([{
+                result.should.include.deep.members([{
                     type: 'table',
                     name: 'BaseConcept'
                 }, {
@@ -2120,7 +2120,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.deep.equal([{
+                result.should.include.deep.members([{
                     type: 'table',
                     name: 'org.acme.base.BaseConcept'
                 }, {
@@ -2153,7 +2153,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.deep.equal([{
+                result.should.include.deep.members([{
                     type: 'table',
                     name: 'BaseConcept'
                 }, {

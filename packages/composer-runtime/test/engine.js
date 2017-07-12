@@ -140,6 +140,7 @@ describe('Engine', () => {
             let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
@@ -176,8 +177,10 @@ describe('Engine', () => {
                     }));
                     sinon.assert.calledOnce(mockScriptCompiler.compile);
                     sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
-                    sinon.assert.calledOnce(sysdata.add);
+                    sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkID':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
@@ -218,6 +221,7 @@ describe('Engine', () => {
             let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
@@ -249,8 +253,9 @@ describe('Engine', () => {
                     }));
                     sinon.assert.calledOnce(mockScriptCompiler.compile);
                     sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
-                    sinon.assert.calledOnce(sysdata.add);
+                    sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkID':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);

@@ -41,3 +41,7 @@ asset Identity identified by userID {
   o Boolean activated
   o Boolean revoked
 }
+
+asset Network identified by networkID {
+  o String networkID
+}
