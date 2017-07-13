@@ -65,6 +65,8 @@
     "composer-common": "^0.9.2",
     "composer-runtime": "^0.9.2",
     "composer-runtime-pouchdb": "^0.9.2",
+    "pouchdb-adapter-idb": "^6.2.0",
+    "pouchdb-adapter-websql": "^6.2.0",
     "uuid": "^3.0.1",
     "xhr": "^2.4.0"
   }
