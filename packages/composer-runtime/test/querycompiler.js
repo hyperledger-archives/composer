@@ -285,6 +285,14 @@ describe('QueryCompiler', () => {
             compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
         });
 
+        it('should compile a query with nested parameters', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q14, {});
+            compiled.name.should.equal('Q14');
+            compiled.hash.should.equal('951f2465d94148ffbe2e4c081fe6c8f73f95056ccdb8be3dcb8180ba6f3d9098');
+            compiled.generator.should.be.a('function');
+            compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
+        });
+
     });
 
     describe('#buildTrivialCompiledQueryGenerator', () => {
