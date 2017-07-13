@@ -321,10 +321,12 @@ class Context {
                 // Check for an admin user.
                 // TODO: this is temporary whilst we migrate to requiring all
                 // users to have identities that are mapped to participants.
-                const name = this.getIdentityService().getName();
-                if (name && name.match(/admin/i)) {
-                    LOG.exit(method, null);
-                    return null;
+                if (!error.activationRequired) {
+                    const name = this.getIdentityService().getName();
+                    if (name && name.match(/admin/i)) {
+                        LOG.exit(method, null);
+                        return null;
+                    }
                 }
 
                 // Throw the error.

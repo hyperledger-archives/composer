@@ -17,7 +17,7 @@
 const Issue = require ('./lib/issue.js');
 
 module.exports.command = 'issue [options]';
-module.exports.describe = 'Issue an identity to a participant in a participant registry';
+module.exports.describe = 'Issue a new identity to a participant in a participant registry';
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },

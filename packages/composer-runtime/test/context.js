@@ -336,6 +336,24 @@ describe('Context', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
+        it('should not ignore an activation required error from looking up the identity for admin users', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'bindIdentity';
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            let promise = Promise.resolve();
+            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
+                mockIdentityService.getName.returns(admin);
+                promise = promise.then(() => {
+                    return context.loadCurrentParticipant()
+                        .should.be.rejectedWith(/such error/);
+                });
+            });
+            return promise;
+        });
+
         it('should ignore any errors from looking up the identity for admin users', () => {
             let promise = Promise.resolve();
             ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
