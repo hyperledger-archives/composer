@@ -156,7 +156,13 @@ describe('AdminService', () => {
             identityMock.getUserID.returns(Promise.resolve('myId'));
             identityMock.getUserSecret.returns(Promise.resolve('myPassword'));
 
-            service.connect('myNetwork');
+            service.connect('myNetwork')
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
 
@@ -176,7 +182,6 @@ describe('AdminService', () => {
 
             service['isConnected'].should.equal(false);
             should.not.exist(service['isConnectingPromise']);
-            alertMock.errorStatus$.next.should.have.been.calledWith('some error');
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
     });
