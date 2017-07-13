@@ -1,11 +1,12 @@
-<section class="header">
+<section *ngIf="!editingConectionProfile" class="header">
     My Wallet
 </section>
-<section class="main-view">
+<section *ngIf="!editingConectionProfile" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfile of connectionProfiles; let profileIndex = index">
-        <h2>Identities for {{connectionProfile}}
+        <h2>Identities for {{connectionProfile.name === '$default' ? 'Web Browser' : connectionProfile.name }}
             <div class="connection-profile-buttons">
-                <button id="editConnectionProfileButton" type="button" class="action">
+                <button  *ngIf="connectionProfile.name !== '$default'" id="editConnectionProfileButton" type="button" class="action"
+                        (click)="editConnectionProfile(connectionProfile)">
                     <svg class="ibm-icon vertical-top" aria-hidden="true">
                         <use xlink:href="#icon-edit_24"></use>
                     </svg>
@@ -18,7 +19,7 @@
             </div>
         </h2>
         <div class="identities">
-            <div class="identity" *ngFor="let identity of identities[connectionProfile]">
+            <div class="identity" *ngFor="let identity of connectionProfile.identities">
                 <div class="top-section">
                     <div class="userId-image">
                         <span>{{identity.userId.substring(0,2)}}</span>
@@ -43,7 +44,8 @@
                     <p class="business-network">BUSINESS NETWORK</p>
                     <p>{{identity.businessNetwork}}</p>
                     <div class="connect">
-                        <button  id="login-{{profileIndex}}-{{identity.userId}}" type="button" class="action" (click)="changeIdentity(identity)">
+                        <button id="login-{{profileIndex}}-{{identity.userId}}" type="button" class="action"
+                                (click)="changeIdentity(connectionProfile.name, identity.userId)">
                             <span>Connect now</span>
                             <svg class="ibm-icon vertical-top" aria-hidden="true">
                                 <use xlink:href="#icon-forward_16"></use>
@@ -55,4 +57,15 @@
         </div>
     </div>
 </section>
-
+<section class="edit-connection-profile" *ngIf="editingConectionProfile">
+    <div class="header">
+        <button type="button" class="action" (click)="finishedEditingConnectionProfile()">
+            <svg class="ibm-icon vertical-top rotate" aria-hidden="true">
+                <use xlink:href="#icon-forward_16"></use>
+            </svg>
+            <span>My Wallet</span>
+        </button>
+    </div>
+    <connection-profile (profileUpdated)="finishedEditingConnectionProfile()"
+                             [connectionProfile]="editingConectionProfile"></connection-profile>
+</section>

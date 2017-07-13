@@ -65,35 +65,39 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): Promise<any> {
-        return this.clientService.ensureConnected().then(() => {
-            this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
-                .subscribe((noError) => {
-                    if (this.editorFilesValidate() && noError) {
-                        this.noError = noError;
-                        this.dirty = true;
-                    } else {
-                        this.noError = false;
-                    }
-                });
+        return this.clientService.ensureConnected()
+            .then(() => {
+                this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
+                    .subscribe((noError) => {
+                        if (this.editorFilesValidate() && noError) {
+                            this.noError = noError;
+                            this.dirty = true;
+                        } else {
+                            this.noError = false;
+                        }
+                    });
 
-            this.clientService.namespaceChanged$.takeWhile(() => this.alive)
-                .subscribe((newName) => {
-                    if (this.currentFile !== null) {
-                        this.updateFiles();
-                        let index = this.findFileIndex(true, newName);
-                        this.setCurrentFile(this.files[index]);
-                    }
-                });
+                this.clientService.namespaceChanged$.takeWhile(() => this.alive)
+                    .subscribe((newName) => {
+                        if (this.currentFile !== null) {
+                            this.updateFiles();
+                            let index = this.findFileIndex(true, newName);
+                            this.setCurrentFile(this.files[index]);
+                        }
+                    });
 
-            this.updatePackageInfo();
-            this.updateFiles();
+                this.updatePackageInfo();
+                this.updateFiles();
 
-            if (this.editorService.getCurrentFile() !== null) {
-                this.setCurrentFile(this.editorService.getCurrentFile());
-            } else {
-                this.setInitialFile();
-            }
-        });
+                if (this.editorService.getCurrentFile() !== null) {
+                    this.setCurrentFile(this.editorService.getCurrentFile());
+                } else {
+                    this.setInitialFile();
+                }
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     ngOnDestroy() {

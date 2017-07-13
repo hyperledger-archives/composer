@@ -930,7 +930,6 @@ describe('ClientService', () => {
                 .catch((error) => {
                     error.should.equal('forced error');
                     alertMock.busyStatus$.next.should.have.been.calledWith(null);
-                    alertMock.errorStatus$.next.should.have.been.called;
                 });
         })));
 

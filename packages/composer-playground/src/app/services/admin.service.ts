@@ -77,7 +77,7 @@ export class AdminService {
             .catch((error) => {
                 this.connectingPromise = null;
                 this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
+                throw error;
             });
 
         return this.connectingPromise;
