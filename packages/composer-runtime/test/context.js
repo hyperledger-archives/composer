@@ -566,6 +566,14 @@ describe('Context', () => {
                 });
         });
 
+        it('should not initialize the context with the current participant if deploying', () => {
+            return context.initialize({ function: 'init' })
+                .then(() => {
+                    sinon.assert.notCalled(context.loadCurrentParticipant);
+                    should.equal(context.participant, null);
+                });
+        });
+
         it('should initialize the context with the current participant if found', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
             mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
