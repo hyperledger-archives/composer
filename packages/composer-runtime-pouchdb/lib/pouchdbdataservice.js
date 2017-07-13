@@ -24,9 +24,6 @@ const PouchDBUtils = require('./pouchdbutils');
 const LOG = Logger.getLog('PouchDBDataService');
 
 // Install the PouchDB plugins. The order of the adapters is important!
-PouchDB.plugin(require('pouchdb-adapter-idb'));
-PouchDB.plugin(require('pouchdb-adapter-websql'));
-PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-find'));
 
 // This is the object type used to form composite keys for the collection of collections.
@@ -37,6 +34,16 @@ const collectionObjectType = '$syscollections';
  * @protected
  */
 class PouchDBDataService extends DataService {
+
+    /**
+     * Register the specified PouchDB plugin with PouchDB.
+     * @param {*} plugin The PouchDB plugin to register.
+     */
+    static registerPouchDBPlugin(plugin) {
+        // No logging here as this is called during static initialization
+        // at startup, and we don't want to try and load the logger yet.
+        PouchDB.plugin(plugin);
+    }
 
     /**
      * Create a new instance of PouchDB.

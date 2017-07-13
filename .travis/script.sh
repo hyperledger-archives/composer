@@ -45,6 +45,12 @@ if [ "${DOCS}" != "" ]; then
        npm run linkcheck:unstable
     fi
 
+# Are we running playground e2e tests?
+elif [ "${SYSTEST}" = "e2e" ]; then
+
+    # Run the playground e2e tests.
+    cd "${DIR}/packages/composer-playground"
+    npm run e2e:main
 
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
