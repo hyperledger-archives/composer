@@ -48,13 +48,9 @@ class IdentityRegistry extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
-            .then((registries) => {
-                return registries.map((registry) => {
-                    if (registry.id === 'org.hyperledger.composer.system.Identity') {
-                        return new IdentityRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer);
-                    }
-                })[0];
+        return Registry.getRegistry(securityContext, REGISTRY_TYPE, 'org.hyperledger.composer.system.Identity')
+            .then((registry) => {
+                return new IdentityRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer);
             });
     }
 

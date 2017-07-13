@@ -15,8 +15,8 @@
 'use strict';
 
 const Factory = require('composer-common').Factory;
-const ModelManager = require('composer-common').ModelManager;
 const IdentityRegistry = require('../lib/identityregistry');
+const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
@@ -70,26 +70,26 @@ describe('IdentityRegistry', () => {
             }).should.throw(/serializer not specified/);
         });
 
-        it('should invoke the chain-code and return the transaction registry', () => {
+        it('should invoke the chain-code and return the identity registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', () => {
+            sandbox.stub(Registry, 'getRegistry', () => {
                 return Promise.resolve(
-                    [{id: 'org.hyperledger.composer.system.Identity', name: 'doge registry'}]
+                    {id: 'org.hyperledger.composer.system.Identity', name: 'doge registry'}
                 );
             });
 
-            // Invoke the getAllTransactionRegistries function.
+            // Invoke the getAllIdentityRegistries function.
             return IdentityRegistry
                 .getIdentityRegistry(mockSecurityContext, mockModelManager, mockFactory, mockSerializer)
                 .then((identityRegistry) => {
 
                     // Check that the registry was requested correctly.
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Registry.getAllRegistries);
-                    sinon.assert.calledWith(Registry.getAllRegistries, mockSecurityContext, 'Asset');
+                    sinon.assert.calledOnce(Registry.getRegistry);
+                    sinon.assert.calledWith(Registry.getRegistry, mockSecurityContext, 'Asset', 'org.hyperledger.composer.system.Identity');
 
-                    // Check that the transaction registries were returned correctly.
+                    // Check that the identity registries were returned correctly.
                     identityRegistry.should.be.an.instanceOf(IdentityRegistry);
                     identityRegistry.id.should.equal('org.hyperledger.composer.system.Identity');
                     identityRegistry.name.should.equal('doge registry');
@@ -101,13 +101,13 @@ describe('IdentityRegistry', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', () => {
+            sandbox.stub(Registry, 'getRegistry', () => {
                 return Promise.reject(
                     new Error('failed to invoke chain-code')
                 );
             });
 
-            // Invoke the getAllTransactionRegistries function.
+            // Invoke the getAllIdentityRegistries function.
             return IdentityRegistry
                 .getIdentityRegistry(mockSecurityContext, mockModelManager, mockFactory, mockSerializer)
                 .then((identityRegistry) => {
@@ -118,16 +118,6 @@ describe('IdentityRegistry', () => {
 
         });
 
-        it('should not throw if Identity registry is not found', () => {
-            sandbox.stub(Registry, 'getAllRegistries', () => {
-                return Promise.resolve(
-                    [{id: 'org.hyperledger.composer.system.Doge', name: 'doge registry'}]
-                );
-            });
-            (function () {
-                IdentityRegistry.getIdentityRegistry(mockSecurityContext, mockModelManager, mockFactory, mockSerializer);
-            }).should.not.throw();
-        });
     });
 
     describe('#add', () => {

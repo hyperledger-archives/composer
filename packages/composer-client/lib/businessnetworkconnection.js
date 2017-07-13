@@ -694,17 +694,23 @@ class BusinessNetworkConnection extends EventEmitter {
 
     /**
      * Revoke the specified identity by removing any existing mapping to a participant.
-     * @param {string} identityId The identity, for example the enrollment ID.
+     * @param {Resource|string} identity The identity, or the identifier of the identity.
      * @return {Promise} A promise that will be fulfilled when the identity has
      * been removed from the specified participant. The promise will be rejected if
      * the participant does not exist, or if the identity is not mapped to the
      * participant.
      */
-    revokeIdentity(identityId) {
+    revokeIdentity(identity) {
         const method = 'revokeIdentity';
-        LOG.entry(method, identityId);
-        if (!identityId) {
-            throw new Error('identityId not specified');
+        LOG.entry(method, identity);
+        if (!identity) {
+            throw new Error('identity not specified');
+        }
+        let identityId;
+        if (identity instanceof Resource) {
+            identityId = identity.getIdentifier();
+        } else {
+            identityId = identity;
         }
         Util.securityCheck(this.securityContext);
         // It is not currently possible to revoke the certificate, so we just call

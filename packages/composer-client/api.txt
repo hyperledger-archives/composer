@@ -26,7 +26,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise ping() 
    + Promise issueIdentity(string,object,boolean) 
    + Promise bindIdentity(string) 
-   + Promise revokeIdentity(string) 
+   + Promise revokeIdentity() 
 }
 class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 

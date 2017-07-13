@@ -24,6 +24,7 @@ const ComboConnectionProfileStore = require('composer-common').ComboConnectionPr
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
 const Query = require('../lib/query');
@@ -33,8 +34,6 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
-const IdentityRegistry = require('../lib/identityregistry');
-const Registry = require('../lib/registry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -1075,17 +1074,28 @@ describe('BusinessNetworkConnection', () => {
 
     describe('#revokeIdentity', () => {
 
-        it('should throw if identityId not specified', () => {
+        it('should throw if identity not specified', () => {
             (() => {
                 let mockResource = sinon.createStubInstance(Resource);
                 mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
                 businessNetworkConnection.revokeIdentity(null);
-            }).should.throw(/identityId not specified/);
+            }).should.throw(/identity not specified/);
         });
 
-        it('should submit a request to the chaincode', () => {
+        it('should submit a request to the chaincode for a resource', () => {
             sandbox.stub(Util, 'invokeChainCode').resolves();
             return businessNetworkConnection.revokeIdentity('dogeid1')
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
+                });
+        });
+
+        it('should submit a request to the chaincode for an identifier', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('dogeid1');
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.revokeIdentity(mockResource)
                 .then(() => {
                     sinon.assert.calledOnce(Util.invokeChainCode);
                     sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
@@ -1101,15 +1111,30 @@ describe('BusinessNetworkConnection', () => {
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
             let identityRegistry = sinon.createStubInstance(IdentityRegistry);
-            identityRegistry.id = 'org.hyperledger.composer.system.Identity';
-            identityRegistry.name = 'such registry';
-            sandbox.stub(Registry, 'getAllRegistries').resolves([identityRegistry]);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
 
             // Invoke the function.
             return businessNetworkConnection
                 .getIdentityRegistry()
                 .then(() => {
-                    sinon.assert.calledTwice(stub);
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            let stub = sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(mockIdentityRegistry);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(mockIdentityRegistry);
                 });
 
         });
