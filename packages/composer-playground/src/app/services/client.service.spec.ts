@@ -12,8 +12,8 @@ let should = chai.should();
 let expect = chai.expect;
 
 import { AdminService } from './admin.service';
-import { AlertService } from './alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile } from 'composer-common';
+import { AlertService } from '../basic-modals/alert.service';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
@@ -31,6 +31,7 @@ describe('ClientService', () => {
     let modelFileMock;
     let scriptFileMock;
     let aclFileMock;
+    let queryFileMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -44,6 +45,7 @@ describe('ClientService', () => {
         modelFileMock = sinon.createStubInstance(ModelFile);
         scriptFileMock = sinon.createStubInstance(Script);
         aclFileMock = sinon.createStubInstance(AclFile);
+        queryFileMock = sinon.createStubInstance(QueryFile);
 
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
@@ -222,6 +224,23 @@ describe('ClientService', () => {
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
+        it('should update a query file', inject([ClientService], (service: ClientService) => {
+            let queryManagerMock = {
+                setQueryFile: sinon.stub()
+            };
+
+            businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
+
+            let mockCreateQueryFile = sinon.stub(service, 'createQueryFile').returns(queryFileMock);
+
+            // call function
+            let result = service.updateFile('query', 'my-query', 'query');
+
+            queryManagerMock.setQueryFile.should.have.been.calledWith(queryFileMock);
+            should.not.exist(result);
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
         it('should not update a model file if invalid with a matching namespace', inject([ClientService], (service: ClientService) => {
 
             modelManagerMock = {
@@ -369,6 +388,25 @@ describe('ClientService', () => {
             should.not.exist(result);
         }));
 
+        it('should validate a query file', inject([ClientService], (service: ClientService) => {
+            let queryManagerMock = {
+                validateQueryFile: sinon.stub()
+            };
+
+            businessNetworkDefMock.getQueryManager.returns(queryFileMock);
+
+            queryFileMock = {
+                validate: sinon.stub()
+            };
+
+            sinon.stub(service, 'createQueryFile').returns(queryFileMock);
+
+            let result = service.validateFile('query', 'my-query', 'query');
+
+            queryFileMock.validate.should.have.been.called;
+            should.not.exist(result);
+        }));
+
         it('should return error message if a model file is invalid', inject([ClientService], (service: ClientService) => {
             let modelManagerMock = {
                 validateModelFile: sinon.stub().throws('invalid')
@@ -417,6 +455,25 @@ describe('ClientService', () => {
             let result = service.validateFile('acl', 'my-acl', 'acl');
 
             aclFileMock.validate.should.have.been.called;
+            result.should.equal('invalid');
+        }));
+
+        it('should return error message if an query file is invalid', inject([ClientService], (service: ClientService) => {
+            let queryManagerMock = {
+                validateQueryFile: sinon.stub()
+            };
+
+            businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
+
+            queryFileMock = {
+                validate: sinon.stub().throws('invalid')
+            };
+
+            sinon.stub(service, 'createQueryFile').returns(queryFileMock);
+
+            let result = service.validateFile('query', 'my-query', 'query');
+
+            queryFileMock.validate.should.have.been.called;
             result.should.equal('invalid');
         }));
 
@@ -583,6 +640,22 @@ describe('ClientService', () => {
         }));
     });
 
+    describe('getQueryFile', () => {
+        it('should get the query file', inject([ClientService], (service: ClientService) => {
+            let queryManagerMock = {
+                getQueryFile: sinon.stub().returns(queryFileMock)
+            };
+
+            businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            let result = service.getQueryFile();
+
+            result.should.deep.equal(queryFileMock);
+            queryManagerMock.getQueryFile.should.have.been.called;
+        }));
+    });
+
     describe('getMetaData', () => {
         it('should get the metadata', inject([ClientService], (service: ClientService) => {
             businessNetworkDefMock.getMetadata.returns({metadata: 'my metadata'});
@@ -614,9 +687,15 @@ describe('ClientService', () => {
                 addScript: sinon.stub()
             };
 
+            let queryManagerMock = {
+                setQueryFile: sinon.stub(),
+                getQueryFile: sinon.stub().returns(queryFileMock)
+            };
+
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
             businessNetworkDefMock.getScriptManager.returns(scriptManagerMock);
             businessNetworkDefMock.getAclManager.returns(aclManagerMock);
+            businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
 
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
 
@@ -933,4 +1012,106 @@ describe('ClientService', () => {
             businessNetworkConnectionMock.should.have.been.called;
         })));
     });
+
+    describe('createNewBusinessNetwork', () => {
+        it('should alert on failure', inject([ClientService], (service: ClientService) => {
+            // Set up mocks
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork(null, null, null, null, null);
+
+            // Check expected
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
+            alertMock.errorStatus$.next.should.have.been.called;
+        }));
+
+        it('should not update the business network on failure', inject([ClientService], (service: ClientService) => {
+            // Set up mocks
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork(null, null, null, null, null);
+
+            // Check expected
+            businessNetworkChangedSpy.should.not.have.been.called;
+        }));
+
+        it('should create a new business network and notify on success', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+            let filterSpy = sinon.spy(service, 'filterModelFiles');
+
+            let mockFile0 = sinon.createStubInstance(ModelFile);
+            mockFile0.isSystemModelFile.returns(false);
+            let mockFile1 = sinon.createStubInstance(ModelFile);
+            mockFile1.isSystemModelFile.returns(false);
+            let mockFile2 = sinon.createStubInstance(ModelFile);
+            mockFile2.isSystemModelFile.returns(false);
+            let mockFile3 = sinon.createStubInstance(ModelFile);
+            mockFile3.isSystemModelFile.returns(false);
+            let mockFile4 = sinon.createStubInstance(ModelFile);
+            mockFile4.isSystemModelFile.returns(true);
+
+            let modelManagerMock = {
+                getModelFiles: sinon.stub().returns([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]),
+                addModelFiles: sinon.stub()
+            };
+
+            let aclManagerMock = {
+                setAclFile: sinon.stub(),
+                getAclFile: sinon.stub().returns(aclFileMock)
+            };
+
+            let scriptManagerMock = {
+                getScripts: sinon.stub().returns([scriptFileMock, scriptFileMock]),
+                addScript: sinon.stub()
+            };
+
+            let queryManagerMock = {
+                setQueryFile: sinon.stub(),
+                getQueryFile: sinon.stub().returns(queryFileMock)
+            };
+
+            businessNetworkDefMock.getModelManager.returns(modelManagerMock);
+            businessNetworkDefMock.getScriptManager.returns(scriptManagerMock);
+            businessNetworkDefMock.getAclManager.returns(aclManagerMock);
+            businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
+
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+
+            // Call function
+            service.createNewBusinessNetwork('myBND', '1.0', 'description', '{}', null);
+
+            // We filter system namespaces
+            filterSpy.should.have.been.calledWith([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]);
+            let filterReturn = filterSpy.returnValues[0];
+            filterReturn.should.deep.equal([mockFile0, mockFile1, mockFile2, mockFile3]);
+
+            // We alert on success
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
+    });
+    describe('createQueryFile', () => {
+        let mockBusinessNetwork;
+
+        beforeEach(() => {
+            mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+        });
+
+        it('should create a Query file', fakeAsync(inject([ClientService], (service: ClientService) => {
+            service['currentBusinessNetwork'] = mockBusinessNetwork;
+            let queryFile = service.createQueryFile('query', '');
+            queryFile.should.be.instanceOf(QueryFile);
+            mockBusinessNetwork.getModelManager.should.have.been.called;
+        })));
+
+    });
+
 });

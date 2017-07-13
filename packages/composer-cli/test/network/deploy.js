@@ -42,6 +42,7 @@ const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 let mockBusinessNetworkDefinition;
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
+const VALID_ENDORSEMENT_POLICY_STRING = '{"identities":[{ "role": { "name": "member", "mspId": "Org1MSP" }}], "policy": {"1-of": [{"signed-by":0}]}}';
 let mockAdminConnection;
 
 describe('composer deploy network CLI unit tests', function () {
@@ -71,6 +72,149 @@ describe('composer deploy network CLI unit tests', function () {
 
     describe('Deploy handler() method tests', function () {
 
+        it('Good path, optional parameter -O /path/to/options.json specified.', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'
+                       ,optionsFile: '/path/to/options.json'};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectOptions = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+            const optionsObject = {
+                endorsementPolicy: {
+                    identities: [{role: {name: 'member',mspId: 'Org1MSP'}}],
+                    policy: {'1-of': [{'signed-by': 0}]}
+                }
+            };
+
+            // This would also work.
+            //const optionsObject = {
+            //    endorsementPolicy: '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            //};
+
+            const optionFileContents = JSON.stringify(optionsObject);
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
+            sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                    {
+                        endorsementPolicy: optionsObject.endorsementPolicy
+                    });
+            });
+        });
+
+        it('Good path, optional parameter -o endorsementPolicyFile= specified.', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'
+                       ,option: 'endorsementPolicyFile=/path/to/some/file.json'};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectOptions = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                    {
+                        endorsementPolicyFile: '/path/to/some/file.json'
+                    });
+            });
+        });
+
+
+        it('Good path, optional parameter -o endorsementPolicy= specified.', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'
+                       ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectOptions = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                    {
+                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
+                    });
+            });
+        });
+
+
         it('Good path, all parms correctly specified.', function () {
 
             let argv = {enrollId: 'WebAppAdmin'
@@ -80,14 +224,13 @@ describe('composer deploy network CLI unit tests', function () {
             let connectionProfileName = argv.connectionProfileName;
             let keyValStore = CREDENTIALS_ROOT;
 
-            let connectionProfileData = {type: 'hlf'
+            let connectOptions = {type: 'hlf'
                                         ,membershipServicesURL: 'grpc://localhost:7054'
                                         ,peerURL: 'grpc://localhost:7051'
                                         ,eventHubURL: 'grpc://localhost:7053'
                                         ,keyValStore: keyValStore
                                         ,deployWaitTime: '300'
                                         ,invokeWaitTime: '100'};
-            let connectOptions = JSON.stringify(connectionProfileData);
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Deploy, 'getConnectOptions');
@@ -110,6 +253,47 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
+        it('Good path, all parms correctly specified, including optional loglevel.', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'
+                       ,loglevel: 'DEBUG'};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectOptions = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition, {logLevel: 'DEBUG'});
+            });
+        });
+
+
+
         it('Good path, default connection profile, all other parms correctly specified.', function () {
 
             let argv = {enrollId: 'WebAppAdmin'
@@ -118,14 +302,13 @@ describe('composer deploy network CLI unit tests', function () {
             let connectionProfileName = DEFAULT_PROFILE_NAME;
             let keyValStore = CREDENTIALS_ROOT;
 
-            let connectionProfileData = {type: 'hlf'
+            let connectOptions = {type: 'hlf'
                                         ,membershipServicesURL: 'grpc://localhost:7054'
                                         ,peerURL: 'grpc://localhost:7051'
                                         ,eventHubURL: 'grpc://localhost:7053'
                                         ,keyValStore: keyValStore
                                         ,deployWaitTime: '300'
                                         ,invokeWaitTime: '100'};
-            let connectOptions = JSON.stringify(connectionProfileData);
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Deploy, 'getConnectOptions');
@@ -159,14 +342,13 @@ describe('composer deploy network CLI unit tests', function () {
             let connectionProfileName = argv.connectionProfileName;
             let keyValStore = CREDENTIALS_ROOT;
 
-            let connectionProfileData = {type: 'hlf'
+            let connectOptions = {type: 'hlf'
                                         ,membershipServicesURL: 'grpc://localhost:7054'
                                         ,peerURL: 'grpc://localhost:7051'
                                         ,eventHubURL: 'grpc://localhost:7053'
                                         ,keyValStore: keyValStore
                                         ,deployWaitTime: '300'
                                         ,invokeWaitTime: '100'};
-            let connectOptions = JSON.stringify(connectionProfileData);
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Deploy, 'getConnectOptions');

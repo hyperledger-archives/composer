@@ -23,28 +23,44 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
-For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset`.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampleAsset`.
 
 ````
 rule SimpleRule {
     description: "Description of the ACL rule"
     participant: "org.example.SampleParticipant"
     operation: ALL
-    resource: "org.example.SampeAsset"
+    resource: "org.example.SampleAsset"
     action: ALLOW
 }
 ````
 
 Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
 
-For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset` IF the participant is the owner of the asset.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampleAsset` IF the participant is the owner of the asset.
 
 ````
 rule SampleConditionalRule {
     description: "Description of the ACL rule"
     participant(m): "org.example.SampleParticipant"
     operation: ALL
-    resource(v): "org.example.SampeAsset"
+    resource(v): "org.example.SampleAsset"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+````
+
+Conditional ACL rules can also specify an optional transaction clause. When the transaction clause is specified, the ACL rule only allows access to the resource by the participant if the participant submitted a transaction, and that transaction is of the specified type.
+
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampleAsset` IF the participant is the owner of the asset AND the participant submitted a transaction of the `org.example.SampleTransaction` type to perform the operation.
+
+````
+rule SampleConditionalRuleWithTransaction {
+    description: "Description of the ACL rule"
+    participant(m): "org.example.SampleParticipant"
+    operation: READ, CREATE, UPDATE
+    resource(v): "org.example.SampleAsset"
+    transaction(tx): "org.example.SampleTransaction"
     condition: (v.owner.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -60,11 +76,13 @@ Resource Examples:
 - Class in namespace: org.example.Car
 - Instance of a class: org.example.Car#ABC123
 
-**Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
+**Operation** identifies the action that the rule governs. Four actions are supported: CREATE, READ, UPDATE, and DELETE. You can use ALL to specify that the rule governs all supported actions. Alternatively, you can use a comma separated list to specify that the rule governs a set of supported actions.
 
 **Participant** defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value 'ANY' may be used to denote that participant type checking is not enforced for a rule.
 
-**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an `if(...)` expression may be used here.
+**Transaction** defines the transaction that the participant must have submitted in order to perform the specified operation against the specified resource. If this clause is specified, and the participant did not submit a transaction of this type - for example, they are using the CRUD APIs - then the ACL rule does not allow access.
+
+**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an `if(...)` expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.
 
 **Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 

@@ -40,7 +40,6 @@ class Limit {
 
         this.ast = ast;
         this.select = select;
-        this.process();
     }
 
     /**

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb-core');
 const PouchDBUtils = require('..').PouchDBUtils;
 
 const chai = require('chai');

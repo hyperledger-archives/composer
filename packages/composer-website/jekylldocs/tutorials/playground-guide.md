@@ -46,8 +46,7 @@ participant Trader identified by tradeId {
     o String firstName
     o String lastName
 }
-transaction Trade identified by transactionId {
-    o String transactionId
+transaction Trade {
     --> Commodity commodity
     --> Trader newOwner
 }
@@ -94,7 +93,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork"
+    resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
 ```

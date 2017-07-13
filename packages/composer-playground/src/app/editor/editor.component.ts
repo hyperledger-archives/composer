@@ -1,20 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from '../import/import.component';
-import { AddFileComponent } from '../add-file/add-file.component';
+import { ImportComponent } from './import/import.component';
+import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
-import { AlertService } from '../services/alert.service';
-import { EditorService } from '../services/editor.service';
+import { AlertService } from '../basic-modals/alert.service';
+import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -62,24 +60,14 @@ export class EditorComponent implements OnInit, OnDestroy {
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private modalService: NgbModal,
-                private route: ActivatedRoute,
-                private sampleBusinessNetworkService: SampleBusinessNetworkService,
                 private alertService: AlertService,
                 private editorService: EditorService) {
 
     }
 
     ngOnInit(): Promise<any> {
-        this.route.queryParams.subscribe(() => {
-            if (this.sampleBusinessNetworkService.OPEN_SAMPLE) {
-                this.openImportModal();
-                this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
-            }
-        });
-
         return this.initializationService.initialize()
             .then(() => {
-
                 this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
                     .subscribe((noError) => {
                         if (this.editorFilesValidate() && noError) {
@@ -222,6 +210,16 @@ export class EditorComponent implements OnInit, OnDestroy {
             });
         }
 
+        // deal with query
+        let queryFile = this.clientService.getQueryFile();
+        if (queryFile) {
+            newFiles.push({
+                query: true,
+                id: queryFile.getIdentifier(),
+                displayID: queryFile.getIdentifier()
+            });
+        }
+
         // deal with readme
         let readme = this.clientService.getMetaData().getREADME();
         if (readme) {
@@ -292,6 +290,33 @@ export class EditorComponent implements OnInit, OnDestroy {
         scriptManager.addScript(script);
         this.updateFiles();
         let index = this.findFileIndex(true, script.getIdentifier());
+        this.setCurrentFile(this.files[index]);
+        this.dirty = true;
+    }
+
+    addQueryFile(query) {
+        if (this.files.findIndex((file) => file.query === true) !== -1) {
+            const confirmModalRef = this.modalService.open(ReplaceComponent);
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaces.';
+            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+            confirmModalRef.result.then((result) => {
+                this.processQueryFileAddition(query);
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
+        } else {
+            this.processQueryFileAddition(query);
+        }
+    }
+
+    processQueryFileAddition(query) {
+        let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+        let queryManager: QueryManager = businessNetworkDefinition.getQueryManager();
+        queryManager.setQueryFile(query);
+        this.updateFiles();
+        let index = this.findFileIndex(true, query.getIdentifier());
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
@@ -385,16 +410,22 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.modalService.open(AddFileComponent).result
             .then((result) => {
                 if (result !== 0) {
-                    if (result instanceof ModelFile) {
-                        this.addModelFile(result);
-                    } else if (result instanceof Script) {
-                        this.addScriptFile(result);
-                    } else if (result instanceof AclFile) {
-                        this.addRuleFile(result);
-                    } else {
-                        this.addReadme(result);
+                    try {
+                        if (result instanceof ModelFile) {
+                            this.addModelFile(result);
+                        } else if (result instanceof Script) {
+                            this.addScriptFile(result);
+                        } else if (result instanceof AclFile) {
+                            this.addRuleFile(result);
+                        } else if (result instanceof QueryFile) {
+                            this.addQueryFile(result);
+                        } else {
+                            this.addReadme(result);
+                        }
+                        this.clientService.businessNetworkChanged$.next(true);
+                    } catch (error) {
+                        this.alertService.errorStatus$.next(error);
                     }
-                    this.clientService.businessNetworkChanged$.next(true);
                 }
             }, (reason) => {
                 if (reason && reason !== 1) {
@@ -585,8 +616,18 @@ export class EditorComponent implements OnInit, OnDestroy {
             return 'Script';
         } else if (resource.acl) {
             return 'ACL';
+        } else if (resource.query) {
+            return 'Query';
         } else {
             return 'Readme';
+        }
+    }
+
+    preventNameEdit(resource: any): boolean {
+        if (resource.acl || resource.query) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -626,6 +667,14 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
+            } else if (file.query) {
+              let query = this.clientService.getQueryFile();
+              if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
+                  allValid = false;
+                  file.invalid = true;
+              } else {
+                  file.invalid = false;
+              }
             }
         }
         return allValid;

@@ -552,13 +552,30 @@ class BusinessNetworkConnection extends EventEmitter {
             throw new Error('userID not specified');
         }
         let participantFQI;
+        let participantId;
+        let participantType;
         if (participant instanceof Resource) {
             participantFQI = participant.getFullyQualifiedIdentifier();
+            participantId = participant.getIdentifier();
+            participantType = participant.getFullyQualifiedType();
         } else {
             participantFQI = participant;
+            participantId = participantFQI.substring(participantFQI.lastIndexOf('#') + 1);
+            participantType = participantFQI.substr(0, participantFQI.lastIndexOf('#'));
         }
+
         Util.securityCheck(this.securityContext);
-        return this.connection.createIdentity(this.securityContext, userID, options)
+        return this.getParticipantRegistry(participantType)
+            .then((participantRegistry) => {
+                return participantRegistry.exists(participantId);
+            })
+            .then((exists) => {
+                if (exists) {
+                    return this.connection.createIdentity(this.securityContext, userID, options);
+                } else {
+                    throw new Error(`Participant '${participantFQI}' does not exist `);
+                }
+            })
             .then((identity) => {
                 return Util.invokeChainCode(this.securityContext, 'addParticipantIdentity', [participantFQI, userID])
                     .then(() => {

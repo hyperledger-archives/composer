@@ -2,13 +2,14 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityComponent } from './identity.component';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 
@@ -19,6 +20,14 @@ import { ConnectionProfileService } from '../services/connectionprofile.service'
 import { WalletService } from '../services/wallet.service';
 
 let should = chai.should();
+
+@Component({
+    selector: 'app-footer',
+    template: ''
+})
+class MockFooterComponent {
+
+}
 
 describe(`IdentityComponent`, () => {
 
@@ -50,7 +59,8 @@ describe(`IdentityComponent`, () => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [
-                IdentityComponent
+                IdentityComponent,
+                MockFooterComponent
             ],
             providers: [
                 {provide: NgbModal, useValue: mockModal},

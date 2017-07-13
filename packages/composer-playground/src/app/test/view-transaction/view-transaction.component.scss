@@ -1,0 +1,110 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+@import '../../../assets/styles/base/_typography.scss';
+@import '../transaction/transaction.component';
+
+.view-transaction-modal {
+
+     @extend transaction-modal;
+
+    .resource-component {
+        padding-right: $space-small;
+        margin-top: $space-medium;
+    }
+
+    .resource-component.events {
+        overflow-y: scroll;
+    }
+
+    .modal-sub-header {
+        display: flex;
+        align-items: center;
+        background-color: $third-highlight;
+        padding: 0;
+        nav.transactionnav {
+            background-color: $third-highlight;
+            box-shadow: 0 1px 4px 0 $white;
+            .navcontent {
+                .links {
+                    li {
+                        &.withseparator::after {
+                            content: '';
+                            border-right-color: $sixth-highlight;
+                            margin-top: 0;
+                            margin-bottom: 0;
+                        }
+                    }
+                    a {
+                        color: $primary-text;
+                    }
+                    .action {
+                        margin-left: $space-medium;
+                        margin-right: $space-medium;
+                        line-height: 63px;
+                        color: $primary-text;
+                        transition: none;
+                        border-bottom: 3px solid transparent;
+                        &:hover {
+                            border-bottom-color: $first-highlight;
+                        }
+                        &.active {
+                            border-bottom-color: $first-highlight;
+                        }
+                    }
+                }
+            }
+        }
+    }
+  .resource-list {
+    margin: $space-small 0;
+    .resource-dropdown {
+      margin: $space-small 0;
+      border-radius: 3px;
+      border:1px solid #e3ecec;
+      .resource-open {
+        position: relative;
+        width: 100%;
+        background-color: $third-highlight;
+        padding: $space-small $space-medium;
+        min-height: 0;
+        max-height: 50px;
+        min-width: 630px;
+        max-width: 650px;
+        .resource-title {
+          .title {
+            width: 85%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            float: left;
+          }
+        }
+        &::after {
+          content: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIxN3B4IiBoZWlnaHQ9IjE0cHgiIHZpZXdCb3g9IjAgMCAxNyAxNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgICAgIDx0aXRsZT5Db2xsYXBzZS1FeHBhbmQ8L3RpdGxlPiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4gICAgPGRlZnM+PC9kZWZzPiAgICA8ZyBpZD0iUGFnZS0xIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4gICAgICAgIDxnIGlkPSJGYWJyaWMtQ29tcG9zZXItUGxheWdyb3VuZC1EZWZpbmUtMi1Db3B5LTEyMSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwNzYuMDAwMDAwLCAtNDg2LjAwMDAwMCkiPiAgICAgICAgICAgIDxnIGlkPSJHcm91cC0zLUNvcHkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwMC4wMDAwMDAsIDQ2NC4wMDAwMDApIj4gICAgICAgICAgICAgICAgPGcgaWQ9Ikdyb3VwLUNvcHktMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzg0LjUwMDAwMCwgMjkuMDAwMDAwKSByb3RhdGUoOTAuMDAwMDAwKSB0cmFuc2xhdGUoLTc4NC41MDAwMDAsIC0yOS4wMDAwMDApIHRyYW5zbGF0ZSg3NzcuNTAwMDAwLCAyMS41MDAwMDApIj4gICAgICAgICAgICAgICAgICAgIDxnIGlkPSJDb2xsYXBzZS1FeHBhbmQiPiAgICAgICAgICAgICAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJGaWxsLTMiIGZpbGw9IiMxOTI3M0MiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMuNDYxNTM4LCA3LjUzODQ2Mikgc2NhbGUoLTEsIDEpIHRyYW5zbGF0ZSgtMy40NjE1MzgsIC03LjUzODQ2MikgIiBwb2ludHM9IjUuNTM4NDYxNTQgMiAwIDcuNTM4NDYxNTQgNS41Mzg0NjE1NCAxMy4wNzY5MjMxIDYuOTIzMDc2OTIgMTEuNjkyMzA3NyAyLjc2OTIzMDc3IDcuNTM4NDYxNTQgNi45MjMwNzY5MiAzLjM4NDYxNTM4Ij48L3BvbHlnb24+ICAgICAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEzLDAgTDEzLDE1IiBpZD0iTGluZSIgc3Ryb2tlPSIjMTkyNzNDIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiPjwvcGF0aD4gICAgICAgICAgICAgICAgICAgIDwvZz4gICAgICAgICAgICAgICAgPC9nPiAgICAgICAgICAgIDwvZz4gICAgICAgIDwvZz4gICAgPC9nPjwvc3ZnPg==);
+          cursor: pointer;
+          position: absolute;
+          right: 6%;
+          bottom: 85%;
+          width: 0;
+          height: 0;
+        }
+      }
+      .resource-open.open {
+           &::after {
+               transform: rotate(180deg);
+               bottom: 10%;
+               right: 3%;
+           }
+      }
+      .resource-content {
+        .CodeMirror {
+          height: 200px;
+          min-height: 0;
+          max-width: none;
+        }
+        .CodeMirror, .CodeMirror-scroll {
+            min-height: 0;
+        }
+      }
+    }
+  }
+}

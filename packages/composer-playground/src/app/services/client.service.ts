@@ -4,10 +4,10 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -42,6 +42,11 @@ export class ClientService {
     // horrible hack for tests
     createScriptFile(id, type, content) {
         return this.getBusinessNetwork().getScriptManager().createScript(id, type, content);
+    }
+
+    // horrible hack for tests
+    createQueryFile(id, content) {
+      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -87,6 +92,9 @@ export class ClientService {
             } else if (type === 'acl') {
                 let aclFile = this.createAclFile(id, content);
                 aclFile.validate();
+            } else if (type === 'query') {
+                let queryFile = this.createQueryFile(id, content);
+                queryFile.validate();
             }
             return null;
         } catch (e) {
@@ -117,6 +125,9 @@ export class ClientService {
             } else if (type === 'acl') {
                 let aclFile = this.createAclFile(id, content);
                 this.getBusinessNetwork().getAclManager().setAclFile(aclFile);
+            } else if (type === 'query') {
+                let query = this.createQueryFile(id, content);
+                this.getBusinessNetwork().getQueryManager().setQueryFile(query);
             }
 
             this.businessNetworkChanged$.next(true);
@@ -165,6 +176,10 @@ export class ClientService {
 
     getAclFile(): AclFile {
         return this.getBusinessNetwork().getAclManager().getAclFile();
+    }
+
+    getQueryFile(): QueryFile {
+        return this.getBusinessNetwork().getQueryManager().getQueryFile();
     }
 
     getMetaData() {
@@ -332,20 +347,43 @@ export class ClientService {
         return this.getBusinessNetworkConnection().revokeIdentity(userID);
     }
 
-    private createNewBusinessNetwork(name, version, description, packageJson, readme) {
-        let oldBusinessNetwork = this.getBusinessNetwork();
+    createNewBusinessNetwork(name, version, description, packageJson, readme) {
 
-        this.currentBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-        this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
-
-        oldBusinessNetwork.getScriptManager().getScripts().forEach((script) => {
-            this.currentBusinessNetwork.getScriptManager().addScript(script);
+        this.alertService.busyStatus$.next({
+            title: 'Updating Business Network',
+            text: 'Updating Business Network ' + name
         });
 
-        if (oldBusinessNetwork.getAclManager().getAclFile()) {
-            this.currentBusinessNetwork.getAclManager().setAclFile(oldBusinessNetwork.getAclManager().getAclFile());
-        }
+        try {
+            let newBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
+            let modelFiles = this.filterModelFiles(this.getBusinessNetwork().getModelManager().getModelFiles());
 
-        this.businessNetworkChanged$.next(true);
+            newBusinessNetwork.getModelManager().addModelFiles(modelFiles);
+
+            this.getBusinessNetwork().getScriptManager().getScripts().forEach((script) => {
+                newBusinessNetwork.getScriptManager().addScript(script);
+            });
+
+            if (this.getBusinessNetwork().getAclManager().getAclFile()) {
+                newBusinessNetwork.getAclManager().setAclFile(this.getBusinessNetwork().getAclManager().getAclFile());
+            }
+
+            if (this.getBusinessNetwork().getQueryManager().getQueryFile()) {
+                newBusinessNetwork.getQueryManager().setQueryFile(this.getBusinessNetwork().getQueryManager().getQueryFile());
+            }
+
+            this.currentBusinessNetwork = newBusinessNetwork;
+            this.alertService.busyStatus$.next(null);
+            this.businessNetworkChanged$.next(true);
+        } catch (error) {
+            this.alertService.busyStatus$.next(null);
+            this.alertService.errorStatus$.next(`Failed to Update Business Network: ${error}`);
+        }
+    }
+
+    filterModelFiles(files) {
+        return files.filter((model) => {
+                return !model.isSystemModelFile();
+            });
     }
 }

@@ -3,7 +3,7 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, Component } from '@angular/core';
 
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
@@ -11,14 +11,21 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 let should = chai.should();
+
+@Component({
+    selector: 'app-footer',
+    template: ''
+})
+class MockFooterComponent {
+
+}
 
 @Directive({
     selector: 'connection-profile-data'
 })
-
 class MockConnectionProfileDataDirective {
     @Input()
     public profileUpdated;
@@ -36,7 +43,7 @@ describe('ConnectionProfileComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ConnectionProfileComponent, MockConnectionProfileDataDirective],
+            declarations: [ConnectionProfileComponent, MockConnectionProfileDataDirective, MockFooterComponent],
             providers: [
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: AlertService, useValue: mockAlertService},

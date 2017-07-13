@@ -21,23 +21,19 @@ module.exports.describe = 'Create Code artifacts from Business Network Archive';
 module.exports.builder = function (yargs){
 
     return yargs.option('archiveFile',{alias: 'a', required: true,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
-            .option('format',{alias: 'f', required: true, describe: 'Format of code to generate: Go (beta), PlantUML, Typescript (beta), JSONSchema.'})
-            .option('outputDir',{alias: 'o', required: true, describe:'Output Location'})
-            .usage('composer generator create --archiveFile digitialPropertyNetwork.bna --format Go --outputDir ./dev/go-app');
+        .option('format',{alias: 'f', required: true, describe: 'Format of code to generate: Java, Go (beta), PlantUML, Typescript (beta), JSONSchema.'})
+        .option('outputDir',{alias: 'o', required: true, describe:'Output Location'})
+        .usage('composer generator create --archiveFile digitialPropertyNetwork.bna --format Go --outputDir ./dev/go-app');
 };
 
 module.exports.handler = (argv) => {
 
     argv.thePromise = Create.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
-
+        return;
     })
     .catch((error) => {
-        console.log(error.stack);
-        console.log(error+ '\nCommand failed.');
         throw error;
-
     });
     return argv.thePromise;
 };

@@ -1,4 +1,4 @@
-<section class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
+<section id="success_notify" class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
     <button class="icon close" (click)="close(messagesIndex)">
         <svg class="ibm-icon" aria-hidden="true">
             <use xlink:href="#icon-close_new"></use>
@@ -13,6 +13,7 @@
         <div>
             <div class="notification-title">{{message.title}}</div>
             <p class="notification-text" [innerHTML]="message.text"></p>
+            <p *ngIf="message.link !== ''"><a (click)="onLink(message.linkCallback)" href="#" class="transaction-link">{{message.link}}</a></p>
         </div>
     </div>
 </section>

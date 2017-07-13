@@ -466,6 +466,17 @@ describe('ModelFile', () => {
             mf.getType('String').should.equal('String');
         });
 
+        it('should return false if imported, non primative\'s modelFile doesn\'t exist', () => {
+            const ast = {
+                namespace: 'org.acme',
+                body: [ ]
+            };
+            sandbox.stub(parser, 'parse').returns(ast);
+            let mf = new ModelFile(mockModelManager, 'fake');
+            mf.isImportedType = () => { return true; };
+            mf.resolveImport = () => { return 'org.acme'; };
+            should.not.exist(mf.getType('TNTAsset'));
+        });
     });
 
     describe('#getAssetDeclaration', () => {
@@ -542,4 +553,28 @@ describe('ModelFile', () => {
 
     });
 
+    describe('#getFullyQualifiedTypeName', () => {
+        it('should return null if not prmative, imported or local type', () => {
+            const ast = {
+                namespace: 'org.acme',
+                body: [ ]
+            };
+            sandbox.stub(parser, 'parse').returns(ast);
+            let mf = new ModelFile(mockModelManager, 'fake');
+            mf.isImportedType = () => { return false; };
+            mf.isLocalType = () => { return false; };
+            should.not.exist(mf.getFullyQualifiedTypeName('TNTAsset'));
+        });
+
+        it('should return the type name if its a primative type', () => {
+            const ast = {
+                namespace: 'org.acme',
+                body: [ ]
+            };
+            sandbox.stub(parser, 'parse').returns(ast);
+            let modelFile = new ModelFile(mockModelManager, 'something');
+
+            modelFile.getFullyQualifiedTypeName('String').should.equal('String');
+        });
+    });
 });

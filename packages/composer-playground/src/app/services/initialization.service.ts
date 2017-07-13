@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
 import { ClientService } from './client.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 

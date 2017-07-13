@@ -43,6 +43,8 @@ app-editor {
   }
 
   .main-view {
+    display: flex;
+    flex-direction: column;
     .business-network-details {
       display: flex;
       height:50px;
@@ -95,9 +97,30 @@ app-editor {
     .readme {
       background-color: $white;
       padding: $space-large;
-      min-height: 63vh;
-      max-height: 63vh;
+      min-height: 72vh;
+      max-height: 72vh;
       overflow-y: auto;
+
+      pre {
+        font-size: 0.8rem;
+        color: $white;
+        background-color: #272B36;
+        code {
+          background-color: transparent;
+          border: none;
+          font-size: 0.7rem;
+        }
+      }
+
+      code {
+        border: 1px solid $keyline-highlight;
+        background-color: $white;
+        border-radius: 2px;
+        padding-right: 5px;
+        padding-left: 5px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+      }
     }
 
     .edit_icon {

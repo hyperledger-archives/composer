@@ -27,6 +27,8 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
+process.setMaxListeners(Infinity);
+
 describe('Access control system tests', () => {
 
     let businessNetworkDefinition;
@@ -70,12 +72,14 @@ describe('Access control system tests', () => {
         alice = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
         alice.firstName = 'Alice';
         alice.lastName = 'Ashley';
+        alice.asset = factory.newRelationship('systest.accesscontrols', 'SampleAsset', 'AL1 CE');
         aliceCar = factory.newResource('systest.accesscontrols', 'SampleAsset', 'AL1 CE');
         aliceCar.theValue = 'Alice\'s car';
         aliceCar.owner = factory.newRelationship('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
         bob = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
         bob.firstName = 'Bob';
         bob.lastName = 'Bradley';
+        bob.asset = factory.newRelationship('systest.accesscontrols', 'SampleAsset', 'BO85 CAR');
         bobCar = factory.newResource('systest.accesscontrols', 'SampleAsset', 'BO85 CAR');
         bobCar.theValue = 'Bob\'s car';
         bobCar.owner = factory.newRelationship('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
@@ -131,7 +135,7 @@ describe('Access control system tests', () => {
             });
     });
 
-    it('should be able to enforce read access permissions on an asset registry', () => {
+    it('should be able to enforce read access permissions on an asset registry via client getAll', () => {
         return Promise.resolve()
             .then(() => {
                 // Alice should only be able to read Alice's car.
@@ -142,7 +146,11 @@ describe('Access control system tests', () => {
                 // Bob should only be able to read Bob's car.
                 return bobAssetRegistry.getAll()
                     .should.eventually.be.deep.equal([bobCar]);
-            })
+            });
+    });
+
+    it('should be able to enforce read access permissions on an asset registry via client get', () => {
+        return Promise.resolve()
             .then(() => {
                 // Alice should be able to get her car by ID.
                 return aliceAssetRegistry.get('AL1 CE')
@@ -162,7 +170,11 @@ describe('Access control system tests', () => {
                 // Bob should not be able to get Alice's car by ID.
                 return bobAssetRegistry.get('AL1 CE')
                     .should.be.rejectedWith(/does not exist/);
-            })
+            });
+    });
+
+    it('should be able to enforce read access permissions on an asset registry via client exists', () => {
+        return Promise.resolve()
             .then(() => {
                 // Alice should be able to see if her car exists.
                 return aliceAssetRegistry.exists('AL1 CE')
@@ -185,7 +197,24 @@ describe('Access control system tests', () => {
             });
     });
 
-    it('should be able to enforce read access permissions on a participant registry', () => {
+    it('should be able to enforce read access permissions on an asset registry via client query', function () {
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        }
+        return Promise.resolve()
+            .then(() => {
+                const query = aliceClient.buildQuery('SELECT systest.accesscontrols.SampleAsset');
+                return aliceClient.query(query)
+                    .should.eventually.be.deep.equal([aliceCar]);
+            })
+            .then(() => {
+                const query = bobClient.buildQuery('SELECT systest.accesscontrols.SampleAsset');
+                return bobClient.query(query)
+                    .should.eventually.be.deep.equal([bobCar]);
+            });
+    });
+
+    it('should be able to enforce read access permissions on a participant registry via client getAll', () => {
         return Promise.resolve()
             .then(() => {
                 // Alice should only be able to read Alice's record.
@@ -196,7 +225,11 @@ describe('Access control system tests', () => {
                 // Bob should only be able to read Bob's record.
                 return bobParticipantRegistry.getAll()
                     .should.eventually.be.deep.equal([bob]);
-            })
+            });
+    });
+
+    it('should be able to enforce read access permissions on a participant registry via client get', () => {
+        return Promise.resolve()
             .then(() => {
                 // Alice should be able to get her record by ID.
                 return aliceParticipantRegistry.get('alice@mailcorp.com')
@@ -216,7 +249,11 @@ describe('Access control system tests', () => {
                 // Bob should not be able to get Alice's record by ID.
                 return bobParticipantRegistry.get('alice@mailcorp.com')
                     .should.be.rejectedWith(/does not exist/);
-            })
+            });
+    });
+
+    it('should be able to enforce read access permissions on a participant registry via client exists', () => {
+        return Promise.resolve()
             .then(() => {
                 // Alice should be able to see if her record exists.
                 return aliceParticipantRegistry.exists('alice@mailcorp.com')
@@ -236,6 +273,119 @@ describe('Access control system tests', () => {
                 // Bob should not be able to see if Alice's record exists.
                 return bobParticipantRegistry.exists('alice@mailcorp.com')
                     .should.eventually.be.equal(false);
+            });
+    });
+
+    it('should be able to enforce read access permissions on a participant registry via client query', function () {
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        }
+        return Promise.resolve()
+            .then(() => {
+                const query = aliceClient.buildQuery('SELECT systest.accesscontrols.SampleParticipant');
+                return aliceClient.query(query)
+                    .should.eventually.be.deep.equal([alice]);
+            })
+            .then(() => {
+                const query = bobClient.buildQuery('SELECT systest.accesscontrols.SampleParticipant');
+                return bobClient.query(query)
+                    .should.eventually.be.deep.equal([bob]);
+            });
+    });
+
+    it('should be able to enforce update access permissions on an asset registry via client update', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to update Bob's car.
+                bobCar.theValue = 'lol alice is a haxxor';
+                return aliceAssetRegistry.update(bobCar)
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to update Alice's car.
+                aliceCar.theValue = 'lol bob is a haxxor';
+                return bobAssetRegistry.update(aliceCar)
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to update Alice's car.
+                aliceCar.theValue = 'alice rules';
+                return aliceAssetRegistry.update(aliceCar);
+            })
+            .then(() => {
+                // Bob should only be able to update Bob's car.
+                bobCar.theValue = 'bob rules';
+                return bobAssetRegistry.update(bobCar);
+            });
+    });
+
+    it('should be able to enforce update access permissions on a participant registry via client update', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to update Bob's record.
+                bob.lastName = 'lol alice is a haxxor';
+                return aliceParticipantRegistry.update(bob)
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to update Alice's record.
+                alice.lastName = 'lol bob is a haxxor';
+                return bobParticipantRegistry.update(alice)
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to update Alice's record.
+                alice.lastName = 'alice rules';
+                return aliceParticipantRegistry.update(alice);
+            })
+            .then(() => {
+                // Bob should only be able to update Bob's record.
+                bob.lastName = 'bob rules';
+                return bobParticipantRegistry.update(bob);
+            });
+    });
+
+    it('should be able to enforce delete access permissions on an asset registry via client remove', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to remove Bob's car by ID.
+                return aliceAssetRegistry.remove('BO85 CAR')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to remove Alice's car by ID.
+                return bobAssetRegistry.remove('AL1 CE')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to remove Alice's car.
+                return aliceAssetRegistry.remove('AL1 CE');
+            })
+            .then(() => {
+                // Bob should only be able to remove Bob's car.
+                return bobAssetRegistry.remove('BO85 CAR');
+            });
+    });
+
+    it('should be able to enforce delete access permissions on a participant registry via client remove', () => {
+        return Promise.resolve()
+            .then(() => {
+                // Alice should not be able to remove Bob's record by ID.
+                return aliceParticipantRegistry.remove('bob@mailcorp.com')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Bob should not be able to remove Alice's record by ID.
+                return bobParticipantRegistry.remove('alice@mailcorp.com')
+                    .should.be.rejected;
+            })
+            .then(() => {
+                // Alice should only be able to remove Alice's record.
+                return aliceParticipantRegistry.remove('alice@mailcorp.com');
+            })
+            .then(() => {
+                // Bob should only be able to remove Bob's record.
+                return bobParticipantRegistry.remove('bob@mailcorp.com');
             });
     });
 

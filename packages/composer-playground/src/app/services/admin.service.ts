@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileManager, Logger, BusinessNetworkDefinition } from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');

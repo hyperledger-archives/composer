@@ -1,11 +1,17 @@
 /* tslint:disable:no-unused-expression */
 import { ComponentFixture, TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { SuccessComponent } from './success.component';
-import { AlertService } from '../../services/alert.service';
+import { AlertService } from '../alert.service';
+import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 let should = chai.should();
+
+class MockTransactionService {
+    public event$: Subject<string> = new BehaviorSubject<string>(null);
+}
 
 describe('SuccessComponent', () => {
     let component: SuccessComponent;
@@ -16,7 +22,9 @@ describe('SuccessComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [SuccessComponent],
-            providers: [AlertService]
+            providers: [
+                AlertService
+            ]
         });
 
         fixture = TestBed.createComponent(SuccessComponent);
@@ -160,6 +168,20 @@ describe('SuccessComponent', () => {
 
             component['messages'].length.should.equal(1);
             component['messages'][0].should.deep.equal({title: 'fred'});
+        });
+    });
+
+    describe('#onLink', () => {
+        it('should call callback', () => {
+            let cb = sinon.stub();
+            component.onLink(cb);
+            cb.should.have.been.called;
+        });
+
+        it('should not call callback', () => {
+            let cb = sinon.stub();
+            component.onLink(false);
+            cb.should.not.have.been.called;
         });
     });
 });

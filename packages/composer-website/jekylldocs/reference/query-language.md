@@ -9,7 +9,7 @@ excerpt: The [**Hyperledger Composer query language**](./query-language.html) de
 
 # {{site.data.conrefs.composer_full}} Query Language
 
-Queries in {{site.data.conrefs.composer_full}} are written in a bespoke query language. Queries are defined in one or more query files (`.qry`) within a business network definition.
+Queries in {{site.data.conrefs.composer_full}} are written in a bespoke query language. Queries are defined in a single query file called (`queries.qry`) within a business network definition.
 
 ## Query Syntax
 

@@ -78,7 +78,7 @@ describe('JSONSchemaVisitor', () => {
                 'org.acme.base.MyTransactionEx.json',
                 'org.acme.base.UnitedStatesAddress.json'
             ];
-            sinon.assert.callCount(mockFileWriter.openFile, expectedFiles.length);
+
             let jsonSchemas = {};
 
             expectedFiles.forEach((expectedFile) => {

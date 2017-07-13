@@ -41,13 +41,13 @@ asset ProForma identified by id {
   o Clause[] clauses
 }
 
-transaction CreateProForma identified by id {
+transaction CreateProForma {
   o String id
   o String description
   o Clause[] clauses
 }
 
-transaction UpdateProForma identified by id {
+transaction UpdateProForma {
   o String id
   o String description
   o Clause[] clauses
