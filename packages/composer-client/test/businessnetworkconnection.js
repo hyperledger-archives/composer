@@ -1073,50 +1073,6 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
-    describe('#bindIdentity', () => {
-
-        const pem = '-----BEGIN CERTIFICATE-----\nMIIB8jCCAZmgAwIBAgIULKt4c4xcdMwGgjNef9IL92HQkyAwCgYIKoZIzj0EAwIw\nczELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\nbiBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT\nE2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzA4MTg1NzAwWhcNMTgwNzA4MTg1\nNzAwWjASMRAwDgYDVQQDEwdib29iaWVzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD\nQgAE5P4RNqfEy8pArDxAbVIjRxqkwlpHUY7ANR6X7a4uvVIzIPDx4p7lf37xuc+5\nI9VZCvcI1SA5nIRphet0yYSgZaNsMGowDgYDVR0PAQH/BAQDAgIEMAwGA1UdEwEB\n/wQCMAAwHQYDVR0OBBYEFAmjJfUZvdB8pHvklsdd1HiVog+VMCsGA1UdIwQkMCKA\nIBmrZau7BIB9rRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0cA\nMEQCIGtqR9rUR2ESu2UfUpNUfEeeBsshMkMHmuP/r5uvo2fSAiBtFB9Aid/3nexB\nI5qkVbdRSRQpt7uxoKFDLV/LUDM9xw==\n-----END CERTIFICATE-----\n';
-
-        beforeEach(() => {
-            businessNetworkConnection.connection = mockConnection;
-        });
-
-        it('should throw if participant not specified', () => {
-            (() => {
-                businessNetworkConnection.bindIdentity(null, pem);
-            }).should.throw(/participant not specified/);
-        });
-
-        it('should throw if certificate not specified', () => {
-            (() => {
-                let mockResource = sinon.createStubInstance(Resource);
-                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-                businessNetworkConnection.bindIdentity(mockResource, null);
-            }).should.throw(/certificate not specified/);
-        });
-
-        it('should submit a request to the chaincode for a resource', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            return businessNetworkConnection.bindIdentity(mockResource, pem)
-                .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
-                });
-        });
-
-        it('should submit a request to the chaincode for a fully qualified identifier', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            return businessNetworkConnection.bindIdentity('org.doge.Doge#DOGE_1', pem)
-                .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
-                });
-        });
-
-    });
-
     describe('#revokeIdentity', () => {
 
         it('should throw if identityId not specified', () => {
