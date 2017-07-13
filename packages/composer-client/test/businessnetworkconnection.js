@@ -33,6 +33,8 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
+const IdentityRegistry = require('../lib/identityregistry');
+const Registry = require('../lib/registry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -1090,6 +1092,39 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
+    });
+
+    describe('#getIdentityRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.id = 'org.hyperledger.composer.system.Identity';
+            identityRegistry.name = 'such registry';
+            sandbox.stub(Registry, 'getAllRegistries').resolves([identityRegistry]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .then(() => {
+                    sinon.assert.calledTwice(stub);
+                });
+
+        });
+
+        it('should throw when the default identity registry does not exist', () => {
+
+            // Set up the mock.
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(null);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .should.be.rejectedWith(/default identity registry/);
+
+        });
     });
 
 });

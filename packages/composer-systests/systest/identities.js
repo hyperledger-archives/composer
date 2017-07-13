@@ -58,6 +58,13 @@ describe('Identity system tests', () => {
                 return TestUtil.getClient('systest-identities')
                     .then((result) => {
                         client = result;
+                        return client.getIdentityRegistry()
+                            .then((ir) => {
+                                return ir.getAll();
+                            })
+                            .then((all) => {
+                                console.log(all);
+                            });
                     });
             });
     });

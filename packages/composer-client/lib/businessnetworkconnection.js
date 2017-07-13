@@ -28,6 +28,7 @@ const Query = require('./query');
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
+const IdentityRegistry = require('./identityregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 
@@ -284,6 +285,33 @@ class BusinessNetworkConnection extends EventEmitter {
                     return transactionRegistries[0];
                 } else {
                     throw new Error('Failed to find the default transaction registry');
+                }
+            });
+    }
+
+    /**
+     * Get the identity registry.
+     * @example
+     * // Get the transaction registry
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.getIdentityRegistry();
+     * })
+     * .then(function(identityRegistry){
+     *     // Retrieved Identity Registry
+     * });
+     * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
+     */
+    getIdentityRegistry() {
+        Util.securityCheck(this.securityContext);
+        return IdentityRegistry
+            .getIdentityRegistry(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
+            .then((identityRegistry) => {
+                if (identityRegistry) {
+                    return identityRegistry;
+                } else {
+                    throw new Error('Failed to find the default identity registry');
                 }
             });
     }
