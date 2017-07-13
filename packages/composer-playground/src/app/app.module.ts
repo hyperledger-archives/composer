@@ -20,7 +20,6 @@ import { AppState, InternalStateType } from './app.service';
 import { AboutComponent } from './about';
 import { BasicModalsModule } from './basic-modals/basic-models.module';
 import { WelcomeComponent } from './welcome';
-import { LoginComponent } from './login';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
 import { FooterComponent } from './footer';
@@ -60,7 +59,6 @@ type StoreType = {
     declarations: [
         AboutComponent,
         AppComponent,
-        LoginComponent,
         NoContentComponent,
         VersionCheckComponent,
         WelcomeComponent

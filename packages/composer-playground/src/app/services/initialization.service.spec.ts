@@ -82,7 +82,6 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
 
@@ -111,7 +110,6 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
 
