@@ -129,13 +129,13 @@ ga('send', 'pageview');
             
               <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer Tutorial for creating a Hyperledger Composer solution</h1>
 
-<p><em>Note:</em> this tutorial was written against Hyperledger Composer v0.8 on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a Hyperledger Fabric v0.6 setup are shown in <em>italics</em>).</p>
+<p><em>Note:</em> this tutorial was written against the current release of Hyperledger Composer on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested on a Mac environment. (Note: the relevant steps for a Hyperledger Fabric v0.6 setup are shown in <em>italics</em>).</p>
 
 <p>This tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.</p>
 
 <h2 id="install-hyperledger-composer">Install Hyperledger Composer</h2>
 
-<p>First, make sure you have installed Hyperledger Composer. Follow this <a href="../installing/development-tools.html">Development Environment Install guide</a> - As well as installing Composer, it has instructions to quickly build your Hyperledger Fabric blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.</p>
+<p>First, make sure you have installed Hyperledger Composer. Follow this <a href="../installing/development-tools.html">Development Environment Install guide</a> - As well as installing Composer, it has instructions to quickly build your Hyperledger Fabric blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman application generator and some pre-requisite Angular 2 packages.</p>
 
 <h2 id="install-an-editor-eg-vscode-and-its-hyperledger-composer-extension-for-syntax-highlighting">Install an Editor (eg. VSCode - and its Hyperledger Composer Extension for Syntax Highlighting)</h2>
 
@@ -149,7 +149,7 @@ ga('send', 'pageview');
 
 <h2 id="create-a-business-network-definition">Create a Business Network Definition</h2>
 
-<p>The key concept for Composer is the <strong>business network definition (BND)</strong>. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on Hyperledger Fabric. To create a BND,  we need to create a suitable project structure on disk.</p>
+<p>The key concept for Composer is the <strong>business network definition (BND)</strong>. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on Hyperledger Fabric. To create a BND,  you need to create a suitable project structure on disk.</p>
 
 <p>The easiest way to get started is to clone an <strong>existing sample business network</strong>. Open up a command prompt and clone the Composer sample networks GitHub repository. For Linux, perform this as a non-root user.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/hyperledger/composer-sample-networks.git
@@ -157,7 +157,7 @@ ga('send', 'pageview');
 <p>Then, make a copy of this directory in your project, called &#39;my-network&#39;.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
 </code></pre></div>
-<p>You should now have a folder called <code>my-network</code> (as the basis for our project) that we can start to modify. Using VSCode,  open the <code>my-network</code> folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
+<p>You should now have a folder called <code>my-network</code> (as the basis for our project) that we can start to modify. Using VSCode,  open the <code>my-network</code> folder click on Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
@@ -169,12 +169,12 @@ ga('send', 'pageview');
 
 <p>Note: Depending on timeouts encountered (see &#39;Unit Test&#39; later on) we have added a default mocha &#39;test&#39; timeout of 4 seconds below.</p>
 
-<p>The start of the <code>package.json</code> file should now look like this:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My very first Hyperledger Composer Network"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+<p>Copy the snippet below and replace the existing section in package.json (beginning with &quot;name&quot;, ending with the delimiter below &quot;test&quot;):</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="w">
+  </span><span class="s2">"name"</span><span class="err">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="err">,</span><span class="w">
+  </span><span class="s2">"version"</span><span class="err">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="err">,</span><span class="w">
+  </span><span class="s2">"description"</span><span class="err">:</span><span class="w"> </span><span class="s2">"My very first Hyperledger Composer Network"</span><span class="err">,</span><span class="w">
+  </span><span class="s2">"scripts"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
       </span><span class="nt">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
       </span><span class="nt">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
       </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
@@ -185,9 +185,8 @@ ga('send', 'pageview');
       </span><span class="nt">"test-inner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive &amp;&amp; cucumber-js"</span><span class="p">,</span><span class="w">
       </span><span class="nt">"test-cover"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nyc npm run test-inner"</span><span class="p">,</span><span class="w">
       </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive -t 4000"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-</span><span class="err">...</span><span class="w">
-</span><span class="err">}</span><span class="w">
+     </span><span class="p">}</span><span class="err">,</span><span class="w">
+
 </span></code></pre></div>
 <p>Save your changes to <code>package.json</code></p>
 
@@ -552,7 +551,7 @@ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 <p><em>Note: You&#39;ll notice that the flag &#39;-p&#39; specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric.</em></p>
 
 <p>After approximately 30 seconds or so, the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s adminpw
 
 Deploying business network from archive: my-network.bna
 Business network definition:
@@ -567,11 +566,11 @@ Command succeeded
 <p>You can verify that the network has been deployed by typing:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 </code></pre></div>
-<p>Which should give the following output:</p>
+<p>Which should give the following output (version info represented the current Composer build below):</p>
 <div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-version: 0.7.2
+version: &lt;version info&gt;
 participant: &lt;no participant found&gt;
 
 Command succeeded
@@ -644,13 +643,13 @@ create src/app/Commodity/Commodity.component.css
 </code></pre></div>
 <p>Wait a couple of minutes for the install of the application dependencies to complete.</p>
 
-<p>Next, change directory to your new Angular application directory (eg. my-app) located in your home directory (eg. /home/joe):</p>
+<p>Next, change directory to your new Angular application directory (eg. my-app) created in your current directory:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd my-app
 npm start
 </code></pre></div>
-<p>Your application is running. You should see the <code>composer-rest-server</code> start, and then Angular webpacks the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a></p>
+<p>Your application is running. You should see the <code>composer-rest-server</code> start, info about the Angular webpacks and the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a></p>
 
-<p>If you navigate to this URL and press the &quot;Assets&quot; drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the Hyperledger Fabric in the table (we have not stored them on blockchain yet!). You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.</p>
+<p>If you navigate to this URL and press the &quot;Assets&quot; drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the Hyperledger Fabric in the table (we have not stored them on blockchain yet!). You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI / REST before you can create the Commodity.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
@@ -658,7 +657,7 @@ npm start
 
 <h1 id="congratulations">Congratulations!</h1>
 
-<p>Well done, you&#39;ve now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!</p>
+<p>Well done, you&#39;ve now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start modifying/exploring the skeleton Angular application to create the next industry defining blockchain-based application!</p>
 
 <h2 id="related-links">Related Links</h2>
 
