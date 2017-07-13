@@ -1,19 +1,18 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-login {
+app-login {
     width: 100vw;
-    padding: $space-large $space-medium;
     background-color: $fourth-highlight;
 
-    .header {
-        margin-bottom: $space-medium;
+    section.header {
+        padding: $space-large $space-large $space-medium $space-large;
     }
 
-    .main-view {
+    section.main-view {
         overflow-y: auto;
-        height: 80vh;
-    }
+        height: calc(100vh - 63px - 70px);
+        padding: $space-medium $space-large;
 
     div.connection-profile:first-child {
         margin-top: 0;
@@ -119,7 +118,25 @@ login {
         }
 
     }
+    }
 
+    section.edit-connection-profile {
+        padding: $space-large ;
+        height: calc(100vh - 63px);
+        overflow-y: auto;
+
+        .header {
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
 }
 
 

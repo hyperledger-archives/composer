@@ -6,12 +6,13 @@
 /* tslint:disable:no-input-rename*/
 /* tslint:disable:member-ordering*/
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Input, Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 import { BehaviorSubject } from 'rxjs/Rx';
 
-import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 
 import * as chai from 'chai';
 
@@ -21,6 +22,7 @@ import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 
 import { LoginComponent } from './login.component';
+import { AlertService } from '../basic-modals/alert.service';
 
 let should = chai.should();
 
@@ -60,6 +62,18 @@ class RouterStub {
 
 }
 
+@Component({
+    selector: 'connection-profile',
+    template: ''
+})
+class MockConnectionProfileComponent {
+
+    @Input()
+    public connectionProfile;
+    @Output()
+    public profileUpdated: EventEmitter<any> = new EventEmitter<any>();
+}
+
 describe(`LoginComponent`, () => {
 
     let component: LoginComponent;
@@ -71,6 +85,7 @@ describe(`LoginComponent`, () => {
     let mockConnectionProfileService;
     let mockInitializationService;
     let routerStub;
+    let mockAlertService;
 
     beforeEach(() => {
 
@@ -79,13 +94,18 @@ describe(`LoginComponent`, () => {
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
+        mockAlertService = sinon.createStubInstance(AlertService);
 
         routerStub = new RouterStub();
 
+        mockAlertService.errorStatus$ = {
+            next: sinon.stub()
+        };
+
         TestBed.configureTestingModule({
-            imports: [FormsModule],
             declarations: [
-                LoginComponent
+                LoginComponent,
+                MockConnectionProfileComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
@@ -93,7 +113,8 @@ describe(`LoginComponent`, () => {
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
-                {provide: InitializationService, useValue: mockInitializationService}
+                {provide: InitializationService, useValue: mockInitializationService},
+                {provide: AlertService, useValue: mockAlertService}
             ]
         });
 
@@ -107,37 +128,50 @@ describe(`LoginComponent`, () => {
             component.should.be.ok;
         });
 
-        it('should get all identities', fakeAsync(() => {
+        it('should load identities', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve({myProfile: {name: 'myProfile'}}));
-
-            mockIdentityService.getIdentities.returns(Promise.resolve(['bob']));
-
+            let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
             component.ngOnInit();
 
             tick();
 
             mockInitializationService.initialize.should.have.been.called;
+            loadConnectionProfilesStub.should.have.been.called;
+        }));
+    });
+
+    describe('loadConnectionProfiles', () => {
+        it('should load the connection profile', fakeAsync(() => {
+            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve({myProfile: {name: 'myProfile'}}));
+
+            mockIdentityService.getIdentities.returns(Promise.resolve(['bob']));
+
+            component.loadConnectionProfiles();
+
+            tick();
+
             mockConnectionProfileService.getAllProfiles.should.have.been.called;
 
             mockIdentityService.getIdentities.should.have.been.calledWith('myProfile');
 
-            component['identities'].should.deep.equal({
-                myProfile: [{
+            component['connectionProfiles'].should.deep.equal([{
+                name: 'myProfile',
+                profile: {name: 'myProfile'},
+                default: false,
+                identities: [{
                     userId: 'bob',
-                    connectionProfile: 'myProfile',
                     businessNetwork: 'org-acme-biznet'
-                }]});
+                }]
+            }]);
         }));
     });
 
     describe('changeIdentity', () => {
         it('should change identity', fakeAsync(() => {
-            let identity = {userId: 'bob', connectionProfile: 'myProfile'};
             mockAdminService.list.returns(Promise.resolve(['myNetwork']));
             mockClientService.ensureConnected.returns(Promise.resolve());
 
-            component.changeIdentity(identity);
+            component.changeIdentity('myProfile', 'bob');
 
             tick();
 
@@ -149,5 +183,43 @@ describe(`LoginComponent`, () => {
             mockIdentityService.setLoggedIn.should.have.been.calledWith(true);
             routerStub.navigate.should.have.been.calledWith(['editor']);
         }));
+
+        it('should handle error', fakeAsync(() => {
+            mockAdminService.list.returns(Promise.reject('some error'));
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            component.changeIdentity('myProfile', 'bob');
+
+            tick();
+
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            mockAdminService.list.should.have.been.called;
+            mockClientService.ensureConnected.should.not.have.been.called;
+
+            mockIdentityService.setLoggedIn.should.not.have.been.called;
+            routerStub.navigate.should.not.have.been.called;
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+    });
+
+    describe('editConnectionProfile', () => {
+        it('should edit the connection profile', () => {
+            component.should.be.ok;
+            component.editConnectionProfile('myProfile');
+
+            component['editingConectionProfile'].should.equal('myProfile');
+        });
+    });
+
+    describe('finishedEditingConnectionProfile', () => {
+        it('should close editing connection profile screen', () => {
+            let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
+            component.finishedEditingConnectionProfile();
+
+            should.not.exist(component['editingConectionProfile']);
+            loadConnectionProfilesStub.should.have.been.called;
+        });
     });
 });
