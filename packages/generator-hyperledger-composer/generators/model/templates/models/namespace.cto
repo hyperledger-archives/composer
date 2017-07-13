@@ -13,7 +13,7 @@ asset Asset identified by assetId {
   o String value
 }
 
-transaction ChangeAssetValue identified by transactionId {
+transaction ChangeAssetValue {
   o String transactionId
   o String newValue
   --> Asset relatedAsset

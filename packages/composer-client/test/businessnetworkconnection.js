@@ -33,6 +33,8 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
+const IdentityRegistry = require('../lib/identityregistry');
+const Registry = require('../lib/registry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -55,6 +57,7 @@ describe('BusinessNetworkConnection', () => {
     let mockQueryFile;
     let mockFactory;
     let mockSerializer;
+    let mockParticipantRegistry;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -75,6 +78,7 @@ describe('BusinessNetworkConnection', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
         businessNetworkConnection.securityContext = mockSecurityContext;
+        mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
         delete process.env.COMPOSER_CONFIG;
     });
 
@@ -946,6 +950,11 @@ describe('BusinessNetworkConnection', () => {
                 userID: 'dogeid1',
                 userSecret: 'suchsecret'
             });
+
+            mockParticipantRegistry.exists.resolves(true);
+            businessNetworkConnection.getParticipantRegistry = () => {
+                return Promise.resolve(mockParticipantRegistry);
+            };
         });
 
         it('should throw if participant not specified', () => {
@@ -1006,6 +1015,59 @@ describe('BusinessNetworkConnection', () => {
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
                     });
+                });
+        });
+
+        it('should throw if participant does not exist', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            mockParticipantRegistry.exists.resolves(false);
+
+            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1')
+                .catch((error) => {
+                    error.should.match(/does not exist /);
+                });
+        });
+    });
+
+    describe('#bindIdentity', () => {
+
+        const pem = '-----BEGIN CERTIFICATE-----\nMIIB8jCCAZmgAwIBAgIULKt4c4xcdMwGgjNef9IL92HQkyAwCgYIKoZIzj0EAwIw\nczELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\nbiBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT\nE2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzA4MTg1NzAwWhcNMTgwNzA4MTg1\nNzAwWjASMRAwDgYDVQQDEwdib29iaWVzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD\nQgAE5P4RNqfEy8pArDxAbVIjRxqkwlpHUY7ANR6X7a4uvVIzIPDx4p7lf37xuc+5\nI9VZCvcI1SA5nIRphet0yYSgZaNsMGowDgYDVR0PAQH/BAQDAgIEMAwGA1UdEwEB\n/wQCMAAwHQYDVR0OBBYEFAmjJfUZvdB8pHvklsdd1HiVog+VMCsGA1UdIwQkMCKA\nIBmrZau7BIB9rRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0cA\nMEQCIGtqR9rUR2ESu2UfUpNUfEeeBsshMkMHmuP/r5uvo2fSAiBtFB9Aid/3nexB\nI5qkVbdRSRQpt7uxoKFDLV/LUDM9xw==\n-----END CERTIFICATE-----\n';
+
+        beforeEach(() => {
+            businessNetworkConnection.connection = mockConnection;
+        });
+
+        it('should throw if participant not specified', () => {
+            (() => {
+                businessNetworkConnection.bindIdentity(null, pem);
+            }).should.throw(/participant not specified/);
+        });
+
+        it('should throw if certificate not specified', () => {
+            (() => {
+                let mockResource = sinon.createStubInstance(Resource);
+                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+                businessNetworkConnection.bindIdentity(mockResource, null);
+            }).should.throw(/certificate not specified/);
+        });
+
+        it('should submit a request to the chaincode for a resource', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            return businessNetworkConnection.bindIdentity(mockResource, pem)
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
+                });
+        });
+
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.bindIdentity('org.doge.Doge#DOGE_1', pem)
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
                 });
         });
 
@@ -1074,6 +1136,39 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
+    });
+
+    describe('#getIdentityRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.id = 'org.hyperledger.composer.system.Identity';
+            identityRegistry.name = 'such registry';
+            sandbox.stub(Registry, 'getAllRegistries').resolves([identityRegistry]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .then(() => {
+                    sinon.assert.calledTwice(stub);
+                });
+
+        });
+
+        it('should throw when the default identity registry does not exist', () => {
+
+            // Set up the mock.
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(null);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .should.be.rejectedWith(/default identity registry/);
+
+        });
     });
 
 });

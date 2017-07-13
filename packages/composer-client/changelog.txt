@@ -12,8 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.9.2 {465d5a96640dce8240a392d058e06fe5} 2017-07-11
+Version 0.9.2 {60d41f6d3b545fd4ad53ca2bf0e5a36c} 2017-07-11
 - Added bindIdentity
+- Added getIdentityRegistry
 
 Version 0.9.0 {d6ebf2b722345ee0f7dac56f42730f12} 2017-06-26
 - Added buildQuery and query
