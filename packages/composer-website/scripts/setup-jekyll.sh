@@ -10,7 +10,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 
 echo "Attempting to install jekyll"
-gem install jekyll
+gem install sass:3.4.25 jekyll
 echo "Attempting to install jekyll-sitemap"
 gem install jekyll-sitemap
 echo "Attempting to install redcarpet"
