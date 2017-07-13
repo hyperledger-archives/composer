@@ -99,8 +99,8 @@ then
     if [ "${FC_TASK}" != "docs" ]; then
 #        echo "ABORT_BUILD=true" > ${DIR}/build.cfg
 #        echo "ABORT_CODE=0" >> ${DIR}/build.cfg
-        echo 'Docs only build - no pointing bothering with anything more'
-        exit 0
+        echo 'Docs only build'
+#        exit 0
     fi
 
 else
