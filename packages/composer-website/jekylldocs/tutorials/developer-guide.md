@@ -10,13 +10,13 @@ excerpt: "The developer guide will walk you through the steps required to build 
 
 # Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
 
-*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.8 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
+*Note:* this tutorial was written against the current release of {{site.data.conrefs.composer_full}} on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested on a Mac environment. (Note: the relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
 
 This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
 ## Install {{site.data.conrefs.composer_full}}
 
-First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
+First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman application generator and some pre-requisite Angular 2 packages.
 
 ## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
@@ -30,7 +30,7 @@ After installation, launch VSCode and select `View > Command Palette...` then ty
 
 ## Create a Business Network Definition
 
-The key concept for Composer is the **business network definition (BND)**. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on {{site.data.conrefs.hlf_full}}. To create a BND,  we need to create a suitable project structure on disk.
+The key concept for Composer is the **business network definition (BND)**. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on {{site.data.conrefs.hlf_full}}. To create a BND,  you need to create a suitable project structure on disk.
 
 The easiest way to get started is to clone an **existing sample business network**. Open up a command prompt and clone the Composer sample networks GitHub repository. For Linux, perform this as a non-root user.
 
@@ -44,7 +44,7 @@ Then, make a copy of this directory in your project, called 'my-network'.
 cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
 ```
 
-You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.
+You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder click on Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
@@ -56,10 +56,10 @@ The metadata (name, version, description) for the business network definition is
 
 Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
 
-The start of the `package.json` file should now look like this:
+Copy the snippet below and replace the existing section in package.json (beginning with "name", ending with the delimiter below "test"):
 
 ```json
-{
+
   "name": "my-network",
   "version": "0.0.1",
   "description": "My very first Hyperledger Composer Network",
@@ -74,9 +74,8 @@ The start of the `package.json` file should now look like this:
       "test-inner": "mocha --recursive && cucumber-js",
       "test-cover": "nyc npm run test-inner",
       "test": "mocha --recursive -t 4000"
-    },
-...
-}
+	 },
+
 ```
 
 Save your changes to `package.json`
@@ -490,7 +489,7 @@ _Note: You'll notice that the flag '-p' specifies that we should use a v1 connec
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
 ```
-user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s adminpw
 
 Deploying business network from archive: my-network.bna
 Business network definition:
@@ -509,13 +508,13 @@ You can verify that the network has been deployed by typing:
 composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 ```
 
-Which should give the following output:
+Which should give the following output (version info represented the current Composer build below):
 
 ```
 user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-version: 0.7.2
+version: <version info>
 participant: <no participant found>
 
 Command succeeded
@@ -604,16 +603,16 @@ create src/app/Commodity/Commodity.component.css
 
 Wait a couple of minutes for the install of the application dependencies to complete.
 
-Next, change directory to your new Angular application directory (eg. my-app) located in your home directory (eg. /home/joe):
+Next, change directory to your new Angular application directory (eg. my-app) created in your current directory:
 
 ```
 cd my-app
 npm start
 ```
 
-Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a>
+Your application is running. You should see the `composer-rest-server` start, info about the Angular webpacks and the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a>
 
-If you navigate to this URL and press the "Assets" drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the {{site.data.conrefs.hlf_full}} in the table (we have not stored them on blockchain yet!). You can create new instances using the "Add Asset" button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.
+If you navigate to this URL and press the "Assets" drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the {{site.data.conrefs.hlf_full}} in the table (we have not stored them on blockchain yet!). You can create new instances using the "Add Asset" button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI / REST before you can create the Commodity.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
@@ -621,7 +620,7 @@ If you navigate to this URL and press the "Assets" drop down (at the top-right o
 
 # Congratulations!
 
-Well done, you've now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!
+Well done, you've now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start modifying/exploring the skeleton Angular application to create the next industry defining blockchain-based application!
 
 
 ## Related Links

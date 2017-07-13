@@ -1,0 +1,4 @@
+namespace com.testing
+
+transaction Transaction {
+}

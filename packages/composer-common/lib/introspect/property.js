@@ -156,7 +156,7 @@ class Property {
      * @return {string} the fully qualified name of this property
      */
     getFullyQualifiedName() {
-        return this.getNamespace() + '.' + this.getParent().getName() + '.' + this.getName();
+        return this.getParent().getFullyQualifiedName() + '.' + this.getName();
     }
 
     /**
@@ -164,7 +164,7 @@ class Property {
      * @return {string} the namespace of the parent of this property
      */
     getNamespace() {
-        return this.getParent().getModelFile().getNamespace();
+        return this.getParent().getNamespace();
     }
 
     /**

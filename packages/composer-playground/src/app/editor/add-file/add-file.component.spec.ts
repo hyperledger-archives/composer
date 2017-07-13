@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
-import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AssetDeclaration } from 'composer-common';
+import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AssetDeclaration, QueryFile } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from '../../file-importer';
@@ -200,6 +200,23 @@ describe('AddFileComponent', () => {
             createMock.should.have.been.called;
         }));
 
+        it('should call this.createQuery if query file detected', fakeAsync(() => {
+
+            let b = new Blob(['/**QUERY File*/'], {type: 'text/plain'});
+            let file = new File([b], 'newfile.qry');
+
+            let createMock = sandbox.stub(component, 'createQuery');
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('some data'));
+
+            // Run method
+            component.fileAccepted(file);
+            tick();
+
+            // Assertions
+            createMock.should.have.been.called;
+        }));
+
         it('should call this.fileRejected when there is an error reading the file', fakeAsync(() => {
 
             let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
@@ -347,6 +364,24 @@ describe('AddFileComponent', () => {
             component.fileType.should.equal('acl');
             mockClientService.createAclFile.should.have.been.calledWith(filename, dataBuffer.toString());
             component.currentFile.should.deep.equal(mockRuleFile);
+            component.currentFileName.should.equal(filename);
+        }));
+    });
+
+    describe('#createQuery', () => {
+        it('should create a new query file named queries.qry', async(() => {
+            let dataBuffer = new Buffer('/**QUERY File**/ query things');
+            let filename = 'queries.qry';
+            let mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockClientService.createQueryFile.returns(mockQueryFile);
+
+            // Run method
+            component.createQuery(dataBuffer);
+
+            // Assertions
+            component.fileType.should.equal('qry');
+            mockClientService.createQueryFile.should.have.been.calledWith(filename, dataBuffer.toString());
+            component.currentFile.should.deep.equal(mockQueryFile);
             component.currentFileName.should.equal(filename);
         }));
     });

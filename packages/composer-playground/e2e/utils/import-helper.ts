@@ -7,14 +7,14 @@ export class ImportModalHelper {
   // Select BND from BNA file drop
   static selectBusinessNetworkDefinitionFromFile(filePath: string) {
     // Import modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
     .then(() => {
         let inputFileElement = element(by.id('file-importer_input'));
         return dragDropFile(inputFileElement, filePath);
     })
     .then(() => {
         let importElement = element(by.id('import_confirm'));
-        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), 5000)
+        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), 10000)
         .then(() => {
             return importElement.click();
         });
@@ -24,7 +24,7 @@ export class ImportModalHelper {
   // Confirm import
   static confirmImport() {
     // Import modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
     .then(() => {
         return element(by.id('import_confirm')).click();
     });
@@ -33,13 +33,13 @@ export class ImportModalHelper {
   // Cancel import
   static cancelImport() {
       // Import modal should be present
-      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000)
+      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
       .then(() => {
         return element(by.id('import_cancel')).click();
       });
   }
 
   static waitForImportModalToAppear() {
-      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
+      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000);
   }
 }

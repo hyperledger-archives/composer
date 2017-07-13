@@ -1,0 +1,6 @@
+namespace com.testing
+
+asset A identified by AId {
+  o String AId
+  --> Testing test
+}

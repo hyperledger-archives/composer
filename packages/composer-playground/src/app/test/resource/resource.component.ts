@@ -37,6 +37,7 @@ export class ResourceComponent implements OnInit {
     private resourceDeclaration: ClassDeclaration = null;
     private actionInProgress: boolean = false;
     private definitionError: string = null;
+    private includeOptionalFields: boolean = false;
 
     private codeConfig = {
         lineNumbers: true,
@@ -118,7 +119,10 @@ export class ResourceComponent implements OnInit {
         idx = leftPad(idx, 4, '0');
         let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
         try {
-            const generateParameters = {generate: withSampleData ? 'sample' : 'empty'};
+            const generateParameters = {
+                generate: withSampleData ? 'sample' : 'empty',
+                includeOptionalFields: this.includeOptionalFields
+            };
             let resource = factory.newResource(
                 this.resourceDeclaration.getModelFile().getNamespace(),
                 this.resourceDeclaration.getName(),

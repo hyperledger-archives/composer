@@ -4,6 +4,8 @@ title: Support
 category: start
 sidebar: sidebars/support.md
 excerpt: Get support with Hyperledger Composer
+section: support
+index-order: 0
 ---
 
 #Community

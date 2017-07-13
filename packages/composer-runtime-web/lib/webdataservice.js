@@ -19,6 +19,10 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('WebDataService');
 
+// Install the PouchDB plugins. The order of the adapters is important!
+PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-idb'));
+PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-websql'));
+
 /**
  * Base class representing the data service provided by a {@link Container}.
  * @protected
@@ -31,7 +35,7 @@ class WebDataService extends PouchDBDataService {
      * @param {boolean} [autocommit] Should this data service auto commit?
      */
     constructor(uuid, autocommit) {
-        super(uuid, autocommit, { adapter: 'idb' });
+        super(uuid, autocommit);
         const method = 'constructor';
         LOG.entry(method, uuid, autocommit);
         LOG.exit(method);
