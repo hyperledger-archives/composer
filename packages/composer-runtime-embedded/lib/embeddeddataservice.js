@@ -19,6 +19,9 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('EmbeddedDataService');
 
+// Install the PouchDB plugins. The order of the adapters is important!
+PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-memory'));
+
 /**
  * Base class representing the data service provided by a {@link Container}.
  * @protected
