@@ -17,10 +17,12 @@
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
+const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Logger = require('composer-common').Logger;
 const Util = require('composer-common').Util;
 
-const fs = require('fs');
+const LOG = Logger.getLog('AdminConnection');
 
 /**
  * This class creates an administration connection to a Hyperledger Composer runtime. The
@@ -89,7 +91,7 @@ class AdminConnection {
             .then((securityContext) => {
                 this.securityContext = securityContext;
                 if (businessNetworkIdentifier) {
-                    return this.connection.ping(this.securityContext);
+                    return this.ping(this.securityContext);
                 }
             });
     }
@@ -291,8 +293,56 @@ class AdminConnection {
      * been tested. The promise will be rejected if the version is incompatible.
      */
     ping() {
+        const method = 'ping';
+        LOG.entry(method);
+        return this.pingInner()
+            .catch((error) => {
+                if (error.message.match(/ACTIVATION_REQUIRED/)) {
+                    LOG.debug(method, 'Activation required, activating ...');
+                    return this.activate()
+                        .then(() => {
+                            return this.pingInner();
+                        });
+                }
+                throw error;
+            })
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Test the connection to the runtime and verify that the version of the
+     * runtime is compatible with this level of the client node.js module.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    pingInner() {
+        const method = 'pingInner';
+        LOG.entry(method);
         Util.securityCheck(this.securityContext);
-        return this.connection.ping(this.securityContext);
+        return this.connection.ping(this.securityContext)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Activate the current identity on the currently connected business network.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    activate() {
+        const method = 'activate';
+        LOG.entry(method);
+        return Util.invokeChainCode(this.securityContext, 'activateIdentity', [])
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
     /**
