@@ -52,9 +52,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
-    "composer-runtime": "^0.9.3",
-    "composer-runtime-embedded": "^0.9.3"
+    "composer-common": "0.9.3",
+    "composer-runtime": "0.9.3",
+    "composer-runtime-embedded": "0.9.3"
   },
   "nyc": {
     "exclude": [
