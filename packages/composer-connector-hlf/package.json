@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
-    "composer-runtime-hlf": "^0.9.3",
+    "composer-common": "0.9.3",
+    "composer-runtime-hlf": "0.9.3",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
     "semver": "^5.3.0",

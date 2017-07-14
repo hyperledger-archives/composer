@@ -62,9 +62,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
-    "composer-runtime": "^0.9.3",
-    "composer-runtime-web": "^0.9.3",
+    "composer-common": "0.9.3",
+    "composer-runtime": "0.9.3",
+    "composer-runtime-web": "0.9.3",
     "uuid": "^3.0.1"
   }
 }

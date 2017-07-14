@@ -54,7 +54,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
+    "composer-common": "0.9.3",
     "socket.io-client": "^1.7.3"
   },
   "nyc": {
