@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
-    "composer-runtime-hlfv1": "^0.9.3",
+    "composer-common": "0.9.3",
+    "composer-runtime-hlfv1": "0.9.3",
     "fabric-ca-client": "^1.0.0",
     "fabric-client": "^1.0.0",
     "fs-extra": "^1.0.0",
