@@ -4,20 +4,20 @@ abstract asset Asset {  }
 
 abstract participant Participant {   }
 
-abstract transaction Transaction identified by transactionId{
+abstract transaction Transaction identified by transactionId {
   o String transactionId
   o DateTime timestamp
 }
 
-abstract event Event identified by eventId{
+abstract event Event identified by eventId {
   o String eventId
   o DateTime timestamp
 }
 
 abstract asset Registry identified by registryId {
   o String registryId
-  o String name 
-  o String type 
+  o String name
+  o String type
 }
 
 asset AssetRegistry extends Registry {
@@ -32,10 +32,44 @@ asset TransactionRegistry extends Registry {
 
 }
 
-asset IdentityRegistry extends Registry {
+asset Network identified by networkId {
+  o String networkId
+}
+
+enum IdentityState {
+    o ISSUED
+    o BOUND
+    o ACTIVATED
+    o REVOKED
+}
+
+asset Identity identified by identityId extends Asset {
+    o String identityId
+    o String name
+    o String issuer
+    o String certificate
+    o IdentityState state
+    --> Participant participant
+}
+
+abstract transaction IdentityTransaction extends Transaction {
 
 }
 
-asset Network identified by networkId {
-  o String networkId
+transaction IssueIdentity extends IdentityTransaction {
+    o String name
+    --> Participant participant
+}
+
+transaction BindIdentity extends IdentityTransaction {
+    o String identifier
+    --> Participant participant
+}
+
+transaction ActivateIdentity extends IdentityTransaction {
+
+}
+
+transaction RevokeIdentity extends IdentityTransaction {
+    --> Identity identity
 }

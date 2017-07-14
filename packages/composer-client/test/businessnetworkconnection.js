@@ -24,6 +24,7 @@ const ComboConnectionProfileStore = require('composer-common').ComboConnectionPr
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
 const Query = require('../lib/query');
@@ -61,6 +62,7 @@ describe('BusinessNetworkConnection', () => {
         sandbox = sinon.sandbox.create();
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockConnection = sinon.createStubInstance(Connection);
+        mockSecurityContext.getConnection.returns(mockConnection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
@@ -860,6 +862,83 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
+        it('should throw any errors that do not match ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION NOT REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.ping()
+                .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
+        });
+
+        it('should activate the identity if the ping returns ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION_REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.ping()
+                .then(() => {
+                    sinon.assert.calledTwice(mockConnection.ping);
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                });
+        });
+
+    });
+
+    describe('#pingInner', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should ping the connection', () => {
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.ping);
+                });
+        });
+
+    });
+
+    describe('#activate', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should submit a request to the chaincode for activation', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                });
+        });
+
     });
 
     describe('#issueIdentity', () => {
@@ -883,12 +962,12 @@ describe('BusinessNetworkConnection', () => {
             }).should.throw(/participant not specified/);
         });
 
-        it('should throw if userID not specified', () => {
+        it('should throw if identityName not specified', () => {
             (() => {
                 let mockResource = sinon.createStubInstance(Resource);
                 mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
                 businessNetworkConnection.issueIdentity(mockResource, null);
-            }).should.throw(/userID not specified/);
+            }).should.throw(/identityName not specified/);
         });
 
         it('should submit a request to the chaincode for a resource', () => {
@@ -900,7 +979,7 @@ describe('BusinessNetworkConnection', () => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -915,7 +994,7 @@ describe('BusinessNetworkConnection', () => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -930,7 +1009,7 @@ describe('BusinessNetworkConnection', () => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', { issuer: true });
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -949,6 +1028,50 @@ describe('BusinessNetworkConnection', () => {
         });
     });
 
+    describe('#bindIdentity', () => {
+
+        const pem = '-----BEGIN CERTIFICATE-----\nMIIB8jCCAZmgAwIBAgIULKt4c4xcdMwGgjNef9IL92HQkyAwCgYIKoZIzj0EAwIw\nczELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\nbiBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT\nE2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzA4MTg1NzAwWhcNMTgwNzA4MTg1\nNzAwWjASMRAwDgYDVQQDEwdib29iaWVzMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD\nQgAE5P4RNqfEy8pArDxAbVIjRxqkwlpHUY7ANR6X7a4uvVIzIPDx4p7lf37xuc+5\nI9VZCvcI1SA5nIRphet0yYSgZaNsMGowDgYDVR0PAQH/BAQDAgIEMAwGA1UdEwEB\n/wQCMAAwHQYDVR0OBBYEFAmjJfUZvdB8pHvklsdd1HiVog+VMCsGA1UdIwQkMCKA\nIBmrZau7BIB9rRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0cA\nMEQCIGtqR9rUR2ESu2UfUpNUfEeeBsshMkMHmuP/r5uvo2fSAiBtFB9Aid/3nexB\nI5qkVbdRSRQpt7uxoKFDLV/LUDM9xw==\n-----END CERTIFICATE-----\n';
+
+        beforeEach(() => {
+            businessNetworkConnection.connection = mockConnection;
+        });
+
+        it('should throw if participant not specified', () => {
+            (() => {
+                businessNetworkConnection.bindIdentity(null, pem);
+            }).should.throw(/participant not specified/);
+        });
+
+        it('should throw if certificate not specified', () => {
+            (() => {
+                let mockResource = sinon.createStubInstance(Resource);
+                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+                businessNetworkConnection.bindIdentity(mockResource, null);
+            }).should.throw(/certificate not specified/);
+        });
+
+        it('should submit a request to the chaincode for a resource', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            return businessNetworkConnection.bindIdentity(mockResource, pem)
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
+                });
+        });
+
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.bindIdentity('org.doge.Doge#DOGE_1', pem)
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
+                });
+        });
+
+    });
+
     describe('#revokeIdentity', () => {
 
         it('should throw if identity not specified', () => {
@@ -959,15 +1082,74 @@ describe('BusinessNetworkConnection', () => {
             }).should.throw(/identity not specified/);
         });
 
-        it('should submit a request to the chaincode', () => {
+        it('should submit a request to the chaincode for a resource', () => {
             sandbox.stub(Util, 'invokeChainCode').resolves();
             return businessNetworkConnection.revokeIdentity('dogeid1')
                 .then(() => {
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeIdentity', ['dogeid1']);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
                 });
         });
 
+        it('should submit a request to the chaincode for an identifier', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('dogeid1');
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.revokeIdentity(mockResource)
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
+                });
+        });
+
+    });
+
+    describe('#getIdentityRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            let stub = sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(mockIdentityRegistry);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(mockIdentityRegistry);
+                });
+
+        });
+
+        it('should throw when the default identity registry does not exist', () => {
+
+            // Set up the mock.
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(null);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getIdentityRegistry()
+                .should.be.rejectedWith(/default identity registry/);
+
+        });
     });
 
 });

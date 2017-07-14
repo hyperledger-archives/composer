@@ -27,46 +27,89 @@ const LOG = Logger.getLog('EngineIdentities');
 class EngineIdentities {
 
     /**
-     * Add a mapping from the specified identity, or user ID, to the specified
-     * participant.
+     * Issue a new identity to a participant in the business network.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    addParticipantIdentity(context, args) {
-        const method = 'addParticipantIdentity';
+    issueIdentity(context, args) {
+        const method = 'issueIdentity';
         LOG.entry(method, context, args);
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'addParticipantIdentity', ['participantId', 'userId']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'issueIdentity', ['participantFQI', 'identityName']));
         }
-        let participantId = args[0];
-        let userId = args[1];
+        let participantFQI = args[0];
+        let identityName = args[1];
         let identityManager = context.getIdentityManager();
-        return identityManager.addIdentityMapping(participantId, userId)
+        return identityManager.issueIdentity(participantFQI, identityName)
             .then(() => {
                 LOG.exit(method);
             });
     }
 
     /**
-     * Remove any mapping for the specified identity, or user ID.
+     * Bind an existing identity to a participant in the business network.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    removeIdentity(context, args) {
-        const method = 'removeIdentity';
+    bindIdentity(context, args) {
+        const method = 'bindIdentity';
+        LOG.entry(method, context, args);
+        if (args.length !== 2) {
+            LOG.error(method, 'Invalid arguments', args);
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'bindIdentity', ['participantFQI', 'certificate']));
+        }
+        let participantFQI = args[0];
+        let certificate = args[1];
+        let identityManager = context.getIdentityManager();
+        return identityManager.bindIdentity(participantFQI, certificate)
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Activate the current identity in the business network.
+     * @param {Context} context The request context.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    activateIdentity(context, args) {
+        const method = 'activateIdentity';
+        LOG.entry(method, context, args);
+        if (args.length !== 0) {
+            LOG.error(method, 'Invalid arguments', args);
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'activateIdentity', []));
+        }
+        let identityManager = context.getIdentityManager();
+        return identityManager.activateIdentity()
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Revoke an identity in the business network.
+     * @param {Context} context The request context.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    revokeIdentity(context, args) {
+        const method = 'revokeIdentity';
         LOG.entry(method, context, args);
         if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'removeIdentity', ['userId']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'revokeIdentity', ['identityId']));
         }
-        let userId = args[0];
+        let identityId = args[0];
         let identityManager = context.getIdentityManager();
-        return identityManager.removeIdentityMapping(userId)
+        return identityManager.revokeIdentity(identityId)
             .then(() => {
                 LOG.exit(method);
             });

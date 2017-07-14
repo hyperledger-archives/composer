@@ -75,6 +75,24 @@ describe('Context', () => {
 
     });
 
+    describe('#getFunction', () => {
+
+        it('should return the current function', () => {
+            context.function = 'suchfunc';
+            context.getFunction().should.equal('suchfunc');
+        });
+
+    });
+
+    describe('#getArguments', () => {
+
+        it('should return the current arguments', () => {
+            context.arguments = ['arg1', 'arg2'];
+            context.getArguments().should.deep.equal(['arg1', 'arg2']);
+        });
+
+    });
+
     describe('#loadBusinessNetworkRecord', () => {
 
         it('should load the business record', () => {
@@ -259,41 +277,122 @@ describe('Context', () => {
 
     describe('#loadCurrentParticipant', () => {
 
-        it('should return null if no identity is specified', () => {
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
-            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-            mockIdentityService.getCurrentUserID.returns(null);
-            let mockParticipant = sinon.createStubInstance(Resource);
-            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
-            return context.loadCurrentParticipant()
-                .should.eventually.be.equal(null);
+        let mockIdentityManager;
+        let mockIdentityService;
+        let mockIdentity;
+        let mockParticipant;
+
+        beforeEach(() => {
+            mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            sinon.stub(context, 'getIdentityManager').returns(mockIdentityManager);
+            mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            mockIdentity = sinon.createStubInstance(Resource);
+            mockParticipant = sinon.createStubInstance(Resource);
         });
 
-        it('should load the current participant if an identity is specified', () => {
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
-            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-            mockIdentityService.getCurrentUserID.returns('dogeid1');
-            let mockParticipant = sinon.createStubInstance(Resource);
-            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
+        it('should get the identity, validate it, and get the participant', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
             return context.loadCurrentParticipant()
-                .should.eventually.be.equal(mockParticipant);
+                .should.eventually.be.equal(mockParticipant)
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
+                });
         });
 
-        it('should throw an error if an invalid identity is specified', () => {
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
-            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-            mockIdentityService.getCurrentUserID.returns('dogeid1');
-            mockIdentityManager.getParticipant.withArgs('dogeid1').rejects(new Error('no such participant'));
+        it('should ignore an activation required message when calling activate identity', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'activateIdentity';
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
             return context.loadCurrentParticipant()
-                .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+                .should.eventually.be.null
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
+                });
+        });
+
+        it('should throw an activation required message when calling another function', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'bindIdentity';
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
+        });
+
+        it('should throw an non-activation required message', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
+        });
+
+        it('should not ignore an activation required error from looking up the identity for admin users', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'bindIdentity';
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            let promise = Promise.resolve();
+            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
+                mockIdentityService.getName.returns(admin);
+                promise = promise.then(() => {
+                    return context.loadCurrentParticipant()
+                        .should.be.rejectedWith(/such error/);
+                });
+            });
+            return promise;
+        });
+
+        it('should ignore any errors from looking up the identity for admin users', () => {
+            let promise = Promise.resolve();
+            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
+                mockIdentityService.getName.returns(admin);
+                mockIdentityManager.getIdentity.rejects(new Error('such error'));
+                promise = promise.then(() => {
+                    return context.loadCurrentParticipant()
+                        .should.eventually.be.null;
+                });
+            });
+            return promise;
+        });
+
+        it('should ignore any errors from validating the identity for admin users', () => {
+            let promise = Promise.resolve();
+            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
+                mockIdentityService.getName.returns(admin);
+                mockIdentityManager.getIdentity.resolves(mockIdentity);
+                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
+                promise = promise.then(() => {
+                    return context.loadCurrentParticipant()
+                        .should.eventually.be.null;
+                });
+            });
+            return promise;
+        });
+
+        it('should ignore any errors from looking up the participant for admin users', () => {
+            let promise = Promise.resolve();
+            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
+                mockIdentityService.getName.returns(admin);
+                mockIdentityManager.getIdentity.resolves(mockIdentity);
+                mockIdentityManager.getParticipant.withArgs(mockIdentity).rejects(new Error('such error'));
+                promise = promise.then(() => {
+                    return context.loadCurrentParticipant()
+                        .should.eventually.be.null;
+                });
+            });
+            return promise;
         });
 
     });
@@ -427,7 +526,7 @@ describe('Context', () => {
 
     describe('#initialize', () => {
 
-        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockSystemIdentities, mockCompiledAclBundle;
+        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockCompiledAclBundle;
 
         beforeEach(() => {
             mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
@@ -443,8 +542,6 @@ describe('Context', () => {
             sinon.stub(context, 'getDataService').returns(mockDataService);
             mockSystemRegistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
-            mockSystemIdentities = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysidentities').resolves(mockSystemIdentities);
         });
 
         it('should initialize the context', () => {
@@ -466,7 +563,14 @@ describe('Context', () => {
                     sinon.assert.calledOnce(context.loadCurrentParticipant);
                     should.equal(context.participant, null);
                     context.sysregistries.should.equal(mockSystemRegistries);
-                    context.sysidentities.should.equal(mockSystemIdentities);
+                });
+        });
+
+        it('should not initialize the context with the current participant if deploying', () => {
+            return context.initialize({ function: 'init' })
+                .then(() => {
+                    sinon.assert.notCalled(context.loadCurrentParticipant);
+                    should.equal(context.participant, null);
                 });
         });
 
@@ -498,11 +602,33 @@ describe('Context', () => {
                 });
         });
 
-        it('should initialize the context with a specified system identities collection', () => {
-            let mockSystemIdentities2 = sinon.createStubInstance(DataCollection);
-            return context.initialize({ sysidentities: mockSystemIdentities2 })
+        it('should initialize the context with the specified function name', () => {
+            return context.initialize({ function: 'suchfunc' })
                 .then(() => {
-                    context.sysidentities.should.equal(mockSystemIdentities2);
+                    context.function.should.equal('suchfunc');
+                });
+        });
+
+        it('should initialize the context with the original function name if no function name specified', () => {
+            context.function = 'suchfunc';
+            return context.initialize({})
+                .then(() => {
+                    context.function.should.equal('suchfunc');
+                });
+        });
+
+        it('should initialize the context with the specified arguments', () => {
+            return context.initialize({ arguments: ['sucharg1', 'sucharg2'] })
+                .then(() => {
+                    context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
+                });
+        });
+
+        it('should initialize the context with the original function name if no function name specified', () => {
+            context.arguments = ['sucharg1', 'sucharg2'];
+            return context.initialize({})
+                .then(() => {
+                    context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
                 });
         });
 
@@ -763,12 +889,12 @@ describe('Context', () => {
     describe('#getIdentityManager', () => {
 
         it('should return a new identity manager', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            sinon.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-            let mockSystemIdentities = sinon.createStubInstance(DataCollection);
-            sinon.stub(context, 'getSystemIdentities').returns(mockSystemIdentities);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
             context.getIdentityManager().should.be.an.instanceOf(IdentityManager);
         });
 
@@ -885,22 +1011,6 @@ describe('Context', () => {
             let mockSystemRegistries = sinon.createStubInstance(DataCollection);
             context.sysregistries = mockSystemRegistries;
             context.getSystemRegistries().should.equal(mockSystemRegistries);
-        });
-
-    });
-
-    describe('#getSystemIdentities', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getSystemIdentities();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
-        it('should return the system identities data collection', () => {
-            let mockSystemIdentities = sinon.createStubInstance(DataCollection);
-            context.sysidentities = mockSystemIdentities;
-            context.getSystemIdentities().should.equal(mockSystemIdentities);
         });
 
     });
