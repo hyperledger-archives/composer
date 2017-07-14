@@ -44,6 +44,14 @@ editor-file {
   max-height: 63vh;
 }
 
+.CodeMirror-simplescroll-vertical {
+    width: 10px !important; 
+    margin-right: 0.2rem;
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    background: rgba(255, 255, 255, .1) !important;
+}
+
 .ps.ps--active-x>.ps__scrollbar-x-rail,
 .ps.ps--active-y>.ps__scrollbar-y-rail{
     opacity: 0.6;
