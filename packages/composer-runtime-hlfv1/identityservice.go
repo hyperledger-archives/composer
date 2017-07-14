@@ -16,8 +16,9 @@ package main
 
 import (
 	"bytes"
-	"strings"
+	"crypto/sha256"
 	"crypto/x509"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 
@@ -28,8 +29,14 @@ import (
 
 // IdentityService is a Go wrapper around an instance of the IdentityService JavaScript class.
 type IdentityService struct {
-	VM   *duktape.Context
-	Stub shim.ChaincodeStubInterface
+	VM            *duktape.Context
+	Stub          shim.ChaincodeStubInterface
+	Certificate   *x509.Certificate
+	CurrentUserID string
+	Identifier    string
+	Name          string
+	Issuer        string
+	PEM           string
 }
 
 // NewIdentityService creates a Go wrapper around a new instance of the IdentityService JavaScript class.
@@ -43,11 +50,17 @@ func NewIdentityService(vm *duktape.Context, context *Context, stub shim.Chainco
 	// Create the new identity service.
 	result = &IdentityService{VM: vm, Stub: stub}
 
+	// Load the certificate.
+	err := result.loadCertificate()
+	if err != nil {
+		panic(err)
+	}
+
 	// Create a new instance of the JavaScript IdentityService class.
 	vm.PushGlobalObject()                   // [ global ]
 	vm.GetPropString(-1, "composer")        // [ global composer ]
 	vm.GetPropString(-1, "IdentityService") // [ global composer IdentityService ]
-	err := vm.Pnew(0)                       // [ global composer theIdentityService ]
+	err = vm.Pnew(0)                        // [ global composer theIdentityService ]
 	if err != nil {
 		panic(err)
 	}
@@ -59,65 +72,101 @@ func NewIdentityService(vm *duktape.Context, context *Context, stub shim.Chainco
 	vm.Pop()                                // [ global composer theIdentityService ]
 
 	// Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.getCurrentUserID) // [ global composer theIdentityService getCurrentUserID ]
-	vm.PutPropString(-2, "getCurrentUserID")   // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getIdentifier)  // [ global composer theIdentityService getIdentifier ]
+	vm.PutPropString(-2, "getIdentifier")    // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getName)        // [ global composer theIdentityService getName ]
+	vm.PutPropString(-2, "getName")          // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getIssuer)      // [ global composer theIdentityService getIssuer ]
+	vm.PutPropString(-2, "getIssuer")        // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getCertificate) // [ global composer theIdentityService getCertificate ]
+	vm.PutPropString(-2, "getCertificate")   // [ global composer theIdentityService ]
 
 	// Return the new identity service.
 	return result
 }
 
-// extract the common name from the creator x509 certificate
+// load the creator x509 certificate
 // Although we should really use protobufs to correctly locate the certificate
 // this would have meant pulling in a load of vendor dependencies as they aren't
 // in the chaincode container and it isn't worth it.
-func extractNameFromCreator(stub shim.ChaincodeStubInterface) (result string, errResp error) {
-	logger.Debug("Entering extractNameFromCreator", &stub)
-	defer func() {logger.Debug("Exiting extractNameFromCreator", result, errResp)}()
-	creator, err := stub.GetCreator()
+func (identityService *IdentityService) loadCertificate() (errResp error) {
+	logger.Debug("Entering loadCertificate")
+	defer func() { logger.Debug("Exiting loadCertificate", errResp) }()
+
+	creator, err := identityService.Stub.GetCreator()
 	if err != nil {
-		return "", err
+		return err
 	}
 	logger.Debug("creator", string(creator))
-	certStart := bytes.Index(creator,[]byte("-----BEGIN CERTIFICATE-----"))
+	certStart := bytes.Index(creator, []byte("-----BEGIN CERTIFICATE-----"))
 	if certStart == -1 {
-		return "", errors.New("No Certificate found")
+		return errors.New("No Certificate found")
 	}
 	certText := creator[certStart:]
 	block, _ := pem.Decode(certText)
 	if block == nil {
-		return "", errors.New("Error received on pem.Decode of certificate:" + string(certText))
+		return errors.New("Error received on pem.Decode of certificate:" + string(certText))
 	}
 
 	ucert, err := x509.ParseCertificate(block.Bytes)
 
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	return ucert.Subject.CommonName, nil
+	identityService.Certificate = ucert
+	identityService.PEM = string(certText)
+	return nil
 }
 
-// getCurrentUserID retrieves the userID attribute from the users certificate.
-func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (result int) {
-	logger.Debug("Entering IdentityService.getCurrentUserID", vm)
-	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
+// getIdentifier gets a unique identifier for the identity used to submit the transaction.
+func (identityService *IdentityService) getIdentifier(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getIdentifier", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getIdentifier", result) }()
 
-	creatorName, err := extractNameFromCreator(identityService.Stub)
-	if err != nil {
-		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
-		vm.Throw()
-		return 0
-	}
+	// Create a fingerprint of the certificate.
+	bytes := identityService.Certificate.Raw
+	hash := sha256.New()
+	hash.Write(bytes)
+	fingerprint := hex.EncodeToString(hash.Sum(nil))
 
-	logger.Debug("Common Name", creatorName)
+	// Return the fingerprint.
+	vm.PushString(fingerprint)
+	return 1
+}
 
-	// TODO: Will be upgraded to a new security model soon. 
-	// returning Null grants any common name with the word admin in
-	// it to have all authority
-	if strings.Contains(strings.ToLower(creatorName), "admin") {
-		vm.PushNull()
-		return 1
-	}
-	vm.PushString(creatorName)
+// getName gets the name of the identity used to submit the transaction.
+func (identityService *IdentityService) getName(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getName", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getName", result) }()
+
+	// Return the common name of the certificate.
+	name := identityService.Certificate.Subject.CommonName
+	vm.PushString(name)
+	return 1
+}
+
+// getIssuer gets the issuer of the identity used to submit the transaction.
+func (identityService *IdentityService) getIssuer(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getIssuer", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getIssuer", result) }()
+
+	// Create a fingerprint of the issuer of the certificate.
+	bytes := identityService.Certificate.RawIssuer
+	hash := sha256.New()
+	hash.Write(bytes)
+	fingerprint := hex.EncodeToString(hash.Sum(nil))
+
+	// Return the fingerprint.
+	vm.PushString(fingerprint)
+	return 1
+}
+
+// getCertificate gets the certificate used to submit the transaction.
+func (identityService *IdentityService) getCertificate(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getCertificate", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getCertificate", result) }()
+
+	// Return the certificate.
+	vm.PushString(identityService.PEM)
 	return 1
 }

@@ -96,19 +96,28 @@ describe('Identity system tests', () => {
     });
 
     it('should throw an exception for a ping request using a revoked identity', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
+        let identityName = uuid.v4();
+        return client.issueIdentity(participant, identityName)
             .then((identity) => {
                 return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
+                return client.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const identity = identities.find((identity) => {
+                    return identity.name === identityName;
+                });
                 return client.revokeIdentity(identity);
             })
             .then(() => {
                 return client.ping();
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity has been revoked/);
     });
 
     it('should throw an exception for a ping request using a identity that is mapped to a non-existent participant', () => {
@@ -127,7 +136,7 @@ describe('Identity system tests', () => {
                 client = result;
                 return client.ping();
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
     it('should issue an identity and make the participant available for transaction processor functions', () => {
@@ -145,13 +154,22 @@ describe('Identity system tests', () => {
     });
 
     it('should throw an exception for a transaction processor function using a revoked identity', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
+        let identityName = uuid.v4();
+        return client.issueIdentity(participant, identityName)
             .then((identity) => {
                 return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
+                return client.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const identity = identities.find((identity) => {
+                    return identity.name === identityName;
+                });
                 return client.revokeIdentity(identity);
             })
             .then(() => {
@@ -159,7 +177,7 @@ describe('Identity system tests', () => {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity has been revoked/);
     });
 
     it('should throw an exception for a transaction processor function using a identity that is mapped to a non-existent participant', () => {
@@ -180,7 +198,7 @@ describe('Identity system tests', () => {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
 });

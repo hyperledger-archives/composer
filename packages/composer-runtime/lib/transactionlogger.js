@@ -53,7 +53,7 @@ class TransactionLogger {
     onResourceAdded(event) {
         const method = 'onResourceAdded';
         LOG.entry(method, event);
-        LOG.exit();
+        LOG.exit(method);
     }
 
     /**
@@ -78,7 +78,7 @@ class TransactionLogger {
         let patches = jsonpatch.compare(oldJSON, newJSON);
         LOG.debug(method, 'Generated JSON Patch', patches);
 
-        LOG.exit();
+        LOG.exit(method);
     }
 
     /**
@@ -88,7 +88,7 @@ class TransactionLogger {
     onResourceRemoved(event) {
         const method = 'onResourceRemoved';
         LOG.entry(method, event);
-        LOG.exit();
+        LOG.exit(method);
     }
 
 }

@@ -305,7 +305,7 @@ class QueryExecutor {
         foundRelationships.forEach((foundRelationship) => {
             LOG.debug(method, 'Found relationship object', foundRelationship.relationship.toString());
             this.modifyRelationship(foundRelationship.relationship, (name) => {
-                LOG.debug('Relationship accessed', foundRelationship.relationship.toString());
+                LOG.debug(method, 'Relationship accessed', foundRelationship.relationship.toString());
                 return this.resolver.resolveRelationship(foundRelationship.relationship, {
                     cachedResources: new Map(),
                     skipRecursion: true
