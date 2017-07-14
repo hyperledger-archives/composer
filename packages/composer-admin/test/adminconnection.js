@@ -271,7 +271,7 @@ describe('AdminConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.ping()
                 .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
@@ -282,13 +282,13 @@ describe('AdminConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
                 });
         });
 
@@ -325,7 +325,7 @@ describe('AdminConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
@@ -334,12 +334,12 @@ describe('AdminConnection', () => {
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
                 });
         });
 

@@ -402,11 +402,17 @@ describe('WebConnection', () => {
 
         it('should return the existing identity if it already exists', () => {
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
-            mockIdentitiesDataCollection.get.withArgs('doge').resolves({ userID: 'doge', userSecret: 'password' });
+            mockIdentitiesDataCollection.get.withArgs('doge').resolves({
+                certificate: '',
+                identifier: '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
+                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                name: 'doge',
+                secret: 'f892c30a'
+            });
             return connection.createIdentity(mockSecurityContext, 'doge')
                 .then((result) => {
                     sinon.assert.notCalled(mockIdentitiesDataCollection.add);
-                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'password' });
+                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
                 });
         });
 

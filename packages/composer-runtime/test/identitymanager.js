@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Api = require('../lib/api');
 const Context = require('../lib/context');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
@@ -32,6 +33,7 @@ require('sinon-as-promised');
 
 describe('IdentityManager', () => {
 
+    let mockApi;
     let mockContext;
     let mockIdentityService;
     let mockRegistryManager;
@@ -41,6 +43,7 @@ describe('IdentityManager', () => {
     let identityManager;
 
     beforeEach(() => {
+        mockApi = sinon.createStubInstance(Api);
         mockContext = sinon.createStubInstance(Context);
         mockIdentityService = sinon.createStubInstance(IdentityService);
         mockContext.getIdentityService.returns(mockIdentityService);
@@ -175,28 +178,14 @@ describe('IdentityManager', () => {
 
     });
 
-    describe('#parseParticipant', () => {
-
-        it('should throw for a missing hash', () => {
-            (() => {
-                identityManager.parseParticipant('org.acme.SampleParticipant_alice@email.com');
-            }).should.throw(/Invalid fully qualified participant identifier/);
-        });
-
-        it('should parse the participant FQI into a relationship', () => {
-            const relationship = identityManager.parseParticipant('org.acme.SampleParticipant#alice@email.com');
-            relationship.getNamespace().should.equal('org.acme');
-            relationship.getType().should.equal('SampleParticipant');
-            relationship.getIdentifier().should.equal('alice@email.com');
-        });
-
-    });
-
     describe('#issueIdentity', () => {
 
         it('should add a new identity to the identity registry', () => {
+            const tx = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+            tx.participant = factory.newRelationship('org.acme','SampleParticipant', 'alice@email.com');
+            tx.identityName = 'alice1';
             mockIdentityService.getIssuer.returns('26341f1fc63f30886c54abeba3aca520601126ae2a57869d1ec1a3f854ebc417');
-            return identityManager.issueIdentity('org.acme.SampleParticipant#alice@email.com', 'alice1')
+            return identityManager.issueIdentity(mockApi, tx)
                 .then(() => {
                     sinon.assert.calledOnce(mockIdentityRegistry.add);
                     const identity = mockIdentityRegistry.add.args[0][0];
@@ -218,8 +207,11 @@ describe('IdentityManager', () => {
         const pem = '-----BEGIN CERTIFICATE-----\nMIICGjCCAcCgAwIBAgIRANuOnVN+yd/BGyoX7ioEklQwCgYIKoZIzj0EAwIwczEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh\nLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNjI2MTI0OTI2WhcNMjcwNjI0MTI0OTI2\nWjBbMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMN\nU2FuIEZyYW5jaXNjbzEfMB0GA1UEAwwWQWRtaW5Ab3JnMS5leGFtcGxlLmNvbTBZ\nMBMGByqGSM49AgEGCCqGSM49AwEHA0IABGu8KxBQ1GkxSTMVoLv7NXiYKWj5t6Dh\nWRTJBHnLkWV7lRUfYaKAKFadSii5M7Z7ZpwD8NS7IsMdPR6Z4EyGgwKjTTBLMA4G\nA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1UdIwQkMCKAIBmrZau7BIB9\nrRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0gAMEUCIQC4sKQ6\nCEgqbTYe48az95W9/hnZ+7DI5eSnWUwV9vCd/gIgS5K6omNJydoFoEpaEIwM97uS\nXVMHPa0iyC497vdNURA=\n-----END CERTIFICATE-----\n';
 
         it('should add a new identity to the identity registry', () => {
+            const tx = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+            tx.participant = factory.newRelationship('org.acme','SampleParticipant', 'alice@email.com');
+            tx.certificate = pem;
             mockIdentityService.getIssuer.returns('26341f1fc63f30886c54abeba3aca520601126ae2a57869d1ec1a3f854ebc417');
-            return identityManager.bindIdentity('org.acme.SampleParticipant#alice@email.com', pem)
+            return identityManager.bindIdentity(mockApi, tx)
                 .then(() => {
                     sinon.assert.calledOnce(mockIdentityRegistry.add);
                     const identity = mockIdentityRegistry.add.args[0][0];
@@ -236,9 +228,14 @@ describe('IdentityManager', () => {
 
     });
 
-    describe('#activateIdentity', () => {
+    describe('#activateCurrentIdentity', () => {
 
         const pem = '-----BEGIN CERTIFICATE-----\nMIICGjCCAcCgAwIBAgIRANuOnVN+yd/BGyoX7ioEklQwCgYIKoZIzj0EAwIwczEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh\nLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNjI2MTI0OTI2WhcNMjcwNjI0MTI0OTI2\nWjBbMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMN\nU2FuIEZyYW5jaXNjbzEfMB0GA1UEAwwWQWRtaW5Ab3JnMS5leGFtcGxlLmNvbTBZ\nMBMGByqGSM49AgEGCCqGSM49AwEHA0IABGu8KxBQ1GkxSTMVoLv7NXiYKWj5t6Dh\nWRTJBHnLkWV7lRUfYaKAKFadSii5M7Z7ZpwD8NS7IsMdPR6Z4EyGgwKjTTBLMA4G\nA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1UdIwQkMCKAIBmrZau7BIB9\nrRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0gAMEUCIQC4sKQ6\nCEgqbTYe48az95W9/hnZ+7DI5eSnWUwV9vCd/gIgS5K6omNJydoFoEpaEIwM97uS\nXVMHPa0iyC497vdNURA=\n-----END CERTIFICATE-----\n';
+        let tx;
+
+        beforeEach(() => {
+            tx = factory.newTransaction('org.hyperledger.composer.system', 'ActivateCurrentIdentity');
+        });
 
         it('should activate an issued identity', () => {
             let identity = factory.newResource('org.hyperledger.composer.system', 'Identity', 'e38b9db5b7167f8033fb48f04efe5d5fd7ec36c8d7be51ed019f81e1ac66657f');
@@ -249,7 +246,7 @@ describe('IdentityManager', () => {
             identity.participant = factory.newRelationship('org.acme', 'SampleParticipant', 'alice@email.com');
             sinon.stub(identityManager, 'getIdentity').resolves(identity);
             sinon.stub(identityManager, 'activateIssuedIdentity').resolves();
-            return identityManager.activateIdentity()
+            return identityManager.activateCurrentIdentity(mockApi, tx)
                 .then(() => {
                     sinon.assert.calledOnce(identityManager.activateIssuedIdentity);
                     sinon.assert.calledWith(identityManager.activateIssuedIdentity, mockIdentityRegistry, identity);
@@ -265,7 +262,7 @@ describe('IdentityManager', () => {
             identity.participant = factory.newRelationship('org.acme', 'SampleParticipant', 'alice@email.com');
             sinon.stub(identityManager, 'getIdentity').resolves(identity);
             sinon.stub(identityManager, 'activateBoundIdentity').resolves();
-            return identityManager.activateIdentity()
+            return identityManager.activateCurrentIdentity(mockApi, tx)
                 .then(() => {
                     sinon.assert.calledOnce(identityManager.activateBoundIdentity);
                     sinon.assert.calledWith(identityManager.activateBoundIdentity, mockIdentityRegistry, identity);
@@ -280,7 +277,7 @@ describe('IdentityManager', () => {
             identity.state = 'ACTIVATED';
             identity.participant = factory.newRelationship('org.acme', 'SampleParticipant', 'alice@email.com');
             sinon.stub(identityManager, 'getIdentity').resolves(identity);
-            return identityManager.activateIdentity()
+            return identityManager.activateCurrentIdentity(mockApi, tx)
                 .should.be.rejectedWith(/The current identity cannot be activated because it is in an unknown state/);
         });
 
@@ -389,9 +386,20 @@ describe('IdentityManager', () => {
             mockIdentityRegistry.get.withArgs('e38b9db5b7167f8033fb48f04efe5d5fd7ec36c8d7be51ed019f81e1ac66657f').resolves(identity);
         });
 
-        it('should update the identity in the identity registry', () => {
+        it('should throw if the identity has already been revoked', () => {
+            identity.state = 'REVOKED';
+            const tx = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+            tx.identity = identity;
             mockIdentityRegistry.update.resolves();
-            return identityManager.revokeIdentity('e38b9db5b7167f8033fb48f04efe5d5fd7ec36c8d7be51ed019f81e1ac66657f')
+            return identityManager.revokeIdentity(mockApi, tx)
+                .should.be.rejectedWith(/The specified identity has already been revoked/);
+        });
+
+        it('should update the identity in the identity registry', () => {
+            const tx = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+            tx.identity = identity;
+            mockIdentityRegistry.update.resolves();
+            return identityManager.revokeIdentity(mockApi, tx)
                 .then(() => {
                     sinon.assert.calledOnce(mockIdentityRegistry.update);
                     const newIdentity = mockIdentityRegistry.update.args[0][0];

@@ -14,15 +14,13 @@
 
 'use strict';
 
-const Serializer = require('composer-common').Serializer;
-const Factory = require('composer-common').Factory;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const AssetDeclaration = require('composer-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
+const Factory = require('composer-common').Factory;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
@@ -32,7 +30,7 @@ const QueryFile = require('composer-common').QueryFile;
 const QueryManager = require('composer-common').QueryManager;
 const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
-const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('../lib/transactionregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
@@ -51,11 +49,11 @@ describe('BusinessNetworkConnection', () => {
     let mockSecurityContext;
     let mockConnection;
     let mockBusinessNetworkDefinition;
-    let mockModelManager;
+    let modelManager;
     let mockQueryManager;
     let mockQueryFile;
-    let mockFactory;
-    let mockSerializer;
+    let factory;
+    let serializer;
     let mockParticipantRegistry;
 
     beforeEach(() => {
@@ -66,16 +64,31 @@ describe('BusinessNetworkConnection', () => {
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        businessNetworkConnection.businessNetwork.getModelManager.returns(mockModelManager);
+        modelManager = new ModelManager();
+        modelManager.addModelFile(`
+        namespace org.acme.sample
+        asset SampleAsset identified by assetId {
+            o String assetId
+        }
+        participant SampleParticipant identified by participantId {
+            o String participantId
+        }
+        transaction SampleTransaction {
+
+        }
+        event SampleEvent {
+
+        }
+        `);
+        businessNetworkConnection.businessNetwork.getModelManager.returns(modelManager);
         mockQueryManager = sinon.createStubInstance(QueryManager);
         businessNetworkConnection.businessNetwork.getQueryManager.returns(mockQueryManager);
         mockQueryFile = sinon.createStubInstance(QueryFile);
         mockQueryManager.createQueryFile.returns(mockQueryFile);
-        mockFactory = sinon.createStubInstance(Factory);
-        businessNetworkConnection.businessNetwork.getFactory.returns(mockFactory);
-        mockSerializer = sinon.createStubInstance(Serializer);
-        businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
+        factory = new Factory(modelManager);
+        businessNetworkConnection.businessNetwork.getFactory.returns(factory);
+        serializer = new Serializer(factory, modelManager);
+        businessNetworkConnection.businessNetwork.getSerializer.returns(serializer);
         businessNetworkConnection.securityContext = mockSecurityContext;
         mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
         delete process.env.COMPOSER_CONFIG;
@@ -182,15 +195,22 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             const cb = sinon.stub();
             businessNetworkConnection.on('event', cb);
-            mockConnection.on.withArgs('events', sinon.match.func).yields(['event1', 'event2']);
-            mockSerializer.fromJSON.onCall(0).returns('event1#serialized');
-            mockSerializer.fromJSON.onCall(1).returns('event2#serialized');
+            mockConnection.on.withArgs('events', sinon.match.func).yields([
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
+            ]);
 
             return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
             .then((result) => {
                 sinon.assert.calledTwice(cb); // two events
-                sinon.assert.calledWith(cb, 'event1#serialized');
-                sinon.assert.calledWith(cb, 'event2#serialized');
+                const ev1 = cb.args[0][0];
+                ev1.isResource().should.be.true;
+                ev1.instanceOf('org.acme.sample.SampleEvent');
+                ev1.getIdentifier().should.equal('event1');
+                const ev2 = cb.args[1][0];
+                ev2.isResource().should.be.true;
+                ev2.instanceOf('org.acme.sample.SampleEvent');
+                ev2.getIdentifier().should.equal('event2');
             });
         });
     });
@@ -568,50 +588,39 @@ describe('BusinessNetworkConnection', () => {
     describe('#submitTransaction', () => {
 
         it('should throw when transaction not specified', () => {
-            (function () {
+            (() => {
                 businessNetworkConnection.submitTransaction(null);
             }).should.throw(/transaction not specified/);
         });
 
         it('should throw when type is not a transaction', () => {
-            let assetDecl = sinon.createStubInstance(AssetDeclaration);
-            let asset = sinon.createStubInstance(Resource);
-            assetDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            asset.getClassDeclaration.returns(assetDecl);
-            mockFactory.newResource.returns(asset);
-            (function () {
+            const asset = factory.newResource('org.acme.sample', 'SampleAsset', 'ASSET_1');
+            (() => {
                 businessNetworkConnection.submitTransaction(asset);
-            }).should.throw(/such\.ns\.suchType is not a transaction/);
+            }).should.throw(/org.acme.sample.SampleAsset is not a transaction/);
         });
 
         it('should invoke the chain-code', () => {
 
             // Fake the transaction registry.
-            let txRegistry = sinon.createStubInstance(TransactionRegistry);
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            let txDecl = sinon.createStubInstance(TransactionDeclaration);
-            let tx = sinon.createStubInstance(Resource);
-            txDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            tx.getClassDeclaration.returns(txDecl);
-            tx.getIdentifier.returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            const tx = factory.newResource('org.acme.sample', 'SampleTransaction', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
             tx.timestamp = new Date();
 
-            // Force the transaction to be serialized as some fake JSON.
-            const json = '{"fake":"json for the test"}';
-            mockSerializer.toJSON.returns(JSON.parse(json));
-
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', () => {
-                return Promise.resolve();
-            });
+            sandbox.stub(Util, 'invokeChainCode').resolves();
 
             // Invoke the submitTransaction function.
             return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
@@ -623,32 +632,28 @@ describe('BusinessNetworkConnection', () => {
         it('should generate a transaction ID if one not specified', () => {
 
             // Fake the transaction registry.
-            let txRegistry = sinon.createStubInstance(TransactionRegistry);
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            let txDecl = sinon.createStubInstance(TransactionDeclaration);
-            let tx = sinon.createStubInstance(Resource);
-            txDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            tx.getClassDeclaration.returns(txDecl);
+            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            delete tx.$identifier;
+            tx.timestamp = new Date();
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
-            // Force the transaction to be serialized as some fake JSON.
-            const json = '{"fake":"json for the test"}';
-            mockSerializer.toJSON.returns(JSON.parse(json));
-
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', () => {
-                return Promise.resolve();
-            });
+            sandbox.stub(Util, 'invokeChainCode').resolves();
 
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
+
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
@@ -661,38 +666,27 @@ describe('BusinessNetworkConnection', () => {
         it('should generate a transaction timestamp if one not specified', () => {
 
             // Fake the transaction registry.
-            let txRegistry = sinon.createStubInstance(TransactionRegistry);
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            let txDecl = sinon.createStubInstance(TransactionDeclaration);
-            let tx = sinon.createStubInstance(Resource);
-            txDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            tx.getClassDeclaration.returns(txDecl);
+            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            delete tx.timestamp;
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
-            // Force the transaction to be serialized as some fake JSON.
-            const json = '{"fake":"json for the test"}';
-            mockSerializer.toJSON.returns(JSON.parse(json));
-
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', () => {
-                return Promise.resolve();
-            });
+            sandbox.stub(Util, 'invokeChainCode').resolves();
 
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
 
-                    // Check the timestamp was added.
-                    sinon.assert.calledWith(mockSerializer.toJSON, sinon.match((tx) => {
-                        tx.timestamp.should.be.an.instanceOf(Date);
-                        return true;
-                    }));
+                    // Force the transaction to be serialized as some fake JSON.
+                    const json = JSON.stringify(serializer.toJSON(tx));
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
@@ -705,36 +699,24 @@ describe('BusinessNetworkConnection', () => {
         it('should handle an error from the chain-code', () => {
 
             // Fake the transaction registry.
-            let txRegistry = sinon.createStubInstance(TransactionRegistry);
+            const txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').resolves(txRegistry);
 
             // Create the transaction.
-            let txDecl = sinon.createStubInstance(TransactionDeclaration);
-            let tx = sinon.createStubInstance(Resource);
-            txDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            tx.getClassDeclaration.returns(txDecl);
-            tx.getIdentifier.returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            delete tx.timestamp;
 
-            // Force the transaction to be serialized as some fake JSON.
-            const json = '{"fake":"json for the test"}';
-            mockSerializer.toJSON.returns(json);
+            // Stub the UUID generator.
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Util, 'invokeChainCode').rejects(new Error('such error'));
 
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
-                .then(() => {
-                    throw new Error('should not get here');
-                }).catch((error) => {
-                    error.should.match(/failed to invoke chain-code/);
-                });
+                .should.be.rejectedWith(/such error/);
 
         });
 
@@ -756,17 +738,6 @@ describe('BusinessNetworkConnection', () => {
 
     describe('#query', () => {
 
-        let mockResource1, mockResource2;
-
-        beforeEach(() => {
-            mockResource1 = sinon.createStubInstance(Resource);
-            mockResource1.$identifier = 'ASSET_1';
-            mockResource2 = sinon.createStubInstance(Resource);
-            mockResource2.$identifier = 'ASSET_2';
-            mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_1' }).returns(mockResource1);
-            mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_2' }).returns(mockResource2);
-        });
-
         it('should throw for an invalid query', () => {
             (() => {
                 businessNetworkConnection.query(3.124);
@@ -776,62 +747,70 @@ describe('BusinessNetworkConnection', () => {
         it('should submit a built query', () => {
             const query = new Query('SELECT doge');
             const response = [
-                { $identifier: 'ASSET_1' },
-                { $identifier: 'ASSET_2' }
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{}']).resolves(buffer);
             return businessNetworkConnection.query(query)
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].should.equal(mockResource1);
-                    response[1].should.equal(mockResource2);
+                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].getIdentifier().should.equal('ASSET_1');
+                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
         it('should submit a built query with parameters', () => {
             const query = new Query('SELECT doge');
             const response = [
-                { $identifier: 'ASSET_1' },
-                { $identifier: 'ASSET_2' }
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{"param1":true}']).resolves(buffer);
             return businessNetworkConnection.query(query, { param1: true })
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].should.equal(mockResource1);
-                    response[1].should.equal(mockResource2);
+                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].getIdentifier().should.equal('ASSET_1');
+                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
         it('should submit a named query', () => {
             const response = [
-                { $identifier: 'ASSET_1' },
-                { $identifier: 'ASSET_2' }
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{}']).resolves(buffer);
             return businessNetworkConnection.query('Q1')
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].should.equal(mockResource1);
-                    response[1].should.equal(mockResource2);
+                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].getIdentifier().should.equal('ASSET_1');
+                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
         it('should submit a named query with parameters', () => {
             const response = [
-                { $identifier: 'ASSET_1' },
-                { $identifier: 'ASSET_2' }
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
+                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{"param1":true}']).resolves(buffer);
             return businessNetworkConnection.query('Q1', { param1: true })
                 .then((response) => {
                     response.should.have.lengthOf(2);
-                    response[0].should.equal(mockResource1);
-                    response[1].should.equal(mockResource2);
+                    response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[0].getIdentifier().should.equal('ASSET_1');
+                    response[1].instanceOf('org.acme.sample.SampleAsset').should.be.true;
+                    response[1].getIdentifier().should.equal('ASSET_2');
                 });
         });
 
@@ -867,7 +846,7 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
@@ -878,13 +857,13 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
                 });
         });
 
@@ -921,7 +900,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
@@ -930,12 +909,12 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'activateIdentity', []).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'activateIdentity', []);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
                 });
         });
 
@@ -970,16 +949,28 @@ describe('BusinessNetworkConnection', () => {
             }).should.throw(/identityName not specified/);
         });
 
-        it('should submit a request to the chaincode for a resource', () => {
+        it('should throw if participant does not exist', () => {
             sandbox.stub(Util, 'invokeChainCode').resolves();
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            return businessNetworkConnection.issueIdentity(mockResource, 'dogeid1')
+            mockParticipantRegistry.exists.resolves(false);
+
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+                .catch((error) => {
+                    error.should.match(/does not exist /);
+                });
+        });
+
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -987,14 +978,58 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
-        it('should submit a request to the chaincode for a fully qualified identifier', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1')
+        it('should submit a request to the chaincode for a URI', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity('resource:org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
                     sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
+                    result.should.deep.equal({
+                        userID: 'dogeid1',
+                        userSecret: 'suchsecret'
+                    });
+                });
+        });
+
+        it('should submit a request to the chaincode for an resource', () => {
+            const participant = factory.newResource('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
+                    result.should.deep.equal({
+                        userID: 'dogeid1',
+                        userSecret: 'suchsecret'
+                    });
+                });
+        });
+
+        it('should submit a request to the chaincode for an relationship', () => {
+            const participant = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -1003,13 +1038,17 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode with additional options', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true })
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1', { issuer: true, affiliation: 'dogecorp' })
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
-                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', { issuer: true });
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'issueIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', { issuer: true, affiliation: 'dogecorp' });
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
                         userID: 'dogeid1',
                         userSecret: 'suchsecret'
@@ -1017,15 +1056,6 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
-        it('should throw if participant does not exist', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            mockParticipantRegistry.exists.resolves(false);
-
-            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1')
-                .catch((error) => {
-                    error.should.match(/does not exist /);
-                });
-        });
     });
 
     describe('#bindIdentity', () => {
@@ -1050,23 +1080,57 @@ describe('BusinessNetworkConnection', () => {
             }).should.throw(/certificate not specified/);
         });
 
-        it('should submit a request to the chaincode for a resource', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            return businessNetworkConnection.bindIdentity(mockResource, pem)
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.bindIdentity('org.acme.sample.SampleParticipant#dogeid1', pem)
                 .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.certificate.should.equal(pem);
                 });
         });
 
-        it('should submit a request to the chaincode for a fully qualified identifier', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            return businessNetworkConnection.bindIdentity('org.doge.Doge#DOGE_1', pem)
+        it('should submit a request to the chaincode for a URI', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.bindIdentity('resource:org.acme.sample.SampleParticipant#dogeid1', pem)
                 .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'bindIdentity', ['org.doge.Doge#DOGE_1', pem]);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.certificate.should.equal(pem);
+                });
+        });
+
+        it('should submit a request to the chaincode for an resource', () => {
+            const participant = factory.newResource('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.bindIdentity(participant, pem)
+                .then(() => {
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.certificate.should.equal(pem);
+                });
+        });
+
+        it('should submit a request to the chaincode for an relationship', () => {
+            const participant = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.bindIdentity(participant, pem)
+                .then(() => {
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.BindIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.certificate.should.equal(pem);
                 });
         });
 
@@ -1076,29 +1140,69 @@ describe('BusinessNetworkConnection', () => {
 
         it('should throw if identity not specified', () => {
             (() => {
-                let mockResource = sinon.createStubInstance(Resource);
-                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
                 businessNetworkConnection.revokeIdentity(null);
             }).should.throw(/identity not specified/);
         });
 
-        it('should submit a request to the chaincode for a resource', () => {
-            sandbox.stub(Util, 'invokeChainCode').resolves();
+        it('should submit a request to the chaincode for a identifier', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.revokeIdentity('dogeid1')
                 .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.RevokeIdentity').should.be.true;
+                    tx.identity.isRelationship().should.be.true;
+                    tx.identity.getFullyQualifiedIdentifier().should.equal('org.hyperledger.composer.system.Identity#dogeid1');
                 });
         });
 
-        it('should submit a request to the chaincode for an identifier', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getIdentifier.returns('dogeid1');
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            return businessNetworkConnection.revokeIdentity(mockResource)
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.revokeIdentity('org.hyperledger.composer.system.Identity#dogeid1')
                 .then(() => {
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'revokeIdentity', ['dogeid1']);
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.RevokeIdentity').should.be.true;
+                    tx.identity.isRelationship().should.be.true;
+                    tx.identity.getFullyQualifiedIdentifier().should.equal('org.hyperledger.composer.system.Identity#dogeid1');
+                });
+        });
+
+        it('should submit a request to the chaincode for a URI', () => {
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.revokeIdentity('resource:org.hyperledger.composer.system.Identity#dogeid1')
+                .then(() => {
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.RevokeIdentity').should.be.true;
+                    tx.identity.isRelationship().should.be.true;
+                    tx.identity.getFullyQualifiedIdentifier().should.equal('org.hyperledger.composer.system.Identity#dogeid1');
+                });
+        });
+
+        it('should submit a request to the chaincode for an resource', () => {
+            const identity = factory.newResource('org.hyperledger.composer.system', 'Identity', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.revokeIdentity(identity)
+                .then(() => {
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.RevokeIdentity').should.be.true;
+                    tx.identity.isRelationship().should.be.true;
+                    tx.identity.getFullyQualifiedIdentifier().should.equal('org.hyperledger.composer.system.Identity#dogeid1');
+                });
+        });
+
+        it('should submit a request to the chaincode for an relationship', () => {
+            const identity = factory.newRelationship('org.hyperledger.composer.system', 'Identity', 'dogeid1');
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.revokeIdentity(identity)
+                .then(() => {
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.RevokeIdentity').should.be.true;
+                    tx.identity.isRelationship().should.be.true;
+                    tx.identity.getFullyQualifiedIdentifier().should.equal('org.hyperledger.composer.system.Identity#dogeid1');
                 });
         });
 

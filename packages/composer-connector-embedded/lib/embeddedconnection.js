@@ -346,7 +346,13 @@ class EmbeddedConnection extends Connection {
             })
             .then((exists) => {
                 if (exists) {
-                    return identities.get(identityName);
+                    return identities.get(identityName)
+                        .then((identity) => {
+                            return {
+                                userID: identity.name,
+                                userSecret: identity.secret
+                            };
+                        });
                 }
                 const identifier = createHash('sha256').update(uuid.v4()).digest('hex');
                 const secret = uuid.v4().substring(0, 8);

@@ -52,24 +52,20 @@ asset Identity identified by identityId extends Asset {
     --> Participant participant
 }
 
-abstract transaction IdentityTransaction extends Transaction {
-
-}
-
-transaction IssueIdentity extends IdentityTransaction {
-    o String name
+transaction IssueIdentity {
     --> Participant participant
+    o String identityName
 }
 
-transaction BindIdentity extends IdentityTransaction {
-    o String identifier
+transaction BindIdentity {
     --> Participant participant
+    o String certificate
 }
 
-transaction ActivateIdentity extends IdentityTransaction {
+transaction ActivateCurrentIdentity {
 
 }
 
-transaction RevokeIdentity extends IdentityTransaction {
+transaction RevokeIdentity {
     --> Identity identity
 }

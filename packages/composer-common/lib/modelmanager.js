@@ -20,8 +20,6 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-// const ENCODING = 'utf8';
-
 const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODEL_CONTENTS = require('./systemModel');
 

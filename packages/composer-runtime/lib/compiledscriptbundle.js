@@ -49,13 +49,6 @@ class CompiledScriptBundle {
         // Find all of the function names.
         const functionNames = this.findFunctionNames(resolvedTransaction);
 
-        // If we didn't find any functions to call, then throw an error!
-        if (functionNames.length === 0) {
-            const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
-            LOG.error(method, error);
-            throw error;
-        }
-
         // Generate an instance of the compiled script bundle.
         const bundle = this.generatorFunction(api);
 
@@ -75,7 +68,8 @@ class CompiledScriptBundle {
             });
         }, Promise.resolve())
             .then(() => {
-                LOG.exit(method);
+                LOG.exit(method, functionNames.length);
+                return functionNames.length;
             });
 
     }

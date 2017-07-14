@@ -16,7 +16,7 @@
 
 const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
-const ModelUtil = require('composer-common').ModelUtil;
+const TransactionHandler = require('./transactionhandler');
 
 const LOG = Logger.getLog('IdentityManager');
 
@@ -24,16 +24,21 @@ const LOG = Logger.getLog('IdentityManager');
  * A class for managing and persisting identities.
  * @protected
  */
-class IdentityManager {
+class IdentityManager extends TransactionHandler {
 
     /**
      * Constructor.
      * @param {Context} context The request context.
      */
     constructor(context) {
+        super();
         this.identityService = context.getIdentityService();
         this.registryManager = context.getRegistryManager();
         this.factory = context.getFactory();
+        this.bind('org.hyperledger.composer.system.IssueIdentity', this.issueIdentity);
+        this.bind('org.hyperledger.composer.system.BindIdentity', this.bindIdentity);
+        this.bind('org.hyperledger.composer.system.ActivateCurrentIdentity', this.activateCurrentIdentity);
+        this.bind('org.hyperledger.composer.system.RevokeIdentity', this.revokeIdentity);
     }
 
     /**
@@ -167,59 +172,35 @@ class IdentityManager {
     }
 
     /**
-     * Parse the fully qualified participant identifier into a relationship to that participant.
-     * @param {string} participantFQI The fully qualified participant identifier.
-     * @return {Relationship} A relationship to the specified participant.
-     */
-    parseParticipant(participantFQI) {
-        const method = 'parseParticipant';
-        LOG.entry(method, participantFQI);
-        const hashIndex = participantFQI.indexOf('#');
-        if (hashIndex === -1) {
-            throw new Error('Invalid fully qualified participant identifier');
-        }
-        const participantFQT = participantFQI.substring(0, hashIndex);
-        const participantNS = ModelUtil.getNamespace(participantFQT);
-        const participantType = ModelUtil.getShortName(participantFQT);
-        const participantID = participantFQI.substring(hashIndex + 1);
-        const participant = this.factory.newRelationship(participantNS, participantType, participantID);
-        LOG.exit(method, participant);
-        return participant;
-    }
-
-    /**
      * Issue a new identity to a participant in the business network.
-     * @param {string} participantFQI The fully qualified participant identifier.
-     * @param {string} identityName The name of the new identity.
+     * @param {Api} api The API to use.
+     * @param {org.hyperledger.composer.system.IssueIdentity} transaction The transaction.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    issueIdentity(participantFQI, identityName) {
+    issueIdentity(api, transaction) {
         const method = 'issueIdentity';
-        LOG.entry(method, participantFQI, identityName);
+        LOG.entry(method, api, transaction);
         return this.getIdentityRegistry()
             .then((identityRegistry) => {
 
                 // Create the temporary identifier, which is hash(name, issuer)
                 const sha256 = createHash('sha256');
                 const issuer = this.identityService.getIssuer();
-                sha256.update(identityName, 'utf8');
+                sha256.update(transaction.identityName, 'utf8');
                 sha256.update(issuer, 'utf8');
                 const identifier = sha256.digest('hex');
-
-                // Parse the participant into a relationship.
-                const participant = this.parseParticipant(participantFQI);
 
                 // Create the new identity and add it to the identity registry.
                 const identity = this.factory.newResource('org.hyperledger.composer.system', 'Identity', identifier);
                 Object.assign(identity, {
-                    name: identityName,
+                    name: transaction.identityName,
                     issuer,
                     certificate: '',
                     state: 'ISSUED',
-                    participant
+                    participant: transaction.participant
                 });
-                return identityRegistry.add(identity);
+                return identityRegistry.add(identity, { convertResourcesToRelationships: true });
 
             })
             .then(() => {
@@ -229,19 +210,19 @@ class IdentityManager {
 
     /**
      * Bind an existing identity to a participant in the business network.
-     * @param {string} participantFQI The fully qualified participant identifier.
-     * @param {string} certificate The certificate for the existing identity.
+     * @param {Api} api The API to use.
+     * @param {org.hyperledger.composer.system.BindIdentity} transaction The transaction.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    bindIdentity(participantFQI, certificate) {
+    bindIdentity(api, transaction) {
         const method = 'bindIdentity';
-        LOG.entry(method, participantFQI, certificate);
+        LOG.entry(method, api, transaction);
         return this.getIdentityRegistry()
             .then((identityRegistry) => {
 
                 // Parse the certificate into a byte array.
-                const bytes = certificate
+                const bytes = transaction.certificate
                     .replace(/-----BEGIN CERTIFICATE-----/, '')
                     .replace(/-----END CERTIFICATE-----/, '')
                     .replace(/[\r\n]+/g, '');
@@ -249,19 +230,16 @@ class IdentityManager {
                 const sha256 = createHash('sha256');
                 const identityId = sha256.update(buffer).digest('hex');
 
-                // Parse the participant into a relationship.
-                const participant = this.parseParticipant(participantFQI);
-
                 // Create the new identity and add it to the identity registry.
                 const identity = this.factory.newResource('org.hyperledger.composer.system', 'Identity', identityId);
                 Object.assign(identity, {
                     name: '',
                     issuer: '',
-                    certificate,
+                    certificate: transaction.certificate,
                     state: 'BOUND',
-                    participant
+                    participant: transaction.participant
                 });
-                return identityRegistry.add(identity);
+                return identityRegistry.add(identity, { convertResourcesToRelationships: true });
 
             })
             .then(() => {
@@ -271,12 +249,14 @@ class IdentityManager {
 
     /**
      * Activate the current identity in the business network.
+     * @param {Api} api The API to use.
+     * @param {org.hyperledger.composer.system.ActivateCurrentIdentity} transaction The transaction.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    activateIdentity() {
-        const method = 'activateIdentity';
-        LOG.entry(method);
+    activateCurrentIdentity(api, transaction) {
+        const method = 'activateCurrentIdentity';
+        LOG.entry(method, api, transaction);
         let identityRegistry;
         return this.getIdentityRegistry()
             .then((identityRegistry_) => {
@@ -375,26 +355,27 @@ class IdentityManager {
 
     /**
      * Revoke an identity in the business network.
-     * @param {string} identityId The identifier of the identity.
+     * @param {Api} api The API to use.
+     * @param {org.hyperledger.composer.system.RevokeIdentity} transaction The transaction.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    revokeIdentity(identityId) {
+    revokeIdentity(api, transaction) {
         const method = 'revokeIdentity';
-        LOG.entry(method, identityId);
-        let identityRegistry;
+        LOG.entry(method, api, transaction);
         return this.getIdentityRegistry()
-            .then((identityRegistry_) => {
-                identityRegistry = identityRegistry_;
-                return identityRegistry.get(identityId);
-            })
-            .then((identity) => {
+            .then((identityRegistry) => {
 
-                // Revoke the identity and updaye it in the identity registry.
-                Object.assign(identity, {
+                // Ensure the identity is not already revoked.
+                if (transaction.identity.state === 'REVOKED') {
+                    throw new Error('The specified identity has already been revoked');
+                }
+
+                // Revoke the identity and update it in the identity registry.
+                Object.assign(transaction.identity, {
                     state: 'REVOKED'
                 });
-                return identityRegistry.update(identity);
+                return identityRegistry.update(transaction.identity, { convertResourcesToRelationships: true });
 
             })
             .then(() => {

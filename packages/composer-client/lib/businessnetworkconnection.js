@@ -25,6 +25,7 @@ const FSConnectionProfileStore = require('composer-common').FSConnectionProfileS
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
 const Query = require('./query');
+const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
@@ -599,7 +600,10 @@ class BusinessNetworkConnection extends EventEmitter {
     activate() {
         const method = 'activate';
         LOG.entry(method);
-        return Util.invokeChainCode(this.securityContext, 'activateIdentity', [])
+        const json = {
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity'
+        };
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);
             });
@@ -608,8 +612,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Issue an identity with the specified name and map it to the specified
      * participant.
-     * @param {Resource|string} participant The participant, or the fully qualified
-     * identifier of the participant. The participant must already exist.
+     * @param {Resource|Relationship|string} participant The participant, a
+     * relationship to the participant, or the fully qualified identifier of
+     * the participant. The participant must already exist.
      * @param {string} identityName The name for the new identity.
      * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should have
@@ -627,33 +632,32 @@ class BusinessNetworkConnection extends EventEmitter {
         } else if (!identityName) {
             throw new Error('identityName not specified');
         }
-        let participantFQI;
-        let participantId;
-        let participantType;
+        const factory = this.getBusinessNetwork().getFactory();
         if (participant instanceof Resource) {
-            participantFQI = participant.getFullyQualifiedIdentifier();
-            participantId = participant.getIdentifier();
-            participantType = participant.getFullyQualifiedType();
+            participant = factory.newRelationship(participant.getNamespace(), participant.getType(), participant.getIdentifier());
+        } else if (participant instanceof Relationship) {
+            // This is OK!
         } else {
-            participantFQI = participant;
-            participantId = participantFQI.substring(participantFQI.lastIndexOf('#') + 1);
-            participantType = participantFQI.substr(0, participantFQI.lastIndexOf('#'));
+            participant = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), participant);
         }
-
-        Util.securityCheck(this.securityContext);
-        return this.getParticipantRegistry(participantType)
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+        Object.assign(transaction, {
+            participant,
+            identityName
+        });
+        return this.getParticipantRegistry(participant.getFullyQualifiedType())
             .then((participantRegistry) => {
-                return participantRegistry.exists(participantId);
+                return participantRegistry.exists(participant.getIdentifier());
             })
             .then((exists) => {
                 if (exists) {
                     return this.connection.createIdentity(this.securityContext, identityName, options);
                 } else {
-                    throw new Error(`Participant '${participantFQI}' does not exist `);
+                    throw new Error(`Participant '${participant.getFullyQualifiedIdentifier()}' does not exist `);
                 }
             })
             .then((identity) => {
-                return Util.invokeChainCode(this.securityContext, 'issueIdentity', [participantFQI, identityName])
+                return this.submitTransaction(transaction)
                     .then(() => {
                         LOG.exit(method, identity);
                         return identity;
@@ -679,14 +683,20 @@ class BusinessNetworkConnection extends EventEmitter {
         } else if (!certificate) {
             throw new Error('certificate not specified');
         }
-        let participantFQI;
+        const factory = this.getBusinessNetwork().getFactory();
         if (participant instanceof Resource) {
-            participantFQI = participant.getFullyQualifiedIdentifier();
+            participant = factory.newRelationship(participant.getNamespace(), participant.getType(), participant.getIdentifier());
+        } else if (participant instanceof Relationship) {
+            // This is OK!
         } else {
-            participantFQI = participant;
+            participant = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), participant);
         }
-        Util.securityCheck(this.securityContext);
-        return Util.invokeChainCode(this.securityContext, 'bindIdentity', [participantFQI, certificate])
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+        Object.assign(transaction, {
+            participant,
+            certificate
+        });
+        return this.submitTransaction(transaction)
             .then(() => {
                 LOG.exit(method);
             });
@@ -706,16 +716,21 @@ class BusinessNetworkConnection extends EventEmitter {
         if (!identity) {
             throw new Error('identity not specified');
         }
-        let identityId;
+        const factory = this.getBusinessNetwork().getFactory();
         if (identity instanceof Resource) {
-            identityId = identity.getIdentifier();
+            identity = factory.newRelationship(identity.getNamespace(), identity.getType(), identity.getIdentifier());
+        } else if (identity instanceof Relationship) {
+            // This is OK!
         } else {
-            identityId = identity;
+            identity = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), identity, 'org.hyperledger.composer.system', 'Identity');
         }
-        Util.securityCheck(this.securityContext);
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'RevokeIdentity');
+        Object.assign(transaction, {
+            identity
+        });
         // It is not currently possible to revoke the certificate, so we just call
         // the runtime to remove the mapping.
-        return Util.invokeChainCode(this.securityContext, 'revokeIdentity', [identityId])
+        return this.submitTransaction(transaction)
           .then(() => {
               LOG.exit(method);
           });

@@ -302,10 +302,14 @@ describe('Context', () => {
                 });
         });
 
-        it('should ignore an activation required message when calling activate identity', () => {
+        it('should ignore an activation required message when calling the activate current identity transaction', () => {
             mockIdentityManager.getIdentity.resolves(mockIdentity);
             mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-            context.function = 'activateIdentity';
+            context.function = 'submitTransaction';
+            context.arguments = [
+                '45ea5b75-cc00-40bb-afad-4952ad97d469',
+                JSON.stringify({ $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
+            ];
             const error = new Error('such error');
             error.activationRequired = true;
             mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
@@ -315,6 +319,21 @@ describe('Context', () => {
                     sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
                     sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
                 });
+        });
+
+        it('should throw an activation required message when calling another transaction', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'submitTransaction';
+            context.arguments = [
+                '45ea5b75-cc00-40bb-afad-4952ad97d469',
+                JSON.stringify({ $class: 'org.hyperledger.composer.system.BindIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
+            ];
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
         });
 
         it('should throw an activation required message when calling another function', () => {
@@ -1100,6 +1119,16 @@ describe('Context', () => {
 
     });
 
+    describe('#getTransactionHandlers', () => {
+
+        it('should return the compiled query bundle', () => {
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            context.identityManager = mockIdentityManager;
+            context.getTransactionHandlers().should.have.lengthOf(1);
+            context.getTransactionHandlers()[0].should.equal(mockIdentityManager);
+        });
+
+    });
 
     describe('#transactionStart', () => {
 

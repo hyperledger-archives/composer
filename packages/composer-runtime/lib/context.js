@@ -294,8 +294,19 @@ class Context {
                     this.getIdentityManager().validateIdentity(identity);
                 } catch (e) {
 
+                    // Is this an activation transaction?
+                    let isActivation = false;
+                    try {
+                        if (this.getFunction() === 'submitTransaction') {
+                            const json = JSON.parse(this.getArguments()[1]);
+                            isActivation = json.$class === 'org.hyperledger.composer.system.ActivateCurrentIdentity';
+                        }
+                    } catch (e) {
+                        // Ignore.
+                    }
+
                     // Check for the case of activation required, and the user is trying to activate.
-                    if (e.activationRequired && this.getFunction() === 'activateIdentity') {
+                    if (e.activationRequired && isActivation) {
 
                         // Don't throw the error as we are activating the identity, but return null
                         // so that the participant is not set because there is no current participant
@@ -839,6 +850,16 @@ class Context {
      */
     getCompiledAclBundle() {
         return this.compiledAclBundle;
+    }
+
+    /**
+     * Get the list of transaction handlers.
+     * @return {TransactionHandler[]} The list of transaction handlers.
+     */
+    getTransactionHandlers() {
+        return [
+            this.getIdentityManager()
+        ];
     }
 
     /**

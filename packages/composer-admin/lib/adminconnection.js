@@ -339,7 +339,10 @@ class AdminConnection {
     activate() {
         const method = 'activate';
         LOG.entry(method);
-        return Util.invokeChainCode(this.securityContext, 'activateIdentity', [])
+        const json = {
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity'
+        };
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);
             });
