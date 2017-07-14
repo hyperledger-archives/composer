@@ -19,7 +19,13 @@ const Factory = require('../../lib/factory');
 const TypedStack = require('../../lib/serializer/typedstack');
 const TypeNotFoundException = require('../../lib/typenotfoundexception');
 const ResourceValidator = require('../../lib/serializer/resourcevalidator');
+const Identifiable = require('../../lib/model/identifiable');
+const Field = require('../../lib/introspect/field');
+const Resource = require('../../lib/model/resource');
+const ModelUtil = require('../../lib/modelutil');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 
+const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
@@ -29,6 +35,8 @@ describe('ResourceValidator', function () {
     let modelManager;
     let resourceValidator;
     let factory;
+
+    let sandbox;
 
     const enumModelString = `namespace org.acme.enumerations
     enum AnimalType {
@@ -53,6 +61,9 @@ describe('ResourceValidator', function () {
     }
     participant Employee identified by employeeId extends Person {
       o String employeeId
+    }
+    concept Data {
+        o String name
     }
     `;
 
@@ -91,6 +102,7 @@ describe('ResourceValidator', function () {
     }`;
 
     before(function () {
+        sandbox = sinon.sandbox.create();
         resourceValidator = new ResourceValidator();
         modelManager = new ModelManager();
         factory = new Factory(modelManager);
@@ -105,6 +117,33 @@ describe('ResourceValidator', function () {
 
     afterEach(function () {
         modelManager.clearModelFiles();
+        sandbox.restore();
+    });
+
+    describe('#visit', () => {
+        it('should do nothing if unknown object given', () => {
+            const parameters = {
+                stack: new TypedStack({})
+            };
+
+            const thing = {
+                toString: () => {
+                    return 'testing';
+                }
+            };
+            sandbox.stub(resourceValidator, 'visitEnumDeclaration');
+            sandbox.stub(resourceValidator, 'visitClassDeclaration');
+            sandbox.stub(resourceValidator, 'visitRelationshipDeclaration');
+            sandbox.stub(resourceValidator, 'visitField');
+
+            resourceValidator.visit(thing, parameters);
+
+            sinon.assert.notCalled(resourceValidator.visitEnumDeclaration);
+            sinon.assert.notCalled(resourceValidator.visitClassDeclaration);
+            sinon.assert.notCalled(resourceValidator.visitRelationshipDeclaration);
+            sinon.assert.notCalled(resourceValidator.visitField);
+
+        });
     });
 
     describe('#visitRelationshipDeclaration', function() {
@@ -267,7 +306,15 @@ describe('ResourceValidator', function () {
             const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
             const field = vehicleDeclaration.getProperty('vehicleTypes');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'TEST' };
-            field.accept(resourceValidator,parameters );
+            field.accept(resourceValidator,parameters);
+        });
+
+        it('should throw if dataType is undefined', () => {
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            (() => {
+                resourceValidator.visitField(mockField, {stack: {pop: () => {return undefined;}}});
+            }).should.throw(/Model violation in instance undefined/);
         });
     });
 
@@ -373,5 +420,100 @@ describe('ResourceValidator', function () {
             }).should.throw(/has an empty identifier/);
         });
 
+        it('should report undeclared field if not identifiable', () => {
+            const data = factory.newConcept('org.acme.l1', 'Data');
+            data.name = 'name';
+            data.numberOfWipers = 2;
+            const typedStack = new TypedStack(data);
+            const conceptDeclaration = modelManager.getType('org.acme.l1.Data');
+            const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
+
+            (() => {
+                resourceValidator.visitClassDeclaration(conceptDeclaration,parameters);
+            }).should.throw(/property named numberOfWipers which is not declared/);
+        });
+    });
+
+    describe('#reportFieldTypeViolation', () => {
+        let mockIdentifiable;
+        let mockField;
+        beforeEach(() => {
+            mockIdentifiable = sinon.createStubInstance(Identifiable);
+            mockField = sinon.createStubInstance(Field);
+        });
+
+        it('should get fully qualified type and name if Identifiable', () => {
+            mockIdentifiable.getFullyQualifiedType.returns('doge');
+            mockIdentifiable.getFullyQualifiedIdentifier.returns('com.doge');
+            (() => {
+                ResourceValidator.reportFieldTypeViolation('id', 'property', mockIdentifiable, mockField);
+            }).should.throw(/property has value com.doge \(doge\)/);
+        });
+
+        it('should not fail if strigify fails', () => {
+            // Crazy object to force JSON.strigify to throw
+            let obj = {};
+            obj.a = obj;
+
+            (() => {
+                ResourceValidator.reportFieldTypeViolation('id', 'property', obj, mockField);
+            }).should.throw(/id field property has value/);
+        });
+    });
+
+    describe('#checkItem', () => {
+        it('should throw if dataType is undefined', () => {
+            let mockField = sinon.createStubInstance(Field);
+            mockField.getName.returns('propName');
+            (() => {
+                resourceValidator.checkItem(undefined, mockField, {rootResourceIdentifier: 'identifier'});
+            }).should.throw(/Model violation in instance identifier field propName/);
+        });
+
+        it('should throw if class declaration is not found', () => {
+            let mockField = sinon.createStubInstance(Field);
+            mockField.isPrimitive.returns(false);
+            let mockIdentifiable = sinon.createStubInstance(Identifiable);
+            mockField.getName.returns('propName');
+
+            let stub = sinon.stub();
+            stub.onFirstCall().returns('classDeclaration');
+            stub.onSecondCall().throws('error');
+
+            let parameters = {rootResourceIdentifier: 'identifier', modelManager: {getType: stub}};
+
+            (() => {
+                resourceValidator.checkItem(mockIdentifiable, mockField, parameters);
+            }).should.throw(/Model violation in instance identifier field propName/);
+        });
+    });
+
+    describe('#checkRelationship', () => {
+        let mockResource;
+        let mockClassDeclaration;
+        let parameters;
+
+        beforeEach(() => {
+            mockResource = sinon.createStubInstance(Resource);
+            mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockClassDeclaration.isConcept.returns(false);
+            parameters = {rootResourceIdentifier: 'identifier', modelManager: {getType: () => {return mockClassDeclaration;}}};
+            sandbox.stub(ModelUtil, 'isAssignableTo').returns(true);
+        });
+
+
+        it('should not throw if Resource given and convertResourcesToRelationships is set', () => {
+            resourceValidator.options.convertResourcesToRelationships = true;
+            (() => {
+                resourceValidator.checkRelationship(parameters, {}, mockResource);
+            }).should.not.throw();
+        });
+
+        it('should not throw if Resource given and permitResourcesForRelationships is set', () => {
+            resourceValidator.options.permitResourcesForRelationships = true;
+            (() => {
+                resourceValidator.checkRelationship(parameters, {}, mockResource);
+            }).should.not.throw();
+        });
     });
 });
