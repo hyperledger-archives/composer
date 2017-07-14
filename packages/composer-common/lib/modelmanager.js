@@ -26,16 +26,20 @@ const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODEL_CONTENTS = `
     namespace org.hyperledger.composer.system
 
-    abstract asset Asset {  }
+    abstract asset Asset {
 
-    abstract participant Participant {   }
+    }
 
-    abstract transaction Transaction identified by transactionId{
+    abstract participant Participant {
+
+    }
+
+    abstract transaction Transaction identified by transactionId {
       o String transactionId
       o DateTime timestamp
     }
 
-    abstract event Event identified by eventId{
+    abstract event Event identified by eventId {
       o String eventId
       o DateTime timestamp
     }
@@ -47,8 +51,8 @@ const SYSTEM_MODEL_CONTENTS = `
         o REVOKED
     }
 
-    asset Identity identified by identifier extends Asset {
-        o String identifier
+    asset Identity identified by identityId extends Asset {
+        o String identityId
         o String name
         o String issuer
         o String certificate
@@ -75,7 +79,7 @@ const SYSTEM_MODEL_CONTENTS = `
     }
 
     transaction RevokeIdentity extends IdentityTransaction {
-        o String identifier
+        --> Identity identity
     }
 `;
 

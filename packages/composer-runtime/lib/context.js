@@ -511,8 +511,14 @@ class Context {
                 }
             })
             .then(() => {
-                LOG.debug(method, 'Loading current participant');
-                return this.loadCurrentParticipant();
+                if (options.function !== 'init') {
+                    LOG.debug(method, 'Loading current participant');
+                    return this.loadCurrentParticipant();
+                } else {
+                    // No point loading the participant as no participants exist!
+                    LOG.debug(method, 'Not loading current participant as processing deployment');
+                    return null;
+                }
             })
             .then((participant) => {
                 if (!options.reinitialize) {
