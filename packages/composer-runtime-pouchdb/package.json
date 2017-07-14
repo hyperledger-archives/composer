@@ -56,9 +56,9 @@
     "composer-runtime": "^0.9.3",
     "debug": "^2.6.2",
     "istanbul-lib-instrument": "^1.7.2",
-    "pouchdb-collate": "^6.2.0",
-    "pouchdb-core": "^6.2.0",
-    "pouchdb-find": "^6.2.0",
+    "pouchdb-collate": "~6.2.0",
+    "pouchdb-core": "~6.2.0",
+    "pouchdb-find": "~6.2.0",
     "request": "^2.81.0",
     "uuid": "^3.0.1"
   },
