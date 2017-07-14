@@ -42,9 +42,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.9.3",
-    "composer-connector-hlf": "^0.9.3",
-    "composer-connector-hlfv1": "^0.9.3",
+    "composer-common": "0.9.3",
+    "composer-connector-hlf": "0.9.3",
+    "composer-connector-hlfv1": "0.9.3",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
