@@ -37,6 +37,7 @@ linkchecker --version
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 npm install -g npm@4
+npm install -g lerna@2
 npm install -g @alrra/travis-scripts
 
 npm install -g asciify
