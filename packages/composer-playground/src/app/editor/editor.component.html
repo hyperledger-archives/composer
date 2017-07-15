@@ -63,6 +63,7 @@
       </div>
       <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
       <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
+      
       <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
         <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
@@ -77,7 +78,24 @@
           </svg>
         </button>
       </div>
+
+      <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_preview">
+        <button id="editFileButton" type="button" class="action" [class.active]="previewReadme" (click)="setReadmePreview(true)">
+          <svg class="ibm-icon vertical-top" aria-hidden="true">
+            <use xlink:href="#icon-view_24"></use>
+          </svg>
+        </button>
+      </div>
+      
+      <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_edit">
+        <button id="editFileButton" type="button" class="action" [class.active]="!previewReadme" (click)="setReadmePreview(false)">
+          <svg class="ibm-icon vertical-top" aria-hidden="true">
+            <use xlink:href="#icon-code_24"></use>
+          </svg>
+        </button>
+      </div>
     </div>
+    
     <div *ngIf="editActive && fileType(currentFile)=='Readme'" class="business-network-details">
       <label class="edit-label margin-right" for="editName">Name</label>
       <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
@@ -113,7 +131,7 @@
     </div>
   </div>
 
-  <div class="flex"><editor-file [editorFile]="currentFile"></editor-file></div>
+  <div class="flex"><editor-file [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file></div>
 
   <app-footer></app-footer>
 

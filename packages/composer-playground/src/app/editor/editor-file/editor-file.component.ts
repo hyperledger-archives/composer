@@ -43,11 +43,29 @@ export class EditorFileComponent {
         scrollbarStyle: 'simple'
     };
 
+    private mdCodeConfig = {
+        lineNumbers: true,
+        lineWrapping: true,
+        readOnly: false,
+        mode: 'markdown',
+        autofocus: true,
+        extraKeys: {
+            'Ctrl-Q': (cm) => {
+                cm.foldCode(cm.getCursor());
+            }
+        },
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+        scrollbarStyle: 'simple'
+    };
+
     private currentError: string = null;
 
     private _editorFile;
     private editorContent;
     private editorType;
+
+    private previewContent; // used for the README marked() version
 
     @Input()
     set editorFile(editorFile: any) {
@@ -56,6 +74,9 @@ export class EditorFileComponent {
             this.loadFile();
         }
     }
+
+    @Input()
+    private previewReadmeActive: boolean;
 
     constructor(private clientService: ClientService) {
     }
@@ -97,7 +118,8 @@ export class EditorFileComponent {
         } else if (this._editorFile.readme) {
             let readme = this.clientService.getMetaData().getREADME();
             if (readme) {
-                this.editorContent = marked(readme);
+                this.editorContent = readme;
+                this.previewContent = marked(readme);
                 this.editorType = 'readme';
             }
         } else if (this._editorFile.query) {
@@ -131,6 +153,9 @@ export class EditorFileComponent {
                 let packageObject = JSON.parse(this.editorContent);
                 this.clientService.setBusinessNetworkPackageJson(packageObject);
                 this.clientService.businessNetworkChanged$.next(true);
+            } else if (this._editorFile.readme) {
+                type = 'readme';
+                this.previewContent = marked(this.editorContent);
             }
             this.currentError = this.clientService.updateFile(this._editorFile.id, this.editorContent, type);
         } catch (e) {
@@ -149,4 +174,8 @@ export class EditorFileComponent {
         this.previousCode = this.editorContent;
         this.setCurrentCode();
     }
+
+    // setReadmePreview(preview: boolean) {
+    //     this.previewContentActive = preview;
+    // }
 }
