@@ -76,12 +76,36 @@ export class ClientService {
         return this.currentBusinessNetwork;
     }
 
+    getBusinessNetworkName() {
+        return this.getBusinessNetwork().getMetadata().getName();
+    }
+
     getModelFile(id: string): ModelFile {
         return this.getBusinessNetwork().getModelManager().getModelFile(id);
     }
 
     getModelFiles(): ModelFile[] {
         return this.getBusinessNetwork().getModelManager().getModelFiles();
+    }
+
+    getScriptFile(id: string): Script {
+        return this.getBusinessNetwork().getScriptManager().getScript(id);
+    }
+
+    getScripts(): Script[] {
+        return this.getBusinessNetwork().getScriptManager().getScripts();
+    }
+
+    getAclFile(): AclFile {
+        return this.getBusinessNetwork().getAclManager().getAclFile();
+    }
+
+    getQueryFile(): QueryFile {
+        return this.getBusinessNetwork().getQueryManager().getQueryFile();
+    }
+
+    getMetaData() {
+        return this.getBusinessNetwork().getMetadata();
     }
 
     validateFile(id: string, content: any, type: string): string {
@@ -170,71 +194,26 @@ export class ClientService {
         }
     }
 
-    getScriptFile(id: string): Script {
-        return this.getBusinessNetwork().getScriptManager().getScript(id);
-    }
-
-    getScripts(): Script[] {
-        return this.getBusinessNetwork().getScriptManager().getScripts();
-    }
-
-    getAclFile(): AclFile {
-        return this.getBusinessNetwork().getAclManager().getAclFile();
-    }
-
-    getQueryFile(): QueryFile {
-        return this.getBusinessNetwork().getQueryManager().getQueryFile();
-    }
-
-    getMetaData() {
-        return this.getBusinessNetwork().getMetadata();
-    }
-
     setBusinessNetworkReadme(readme) {
-        let name = this.getBusinessNetwork().getMetadata().getName();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
-        let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let version = this.getBusinessNetwork().getMetadata().getVersion();
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
-    }
-
-    setBusinessNetworkName(name: string) {
-        let version = this.getBusinessNetwork().getMetadata().getVersion();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
-        let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        // need to update the name in the package json
-        packageJson.name = name;
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
-    }
-
-    getBusinessNetworkName() {
-        return this.getBusinessNetwork().getMetadata().getName();
+        this.getBusinessNetwork().setReadme(readme);
+        this.businessNetworkChanged$.next(true);
     }
 
     setBusinessNetworkVersion(version: string) {
-        let name = this.getBusinessNetwork().getMetadata().getName();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
         let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        // need to update the version in the packageJson
         packageJson.version = version;
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
+        this.getBusinessNetwork().setPackageJson(packageJson);
+        this.businessNetworkChanged$.next(true);
     }
 
     setBusinessNetworkPackageJson(packageJson: any) {
-        // if we have updated package json we should take the values in there for the name etc
-        let name = packageJson.name;
-        let version = packageJson.version;
-        let description = packageJson.description;
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
+        // prevent BND name change
+        if (packageJson.name !== this.getBusinessNetworkName()) {
+            throw new Error('Unsupported attempt to update Business Network Name.');
+        } else {
+            this.getBusinessNetwork().setPackageJson(packageJson);
+            this.businessNetworkChanged$.next(true);
+        }
     }
 
     ensureConnected(name: string = null, force: boolean = false): Promise<any> {
@@ -382,40 +361,6 @@ export class ClientService {
 
     revokeIdentity(userID: string) {
         return this.getBusinessNetworkConnection().revokeIdentity(userID);
-    }
-
-    createNewBusinessNetwork(name, version, description, packageJson, readme) {
-
-        this.alertService.busyStatus$.next({
-            title: 'Updating Business Network',
-            text: 'Updating Business Network ' + name
-        });
-
-        try {
-            let newBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-            let modelFiles = this.filterModelFiles(this.getBusinessNetwork().getModelManager().getModelFiles());
-
-            newBusinessNetwork.getModelManager().addModelFiles(modelFiles);
-
-            this.getBusinessNetwork().getScriptManager().getScripts().forEach((script) => {
-                newBusinessNetwork.getScriptManager().addScript(script);
-            });
-
-            if (this.getBusinessNetwork().getAclManager().getAclFile()) {
-                newBusinessNetwork.getAclManager().setAclFile(this.getBusinessNetwork().getAclManager().getAclFile());
-            }
-
-            if (this.getBusinessNetwork().getQueryManager().getQueryFile()) {
-                newBusinessNetwork.getQueryManager().setQueryFile(this.getBusinessNetwork().getQueryManager().getQueryFile());
-            }
-
-            this.currentBusinessNetwork = newBusinessNetwork;
-            this.alertService.busyStatus$.next(null);
-            this.businessNetworkChanged$.next(true);
-        } catch (error) {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(`Failed to Update Business Network: ${error}`);
-        }
     }
 
     filterModelFiles(files) {
