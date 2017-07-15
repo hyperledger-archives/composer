@@ -1433,9 +1433,12 @@ describe('EditorComponent', () => {
         it('should make edit package fields visible when true for README', () => {
             component['editActive'] = false;
             component['editingPackage'] = false;
-            component['editingPackage'] = false;
-            component['deployedPackageName'] = 'TestPackageName';
+            component['deployedPackageDescription'] = 'description';
             component['deployedPackageVersion'] = '1.0.0';
+
+            mockClientService.getMetaData.returns({
+                getPackageJson: sinon.stub().returns('description')
+            });
 
             // Specify README file
             let file = {readme: true, id: 'readme', displayID: 'README.md'};
@@ -1443,24 +1446,22 @@ describe('EditorComponent', () => {
 
             fixture.detectChanges();
 
-            // Expect to see "deployedPackageName" visible within class="business-network-details"
+            // Expect to see "description" visible within class="business-network-details"
             // Expect to have "edit" option available within class="business-network-details"
             let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-            element.textContent.should.contain('TestPackageName');
+            element.textContent.should.contain('description');
             element.innerHTML.should.contain('id="editFileButton"');
 
             // Flip editActive boolean
             component['editActive'] = true;
             fixture.detectChanges();
 
-            // Expect three visible edit fields:
-            // 1) Name (input text)
-            // 2) Version (input text)
-            // 3) Full package (button)
+            // Expect two visible edit fields:
+            // 1) Version (input text)
+            // 2) Full package (button)
             element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
             element.innerHTML.should.not.contain('id="editFileButton"');
             element.innerHTML.should.contain('id="editPackageButton"');
-            element.textContent.should.contain('Name');
             element.textContent.should.contain('Version');
             element.textContent.should.contain('View/edit full metadata in package.json');
 
@@ -1477,12 +1478,9 @@ describe('EditorComponent', () => {
 
             // Expect edit fields:
             // 1) Name & Version (input text) should not be editable (focused)
-            // 3) Full package (button) to be enabled
+            // 2) Full package (button) to be enabled
 
-            let editItem = fixture.debugElement.query(By.css('#editName')).nativeElement;
-            (editItem as HTMLInputElement).isContentEditable.should.be.false;
-
-            editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
+            let editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
             (editItem as HTMLInputElement).isContentEditable.should.be.false;
 
             editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement;
@@ -1508,31 +1506,6 @@ describe('EditorComponent', () => {
             should.not.exist(fixture.debugElement.query(By.css('#editPackageButton')));
         });
 
-    });
-
-    describe('editPackageName', () => {
-        beforeEach(() => {
-            mockClientService.setBusinessNetworkName.reset();
-        });
-
-        it('should edit the package name', () => {
-            component['inputPackageName'] = 'my name';
-
-            component.editPackageName();
-
-            mockClientService.setBusinessNetworkName.should.have.been.calledWith('my name');
-            component['editActive'].should.equal(false);
-            component['deployedPackageName'].should.equal('my name');
-        });
-
-        it('should not edit the package name if not changed', () => {
-            component['deployedPackageName'] = 'my name';
-            component['inputPackageName'] = 'my name';
-
-            component.editPackageName();
-
-            mockClientService.setBusinessNetworkName.should.not.have.been.called;
-        });
     });
 
     describe('editPackageVersion', () => {
