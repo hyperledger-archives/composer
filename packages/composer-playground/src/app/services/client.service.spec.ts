@@ -673,8 +673,6 @@ describe('ClientService', () => {
     });
 
     describe('setBusinessNetwork...', () => {
-        let mockCreateBusinessNetwork;
-
         beforeEach(inject([ClientService], (service: ClientService) => {
             let modelManagerMock = {
                 getModelFiles: sinon.stub().returns([modelFileMock, modelFileMock]),
@@ -702,39 +700,18 @@ describe('ClientService', () => {
             businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
 
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
-
-            mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
         }));
 
         it('should set business network readme', inject([ClientService], (service: ClientService) => {
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
 
             businessNetworkDefMock.getMetadata.returns({
-                getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({package: 'such data'}),
-                getName: sinon.stub().returns('my name')
+                setReadme: sinon.stub()
             });
 
             service.setBusinessNetworkReadme('my readme');
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {package: 'such data'}, 'my readme');
-            businessNetworkChangedSpy.should.have.been.calledWith(true);
-        }));
-
-        it('should set business network name', inject([ClientService], (service: ClientService) => {
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-
-            businessNetworkDefMock.getMetadata.returns({
-                getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({}),
-                getREADME: sinon.stub().returns('my readme')
-            });
-
-            service.setBusinessNetworkName('my name');
-
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {name: 'my name'}, 'my readme');
+            businessNetworkDefMock.setReadme.should.have.been.calledWith('my readme');
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
@@ -743,14 +720,13 @@ describe('ClientService', () => {
 
             businessNetworkDefMock.getMetadata.returns({
                 getName: sinon.stub().returns('my name'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({}),
-                getREADME: sinon.stub().returns('my readme')
+                getPackageJson: sinon.stub().returns({version: '0.0'}),
+                setPackageJson: sinon.stub()
             });
 
-            service.setBusinessNetworkVersion('my version');
+            service.setBusinessNetworkVersion('new_version');
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {version: 'my version'}, 'my readme');
+            businessNetworkDefMock.setPackageJson.should.have.been.calledWith({version: 'new_version'});
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
@@ -758,15 +734,34 @@ describe('ClientService', () => {
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
 
             businessNetworkDefMock.getMetadata.returns({
-                getREADME: sinon.stub().returns('my readme')
+                getName: sinon.stub().returns('my name')
             });
 
             let packageJson = {name: 'my name', version: 'my version', description: 'my description'};
 
             service.setBusinessNetworkPackageJson(packageJson);
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', packageJson, 'my readme');
+            businessNetworkDefMock.setPackageJson.should.have.been.calledWith(packageJson);
             businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
+        it('should prevent setting the business network packageJson to change the BND name', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('my name')
+            });
+
+            let packageJson = {name: 'my different name', version: 'my version', description: 'my description'};
+
+            try {
+                service.setBusinessNetworkPackageJson(packageJson);
+                throw new Error('should not get here');
+            } catch (error) {
+                businessNetworkDefMock.setPackageJson.should.not.have.been.called;
+                businessNetworkChangedSpy.should.not.have.been.called;
+                error.toString().should.equal('Error: Unsupported attempt to update Business Network Name.');
+            }
         }));
     });
 
@@ -1191,9 +1186,6 @@ describe('ClientService', () => {
 
     describe('revokeIdentity', () => {
         it('should call the revokeIdentity() function for the relevant BusinessNetworkConnection', fakeAsync(inject([ClientService], (service: ClientService) => {
-
-            // (1).should.equal(1);
-
             let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
                 revokeIdentity: sinon.stub().returns(Promise.resolve())
             });
@@ -1220,28 +1212,15 @@ describe('ClientService', () => {
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
             alertMock.errorStatus$.next.should.have.been.called;
         }));
+    });
 
-        it('should not update the business network on failure', inject([ClientService], (service: ClientService) => {
-            // Set up mocks
-            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
-
-            // Call function
-            service.createNewBusinessNetwork(null, null, null, null, null);
-
-            // Check expected
-            businessNetworkChangedSpy.should.not.have.been.called;
-        }));
-
-        it('should create a new business network and notify on success', inject([ClientService], (service: ClientService) => {
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            let filterSpy = sinon.spy(service, 'filterModelFiles');
+    describe('#filterModelFiles', () => {
+        it('should filter passed model files', inject([ClientService], (service: ClientService) => {
 
             let mockFile0 = sinon.createStubInstance(ModelFile);
-            mockFile0.isSystemModelFile.returns(false);
+            mockFile0.isSystemModelFile.returns(true);
             let mockFile1 = sinon.createStubInstance(ModelFile);
-            mockFile1.isSystemModelFile.returns(false);
+            mockFile1.isSystemModelFile.returns(true);
             let mockFile2 = sinon.createStubInstance(ModelFile);
             mockFile2.isSystemModelFile.returns(false);
             let mockFile3 = sinon.createStubInstance(ModelFile);
@@ -1277,17 +1256,13 @@ describe('ClientService', () => {
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
 
             let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+            mockFile3.isSystemModelFile.returns(true);
 
-            // Call function
-            service.createNewBusinessNetwork('myBND', '1.0', 'description', '{}', null);
+            let allFiles = [mockFile0, mockFile1, mockFile2, mockFile3];
 
-            // We filter system namespaces
-            filterSpy.should.have.been.calledWith([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]);
-            let filterReturn = filterSpy.returnValues[0];
-            filterReturn.should.deep.equal([mockFile0, mockFile1, mockFile2, mockFile3]);
+            let filteredFiles = service['filterModelFiles'](allFiles);
 
-            // We alert on success
-            businessNetworkChangedSpy.should.have.been.calledWith(true);
+            filteredFiles.length.should.be.equal(1);
         }));
 
     });
@@ -1338,5 +1313,4 @@ describe('ClientService', () => {
             businessNetworkConMock.getTransactionRegistry.should.have.been.called;
         })));
     });
-
 });

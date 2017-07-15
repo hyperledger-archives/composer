@@ -305,6 +305,9 @@ describe('AppComponent', () => {
         it('should check version and open version modal', fakeAsync(() => {
             let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(false));
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetworkName.returns('bob');
+            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -320,6 +323,9 @@ describe('AppComponent', () => {
         it('should check version and not open version modal', fakeAsync(() => {
             let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetworkName.returns('bob');
+            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -349,6 +355,9 @@ describe('AppComponent', () => {
         it('should show header links if logged in', fakeAsync(() => {
             let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             routerStub.eventParams = {url: '/editor', nav: 'end'};
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetworkName.returns('bob');
+            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             updateComponent();
 
@@ -420,14 +429,14 @@ describe('AppComponent', () => {
 
             component['usingLocally'] = true;
             component['showHeaderLinks'] = true;
+            component['connectionProfiles'] = [{name: 'test_name'}];
 
             updateComponent();
 
-            links.length.should.equal(4);
+            links.length.should.equal(3);
             links[0].linkParams.should.deep.equal(['editor']);
             links[1].linkParams.should.deep.equal(['test']);
             links[2].linkParams.should.deep.equal(['identity']);
-            links[3].linkParams.should.deep.equal(['profile']);
         });
 
         it('should not show links when not logged in', () => {
@@ -482,23 +491,6 @@ describe('AppComponent', () => {
 
             testLink.navigatedTo.should.deep.equal(['identity']);
         });
-
-        it('can click profile link in template', () => {
-            component['showHeaderLinks'] = true;
-            component['usingLocally'] = true;
-
-            updateComponent();
-
-            const testLinkDe = linkDes[3];
-            const testLink = links[3];
-
-            should.not.exist(testLink.navigatedTo);
-
-            testLinkDe.triggerEventHandler('click', null);
-            fixture.detectChanges();
-
-            testLink.navigatedTo.should.deep.equal(['profile']);
-        });
     });
 
     describe('queryParamsUpdated', () => {
@@ -521,6 +513,7 @@ describe('AppComponent', () => {
         it('should load the connection profiles when local and logged in', fakeAsync(() => {
 
             component['showHeaderLinks'] = true;
+            component['connectionProfiles'] = [{name: 'test_name'}];
             mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
             mockInitializationService.isWebOnly.returns(Promise.resolve(false));
             let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
@@ -541,16 +534,16 @@ describe('AppComponent', () => {
 
             component['usingLocally'].should.equal(true);
 
-            links.length.should.equal(4);
+            links.length.should.equal(3);
             links[0].linkParams.should.deep.equal(['editor']);
             links[1].linkParams.should.deep.equal(['test']);
             links[2].linkParams.should.deep.equal(['identity']);
-            links[3].linkParams.should.deep.equal(['profile']);
         }));
 
         it('should load the connection profiles when web only and logged in', fakeAsync(() => {
 
             component['showHeaderLinks'] = true;
+            component['connectionProfiles'] = [{name: 'test_name'}];
             mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
             mockInitializationService.isWebOnly.returns(Promise.resolve(true));
             let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
