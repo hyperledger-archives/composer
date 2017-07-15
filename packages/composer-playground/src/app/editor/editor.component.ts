@@ -502,16 +502,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     /*
-     * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageName() {
-        if (this.deployedPackageName !== this.inputPackageName) {
-            this.deployedPackageName = this.inputPackageName;
-            this.clientService.setBusinessNetworkName(this.deployedPackageName);
-        }
-    }
-
-    /*
      * When user edits the file name (in the input box), the underlying file needs to be updated, and the BND needs to be updated
      */
     editFileName() {

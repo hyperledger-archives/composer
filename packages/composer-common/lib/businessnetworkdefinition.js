@@ -685,6 +685,24 @@ class BusinessNetworkDefinition {
         return this.queryManager;
     }
 
+    /**
+     * Set the readme file within the BusinessNetworkMetadata
+     * @param {String} readme the readme in markdown for the business network
+     * @private
+     */
+    setReadme(readme) {
+        this.metadata = new BusinessNetworkMetadata(this.metadata.getPackageJson(), readme);
+    }
+
+    /**
+     * Set the packageJson within the BusinessNetworkMetadata
+     * @param {object} packageJson the JS object for package.json
+     * @private
+     */
+    setPackageJson(packageJson) {
+        this.metadata = new BusinessNetworkMetadata(packageJson, this.metadata.getREADME());
+    }
+
 }
 
 module.exports = BusinessNetworkDefinition;

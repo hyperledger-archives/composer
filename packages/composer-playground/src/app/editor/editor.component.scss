@@ -48,10 +48,31 @@ app-editor {
     .business-network-details {
       display: flex;
       height:50px;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0rem;
+
+      .business-network-description {
+        margin-right: $space-smedium;
+        max-width: 20rem;
+        color: $secondary-text;
+        position: relative;
+        p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+      }
+
+      .business-network-description .tooltiptext {
+        top : 1.5rem;
+      }
+
+      .business-network-description:hover .tooltiptext {
+        visibility: visible;
+      }
 
       .business-network-version {
         margin-right: $space-smedium;
+        margin-bottom: 0.3rem;
         color: $secondary-text;
       }
 
@@ -62,8 +83,7 @@ app-editor {
       .edit-label{
         line-height: 2.5rem;
         font-weight:bold;
-        flex-shrink:1;
-        margin-top: 0.2rem;
+        flex:0 0 auto;
       }
 
       .edit-file-hidden{

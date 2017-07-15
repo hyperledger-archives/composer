@@ -46,9 +46,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private usingLocally = false;
     private showHeaderLinks = false;
+    private showWelcome = true;
 
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
+    private composerBanner = ['Hyperledger', 'Composer Playground'];
 
     private busyModalRef = null;
 
@@ -99,14 +101,15 @@ export class AppComponent implements OnInit, OnDestroy {
         this.identityService.setCurrentIdentity(null);
         this.connectionProfileService.setCurrentConnectionProfile(null);
         this.identityService.setLoggedIn(false);
+        this.composerBanner = ['Hyperledger', 'Composer Playground'];
+        this.showWelcome = false;
 
         return this.router.navigate(['/login']);
-
     }
 
     processRouteEvent(event): Promise<void> {
         let welcomePromise;
-        if (event['url'] === '/login') {
+        if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
         } else {
             welcomePromise = this.checkVersion().then((success) => {
@@ -120,6 +123,12 @@ export class AppComponent implements OnInit, OnDestroy {
             this.showHeaderLinks = false;
         } else {
             this.showHeaderLinks = true;
+            this.clientService.ensureConnected()
+            .then(() => {
+                let profileName = this.connectionProfileService.getCurrentConnectionProfile() === '$default' ? 'Web' : this.connectionProfileService.getCurrentConnectionProfile();
+                let busNetName = this.clientService.getBusinessNetworkName();
+                this.composerBanner = [profileName, busNetName];
+            });
         }
 
         return welcomePromise;
