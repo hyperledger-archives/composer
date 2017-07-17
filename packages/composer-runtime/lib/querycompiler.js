@@ -284,9 +284,9 @@ class QueryCompiler {
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {
-            query.selector.$registryID = registry;
+            query.selector.$registryId = registry;
         } else {
-            query.selector.$registryID = resource;
+            query.selector.$registryId = resource;
         }
 
         // Handle the where clause, if it exists.

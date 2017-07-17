@@ -123,7 +123,7 @@ describe('ResourceComponent', () => {
     describe('#ngOnInit', () => {
         let mockClassDeclaration;
         beforeEach(() => {
-            component['registryID'] = 'org.acme.fqn';
+            component['registryId'] = 'org.acme.fqn';
             component['retrieveResourceType'] = sandbox.stub();
             component['generateResource'] = sandbox.stub();
             component['onDefinitionChanged'] = sandbox.stub();
@@ -413,7 +413,7 @@ describe('ResourceComponent', () => {
     describe('#retrieveResourceRegistry', () => {
         it('should return an AssetRegistry', () => {
             let registryId = 'registryId';
-            component['registryID'] = registryId;
+            component['registryId'] = registryId;
             mockBusinessNetworkConnection.getAssetRegistry.returns('testing');
 
             let result = component['retrieveResourceRegistry']('Asset');
@@ -424,7 +424,7 @@ describe('ResourceComponent', () => {
 
         it('should return a ParticipantRegistry', () => {
             let registryId = 'registryId';
-            component['registryID'] = registryId;
+            component['registryId'] = registryId;
             mockBusinessNetworkConnection.getParticipantRegistry.returns('testing');
 
             let result = component['retrieveResourceRegistry']('Participant');
@@ -435,7 +435,7 @@ describe('ResourceComponent', () => {
 
         it('should return a TransactionRegistry', () => {
             let registryId = 'registryId';
-            component['registryID'] = registryId;
+            component['registryId'] = registryId;
             mockBusinessNetworkConnection.getTransactionRegistry.returns('testing');
 
             let result = component['retrieveResourceRegistry']('Transaction');

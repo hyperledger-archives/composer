@@ -105,7 +105,7 @@ class Engine {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-        let sysregistries, sysidentities;
+        let sysregistries, sysidentities, sysdata;
         return Promise.resolve()
             .then(() => {
 
@@ -160,11 +160,14 @@ class Engine {
                 return dataService.ensureCollection('$sysdata');
 
             })
-            .then((sysdata) => {
-
+            .then((sysdata_) => {
+                sysdata = sysdata_;
                 // Add the business network definition to the sysdata collection.
                 return sysdata.add('businessnetwork', businessNetworkRecord);
 
+            })
+            .then(() => {
+                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
 

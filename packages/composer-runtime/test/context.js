@@ -684,6 +684,8 @@ describe('Context', () => {
             sinon.stub(context, 'getAccessController').returns(mockAccessController);
             let mockSystemRegistries = sinon.createStubInstance(DataCollection);
             sinon.stub(context, 'getSystemRegistries').returns(mockSystemRegistries);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
         });
 
