@@ -1,8 +1,9 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
-import { dragDropFile } from '../utils/fileUtils.ts';
+import { dragDropFile } from '../utils/fileUtils';
+import { OperationsHelper } from '../utils/operations-helper';
 
-export class ImportModalHelper {
+export class Import {
 
   // Select BND from BNA file drop
   static selectBusinessNetworkDefinitionFromFile(filePath: string) {
@@ -26,20 +27,19 @@ export class ImportModalHelper {
     // Import modal should be present
     return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
     .then(() => {
-        return element(by.id('import_confirm')).click();
+        return OperationsHelper.click(element(by.id('import_confirm')));
     });
   }
 
   // Cancel import
   static cancelImport() {
       // Import modal should be present
-      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
-      .then(() => {
-        return element(by.id('import_cancel')).click();
-      });
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
+      OperationsHelper.click(element(by.id('import_cancel')));
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
   }
 
   static waitForImportModalToAppear() {
-      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000);
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
   }
 }

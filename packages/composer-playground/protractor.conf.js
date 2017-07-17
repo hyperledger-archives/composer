@@ -3,7 +3,7 @@ var os = require('os');
 var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
-  allScriptsTimeout: 11000,
+  allScriptsTimeout: 20000,
   framework: 'jasmine',
   directConnect: true,
   baseUrl: 'http://127.0.0.1:3001',
