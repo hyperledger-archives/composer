@@ -374,7 +374,10 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+            .filter((classDeclaration) => {
+                return classDeclaration.isSystemCoreType();
+            });
     }
 
     /**

@@ -889,6 +889,12 @@ class BusinessNetworkConnector extends Connector {
                         // Filter out any abstract types.
                         return !classDeclaration.isAbstract();
 
+                    })
+                    .filter((classDeclaration) => {
+
+                        // Filter out any system types.
+                        return !classDeclaration.isSystemType();
+
                     });
 
                 // Look for duplicate type names, and set a flag if so.

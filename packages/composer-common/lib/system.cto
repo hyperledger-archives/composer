@@ -18,6 +18,7 @@ abstract asset Registry identified by registryId {
   o String registryId
   o String name
   o String type
+  o Boolean system
 }
 
 asset AssetRegistry extends Registry {

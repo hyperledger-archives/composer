@@ -43,7 +43,7 @@ describe('Registry', () => {
         mockAccessController = sinon.createStubInstance(AccessController);
         mockAccessController.check.resolves();
         mockParticipant = sinon.createStubInstance(Resource);
-        registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
+        registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry', true);
     });
 
     describe('#removeInternalProperties', () => {
@@ -70,6 +70,10 @@ describe('Registry', () => {
 
         it('should be an event emitter', () => {
             registry.should.be.an.instanceOf(EventEmitter);
+            registry.type.should.equal('Asset');
+            registry.id.should.equal('doges');
+            registry.name.should.equal('The doges registry');
+            registry.system.should.be.true;
         });
 
     });

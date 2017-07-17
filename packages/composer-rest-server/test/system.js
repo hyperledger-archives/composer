@@ -218,10 +218,19 @@ describe('System REST API unit tests', () => {
     describe('POST /revokeIdentity', () => {
 
         it('should revoke an identity for a participant in the business network', () => {
-            return chai.request(app)
-                .post('/api/system/revokeIdentity')
-                .send({
-                    userID: 'bob1'
+            return businessNetworkConnection.getIdentityRegistry()
+                .then((identityRegistry) => {
+                    return identityRegistry.getAll();
+                })
+                .then((identities) => {
+                    const identity = identities.find((identity) => {
+                        return identity.name === 'bob1';
+                    });
+                    return chai.request(app)
+                        .post('/api/system/revokeIdentity')
+                        .send({
+                            userID: identity.getIdentifier()
+                        });
                 })
                 .then((res) => {
                     res.should.be.json;
@@ -250,7 +259,10 @@ describe('System REST API unit tests', () => {
                 .get('/api/system/transactions')
                 .then((res) => {
                     res.should.be.json;
-                    res.body.sort((a, b) => {
+                    console.log(res.body);
+                    res.body.filter((tx) => {
+                        return tx.$class === 'org.acme.bond.PublishBond';
+                    }).sort((a, b) => {
                         return a.ISINCode.localeCompare(b.ISINCode);
                     }).map((tx) => {
                         delete tx.transactionId;
