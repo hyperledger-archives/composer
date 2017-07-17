@@ -88,15 +88,15 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * Install a business network definition.
+     * Install the hyperledger composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
+     * @param {BusinessNetworkDefinition} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
      * @param {Object} installOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been installed, or rejected with an error.
      */
-    install(securityContext, businessNetworkDefinition, installOptions) {
+    install(securityContext, businessNetworkIdentifier, installOptions) {
         return Promise.reject(new Error('abstract function called'));
     }
 

@@ -208,20 +208,22 @@ class AdminConnection {
     }
 
     /**
-     * Installs a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
-     * be connected for this method to succeed.
+     * Installs the hyperledger composer runtime to the Hyperledger Fabric in preparation
+     * for the business network to be started. The connection mustbe connected for this method to succeed.
+     * You must pass the name of the business network that is defined in your archive that this
+     * runtime will be started with.
      * @example
-     * // Install a Business Network Definition
+     * // Install the hyperledger composer runtime
      * var adminConnection = new AdminConnection();
      * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
-     * return adminConnection.install(businessNetworkDefinition)
+     * return adminConnection.install(businessNetworkDefinition.getName())
      * .then(function(){
      *     // Business network definition installed
      * })
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
-     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network to install.
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network which will be used to start this runtime.
      * @param {Object} installOptions connector specific install options
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
@@ -232,10 +234,11 @@ class AdminConnection {
     }
 
     /**
-     * Starts a previously installed but not started BusinessNetworkDefinition to the Hyperledger Fabric.
-     * The connection must be connected for this method to succeed.
+     * Starts a business network within the runtime previously installed to the Hyperledger Fabric with
+     * the same name as the business network to be started. The connection must be connected for this
+     * method to succeed.
      * @example
-     * // Install a Business Network Definition
+     * // Start a Business Network Definition
      * var adminConnection = new AdminConnection();
      * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * return adminConnection.start(businessNetworkDefinition)

@@ -42,8 +42,13 @@ describe('Asset system tests', function () {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return admin.deploy(businessNetworkDefinition)
+        if (TestUtil.isHyperledgerFabricV1()) {
+            console.log('doing install/start');
+            // Have some system test perform install/start rather than deploy
+            return admin.install(businessNetworkDefinition.getName())
+                .then(() => {
+                    return admin.start(businessNetworkDefinition);
+                })
                 .then(() => {
                     return TestUtil.getClient('systest-assets')
                         .then((result) => {
@@ -51,11 +56,7 @@ describe('Asset system tests', function () {
                         });
                 });
         } else {
-            console.log('doing 2 step deploy');
-            return admin.install(businessNetworkDefinition.getName())
-                .then(() => {
-                    return admin.start(businessNetworkDefinition);
-                })
+            return admin.deploy(businessNetworkDefinition)
                 .then(() => {
                     return TestUtil.getClient('systest-assets')
                         .then((result) => {

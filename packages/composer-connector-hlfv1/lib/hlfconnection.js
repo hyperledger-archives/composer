@@ -300,18 +300,18 @@ class HLFConnection extends Connection {
      * Install a business network connection.
      *
      * @param {any} securityContext the security context
-     * @param {string} businessNetworkName the business network name
+     * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
      * @returns {Promise} a promise for install completion
      *
      * @memberOf HLFConnection
      */
-    install(securityContext, businessNetworkName, installOptions) {
+    install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
-        LOG.entry(method, securityContext, businessNetworkName, installOptions);
+        LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
 
-        if (!businessNetworkName) {
-            throw new Error('businessNetworkName not specified');
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
         }
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
@@ -349,7 +349,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetworkName,
+                    chaincodeId: businessNetworkIdentifier,
                     txId: txId,
                     targets: this.channel.getPeers()
                 };
