@@ -21,7 +21,7 @@ const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = require('./systemModel');
+const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
 
 /**
  * <p>
