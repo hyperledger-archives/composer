@@ -19,6 +19,10 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('WebDataService');
 
+// Install the PouchDB plugins. The order of the adapters is important!
+PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-idb'));
+PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-websql'));
+
 /**
  * Base class representing the data service provided by a {@link Container}.
  * @protected

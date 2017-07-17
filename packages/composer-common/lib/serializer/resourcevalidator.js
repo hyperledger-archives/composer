@@ -68,9 +68,6 @@ class ResourceValidator {
      * @private
      */
     visit(thing, parameters) {
-        const obj = parameters.stack.peek();
-        this.log('visit', thing.toString() + ' with value (' + obj + ')');
-
         if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof ClassDeclaration) {
@@ -399,19 +396,6 @@ class ResourceValidator {
 
         if(!ModelUtil.isAssignableTo(relationshipType.getModelFile(), obj.getFullyQualifiedType(), relationshipDeclaration)) {
             ResourceValidator.reportInvalidFieldAssignment(parameters.rootResourceIdentifier, relationshipDeclaration.getName(), obj, relationshipDeclaration);
-        }
-    }
-
-    /**
-     * @param {String} callSite - the location
-     * @param {String} message - the message to log.
-     */
-    log(callSite, message) {
-        const log = false;
-        if(log) {
-            if(!message) {
-                message = '';
-            }
         }
     }
 

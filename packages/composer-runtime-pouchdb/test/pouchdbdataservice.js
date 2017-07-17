@@ -59,6 +59,20 @@ describe('PouchDBDataService', () => {
         return dataService.destroy();
     });
 
+    describe('#registerPouchDBPlugin', () => {
+
+        beforeEach(() => {
+            sandbox.stub(PouchDB, 'plugin');
+        });
+
+        it('should register a PouchDB plugin', () => {
+            PouchDBDataService.registerPouchDBPlugin({ foo: 'bar' });
+            sinon.assert.calledOnce(PouchDB.plugin);
+            sinon.assert.calledWith(PouchDB.plugin, { foo: 'bar' });
+        });
+
+    });
+
     describe('#createPouchDB', () => {
 
         beforeEach(() => {
