@@ -24,8 +24,7 @@ const LOG = Logger.getLog('RegistryManager');
 const TYPE_MAP = {
     'Asset': 'org.hyperledger.composer.system.AssetRegistry',
     'Participant': 'org.hyperledger.composer.system.ParticipantRegistry',
-    'Transaction': 'org.hyperledger.composer.system.TransactionRegistry',
-    'Identity': 'org.hyperledger.composer.system.IdentityRegistry'
+    'Transaction': 'org.hyperledger.composer.system.TransactionRegistry'
 };
 
 
@@ -119,20 +118,6 @@ class RegistryManager extends EventEmitter {
                     }
                 }, Promise.resolve());
             }).then(() => {
-                // FUTURE:
-                // let file = ['namespace org.composer.runtime', 'import org.hyperledger.composer.system.AssetRegistry'];
-
-                // let runtimeModel = assetDeclarations.reduce((result, assetDeclaration) => {
-                //     let fqn = assetDeclaration.getName();
-                //     if (!assetDeclaration.isSystemType()) {
-                //         result.push('asset ' + fqn + 'Registry extends AssetRegistry {}');
-                //     }
-
-                //     return result;
-                // }, file);
-                // LOG.debug('createDefaults', runtimeModel.join('\n'));
-                // // console.log(runtimeModel.join('\n'));
-                // this.introspector.getModelManager().addModelFile(runtimeModel.join('\n'));
                 return;
             });
     }
@@ -203,23 +188,6 @@ class RegistryManager extends EventEmitter {
                 return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryID, simpledata.name);
             });
 
-        // let regType = TYPE_MAP[type];
-        // let r = {
-        //     '$class': regType,
-        //     'registryID': id,
-        //     'type': type
-        // };
-        // // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
-        // let resource = this.serializer.fromJSON(r);
-        // return this.accessController.check(resource, 'READ').then(() => {
-        //     return this.sysregistries.get(collectionID);
-        // })
-        //     .then((registry) => {
-        //         return this.dataService.getCollection(collectionID)
-        //             .then((dataCollection) => {
-        //                 return this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.registryID, registry.name);
-        //             });
-        //     });
     }
 
     /**

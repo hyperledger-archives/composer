@@ -169,10 +169,6 @@ class EngineBusinessNetworks {
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                //     return dataService.getCollection('$sysdata');
-
-                // })
-                // .then((sysdata) => {
 
                 // Update the business network definition in the sysdata collection.
                 return sysdata.update('businessnetwork', {
