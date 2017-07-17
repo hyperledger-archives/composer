@@ -2,10 +2,10 @@
 layout: default
 title: Task - Diagnosing Problems
 category: tasks
-sidebar: sidebars/problems.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Diagnosing Problems
 section: diagnostics
-index-order: 0
+index-order: 800
 ---
 
 # Diagnosing Problems
