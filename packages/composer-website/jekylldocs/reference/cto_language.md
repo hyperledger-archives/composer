@@ -56,7 +56,7 @@ A resource definition has the following properties:
 1. A name
 2. A namespace defined by the namespace of its parent file
 3. An identifying field. For example, the Vehicle asset might be identified by
-the vin field. Identifying fields must be Strings.
+the vin field. Identifying fields must be Strings. You must specify this for Assets and Participants using 'identified by'.
 4. An optional super-type, which the resource definition extends.
 5. An optional 'abstract' declaration, to indicate that this type cannot be created
 6. A set of named fields (data owned by the resource, using a has-a relationship)
@@ -93,7 +93,7 @@ but that may be referenced from the resource. Relationships are unidirectional.
     /**
      * An abstract event type
      */
-    event BasicEvent identified by eventId {
+    event BasicEvent {
     o String eventId
     }
     ```
@@ -102,7 +102,7 @@ but that may be referenced from the resource. Relationships are unidirectional.
     /**
      * An abstract transaction type for animal movements
      */
-    abstract transaction AnimalMovement identified by transactionId {
+    abstract transaction AnimalMovement {
       o String transactionId
         --> Animal animal
     }
@@ -129,7 +129,7 @@ Represented as a `.cto` model file, the system namespace is as follows:
     namespace org.hyperledger.composer.system
     abstract asset Asset {  }
     abstract participant Participant {   }
-    abstract transaction Transaction identified by transactionId{
+    abstract transaction Transaction identified by transactionId {
       o String transactionId
       o DateTime timestamp
     }
