@@ -459,6 +459,7 @@ li {
 
 .footer-left {
   display: flex;
+
   flex-grow: 1;
   flex-shrink: 1;
 
@@ -479,6 +480,7 @@ li {
 
   .footer-right {
     display: flex;
+
     justify-content: flex-end;
     flex-basis: auto;
     flex-shrink: 1;
@@ -491,15 +493,13 @@ li {
       padding: 0;
       height: 100%;
     }
-    .license {
-      opacity: 0.6;
-    }
     li {
       margin-left: 2rem;
       flex-direction: column;
       justify-content: center;
       height: 100%;
       display: flex;
+
       a {
         color: $white;
         text-decoration: none;
@@ -508,10 +508,12 @@ li {
           border-bottom: 1px solid $white;
       }
     }
+
       p {
-        // opacity: 0.6;
+        opacity: 0.6;
         color: $white;
       }
+
     }
   }
 
@@ -642,9 +644,11 @@ li {
   }
   .community {
     color: $first-highlight;
+    border-bottom: 1px solid $first-highlight;
     padding-bottom: 3px;
     &:hover {
       color: $sixth-highlight;
+      border-bottom: 1px solid $sixth-highlight;
       padding-bottom: 3px;
       text-decoration: none;
     }

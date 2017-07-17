@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Network Deploy CLI
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Composer Network Deploy CLI
 ---
 
@@ -47,21 +47,30 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 
+<<<<<<< HEAD
+        composer network deploy -o endorsementPolicy='{"endorsementPolicy": {"identities": [.... }'
+=======
         composer network deploy -o endorsementPolicy='{"identities": [.... }'
+>>>>>>> hyperledger/master
 
 - Using the `-o` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 
+<<<<<<< HEAD
+=======
 	In this case, the endorsement policy file should follow this format:
 
 		{"identities":[...],
 			"policy": {...}}
 
+>>>>>>> hyperledger/master
 - Using the `-O` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -O /path/to/file/options.json
 
+<<<<<<< HEAD
+=======
 	In this case, the options file should follow this format:
 
 				{"endorsementPolicy": {"Identities": [...].
@@ -70,4 +79,5 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 				  "someOtherOption": "A Value"
 				}
 
+>>>>>>> hyperledger/master
 For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
