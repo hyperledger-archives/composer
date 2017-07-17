@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Participant Add Command
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Hyperledger Composer Participant Add Command
 ---
 

@@ -55,6 +55,7 @@ describe('BusinessNetworkConnection', () => {
     let mockQueryFile;
     let mockFactory;
     let mockSerializer;
+    let mockParticipantRegistry;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -74,6 +75,7 @@ describe('BusinessNetworkConnection', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
         businessNetworkConnection.securityContext = mockSecurityContext;
+        mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
         delete process.env.COMPOSER_CONFIG;
     });
 
@@ -868,6 +870,11 @@ describe('BusinessNetworkConnection', () => {
                 userID: 'dogeid1',
                 userSecret: 'suchsecret'
             });
+
+            mockParticipantRegistry.exists.resolves(true);
+            businessNetworkConnection.getParticipantRegistry = () => {
+                return Promise.resolve(mockParticipantRegistry);
+            };
         });
 
         it('should throw if participant not specified', () => {
@@ -931,6 +938,15 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
+        it('should throw if participant does not exist', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            mockParticipantRegistry.exists.resolves(false);
+
+            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1')
+                .catch((error) => {
+                    error.should.match(/does not exist /);
+                });
+        });
     });
 
     describe('#revokeIdentity', () => {

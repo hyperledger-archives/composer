@@ -139,7 +139,7 @@ describe('CompiledQueryBundle', () => {
             return compiledQueryBundle.execute(mockDataService, identifier)
                 .then((result) => {
                     sinon.assert.calledOnce(mockDataService.executeQuery);
-                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset"}}');
+                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset"}}');
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
@@ -149,7 +149,7 @@ describe('CompiledQueryBundle', () => {
             return compiledQueryBundle.execute(mockDataService, identifier, { foo: 'bar' })
                 .then((result) => {
                     sinon.assert.calledOnce(mockDataService.executeQuery);
-                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"bar"}}}');
+                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"bar"}}}');
                     result.should.deep.equal(fakeQueryResults);
                 });
         });

@@ -2,8 +2,8 @@
 layout: default
 title: Reference Index
 section: reference
-index-order: 0
-sidebar: sidebars/reference.md
+index-order: 900
+sidebar: sidebars/accordion-toc0.md
 excerpt: Reference section index page.
 ---
 

@@ -286,7 +286,7 @@ describe(`RegistryComponent`, () => {
             component.editResource(mockAsset);
             tick();
             mockNgbModalRef.resource.should.equal(mockAsset);
-            mockNgbModalRef.registryID.should.equal('registry_id');
+            mockNgbModalRef.registryId.should.equal('registry_id');
             component.loadResources.should.be.called;
         }));
     });

@@ -14,8 +14,10 @@ abstract event Event identified by eventId{
   o DateTime timestamp
 }
 
-asset Registry identified by registryID {
-  o String registryID
+abstract asset Registry identified by registryId {
+  o String registryId
+  o String name 
+  o String type 
 }
 
 asset AssetRegistry extends Registry {
@@ -34,10 +36,6 @@ asset IdentityRegistry extends Registry {
 
 }
 
-asset Identity identified by userID {
-  o String userID
-  o DateTime issued
-  --> Participant participant
-  o Boolean activated
-  o Boolean revoked
+asset Network identified by networkId {
+  o String networkId
 }

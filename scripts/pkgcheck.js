@@ -28,7 +28,7 @@ const lernaDirectory = path.resolve('.');
 const lernaConfigFile = path.resolve(lernaDirectory, 'lerna.json');
 const lernaConfig = require(lernaConfigFile);
 const targetVersion = lernaConfig.version;
-const targetDependency = `^${targetVersion}`;
+const targetDependency = `${targetVersion}`;
 packages['lerna.json'] = lernaConfig;
 
 if (!semver.valid(targetVersion)) {
@@ -108,7 +108,7 @@ if (mismatch && !fix) {
     console.error(`Run "scripts/pkgcheck.js --fix" inside the directory "${lernaDirectory}" to resolve this problem and change the version to "${targetVersion}"`);
     process.exit(1);
 } else if (mismatch && fix) {
-    const command = `lerna publish --skip-git --skip-npm --yes --repo-version ${targetVersion} --force-publish '*'`;
+    const command = `lerna publish --skip-git --skip-npm --yes --repo-version ${targetVersion} --force-publish '*' --exact`;
     console.warn(`Status: running command ${command} to fix problems ...`)
     child_process.execSync(command);
     console.warn(`Status: modifying "${masterPackageFile} to fix problems ...`);

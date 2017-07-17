@@ -147,8 +147,9 @@ class ConnectionProfileManager {
                         }
                     }
                 } catch (e) {
-                    LOG.debug(METHOD,e);
-                    throw new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}"`);
+                    const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${e}`);
+                    LOG.error(METHOD, newError);
+                    throw newError;
                 }
                 connectionManagers[data.type] = connectionManager;
             }

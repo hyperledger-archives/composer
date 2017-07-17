@@ -20,6 +20,8 @@ const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const EventEmitter = require('events');
 const Introspector = require('composer-common').Introspector;
+const Factory = require('composer-common').Factory;
+const Resource = require('composer-common').Resource;
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
@@ -42,6 +44,7 @@ describe('RegistryManager', () => {
     let mockAccessController;
     let registryManager;
     let mockSystemRegistries;
+    let mockFactory;
 
     beforeEach(() => {
         mockDataService = sinon.createStubInstance(DataService);
@@ -49,8 +52,9 @@ describe('RegistryManager', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         mockAccessController = sinon.createStubInstance(AccessController);
         mockSystemRegistries = sinon.createStubInstance(DataCollection);
+        mockFactory = sinon.createStubInstance(Factory);
         mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
-        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController, mockSystemRegistries);
+        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController, mockSystemRegistries,mockFactory);
     });
 
     describe('#constructor', () => {
@@ -96,6 +100,18 @@ describe('RegistryManager', () => {
                 });
         });
 
+        it('should create default asset registries', () => {
+            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockAssetDeclaration.getFullyQualifiedName.returns('org.hyperledger.composer.system.Network');
+            mockAssetDeclaration.isSystemType.returns(true);
+            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
+            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
+            return registryManager.createDefaults()
+                .then(() => {
+                    sinon.assert.notCalled(registryManager.ensure);
+                });
+        });
+
         it('should forcably create default asset registries', () => {
             let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
@@ -129,6 +145,18 @@ describe('RegistryManager', () => {
                 .then(() => {
                     sinon.assert.calledOnce(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge');
+                });
+        });
+
+        it('should create default participant registries ignoring system', () => {
+            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockParticipantDeclaration.getFullyQualifiedName.returns('org.hyperledger.composer.system.Admin');
+            mockParticipantDeclaration.isSystemType.returns(true);
+            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
+            sinon.stub(registryManager, 'ensure').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves();
+            return registryManager.createDefaults()
+                .then(() => {
+                    sinon.assert.notCalled(registryManager.ensure);
                 });
         });
 
@@ -171,16 +199,56 @@ describe('RegistryManager', () => {
 
     describe('#getAll', () => {
 
-        it('should get all the registries of the specified type', () => {
+        it('should not fail if one of the registries is not permitted', () => {
             mockSystemRegistries.getAll.resolves([{
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
                 name: 'The cats registry'
             }, {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
                 name: 'The doges registry'
             }]);
+            mockSystemRegistries.get.rejects(false);
+            return registryManager.getAll('Asset')
+                .then((registries) => {
+
+                });
+        });
+
+        it('should get all the registries of the specified type', () => {
+            mockSystemRegistries.getAll.resolves([{
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                id: 'cats',
+                name: 'The cats registry'
+            }, {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            }]);
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            });
+            mockSystemRegistries.get.withArgs('Asset:cats').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                id: 'cats',
+                name: 'The cats registry'
+            });
+
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
@@ -208,14 +276,25 @@ describe('RegistryManager', () => {
 
         it('should filter out registries not of the specified type', () => {
             mockSystemRegistries.getAll.resolves([{
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
                 name: 'The cats registry'
             }, {
-                type: 'Particpant',
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Participant',
                 id: 'doges',
                 name: 'The doges registry'
             }]);
+            mockSystemRegistries.get.withArgs('Asset:cats').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                id: 'cats',
+                name: 'The cats registry'
+            });
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
             return registryManager.getAll('Asset')
@@ -236,8 +315,9 @@ describe('RegistryManager', () => {
 
         it('should get the registry with the specified ID', () => {
             mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry'
             });
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
@@ -247,6 +327,7 @@ describe('RegistryManager', () => {
                     registry.should.be.an.instanceOf(Registry);
                     registry.should.containSubset({
                         type: 'Asset',
+                        // registryId: 'doges',
                         id: 'doges',
                         name: 'The doges registry'
                     });
@@ -263,16 +344,22 @@ describe('RegistryManager', () => {
     describe('#exists', () => {
 
         it('should determine the existence of a registry with the specified ID', () => {
+            mockSystemRegistries.exists.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry'
+            });
             mockSystemRegistries.exists.withArgs('Asset:doges').resolves(true);
+            mockAccessController.check.resolves(true);
+            let mockResource = sinon.createStubInstance(Resource);
+
+            mockFactory.newResource.resolves(mockResource);
+
             return registryManager.exists('Asset', 'doges')
                 .then((exists) => {
                     exists.should.equal.true;
                 });
-        });
-
-        it('should return errors from the data service', () => {
-            mockSystemRegistries.exists.rejects();
-            return registryManager.exists('Asset', 'doges').should.be.rejected;
         });
 
     });
@@ -281,20 +368,31 @@ describe('RegistryManager', () => {
 
         it('should add a new registry with the specified ID', () => {
             mockSystemRegistries.add.withArgs('Asset:doges', {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
                 type: 'Asset',
-                id: 'doges',
+                registryId: 'doges',
                 name: 'The doges registry'
             }).resolves();
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
             let mockEventHandler = sinon.stub();
+            let mockResource = sinon.createStubInstance(Resource);
+            mockFactory.newResource.resolves(mockResource);
+            mockSerializer.toJSON.returns({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                type: 'Asset',
+                registryId: 'doges',
+                name: 'The doges registry'
+            });
             registryManager.on('registryadded', mockEventHandler);
+            mockAccessController.check.resolves(true);
             return registryManager.add('Asset', 'doges', 'The doges registry')
                 .then((registry) => {
                     sinon.assert.calledOnce(mockSystemRegistries.add);
                     sinon.assert.calledWith(mockSystemRegistries.add, 'Asset:doges', {
+                        $class: 'org.hyperledger.composer.system.AssetRegistry',
                         type: 'Asset',
-                        id: 'doges',
+                        registryId: 'doges',
                         name: 'The doges registry'
                     });
                     sinon.assert.calledOnce(mockDataService.createCollection);
@@ -308,16 +406,12 @@ describe('RegistryManager', () => {
                     sinon.assert.calledWith(mockEventHandler, sinon.match({
                         registry: sinon.match.instanceOf(Registry),
                         registryType: 'Asset',
-                        registryID: 'doges',
+                        registryId: 'doges',
                         registryName: 'The doges registry'
                     }));
                 });
         });
 
-        it('should return errors from the data service', () => {
-            mockSystemRegistries.add.rejects();
-            return registryManager.add('Asset', 'doges', 'The doges registry').should.be.rejected;
-        });
 
     });
 

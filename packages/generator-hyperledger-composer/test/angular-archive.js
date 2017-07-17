@@ -44,6 +44,12 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
 import {Participant} from './org.hyperledger.composer.system';
 import {Transaction} from './org.hyperledger.composer.system';
 import {Event} from './org.hyperledger.composer.system';
+import {Registry} from './org.hyperledger.composer.system';
+import {AssetRegistry} from './org.hyperledger.composer.system';
+import {ParticipantRegistry} from './org.hyperledger.composer.system';
+import {TransactionRegistry} from './org.hyperledger.composer.system';
+import {IdentityRegistry} from './org.hyperledger.composer.system';
+import {Network} from './org.hyperledger.composer.system';
 // export namespace net.biz.digitalPropertyNetwork{
    export class LandTitle extends Asset {
       titleId: string;
@@ -138,6 +144,12 @@ describe('hyperledger-composer:angular for CarAuction-Network running against a 
 import {Participant} from './org.hyperledger.composer.system';
 import {Transaction} from './org.hyperledger.composer.system';
 import {Event} from './org.hyperledger.composer.system';
+import {Registry} from './org.hyperledger.composer.system';
+import {AssetRegistry} from './org.hyperledger.composer.system';
+import {ParticipantRegistry} from './org.hyperledger.composer.system';
+import {TransactionRegistry} from './org.hyperledger.composer.system';
+import {IdentityRegistry} from './org.hyperledger.composer.system';
+import {Network} from './org.hyperledger.composer.system';
 // export namespace org.acme.vehicle.auction{
    export class Vehicle extends Asset {
       vin: string;
