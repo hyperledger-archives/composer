@@ -203,17 +203,8 @@ class RegistryManager extends EventEmitter {
         let collectionID = type + ':' + id;
         let resource;
 
-        // firstly form up a 'fake' object to test IF one did exist, would you in theory
-        // be able to see it?
-        // Structure of the JSON will be along these lines
-        // let r = {
-        //     '$class': regType,
-        //     'registryId': id,
-        //     'type': type
-        // };
-
+        // form this up into a resource and check if we are able to read this.
         let litmusResource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
-        // let litmusResource = this.serializer.fromJSON(r);
         return this.accessController.check(litmusResource, 'READ')
             .then(() => {
                 // yes we can see this type of registry - in theory
@@ -254,15 +245,6 @@ class RegistryManager extends EventEmitter {
      */
     add(type, id, name, force) {
         let collectionID = type + ':' + id;
-
-        // This map should be sufficient I hope!
-        // This is the format of the resource
-        // let r = {
-        //     '$class': regType,
-        //     'registryId': id,
-        //     'type': type,
-        //     'name': name
-        // };
 
         // form this up into a resource and check if we are able to create this.
         let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
