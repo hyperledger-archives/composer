@@ -107,7 +107,7 @@ $callout: #FFD640;
         overflow: hidden;
         transition: 0.4s;
         &.hide {
-            height: 5rem !important;
+            height: 4rem !important;
         }
         &:hover {
           border-right: 0px solid $first-highlight;
@@ -138,8 +138,11 @@ $callout: #FFD640;
           padding-left: 2rem;
           padding-right: 1rem;
           display: block;
-          padding-top: 1rem;
-          padding-bottom: 1rem;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          &.active {
+            color: $first-highlight;
+          }
         }
 
 

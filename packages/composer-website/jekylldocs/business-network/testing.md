@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Task - Testing Business Networks
+title: Testing Business Networks
 category: tasks
 section: business-network
 index-order: 405

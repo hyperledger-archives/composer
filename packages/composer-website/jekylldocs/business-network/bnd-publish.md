@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Task - Publish Models or Business Network Definitions
+title: Publish Models or Business Network Definitions
 category: tasks
 section: business-network
 index-order: 406

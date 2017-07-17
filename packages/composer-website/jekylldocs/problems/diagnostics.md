@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Task - Diagnosing Problems
+title: Diagnosing Problems
 category: tasks
 sidebar: sidebars/accordion-toc0.md
 excerpt: Diagnosing Problems

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Hyperledger Composer - Business Network Definition
+title: Business Network Definitions
 category: concepts
 section: business-network
 index-order: 401

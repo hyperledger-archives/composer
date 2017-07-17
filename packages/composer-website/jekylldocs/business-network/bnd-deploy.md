@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Task - Deploying and Updating Business Networks
+title: Deploying and Updating Business Networks
 category: tasks
 section: business-network
 index-order: 403

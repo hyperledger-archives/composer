@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Task - Create a Business Network Definition
+title: Create a Business Network Definition
 category: tasks
 section: business-network
 index-order: 402
