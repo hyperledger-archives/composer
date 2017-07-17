@@ -198,10 +198,10 @@ describe('EngineBusinessNetworks', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataCollection.getAll.resolves([{
                 type: 'Asset',
-                registryID: 'sheeps'
+                registryId: 'sheeps'
             }, {
                 type: 'Participants',
-                registryID: 'farmers'
+                registryId: 'farmers'
             }]);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             mockDataService.deleteCollection.resolves();

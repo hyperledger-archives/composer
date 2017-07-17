@@ -225,7 +225,7 @@ class EngineBusinessNetworks {
                         return registries.reduce((cur, next) => {
                             return cur.then(() => {
                                 let registryType = next.type;
-                                let registryId = next.registryID;
+                                let registryId = next.registryId;
 
                                 LOG.debug(method, 'Deleting collection', registryType, registryId);
                                 return dataService.deleteCollection(registryType + ':' + registryId)

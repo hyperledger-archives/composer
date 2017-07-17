@@ -180,7 +180,7 @@ describe('Engine', () => {
                     sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
-                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkID':'test' });
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
@@ -255,7 +255,7 @@ describe('Engine', () => {
                     sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
                     sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkID':'test' });
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);

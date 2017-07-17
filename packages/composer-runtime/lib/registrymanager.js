@@ -22,9 +22,10 @@ const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
 const TYPE_MAP = {
-    'Asset': 'org.hyperledger.composer.system.AssetRegistry',
-    'Participant': 'org.hyperledger.composer.system.ParticipantRegistry',
-    'Transaction': 'org.hyperledger.composer.system.TransactionRegistry'
+    'Asset': 'AssetRegistry',
+    'Participant': 'ParticipantRegistry',
+    'Transaction': 'TransactionRegistry',
+    'Network': 'Network'
 };
 
 
@@ -43,14 +44,16 @@ class RegistryManager extends EventEmitter {
      * @param {Serializer} serializer The serializer to use.
      * @param {AccessController} accessController The access controller to use.
      * @param {DataCollection} sysregistries The system registries collection to use.
+     * @param {Factory} factory The factory to create new resources
      */
-    constructor(dataService, introspector, serializer, accessController, sysregistries) {
+    constructor(dataService, introspector, serializer, accessController, sysregistries,factory) {
         super();
         this.dataService = dataService;
         this.introspector = introspector;
         this.serializer = serializer;
         this.accessController = accessController;
         this.sysregistries = sysregistries;
+        this.factory = factory;
     }
 
     /**
@@ -97,6 +100,7 @@ class RegistryManager extends EventEmitter {
             .then(() => {
                 return assetDeclarations.reduce((result, assetDeclaration) => {
                     let fqn = assetDeclaration.getFullyQualifiedName();
+
                     if (!assetDeclaration.isSystemType()) {
                         if (force) {
                             return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
@@ -117,8 +121,6 @@ class RegistryManager extends EventEmitter {
                         }
                     }
                 }, Promise.resolve());
-            }).then(() => {
-                return;
             });
     }
 
@@ -140,7 +142,7 @@ class RegistryManager extends EventEmitter {
                 return registries.reduce((prev, registry) => {
                     return prev.then((result) => {
 
-                        return this.get(registry.type, registry.registryID)
+                        return this.get(registry.type, registry.registryId)
                             .then((r) => {
                                 // console.log(r);
                                 LOG.debug(METHOD, 'reducing', r.name);
@@ -183,9 +185,9 @@ class RegistryManager extends EventEmitter {
                 return this.dataService.getCollection(collectionID);
             }).then((dataCollection) => {
                 // and form up the actual registry object
-                // TODO: Does this really need to take the the 3 parametrs type,registryID and name??
+                // TODO: Does this really need to take the the 3 parametrs type,registryId and name??
                 // TODO: this really doens't seem right
-                return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryID, simpledata.name);
+                return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryId, simpledata.name);
             });
 
     }
@@ -203,14 +205,15 @@ class RegistryManager extends EventEmitter {
 
         // firstly form up a 'fake' object to test IF one did exist, would you in theory
         // be able to see it?
-        let regType = TYPE_MAP[type];
-        let r = {
-            '$class': regType,
-            'registryID': id,
-            'type': type
-        };
+        // Structure of the JSON will be along these lines
+        // let r = {
+        //     '$class': regType,
+        //     'registryId': id,
+        //     'type': type
+        // };
 
-        let litmusResource = this.serializer.fromJSON(r);
+        let litmusResource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
+        // let litmusResource = this.serializer.fromJSON(r);
         return this.accessController.check(litmusResource, 'READ')
             .then(() => {
                 // yes we can see this type of registry - in theory
@@ -236,7 +239,7 @@ class RegistryManager extends EventEmitter {
      * @type {object}
      * @param {Registry} registry The registry.
      * @param {string} registryType The type of the registry.
-     * @param {string} registryID The ID of the registry.
+     * @param {string} registryId The ID of the registry.
      * @param {string} registryName The name of the registry.
      */
 
@@ -253,24 +256,25 @@ class RegistryManager extends EventEmitter {
         let collectionID = type + ':' + id;
 
         // This map should be sufficient I hope!
-        let regType = TYPE_MAP[type];
-        let r = {
-            '$class': regType,
-            'registryID': id,
-            'type': type,
-            'name': name
-        };
-
-        LOG.debug('add', 'Creating new registry ', r.type, r.name, r.id);
+        // This is the format of the resource
+        // let r = {
+        //     '$class': regType,
+        //     'registryId': id,
+        //     'type': type,
+        //     'name': name
+        // };
 
         // form this up into a resource and check if we are able to create this.
-        let resource = this.serializer.fromJSON(r);
+        let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
+        resource.name=name;
+        resource.type=type;
+        // let resource = this.serializer.fromJSON(r);
         return this.accessController.check(resource, 'CREATE')
             .then(() => {
                 // yes we can create an instance of this type; now add that to the sysregistries collection
                 // Note we haven't checked if we have update permission on the sysregristries collection
                 // but that is going a bit far really...
-                this.sysregistries.add(collectionID, r, force);
+                this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
             })
             .then(() => {
                 // create the collection that will hold the actual data in this registry
@@ -285,7 +289,7 @@ class RegistryManager extends EventEmitter {
                 this.emit('registryadded', {
                     registry: result,
                     registryType: type,
-                    registryID: id,
+                    registryId: id,
                     registryName: name
                 });
                 return result;

@@ -203,6 +203,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
+                console.log('getting bondasset');
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
             })
             .then((assetRegistry_) => {

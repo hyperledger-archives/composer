@@ -49,7 +49,6 @@ import {AssetRegistry} from './org.hyperledger.composer.system';
 import {ParticipantRegistry} from './org.hyperledger.composer.system';
 import {TransactionRegistry} from './org.hyperledger.composer.system';
 import {IdentityRegistry} from './org.hyperledger.composer.system';
-import {Identity} from './org.hyperledger.composer.system';
 import {Network} from './org.hyperledger.composer.system';
 // export namespace net.biz.digitalPropertyNetwork{
    export class LandTitle extends Asset {
@@ -150,7 +149,6 @@ import {AssetRegistry} from './org.hyperledger.composer.system';
 import {ParticipantRegistry} from './org.hyperledger.composer.system';
 import {TransactionRegistry} from './org.hyperledger.composer.system';
 import {IdentityRegistry} from './org.hyperledger.composer.system';
-import {Identity} from './org.hyperledger.composer.system';
 import {Network} from './org.hyperledger.composer.system';
 // export namespace org.acme.vehicle.auction{
    export class Vehicle extends Asset {

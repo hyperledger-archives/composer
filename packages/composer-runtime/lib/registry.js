@@ -34,7 +34,7 @@ class Registry extends EventEmitter {
             throw new Error('Can only add properties to JSON objects');
         }
         delete json.$registryType;
-        delete json.$registryID;
+        delete json.$registryId;
         return json;
     }
 
@@ -322,7 +322,7 @@ class Registry extends EventEmitter {
             throw new Error('Can only add properties to JSON objects');
         }
         json.$registryType = this.type;
-        json.$registryID = this.id;
+        json.$registryId = this.id;
         return json;
     }
 

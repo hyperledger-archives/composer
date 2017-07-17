@@ -16,6 +16,8 @@ abstract event Event identified by eventId{
 
 abstract asset Registry identified by registryId {
   o String registryId
+  o String name 
+  o String type 
 }
 
 asset AssetRegistry extends Registry {

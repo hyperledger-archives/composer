@@ -167,7 +167,7 @@ class Engine {
 
             })
             .then(() => {
-                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkID': businessNetworkDefinition.getIdentifier() });
+                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
 
