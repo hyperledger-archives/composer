@@ -137,18 +137,18 @@ class HFCConnection extends Connection {
     }
 
     /**
-     * Deploy all business network artifacts.
+     * Start a business network definition.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
-     * @param {Object} deployOptions connector specific deployment options
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to start
+     * @param {Object} startOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
+     * artifacts have been deployed and the business network started, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
+    start(securityContext, businessNetwork, startOptions) {
         HFCUtil.securityCheck(securityContext);
         const self = this;
         let chaincodeId = null;
-        LOG.info('deploy', 'Deploying business network', businessNetwork.getIdentifier());
+        LOG.info('start', 'Starting business network', businessNetwork.getIdentifier());
 
         // check whether this client has already deployed this business network
         return self.getConnectionManager().getConnectionProfileManager().getConnectionProfileStore().load(self.connectionProfile)
@@ -164,7 +164,7 @@ class HFCConnection extends Connection {
                     .deployChainCode(securityContext, 'concerto', 'init', [buffer.toString('base64'), JSON.stringify(initArgs)], true);
             })
             .then((result) => {
-                LOG.info('deploy', 'Deployed chaincode', result.chaincodeID);
+                LOG.info('start', 'Deployed chaincode', result.chaincodeID);
                 chaincodeId = result.chaincodeID;
                 return securityContext.setChaincodeID(result.chaincodeID);
             })
@@ -181,7 +181,7 @@ class HFCConnection extends Connection {
                 return self.connectionManager.getConnectionProfileManager().getConnectionProfileStore().save(self.connectionProfile, profile);
             })
             .then(() => {
-                LOG.info('deploy', 'Updated connection profile with chaincode id', self.getIdentifier());
+                LOG.info('start', 'Updated connection profile with chaincode id', self.getIdentifier());
                 // note that we do NOT set self.businessNetworkIdentifier
                 // here as that would change the identity of this admin connection
                 // causing an exception when the connection is disconncted due to a
@@ -356,28 +356,28 @@ class HFCConnection extends Connection {
         }
     }
 
-    /**
-     * This method is not supported by this connector. Use deploy instead
-     *
-     * @param {any} securityContext the security context
-     * @param {any} businessNetwork the business network
-     * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
-     * @returns {Promise} a promise for instantiation completion
+   /**
+     * Deploy a business network. For the hlf connector this just translates to
+     * a start request as no install is required.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deploy options
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed, or rejected with an error.
      */
-    start(securityContext, businessNetwork, startOptions) {
-        return Promise.reject(new Error('Start is not supported by this connector, use deploy instead'));
+    deploy(securityContext, businessNetwork, deployOptions) {
+        return this.start(securityContext, businessNetwork, deployOptions);
     }
 
     /**
-     * This method is not supported by this connector. Use deploy instead
-     *
-     * @param {any} securityContext the security context
-     * @param {string} businessNetworkIdentifier the business network
-     * @param {object} installOptions any relevant install options
-     * @returns {Promise} a promise for install completion
+     * For the hlf connector, this is just a no-op, there is nothing to install
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {Object} installOptions connector specific install options
+     * @return {Promise} An already resolved promise
      */
     install(securityContext, businessNetworkIdentifier, installOptions) {
-        return Promise.reject(new Error('Install is not supported by this connector, use deploy instead'));
+        return Promise.resolve();
     }
 }
 

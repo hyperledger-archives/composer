@@ -53,12 +53,8 @@ describe('Identity system tests', () => {
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
         admin = TestUtil.getAdmin();
-        if (TestUtil.isHyperledgerFabricV1()) {
-            // Have some system test perform install/start rather than deploy
-            return admin.install(businessNetworkDefinition.getName())
-                .then(() => {
-                    return admin.start(businessNetworkDefinition);
-                })
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return admin.deploy(businessNetworkDefinition)
                 .then(() => {
                     return TestUtil.getClient('systest-identities')
                         .then((result) => {
@@ -66,7 +62,12 @@ describe('Identity system tests', () => {
                         });
                 });
         } else {
-            return admin.deploy(businessNetworkDefinition)
+            console.log('testing install/start');
+            // Have some system test perform install/start rather than deploy
+            return admin.install(businessNetworkDefinition.getName())
+                .then(() => {
+                    return admin.start(businessNetworkDefinition);
+                })
                 .then(() => {
                     return TestUtil.getClient('systest-identities')
                         .then((result) => {

@@ -237,7 +237,7 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#deploy', function() {
+    describe('#start', function() {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
@@ -253,14 +253,14 @@ describe('HFCConnection', () => {
                 networks: {
                 }
             });
-            return connection.deploy(mockSecurityContext, businessNetworkStub)
+            return connection.start(mockSecurityContext, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                 });
         });
 
-        it('should deploy the Concerto chain-code to the Hyperledger Fabric', function() {
+        it('should start the Concerto chain-code to the Hyperledger Fabric', function() {
 
             // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'deployChainCode').resolves({
@@ -275,7 +275,7 @@ describe('HFCConnection', () => {
             });
 
             return connection
-                .deploy(mockSecurityContext, businessNetworkStub, '{}')
+                .start(mockSecurityContext, businessNetworkStub, '{}')
                 .then(function() {
 
                     // Check that the query was made successfully.
@@ -305,7 +305,7 @@ describe('HFCConnection', () => {
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .deploy(mockSecurityContext, businessNetworkStub)
+                .start(mockSecurityContext, businessNetworkStub)
                 .then(function(assetRegistries) {
                     throw new Error('should not get here');
                 }).catch(function(error) {
@@ -324,7 +324,7 @@ describe('HFCConnection', () => {
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .deploy(mockSecurityContext, businessNetworkStub)
+                .start(mockSecurityContext, businessNetworkStub)
                 .then(function(assetRegistries) {
                     throw new Error('should not get here');
                 }).catch(function(error) {
@@ -728,22 +728,23 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#install', () => {
-        it('should throw an error if invoked', () => {
-            return connection
-                .install(mockSecurityContext, 'anything')
-                .should.be.rejectedWith(/Install is not/);
-
+    describe('#install', ()  => {
+        it('should perform a no-op and return a resolved promise', () => {
+            return connection.install(mockSecurityContext, 'org-acme-biznet')
+                .then(() => {
+                });
         });
     });
 
-    describe('#start', () => {
-        it('should throw an error if invoked', () => {
-            return connection
-                .start(mockSecurityContext, 'anything')
-                .should.be.rejectedWith(/Start is not/);
-
+    describe('#deploy', ()  => {
+        it('should just call start', () => {
+            sinon.stub(connection, 'start').resolves();
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+                .then(() => {
+                    sinon.assert.calledOnce(connection.start);
+                    sinon.assert.calledWith(connection.start, mockSecurityContext, mockBusinessNetwork);
+                });
         });
     });
-
 });

@@ -460,7 +460,7 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
+                LOG.debug(method, `Received ${results.length} results(s) from instantiating the chaincode`, results);
                 let proposalResponses = results[0];
                 this._validateResponses(proposalResponses, true);
 
@@ -488,7 +488,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying instantiate chaincode. ' + error);
+                const newError = new Error('error trying to instantiate chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });

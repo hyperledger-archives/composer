@@ -163,7 +163,28 @@ describe('WebConnection', () => {
 
     });
 
-    describe('#deploy', () => {
+    describe('#install', ()  => {
+        it('should perform a no-op and return a resolved promise', () => {
+            return connection.install(mockSecurityContext, 'org-acme-biznet')
+                .then(() => {
+                });
+        });
+    });
+
+    describe('#deploy', ()  => {
+        it('should just call start', () => {
+            sinon.stub(connection, 'start').resolves();
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+                .then(() => {
+                    sinon.assert.calledOnce(connection.start);
+                    sinon.assert.calledWith(connection.start, mockSecurityContext, mockBusinessNetwork);
+                });
+        });
+    });
+
+
+    describe('#start', () => {
 
         it('should call the init engine method, ping, and store the chaincode ID', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
@@ -178,7 +199,7 @@ describe('WebConnection', () => {
             sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
