@@ -146,18 +146,18 @@ asset POContractorRecord identified by poContractorKey {
 *****************************/
 
 /** Create purchase order from PO provider, ie SAP system */
-transaction CreatePO identified by trxId {
+transaction CreatePO {
   o String trxId
   o PurchaseOrder po
 }
 
-transaction UpdatePOContractorSupplierDetails identified by trxId {
+transaction UpdatePOContractorSupplierDetails {
   o String trxId
   o String poNumber
   o POContractorSupplierDetails poContractorSupplierDetails
 }
 
-transaction UpdatePOContractorBuyerDetails identified by trxId {
+transaction UpdatePOContractorBuyerDetails {
   o String trxId
   o String poNumber
   o POContractorBuyerDetails poContractorBuyerDetails
@@ -166,7 +166,7 @@ transaction UpdatePOContractorBuyerDetails identified by trxId {
 /**
  * Transaction for supplier account manager to approve purchase order buyer details
  */
-transaction ApprovePOContractorBuyerDetails identified by trxId {
+transaction ApprovePOContractorBuyerDetails {
   o String trxId
   o String poNumber
 }
@@ -174,7 +174,7 @@ transaction ApprovePOContractorBuyerDetails identified by trxId {
 /**
  * Transaction for buyer manager to approve purchase order supplier details
  */
-transaction ApprovePOContractorSupplierDetails identified by trxId {
+transaction ApprovePOContractorSupplierDetails {
   o String trxId
   o String poNumber
 }

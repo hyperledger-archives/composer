@@ -16,6 +16,8 @@
 
 const ClassDeclaration = require('./classdeclaration');
 const IllegalModelException = require('./illegalmodelexception');
+const ModelUtil = require('../modelutil');
+
 
 /** Class representing the definition of an Transaction.
  * @extends ClassDeclaration
@@ -57,6 +59,19 @@ class TransactionDeclaration extends ClassDeclaration {
 
         if(!this.isSystemType() && this.getName() === 'Transaction') {
             throw new IllegalModelException('Transaction is a reserved type name.', this.modelFile, this.ast.location);
+        }
+
+        let systemTypeDeclared = true;
+
+        // If using models without importing system models
+        try {
+            this.getModelFile().getType(ModelUtil.getSystemNamespace() + '.' + this.getSystemType());
+        } catch (e) {
+            systemTypeDeclared = false;
+        }
+
+        if (!this.isSystemType() && this.idField && systemTypeDeclared) {
+            throw new IllegalModelException('Transaction should not specify an identifying field.', this.modelFile, this.ast.location);
         }
     }
 }

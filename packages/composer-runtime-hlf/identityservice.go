@@ -15,6 +15,9 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -53,24 +56,69 @@ func NewIdentityService(vm *duktape.Context, context *Context, stub shim.Chainco
 	vm.Pop()                                // [ global composer theIdentityService ]
 
 	// Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.getCurrentUserID) // [ global composer theIdentityService getCurrentUserID ]
-	vm.PutPropString(-2, "getCurrentUserID")   // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getIdentifier)  // [ global composer theIdentityService getIdentifier ]
+	vm.PutPropString(-2, "getIdentifier")    // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getName)        // [ global composer theIdentityService getName ]
+	vm.PutPropString(-2, "getName")          // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getIssuer)      // [ global composer theIdentityService getIssuer ]
+	vm.PutPropString(-2, "getIssuer")        // [ global composer theIdentityService ]
+	vm.PushGoFunction(result.getCertificate) // [ global composer theIdentityService getCertificate ]
+	vm.PutPropString(-2, "getCertificate")   // [ global composer theIdentityService ]
 
 	// Return the new identity service.
 	return result
 }
 
-// getCurrentUserID retrieves the userID attribute from the users certificate.
-func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (result int) {
-	logger.Debug("Entering IdentityService.getCurrentUserID", vm)
-	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
+// getIdentifier gets a unique identifier for the identity used to submit the transaction.
+func (identityService *IdentityService) getIdentifier(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getIdentifier", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getIdentifier", result) }()
 
-	// Read the userID attribute value.
+	// Create a fingerprint of the certificate.
 	bytes, err := identityService.Stub.ReadCertAttribute("userID")
 	if err != nil {
-		vm.PushNull()
+		bytes, _ = identityService.Stub.GetCallerCertificate()
+	}
+	hash := sha256.New()
+	hash.Write(bytes)
+	fingerprint := hex.EncodeToString(hash.Sum(nil))
+
+	// Return the fingerprint.
+	vm.PushString(fingerprint)
+	return 1
+}
+
+// getName gets the name of the identity used to submit the transaction.
+func (identityService *IdentityService) getName(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getName", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getName", result) }()
+
+	// Return the common name of the certificate.
+	bytes, err := identityService.Stub.ReadCertAttribute("userID")
+	if err != nil {
+		vm.PushString("admin")
 	} else {
 		vm.PushString(string(bytes))
 	}
+	return 1
+}
+
+// getIssuer gets the issuer of the identity used to submit the transaction.
+func (identityService *IdentityService) getIssuer(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getIssuer", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getIssuer", result) }()
+
+	// Return the fingerprint.
+	vm.PushString("")
+	return 1
+}
+
+// getCertificate gets the certificate used to submit the transaction.
+func (identityService *IdentityService) getCertificate(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getCertificate", vm)
+	defer func() { logger.Debug("Exiting IdentityService.getCertificate", result) }()
+
+	// Return the certificate.
+	vm.PushString("")
 	return 1
 }

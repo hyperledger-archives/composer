@@ -25,12 +25,38 @@ const Service = require('./service');
 class IdentityService extends Service {
 
     /**
-     * Retrieve the current user ID.
+     * Get a unique identifier for the identity used to submit the transaction.
      * @abstract
-     * @return {string} The current user ID, or null if the current user ID cannot
-     * be determined or has not been specified.
+     * @return {string} A unique identifier for the identity used to submit the transaction.
      */
-    getCurrentUserID() {
+    getIdentifier() {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Get the name of the identity used to submit the transaction.
+     * @abstract
+     * @return {string} The name of the identity used to submit the transaction.
+     */
+    getName() {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Get the issuer of the identity used to submit the transaction.
+     * @abstract
+     * @return {string} The issuer of the identity used to submit the transaction.
+     */
+    getIssuer() {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Get the certificate for the identity used to submit the transaction.
+     * @abstract
+     * @return {string} The certificate for the identity used to submit the transaction.
+     */
+    getCertificate() {
         throw new Error('abstract function called');
     }
 

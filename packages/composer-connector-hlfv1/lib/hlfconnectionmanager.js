@@ -345,21 +345,22 @@ class HLFConnectionManager extends ConnectionManager {
     /**
      * Import an identity into a profile wallet or keystore
      *
-     * @param {object} profileDefinition the profile definition
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
      * @param {string} publicKey the public key
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
-     *
-     * @memberOf HLFConnectionManager
      */
-    importIdentity(profileDefinition, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, profileDefinition, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, publicKey, privateKey);
 
         // validate arguments
-        if (!profileDefinition || typeof profileDefinition !== 'object') {
-            throw new Error('profileDefinition not specified or not an object');
+        if (!connectionProfile || typeof connectionProfile !== 'string') {
+            throw new Error('connectionProfile not specified or not a string');
+        } else if (!connectionOptions || typeof connectionOptions !== 'object') {
+            throw new Error('connectionOptions not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
         } else if (!publicKey || typeof publicKey !== 'string') {
@@ -369,14 +370,14 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         //default the optional wallet
-        let wallet = profileDefinition.wallet || Wallet.getWallet();
+        let wallet = connectionOptions.wallet || Wallet.getWallet();
 
         // validate the profile
-        this.validateProfileDefinition(profileDefinition, wallet);
+        this.validateProfileDefinition(connectionOptions, wallet);
 
-        let mspID = profileDefinition.mspID;
+        let mspID = connectionOptions.mspID;
         const client = HLFConnectionManager.createClient();
-        return this._setupWallet(client, wallet, profileDefinition.keyValStore)
+        return this._setupWallet(client, wallet, connectionOptions.keyValStore)
             .then(() => {
                 return client.createUser({
                     username: id,

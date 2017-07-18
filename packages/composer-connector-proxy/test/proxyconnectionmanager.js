@@ -19,7 +19,9 @@ const ProxyConnection = require('../lib/proxyconnection');
 /* const ProxyConnectionManager = */ require('..');
 const serializerr = require('serializerr');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
@@ -125,6 +127,37 @@ describe('ProxyConnectionManager', () => {
                     sinon.assert.calledOnce(mockSocket.once);
                     sinon.assert.calledWith(mockSocket.once, 'connect');
                 });
+        });
+
+    });
+
+    describe('#importIdentity', () => {
+
+        beforeEach(() => {
+            mockConnection = sinon.createStubInstance(ProxyConnection);
+            mockConnection.connectionID = connectionID;
+            mockConnection.socket = mockSocket;
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+            connectionManager.connected = true;
+        });
+
+        it('should send a importIdentity call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func).yields(null);
+            sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
+            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key')
+                .then(() => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func);
+                    sinon.assert.calledTwice(mockSocket.on);
+                });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func).yields(serializedError);
+            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key')
+                .should.be.rejectedWith(TypeError, /such type error/);
         });
 
     });

@@ -20,26 +20,8 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-// const ENCODING = 'utf8';
-
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = `
-    namespace org.hyperledger.composer.system
-
-    abstract asset Asset {  }
-
-    abstract participant Participant {   }
-
-    abstract transaction Transaction identified by transactionId{
-      o String transactionId
-      o DateTime timestamp
-    }
-
-    abstract event Event identified by eventId{
-      o String eventId
-      o DateTime timestamp
-    }
-`;
+const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
 
 /**
  * <p>
@@ -392,7 +374,10 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+            .filter((classDeclaration) => {
+                return classDeclaration.isSystemCoreType();
+            });
     }
 
     /**

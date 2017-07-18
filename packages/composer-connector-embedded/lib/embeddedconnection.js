@@ -15,6 +15,7 @@
 'use strict';
 
 const Connection = require('composer-common').Connection;
+const createHash = require('sha.js');
 const Engine = require('composer-runtime').Engine;
 const EmbeddedContainer = require('composer-runtime-embedded').EmbeddedContainer;
 const EmbeddedContext = require('composer-runtime-embedded').EmbeddedContext;
@@ -27,6 +28,9 @@ const businessNetworks = {};
 
 // A mapping of chaincode IDs to their instance objects.
 const chaincodes = {};
+
+// The issuer for all identities.
+const DEFAULT_ISSUER = createHash('sha256').update('org1').digest('hex');
 
 /**
  * Base class representing a connection to a business network.
@@ -148,20 +152,19 @@ class EmbeddedConnection extends Connection {
      * object representing the logged in participant, or rejected with a login error.
      */
     login(enrollmentID, enrollmentSecret) {
-        // The 'admin' ID is special for the moment as it is not bound to a participant.
-        let result = new EmbeddedSecurityContext(this, enrollmentID !== 'admin' ? enrollmentID : null);
         if (!this.businessNetworkIdentifier) {
             return this.testIdentity(enrollmentID, enrollmentSecret)
-                .then(() => {
-                    return result;
+                .then((identity) => {
+                    return new EmbeddedSecurityContext(this, identity);
                 });
         }
         return this.testIdentity(enrollmentID, enrollmentSecret)
-            .then(() => {
+            .then((identity) => {
                 let chaincodeUUID = EmbeddedConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile);
                 if (!chaincodeUUID) {
                     throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
                 }
+                const result = new EmbeddedSecurityContext(this, identity);
                 result.setChaincodeID(chaincodeUUID);
                 return result;
             });
@@ -177,12 +180,12 @@ class EmbeddedConnection extends Connection {
      */
     deploy(securityContext, businessNetwork, deployOptions) {
         let container = EmbeddedConnection.createContainer();
-        let userID = securityContext.getUserID();
+        let identity = securityContext.getIdentity();
         let chaincodeUUID = container.getUUID();
         let engine = EmbeddedConnection.createEngine(container);
         EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
-        let context = new EmbeddedContext(engine, userID, this);
+        let context = new EmbeddedContext(engine, identity, this);
         return businessNetwork.toArchive({ date: new Date(545184000000) })
             .then((businessNetworkArchive) => {
                 const initArgs = {};
@@ -244,10 +247,10 @@ class EmbeddedConnection extends Connection {
      * chaincode function once it has been invoked, or rejected with an error.
      */
     queryChainCode(securityContext, functionName, args) {
-        let userID = securityContext.getUserID();
+        let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID, this);
+        let context = new EmbeddedContext(chaincode.engine, identity, this);
         return chaincode.engine.query(context, functionName, args)
             .then((data) => {
                 return Buffer.from(JSON.stringify(data));
@@ -263,10 +266,10 @@ class EmbeddedConnection extends Connection {
      * has been invoked, or rejected with an error.
      */
     invokeChainCode(securityContext, functionName, args) {
-        let userID = securityContext.getUserID();
+        let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID, this);
+        let context = new EmbeddedContext(chaincode.engine, identity, this);
         return chaincode.engine.invoke(context, functionName, args)
             .then((data) => {
                 return undefined;
@@ -275,47 +278,68 @@ class EmbeddedConnection extends Connection {
 
     /**
      * Get the data collection that stores identities.
-     * @return {DataCollection} The data collection that stores identities.
+     * @return {Promise} A promise that is resolved with the data collection
+     * that stores identities.
      */
     getIdentities() {
-        return this.dataService.existsCollection('identities')
-            .then((exists) => {
-                if (exists) {
-                    return this.dataService.getCollection('identities');
-                } else {
-                    return this.dataService.createCollection('identities');
-                }
-            });
+        return this.dataService.ensureCollection('identities');
     }
 
     /**
-     * Test the specified user ID and secret to ensure that it is valid.
-     * @param {string} userID The user ID.
-     * @param {string} userSecret The user secret.
-     * @return {Promise} A promise that is resolved if the user ID and secret
-     * is valid, or rejected with an error.
+     * Get the identity for the specified name.
+     * @param {string} identityName The name for the identity.
+     * @return {Promise} A promise that is resolved with the identity, or
+     * rejected with an error.
      */
-    testIdentity(userID, userSecret) {
-        // The 'admin' ID is special for the moment as it is not bound to a participant.
-        if (userID === 'admin') {
-            return Promise.resolve();
+    getIdentity(identityName) {
+        if (identityName === 'admin') {
+            const certificateContents = identityName;
+            const certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from(certificateContents).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            return Promise.resolve({
+                identifier: '',
+                name: 'admin',
+                issuer: DEFAULT_ISSUER,
+                secret: 'adminpw',
+                certificate,
+                imported: false
+            });
         }
         return this.getIdentities()
             .then((identities) => {
-                return identities.get(userID);
-            })
-            .then((identity) => {
-                if (identity.userSecret !== userSecret) {
-                    throw new Error(`The user secret ${userSecret} specified for the user ID ${userID} does not match the stored user secret ${identity.userSecret}`);
-                }
+                return identities.get(identityName);
             });
-
     }
 
     /**
-     * Create a new identity for the specified user ID.
+     * Test the specified identity name and secret to ensure that it is valid.
+     * @param {string} identityName The name for the identity.
+     * @param {string} identitySecret The secret for the identity.
+     * @return {Promise} A promise that is resolved if the user ID and secret
+     * is valid, or rejected with an error.
+     */
+    testIdentity(identityName, identitySecret) {
+        return this.getIdentity(identityName)
+            .then((identity) => {
+                if (identity.imported) {
+                    return identity;
+                } else if (identityName === 'admin') {
+                    return identity;
+                } else if (identity.secret !== identitySecret) {
+                    throw new Error(`The secret ${identitySecret} specified for the identity ${identityName} does not match the stored secret ${identity.secret}`);
+                } else {
+                    return identity;
+                }
+            });
+    }
+
+    /**
+     * Create a new identity for the specified name.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} userID The user ID.
+     * @param {string} identityName The name for the new identity.
      * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should have
      * permissions to create additional new identities. False by default.
@@ -324,22 +348,45 @@ class EmbeddedConnection extends Connection {
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
      */
-    createIdentity(securityContext, userID, options) {
+    createIdentity(securityContext, identityName, options) {
         let identities;
         return this.getIdentities()
             .then((identities_) => {
                 identities = identities_;
-                return identities.exists(userID);
+                return identities.exists(identityName);
             })
             .then((exists) => {
                 if (exists) {
-                    return identities.get(userID);
+                    return identities.get(identityName)
+                        .then((identity) => {
+                            return {
+                                userID: identity.name,
+                                userSecret: identity.secret
+                            };
+                        });
                 }
-                const userSecret = uuid.v4().substring(0, 8);
-                const identity = { userID: userID, userSecret: userSecret };
-                return identities.add(userID, identity)
+                const certificateContents = identityName + ':' + uuid.v4();
+                const certificate = [
+                    '----- BEGIN CERTIFICATE -----',
+                    Buffer.from(certificateContents).toString('base64'),
+                    '----- END CERTIFICATE -----'
+                ].join('\n').concat('\n');
+                const identifier = createHash('sha256').update(certificateContents).digest('hex');
+                const secret = uuid.v4().substring(0, 8);
+                const identity = {
+                    identifier,
+                    name: identityName,
+                    issuer: DEFAULT_ISSUER,
+                    secret,
+                    certificate,
+                    imported: false
+                };
+                return identities.add(identityName, identity)
                     .then(() => {
-                        return identity;
+                        return {
+                            userID: identity.name,
+                            userSecret: identity.secret
+                        };
                     });
             });
     }

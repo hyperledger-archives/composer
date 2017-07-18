@@ -100,7 +100,6 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
     it('creates SalesAgreement component html', function () {
         assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.html');
     });
-
     it('creates SalesAgreement component css', function () {
         assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.css');
     });

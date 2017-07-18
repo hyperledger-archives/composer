@@ -9,7 +9,7 @@ export class OperationsHelper {
     .then(() => {
         return element(by.id('welcome_start')).click()
         .then(() => {
-            return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.welcome'))), 5000);
+            return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.welcome'))), 10000);
         });
     });
   };

@@ -12,8 +12,8 @@ import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
 import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AssetDeclaration, QueryFile } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
-import { FileImporterComponent } from '../../file-importer';
-import { FileDragDropDirective } from '../../file-importer/file-drag-drop';
+import { FileImporterComponent } from '../../common/file-importer';
+import { FileDragDropDirective } from '../../common/file-importer/file-drag-drop';
 
 import { AdminService } from '../../services/admin.service';
 import { AlertService } from '../../basic-modals/alert.service';

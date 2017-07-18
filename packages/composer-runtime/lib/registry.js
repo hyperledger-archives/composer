@@ -34,7 +34,7 @@ class Registry extends EventEmitter {
             throw new Error('Can only add properties to JSON objects');
         }
         delete json.$registryType;
-        delete json.$registryID;
+        delete json.$registryId;
         return json;
     }
 
@@ -46,8 +46,9 @@ class Registry extends EventEmitter {
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
      * @param {string} name The name of the registry.
+     * @param {boolean} system True if the registry is for a system type, false otherwise.
      */
-    constructor(dataCollection, serializer, accessController, type, id, name) {
+    constructor(dataCollection, serializer, accessController, type, id, name, system) {
         super();
         this.dataCollection = dataCollection;
         this.serializer = serializer;
@@ -55,6 +56,7 @@ class Registry extends EventEmitter {
         this.type = type;
         this.id = id;
         this.name = name;
+        this.system = system;
     }
 
     /**
@@ -322,7 +324,7 @@ class Registry extends EventEmitter {
             throw new Error('Can only add properties to JSON objects');
         }
         json.$registryType = this.type;
-        json.$registryID = this.id;
+        json.$registryId = this.id;
         return json;
     }
 

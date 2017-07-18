@@ -16,6 +16,7 @@
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Connection = require('composer-common').Connection;
+const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const ConnectorServer = require('..');
@@ -49,6 +50,7 @@ describe('ConnectorServer', () => {
 
     let mockConnectionProfileManager;
     let mockConnectionProfileStore;
+    let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
     let mockSocket;
@@ -66,6 +68,7 @@ describe('ConnectorServer', () => {
             on: sinon.stub(),
             emit: sinon.stub()
         };
+        mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
@@ -110,6 +113,7 @@ describe('ConnectorServer', () => {
                 '/api/connectionList',
                 '/api/connectionLogin',
                 '/api/connectionManagerConnect',
+                '/api/connectionManagerImportIdentity',
                 '/api/connectionPing',
                 '/api/connectionQueryChainCode',
                 '/api/connectionUndeploy',
@@ -130,6 +134,37 @@ describe('ConnectorServer', () => {
             } finally {
                 delete ConnectorServer.prototype.foo;
             }
+        });
+
+    });
+
+    describe('#connectionManagerImportIdentity', () => {
+
+        it('should import an identity', () => {
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.importIdentity.resolves();
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'public key', 'private key');
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                });
+        });
+
+        it('should handle errors importing an identity', () => {
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.importIdentity.rejects(new Error('import error'));
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.equal('import error');
+                    serializedError.stack.should.be.a('string');
+                });
         });
 
     });

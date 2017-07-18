@@ -3,9 +3,9 @@ layout: default
 title: Installing a development environment
 category: start
 section: installing
-sidebar: sidebars/installing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
-index-order: 3
+index-order: 203
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}

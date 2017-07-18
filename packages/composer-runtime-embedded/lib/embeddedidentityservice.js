@@ -24,20 +24,43 @@ class EmbeddedIdentityService extends IdentityService {
 
     /**
      * Constructor.
-     * @param {String} userID The current user ID.
+     * @param {String} identity The current identity.
      */
-    constructor(userID) {
+    constructor(identity) {
         super();
-        this.userID = userID;
+        this.identity = identity;
     }
 
     /**
-     * Retrieve the current user ID.
-     * @return {string} The current user ID, or null if the current user ID cannot
-     * be determined or has not been specified.
+     * Get a unique identifier for the identity used to submit the transaction.
+     * @return {string} A unique identifier for the identity used to submit the transaction.
      */
-    getCurrentUserID() {
-        return this.userID;
+    getIdentifier() {
+        return this.identity.identifier;
+    }
+
+    /**
+     * Get the name of the identity used to submit the transaction.
+     * @return {string} The name of the identity used to submit the transaction.
+     */
+    getName() {
+        return this.identity.name;
+    }
+
+    /**
+     * Get the issuer of the identity used to submit the transaction.
+     * @return {string} The issuer of the identity used to submit the transaction.
+     */
+    getIssuer() {
+        return this.identity.issuer;
+    }
+
+    /**
+     * Get the certificate for the identity used to submit the transaction.
+     * @return {string} The certificate for the identity used to submit the transaction.
+     */
+    getCertificate() {
+        return this.identity.certificate;
     }
 
 }
