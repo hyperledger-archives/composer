@@ -4,6 +4,7 @@ import { IdentityService } from '../services/identity.service';
 import { AdminService } from '../services/admin.service';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { ClientService } from '../services/client.service';
+import { WalletService } from '../services/wallet.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
                 private connectionProfileService: ConnectionProfileService,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
+                private walletService: WalletService,
                 private alertService: AlertService) {
 
     }
@@ -90,5 +92,10 @@ export class LoginComponent implements OnInit {
     finishedEditingConnectionProfile(): Promise<void> {
         delete this.editingConectionProfile;
         return this.loadConnectionProfiles();
+    }
+
+    removeIdentity(): void {
+        // this.walletService.removeFromWallet();
+        console.log('Hello World');
     }
 }
