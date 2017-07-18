@@ -4,9 +4,11 @@ import { IdentityService } from '../services/identity.service';
 import { AdminService } from '../services/admin.service';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { ClientService } from '../services/client.service';
-import { WalletService } from '../services/wallet.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
+import { WalletService } from '../services/wallet.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-login',
@@ -27,6 +29,7 @@ export class LoginComponent implements OnInit {
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private walletService: WalletService,
+                private modalService: NgbModal,
                 private alertService: AlertService) {
 
     }
@@ -94,8 +97,46 @@ export class LoginComponent implements OnInit {
         return this.loadConnectionProfiles();
     }
 
-    removeIdentity(): void {
-        // this.walletService.removeFromWallet();
-        console.log('Hello World');
+    removeIdentity(connectionProfile, userId): void {
+        const confirmModalRef = this.modalService.open(DeleteComponent);
+        confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
+        confirmModalRef.componentInstance.fileName = userId;
+        confirmModalRef.componentInstance.fileType = 'ID Card';
+        confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';
+        confirmModalRef.componentInstance.deleteFrom = 'My Wallet';
+        confirmModalRef.componentInstance.confirmButtonText = 'Remove';
+
+        confirmModalRef.result
+            .then((result) => {
+                if (result) {
+                    this.alertService.busyStatus$.next({
+                        title: 'Removing ID card',
+                        text: 'removing the ID card ' + userId
+                    });
+                    this.walletService.removeFromWallet(connectionProfile, userId)
+                        .then(() => {
+                            this.loadConnectionProfiles();
+                            this.alertService.busyStatus$.next(null);
+                            this.alertService.successStatus$.next({
+                                title: 'ID Card Removed',
+                                text: 'The ID card was successfully removed from My Wallet.',
+                                icon: '#icon-trash_32'
+                            });
+                        })
+                        .catch((error) => {
+                            this.alertService.busyStatus$.next(null);
+                            this.alertService.errorStatus$.next(error);
+                        });
+                }
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(reason);
+                }
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
     }
 }

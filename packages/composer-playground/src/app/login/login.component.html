@@ -28,7 +28,7 @@
                         {{identity.userId}}
                     </div>
                     <div class="action-buttons">
-                        <button type="button" class="action circular" (click)="removeIdentity()">
+                        <button type="button" class="action circular" (click)="removeIdentity(connectionProfile.name, identity.userId)">
                             <svg class="ibm-icon vertical-top" aria-hidden="true">
                                 <use xlink:href="#icon-trash_32"></use>
                             </svg>
