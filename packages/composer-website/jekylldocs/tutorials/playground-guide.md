@@ -3,8 +3,8 @@ layout: default
 title: Playground Guide
 category: tutorials
 section: tutorials
-index-order: 1
-sidebar: sidebars/tutorials.md
+index-order: 301
+sidebar: sidebars/accordion-toc0.md
 excerpt: The Playground guide runs through importing the car auction sample business network. In this guide, you'll create participants, assets, and transactions; set up and run the auction, and verify that the transactions worked correctly. If you want to run the playground guide locally [**install the Playground locally**](../installing/using-playground-locally.html) first, then use the playground guide.
 ---
 

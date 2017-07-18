@@ -416,42 +416,49 @@ module.exports = yeoman.Base.extend({
                 let modelFile = modelManager.getModelFile(namespace);
                 let assetDeclarations = modelFile.getAssetDeclarations();
 
-                assetDeclarations.forEach((asset) => {
+                assetDeclarations
+                .filter((assetDeclaration) =>{
+                    return !assetDeclaration.isAbstract();
+                })
+                .filter((assetDeclaration) => {
+                    if (assetDeclaration.isSystemType()) {
+                        return assetDeclaration.isSystemCoreType();
+                    }
+                    return true;
+                })
+                .forEach((asset) => {
 
-                    if (!asset.isAbstract()) {
+                    let tempList = [];
+                    assetProperties = asset.getProperties();
 
-                        let tempList = [];
-                        assetProperties = asset.getProperties();
-
-                        assetProperties.forEach((property) => {
-                            if (property.constructor.name === 'Field') {
-                                if (property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()) {
-                                    tempList.push({
-                                        'name': property.getName(),
-                                        'type': property.getType()
-                                    });
-                                } else {
-                                    console.log('Unknown property type: ' + property);
-                                }
-                            } else if (property.constructor.name === 'RelationshipDeclaration') {
+                    assetProperties.forEach((property) => {
+                        if (property.constructor.name === 'Field') {
+                            if (property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()) {
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
                                 });
                             } else {
-                                console.log('Unknown property constructor name: ' + property );
+                                console.log('Unknown property type: ' + property);
                             }
-                        });
+                        } else if (property.constructor.name === 'RelationshipDeclaration') {
+                            tempList.push({
+                                'name': property.getName(),
+                                'type': property.getType()
+                            });
+                        } else {
+                            console.log('Unknown property constructor name: ' + property );
+                        }
+                    });
 
-                        assetList.push({
-                            'name': asset.name,
-                            'namespace': asset.getNamespace(),
-                            'properties': tempList,
-                            'identifier': asset.getIdentifierFieldName()
-                        });
-                        shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
+                    assetList.push({
+                        'name': asset.name,
+                        'namespace': asset.getNamespace(),
+                        'properties': tempList,
+                        'identifier': asset.getIdentifierFieldName()
+                    });
+                    shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
 
-                    }
                 });
             });
 

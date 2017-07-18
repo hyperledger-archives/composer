@@ -152,7 +152,10 @@ function registerSystemMethods(app, dataSource) {
     // Register all system methods
     const registerMethods = [
         registerPingMethod,
+        registerGetAllIdentitiesMethod,
+        registerGetIdentityByIDMethod,
         registerIssueIdentityMethod,
+        registerBindIdentityMethod,
         registerRevokeIdentityMethod,
         registerGetAllTransactionsMethod,
         registerGetTransactionByIDMethod
@@ -307,6 +310,81 @@ function registerPingMethod(app, dataSource, System, connector) {
 }
 
 /**
+ * Register the 'getAllIdentities' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetAllIdentitiesMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getAllIdentities = (options, callback) => {
+        connector.getAllIdentities(options, callback);
+    };
+    System.remoteMethod(
+        'getAllIdentities', {
+            description: 'Get all identities from the identity registry',
+            accepts: [{
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/identities'
+            }
+        }
+    );
+
+}
+
+/**
+ * Register the 'getIdentityByID' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetIdentityByIDMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getIdentityByID = (id, options, callback) => {
+        connector.getIdentityByID(id, options, callback);
+    };
+    System.remoteMethod(
+        'getIdentityByID', {
+            description: 'Get the specified identity from the identity registry',
+            accepts: [{
+                arg: 'id',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: 'object',
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/identities/:id'
+            }
+        }
+    );
+
+}
+
+/**
  * Register the 'issueIdentity' Composer system method.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
@@ -323,7 +401,7 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
         properties: {
             participant: {
                 type: 'string',
-                required: false
+                required: true
             },
             userID: {
                 type: 'string',
@@ -386,7 +464,68 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
             },
             http: {
                 verb: 'post',
-                path: '/issueIdentity'
+                path: '/identities/issue'
+            }
+        }
+    );
+
+}
+
+
+
+/**
+ * Register the 'bindIdentity' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerBindIdentityMethod(app, dataSource, System, connector) {
+
+    // Create and register the models.
+    const BindIdentityRequest = app.loopback.createModel({
+        name: 'BindIdentityRequest',
+        description: 'The request to the bindIdentity method',
+        base: 'Model',
+        properties: {
+            participant: {
+                type: 'string',
+                required: false
+            },
+            certificate: {
+                type: 'string',
+                required: true
+            }
+        },
+        hidden: [ 'id' ]
+    });
+    app.model(BindIdentityRequest, {
+        dataSource: dataSource,
+        public: false
+    });
+
+    // Define and register the method.
+    System.bindIdentity = (data, options, callback) => {
+        connector.bindIdentity(data.participant, data.certificate, options, callback);
+    };
+    System.remoteMethod(
+        'bindIdentity', {
+            description: 'Bind an identity to the specified participant',
+            accepts: [{
+                arg: 'data',
+                type: 'BindIdentityRequest',
+                required: true,
+                http: {
+                    source: 'body'
+                }
+            }, {
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            http: {
+                verb: 'post',
+                path: '/identities/bind'
             }
         }
     );
@@ -402,37 +541,19 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
  */
 function registerRevokeIdentityMethod(app, dataSource, System, connector) {
 
-    // Create and register the models.
-    const RevokeIdentityRequest = app.loopback.createModel({
-        name: 'RevokeIdentityRequest',
-        description: 'The request to the revokeIdentity method',
-        base: 'Model',
-        properties: {
-            userID: {
-                type: 'string',
-                required: true
-            }
-        },
-        hidden: [ 'id' ]
-    });
-    app.model(RevokeIdentityRequest, {
-        dataSource: dataSource,
-        public: false
-    });
-
     // Define and register the method.
     System.revokeIdentity = (data, options, callback) => {
-        connector.revokeIdentity(data.userID, options, callback);
+        connector.revokeIdentity(data, options, callback);
     };
     System.remoteMethod(
         'revokeIdentity', {
             description: 'Revoke the specified identity',
             accepts: [{
-                arg: 'data',
-                type: 'RevokeIdentityRequest',
+                arg: 'id',
+                type: 'string',
                 required: true,
                 http: {
-                    source: 'body'
+                    source: 'path'
                 }
             }, {
                 arg: 'options',
@@ -441,7 +562,7 @@ function registerRevokeIdentityMethod(app, dataSource, System, connector) {
             }],
             http: {
                 verb: 'post',
-                path: '/revokeIdentity'
+                path: '/identities/:id/revoke'
             }
         }
     );

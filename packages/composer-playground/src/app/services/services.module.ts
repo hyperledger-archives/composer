@@ -1,8 +1,6 @@
 import { CommonModule }       from '@angular/common';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf }       from '@angular/core';
 
-import { FileImporterComponent } from './file-importer.component';
-import { FileDragDropDirective } from './file-drag-drop/file-drag-and-drop.directive';
 import { AboutService } from './about.service';
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';

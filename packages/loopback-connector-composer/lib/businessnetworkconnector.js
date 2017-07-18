@@ -757,6 +757,63 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Get all of the identities from the identity registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllIdentities(options, callback) {
+        debug('getAllIdentities', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const result = identities.map((identity) => {
+                    return this.serializer.toJSON(identity);
+                });
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getAllIdentities', 'error thrown doing getAllIdentities', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Get the identity with the specified ID from the identity registry.
+     * @param {string} id The ID for the identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getIdentityByID(id, options, callback) {
+        debug('getIdentityByID', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.get(id);
+            })
+            .then((identity) => {
+                const result = this.serializer.toJSON(identity);
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getIdentityByID', 'error thrown doing getIdentityByID', error);
+                if (error.message.match(/does not exist/)) {
+                    error.statusCode = error.status = 404;
+                }
+                callback(error);
+            });
+
+    }
+
+    /**
      * Issue an identity to the specified participant.
      * @param {string} participant The fully qualified participant ID.
      * @param {string} userID The user ID for the new identity.
@@ -776,6 +833,29 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('issueIdentity', 'error thrown doing issueIdentity', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Bind an identity to the specified participant.
+     * @param {string} participant The fully qualified participant ID.
+     * @param {string} certificate The certificate for the new identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    bindIdentity(participant, certificate, options, callback) {
+        debug('bindIdentity', participant, certificate, options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.bindIdentity(participant, certificate);
+            })
+            .then((result) => {
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('bindIdentity', 'error thrown doing bindIdentity', error);
                 callback(error);
             });
     }
@@ -923,6 +1003,12 @@ class BusinessNetworkConnector extends Connector {
 
                         // Filter out any abstract types.
                         return !classDeclaration.isAbstract();
+
+                    })
+                    .filter((classDeclaration) => {
+
+                        // Filter out any system types.
+                        return !classDeclaration.isSystemType();
 
                     });
 

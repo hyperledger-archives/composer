@@ -114,7 +114,7 @@ describe('IssueIdentityComponent', () => {
             tick();
 
             // Check we load the participants
-            let expected = ['org.doge.Doge#DOGE_1', 'org.doge.Doge#DOGE_2'];
+            let expected = ['resource:org.doge.Doge#DOGE_1', 'resource:org.doge.Doge#DOGE_2'];
             component['participantFQIs'].should.deep.equal(expected);
 
         }));
