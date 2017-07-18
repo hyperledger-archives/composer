@@ -20,6 +20,7 @@ const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
 const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnectionwrapper');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Factory = require('composer-common').Factory;
+const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelManager = require('composer-common').ModelManager;
@@ -1824,6 +1825,130 @@ describe('BusinessNetworkConnector', () => {
         });
     });
 
+    describe('#getAllIdentities', () => {
+
+        let mockIdentityRegistry;
+        let identity1, identity2;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            identity1 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id1');
+            identity2 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id2');
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get all of the identities in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.getAll.resolves([identity1, identity2]);
+            mockSerializer.toJSON.withArgs(identity1).returns({ identityId: 'id1', $class: 'sometx' });
+            mockSerializer.toJSON.withArgs(identity2).returns({ identityId: 'id2', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getAllIdentities({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.getAll);
+                    sinon.assert.calledWith(mockIdentityRegistry.getAll);
+                    const result = cb.args[0][1]; // First call, second argument (error, identities)
+                    result.should.deep.equal([{
+                        identityId: 'id1',
+                        $class: 'sometx'
+                    }, {
+                        identityId: 'id2',
+                        $class: 'sometx'
+                    }]);
+                });
+        });
+
+        it('should handle an error getting all of the identities in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.getAll.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.getAllIdentities({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.getAll);
+                    sinon.assert.calledWith(mockIdentityRegistry.getAll);
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#getIdentityByID', () => {
+
+        let mockIdentityRegistry;
+        let identity;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            identity = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id1');
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').resolves(identity);
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const result = cb.args[0][1]; // First call, second argument (error, identities)
+                    result.should.deep.equal({
+                        identityId: 'id1',
+                        $class: 'sometx'
+                    });
+                });
+        });
+
+        it('should handle an error getting the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('such error'));
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+        it('should return a 404 error getting the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('the thing does not exist'));
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/does not exist/);
+                    error.statusCode.should.equal(404);
+                    error.status.should.equal(404);
+                });
+        });
+
+    });
+
     describe('#issueIdentity', () => {
 
         const participant = 'org.acme.Member#bob@email.com';
@@ -1865,6 +1990,48 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, participant, userID, options);
+                    const error = cb.args[0][0]; // First call, first argument (error, identity)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#bindIdentity', () => {
+
+        const participant = 'org.acme.Member#bob@email.com';
+        const certificate = [
+            '----- BEGIN CERTIFICATE -----',
+            Buffer.from('bob@email.com').toString('base64'),
+            '----- END CERTIFICATE -----'
+        ].join('\n').concat('\n');
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+        });
+
+        it('should bind an identity', () => {
+            mockBusinessNetworkConnection.bindIdentity.withArgs(participant, certificate).resolves();
+            const cb = sinon.stub();
+            return testConnector.bindIdentity(participant, certificate, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, participant, certificate);
+                });
+        });
+
+        it('should handle an error thrown binding an identity', () => {
+            mockBusinessNetworkConnection.bindIdentity.withArgs(participant, certificate).rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.bindIdentity(participant, certificate, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, participant, certificate);
                     const error = cb.args[0][0]; // First call, first argument (error, identity)
                     error.should.match(/such error/);
                 });
@@ -2056,7 +2223,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.include.deep.members([{
+                result.should.deep.equal([{
                     type: 'table',
                     name: 'org.acme.base.BaseConcept'
                 }, {
@@ -2086,7 +2253,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.include.deep.members([{
+                result.should.deep.equal([{
                     type: 'table',
                     name: 'BaseConcept'
                 }, {
@@ -2120,7 +2287,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.include.deep.members([{
+                result.should.deep.equal([{
                     type: 'table',
                     name: 'org.acme.base.BaseConcept'
                 }, {
@@ -2153,7 +2320,7 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
-                result.should.include.deep.members([{
+                result.should.deep.equal([{
                     type: 'table',
                     name: 'BaseConcept'
                 }, {

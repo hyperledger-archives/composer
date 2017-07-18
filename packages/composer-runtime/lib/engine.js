@@ -105,7 +105,7 @@ class Engine {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-        let sysregistries, sysidentities, sysdata;
+        let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
 
@@ -181,25 +181,16 @@ class Engine {
             })
             .then(() => {
 
-                // Ensure that the system identities collection exists.
-                LOG.debug(method, 'Ensuring that sysidentities collection exists');
-                return dataService.ensureCollection('$sysidentities')
-                    .then((sysidentities_) => {
-                        sysidentities = sysidentities_;
-                    });
-
-            })
-            .then(() => {
-
                 // Initialize the context.
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
+                    function: fcn,
+                    arguments: args,
                     businessNetworkDefinition: businessNetworkDefinition,
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
                     compiledAclBundle: compiledAclBundle,
-                    sysregistries: sysregistries,
-                    sysidentities: sysidentities
+                    sysregistries: sysregistries
                 });
 
             })
@@ -273,7 +264,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize()
+            return context.initialize({ function: fcn, arguments: args })
                 .then(() => {
                     return context.transactionStart(false);
                 })
@@ -344,7 +335,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize()
+            return context.initialize({ function: fcn, arguments: args })
                 .then(() => {
                     return context.transactionStart(true);
                 })
@@ -445,7 +436,6 @@ function mixin(sourceClass) {
 }
 
 mixin(require('./engine.businessnetworks'));
-mixin(require('./engine.identities'));
 mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));

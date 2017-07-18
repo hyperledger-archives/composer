@@ -97,7 +97,7 @@ class ClassDeclaration {
         else {
             // if we are not a system type, then we should set the
             // super type to the system type for this class declaration
-            if(!this.isSystemType()) {
+            if(!this.isSystemCoreType()) {
                 this.superType = this.getSystemType();
             }
         }
@@ -326,6 +326,17 @@ class ClassDeclaration {
      */
     isSystemType() {
         return ModelUtil.getSystemNamespace() === this.getNamespace();
+    }
+
+    /**
+     * Returns true if this class is a system core type - both in the system
+     * namespace, and also one of the system core types (Asset, Participant, etc).
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemCoreType() {
+        return this.isSystemType() &&
+            this.getSystemType() === this.getName();
     }
 
     /**

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DrawerBackdropComponent } from './drawer-backdrop.component';
 import { DrawerDismissReasons } from './drawer-dismiss-reasons';
@@ -13,7 +14,10 @@ describe('DrawerBackdropComponent', () => {
   let fixture: ComponentFixture<DrawerBackdropComponent>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [DrawerBackdropComponent]});
+    TestBed.configureTestingModule({
+      declarations: [DrawerBackdropComponent],
+      imports: [NoopAnimationsModule]
+    });
 
     fixture = TestBed.createComponent(DrawerBackdropComponent);
   });
