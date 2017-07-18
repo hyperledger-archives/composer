@@ -280,89 +280,95 @@ describe('Query system tests', () => {
                     });
             });
 
-            it('should execute a named query using limit', () => {
-                return client.query(`${type}_limit`)
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
-                        });
-                        actual.should.deep.equal(expected.slice(0, 2));
-                    });
-            });
+            // Hyperledger Fabric v1.0.0 is dumb and overwrites any limit/skip fields we send in.
+            // https://jira.hyperledger.org/browse/FAB-5369
+            if (!TestUtil.isHyperledgerFabricV1()) {
 
-            it('should execute a dynamic query using limit', () => {
-                const query = client.buildQuery(`SELECT ${resource} LIMIT 2`);
-                return client.query(query)
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a named query using limit', () => {
+                    return client.query(`${type}_limit`)
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(0, 2));
                         });
-                        actual.should.deep.equal(expected.slice(0, 2));
-                    });
-            });
+                });
 
-            it('should execute a named query using skip', () => {
-                return client.query(`${type}_skip`)
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a dynamic query using limit', () => {
+                    const query = client.buildQuery(`SELECT ${resource} LIMIT 2`);
+                    return client.query(query)
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(0, 2));
                         });
-                        actual.should.deep.equal(expected.slice(4));
-                    });
-            });
+                });
 
-            it('should execute a dynamic query using skip', () => {
-                const query = client.buildQuery(`SELECT ${resource} SKIP 4`);
-                return client.query(query)
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a named query using skip', () => {
+                    return client.query(`${type}_skip`)
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(4));
                         });
-                        actual.should.deep.equal(expected.slice(4));
-                    });
-            });
+                });
 
-            it('should execute a named query using a parameter for limit', () => {
-                return client.query(`${type}_limitParameter`, { inputLimit: 4 })
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a dynamic query using skip', () => {
+                    const query = client.buildQuery(`SELECT ${resource} SKIP 4`);
+                    return client.query(query)
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(4));
                         });
-                        actual.should.deep.equal(expected.slice(0, 4));
-                    });
-            });
+                });
 
-            it('should execute a dynamic query using a parameter for limit', () => {
-                const query = client.buildQuery(`SELECT ${resource} LIMIT _$inputLimit`);
-                return client.query(query, { inputLimit: 4 })
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a named query using a parameter for limit', () => {
+                    return client.query(`${type}_limitParameter`, { inputLimit: 4 })
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(0, 4));
                         });
-                        actual.should.deep.equal(expected.slice(0, 4));
-                    });
-            });
+                });
 
-            it('should execute a named query using a parameter for skip', () => {
-                return client.query(`${type}_skipParameter`, { inputSkip: 4 })
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a dynamic query using a parameter for limit', () => {
+                    const query = client.buildQuery(`SELECT ${resource} LIMIT _$inputLimit`);
+                    return client.query(query, { inputLimit: 4 })
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(0, 4));
                         });
-                        actual.should.deep.equal(expected.slice(4));
-                    });
-            });
+                });
 
-            it('should execute a dynamic query using a parameter for skip', () => {
-                const query = client.buildQuery(`SELECT ${resource} SKIP _$inputSkip`);
-                return client.query(query, { inputSkip: 4 })
-                    .then((resources) => {
-                        const actual = resources.map((resource) => {
-                            return serializer.toJSON(resource);
+                it('should execute a named query using a parameter for skip', () => {
+                    return client.query(`${type}_skipParameter`, { inputSkip: 4 })
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(4));
                         });
-                        actual.should.deep.equal(expected.slice(4));
-                    });
-            });
+                });
+
+                it('should execute a dynamic query using a parameter for skip', () => {
+                    const query = client.buildQuery(`SELECT ${resource} SKIP _$inputSkip`);
+                    return client.query(query, { inputSkip: 4 })
+                        .then((resources) => {
+                            const actual = resources.map((resource) => {
+                                return serializer.toJSON(resource);
+                            });
+                            actual.should.deep.equal(expected.slice(4));
+                        });
+                });
+
+            }
 
         });
 
