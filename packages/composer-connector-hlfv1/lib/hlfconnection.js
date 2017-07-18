@@ -297,19 +297,22 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * internal method to perform chaincode install
+     * Install a business network connection.
      *
      * @param {any} securityContext the security context
-     * @param {any} businessNetwork the business network
-     * @param {object} deployOptions any relevant deploy options for install
-     * @private
+     * @param {string} businessNetworkIdentifier the business network name
+     * @param {object} installOptions any relevant install options
      * @returns {Promise} a promise for install completion
      *
      * @memberOf HLFConnection
      */
-    _install(securityContext, businessNetwork, deployOptions) {
-        const method = '_install';
-        LOG.entry(method, securityContext, businessNetwork, deployOptions);
+    install(securityContext, businessNetworkIdentifier, installOptions) {
+        const method = 'install';
+        LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
+
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        }
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
@@ -346,7 +349,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetwork.getName(),
+                    chaincodeId: businessNetworkIdentifier,
                     txId: txId,
                     targets: this.channel.getPeers()
                 };
@@ -355,11 +358,13 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
-
-                // Validate the proposal results, ignore chaincode exists messages
-                this._validateResponses(results[0], false, /chaincode .+ exists/);
-
-                LOG.debug(method, 'chaincode installed, or already installed');
+                if (installOptions && installOptions.ignoreCCInstalled) {
+                    this._validateResponses(results[0], false, /chaincode .+ exists/);
+                    LOG.debug(method, 'chaincode installed, or already installed');
+                } else {
+                    this._validateResponses(results[0], false);
+                    LOG.debug(method, 'chaincode installed');
+                }
             })
             .then(() => {
                 LOG.exit(method);
@@ -389,19 +394,22 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * instantiate the chaincode
-     *
+     * Instantiate the chaincode.
      *
      * @param {any} securityContext the security context
      * @param {any} businessNetwork the business network
-     * @param {Object} deployOptions an optional connection specific set of deployment options (see deploy for details)
+     * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
      * @returns {Promise} a promise for instantiation completion
      *
      * @memberOf HLFConnection
      */
-    _instantiate(securityContext, businessNetwork, deployOptions) {
+    start(securityContext, businessNetwork, startOptions) {
         const method = '_instantiate';
-        LOG.entry(method, securityContext, businessNetwork, deployOptions);
+        LOG.entry(method, securityContext, businessNetwork, startOptions);
+
+        if (!businessNetwork) {
+            throw new Error('businessNetwork not specified');
+        }
 
         let businessNetworkArchive;
         let finalTxId;
@@ -418,8 +426,8 @@ class HLFConnection extends Connection {
                 finalTxId = this.client.newTransactionID();
 
                 let initArgs = {};
-                if (deployOptions && deployOptions.logLevel) {
-                    initArgs.logLevel = deployOptions.logLevel;
+                if (startOptions && startOptions.logLevel) {
+                    initArgs.logLevel = startOptions.logLevel;
                 }
 
                 const request = {
@@ -431,15 +439,15 @@ class HLFConnection extends Connection {
                     args: [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]
                 };
 
-                if (deployOptions) {
+                if (startOptions) {
                     // endorsementPolicy overrides endorsementPolicyFile
                     try {
-                        if (deployOptions.endorsementPolicy) {
+                        if (startOptions.endorsementPolicy) {
                             request['endorsement-policy'] =
-                                (typeof deployOptions.endorsementPolicy === 'string') ? JSON.parse(deployOptions.endorsementPolicy) : deployOptions.endorsementPolicy;
-                        } else if (deployOptions.endorsementPolicyFile) {
+                                (typeof startOptions.endorsementPolicy === 'string') ? JSON.parse(startOptions.endorsementPolicy) : startOptions.endorsementPolicy;
+                        } else if (startOptions.endorsementPolicyFile) {
                             // we don't check for existence so that the error handler will report the file not found
-                            request['endorsement-policy'] = JSON.parse(fs.readFileSync(deployOptions.endorsementPolicyFile));
+                            request['endorsement-policy'] = JSON.parse(fs.readFileSync(startOptions.endorsementPolicyFile));
                         }
                     } catch (error) {
                         const newError = new Error('Error trying parse endorsement policy. ' + error);
@@ -452,7 +460,7 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
+                LOG.debug(method, `Received ${results.length} results(s) from instantiating the chaincode`, results);
                 let proposalResponses = results[0];
                 this._validateResponses(proposalResponses, true);
 
@@ -480,7 +488,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying instantiate chaincode. ' + error);
+                const newError = new Error('error trying to instantiate chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -509,7 +517,7 @@ class HLFConnection extends Connection {
             throw new Error('businessNetwork not specified');
         }
 
-        return this._install(securityContext, businessNetwork)
+        return this.install(securityContext, businessNetwork.getName(), {ignoreCCInstalled: true})
             .then(() => {
                 // check to see if the chaincode is already instantiated
                 return this.channel.queryInstantiatedChaincodes();
@@ -523,7 +531,7 @@ class HLFConnection extends Connection {
                     LOG.debug(method, 'chaincode already instantiated');
                     return Promise.resolve();
                 }
-                return this._instantiate(securityContext, businessNetwork, deployOptions);
+                return this.start(securityContext, businessNetwork, deployOptions);
             })
             .then(() => {
                 LOG.exit(method);

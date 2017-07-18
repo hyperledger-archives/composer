@@ -65,6 +65,8 @@ describe('AdminConnection', () => {
         mockConnection.disconnect.resolves();
         mockConnection.login.resolves(mockSecurityContext);
         mockConnection.deploy.resolves();
+        mockConnection.install.resolves();
+        mockConnection.start.resolves();
         mockConnection.ping.resolves();
         mockConnection.queryChainCode.resolves();
         mockConnection.invokeChainCode.resolves();
@@ -200,6 +202,59 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#install', () => {
+
+        it('should be able to install a business network definition', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.install(businessNetworkDefinition)
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.install);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition);
+            });
+        });
+
+        it('should be able to install a business network definition with install options', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.install(businessNetworkDefinition, {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.install);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+            });
+        });
+
+    });
+
+    describe('#start', () => {
+
+        it('should be able to start a business network definition', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.start(businessNetworkDefinition)
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.start);
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, businessNetworkDefinition);
+            });
+        });
+
+        it('should be able to start a business network definition with start options', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.start(businessNetworkDefinition, {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.start);
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+            });
+        });
+
+    });
+
+
     describe('#deploy', () => {
 
         it('should be able to deploy a business network definition', () => {
@@ -212,6 +267,18 @@ describe('AdminConnection', () => {
                 sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition);
             });
         });
+
+        it('should be able to deploy a business network definition with deployOptions', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.deploy);
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+            });
+        });
+
     });
 
     describe('#undeploy', () => {
