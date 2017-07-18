@@ -11,7 +11,7 @@ import { EditorService } from './editor.service';
 import { EditorRoutingModule } from './editor-routing.module';
 import { AddFileComponent } from './add-file/add-file.component';
 import { ImportComponent } from './import/import.component';
-import { FileImporterModule } from '../file-importer/file-importer.module';
+import { FileImporterModule } from '../common/file-importer/file-importer.module';
 import { DirectivesModule } from '../directives/directives.module';
 import { FooterModule } from '../footer/footer.module';
 
