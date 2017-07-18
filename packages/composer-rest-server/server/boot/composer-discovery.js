@@ -18,6 +18,8 @@ const connector = require('loopback-connector-composer');
 const LoopBackWallet = require('../../lib/loopbackwallet');
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const ModelUtil = require('composer-common').ModelUtil;
+const LoopbackVisitor = require('composer-common').LoopbackVisitor;
+
 /**
  * Find or create the system wallet for storing identities in.
  * @param {Object} app The LoopBack application.
@@ -222,7 +224,7 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     // will generate the web form to enter them
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
-        accepts.push( {arg: param.name, type: param.type, required: true, http: {verb : 'get', source: 'query'}} );
+        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
     }
 
     // Define and register dynamic query method

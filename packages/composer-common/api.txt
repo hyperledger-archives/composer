@@ -102,9 +102,6 @@ class ValidatedResource extends Resource {
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
 }
-class QueryAnalyzer {
-   + object[] analyze(QueryManager) 
-}
 class SecurityContext {
    + void constructor(Connection,string) 
    + Connection getConnection() 

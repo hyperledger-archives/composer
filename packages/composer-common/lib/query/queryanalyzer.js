@@ -21,11 +21,12 @@ const Query = require('./query');
 const Select = require('./select');
 const Skip = require('./skip');
 const Where = require('./where');
+const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const LOG = Logger.getLog('QueryAnalyzer');
 
 /**
  * The query analyzer visits a query and extracts the names and types of all parameters
- * @protected
+ * @private
  */
 class QueryAnalyzer {
 
@@ -37,6 +38,10 @@ class QueryAnalyzer {
      * @throws {IllegalModelException}
      */
     constructor(query) {
+        if(!query) {
+            throw new Error('Invalid query');
+        }
+
         this.query = query;
     }
 
@@ -63,7 +68,6 @@ class QueryAnalyzer {
     visit(thing, parameters) {
         const method = 'visit';
         LOG.entry(method, thing, parameters);
-        console.log('xxxxx visit parameters = ', parameters);
         let result = null;
         if (thing instanceof Query) {
             result = this.visitQuery(thing, parameters);
@@ -126,7 +130,6 @@ class QueryAnalyzer {
         const method = 'visitSelect';
         LOG.entry(method, select, parameters);
 
-        console.log('visiting ' + method + JSON.stringify(select.ast) + 'parameters = ' + parameters);
         let results = [];
 
         // Handle the where clause, if it exists.
@@ -169,7 +172,6 @@ class QueryAnalyzer {
     visitWhere(where, parameters) {
         const method = 'visitWhere';
         LOG.entry(method, where, parameters);
-        console.log('visiting ' + method + JSON.stringify(where.ast));
 
         // Simply visit the AST, which will generate a selector.
         // The root of the AST is probably a binary expression.
@@ -204,11 +206,9 @@ class QueryAnalyzer {
         const method = 'visitLimit';
         LOG.entry(method, limit, parameters);
         // Get the limit value from the AST.
-        const result = [];
-        const value = this.visit(limit.getAST(), parameters);
-        const rparams = parameters.requiredParameters;
-        if(rparams !== null && rparams.length === 1){
-            result.push({name: rparams[0], type: 'Integer'});
+        const result = this.visit(limit.getAST(), parameters);
+        if(result.length>0) {
+            result[0].type = 'Integer';
         }
         LOG.exit(method, result);
         return result;
@@ -225,11 +225,10 @@ class QueryAnalyzer {
         const method = 'visitSkip';
         LOG.entry(method, skip, parameters);
         // Get the skip value from the AST.
-        const result = [];
-        let value = this.visit(skip.getAST(), parameters);
-        const rparams = parameters.requiredParameters;
-        if(rparams !== null && rparams.length === 1){
-            result.push({name: rparams[0], type: 'Integer'});
+        const result = this.visit(skip.getAST(), parameters);
+
+        if(result.length>0) {
+            result[0].type = 'Integer';
         }
         LOG.exit(method, result);
         return result;
@@ -249,14 +248,11 @@ class QueryAnalyzer {
         // Binary expressions are handled differently in Mango based on the type,
         // so figure out the type and handle it appropriately.
         const arrayCombinationOperators = [ 'AND', 'OR' ];
-        const conditionOperators = [ '<', '<=', '>', '>=', '==', '!=' ];
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
-        } else if (conditionOperators.indexOf(ast.operator) !== -1) {
-            result = this.visitConditionOperator(ast, parameters);
         } else {
-            throw new Error('The query compiler does not support this binary expression');
+            result = this.visitConditionOperator(ast, parameters);
         }
 
         LOG.exit(method, result);
@@ -298,20 +294,22 @@ class QueryAnalyzer {
 
         let result = [];
 
-           // Grab the right hand side of this expression.
+        // Grab the right hand side of this expression.
         const rhs = this.visit(ast.right, parameters);
-        const rparams = parameters.requiredParameters;
         const lhs = this.visit(ast.left, parameters);
 
-
-        if( rparams !== null && rparams.length === 1){
-            //find the variable's type from the rhs
-            const paramType = this.getParameterType(lhs);
-            result.push({name: rparams[0], type: paramType});
-            result.concat(rhs);
+        // if the rhs is a string, it is the name of a property
+        if(typeof rhs === 'string' && (lhs instanceof Array && lhs.length > 0)) {
+            lhs[0].type = this.getPropertyType(rhs);
+            result = result.concat(lhs);
         }
 
-        // result.concat(lhs);
+        // if the lhs is a string, it is the name of a property
+        if(typeof lhs === 'string' && (rhs instanceof Array && rhs.length > 0)) {
+            rhs[0].type = this.getPropertyType(lhs);
+            result = result.concat(rhs);
+        }
+
         LOG.exit(method, result);
         return result;
     }
@@ -329,25 +327,18 @@ class QueryAnalyzer {
         const method = 'visitIdentifier';
         LOG.entry(method, ast, parameters);
 
-        // clear the parameters for each indentifier
-        if( parameters !== null ){
-            parameters.requiredParameters= [];
-        }
         // Check to see if this is a parameter reference.
         const parameterMatch = ast.name.match(/^_\$(.+)/);
         if (parameterMatch) {
             const parameterName = parameterMatch[1];
-            parameters.requiredParameters.push(parameterName);
-            const parametersToUse = parameters.parametersToUse;
-            const selector = () => {
-                return parametersToUse[parameterName];
-            };
-            LOG.exit(method, selector);
-            return selector;
+            LOG.exit(method, parameterName);
+
+            // We return a parameter object with a null type
+            // performing the type inference in the parent visit
+            return [{name: parameterName, type: null}];
         }
 
         // Otherwise it's a property name.
-        // TODO: We should validate that it is a property name!
         const selector = ast.name;
         LOG.exit(method, selector);
         return selector;
@@ -357,48 +348,52 @@ class QueryAnalyzer {
     /**
      * Visitor design pattern; handle a literal.
      * Literals are just plain old literal values ;-)
-     * @param {string} parameterNames The parameter name or name with nested structure e.g A.B.C
+     * @param {string} parameterName The parameter name or name with nested structure e.g A.B.C
      * @return {string} The result of the parameter type or null
      * @private
      */
-    getParameterType(parameterName) {
+    getPropertyType(parameterName) {
         const method = 'getParameterType';
         LOG.entry(method, parameterName);
 
-     // The grammar ensures that the resource property is set.
+        // The grammar ensures that the resource property is set.
         const  modelManager = this.query.getQueryFile().getModelManager();
         const resource = this.query.getSelect().getResource();
 
         let result = null;
-        if(parameterName === null || parameterName === undefined ) {return result;}
-
         const parameterNames = parameterName.split('.');
-
-        if(parameterNames === null || parameterNames.length === 0){
-            throw new Error('Can only find a valid property type.');
-        }
 
         // checks the resource type exists
         let classDeclaration = modelManager.getType(resource);
-
-        // check that it is not an enum or concept
-        if(/*classDeclaration.isConcept() ||*/classDeclaration.isEnum()) {
-            throw new Error('Can only select assets, participants and transactions.');
-        }
 
         for(let n=0; n<parameterNames.length; n++){
             const property = classDeclaration.getProperty(parameterNames[n]);
 
             if( property !== null ){
-                if (property.isTypeEnum() || property.isPrimitive()) {
+                // enums are relationships are represented as strings
+                if(property.isTypeEnum() || property instanceof RelationshipDeclaration) {
+                    result = 'String';
+                    break;
+                }
+                else if (property.isPrimitive()) {
                     result = property.getType();
-                }else{
+                    break;
+                }
+                else {
                     const resource = property.getFullyQualifiedTypeName();
                     classDeclaration = modelManager.getType(resource);
                     property.validate(classDeclaration);
                 }
             }
+            else {
+                throw new Error('Property ' + parameterNames[n] + ' does not exist on ' + resource );
+            }
         }
+
+        if(result === null) {
+            throw new Error('Property ' + parameterName + ' is not a primitive, enum or relationship on ' + resource );
+        }
+
         LOG.exit(method, result);
         return result;
     }
@@ -413,7 +408,6 @@ class QueryAnalyzer {
     visitLiteral(ast, parameters) {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
-        console.log('visiting ' + method + JSON.stringify(ast));
         const result = [];
         LOG.exit(method, result);
         return result;
