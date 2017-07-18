@@ -31,7 +31,7 @@ A code editor of your choice, we recommend VSCode.
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
-curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 ```
