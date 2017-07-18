@@ -208,12 +208,12 @@ class AdminConnection {
     }
 
     /**
-     * Installs the hyperledger composer runtime to the Hyperledger Fabric in preparation
+     * Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation
      * for the business network to be started. The connection mustbe connected for this method to succeed.
      * You must pass the name of the business network that is defined in your archive that this
      * runtime will be started with.
      * @example
-     * // Install the hyperledger composer runtime
+     * // Install the Hyperledger Composer runtime
      * var adminConnection = new AdminConnection();
      * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * return adminConnection.install(businessNetworkDefinition.getName())

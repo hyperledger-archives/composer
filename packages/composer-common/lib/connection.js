@@ -88,7 +88,7 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * Install the hyperledger composer runtime.
+     * Install the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {BusinessNetworkDefinition} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
