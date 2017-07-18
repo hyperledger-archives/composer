@@ -14,3 +14,4 @@ export * from './drawer.service';
 export * from './drawer-ref';
 export * from './active-drawer';
 export * from './drawer-stack';
+export * from './drawer.module';
