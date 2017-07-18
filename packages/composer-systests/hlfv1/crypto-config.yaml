@@ -69,4 +69,4 @@ PeerOrgs:
     # Count: The number of user accounts _in addition_ to Admin
     # ---------------------------------------------------------------------------
     Users:
-      Count: 0
+      Count: 10

@@ -14,21 +14,22 @@
 
 'use strict';
 
-const Revoke = require ('./lib/revoke.js');
+const Bind = require ('./lib/bind.js');
 
-module.exports.command = 'revoke [options]';
-module.exports.describe = 'Revoke an identity that was issued or bound to a participant';
+module.exports.command = 'bind [options]';
+module.exports.describe = 'Bind an existing identity to a participant in a participant registry';
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    userId: { alias: 'u', required: true, describe: 'The user ID of the identity to revoke', type: 'string' }
+    participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
+    publicKeyFile: { alias: 'c', required: true, describe: 'File containing the public key', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
 
-    argv.thePromise =  Revoke.handler(argv)
+    argv.thePromise =  Bind.handler(argv)
     .then(() => {
         return;
     })
