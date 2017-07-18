@@ -21,6 +21,18 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
+const TYPE_MAP = {
+    'Asset': 'AssetRegistry',
+    'Participant': 'ParticipantRegistry',
+    'Transaction': 'TransactionRegistry',
+    'Network': 'Network'
+};
+const VIRTUAL_TYPES = [
+    'AssetRegistry',
+    'ParticipantRegistry',
+    'TransactionRegistry',
+    'Network'
+];
 
 /**
  * A class for managing and persisting registries.
@@ -35,14 +47,16 @@ class RegistryManager extends EventEmitter {
      * @param {Serializer} serializer The serializer to use.
      * @param {AccessController} accessController The access controller to use.
      * @param {DataCollection} sysregistries The system registries collection to use.
+     * @param {Factory} factory The factory to create new resources
      */
-    constructor(dataService, introspector, serializer, accessController, sysregistries) {
+    constructor(dataService, introspector, serializer, accessController, sysregistries, factory) {
         super();
         this.dataService = dataService;
         this.introspector = introspector;
         this.serializer = serializer;
         this.accessController = accessController;
         this.sysregistries = sysregistries;
+        this.factory = factory;
     }
 
     /**
@@ -54,10 +68,11 @@ class RegistryManager extends EventEmitter {
      * @param {string} type The type.
      * @param {string} id The ID.
      * @param {string} name The name.
+     * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Registry} The new registry instance.
      */
-    createRegistry(dataCollection, serializer, accessController, type, id, name) {
-        let registry = new Registry(dataCollection, serializer, accessController, type, id, name);
+    createRegistry(dataCollection, serializer, accessController, type, id, name, system) {
+        let registry = new Registry(dataCollection, serializer, accessController, type, id, name, system);
         ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
             registry.on(event, (data) => {
                 this.emit(event, data);
@@ -73,38 +88,33 @@ class RegistryManager extends EventEmitter {
      * have been created, or rejected with an error.
      */
     createDefaults(force) {
-        let assetDeclarations = this.introspector.getClassDeclarations().filter((classDeclaration) => {
-            if (classDeclaration.isAbstract()) {
-                return false;
-            }
-            return (classDeclaration instanceof AssetDeclaration);
-        });
-        let participantDeclarations = this.introspector.getClassDeclarations().filter((classDeclaration) => {
-            if (classDeclaration.isAbstract()) {
-                return false;
-            }
-            return (classDeclaration instanceof ParticipantDeclaration);
-        });
-        return Promise.resolve()
-            .then(() => {
-                return assetDeclarations.reduce((result, assetDeclaration) => {
-                    let fqn = assetDeclaration.getFullyQualifiedName();
-                    if (force) {
-                        return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
-                    } else {
-                        return this.ensure('Asset', fqn, `Asset registry for ${fqn}`);
-                    }
-                }, Promise.resolve());
+        const method = 'createDefaults';
+        LOG.entry(method, force);
+        return this.introspector.getClassDeclarations()
+            .filter((classDeclaration) => {
+                return !classDeclaration.isAbstract();
             })
-            .then(() => {
-                return participantDeclarations.reduce((result, participantDeclaration) => {
-                    let fqn = participantDeclaration.getFullyQualifiedName();
+            .filter((classDeclaration) => {
+                return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration);
+            })
+            .filter((classDeclaration) => {
+                return !(classDeclaration.isSystemType() && VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1);
+            })
+            .reduce((promise, classDeclaration) => {
+                return promise.then(() => {
+                    const type = classDeclaration.getSystemType();
+                    const fqn = classDeclaration.getFullyQualifiedName();
+                    const systemType  = classDeclaration.isSystemType();
+                    LOG.debug(method, 'Creating registry', type, fqn, systemType);
                     if (force) {
-                        return this.add('Participant', fqn, `Participant registry for ${fqn}`, true);
+                        return this.add(type, fqn, `${type} registry for ${fqn}`, true, systemType);
                     } else {
-                        return this.ensure('Participant', fqn, `Participant registry for ${fqn}`);
+                        return this.ensure(type, fqn, `${type} registry for ${fqn}`, systemType);
                     }
-                }, Promise.resolve());
+                });
+            }, Promise.resolve())
+            .then(() => {
+                LOG.exit(method);
             });
     }
 
@@ -115,21 +125,38 @@ class RegistryManager extends EventEmitter {
      * objects when complete, or rejected with an error.
      */
     getAll(type) {
+        const method = 'getAll';
+        LOG.entry(method, type);
         return this.sysregistries.getAll()
             .then((registries) => {
                 registries = registries.filter((registry) => {
                     return registry.type === type;
                 });
+                LOG.debug(method, 'Filtered registries down to', registries.length);
                 return registries.reduce((prev, registry) => {
-                    let collectionID = registry.type + ':' + registry.id;
                     return prev.then((result) => {
-                        return this.dataService.getCollection(collectionID)
-                            .then((dataCollection) => {
-                                result.push(this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name));
+
+                        return this.get(registry.type, registry.registryId)
+                            .then((r) => {
+                                // console.log(r);
+                                LOG.debug(method, 'reducing', r.name);
+                                result.push(r);
+                                return result;
+                            })
+                            .catch(() => {
+                                LOG.debug(method, 'not worried about access failure');
                                 return result;
                             });
+
                     });
                 }, Promise.resolve([]));
+            })
+            .then((registries) => {
+                registries = registries.filter((registry) => {
+                    return !registry.system;
+                });
+                LOG.exit(method, registries);
+                return registries;
             });
     }
 
@@ -142,12 +169,28 @@ class RegistryManager extends EventEmitter {
      */
     get(type, id) {
         let collectionID = type + ':' + id;
+        let resource;
+        let simpledata;
+        LOG.entry('get', collectionID);
+
+        // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
         return this.sysregistries.get(collectionID)
-            .then((registry) => {
-                return this.dataService.getCollection(collectionID)
-                    .then((dataCollection) => {
-                        return this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name);
-                    });
+            .then((result) => {
+                simpledata = result;
+                // do we have permission to be looking at this??
+                resource = this.serializer.fromJSON(result);
+                return this.accessController.check(resource, 'READ');
+            })
+            .then(() => {
+                // if we got here then, we the accessController.check was OK, get the dataCollection with the actual information
+                // for the require registry
+                return this.dataService.getCollection(collectionID);
+            })
+            .then((dataCollection) => {
+                // and form up the actual registry object
+                // TODO: Does this really need to take the the 3 parametrs type,registryId and name??
+                // TODO: this really doens't seem right
+                return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryId, simpledata.name, simpledata.system);
             });
     }
 
@@ -160,9 +203,24 @@ class RegistryManager extends EventEmitter {
      */
     exists(type, id) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.exists(collectionID)
-            .then((exists) => {
-                return exists;
+        let resource;
+
+        // form this up into a resource and check if we are able to read this.
+        let litmusResource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
+        return this.accessController.check(litmusResource, 'READ')
+            .then(() => {
+                // yes we can see this type of registry - in theory
+                return this.sysregistries.get(collectionID);
+            })
+            .then((result) => {
+                // do we REALLY have permission to be looking at this??
+                resource = this.serializer.fromJSON(result);
+                return this.accessController.check(resource, 'READ');
+            })
+            .then(() => {
+                // well we got here! so the resource is there and we can really really access it
+                return true;
+
             });
     }
 
@@ -173,7 +231,7 @@ class RegistryManager extends EventEmitter {
      * @type {object}
      * @param {Registry} registry The registry.
      * @param {string} registryType The type of the registry.
-     * @param {string} registryID The ID of the registry.
+     * @param {string} registryId The ID of the registry.
      * @param {string} registryName The name of the registry.
      */
 
@@ -182,22 +240,40 @@ class RegistryManager extends EventEmitter {
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
      * @param {string} name The name of the registry.
-     * @param {boolean} force true to force the creation of the collection without checking
+     * @param {boolean} force True to force the creation of the collection without checking.
+     * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
      */
-    add(type, id, name, force) {
+    add(type, id, name, force, system) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force)
+
+        // form this up into a resource and check if we are able to create this.
+        let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
+        resource.name=name;
+        resource.type=type;
+        resource.system=!!system;
+        return this.accessController.check(resource, 'CREATE')
             .then(() => {
+                // yes we can create an instance of this type; now add that to the sysregistries collection
+                // Note we haven't checked if we have update permission on the sysregristries collection
+                // but that is going a bit far really...
+                this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
+            })
+            .then(() => {
+                // create the collection that will hold the actual data in this registry
                 return this.dataService.createCollection(collectionID, force);
             })
             .then((dataCollection) => {
+                // and create the registry instance to be used
                 let result = this.createRegistry(dataCollection, this.serializer, this.accessController, type, id, name);
+
+                // event emitting
+                // TODO: not checked event emission privaledge.
                 this.emit('registryadded', {
                     registry: result,
                     registryType: type,
-                    registryID: id,
+                    registryId: id,
                     registryName: name
                 });
                 return result;
@@ -209,17 +285,17 @@ class RegistryManager extends EventEmitter {
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
      * @param {string} name The name of the registry.
-     * @param {boolean} force true to force the creation of the collection without checking
+     * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
      */
-    ensure(type, id, name) {
+    ensure(type, id, name, system) {
         const method = 'ensure';
-        LOG.entry(method, type, id, name);
+        LOG.entry(method, type, id, name, system);
         return this.get(type, id)
             .catch((error) => {
                 LOG.debug(method, 'The registry does not exist, creating');
-                return this.add(type, id, name);
+                return this.add(type, id, name, false, system);
             })
             .then((registry) => {
                 LOG.exit(method, registry);

@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Task - Testing Business Networks
+title: Testing Business Networks
 category: tasks
 section: business-network
-index-order: 5
-sidebar: sidebars/businessnetworks.md
+index-order: 405
+sidebar: sidebars/accordion-toc0.md
 excerpt: How to test business networks
 ---
 

@@ -17,27 +17,70 @@
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const DataCollection = require('composer-runtime').DataCollection;
 const EmbeddedConnectionManager = require('..');
+const uuid = require('uuid');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('EmbeddedConnectionManager', () => {
 
     let mockConnectionProfileManager;
     let connectionManager;
+    let sandbox;
 
     beforeEach(() => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         connectionManager = new EmbeddedConnectionManager(mockConnectionProfileManager);
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('#constructor', () => {
 
         it('should construct a new connection manager', () => {
             connectionManager.should.be.an.instanceOf(ConnectionManager);
+        });
+
+    });
+
+    describe('#importIdentity', () => {
+
+        const certificate = [
+            '----- BEGIN CERTIFICATE -----',
+            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
+            '----- END CERTIFICATE -----'
+        ].join('\n').concat('\n');
+
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(connectionManager.dataService, 'ensureCollection').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('should store a new identity', () => {
+            sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
+            mockIdentitiesDataCollection.add.withArgs('doge').resolves();
+            return connectionManager.importIdentity('devFabric1', { connect: 'options' }, 'doge', certificate)
+               .then(() => {
+                   sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
+                   sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
+                       certificate,
+                       identifier: 'eecfb51e8e51ed6b98566b14ed4c022a6b9dba3d757bbdb67ea2e37cd8e50a48',
+                       issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                       name: 'doge',
+                       secret: 'f892c30a',
+                       imported: true
+                   });
+               });
         });
 
     });

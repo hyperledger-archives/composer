@@ -15,7 +15,13 @@
 'use strict';
 
 const ConnectionManager = require('composer-common').ConnectionManager;
+const createHash = require('sha.js');
 const WebConnection = require('./webconnection');
+const WebDataService = require('composer-runtime-web').WebDataService;
+const uuid = require('uuid');
+
+// The issuer for all identities.
+const DEFAULT_ISSUER = createHash('sha256').update('org1').digest('hex');
 
 /**
  * Base class representing a connection manager that establishes and manages
@@ -32,6 +38,38 @@ class WebConnectionManager extends ConnectionManager {
      */
     constructor(connectionProfileManager) {
         super(connectionProfileManager);
+        this.dataService = new WebDataService(null, true);
+    }
+
+    /**
+     * Import an identity into a profile wallet or keystore.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @param {string} publicKey the public key
+     * @param {string} privateKey the private key
+     * @returns {Promise} a promise
+     */
+    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+        return this.dataService.ensureCollection('identities')
+            .then((identities) => {
+                const bytes = publicKey
+                    .replace(/-----BEGIN CERTIFICATE-----/, '')
+                    .replace(/-----END CERTIFICATE-----/, '')
+                    .replace(/[\r\n]+/g, '');
+                const certificateContents = Buffer.from(bytes, 'base64');
+                const identifier = createHash('sha256').update(certificateContents).digest('hex');
+                const secret = uuid.v4().substring(0, 8);
+                const identity = {
+                    identifier,
+                    name: id,
+                    issuer: DEFAULT_ISSUER,
+                    secret,
+                    certificate: publicKey,
+                    imported: true
+                };
+                return identities.add(id, identity);
+            });
     }
 
     /**

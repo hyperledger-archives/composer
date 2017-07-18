@@ -338,4 +338,14 @@ describe('InstanceGenerator', () => {
 
     });
 
+    describe('#findConcreteSubclass', () => {
+        it('should return the same declaration if it is abstract', () => {
+            const declaration = {
+                isAbstract: () => {
+                    return false;
+                }
+            };
+            visitor.findConcreteSubclass(declaration).should.deep.equal(declaration);
+        });
+    });
 });

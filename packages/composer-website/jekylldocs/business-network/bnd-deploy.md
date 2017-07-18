@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Task - Deploying and Updating Business Networks
+title: Deploying and Updating Business Networks
 category: tasks
 section: business-network
-index-order: 3
-sidebar: sidebars/businessnetworks.md
+index-order: 403
+sidebar: sidebars/accordion-toc0.md
 excerpt: How to deploy or update Business Networks
 ---
 
