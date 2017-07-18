@@ -8,12 +8,32 @@ import {
   Output
 } from '@angular/core';
 
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from '@angular/animations';
+
 import { DrawerDismissReasons } from './drawer-dismiss-reasons';
 
 @Component({
   selector: 'drawer-backdrop',
   template: '',
-  styleUrls: ['./drawer-backdrop.component.scss'.toString()]
+  styleUrls: ['./drawer-backdrop.component.scss'.toString()],
+  animations: [
+    trigger('slideOpenClosed', [
+      state('open', style({
+        opacity: 0.7
+      })),
+      state('closed', style({
+        opacity: 0
+      })),
+      transition('* => open', animate('.3s ease-out')),
+      transition('* => closed', animate('.2s ease-out'))
+    ])
+  ]
 })
 export class DrawerBackdropComponent {
 
@@ -21,14 +41,14 @@ export class DrawerBackdropComponent {
   @Input()
   closing: boolean | string = false;
 
-  @HostBinding('class.open')
-  get isOpen() {
-    return !this.closing;
-  }
-
-  @HostBinding('class.drawer-backdrop') true;
+  @HostBinding('class') classes = 'open drawer-backdrop';
 
   @Output('dismissEvent') dismissEvent = new EventEmitter();
+
+  @HostBinding('@slideOpenClosed')
+  get isClosing() {
+    return this.closing ? 'closed' : 'open';
+  }
 
   constructor(private _elRef: ElementRef) {}
 
