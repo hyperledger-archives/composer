@@ -171,14 +171,38 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * Deploy all business network artifacts.
+     * For the embedded connector, this is just a no-op, there is nothing to install.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {Object} installOptions connector specific installation options
+     * @return {Promise} A resolved promise as this is a no-op
+     */
+    install(securityContext, businessNetworkIdentifier, installOptions) {
+        return Promise.resolve();
+    }
+
+    /**
+     * Deploy a business network. For the embedded connector this just translates to
+     * a start request as no install is required.
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
-     * @param {Object} deployOptions connector specific deployment options
+     * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
     deploy(securityContext, businessNetwork, deployOptions) {
+        return this.start(securityContext, businessNetwork, deployOptions);
+    }
+
+    /**
+     * Start a business network.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} startOptions connector specific start options
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed and started, or rejected with an error.
+     */
+    start(securityContext, businessNetwork, startOptions) {
         let container = EmbeddedConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeUUID = container.getUUID();

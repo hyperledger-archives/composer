@@ -81,6 +81,26 @@ describe('Connection', () => {
 
     });
 
+    describe('#start', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.start()
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
+    });
+
+    describe('#install', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.install()
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
+    });
+
     describe('#deploy', () => {
 
         it('should throw as abstract method', () => {
