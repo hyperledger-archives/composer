@@ -99,8 +99,9 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.13.0/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Install python v2 if required
-python -V | grep 2.7
-if [ $? -ne 1 ]
+set +e
+COUNT="$(python -V 2>&1 | grep -c 2.)"
+if [ ${COUNT} -ne 1 ]
 then
    sudo apt-get install -y python-minimal
 fi
