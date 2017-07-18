@@ -95,7 +95,7 @@ describe('Identity system tests', () => {
             });
     });
 
-    it('should bind an identity and make it available for a ping request', () => {
+    it('should bind an identity and make it available for a ping request', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
         if (TestUtil.isHyperledgerFabricV06()) {
@@ -187,7 +187,7 @@ describe('Identity system tests', () => {
             });
     });
 
-    it('should bind an identity and make the participant available for transaction processor functions', () => {
+    it('should bind an identity and make the participant available for transaction processor functions', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
         if (TestUtil.isHyperledgerFabricV06()) {
