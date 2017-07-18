@@ -21,6 +21,9 @@ const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const SecurityContext = require('composer-common').SecurityContext;
+const Util = require('composer-common').Util;
+
+const version = require('../package.json').version;
 
 const chai = require('chai');
 const should = chai.should();
@@ -35,6 +38,7 @@ describe('AdminConnection', () => {
     let mockConnection;
     let mockSecurityContext;
     let adminConnection;
+    let sandbox;
 
     const config =
         {
@@ -54,6 +58,7 @@ describe('AdminConnection', () => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
+        mockSecurityContext.getConnection.returns(mockConnection);
 
         mockConnection.getConnectionManager.returns(mockConnectionManager);
         mockConnection.getIdentifier.returns('BNI@CP');
@@ -69,6 +74,7 @@ describe('AdminConnection', () => {
 
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
+        adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
@@ -76,10 +82,12 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
         sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
         delete process.env.COMPOSER_CONFIG;
+        sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
         delete process.env.COMPOSER_CONFIG;
+        sandbox.restore();
     });
 
     describe('#constructor', () => {
@@ -234,15 +242,107 @@ describe('AdminConnection', () => {
     });
 
     describe('#ping', () => {
-        it('should not fail', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
             adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
             return adminConnection.ping()
-            .then(() => {
-                sinon.assert.calledOnce(mockConnection.ping);
-                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
-            });
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
         });
+
+        it('should ping the connection', () => {
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.ping);
+                });
+        });
+
+        it('should throw any errors that do not match ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION NOT REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
+        });
+
+        it('should activate the identity if the ping returns ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION_REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .then(() => {
+                    sinon.assert.calledTwice(mockConnection.ping);
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                });
+        });
+
+    });
+
+    describe('#pingInner', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should ping the connection', () => {
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.ping);
+                });
+        });
+
+    });
+
+    describe('#activate', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should submit a request to the chaincode for activation', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                });
+        });
+
     });
 
     describe('#getLogLevel', () => {
@@ -288,10 +388,10 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .then(() => {
-                sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                sinon.assert.calledWith(mockConnectionManager.importIdentity, config, 'anid', 'acerttosign', 'akey');
-            });
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, 'testprofile', config, 'anid', 'acerttosign', 'akey');
+                });
         });
 
         it('should throw an error if import fails', () => {
@@ -300,7 +400,7 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .should.be.rejectedWith(/no identity imported/);
+                .should.be.rejectedWith(/no identity imported/);
         });
 
 

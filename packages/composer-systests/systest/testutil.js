@@ -204,7 +204,7 @@ class TestUtil {
                     // the connection profile manager that the connector server is using.
                     const connectionManager = new EmbeddedConnectionManager(connectionProfileManager);
                     connectionProfileManager.getConnectionManager = () => {
-                        return connectionManager;
+                        return Promise.resolve(connectionManager);
                     };
                     const io = socketIO(15699);
                     io.on('connect', (socket) => {
@@ -303,7 +303,7 @@ class TestUtil {
                 if (TestUtil.isHyperledgerFabricV1()) {
                     let fs = dynamicRequire('fs');
                     let org = 'org1';
-                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk');
+                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/keystore/cf961334129e4cf283c1144356f36a394d6b65a75ecff835f5d5de545a006141_sk');
                     let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/signcerts/Admin@org1.example.com-cert.pem');
                     let signerCert = fs.readFileSync(certPath).toString();
                     let key = fs.readFileSync(keyPath).toString();

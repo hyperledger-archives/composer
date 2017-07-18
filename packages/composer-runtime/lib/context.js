@@ -97,6 +97,8 @@ class Context {
      */
     constructor(engine) {
         this.engine = engine;
+        this.function = null;
+        this.arguments = null;
         this.businessNetworkDefinition = null;
         this.registryManager = null;
         this.resolver = null;
@@ -107,7 +109,6 @@ class Context {
         this.transaction = null;
         this.accessController = null;
         this.sysregistries = null;
-        this.sysidentities = null;
         this.eventNumber = 0;
         this.scriptCompiler = null;
         this.compiledScriptBundle = null;
@@ -115,6 +116,22 @@ class Context {
         this.compiledQueryBundle = null;
         this.aclCompiler = null;
         this.compiledAclBundle = null;
+    }
+
+    /**
+     * Get the name of the currently executing runtime method.
+     * @return {string} The name of the currently executing runtime method.
+     */
+    getFunction() {
+        return this.function;
+    }
+
+    /**
+     * Get the arguments for the currently executing runtime method.
+     * @return {string} The arguments for the currently executing runtime method.
+     */
+    getArguments() {
+        return this.arguments;
     }
 
     /**
@@ -135,7 +152,7 @@ class Context {
                 if (object.undeployed){
                     throw new Error('The business network has been undeployed');
                 }
-                LOG.exit(object);
+                LOG.exit(method, object);
                 return object;
             });
     }
@@ -267,26 +284,67 @@ class Context {
     loadCurrentParticipant() {
         const method = 'loadCurrentParticipant';
         LOG.entry(method);
-        let currentUserID = this.getIdentityService().getCurrentUserID();
-        LOG.debug(method, 'Got current user ID', currentUserID);
-        if (currentUserID) {
-            return this.getIdentityManager().getParticipant(currentUserID)
-                .then((participant) => {
-                    LOG.debug(method, 'Found current participant', participant.getFullyQualifiedIdentifier());
-                    LOG.exit(method, participant);
-                    return participant;
-                })
-                .catch((error) => {
-                    LOG.error(method, 'Could not find current participant', error);
-                    throw new Error(`Could not determine the participant for identity '${currentUserID}'. The identity may be invalid or may have been revoked.`);
-                });
-        } else {
-            // TODO: this is temporary whilst we migrate to requiring all
-            // users to have identities that are mapped to participants.
-            LOG.debug(method, 'Could not determine current user ID');
-            LOG.exit(method, null);
-            return Promise.resolve(null);
-        }
+
+        // Load the current identity.
+        return this.getIdentityManager().getIdentity()
+            .then((identity) => {
+
+                // Validate the identity.
+                try {
+                    this.getIdentityManager().validateIdentity(identity);
+                } catch (e) {
+
+                    // Is this an activation transaction?
+                    let isActivation = false;
+                    try {
+                        if (this.getFunction() === 'submitTransaction') {
+                            const json = JSON.parse(this.getArguments()[1]);
+                            isActivation = json.$class === 'org.hyperledger.composer.system.ActivateCurrentIdentity';
+                        }
+                    } catch (e) {
+                        // Ignore.
+                    }
+
+                    // Check for the case of activation required, and the user is trying to activate.
+                    if (e.activationRequired && isActivation) {
+
+                        // Don't throw the error as we are activating the identity, but return null
+                        // so that the participant is not set because there is no current participant
+                        // until the identity is activated and not revoked.
+                        return null;
+
+                    } else {
+                        throw e;
+                    }
+
+                }
+
+                // Load the current participant.
+                return this.getIdentityManager().getParticipant(identity);
+
+            })
+            .then((participant) => {
+                LOG.exit(method, participant);
+                return participant;
+            })
+            .catch((error) => {
+
+                // Check for an admin user.
+                // TODO: this is temporary whilst we migrate to requiring all
+                // users to have identities that are mapped to participants.
+                if (!error.activationRequired) {
+                    const name = this.getIdentityService().getName();
+                    if (name && name.match(/admin/i)) {
+                        LOG.exit(method, null);
+                        return null;
+                    }
+                }
+
+                // Throw the error.
+                LOG.error(method, error);
+                throw error;
+
+            });
     }
 
     /**
@@ -415,12 +473,13 @@ class Context {
     /**
      * Initialize the context for use.
      * @param {Object} [options] The options to use.
+     * @param {string} [options.function] The name of the currently executing runtime method.
+     * @param {string} [options.arguments] The arguments for the currently executing runtime method.
      * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
      * @param {CompiledScriptBundle} [options.compiledScriptBundle] The compiled script bundle to use.
+     * @param {DataCollection} [options.sysregistries] The system registries collection to use.
      * @param {boolean} [options.reinitialize] Set to true if being reinitialized as a result of an upgrade to the
      * business network, falsey value if not.
-     * @param {DataCollection} [options.sysregistries] The system registries collection to use.
-     * @param {DataCollection} [options.sysidentities] The system identities collection to use.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
@@ -428,6 +487,8 @@ class Context {
         const method = 'initialize';
         LOG.entry(method, options);
         options = options || {};
+        this.function = options.function || this.function;
+        this.arguments = options.arguments || this.arguments;
         return Promise.resolve()
             .then(() => {
                 return this.findBusinessNetworkDefinition(options);
@@ -461,19 +522,14 @@ class Context {
                 }
             })
             .then(() => {
-                LOG.debug(method, 'Loading sysidentities collection', options.sysidentities);
-                if (options.sysidentities) {
-                    this.sysidentities = options.sysidentities;
+                if (options.function !== 'init') {
+                    LOG.debug(method, 'Loading current participant');
+                    return this.loadCurrentParticipant();
                 } else {
-                    return this.getDataService().getCollection('$sysidentities')
-                        .then((sysidentities) => {
-                            this.sysidentities = sysidentities;
-                        });
+                    // No point loading the participant as no participants exist!
+                    LOG.debug(method, 'Not loading current participant as processing deployment');
+                    return null;
                 }
-            })
-            .then(() => {
-                LOG.debug(method, 'Loading current participant');
-                return this.loadCurrentParticipant();
             })
             .then((participant) => {
                 if (!options.reinitialize) {
@@ -655,7 +711,7 @@ class Context {
      */
     getIdentityManager() {
         if (!this.identityManager) {
-            this.identityManager = new IdentityManager(this.getDataService(), this.getRegistryManager(), this.getSystemIdentities());
+            this.identityManager = new IdentityManager(this);
         }
         return this.identityManager;
     }
@@ -721,17 +777,6 @@ class Context {
             throw new Error('must call initialize before calling this function');
         }
         return this.sysregistries;
-    }
-
-    /**
-     * Get the system identities collection.
-     * @return {DataCollection} The system registries collection.
-     */
-    getSystemIdentities() {
-        if (!this.sysidentities) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.sysidentities;
     }
 
     /**
@@ -805,6 +850,16 @@ class Context {
      */
     getCompiledAclBundle() {
         return this.compiledAclBundle;
+    }
+
+    /**
+     * Get the list of transaction handlers.
+     * @return {TransactionHandler[]} The list of transaction handlers.
+     */
+    getTransactionHandlers() {
+        return [
+            this.getIdentityManager()
+        ];
     }
 
     /**

@@ -15,18 +15,15 @@
 'use strict';
 
 const AccessController = require('../lib/accesscontroller');
-const AssetDeclaration = require('composer-common').AssetDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const EventEmitter = require('events');
 const Introspector = require('composer-common').Introspector;
 const Factory = require('composer-common').Factory;
-const Resource = require('composer-common').Resource;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
+const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Serializer = require('composer-common').Serializer;
-const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 
 const chai = require('chai');
 chai.should();
@@ -38,23 +35,25 @@ require('sinon-as-promised');
 
 describe('RegistryManager', () => {
 
+    let modelManager;
+    let introspector;
+    let factory;
+    let serializer;
     let mockDataService;
-    let mockIntrospector;
-    let mockSerializer;
     let mockAccessController;
-    let registryManager;
     let mockSystemRegistries;
-    let mockFactory;
+    let registryManager;
 
     beforeEach(() => {
+        modelManager = new ModelManager();
+        introspector = new Introspector(modelManager);
+        factory = new Factory(modelManager);
+        serializer = new Serializer(factory, modelManager);
         mockDataService = sinon.createStubInstance(DataService);
-        mockIntrospector = sinon.createStubInstance(Introspector);
-        mockSerializer = sinon.createStubInstance(Serializer);
         mockAccessController = sinon.createStubInstance(AccessController);
         mockSystemRegistries = sinon.createStubInstance(DataCollection);
-        mockFactory = sinon.createStubInstance(Factory);
         mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
-        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController, mockSystemRegistries,mockFactory);
+        registryManager = new RegistryManager(mockDataService, introspector, serializer, mockAccessController, mockSystemRegistries, factory);
     });
 
     describe('#constructor', () => {
@@ -69,7 +68,27 @@ describe('RegistryManager', () => {
 
         it('should create a new registry and subscribe to its events', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
-            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
+            let registry = registryManager.createRegistry(mockDataCollection, serializer, mockAccessController, 'Asset', 'doges', 'The doges registry', false);
+            registry.type.should.equal('Asset');
+            registry.id.should.equal('doges');
+            registry.name.should.equal('The doges registry');
+            registry.system.should.be.false;
+            ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
+                let stub = sinon.stub();
+                registryManager.once(event, stub);
+                registry.emit(event, { test: 'data' });
+                sinon.assert.calledOnce(stub);
+                sinon.assert.calledWith(stub, { test: 'data' });
+            });
+        });
+
+        it('should create a new system registry and subscribe to its events', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            let registry = registryManager.createRegistry(mockDataCollection, serializer, mockAccessController, 'Asset', 'doges', 'The doges registry', true);
+            registry.type.should.equal('Asset');
+            registry.id.should.equal('doges');
+            registry.name.should.equal('The doges registry');
+            registry.system.should.be.true;
             ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
                 let stub = sinon.stub();
                 registryManager.once(event, stub);
@@ -83,115 +102,110 @@ describe('RegistryManager', () => {
 
     describe('#createDefaults', () => {
 
-        it('should do nothing when no classes exist', () => {
-            mockIntrospector.getClassDeclarations.returns([]);
-            return registryManager.createDefaults();
-        });
-
-        it('should create default asset registries', () => {
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
-            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
+        it('should create default system registries for non-virtual types', () => {
+            sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
                     sinon.assert.calledOnce(registryManager.ensure);
+                    sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.ParticipantRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.TransactionRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Network', sinon.match.any, sinon.match.any);
+                });
+        });
+
+        it('should create default asset registries', () => {
+            modelManager.addModelFile(`
+            namespace org.doge
+            asset Doge identified by dogeId {
+                o String dogeId
+            }`);
+            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
+            return registryManager.createDefaults()
+                .then(() => {
+                    sinon.assert.called(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge');
                 });
         });
 
-        it('should create default asset registries', () => {
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockAssetDeclaration.getFullyQualifiedName.returns('org.hyperledger.composer.system.Network');
-            mockAssetDeclaration.isSystemType.returns(true);
-            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
-            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
-            return registryManager.createDefaults()
-                .then(() => {
-                    sinon.assert.notCalled(registryManager.ensure);
-                });
-        });
-
-        it('should forcably create default asset registries', () => {
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
+        it('should forcibly create default asset registries', () => {
+            modelManager.addModelFile(`
+            namespace org.doge
+            asset Doge identified by dogeId {
+                o String dogeId
+            }`);
             sinon.stub(registryManager, 'add').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true).resolves();
             return registryManager.createDefaults(true)
                 .then(() => {
-                    sinon.assert.calledOnce(registryManager.add);
-                    sinon.assert.calledWith(registryManager.add, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true);
+                    sinon.assert.called(registryManager.add);
+                    sinon.assert.calledWith(registryManager.add, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true, false);
                 });
         });
 
         it('should ignore abstract default asset registries', () => {
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockAssetDeclaration.isAbstract.returns(true);
-            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
-            sinon.stub(registryManager, 'ensure').rejects();
+            modelManager.addModelFile(`
+            namespace org.doge
+            abstract asset Doge identified by dogeId {
+                o String dogeId
+            }`);
+            sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.notCalled(registryManager.ensure);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.doge.Doge', sinon.match.any, sinon.match.any);
                 });
         });
 
         it('should create default participant registries', () => {
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockParticipantDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
+            modelManager.addModelFile(`
+            namespace org.doge
+            participant Doge identified by dogeId {
+                o String dogeId
+            }`);
             sinon.stub(registryManager, 'ensure').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.calledOnce(registryManager.ensure);
+                    sinon.assert.called(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge');
                 });
         });
 
-        it('should create default participant registries ignoring system', () => {
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockParticipantDeclaration.getFullyQualifiedName.returns('org.hyperledger.composer.system.Admin');
-            mockParticipantDeclaration.isSystemType.returns(true);
-            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
-            sinon.stub(registryManager, 'ensure').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves();
-            return registryManager.createDefaults()
-                .then(() => {
-                    sinon.assert.notCalled(registryManager.ensure);
-                });
-        });
-
-        it('should forcably create default participant registries', () => {
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockParticipantDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
+        it('should forcibly create default participant registries', () => {
+            modelManager.addModelFile(`
+            namespace org.doge
+            participant Doge identified by dogeId {
+                o String dogeId
+            }`);
             sinon.stub(registryManager, 'add').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true).resolves();
             return registryManager.createDefaults(true)
                 .then(() => {
-                    sinon.assert.calledOnce(registryManager.add);
-                    sinon.assert.calledWith(registryManager.add, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true);
+                    sinon.assert.called(registryManager.add);
+                    sinon.assert.calledWith(registryManager.add, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true, false);
                 });
         });
 
         it('should ignore abstract default participant registries', () => {
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockParticipantDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockParticipantDeclaration.isAbstract.returns(true);
-            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
-            sinon.stub(registryManager, 'ensure').rejects();
+            modelManager.addModelFile(`
+            namespace org.doge
+            abstract participant Doge identified by dogeId {
+                o String dogeId
+            }`);
+            sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.notCalled(registryManager.ensure);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Participant', 'org.doge.Doge', sinon.match.any, sinon.match.any);
                 });
         });
 
         it('should not create default transaction registries', () => {
-            let mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
-            mockTransactionDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
-            mockIntrospector.getClassDeclarations.returns([mockTransactionDeclaration]);
-            sinon.stub(registryManager, 'ensure').rejects();
+            modelManager.addModelFile(`
+            namespace org.doge
+            transaction Doge {
+            }`);
+            sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.notCalled(registryManager.ensure);
+                    sinon.assert.neverCalledWith(registryManager.ensure, 'Transaction', sinon.match.any, sinon.match.any, sinon.match.any);
                 });
         });
 
@@ -344,7 +358,7 @@ describe('RegistryManager', () => {
     describe('#exists', () => {
 
         it('should determine the existence of a registry with the specified ID', () => {
-            mockSystemRegistries.exists.withArgs('Asset:doges').resolves({
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
@@ -352,10 +366,6 @@ describe('RegistryManager', () => {
             });
             mockSystemRegistries.exists.withArgs('Asset:doges').resolves(true);
             mockAccessController.check.resolves(true);
-            let mockResource = sinon.createStubInstance(Resource);
-
-            mockFactory.newResource.resolves(mockResource);
-
             return registryManager.exists('Asset', 'doges')
                 .then((exists) => {
                     exists.should.equal.true;
@@ -376,14 +386,6 @@ describe('RegistryManager', () => {
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
             let mockEventHandler = sinon.stub();
-            let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newResource.resolves(mockResource);
-            mockSerializer.toJSON.returns({
-                $class: 'org.hyperledger.composer.system.AssetRegistry',
-                type: 'Asset',
-                registryId: 'doges',
-                name: 'The doges registry'
-            });
             registryManager.on('registryadded', mockEventHandler);
             mockAccessController.check.resolves(true);
             return registryManager.add('Asset', 'doges', 'The doges registry')
@@ -393,7 +395,8 @@ describe('RegistryManager', () => {
                         $class: 'org.hyperledger.composer.system.AssetRegistry',
                         type: 'Asset',
                         registryId: 'doges',
-                        name: 'The doges registry'
+                        name: 'The doges registry',
+                        system: false
                     });
                     sinon.assert.calledOnce(mockDataService.createCollection);
                     sinon.assert.calledWith(mockDataService.createCollection, 'Asset:doges');

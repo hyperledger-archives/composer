@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const nunjucks=require('nunjucks');
 
-const targetFile = path.resolve(__dirname, '..', 'lib','systemModel.js');
+const targetFile = path.resolve(__dirname, '..', 'lib','systemmodel.js');
 const templatePath = path.resolve(__dirname, '..', 'lib','_template');
 const modelFile = path.resolve(__dirname, '..', 'lib','system.cto');
 
@@ -31,7 +31,7 @@ let env = nunjucks.configure(templatePath,{autoescape:false});
 let model = fs.readFileSync(modelFile,  { encoding: 'utf8' });
 
 // render the model
-let jsModel = env.render('systemModel.njk',{ systemmodel: model});
+let jsModel = env.render('systemmodel.njk',{ systemmodel: model});
 
 // and write out the file
 fs.writeFileSync(targetFile, jsModel, { encoding: 'utf8' });

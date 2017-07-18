@@ -49,4 +49,4 @@ lib/acl/parser.js
 lib/introspect/parser.js
 lib/query/parser.js
 index.d.ts
-lib/systemModel.js
+lib/systemmodel.js

@@ -20,10 +20,8 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-// const ENCODING = 'utf8';
-
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = require('./systemModel');
+const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
 
 /**
  * <p>
@@ -376,7 +374,10 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+            .filter((classDeclaration) => {
+                return classDeclaration.isSystemCoreType();
+            });
     }
 
     /**

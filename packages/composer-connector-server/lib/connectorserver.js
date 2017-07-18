@@ -69,6 +69,34 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to import an identity.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @param {string} publicKey the public key
+     * @param {string} privateKey the private key
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, callback) {
+        const method = 'connectionManagerImportIdentity';
+        LOG.entry(method, connectionProfile, id, publicKey, privateKey);
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey);
+            })
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
      * Handle a request from the client to connect to a business network.
      * @param {string} connectionProfile The connection profile name.
      * @param {string} businessNetworkIdentifier The business network identifier.
