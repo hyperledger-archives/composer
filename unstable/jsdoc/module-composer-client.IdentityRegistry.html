@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: Typed</title>
+	<title>Hyperledger Composer Class: IdentityRegistry</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,19 +79,19 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Typed</h1>
+	<h1 class="page-title">Class: IdentityRegistry</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
+            <span class="ancestors"><a href="module-composer-client.html">composer-client</a>.</span>
         
-        Typed
+        IdentityRegistry
         </h2>
         
-            <div class="class-description"><p>Object is an instance with a namespace and a type.</p>
-<p>This class is abstract.</p></div>
+            <div class="class-description"><p>The IdentityRegistry is used to store a set of identities on the blockchain.</p>
+<p><a href="./diagrams/identityregistry.svg"><img src="./diagrams/identityregistry.svg" style="height:100%;"/></a></p></div>
         
     
 </header>
@@ -103,7 +103,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="Typed"><span class="type-signature">&lt;abstract> </span>new Typed(modelManager, ns, type)</h4>
+    <h4 class="name" id="IdentityRegistry"><span class="type-signature"></span>new IdentityRegistry(id, name, securityContext, modelManager, factory, serializer)</h4>
     
     
 </dt>
@@ -111,8 +111,7 @@
 
     
     <div class="description">
-        <p>Create an instance.</p>
-<p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from Factory</strong><br></p>
+        <p>Create an identity registry.<br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from BusinessNetworkConnection</strong><br></p></p>
     </div>
     
 
@@ -143,6 +142,78 @@
     </thead>
 
     <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The unique identifier of the identity registry.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The display name for the identity registry.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>securityContext</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">SecurityContext</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The security context to use for this asset registry.</p></td>
+        </tr>
+
     
 
         <tr>
@@ -164,20 +235,20 @@
 
             
 
-            <td class="description last"><p>The ModelManager for this instance</p></td>
+            <td class="description last"><p>The ModelManager to use for this identity registry.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>factory</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Factory</span>
 
 
 
@@ -188,20 +259,20 @@
 
             
 
-            <td class="description last"><p>The namespace this instance.</p></td>
+            <td class="description last"><p>The factory to use for this identity registry.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>type</code></td>
+                <td class="name"><code>serializer</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Serializer</span>
 
 
 
@@ -212,7 +283,7 @@
 
             
 
-            <td class="description last"><p>The type this instance.</p></td>
+            <td class="description last"><p>The Serializer to use for this identity registry.</p></td>
         </tr>
 
     
@@ -256,8 +327,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-28">line 28</a>
+				<a href="composer-client_lib_identityregistry.js.html">composer-client/lib/identityregistry.js</a>,
+				 <a href="composer-client_lib_identityregistry.js.html#sunlight-1-line-30">line 30</a>
 			</li>
 		</ul>
 	</dd>
@@ -265,6 +336,13 @@
 
 	
 
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><p>See <a href="module-composer-client.Registry.html">Registry</a></p></li>
+			</ul>
+	</dd>
 	
 
 	
@@ -288,6 +366,17 @@
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Registry.html">Registry</a></li>
+    </ul>
+
 
     
 
@@ -308,7 +397,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="addArrayValue"><span class="type-signature"></span>addArrayValue(propName, value)</h4>
+    <h4 class="name" id=".getIdentityRegistry"><span class="type-signature">&lt;static> </span>getIdentityRegistry(securityContext, modelManager, factory, serializer)</h4>
     
     
 </dt>
@@ -316,7 +405,7 @@
 
     
     <div class="description">
-        <p>Adds a value to an array property on this Resource</p>
+        <p>Get an existing identity registry.</p>
     </div>
     
 
@@ -351,13 +440,13 @@
 
         <tr>
             
-                <td class="name"><code>propName</code></td>
+                <td class="name"><code>securityContext</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">SecurityContext</span>
 
 
 
@@ -368,20 +457,20 @@
 
             
 
-            <td class="description last"><p>the name of the field</p></td>
+            <td class="description last"><p>The user's security context.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>modelManager</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">ModelManager</span>
 
 
 
@@ -392,7 +481,55 @@
 
             
 
-            <td class="description last"><p>the value of the property</p></td>
+            <td class="description last"><p>The ModelManager to use for this identity registry.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>factory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Factory</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The factory to use for this identity registry.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>serializer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Serializer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Serializer to use for this identity registry.</p></td>
         </tr>
 
     
@@ -436,96 +573,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-130">line 130</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getFullyQualifiedType"><span class="type-signature"></span>getFullyQualifiedType()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get the fully-qualified type name of the instance (including namespace).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-79">line 79</a>
+				<a href="composer-client_lib_identityregistry.js.html">composer-client/lib/identityregistry.js</a>,
+				 <a href="composer-client_lib_identityregistry.js.html#sunlight-1-line-42">line 42</a>
 			</li>
 		</ul>
 	</dd>
@@ -554,7 +603,7 @@
     
             
 <div class="param-desc">
-    <p>The fully-qualified type name of this object</p>
+    <p>A promise that will be resolved with a IdentityRegistry<br>instance representing the identity registry.</p>
 </div>
 
 
@@ -565,7 +614,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">Promise</span>
 
 
 
@@ -582,7 +631,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getNamespace"><span class="type-signature"></span>getNamespace()</h4>
+    <h4 class="name" id="addInternalProperties"><span class="type-signature"></span>addInternalProperties(json)</h4>
     
     
 </dt>
@@ -590,231 +639,7 @@
 
     
     <div class="description">
-        <p>Get the namespace of the instance.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-87">line 87</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The namespace of this object</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getType"><span class="type-signature"></span>getType()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get the type of the instance (a short name, not including namespace).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-71">line 71</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The type of this object</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="instanceOf"><span class="type-signature"></span>instanceOf(fqt)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Check to see if this instance is an instance of the specified fully qualified<br>type name.</p>
+        <p>Add any internal properties to the specified JSON object before<br>persisting it into a data collection.</p>
     </div>
     
 
@@ -849,13 +674,13 @@
 
         <tr>
             
-                <td class="name"><code>fqt</code></td>
+                <td class="name"><code>json</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Object</span>
 
 
 
@@ -866,7 +691,7 @@
 
             
 
-            <td class="description last"><p>The fully qualified type name.</p></td>
+            <td class="description last"><p>The JSON object.</p></td>
         </tr>
 
     
@@ -883,6 +708,15 @@
 
 	
 
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Registry.html#addInternalProperties">Registry#addInternalProperties</a>
+			</li>
+		</ul>
+	</dd>
 	
 
     
@@ -910,8 +744,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-180">line 180</a>
+				<a href="composer-runtime_lib_registry.js.html">composer-runtime/lib/registry.js</a>,
+				 <a href="composer-runtime_lib_registry.js.html#sunlight-1-line-322">line 322</a>
 			</li>
 		</ul>
 	</dd>
@@ -940,7 +774,7 @@
     
             
 <div class="param-desc">
-    <p>True if this instance is an instance of the specified fully<br>qualified type name, false otherwise.</p>
+    <p>The JSON object.</p>
 </div>
 
 
@@ -951,7 +785,7 @@
     </dt>
     <dd>
         
-<span class="param-type">boolean</span>
+<span class="param-type">Object</span>
 
 
 
@@ -968,7 +802,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="setPropertyValue"><span class="type-signature"></span>setPropertyValue(propName, value)</h4>
+    <h4 class="name" id="exists"><span class="type-signature"></span>exists(id)</h4>
     
     
 </dt>
@@ -976,7 +810,7 @@
 
     
     <div class="description">
-        <p>Sets a property on this Resource</p>
+        <p>Determine whether the specified resource exists in this registry.</p>
     </div>
     
 
@@ -1011,7 +845,7 @@
 
         <tr>
             
-                <td class="name"><code>propName</code></td>
+                <td class="name"><code>id</code></td>
             
 
             <td class="type">
@@ -1028,31 +862,7 @@
 
             
 
-            <td class="description last"><p>the name of the field</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the value of the property</p></td>
+            <td class="description last"><p>The ID of the resource.</p></td>
         </tr>
 
     
@@ -1069,6 +879,15 @@
 
 	
 
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Registry.html#exists">Registry#exists</a>
+			</li>
+		</ul>
+	</dd>
 	
 
     
@@ -1096,8 +915,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_typed.js.html">composer-common/lib/model/typed.js</a>,
-				 <a href="composer-common_lib_model_typed.js.html#sunlight-1-line-121">line 121</a>
+				<a href="composer-runtime_lib_registry.js.html">composer-runtime/lib/registry.js</a>,
+				 <a href="composer-runtime_lib_registry.js.html#sunlight-1-line-115">line 115</a>
 			</li>
 		</ul>
 	</dd>
@@ -1122,6 +941,443 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that will be resolved with a boolean<br>indicating whether the asset exists.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="get"><span class="type-signature"></span>get(id)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the specified resource in this registry.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The ID of the resource.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Registry.html#get">Registry#get</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_registry.js.html">composer-runtime/lib/registry.js</a>,
+				 <a href="composer-runtime_lib_registry.js.html#sunlight-1-line-94">line 94</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that will be resolved with a Resource<br>object when complete, or rejected with an error.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getAll"><span class="type-signature"></span>getAll()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get all the resources in this registry.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Registry.html#getAll">Registry#getAll</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_registry.js.html">composer-runtime/lib/registry.js</a>,
+				 <a href="composer-runtime_lib_registry.js.html#sunlight-1-line-67">line 67</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that will be resolved with an array of {@link<br>Resource} objects when complete, or rejected with an error.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Return an object suitable for serialization.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Registry.html#toJSON">Registry#toJSON</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_registry.js.html">composer-runtime/lib/registry.js</a>,
+				 <a href="composer-runtime_lib_registry.js.html#sunlight-1-line-335">line 335</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>An object suitable for serialization.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Global</title>
+	<title>Hyperledger Composer Class: TransactionHandler</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,14 +79,16 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+	<h1 class="page-title">Class: TransactionHandler</h1>
 <section>
 
 <header>
     
         <h2>
-        
+        TransactionHandler
         </h2>
+        
+            <div class="class-description"><p>A transaction handler class can bind transaction processor functions which are<br>then executed when the bound transaction type is submitted.</p></div>
         
     
 </header>
@@ -96,79 +98,25 @@
     <div class="container-overview">
     
         
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        <dl>
-            
 <hr>
-<dt class="name" id="theWallet">
-    <h4 id="theWallet"><span class="type-signature"></span>theWallet<span class="type-signature"></span></h4>
-
+<dt>
+    <h4 class="name" id="TransactionHandler"><span class="type-signature">&lt;abstract> </span>new TransactionHandler()</h4>
+    
     
 </dt>
 <dd>
+
     
     <div class="description">
-        <p>Currently we have a wallet singleton, but this is temporary until<br>we decide how wallets fit into the administrative and client APIs.</p>
+        <p>Constructor.</p>
     </div>
     
 
+    
+
+    
+
+    
     
 
     
@@ -206,8 +154,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_wallet.js.html">composer-common/lib/wallet.js</a>,
-				 <a href="composer-common_lib_wallet.js.html#sunlight-1-line-21">line 21</a>
+				<a href="composer-runtime_lib_transactionhandler.js.html">composer-runtime/lib/transactionhandler.js</a>,
+				 <a href="composer-runtime_lib_transactionhandler.js.html#sunlight-1-line-26">line 26</a>
 			</li>
 		</ul>
 	</dd>
@@ -222,9 +170,33 @@
 
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dd>
 
-        </dl>
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -234,7 +206,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getLogger"><span class="type-signature"></span>getLogger(config, configElements)</h4>
+    <h4 class="name" id="execute"><span class="type-signature"></span>execute(api, resolvedTransaction)</h4>
     
     
 </dt>
@@ -242,7 +214,7 @@
 
     
     <div class="description">
-        <p>This the default core logger that is used for Hyperledger-Composer. This function<br>setups up the Winston logging for both file and console output.</p>
+        <p>Execute the specified transaction.</p>
     </div>
     
 
@@ -277,13 +249,13 @@
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>api</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Api</span>
 
 
 
@@ -294,20 +266,20 @@
 
             
 
-            <td class="description last"><p>JSON structure with specific configuration information</p></td>
+            <td class="description last"><p>The API to use.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>configElements</code></td>
+                <td class="name"><code>resolvedTransaction</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">Resource</span>
 
 
 
@@ -318,7 +290,7 @@
 
             
 
-            <td class="description last"><p>JSON struction with the  DEBUG env variables for composer</p></td>
+            <td class="description last"><p>The resolved transaction to execute.</p></td>
         </tr>
 
     
@@ -362,8 +334,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_log_winstonInjector.js.html">composer-common/lib/log/winstonInjector.js</a>,
-				 <a href="composer-common_lib_log_winstonInjector.js.html#sunlight-1-line-29">line 29</a>
+				<a href="composer-runtime_lib_transactionhandler.js.html">composer-runtime/lib/transactionhandler.js</a>,
+				 <a href="composer-runtime_lib_transactionhandler.js.html#sunlight-1-line-62">line 62</a>
 			</li>
 		</ul>
 	</dd>
@@ -392,7 +364,7 @@
     
             
 <div class="param-desc">
-    <p>object that is the logger to use</p>
+    <p>A promise that is resolved when the transaction has been<br>executed, or rejected with an error.</p>
 </div>
 
 
@@ -403,7 +375,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">Promise</span>
 
 
 
