@@ -1,0 +1,47 @@
+<section class="identity-card">
+    <header>
+        <button *ngIf="preview" type="button" class="icon dismiss"
+                (click)="dismiss()">
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-close_new"></use>
+            </svg>
+        </button>
+    </header>
+    <section class="user-details">
+        <div class="image-placeholder">
+            <span class="initials">{{getInitials()}}</span>
+        </div>
+        <p>{{identity.userId}}</p>
+    </section>
+    <section *ngIf="!preview" class="actions">
+        <button type="button" class="action circular delete"
+                (click)="delete()">
+            <svg class="ibm-icon vertical-top" aria-hidden="true">
+                <use xlink:href="#icon-trash_32"></use>
+            </svg>
+        </button>
+        <button type="button" class="action circular export"
+                (click)="export()">
+            <svg class="ibm-icon vertical-top" aria-hidden="true">
+                <use xlink:href="#icon-download_32"></use>
+            </svg>
+        </button>
+    </section>
+    <section *ngIf="preview" class="connection-profile-details">
+        <h3>Connection Profile</h3>
+        <p>{{identity.profile}}</p>
+    </section>
+    <section class="business-network-details">
+        <h3>Business Network</h3>
+        <p>{{identity.businessNetwork}}</p>
+    </section>
+    <footer>
+        <button *ngIf="!preview" type="button" class="action connect"
+                (click)="connect()">
+            <span>Connect now</span>
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-forward_16"></use>
+            </svg>
+        </button>
+    </footer>
+</section>
