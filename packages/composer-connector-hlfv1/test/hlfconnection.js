@@ -1718,6 +1718,11 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should handle an error with an invalid  user supplied attributes JSON string', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {attributes: 'NO JSON HERE LULZ'})
+                .should.be.rejectedWith(/attributes provided are not valid JSON/);
+        });
 
         it('should handle a register error', () => {
             mockCAClient.register.rejects(new Error('anerror'));

@@ -388,10 +388,10 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .then(() => {
-                sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                sinon.assert.calledWith(mockConnectionManager.importIdentity, config, 'anid', 'acerttosign', 'akey');
-            });
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, 'testprofile', config, 'anid', 'acerttosign', 'akey');
+                });
         });
 
         it('should throw an error if import fails', () => {
@@ -400,7 +400,7 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .should.be.rejectedWith(/no identity imported/);
+                .should.be.rejectedWith(/no identity imported/);
         });
 
 

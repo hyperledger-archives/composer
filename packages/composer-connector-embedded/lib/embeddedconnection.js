@@ -293,11 +293,19 @@ class EmbeddedConnection extends Connection {
      */
     getIdentity(identityName) {
         if (identityName === 'admin') {
+            const certificateContents = identityName;
+            const certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from(certificateContents).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
             return Promise.resolve({
                 identifier: '',
                 name: 'admin',
                 issuer: DEFAULT_ISSUER,
-                secret: 'adminpw'
+                secret: 'adminpw',
+                certificate,
+                imported: false
             });
         }
         return this.getIdentities()
@@ -316,12 +324,15 @@ class EmbeddedConnection extends Connection {
     testIdentity(identityName, identitySecret) {
         return this.getIdentity(identityName)
             .then((identity) => {
-                if (identityName !== 'admin') {
-                    if (identity.secret !== identitySecret) {
-                        throw new Error(`The secret ${identitySecret} specified for the identity ${identityName} does not match the stored secret ${identity.secret}`);
-                    }
+                if (identity.imported) {
+                    return identity;
+                } else if (identityName === 'admin') {
+                    return identity;
+                } else if (identity.secret !== identitySecret) {
+                    throw new Error(`The secret ${identitySecret} specified for the identity ${identityName} does not match the stored secret ${identity.secret}`);
+                } else {
+                    return identity;
                 }
-                return identity;
             });
     }
 
@@ -354,14 +365,21 @@ class EmbeddedConnection extends Connection {
                             };
                         });
                 }
-                const identifier = createHash('sha256').update(uuid.v4()).digest('hex');
+                const certificateContents = identityName + ':' + uuid.v4();
+                const certificate = [
+                    '----- BEGIN CERTIFICATE -----',
+                    Buffer.from(certificateContents).toString('base64'),
+                    '----- END CERTIFICATE -----'
+                ].join('\n').concat('\n');
+                const identifier = createHash('sha256').update(certificateContents).digest('hex');
                 const secret = uuid.v4().substring(0, 8);
                 const identity = {
                     identifier,
                     name: identityName,
                     issuer: DEFAULT_ISSUER,
                     secret,
-                    certificate: ''
+                    certificate,
+                    imported: false
                 };
                 return identities.add(identityName, identity)
                     .then(() => {

@@ -95,6 +95,40 @@ describe('Identity system tests', () => {
             });
     });
 
+    it('should bind an identity and make it available for a ping request', () => {
+        let identity, certificate, privateKey;
+        identity = uuid.v4();
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        } else if (TestUtil.isHyperledgerFabricV1()) {
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/8b627256737cb372d6e51036b74f2952181000bc4a3a7123acea36ee909b454c_sk');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+        } else {
+            certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('User1@org1.example.com' + ':' + uuid.v4()).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            privateKey = 'not used';
+        }
+        return client.bindIdentity(participant, certificate)
+            .then(() => {
+                return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+            })
+            .then(() => {
+                return TestUtil.getClient('systest-identities', identity, 'not used');
+            })
+            .then((result) => {
+                client = result;
+                return client.ping();
+            })
+            .then((result) => {
+                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
+            });
+    });
+
     it('should throw an exception for a ping request using a revoked identity', () => {
         let identityName = uuid.v4();
         return client.issueIdentity(participant, identityName)
@@ -144,6 +178,39 @@ describe('Identity system tests', () => {
         return client.issueIdentity(participant, identity)
             .then((identity) => {
                 return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
+            })
+            .then((result) => {
+                client = result;
+                let factory = client.getBusinessNetwork().getFactory();
+                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
+                return client.submitTransaction(transaction);
+            });
+    });
+
+    it('should bind an identity and make the participant available for transaction processor functions', () => {
+        let identity, certificate, privateKey;
+        identity = uuid.v4();
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        } else if (TestUtil.isHyperledgerFabricV1()) {
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/8b627256737cb372d6e51036b74f2952181000bc4a3a7123acea36ee909b454c_sk');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+        } else {
+            certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            privateKey = 'not used';
+        }
+        return client.bindIdentity(participant, certificate)
+            .then(() => {
+                return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+            })
+            .then(() => {
+                return TestUtil.getClient('systest-identities', identity, 'not used');
             })
             .then((result) => {
                 client = result;

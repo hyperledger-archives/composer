@@ -426,7 +426,7 @@ class AdminConnection {
     * @example
      * // Import an identity into a profiles' wallet
      * var adminConnection = new AdminConnection();
-     * return adminConnection.import('hlfv1', 'PeerAdmin', publicKey, privateKey)
+     * return adminConnection.importIdentity('hlfv1', 'PeerAdmin', publicKey, privateKey)
      * .then(() => {
      *     // Identity imported
      *     console.log('identity imported successfully');
@@ -451,7 +451,7 @@ class AdminConnection {
                 return this.getProfile(connectionProfile);
             })
             .then((profileData) => {
-                return savedConnectionManager.importIdentity(profileData, id, publicKey, privateKey);
+                return savedConnectionManager.importIdentity(connectionProfile, profileData, id, publicKey, privateKey);
             })
             .catch((error) => {
                 throw new Error('failed to import identity. ' + error.message);

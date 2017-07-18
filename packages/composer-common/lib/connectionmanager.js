@@ -68,16 +68,16 @@ class ConnectionManager {
     /**
      * Import an identity into a profile wallet or keystore
      *
-     * @param {object} profileDefinition the profile definition
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
      * @param {string} publicKey the public key
      * @param {string} privateKey the private key
      * @returns {Promise} a promise which resolves when the identity is imported
-     *
-     * @memberOf HLFConnectionManager
+     * @abstract
      */
-    importIdentity(profileDefinition, id, publicKey, privateKey) {
-        return Promise.reject(new Error('Import identity not supported by this connection profile'));
+    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+        return Promise.reject(new Error('abstract function called'));
     }
 
 }

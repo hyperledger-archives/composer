@@ -315,12 +315,18 @@ describe('EmbeddedConnection', () => {
 
         it('should return the hardcoded admin identity', () => {
             return connection.getIdentity('admin')
-               .should.eventually.be.deep.equal({
-                   identifier: '',
-                   name: 'admin',
-                   issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                   secret: 'adminpw'
-               });
+                .should.eventually.be.deep.equal({
+                    identifier: '',
+                    name: 'admin',
+                    issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                    secret: 'adminpw',
+                    certificate: [
+                        '----- BEGIN CERTIFICATE -----',
+                        'YWRtaW4=',
+                        '----- END CERTIFICATE -----'
+                    ].join('\n').concat('\n'),
+                    imported: false
+                });
         });
 
         it('should return the specified identity', () => {
@@ -338,7 +344,8 @@ describe('EmbeddedConnection', () => {
                 identifier: '',
                 name: 'admin',
                 issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                secret: 'adminpw'
+                secret: 'adminpw',
+                imported: false
             };
             sinon.stub(connection, 'getIdentity').resolves(identity);
             return connection.testIdentity('admin', 'blahblah')
@@ -352,6 +359,19 @@ describe('EmbeddedConnection', () => {
         });
 
         it('should not throw if the secret does match', () => {
+            sinon.stub(connection, 'getIdentity').resolves(identity);
+            return connection.testIdentity('bob1', 'suchsecret')
+                .should.eventually.be.equal(identity);
+        });
+
+        it('should not throw if the secret does match and the identity was imported', () => {
+            const identity = {
+                identifier: '',
+                name: 'admin',
+                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                secret: 'adminpw',
+                imported: true
+            };
             sinon.stub(connection, 'getIdentity').resolves(identity);
             return connection.testIdentity('bob1', 'suchsecret')
                 .should.eventually.be.equal(identity);
@@ -392,11 +412,16 @@ describe('EmbeddedConnection', () => {
                .then((result) => {
                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                       certificate: '',
-                       identifier: '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
+                       certificate: [
+                           '----- BEGIN CERTIFICATE -----',
+                           'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
+                           '----- END CERTIFICATE -----'
+                       ].join('\n').concat('\n'),
+                       identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
                        name: 'doge',
-                       secret: 'f892c30a'
+                       secret: 'f892c30a',
+                       imported: false
                    });
                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
                });
