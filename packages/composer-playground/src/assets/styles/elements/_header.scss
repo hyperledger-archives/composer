@@ -19,6 +19,7 @@
         display: flex;
         align-items: center;
         position: relative;
+        min-width: 0;
         flex: 1;
         p {
             min-width: 0;
@@ -30,6 +31,30 @@
 
       .navlogo:hover .tooltiptext {
         visibility: visible;
+        opacity: 0.8;
+      }
+
+      .navlogo .tooltiptext {
+        visibility: hidden;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 12px 12px;
+        border-radius: 6px;
+        position: absolute;
+        left: 5rem;
+        top : 3rem;
+      }
+
+      .navlogo .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%;
+        left: 10%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent black transparent;
       }
 
       .drop-select{
@@ -38,6 +63,15 @@
             max-width: 18rem;
             color:$third-highlight;
             background-color: $second-highlight;
+            border-bottom:  6px solid $first-highlight;
+
+            &.dropListActive {
+                border-bottom:  6px solid $white;
+            }
+
+            &.active, &:active, &:hover {
+                border-bottom:  6px solid $white;
+            }
 
             .action{
                 color:$third-highlight;
@@ -67,6 +101,8 @@
                 #footer {
                     color:$white-2;
                     background-color: $second-highlight;
+                    border-bottom-right-radius: 5px;
+                    border-bottom-left-radius: 5px;
 
                     &:hover {
                         background-color: $sixth-highlight;
@@ -76,10 +112,13 @@
 
             .dropdown {
                 display: flex;
-                // color:$third-highlight;
                 background-color: $first-highlight;
                 max-width: 18rem;
                 min-height: 63px;
+                background-color: $first-highlight;
+                max-width: 18rem;
+                min-height: 63px;
+                padding-top: 6px;
             }
 
             .dropdown-menu {
@@ -87,6 +126,40 @@
                 border-right: transparent;
                 border-bottom: transparent;
                 max-width: 18rem;
+                border-top: transparent;
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+                overflow-x: visible;
+                overflow-y: visible;
+
+                top : 4.5rem;
+                max-width: 18rem;
+
+                &:before{
+                    content:"";
+                    position: absolute;
+                    right: 3rem;
+                    top: -0.5rem;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 0.5rem 0.5rem 0.5rem;
+                    border-color: transparent transparent $third-highlight transparent;
+                    z-index:9999;
+                }
+
+                &:after{
+                    content:"";
+                    position: absolute;
+                    right: 3rem;
+                    top: -0.5rem;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 0.5rem 0.5rem 0.5rem;
+                    border-color: transparent transparent $third-highlight transparent;
+                    z-index:9999;
+                }
             }
 
             .dropdown-toggle::after{

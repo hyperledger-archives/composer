@@ -47,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private usingLocally = false;
     private showHeaderLinks = false;
     private showWelcome = true;
+    private dropListActive = false;
 
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
@@ -209,6 +210,14 @@ export class AppComponent implements OnInit, OnDestroy {
             let transactionModalRef = this.modalService.open(ViewTransactionComponent);
             transactionModalRef.componentInstance.transaction = this.transactionService.lastTransaction;
             transactionModalRef.componentInstance.events = this.transactionService.events;
+        }
+    }
+
+    onToggle(open) {
+        if (open) {
+            this.dropListActive = true;
+        } else {
+            this.dropListActive = false;
         }
     }
 

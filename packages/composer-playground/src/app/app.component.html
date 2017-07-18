@@ -30,9 +30,9 @@
                         </a>
                     </li>
                 </ul>
-                <div class="drop-select" *ngIf="usingLocally">
+                <div class="drop-select" *ngIf="usingLocally" [routerLinkActive]="['active']" [ngClass]="{'dropListActive' : dropListActive}">
                     <div class="drop-select-item flex-container flex">
-                        <div ngbDropdown class="d-inline-block">
+                        <div ngbDropdown class="d-inline-block" (openChange)="onToggle($event)">
                             <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>
                                 <span title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
                             </button>
