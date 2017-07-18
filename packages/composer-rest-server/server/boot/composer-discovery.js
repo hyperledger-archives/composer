@@ -18,8 +18,6 @@ const connector = require('loopback-connector-composer');
 const LoopBackWallet = require('../../lib/loopbackwallet');
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const ModelUtil = require('composer-common').ModelUtil;
-const util = require('util');
-
 /**
  * Find or create the system wallet for storing identities in.
  * @param {Object} app The LoopBack application.
@@ -202,11 +200,13 @@ function registerQueryMethods(app, dataSource) {
  */
 function registerQueryMethod(app, dataSource, Query, connector, query) {
 
-    const analyzer = new QueryAnalyzer();
-    const parameters = analyzer.analyze(query);
+    const analyzer = new QueryAnalyzer(query);
+    const parameters = analyzer.analyze();
     const returnType = dataSource.settings.namespace
         ? query.getSelect().getResource()
             : ModelUtil.getShortName(query.getSelect().getResource());
+
+    console.log('=====return type = ' + returnType);
 
     // declare the arguments to the query method
     let accepts = [];

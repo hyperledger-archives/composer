@@ -30,15 +30,26 @@ const LOG = Logger.getLog('QueryAnalyzer');
 class QueryAnalyzer {
 
     /**
+     * Create an Query from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {Query} query - the composer query for process
+     * @throws {IllegalModelException}
+     */
+    constructor(query) {
+        this.query = query;
+    }
+
+    /**
      * Extract the names and types of query parameters
-     * @param {QueryManager} query The query to process.
      * @return {object[]} The names and types of the query parameters
      */
-    analyze(query) {
+    analyze() {
         const method = 'analyze';
-        LOG.entry(method, query);
-        const result = query.accept(this, {});
+        LOG.entry(method);
+        const result = this.query.accept(this, {});
         LOG.exit(method, result);
+
         return result;
     }
 
@@ -52,6 +63,7 @@ class QueryAnalyzer {
     visit(thing, parameters) {
         const method = 'visit';
         LOG.entry(method, thing, parameters);
+        console.log('xxxxx visit parameters = ', parameters);
         let result = null;
         if (thing instanceof Query) {
             result = this.visitQuery(thing, parameters);
@@ -93,6 +105,10 @@ class QueryAnalyzer {
 
         // Process the select statement, which will return a Mango query.
         const select = query.getSelect();
+        const requiredParameters = [];
+        parameters.requiredParameters = requiredParameters;
+        const parametersToUse = {};
+        parameters.parametersToUse = parametersToUse;
         const result = select.accept(this, parameters);
 
         LOG.exit(method, result);
@@ -110,6 +126,7 @@ class QueryAnalyzer {
         const method = 'visitSelect';
         LOG.entry(method, select, parameters);
 
+        console.log('visiting ' + method + JSON.stringify(select.ast) + 'parameters = ' + parameters);
         let results = [];
 
         // Handle the where clause, if it exists.
@@ -152,6 +169,7 @@ class QueryAnalyzer {
     visitWhere(where, parameters) {
         const method = 'visitWhere';
         LOG.entry(method, where, parameters);
+        console.log('visiting ' + method + JSON.stringify(where.ast));
 
         // Simply visit the AST, which will generate a selector.
         // The root of the AST is probably a binary expression.
@@ -185,9 +203,13 @@ class QueryAnalyzer {
     visitLimit(limit, parameters) {
         const method = 'visitLimit';
         LOG.entry(method, limit, parameters);
-
         // Get the limit value from the AST.
-        const result = this.visit(limit.getAST(), parameters);
+        const result = [];
+        const value = this.visit(limit.getAST(), parameters);
+        const rparams = parameters.requiredParameters;
+        if(rparams !== null && rparams.length === 1){
+            result.push({name: rparams[0], type: 'Integer'});
+        }
         LOG.exit(method, result);
         return result;
     }
@@ -203,7 +225,12 @@ class QueryAnalyzer {
         const method = 'visitSkip';
         LOG.entry(method, skip, parameters);
         // Get the skip value from the AST.
-        const result = this.visit(skip.getAST(), parameters);
+        const result = [];
+        let value = this.visit(skip.getAST(), parameters);
+        const rparams = parameters.requiredParameters;
+        if(rparams !== null && rparams.length === 1){
+            result.push({name: rparams[0], type: 'Integer'});
+        }
         LOG.exit(method, result);
         return result;
     }
@@ -270,16 +297,21 @@ class QueryAnalyzer {
         LOG.entry(method, ast, parameters);
 
         let result = [];
-        const lhs = this.visit(ast.left, parameters);
-        console.log('Result of lhs: ' + lhs );
-        result.concat(lhs);
 
+           // Grab the right hand side of this expression.
         const rhs = this.visit(ast.right, parameters);
-        console.log('Result of rhs: ' + rhs );
-        result = result.concat(rhs);
+        const rparams = parameters.requiredParameters;
+        const lhs = this.visit(ast.left, parameters);
 
-        console.log('***** result of conditional operator ' + result);
 
+        if( rparams !== null && rparams.length === 1){
+            //find the variable's type from the rhs
+            const paramType = this.getParameterType(lhs);
+            result.push({name: rparams[0], type: paramType});
+            result.concat(rhs);
+        }
+
+        // result.concat(lhs);
         LOG.exit(method, result);
         return result;
     }
@@ -296,25 +328,80 @@ class QueryAnalyzer {
     visitIdentifier(ast, parameters) {
         const method = 'visitIdentifier';
         LOG.entry(method, ast, parameters);
-        const result = [];
 
-        console.log('**** visiting ' + JSON.stringify(ast));
-
+        // clear the parameters for each indentifier
+        if( parameters !== null ){
+            parameters.requiredParameters= [];
+        }
         // Check to see if this is a parameter reference.
         const parameterMatch = ast.name.match(/^_\$(.+)/);
         if (parameterMatch) {
             const parameterName = parameterMatch[1];
-            // TODO - figure out the type of the parameter by looking
-            // at the type of the LHS or RHS if there is one
-            result.push({name: parameterName, type : 'String'});
+            parameters.requiredParameters.push(parameterName);
+            const parametersToUse = parameters.parametersToUse;
+            const selector = () => {
+                return parametersToUse[parameterName];
+            };
+            LOG.exit(method, selector);
+            return selector;
         }
 
-        console.log('**** visitIdentifier result ' + result);
+        // Otherwise it's a property name.
+        // TODO: We should validate that it is a property name!
+        const selector = ast.name;
+        LOG.exit(method, selector);
+        return selector;
 
+    }
+
+    /**
+     * Visitor design pattern; handle a literal.
+     * Literals are just plain old literal values ;-)
+     * @param {string} parameterNames The parameter name or name with nested structure e.g A.B.C
+     * @return {string} The result of the parameter type or null
+     * @private
+     */
+    getParameterType(parameterName) {
+        const method = 'getParameterType';
+        LOG.entry(method, parameterName);
+
+     // The grammar ensures that the resource property is set.
+        const  modelManager = this.query.getQueryFile().getModelManager();
+        const resource = this.query.getSelect().getResource();
+
+        let result = null;
+        if(parameterName === null || parameterName === undefined ) {return result;}
+
+        const parameterNames = parameterName.split('.');
+
+        if(parameterNames === null || parameterNames.length === 0){
+            throw new Error('Can only find a valid property type.');
+        }
+
+        // checks the resource type exists
+        let classDeclaration = modelManager.getType(resource);
+
+        // check that it is not an enum or concept
+        if(/*classDeclaration.isConcept() ||*/classDeclaration.isEnum()) {
+            throw new Error('Can only select assets, participants and transactions.');
+        }
+
+        for(let n=0; n<parameterNames.length; n++){
+            const property = classDeclaration.getProperty(parameterNames[n]);
+
+            if( property !== null ){
+                if (property.isTypeEnum() || property.isPrimitive()) {
+                    result = property.getType();
+                }else{
+                    const resource = property.getFullyQualifiedTypeName();
+                    classDeclaration = modelManager.getType(resource);
+                    property.validate(classDeclaration);
+                }
+            }
+        }
         LOG.exit(method, result);
         return result;
     }
-
     /**
      * Visitor design pattern; handle a literal.
      * Literals are just plain old literal values ;-)
@@ -326,6 +413,7 @@ class QueryAnalyzer {
     visitLiteral(ast, parameters) {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
+        console.log('visiting ' + method + JSON.stringify(ast));
         const result = [];
         LOG.exit(method, result);
         return result;
@@ -341,17 +429,11 @@ class QueryAnalyzer {
     visitMemberExpression(ast, parameters) {
         const method = 'visitMemberExpression';
         LOG.entry(method, ast, parameters);
-        const result = [];
-
         const property = this.visit(ast.property, parameters);
-        result.concat(property);
-
         const object = this.visit(ast.object, parameters);
-
-        result.concat(object);
-        // const selector = `${object}.${property}`;
-        LOG.exit(method, result);
-        return result;
+        const selector = `${object}.${property}`;
+        LOG.exit(method, selector);
+        return selector;
     }
 }
 

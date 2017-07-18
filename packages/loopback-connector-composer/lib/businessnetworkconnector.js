@@ -842,6 +842,10 @@ class BusinessNetworkConnector extends Connector {
         debug('queryName', queryName);
         debug('queryParameters', util.inspect(queryParameters));
 
+        console.log('options = ', options);
+        console.log('queryParameters = ', queryParameters);
+        console.log('queryName = ', queryName);
+
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
                 return businessNetworkConnection.query(queryName, queryParameters);
