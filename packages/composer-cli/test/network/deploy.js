@@ -370,6 +370,16 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
             });
         });
+
+        it('show throw an error if loglevel not valid', function() {
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,loglevel: 'BAD'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            return Deploy.handler(argv)
+                .should.be.rejectedWith(/or not one of/);
+
+        });
     });
 
     describe('Deploy getConnectOption() method tests', function () {

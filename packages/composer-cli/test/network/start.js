@@ -238,6 +238,17 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition);
             });
         });
+
+        it('show throw an error if loglevel not valid', function() {
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,loglevel: 'BAD'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            return Start.handler(argv)
+                .should.be.rejectedWith(/or not one of/);
+
+        });
+
     });
 
     describe('Deploy getArchiveFileContents() method tests', function () {
