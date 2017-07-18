@@ -1109,4 +1109,22 @@ describe('AppComponent', () => {
         }));
     });
 
+    describe('onToggle', () => {
+
+        it('should set toggle down on true event', () => {
+            component['dropListActive'] = false;
+
+            component['onToggle'](true);
+
+            component['dropListActive'].should.be.true;
+        });
+
+        it('should set toggle up on false event', () => {
+            component['dropListActive'] = true;
+
+            component['onToggle'](false);
+
+            component['dropListActive'].should.be.false;
+        });
+    });
 });

@@ -46,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private usingLocally = false;
     private showHeaderLinks = false;
     private showWelcome = true;
+    private dropListActive = false;
 
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
@@ -210,6 +211,14 @@ export class AppComponent implements OnInit, OnDestroy {
             transactionModalRef.result.catch((error) => {
                 this.alertService.errorStatus$.next(error);
             });
+        }
+    }
+
+    onToggle(open) {
+        if (open) {
+            this.dropListActive = true;
+        } else {
+            this.dropListActive = false;
         }
     }
 
