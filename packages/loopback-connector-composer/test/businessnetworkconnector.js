@@ -2141,7 +2141,7 @@ describe('BusinessNetworkConnector', () => {
 
     });
 
-    describe.only('#executeQuery', () => {
+    describe('#executeQuery', () => {
 
         beforeEach(() => {
             // create mock query
@@ -2280,6 +2280,60 @@ describe('BusinessNetworkConnector', () => {
                     resolve(result);
                 });
             }).should.be.rejectedWith(/Named query missing does not exist in the business network./);
+        });
+
+    });
+
+    describe('#discoverQueries', () => {
+
+        beforeEach(() => {
+            // create mock query file
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+
+            // create real query
+            const stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query',
+                'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQueries.returns([stringQuery]);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+        });
+
+        it('should return the queries in the business network definition', () => {
+
+            const cb = sinon.stub();
+            return testConnector.discoverQueries( {test: 'options' }, cb)
+                .then(( queries ) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queries)
+                    result.length.should.equal(1);
+                    result[0].getName().should.equal('stringQuery');
+                });
+        });
+
+        it('should throw when getQueries fails', () => {
+
+            mockQueryManager.getQueries.throws();
+
+            return new Promise((resolve, reject) => {
+                testConnector.discoverQueries( {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith();
         });
 
     });
@@ -2563,10 +2617,30 @@ describe('BusinessNetworkConnector', () => {
                     'type': 'string'
                 },
                 'theValue' : {
-                    'description' : 'The instance identifier for this type',
-                    'id' : true,
+                    'description': 'The instance identifier for this type',
+                    'id': true,
                     'required' : true,
                     'type' : 'string'
+                },
+                'theInteger' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDouble' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theLong' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDateTime' : {
+                    'required' : false,
+                    'type' : 'date'
+                },
+                'theBoolean' : {
+                    'required' : false,
+                    'type' : 'boolean'
                 }
             },
             'relations' : {},

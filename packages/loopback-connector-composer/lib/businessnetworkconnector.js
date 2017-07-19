@@ -922,23 +922,15 @@ class BusinessNetworkConnector extends Connector {
         debug('executeQuery', options);
         debug('queryName', queryName);
         debug('queryParameters', util.inspect(queryParameters));
-        console.log('executeQuery: ' + queryName);
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-
-                console.log('businessNetworkConnection: ' + util.inspect(businessNetworkConnection));
-
-                // console.log('****', businessNetworkConnection.getBusinessNetwork());
-
-
                 // all query parameters come in as string
                 // so we need to coerse them to their correct types
                 // before executing a query
                 // TODO (DCS) not sure this should be done here, as it will also
                 // need to be done on the runtime side
                 const query = businessNetworkConnection.getBusinessNetwork().getQueryManager().getQuery(queryName);
-                console.log('query: ' + util.inspect(query));
 
                 if(!query) {
                     throw new Error('Named query ' + queryName + ' does not exist in the business network.');
@@ -967,7 +959,6 @@ class BusinessNetworkConnector extends Connector {
                     }
                 }
 
-                console.log('about to query with: ' + queryParameters);
                 return businessNetworkConnection.query(queryName, queryParameters);
             })
             .then((queryResult) => {
@@ -977,7 +968,6 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                debug('executeQuery', 'error thrown executing query', error);
                 callback(error);
             });
     }
