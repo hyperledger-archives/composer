@@ -58,11 +58,11 @@ Update a deployed Business Network: [composer network update](./composer.network
 
 `composer network start`
 
-Deploy a business network archive to a peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
+Deploy a business network archive to a {{site.data.conrefs.hlf_full}} endorsing peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
 
 `composer runtime install`
 
-Install the {{site.data.conrefs.composer_full}} runtime to a blockchain peer: [composer runtime install](./composer.runtime.install.md)
+Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} endorsing peer: [composer runtime install](./composer.runtime.install.md)
 
 ## Participant and Identity management
 

@@ -10,9 +10,9 @@ excerpt: Composer Network Start
 
 ---
 
-The `composer network start` utility is used to deploy a business network archive from local disk to blockchain network peers.
+The `composer network start` utility is used to deploy a business network archive from local disk to the {{site.data.conrefs.hlf_full}} endorsing peers.
 
-_Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the blockchain network peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
+_Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the {{site.data.conrefs.hlf_full}} endorsing peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
 
 ```
 composer network start -a <business-network-archive> -i <user-id> -s <user-id-secret>
