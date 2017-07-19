@@ -144,7 +144,7 @@ You can see how the owner and title information are being accessed in a very sim
 The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:
 
 ```
-transaction RegisterPropertyForSale identified by transactionId{
+transaction RegisterPropertyForSale {
   o String transactionId
   --> LandTitle title
 }
