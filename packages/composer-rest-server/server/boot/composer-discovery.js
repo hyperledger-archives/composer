@@ -224,7 +224,7 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     // will generate the web form to enter them
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
-        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
+        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopbackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
     }
 
     // Define and register dynamic query method

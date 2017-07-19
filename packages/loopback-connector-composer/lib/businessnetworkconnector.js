@@ -937,7 +937,6 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                console.log(error);
                 debug('executeQuery', 'error thrown doing query', error);
                 callback(error);
             });
