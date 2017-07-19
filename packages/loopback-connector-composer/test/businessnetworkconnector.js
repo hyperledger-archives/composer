@@ -25,6 +25,7 @@ const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelManager = require('composer-common').ModelManager;
 const Query = require('composer-common').Query;
+const QueryManager = require('composer-common').QueryManager;
 const QueryFile = require('composer-common').QueryFile;
 const NodeCache = require('node-cache');
 const ParticipantRegistry = require('composer-client/lib/participantregistry');
@@ -47,6 +48,11 @@ describe('BusinessNetworkConnector', () => {
     }
     asset BaseAsset identified by theValue {
         o String theValue
+        o Integer theInteger optional
+        o Boolean theBoolean optional
+        o DateTime theDateTime optional
+        o Double theDouble optional
+        o Long theLong optional
     }
     participant BaseParticipant identified by theValue {
         o String theValue
@@ -54,48 +60,17 @@ describe('BusinessNetworkConnector', () => {
     transaction BaseTransaction {
     }`;
 
-    // const QUERY_MODEL_FILE =`
-    // namespace org.acme
-
-    // enum ContactType {
-    //     o MOBILE
-    //     o FAX
-    //     o LANDLINE
-    // }
-
-    // concept PhoneDetails {
-    //     o String phoneNumber
-    //     o ContactType contactType
-    // }
-
-    // concept Address {
-    //     o String city
-    //     o PhoneDetails phoneDetails
-    // }
-
-    // participant Driver identified by driverId {
-    //     o String driverId
-    //     o String name
-    //     o Address address
-    //     o Integer age
-    // }
-
-    // asset Vehicle identified by vin {
-    //     o String vin
-    //     --> Driver driver
-    // }`;
-
     let settings;
     let mockBusinessNetworkConnectionWrapper;
     let mockBusinessNetworkConnection;
     let mockBusinessNetworkDefinition;
     let mockSerializer;
+    let mockQueryManager;
     let sandbox;
     let testConnector;
     let modelManager;
     let factory;
     let introspector;
-    let mockQuery;
     let mockQueryFile;
 
     beforeEach(() => {
@@ -106,6 +81,12 @@ describe('BusinessNetworkConnector', () => {
             participantId : 'MockEnrollmentId',
             participantPwd : 'MockEnrollmentPwd'
         };
+
+        // create real instances
+        modelManager = new ModelManager();
+        modelManager.addModelFile(MODEL_FILE);
+        introspector = new Introspector(modelManager);
+        factory = new Factory(modelManager);
 
         // // create mocks
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -118,18 +99,6 @@ describe('BusinessNetworkConnector', () => {
         mockBusinessNetworkConnection.disconnect.resolves();
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
-
-        // // create real instances
-        modelManager = new ModelManager();
-        modelManager.addModelFile(MODEL_FILE);
-        introspector = new Introspector(modelManager);
-        factory = new Factory(modelManager);
-
-        // create mock query
-        mockQuery = sinon.createStubInstance(Query);
-        mockQueryFile = sinon.createStubInstance(QueryFile);
-        mockQuery.getQueryFile.returns(mockQueryFile);
-        mockQueryFile.getModelManager.returns(modelManager);
 
         sandbox = sinon.sandbox.create();
 
@@ -2172,50 +2141,145 @@ describe('BusinessNetworkConnector', () => {
 
     });
 
-    describe('#executeQuery', () => {
-
-        let mockAssetRegistry;
+    describe.only('#executeQuery', () => {
 
         beforeEach(() => {
+            // create mock query
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+            let stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+            let integerQuery = Query.buildQuery(mockQueryFile, 'integerQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theInteger==_$param1)');
+            let doubleQuery = Query.buildQuery(mockQueryFile, 'doubleQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDouble==_$param1)');
+            let longQuery = Query.buildQuery(mockQueryFile, 'longQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theLong==_$param1)');
+            let dateTimeQuery = Query.buildQuery(mockQueryFile, 'dateTimeQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDateTime==_$param1)');
+            let booleanQuery = Query.buildQuery(mockQueryFile, 'booleanQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theBoolean==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQuery.withArgs('stringQuery').returns(stringQuery);
+            mockQueryManager.getQuery.withArgs('integerQuery').returns(integerQuery);
+            mockQueryManager.getQuery.withArgs('doubleQuery').returns(doubleQuery);
+            mockQueryManager.getQuery.withArgs('longQuery').returns(longQuery);
+            mockQueryManager.getQuery.withArgs('dateTimeQuery').returns(dateTimeQuery);
+            mockQueryManager.getQuery.withArgs('booleanQuery').returns(booleanQuery);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
             sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
             testConnector.connected = true;
-            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
-            mockBusinessNetworkConnection.getAssetRegistry.resolves(mockAssetRegistry);
             testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
         });
 
-        it('should call the executeQuery with a result', () => {
-            let query = Query.buildQuery('SELECT org.acme.base.BaseAsset WHERE (theValue == _$inputValue)');
-            const cb = sinon.stub();
+        it('should call the executeQuery with an expected string result', () => {
 
-            return testConnector.executeQuery(query.name, { inputValue: 'blue' }, {test: 'options'}, cb)
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'stringQuery', { param1: 'blue' }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
 
-                    const result = cb.args[0][1]; // First call, second argument (error, transactions)
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
-                        transactionId: 'tx1',
-                        $class: 'sometx'
-                    }, {
-                        transactionId: 'tx2',
-                        $class: 'sometx'
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
                     }]);
-
                 });
         });
 
-        it('should handle an error when executing query', () => {
-            mockBusinessNetworkConnection.executeQuery.resolves() ;
-            // mockTransactionRegistry.getAll.rejects(new Error('such error'));
+        it('should call the executeQuery with an expected double result', () => {
+
             const cb = sinon.stub();
-            return testConnector.executeQuery({ test: 'options' }, cb)
-                .then(() => {
+            return testConnector.executeQuery( 'doubleQuery', { param1: '10.2' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
-                    const error = cb.args[0][0]; // First call, first argument (error)
-                    error.should.match(/such error/);
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
                 });
+        });
+
+        it('should call the executeQuery with an expected long result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'longQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected integer result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'integerQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected dateTime result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'dateTimeQuery', { param1: '2007-04-05T14:30' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected boolean result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'booleanQuery', { param1: 'false' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should throw when executing a query that does not exist', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'missing', { param1: 'false' }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/Named query missing does not exist in the business network./);
         });
 
     });

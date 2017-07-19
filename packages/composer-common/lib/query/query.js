@@ -18,7 +18,6 @@ const IllegalModelException = require('../introspect/illegalmodelexception');
 const ParseException = require('../introspect/parseexception');
 const parser = require('./parser');
 const Select = require('./select');
-const util = require('util');
 
 /**
  * Query defines a SELECT query over a resource (asset, transaction or participant)

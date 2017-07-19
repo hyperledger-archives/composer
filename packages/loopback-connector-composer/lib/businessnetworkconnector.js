@@ -922,43 +922,52 @@ class BusinessNetworkConnector extends Connector {
         debug('executeQuery', options);
         debug('queryName', queryName);
         debug('queryParameters', util.inspect(queryParameters));
-
-        // all query parameters come in as string
-        // so we need to coerse them to their correct types
-        // before executing a query
-        // TODO (DCS) not sure this should be done here, as it will also
-        // need to be done on the runtime side
-        const query = this.businessNetworkDefinition.getQueryManager().getQuery(queryName);
-
-        if(!query) {
-            throw new Error('Named query ' + queryName + ' does not exist in the business network.');
-        }
-
-        const qa = new QueryAnalyzer(query);
-        const parameters = qa.analyze();
-
-        for(let n=0; n < parameters.length; n++) {
-            const param = parameters[n];
-            const paramValue = queryParameters[param.name];
-            switch(param.type) {
-            case 'Integer':
-            case 'Long':
-                queryParameters[param.name] = parseInt(paramValue,10);
-                break;
-            case 'Double':
-                queryParameters[param.name] = parseFloat(paramValue);
-                break;
-            case 'DateTime':
-                queryParameters[param.name] = Date.parse(paramValue);
-                break;
-            case 'Boolean':
-                queryParameters[param.name] = Boolean.parse(paramValue);
-                break;
-            }
-        }
+        console.log('executeQuery: ' + queryName);
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+
+                console.log('businessNetworkConnection: ' + util.inspect(businessNetworkConnection));
+
+                // console.log('****', businessNetworkConnection.getBusinessNetwork());
+
+
+                // all query parameters come in as string
+                // so we need to coerse them to their correct types
+                // before executing a query
+                // TODO (DCS) not sure this should be done here, as it will also
+                // need to be done on the runtime side
+                const query = businessNetworkConnection.getBusinessNetwork().getQueryManager().getQuery(queryName);
+                console.log('query: ' + util.inspect(query));
+
+                if(!query) {
+                    throw new Error('Named query ' + queryName + ' does not exist in the business network.');
+                }
+
+                const qa = new QueryAnalyzer(query);
+                const parameters = qa.analyze();
+
+                for(let n=0; n < parameters.length; n++) {
+                    const param = parameters[n];
+                    const paramValue = queryParameters[param.name];
+                    switch(param.type) {
+                    case 'Integer':
+                    case 'Long':
+                        queryParameters[param.name] = parseInt(paramValue,10);
+                        break;
+                    case 'Double':
+                        queryParameters[param.name] = parseFloat(paramValue);
+                        break;
+                    case 'DateTime':
+                        queryParameters[param.name] = Date.parse(paramValue);
+                        break;
+                    case 'Boolean':
+                        queryParameters[param.name] = (paramValue === 'true');
+                        break;
+                    }
+                }
+
+                console.log('about to query with: ' + queryParameters);
                 return businessNetworkConnection.query(queryName, queryParameters);
             })
             .then((queryResult) => {
