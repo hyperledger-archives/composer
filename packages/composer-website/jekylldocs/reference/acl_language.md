@@ -77,7 +77,15 @@ Network access is required to use the CREATE operation on participants or the UP
 
 ### Granting network access control
 
-Network access is granted using the system namespace. The system namespace is always `org.hyperledger.composer.system`.
+Network access is granted using the system namespace. The system namespace is always `org.hyperledger.composer.system.Network`. The following access control rules gives the **networkControl** participant the authority to use all operations with network commands.
+
+rule networkControlPermission {
+  description:  "networkControl can access network commands"
+  participant: "org.acme.vehicle.auction.networkControl"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.Network"
+  action: ALLOW  
+}
 
 The following access control rule will give all participants access to all operations and commands in the business network, including network access and business access.
 
