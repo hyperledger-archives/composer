@@ -24,6 +24,7 @@ const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const util = require('util');
 
 /**
@@ -933,7 +934,8 @@ class BusinessNetworkConnector extends Connector {
             throw new Error('Named query ' + queryName + ' does not exist in the business network.');
         }
 
-        const parameters = query.getParameters();
+        const qa = new QueryAnalyzer(query);
+        const parameters = qa.analyze();
 
         for(let n=0; n < parameters.length; n++) {
             const param = parameters[n];

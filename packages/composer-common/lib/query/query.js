@@ -18,7 +18,7 @@ const IllegalModelException = require('../introspect/illegalmodelexception');
 const ParseException = require('../introspect/parseexception');
 const parser = require('./parser');
 const Select = require('./select');
-const QueryAnalyzer = require('./queryanalyzer');
+const util = require('util');
 
 /**
  * Query defines a SELECT query over a resource (asset, transaction or participant)
@@ -144,15 +144,6 @@ class Query {
      */
     getSelect() {
         return this.select;
-    }
-
-    /**
-     * Returns the parameters (names and types) for this query
-     * @return {object[]} The array of paramters
-     */
-    getParameters() {
-        const qa = new QueryAnalyzer(this);
-        return qa.analyze();
     }
 }
 

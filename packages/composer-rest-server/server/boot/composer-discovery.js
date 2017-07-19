@@ -206,7 +206,8 @@ function registerQueryMethods(app, dataSource) {
 function registerQueryMethod(app, dataSource, Query, connector, query) {
 
     console.log('*** register query method: ' + query.getName() );
-    const parameters = query.getParameters();
+    const qa = new QueryAnalyzer(query);
+    const parameters = qa.analyze();
     console.log('*** parameters: ' + JSON.stringify(parameters) );
     const returnType = dataSource.settings.namespace
         ? query.getSelect().getResource()
