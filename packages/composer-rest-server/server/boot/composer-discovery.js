@@ -123,7 +123,7 @@ function createQueryModel(app, dataSource) {
     // Create the query model schema.
     let modelSchema = {
         name: 'Query',
-        description: 'Content-based Query Methods',
+        description: 'Named queries',
         plural: '/queries',
         base: 'Model'
     };
@@ -205,13 +205,12 @@ function registerQueryMethods(app, dataSource) {
  */
 function registerQueryMethod(app, dataSource, Query, connector, query) {
 
-    const analyzer = new QueryAnalyzer(query);
-    const parameters = analyzer.analyze();
+    console.log('*** register query method: ' + query.getName() );
+    const parameters = query.getParameters();
+    console.log('*** parameters: ' + JSON.stringify(parameters) );
     const returnType = dataSource.settings.namespace
         ? query.getSelect().getResource()
             : ModelUtil.getShortName(query.getSelect().getResource());
-
-    console.log('=====return type = ' + returnType);
 
     // declare the arguments to the query method
     let accepts = [];
@@ -224,7 +223,7 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     // will generate the web form to enter them
     for(let n=0; n < parameters.length; n++) {
         const param = parameters[n];
-        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
+        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopbackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
     }
 
     // Define and register dynamic query method
@@ -795,10 +794,10 @@ module.exports = function (app, callback) {
         // Register the system methods.
         registerSystemMethods(app, dataSource);
 
-        // Create the query model.
+        // Create the query model
         createQueryModel(app, dataSource);
 
-        // Register the query methods.
+        // Register the named query methods
         registerQueryMethods(app, dataSource);
 
         // Discover the model definitions (types) from the connector.
@@ -845,6 +844,7 @@ module.exports = function (app, callback) {
         callback();
     })
     .catch((error) => {
+        console.log('Exception: ' + error );
         callback(error);
     });
 };
