@@ -153,8 +153,8 @@ describe('ImportComponent', () => {
         });
 
         it('should set the correct values for _currentBusinessNetwork', () => {
-            component.currentBusinessNetwork = mockBusinessNetworkDefinition;
-            component['currentAssets'].should.deep.equal([stub1]);
+            component['currentBusinessNetwork'] = mockBusinessNetworkDefinition;
+            component['currentAssets'].should.deep.equal([]);
         });
     });
 
