@@ -3,7 +3,7 @@ layout: default
 title: Connector Specific Information
 category: tasks
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt:
 ---
 
