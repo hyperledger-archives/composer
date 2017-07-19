@@ -29,9 +29,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
 ['always', 'never'].forEach((namespaces) => {
 
-    const prefix = namespaces === 'always' ? 'org.acme.bond.' : '';
-
-    describe(`Transaction REST API unit tests namespaces[${namespaces}]`, () => {
+    describe(`Query REST API unit tests namespaces[${namespaces}]`, () => {
 
         const assetData = [{
             $class: 'org.acme.bond.BondAsset',
@@ -123,16 +121,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             }
         }];
 
-        const participantData = [{
-            $class: 'org.acme.bond.Issuer',
-            memberId: 'MEMBER_1',
-            name: 'Alice'
-        }];
-
         let app;
         let businessNetworkConnection;
         let assetRegistry;
-        let participantRegistry;
         let serializer;
 
         before(() => {
@@ -171,130 +162,27 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             })
             .then((assetRegistry_) => {
                 assetRegistry = assetRegistry_;
-            })
-            .then(() => {
-                return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
-            })
-            .then((participantRegistry_) => {
-                participantRegistry = participantRegistry_;
-                return participantRegistry.addAll([
-                    serializer.fromJSON(participantData[0])
+                return assetRegistry.addAll([
+                    serializer.fromJSON(assetData[0]),
+                    serializer.fromJSON(assetData[1])
                 ]);
             });
         });
 
-        describe(`POST / namespaces[${namespaces}]`, () => {
+        describe(`GET / namespaces[${namespaces}]`, () => {
 
-            it('should submit the specified transaction without a client supplied transaction ID or timestamp', () => {
+            it('should return all of the assets', () => {
                 return chai.request(app)
-                    .post(`/api/${prefix}PublishBond`)
-                    .send({
-                        $class: 'org.acme.bond.PublishBond',
-                        ISINCode: assetData[0].ISINCode,
-                        bond: assetData[0].bond
-                    })
+                    .get('/api/queries/findBondByFaceAmount?faceAmount=500')
                     .then((res) => {
-                        res.should.have.status(200);
                         res.should.be.json;
-                        res.body.transactionId.should.be.a('string');
-                        return assetRegistry.get('ISIN_1');
-                    })
-                    .then((asset) => {
-                        let json = serializer.toJSON(asset);
-                        json.should.deep.equal(assetData[0]);
-                        return assetRegistry.remove('ISIN_1');
-                    });
-            });
-
-            it('should return a 422 if the specified transaction has a client supplied transaction ID', () => {
-                return chai.request(app)
-                    .post(`/api/${prefix}PublishBond`)
-                    .send({
-                        $class: 'org.acme.bond.PublishBond',
-                        transactionId: '00000000-0000-0000-0000-000000000000',
-                        ISINCode: assetData[0].ISINCode,
-                        bond: assetData[0].bond
-                    })
-                    .catch((err) => {
-                        err.response.should.have.status(422);
-                    });
-            });
-
-            it('should submit the specified transaction without a $class property', () => {
-                return chai.request(app)
-                    .post(`/api/${prefix}PublishBond`)
-                    .send({
-                        ISINCode: assetData[1].ISINCode,
-                        bond: assetData[1].bond
-                    })
-                    .then((res) => {
-                        res.should.have.status(200);
-                        res.should.be.json;
-                        res.body.transactionId.should.be.a('string');
-                        return assetRegistry.get('ISIN_2');
-                    })
-                    .then((asset) => {
-                        let json = serializer.toJSON(asset);
-                        json.should.deep.equal(assetData[1]);
-                        return assetRegistry.remove('ISIN_2');
-                    });
-            });
-
-            it('should submit the specified transaction with a client supplied timestamp', () => {
-                return chai.request(app)
-                    .post(`/api/${prefix}PublishBond`)
-                    .send({
-                        $class: 'org.acme.bond.PublishBond',
-                        ISINCode: assetData[2].ISINCode,
-                        bond: assetData[2].bond,
-                        timestamp: new Date()
-                    })
-                    .then((res) => {
-                        res.should.have.status(200);
-                        res.should.be.json;
-                        res.body.transactionId.should.be.a('string');
-                        return assetRegistry.get('ISIN_3');
-                    })
-                    .then((asset) => {
-                        let json = serializer.toJSON(asset);
-                        json.should.deep.equal(assetData[2]);
-                    });
-            });
-
-            it('should submit the specified array of transactions', () => {
-                return chai.request(app)
-                    .post(`/api/${prefix}PublishBond`)
-                    .send([{
-                        ISINCode: assetData[0].ISINCode,
-                        bond: assetData[0].bond
-                    }, {
-                        ISINCode: assetData[1].ISINCode,
-                        bond: assetData[1].bond
-                    }])
-                    .then((res) => {
-                        res.should.have.status(200);
-                        res.should.be.json;
-                        res.body[0].transactionId.should.be.a('string');
-                        res.body[1].transactionId.should.be.a('string');
-                        return assetRegistry.get('ISIN_1');
-                    })
-                    .then((asset) => {
-                        let json = serializer.toJSON(asset);
-                        json.should.deep.equal(assetData[0]);
-                        return assetRegistry.remove('ISIN_1');
-                    })
-                    .then((res) => {
-                        return assetRegistry.get('ISIN_2');
-                    })
-                    .then((asset) => {
-                        let json = serializer.toJSON(asset);
-                        json.should.deep.equal(assetData[1]);
-                        return assetRegistry.remove('ISIN_2');
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                        ]);
                     });
             });
 
         });
-
     });
-
 });

@@ -1072,7 +1072,8 @@ class BusinessNetworkConnector extends Connector {
                 classDeclarations.forEach((classDeclaration) => {
                     models.push({
                         type : 'table',
-                        name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName()
+                        name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName(),
+                        namespaces : namespaces
                     });
                 });
 

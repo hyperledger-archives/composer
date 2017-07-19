@@ -2432,15 +2432,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }]);
             });
@@ -2462,15 +2466,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });
@@ -2496,18 +2504,23 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.extra.BaseAsset'
                 }]);
             });
@@ -2529,15 +2542,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });

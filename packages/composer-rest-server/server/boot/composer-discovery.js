@@ -172,9 +172,10 @@ function registerSystemMethods(app, dataSource) {
  * Register all of the Composer query methods.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
+ * @param {boolean} namespaces true if types should be fully qualified
  * @returns {Promise} a promise when complete
  */
-function registerQueryMethods(app, dataSource) {
+function registerQueryMethods(app, dataSource, namespaces) {
 
     // Grab the query model.
     const Query = app.models.Query;
@@ -187,7 +188,7 @@ function registerQueryMethods(app, dataSource) {
             }
 
             queries.forEach((query) => {
-                registerQueryMethod(app, dataSource, Query, connector, query);
+                registerQueryMethod(app, dataSource, Query, connector, query, namespaces);
             });
 
             resolve(queries);
@@ -196,20 +197,21 @@ function registerQueryMethods(app, dataSource) {
 }
 
 /**
- * Register a composer named query method.
+ * Register a composer named query method at a GET method on the REST API. The
+ * parameters for the named query are exposed as GET query parameters.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
  * @param {Object} Query The LoopBack Query model
  * @param {Object} connector The LoopBack connector.
  * @param {Query} query the named Composer query to register
+ * @param {boolean} namespaces true if types should be fully qualified
  */
-function registerQueryMethod(app, dataSource, Query, connector, query) {
+function registerQueryMethod(app, dataSource, Query, connector, query, namespaces) {
 
-    console.log('*** register query method: ' + query.getName() );
+    console.log('Registering named query: ' + query.getName());
     const qa = new QueryAnalyzer(query);
     const parameters = qa.analyze();
-    console.log('*** parameters: ' + JSON.stringify(parameters) );
-    const returnType = dataSource.settings.namespace
+    const returnType = namespaces
         ? query.getSelect().getResource()
             : ModelUtil.getShortName(query.getSelect().getResource());
 
@@ -228,6 +230,7 @@ function registerQueryMethod(app, dataSource, Query, connector, query) {
     }
 
     // Define and register dynamic query method
+    /* istanbul ignore next */
     const queryMethod = {
         [query.getName()]() {
             const args = [].slice.apply(arguments);
@@ -798,9 +801,6 @@ module.exports = function (app, callback) {
         // Create the query model
         createQueryModel(app, dataSource);
 
-        // Register the named query methods
-        registerQueryMethods(app, dataSource);
-
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
         console.log('Discovering types from business network definition ...');
@@ -808,6 +808,12 @@ module.exports = function (app, callback) {
 
     })
     .then((modelDefinitions) => {
+
+        /* istanbul ignore else */
+        if(modelDefinitions.length>0) {
+            // Register the named query methods, passing in whether we should use namespaces
+            registerQueryMethods(app, dataSource, modelDefinitions[0].namespaces);
+        }
 
         // For each model definition (type), we need to generate a Loopback model definition JSON file.
         console.log('Discovered types from business network definition');
