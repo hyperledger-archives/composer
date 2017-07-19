@@ -23,6 +23,8 @@ import { InitializationService } from '../services/initialization.service';
 
 import { LoginComponent } from './login.component';
 import { AlertService } from '../basic-modals/alert.service';
+import { WalletService } from '../services/wallet.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 let should = chai.should();
 
@@ -86,6 +88,8 @@ describe(`LoginComponent`, () => {
     let mockInitializationService;
     let routerStub;
     let mockAlertService;
+    let mockWalletService;
+    let mockModal;
 
     beforeEach(() => {
 
@@ -95,12 +99,16 @@ describe(`LoginComponent`, () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
+        mockWalletService = sinon.createStubInstance(WalletService);
+        mockModal = sinon.createStubInstance(NgbModal);
 
         routerStub = new RouterStub();
 
-        mockAlertService.errorStatus$ = {
-            next: sinon.stub()
-        };
+        mockAlertService.successStatus$ = {next: sinon.stub()};
+        mockAlertService.busyStatus$ = {next: sinon.stub()};
+        mockAlertService.errorStatus$ = {next: sinon.stub()};
+
+        mockWalletService.removeFromWallet = sinon.stub().returns(Promise.resolve(true));
 
         TestBed.configureTestingModule({
             declarations: [
@@ -114,7 +122,9 @@ describe(`LoginComponent`, () => {
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
-                {provide: AlertService, useValue: mockAlertService}
+                {provide: AlertService, useValue: mockAlertService},
+                {provide: WalletService, useValue: mockWalletService},
+                {provide: NgbModal, useValue: mockModal}
             ]
         });
 
@@ -221,5 +231,81 @@ describe(`LoginComponent`, () => {
             should.not.exist(component['editingConectionProfile']);
             loadConnectionProfilesStub.should.have.been.called;
         });
+    });
+
+    describe('removeIdentity', () => {
+        it('should open the delete-confirm modal', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(0)
+            });
+
+            component.removeIdentity('profile', 'name');
+            tick();
+            mockModal.open.should.have.been.called;
+        }));
+
+        it('should open delete-confirm modal and handle error', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            component.removeIdentity('profile', 'name');
+            tick();
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.called;
+        }));
+
+        it('should open delete-confirm modal and handle cancel', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            component.removeIdentity('profile', 'name');
+            tick();
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should refresh the connection profiles after successfully calling walletService.removeFromWallet()', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.loadConnectionProfiles = sinon.stub();
+
+            component.removeIdentity('profile', 'name');
+            tick();
+
+            // check services called
+            component.loadConnectionProfiles.should.have.been.called;
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should handle errors when calling walletService.removeFromWallet()', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.loadConnectionProfiles = sinon.stub();
+            mockWalletService.removeFromWallet = sinon.stub().returns(Promise.reject('some error'));
+
+            component.removeIdentity('profile', 'name');
+            tick();
+
+            // check services called
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.called;
+
+            mockAlertService.successStatus$.next.should.not.have.been.called;
+            component.loadConnectionProfiles.should.not.have.been.called;
+        }));
     });
 });

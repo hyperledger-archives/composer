@@ -184,6 +184,20 @@
             }
         }
 
+        &.action.circular {
+            border-radius: 50%;
+            width: 42px;
+            box-sizing: border-box;
+            padding-top: 1px;
+            height: 42px;
+        }
+
+        &.action.circular:hover,
+        &.action.circular:focus {
+            background-color: $fourth-highlight;
+            border-bottom: 2px solid transparent;
+        }
+
         &.icon {
             background-color: transparent;
             min-width: 0;
