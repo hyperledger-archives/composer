@@ -2,9 +2,9 @@
 layout: default
 title: Installing Index
 category: tasks
-sidebar: sidebars/installing.md
+sidebar: sidebars/accordion-toc0.md
 section: installing
-index-order: 0
+index-order: 200
 excerpt: Tutorials
 ---
 

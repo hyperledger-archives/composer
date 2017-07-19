@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Network Ping CLI
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Composer Network Ping CLI
 ---
 

@@ -23,27 +23,35 @@ const sinon = require('sinon');
 
 describe('WebSecurityContext', () => {
 
+    const identity = {
+        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+        name: 'bob1',
+        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+        secret: 'suchsecret',
+        certificate: ''
+    };
+
     let mockConnection;
+    let securityContext;
 
     beforeEach(() => {
         mockConnection = sinon.createStubInstance(Connection);
+        securityContext = new WebSecurityContext(mockConnection, identity);
     });
 
     describe('#constructor', () => {
 
         it('should construct a new security context', () => {
-            let securityContext = new WebSecurityContext(mockConnection, 'bob1');
             securityContext.should.be.an.instanceOf(SecurityContext);
-            securityContext.userID.should.equal('bob1');
+            securityContext.identity.should.equal(identity);
         });
 
     });
 
-    describe('#getUserID', () => {
+    describe('#getIdentity', () => {
 
         it('should get the current user ID', () => {
-            let securityContext = new WebSecurityContext(mockConnection, 'bob1');
-            securityContext.getUserID().should.equal('bob1');
+            securityContext.getIdentity().should.deep.equal(identity);
         });
 
     });
@@ -51,7 +59,6 @@ describe('WebSecurityContext', () => {
     describe('#getChaincodeID', () => {
 
         it('should get the chaincode ID', () => {
-            let securityContext = new WebSecurityContext(mockConnection, 'bob1');
             securityContext.chaincodeID = 'ed916d6a-21af-4a2a-a9be-a86f69aa641b';
             securityContext.getChaincodeID().should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
         });
@@ -61,7 +68,6 @@ describe('WebSecurityContext', () => {
     describe('#setChaincodeID', () => {
 
         it('should set the chaincode ID', () => {
-            let securityContext = new WebSecurityContext(mockConnection, 'bob1');
             securityContext.setChaincodeID('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
             securityContext.chaincodeID.should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
         });

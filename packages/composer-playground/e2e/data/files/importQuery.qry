@@ -1,0 +1,8 @@
+/**
+ * Import query file
+ */
+ 
+query Q1 {
+    description: "Select all drivers"
+    statement: SELECT org.acme.sample.SampleAsset
+}

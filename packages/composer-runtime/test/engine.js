@@ -135,11 +135,11 @@ describe('Engine', () => {
         it('should enable logging if logging specified on the init', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);
-            let sysidentities = sinon.createStubInstance(DataCollection);
             mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
             let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
@@ -155,7 +155,6 @@ describe('Engine', () => {
             mockContext.getAclCompiler.returns(mockAclCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.ensureCollection.withArgs('$sysidentities').resolves(sysidentities);
             mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
@@ -168,7 +167,7 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockLoggingService.setLogLevel);
                     sinon.assert.calledWith(mockLoggingService.setLogLevel, 'DEBUG');
 
-                    sinon.assert.calledThrice(mockDataService.ensureCollection);
+                    sinon.assert.calledTwice(mockDataService.ensureCollection);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
@@ -176,8 +175,10 @@ describe('Engine', () => {
                     }));
                     sinon.assert.calledOnce(mockScriptCompiler.compile);
                     sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
-                    sinon.assert.calledOnce(sysdata.add);
+                    sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
@@ -187,18 +188,18 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledAclBundle);
                     sinon.assert.calledWith(Context.cacheCompiledAclBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledWith(mockDataService.ensureCollection, '$sysidentities');
                     sinon.assert.calledOnce(mockRegistryManager.ensure);
                     sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
+                        function: 'init',
+                        arguments: ['aGVsbG8gd29ybGQ=','{"logLevel": "DEBUG"}'],
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries,
-                        sysidentities: sysidentities
+                        sysregistries: sysregistries
                     });
                     sinon.assert.calledOnce(mockContext.transactionStart);
                     sinon.assert.calledWith(mockContext.transactionStart, false);
@@ -213,11 +214,11 @@ describe('Engine', () => {
         it('should create system collections and default registries', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);
-            let sysidentities = sinon.createStubInstance(DataCollection);
             mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
             let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
@@ -233,7 +234,6 @@ describe('Engine', () => {
             mockContext.getAclCompiler.returns(mockAclCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.ensureCollection.withArgs('$sysidentities').resolves(sysidentities);
             mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
@@ -241,7 +241,7 @@ describe('Engine', () => {
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
                 .then(() => {
                     sinon.assert.notCalled(mockLoggingService.setLogLevel);
-                    sinon.assert.calledThrice(mockDataService.ensureCollection);
+                    sinon.assert.calledTwice(mockDataService.ensureCollection);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
@@ -249,25 +249,26 @@ describe('Engine', () => {
                     }));
                     sinon.assert.calledOnce(mockScriptCompiler.compile);
                     sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
-                    sinon.assert.calledOnce(sysdata.add);
+                    sinon.assert.calledTwice(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledWith(sysdata.add, 'metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId':'test' });
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledWith(mockDataService.ensureCollection, '$sysidentities');
                     sinon.assert.calledOnce(mockRegistryManager.ensure);
                     sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
+                        function: 'init',
+                        arguments: ['aGVsbG8gd29ybGQ=','{}'],
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries,
-                        sysidentities: sysidentities
+                        sysregistries: sysregistries
                     });
                     sinon.assert.calledOnce(mockContext.transactionStart);
                     sinon.assert.calledWith(mockContext.transactionStart, false);
@@ -349,6 +350,10 @@ describe('Engine', () => {
             return engine.invoke(mockContext, 'test', [])
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledWith(mockContext.initialize, {
+                        function: 'test',
+                        arguments: []
+                    });
                     sinon.assert.calledOnce(engine.test);
                     sinon.assert.calledWith(engine.test, mockContext, []);
                     sinon.assert.calledOnce(mockContext.transactionStart);
@@ -421,6 +426,10 @@ describe('Engine', () => {
             engine.test = sinon.stub().resolves({});
             return engine.query(mockContext, 'test', [])
                 .then(() => {
+                    sinon.assert.calledWith(mockContext.initialize, {
+                        function: 'test',
+                        arguments: []
+                    });
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledOnce(engine.test);
                     sinon.assert.calledWith(engine.test, mockContext, []);

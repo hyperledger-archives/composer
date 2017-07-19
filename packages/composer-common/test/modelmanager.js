@@ -353,6 +353,16 @@ describe('ModelManager', () => {
 
     });
 
+    describe('#getSystemTypes', () => {
+
+        it('should return all of the system core types', () => {
+            modelManager.getSystemTypes().map((classDeclaration) => {
+                return classDeclaration.getName();
+            }).should.deep.equal(['Asset', 'Participant', 'Transaction', 'Event']);
+        });
+
+    });
+
     describe('#getAssetDeclarations', () => {
 
         it('should return all of the asset declarations', () => {

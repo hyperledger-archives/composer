@@ -3,8 +3,8 @@ layout: default
 title: Managing Index
 category: concepts
 section: managing
-index-order: 0
-sidebar: sidebars/managing.md
+index-order: 700
+sidebar: sidebars/accordion-toc0.md
 excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 ---
 

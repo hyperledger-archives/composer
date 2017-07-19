@@ -87,12 +87,10 @@ export class TestComponent implements OnInit, OnDestroy {
                 }
             })
             .catch((error) => {
-                console.log('Caught error');
                 this.alertService.errorStatus$.next(error);
             });
         })
         .catch((error) => {
-            console.log('Caught error');
             this.alertService.errorStatus$.next(error);
         });
     }

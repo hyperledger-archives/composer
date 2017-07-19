@@ -49,6 +49,18 @@ describe('composer-rest-server CLI unit tests', () => {
         sandbox.restore();
     });
 
+    it('should call version and give the correct version', () => {
+        process.argv = [ process.argv0, 'cli.js', '-v' ];
+        delete require.cache[require.resolve('yargs')];
+        return proxyquire('../cli', {})
+            .then(() => {
+                // Meh
+            })
+            .catch((error) => {
+                error.should.be.null;
+            });
+    });
+
     it('should call inquirer if no arguments specified and start the server', () => {
         let listen = sinon.stub();
         process.argv = [ process.argv0 ];

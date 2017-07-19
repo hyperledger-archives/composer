@@ -3,8 +3,8 @@ layout: default
 title: Integrating Index
 category: concepts
 section: integrating
-index-order: 0
-sidebar: sidebars/integrating.md
+index-order: 600
+sidebar: sidebars/accordion-toc0.md
 excerpt: How to create a new Connection Profile
 ---
 
