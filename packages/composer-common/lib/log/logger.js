@@ -323,9 +323,9 @@ class Logger {
                 },
                 'file': {
 
-                    'filename': 'trace_PID.log',
-                    'enabledLevel': 'silly',
-                    'alwaysLevel': 'info'
+                    'filename': 'trace_TIMESTAMP.log',
+                    'enabledLevel': 'debug',
+                    'alwaysLevel': 'error'
                 }
             }};
 
