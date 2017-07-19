@@ -38,7 +38,7 @@ class QueryAnalyzer {
      * @throws {IllegalModelException}
      */
     constructor(query) {
-        if(!query) {
+        if (!query) {
             throw new Error('Invalid query');
         }
 
@@ -207,7 +207,7 @@ class QueryAnalyzer {
         LOG.entry(method, limit, parameters);
         // Get the limit value from the AST.
         const result = this.visit(limit.getAST(), parameters);
-        if(result.length>0) {
+        if (result.length > 0) {
             result[0].type = 'Integer';
         }
         LOG.exit(method, result);
@@ -227,7 +227,7 @@ class QueryAnalyzer {
         // Get the skip value from the AST.
         const result = this.visit(skip.getAST(), parameters);
 
-        if(result.length>0) {
+        if (result.length > 0) {
             result[0].type = 'Integer';
         }
         LOG.exit(method, result);
@@ -247,7 +247,7 @@ class QueryAnalyzer {
 
         // Binary expressions are handled differently in Mango based on the type,
         // so figure out the type and handle it appropriately.
-        const arrayCombinationOperators = [ 'AND', 'OR' ];
+        const arrayCombinationOperators = ['AND', 'OR'];
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
@@ -299,13 +299,13 @@ class QueryAnalyzer {
         const lhs = this.visit(ast.left, parameters);
 
         // if the rhs is a string, it is the name of a property
-        if(typeof rhs === 'string' && (lhs instanceof Array && lhs.length > 0)) {
+        if (typeof rhs === 'string' && (lhs instanceof Array && lhs.length > 0)) {
             lhs[0].type = this.getPropertyType(rhs);
             result = result.concat(lhs);
         }
 
         // if the lhs is a string, it is the name of a property
-        if(typeof lhs === 'string' && (rhs instanceof Array && rhs.length > 0)) {
+        if (typeof lhs === 'string' && (rhs instanceof Array && rhs.length > 0)) {
             rhs[0].type = this.getPropertyType(lhs);
             result = result.concat(rhs);
         }
@@ -335,7 +335,10 @@ class QueryAnalyzer {
 
             // We return a parameter object with a null type
             // performing the type inference in the parent visit
-            return [{name: parameterName, type: null}];
+            return [{
+                name: parameterName,
+                type: null
+            }];
         }
 
         // Otherwise it's a property name.
@@ -357,7 +360,7 @@ class QueryAnalyzer {
         LOG.entry(method, parameterName);
 
         // The grammar ensures that the resource property is set.
-        const  modelManager = this.query.getQueryFile().getModelManager();
+        const modelManager = this.query.getQueryFile().getModelManager();
         const resource = this.query.getSelect().getResource();
 
         let result = null;
@@ -366,32 +369,29 @@ class QueryAnalyzer {
         // checks the resource type exists
         let classDeclaration = modelManager.getType(resource);
 
-        for(let n=0; n<parameterNames.length; n++){
+        for (let n = 0; n < parameterNames.length; n++) {
             const property = classDeclaration.getProperty(parameterNames[n]);
 
-            if( property !== null ){
+            if (property !== null) {
                 // enums are relationships are represented as strings
-                if(property.isTypeEnum() || property instanceof RelationshipDeclaration) {
+                if (property.isTypeEnum() || property instanceof RelationshipDeclaration) {
                     result = 'String';
                     break;
-                }
-                else if (property.isPrimitive()) {
+                } else if (property.isPrimitive()) {
                     result = property.getType();
                     break;
-                }
-                else {
+                } else {
                     const resource = property.getFullyQualifiedTypeName();
                     classDeclaration = modelManager.getType(resource);
                     property.validate(classDeclaration);
                 }
-            }
-            else {
-                throw new Error('Property ' + parameterNames[n] + ' does not exist on ' + resource );
+            } else {
+                throw new Error('Property ' + parameterNames[n] + ' does not exist on ' + resource);
             }
         }
 
-        if(result === null) {
-            throw new Error('Property ' + parameterName + ' is not a primitive, enum or relationship on ' + resource );
+        if (result === null) {
+            throw new Error('Property ' + parameterName + ' is not a primitive, enum or relationship on ' + resource);
         }
 
         LOG.exit(method, result);

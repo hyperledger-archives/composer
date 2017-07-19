@@ -922,9 +922,38 @@ class BusinessNetworkConnector extends Connector {
         debug('queryName', queryName);
         debug('queryParameters', util.inspect(queryParameters));
 
-        console.log('options = ', options);
-        console.log('queryParameters = ', queryParameters);
-        console.log('queryName = ', queryName);
+        // all query parameters come in as string
+        // so we need to coerse them to their correct types
+        // before executing a query
+        // TODO (DCS) not sure this should be done here, as it will also
+        // need to be done on the runtime side
+        const query = this.businessNetworkDefinition.getQueryManager().getQuery(queryName);
+
+        if(!query) {
+            throw new Error('Named query ' + queryName + ' does not exist in the business network.');
+        }
+
+        const parameters = query.getParameters();
+
+        for(let n=0; n < parameters.length; n++) {
+            const param = parameters[n];
+            const paramValue = queryParameters[param.name];
+            switch(param.type) {
+            case 'Integer':
+            case 'Long':
+                queryParameters[param.name] = parseInt(paramValue,10);
+                break;
+            case 'Double':
+                queryParameters[param.name] = parseFloat(paramValue);
+                break;
+            case 'DateTime':
+                queryParameters[param.name] = Date.parse(paramValue);
+                break;
+            case 'Boolean':
+                queryParameters[param.name] = Boolean.parse(paramValue);
+                break;
+            }
+        }
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
@@ -937,8 +966,7 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                console.log(error);
-                debug('executeQuery', 'error thrown doing query', error);
+                debug('executeQuery', 'error thrown executing query', error);
                 callback(error);
             });
     }
@@ -988,7 +1016,7 @@ class BusinessNetworkConnector extends Connector {
                 let modelNames = new Set();
                 let namesAreUnique = true;
 
-                // Find all the types in the buiness network.
+                // Find all the types in the business network.
                 const classDeclarations = this.introspector.getClassDeclarations()
                     .filter((classDeclaration) => {
 
