@@ -42,7 +42,12 @@ describe('Asset system tests', function () {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        console.log('testing install/start');
+        // Have some system test perform install/start rather than deploy
+        return admin.install(businessNetworkDefinition.getName())
+            .then(() => {
+                return admin.start(businessNetworkDefinition);
+            })
             .then(() => {
                 return TestUtil.getClient('systest-assets')
                     .then((result) => {

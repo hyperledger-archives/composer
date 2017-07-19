@@ -182,14 +182,38 @@ class WebConnection extends Connection {
     }
 
     /**
-     * Deploy all business network artifacts.
+     * For the web connector, this is just a no-op, there is nothing to install
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {Object} installOptions connector specific install options
+     * @return {Promise} An already resolved promise
+     */
+    install(securityContext, businessNetworkIdentifier, installOptions) {
+        return Promise.resolve();
+    }
+
+    /**
+     * Deploy a business network. For the web connector this just translates to
+     * a start request as no install is required.
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
-     * @param {Object} deployOptions connector specific deployment options
+     * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
     deploy(securityContext, businessNetwork, deployOptions) {
+        return this.start(securityContext, businessNetwork, deployOptions);
+    }
+
+    /**
+     * Start a business network.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} startOptions connector specific start options
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed and the network started, or rejected with an error.
+     */
+    start(securityContext, businessNetwork, startOptions) {
         let container = WebConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeID = container.getUUID();

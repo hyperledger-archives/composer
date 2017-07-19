@@ -5,6 +5,7 @@ import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
+import { TransactionDeclaration } from 'composer-common';
 import { TransactionService } from '../services/transaction.service';
 
 @Component({
@@ -17,6 +18,7 @@ import { TransactionService } from '../services/transaction.service';
 
 export class TestComponent implements OnInit, OnDestroy {
 
+    hasTransactions = false;
     private assetRegistries = [];
     private participantRegistries = [];
     private transactionRegistry = null;
@@ -34,9 +36,18 @@ export class TestComponent implements OnInit, OnDestroy {
     ngOnInit(): Promise<any> {
         this.initializeEventListener();
         return this.initializationService.initialize()
-            .then(() => {
-                return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries();
-            })
+        .then(() => {
+
+            let introspector = this.clientService.getBusinessNetwork().getIntrospector();
+            let modelClassDeclarations = introspector.getClassDeclarations();
+            modelClassDeclarations.forEach((modelClassDeclaration) => {
+                // Generate list of all known (non-abstract) transaction types
+                if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
+                    this.hasTransactions = true;
+                }
+            });
+
+            return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()
             .then((assetRegistries) => {
                 assetRegistries.forEach((assetRegistry) => {
                     let index = assetRegistry.id.lastIndexOf('.');
@@ -78,6 +89,10 @@ export class TestComponent implements OnInit, OnDestroy {
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
             });
+        })
+        .catch((error) => {
+            this.alertService.errorStatus$.next(error);
+        });
     }
 
     ngOnDestroy() {
