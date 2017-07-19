@@ -23,9 +23,9 @@
           <div class="file-title">
             <div class="title">{{currentBusinessNetwork.getName()}}</div>
             <div>
-              <span>{{currentBusinessNetwork.getModelManager().getAssetDeclarations().length}} Assets</span>
-              <span>{{currentBusinessNetwork.getModelManager().getParticipantDeclarations().length}} Participants</span>
-              <span>{{currentBusinessNetwork.getModelManager().getTransactionDeclarations().length}} Transactions</span>
+              <span>{{currentAssets.length}} Assets</span>
+              <span>{{currentParticipants.length}} Participants</span>
+              <span>{{currentTransactions.length}} Transactions</span>
             </div>
           </div>
         </div>
@@ -53,24 +53,24 @@
           </ul>
         </div>
         <div>
-          <div *ngIf="currentBusinessNetwork.getModelManager().getAssetDeclarations().length > 0" class="network-part">
+          <div *ngIf="currentAssets.length > 0" class="network-part">
             <span class="title">Assets:</span>
             <span
-              *ngFor="let asset of currentBusinessNetwork.getModelManager().getAssetDeclarations() | slice:0:2; let i = index; let lastOne = last">{{asset.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
-            <span *ngIf="currentBusinessNetwork.getModelManager().getAssetDeclarations().length > 2">+ {{currentBusinessNetwork.getModelManager().getAssetDeclarations().length -2}} more</span>
+              *ngFor="let asset of currentAssets | slice:0:2; let i = index; let lastOne = last">{{asset.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
+            <span *ngIf="currentAssets.length > 2">+ {{currentAssets.length -2}} more</span>
           </div>
-          <div *ngIf="currentBusinessNetwork.getModelManager().getParticipantDeclarations().length > 0"
+          <div *ngIf="currentParticipants.length > 0"
                class="network-part">
             <span class="title">Participants:</span>
             <span
-              *ngFor="let participant of currentBusinessNetwork.getModelManager().getParticipantDeclarations() | slice:0:2; let i = index; let lastOne = last">{{participant.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
-            <span *ngIf="currentBusinessNetwork.getModelManager().getParticipantDeclarations().length > 2">+ {{currentBusinessNetwork.getModelManager().getAssetDeclarations().length -2}} more</span>
+              *ngFor="let participant of currentParticipants | slice:0:2; let i = index; let lastOne = last">{{participant.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
+            <span *ngIf="currentParticipants.length > 2">+ {{currentParticipants.length -2}} more</span>
           </div>
-          <div *ngIf="currentBusinessNetwork.getModelManager().getParticipantDeclarations() >0" class="network-part">
+          <div *ngIf="currentParticipants >0" class="network-part">
             <span class="title">Transactions:</span>
             <span
-              *ngFor="let transaction of currentBusinessNetwork.getModelManager().getParticipantDeclarations() | slice:0:2; let i = index; let lastOne = last">{{transaction.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
-            <span *ngIf="currentBusinessNetwork.getModelManager().getParticipantDeclarations().length > 2">+ {{currentBusinessNetwork.getModelManager().getAssetDeclarations().length -2}} more</span>
+              *ngFor="let transaction of currentTransactions | slice:0:2; let i = index; let lastOne = last">{{transaction.getName()}}{{i === 1 || lastOne ? '' : ', ' }}</span>
+            <span *ngIf="currentTransactions.length > 2">+ {{currentTransactions.length -2}} more</span>
           </div>
         </div>
       </div>
