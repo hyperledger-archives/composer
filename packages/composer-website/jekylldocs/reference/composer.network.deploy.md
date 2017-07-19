@@ -10,7 +10,7 @@ excerpt: Composer Network Deploy CLI
 
 ---
 
-The `composer network deploy` utility is used to deploy a business network archive from local disk to a Hyperledger Fabric runtime.
+The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 runtime.
 
 ```
 composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
@@ -43,34 +43,25 @@ Command completed successfully.
 
 ## {{site.data.conrefs.hlf_full}} Endorsement Policies
 
-The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} RC endorsement policies can be sent using the `-o` and `-O` options in several ways.
+The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} v1.0 endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 
-<<<<<<< HEAD
-        composer network deploy -o endorsementPolicy='{"endorsementPolicy": {"identities": [.... }'
-=======
         composer network deploy -o endorsementPolicy='{"identities": [.... }'
->>>>>>> hyperledger/master
 
 - Using the `-o` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 
-<<<<<<< HEAD
-=======
 	In this case, the endorsement policy file should follow this format:
 
 		{"identities":[...],
 			"policy": {...}}
 
->>>>>>> hyperledger/master
 - Using the `-O` option, the endorsement policy can be sent as a file path as follows:
 
         composer network deploy -O /path/to/file/options.json
 
-<<<<<<< HEAD
-=======
 	In this case, the options file should follow this format:
 
 				{"endorsementPolicy": {"Identities": [...].
@@ -79,5 +70,4 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 				  "someOtherOption": "A Value"
 				}
 
->>>>>>> hyperledger/master
 For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
