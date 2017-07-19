@@ -35,6 +35,7 @@ Due to many breaking API changes between {{site.data.conrefs.hlf_full}} alpha 1 
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
 
 
+
 ## References
 
 * [**Composer CLI commands**](../reference/commands.html)
