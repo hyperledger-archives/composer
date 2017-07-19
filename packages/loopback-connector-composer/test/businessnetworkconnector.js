@@ -24,6 +24,8 @@ const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelManager = require('composer-common').ModelManager;
+const Query = require('composer-common').Query;
+const QueryFile = require('composer-common').QueryFile;
 const NodeCache = require('node-cache');
 const ParticipantRegistry = require('composer-client/lib/participantregistry');
 const Serializer = require('composer-common').Serializer;
@@ -52,6 +54,37 @@ describe('BusinessNetworkConnector', () => {
     transaction BaseTransaction {
     }`;
 
+    // const QUERY_MODEL_FILE =`
+    // namespace org.acme
+
+    // enum ContactType {
+    //     o MOBILE
+    //     o FAX
+    //     o LANDLINE
+    // }
+
+    // concept PhoneDetails {
+    //     o String phoneNumber
+    //     o ContactType contactType
+    // }
+
+    // concept Address {
+    //     o String city
+    //     o PhoneDetails phoneDetails
+    // }
+
+    // participant Driver identified by driverId {
+    //     o String driverId
+    //     o String name
+    //     o Address address
+    //     o Integer age
+    // }
+
+    // asset Vehicle identified by vin {
+    //     o String vin
+    //     --> Driver driver
+    // }`;
+
     let settings;
     let mockBusinessNetworkConnectionWrapper;
     let mockBusinessNetworkConnection;
@@ -62,6 +95,8 @@ describe('BusinessNetworkConnector', () => {
     let modelManager;
     let factory;
     let introspector;
+    let mockQuery;
+    let mockQueryFile;
 
     beforeEach(() => {
 
@@ -89,6 +124,12 @@ describe('BusinessNetworkConnector', () => {
         modelManager.addModelFile(MODEL_FILE);
         introspector = new Introspector(modelManager);
         factory = new Factory(modelManager);
+
+        // create mock query
+        mockQuery = sinon.createStubInstance(Query);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockQuery.getQueryFile.returns(mockQueryFile);
+        mockQueryFile.getModelManager.returns(modelManager);
 
         sandbox = sinon.sandbox.create();
 
@@ -2124,6 +2165,54 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockTransactionRegistry.getAll);
                     sinon.assert.calledWith(mockTransactionRegistry.getAll);
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#executeQuery', () => {
+
+        let mockAssetRegistry;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockBusinessNetworkConnection.getAssetRegistry.resolves(mockAssetRegistry);
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should call the executeQuery with a result', () => {
+            let query = Query.buildQuery('SELECT org.acme.base.BaseAsset WHERE (theValue == _$inputValue)');
+            const cb = sinon.stub();
+
+            return testConnector.executeQuery(query.name, { inputValue: 'blue' }, {test: 'options'}, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, transactions)
+                    result.should.deep.equal([{
+                        transactionId: 'tx1',
+                        $class: 'sometx'
+                    }, {
+                        transactionId: 'tx2',
+                        $class: 'sometx'
+                    }]);
+
+                });
+        });
+
+        it('should handle an error when executing query', () => {
+            mockBusinessNetworkConnection.executeQuery.resolves() ;
+            // mockTransactionRegistry.getAll.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.executeQuery({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     const error = cb.args[0][0]; // First call, first argument (error)
                     error.should.match(/such error/);
                 });
