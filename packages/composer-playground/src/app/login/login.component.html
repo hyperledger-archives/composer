@@ -1,11 +1,13 @@
 <section *ngIf="!showSubScreen" class="header">
-    <header class="flex-container">
-        <h1 class="flex">My Wallet</h1>
-
+    <div class="left-align">My Wallet</div>
+    <div class="right-align" *ngIf="!showSubScreen">
         <button type="button" class="secondary">
             <span>Import ID Card</span>
         </button>
-    </header>
+        <button type="button" class="secondary" (click)="createIdCard()">
+            <span>Create ID Card</span>
+        </button>
+    </div>
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfile of connectionProfiles; let profileIndex = index">
@@ -43,13 +45,24 @@
             <span>My Wallet</span>
         </button>
     </div>
-    <div *ngIf="editingConectionProfile">
-        <connection-profile (profileUpdated)="finishedEditingConnectionProfile()"
-                            [connectionProfile]="editingConectionProfile"></connection-profile>
-    </div>
     <div *ngIf="showDeployNetwork">
         <import-business-network class="deploy" [deployNetwork]="true"
                                  (finishedSampleImport)="finishedDeploying()"></import-business-network>
+    </div>
+    <div *ngIf="editingConnectionProfile">
+        <connection-profile (profileUpdated)="finishedEditingConnectionProfile($event)"
+                            [connectionProfile]="editingConnectionProfile"></connection-profile>
+    </div>
+    <div *ngIf="creatingIdCard">
+        <add-connection-profile (profileToUse)="addIdToExistingProfileName($event)"
+                                (profileToEdit)="addIdToNewProfile($event)"
+                                (cancelAdd) = "closeSubView()"
+                                [connectionProfiles]="connectionProfiles"></add-connection-profile>
+    </div>
+    <div *ngIf="editingIdCard">
+        <add-identity (identityAdded)="completeCardAddition()"
+                      (cancelAdd) = "closeSubView()"
+                      [targetProfileName]="targetProfileName"></add-identity>
     </div>
 </section>
 <app-footer></app-footer>
