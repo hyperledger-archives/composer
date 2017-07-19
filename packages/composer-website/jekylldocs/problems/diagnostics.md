@@ -34,7 +34,7 @@ The config module does write out a warning, if there are no configuration files 
 - advice: set loglevel to debug on deploy because if deploy breaks you want the logs.
 
 
-## {{site.data.conrefs.hlf_full}} RC1 - David
+## {{site.data.conrefs.hlf_full}} v1.0 - David
 
 
 -->
