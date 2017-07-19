@@ -14,6 +14,7 @@ import { ClientService } from '../../services/client.service';
 import { SampleBusinessNetworkService } from '../../services/samplebusinessnetwork.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../../basic-modals/alert.service';
+import { BusinessNetworkDefinition, ClassDeclaration } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -128,6 +129,33 @@ describe('ImportComponent', () => {
 
     afterAll(() => {
         sandbox.restore();
+    });
+
+    describe('currentBusinessNetwork', () => {
+        let mockBusinessNetworkDefinition;
+        let stub1 = sinon.createStubInstance(ClassDeclaration);
+        beforeEach(() => {
+            stub1.isAbstract.returns(true);
+            stub1.isSystemType.returns(false);
+
+            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.getModelManager.returns({
+                getAssetDeclarations: () => {
+                    return [stub1];
+                },
+                getParticipantDeclarations: () => {
+                    return [stub1];
+                },
+                getTransactionDeclarations: () => {
+                    return [stub1];
+                }
+            });
+        });
+
+        it('should set the correct values for _currentBusinessNetwork', () => {
+            component.currentBusinessNetwork = mockBusinessNetworkDefinition;
+            component['currentAssets'].should.deep.equal([stub1]);
+        });
     });
 
     describe('ngInit', () => {
