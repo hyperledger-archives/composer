@@ -330,6 +330,18 @@ class AdminConnection {
     }
 
     /**
+     * TODO:DAVE
+     * @param {any} businessNetworkIdentifier the business network id to upgrade the runtime
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * updated.
+     * @memberof AdminConnection
+     */
+    upgrade(businessNetworkIdentifier) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.upgrade(this.securityContext, businessNetworkIdentifier);
+    }
+
+    /**
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the node.js module.
      * @example

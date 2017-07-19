@@ -405,7 +405,7 @@ class HLFConnection extends Connection {
      * @memberOf HLFConnection
      */
     start(securityContext, businessNetwork, startOptions) {
-        const method = '_instantiate';
+        const method = 'start';
         LOG.entry(method, securityContext, businessNetwork, startOptions);
 
         if (!businessNetwork) {
@@ -1010,6 +1010,71 @@ class HLFConnection extends Connection {
      */
     _getLoggedInUser() {
         return this.user;
+    }
+
+    /**
+     * Upgrade chaincode to a newer version
+     * @param {any} securityContext security context
+     * @param {any} businessNetworkIdentifier bna id
+     * @returns {Promise} a promise
+     * @memberof HLFConnection
+     */
+    upgrade(securityContext, businessNetworkIdentifier) {
+        const method = 'upgrade';
+        LOG.entry(method, securityContext, businessNetworkIdentifier);
+
+        let txId;
+        return this._initializeChannel()
+            .then(() => {
+                txId = this.client.newTransactionID();
+
+                // Submit the upgrade proposal
+                const request = {
+                    chaincodePath: chaincodePath,
+                    chaincodeVersion: runtimePackageJSON.version,
+                    chaincodeId: businessNetworkIdentifier,
+                    txId: txId,
+                    fcn: 'upgrade'
+                };
+
+                return this.channel.sendUpgradeProposal(request);
+            })
+            .then((results) => {
+                // Validate the instantiate proposal results
+                LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
+                let proposalResponses = results[0];
+                this._validateResponses(proposalResponses, true);
+
+                // Submit the endorsed transaction to the primary orderer.
+                const proposal = results[1];
+                const header = results[2];
+                return this.channel.sendTransaction({
+                    proposalResponses: proposalResponses,
+                    proposal: proposal,
+                    header: header
+                });
+
+            })
+            .then((response) => {
+
+                // If the transaction was successful, wait for it to be committed.
+                LOG.debug(method, 'Received response from orderer', response);
+                if (response.status !== 'SUCCESS') {
+                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                }
+                return this._waitForEvents(txId, this.connectOptions.timeout);
+
+            })
+            .then(() => {
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                const newError = new Error('error trying upgrade chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+
+
     }
 
 }

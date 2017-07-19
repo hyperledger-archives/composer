@@ -90,6 +90,14 @@ class Engine {
         const method = 'init';
         LOG.entry(method);
         LOG.entry(method, context, fcn, args);
+
+        // chaincode was upgraded, no change to business network and obviously
+        // nothing the runtime can do to stop it.
+        if (fcn === 'upgrade') {
+            LOG.info('runtime has been upgraded');
+            return Promise.resolve();
+        }
+
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
         } else if (args.length !== 2) {
@@ -232,6 +240,8 @@ class Engine {
                 LOG.exit(method);
             });
     }
+
+
 
     /**
      * Handle an initialisation (deploy) request.
