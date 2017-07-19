@@ -351,9 +351,29 @@ describe('ClassDeclaration', () => {
             const modelFiles = loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
+
         it('should return false', () => {
             const testClass = modelManager.getType('com.testing.Test');
             testClass.isRelationshipTarget().should.be.false;
+
+        });
+    });
+
+    describe('#isSystemRelationshipTarget', () => {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.isrelationshiptarget.cto',
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
+        it('should return false', () => {
+            const testClass = modelManager.getType('com.testing.Test');
+            testClass.isSystemRelationshipTarget().should.be.false;
 
         });
     });
