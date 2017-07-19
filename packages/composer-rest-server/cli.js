@@ -36,7 +36,7 @@ const yargs = require('yargs')
     .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
     .alias('v', 'version')
     .version(() => {
-        return getInfo('composer-rest-server')+getInfo('composer-cli')+
+        return getInfo('composer-rest-server')+
           getInfo('composer-admin')+getInfo('composer-client')+
           getInfo('composer-common')+getInfo('composer-runtime-hlf')+
           getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
