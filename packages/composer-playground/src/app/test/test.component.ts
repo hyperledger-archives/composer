@@ -18,7 +18,7 @@ import { TransactionService } from '../services/transaction.service';
 
 export class TestComponent implements OnInit, OnDestroy {
 
-    hasTransactions = false;
+    private hasTransactions = false;
     private assetRegistries = [];
     private participantRegistries = [];
     private transactionRegistry = null;
@@ -87,12 +87,10 @@ export class TestComponent implements OnInit, OnDestroy {
                 }
             })
             .catch((error) => {
-                console.log('Caught error');
                 this.alertService.errorStatus$.next(error);
             });
         })
         .catch((error) => {
-            console.log('Caught error');
             this.alertService.errorStatus$.next(error);
         });
     }

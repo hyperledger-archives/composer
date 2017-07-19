@@ -42,22 +42,22 @@ describe('HLFConnectionManager', () => {
 
 
     const embeddedCert = '-----BEGIN CERTIFICATE-----\n' +
-'MIICKTCCAdCgAwIBAgIRALz4qIofOY8ff94YDATVyGIwCgYIKoZIzj0EAwIwZjEL\n' +
-'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
-'cmFuY2lzY28xFDASBgNVBAoTC29yZGVyZXJPcmcxMRQwEgYDVQQDEwtvcmRlcmVy\n' +
-'T3JnMTAeFw0xNzAzMDExNzM2NDFaFw0yNzAyMjcxNzM2NDFaMGYxCzAJBgNVBAYT\n' +
-'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
-'MRQwEgYDVQQKEwtvcmRlcmVyT3JnMTEUMBIGA1UEAxMLb3JkZXJlck9yZzEwWTAT\n' +
-'BgcqhkjOPQIBBggqhkjOPQMBBwNCAARNSaTugowp/Y4XcY7Hrs+m3oE/j8B/jIp3\n' +
-'H8thNhYUdkHX69wNsRB6v/vElHn6CPjUHpNAivbXw9dIz7X3aI/Xo18wXTAOBgNV\n' +
-'HQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMBAf8EBTADAQH/MCkG\n' +
-'A1UdDgQiBCBNSnciFRaLZZTIfoJlDkOPHzfDA+FLX55vPuBswruCOjAKBggqhkjO\n' +
-'PQQDAgNHADBEAiBa6k7Cax+McCHy61Jma1vLuFZswBbnsC6DqbveiKdUoAIgeyAf\n' +
-'HzWxMoVrLfPFwF75PqCjae7xnYq+RWlsHZlMGFU=\n' +
-'-----END CERTIFICATE-----';
+        'MIICKTCCAdCgAwIBAgIRALz4qIofOY8ff94YDATVyGIwCgYIKoZIzj0EAwIwZjEL\n' +
+        'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
+        'cmFuY2lzY28xFDASBgNVBAoTC29yZGVyZXJPcmcxMRQwEgYDVQQDEwtvcmRlcmVy\n' +
+        'T3JnMTAeFw0xNzAzMDExNzM2NDFaFw0yNzAyMjcxNzM2NDFaMGYxCzAJBgNVBAYT\n' +
+        'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
+        'MRQwEgYDVQQKEwtvcmRlcmVyT3JnMTEUMBIGA1UEAxMLb3JkZXJlck9yZzEwWTAT\n' +
+        'BgcqhkjOPQIBBggqhkjOPQMBBwNCAARNSaTugowp/Y4XcY7Hrs+m3oE/j8B/jIp3\n' +
+        'H8thNhYUdkHX69wNsRB6v/vElHn6CPjUHpNAivbXw9dIz7X3aI/Xo18wXTAOBgNV\n' +
+        'HQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMBAf8EBTADAQH/MCkG\n' +
+        'A1UdDgQiBCBNSnciFRaLZZTIfoJlDkOPHzfDA+FLX55vPuBswruCOjAKBggqhkjO\n' +
+        'PQQDAgNHADBEAiBa6k7Cax+McCHy61Jma1vLuFZswBbnsC6DqbveiKdUoAIgeyAf\n' +
+        'HzWxMoVrLfPFwF75PqCjae7xnYq+RWlsHZlMGFU=\n' +
+        '-----END CERTIFICATE-----';
     const overrideCert = '-----BEGIN CERTIFICATE-----\n' +
-'Override override override' +
-'-----END CERTIFICATE-----';
+        'Override override override' +
+        '-----END CERTIFICATE-----';
 
     let mockConnectionProfileManager;
     let sandbox;
@@ -925,7 +925,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should successfully import an identity', () => {
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .then(() => {
                     sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
                     sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
@@ -946,83 +946,95 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should throw if profileDefinition not specified', () => {
+        it('should throw if connectionProfile not specified', () => {
             (() => {
                 connectionManager.importIdentity();
-            }).should.throw(/profileDefinition not specified or not an object/);
+            }).should.throw(/connectionProfile not specified or not a string/);
         });
 
-        it('should throw if profileDefinition not an object', () => {
+        it('should throw if connectionProfile not a string', () => {
             (() => {
-                connectionManager.importIdentity('hlfabric1');
-            }).should.throw(/profileDefinition not specified or not an object/);
+                connectionManager.importIdentity([]);
+            }).should.throw(/connectionProfile not specified or not a string/);
+        });
+
+        it('should throw if connectionOptions not specified', () => {
+            (() => {
+                connectionManager.importIdentity('connprof1');
+            }).should.throw(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if connectionOptions not an object', () => {
+            (() => {
+                connectionManager.importIdentity('connprof1', 'hlfabric1');
+            }).should.throw(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if id not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile);
+                connectionManager.importIdentity('connprof1', profile);
             }).should.throw(/id not specified or not a string/);
         });
 
         it('should throw if id not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, []);
+                connectionManager.importIdentity('connprof1', profile, []);
             }).should.throw(/id not specified or not a string/);
         });
 
         it('should throw if publicKey not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid');
+                connectionManager.importIdentity('connprof1', profile, 'anid');
             }).should.throw(/publicKey not specified or not a string/);
         });
 
         it('should throw if publicKey not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', []);
+                connectionManager.importIdentity('connprof1', profile, 'anid', []);
             }).should.throw(/publicKey not specified or not a string/);
         });
+
         it('should throw if key not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert');
             }).should.throw(/privateKey not specified or not a string/);
         });
 
         it('should throw if key not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 5);
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 5);
             }).should.throw(/privateKey not specified or not a string/);
         });
-
 
         it('should throw if msp id is not specified', () => {
             delete profile.mspID;
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 'akey');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
             }).should.throw(/No msp id defined/);
         });
 
         it('should throw if no keyValStore or wallet is not specified', () => {
             delete profile.keyValStore;
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 'akey');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
             }).should.throw(/No key value store directory or wallet has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {
             Client.newDefaultKeyValueStore.rejects('wow such fail');
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });
 
         it('should handle an error creating a new cryptosuite', () => {
             mockClient.setCryptoSuite.throws(new Error('another fail'));
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/another fail/);
         });
 
         it('should handle an error creating a user', () => {
             mockClient.createUser.rejects('wow such fail');
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });
 

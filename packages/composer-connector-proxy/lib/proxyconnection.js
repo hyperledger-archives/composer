@@ -83,6 +83,47 @@ class ProxyConnection extends Connection {
     }
 
     /**
+     * Install the Hyperledger Composer runtime.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {Object} installOptions connector specific install options
+     * @return {Promise} A promise that is resolved once the runtime has been installed, or rejected with an error.
+     */
+    install(securityContext, businessNetworkIdentifier, installOptions) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionInstall', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, installOptions, (error) => {
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * Start a business network definition.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to start
+     * @param {Object} startOptions connector specific start options
+     * @return {Promise} A promise that is resolved once the business network has been started,
+     * or rejected with an error.
+     */
+    start(securityContext, businessNetworkDefinition, startOptions) {
+        return businessNetworkDefinition.toArchive()
+            .then((businessNetworkArchive) => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/connectionStart', this.connectionID, securityContext.securityContextID, businessNetworkArchive.toString('base64'), startOptions, (error) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+                        resolve();
+                    });
+                });
+            });
+    }
+
+
+    /**
      * Deploy a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy

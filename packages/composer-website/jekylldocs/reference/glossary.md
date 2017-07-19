@@ -2,8 +2,8 @@
 layout: default
 title: Hyperledger Composer Glossary of Terms
 section: reference
-index-order: 10
-sidebar: sidebars/reference.md
+index-order: 910
+sidebar: sidebars/accordion-toc0.md
 excerpt: The glossary contains [**definitions of all Hyperledger Composer terms**](./glossary.html) for developing a solution with Hyperledger Composer.
 ---
 

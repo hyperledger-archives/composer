@@ -226,6 +226,122 @@ describe('Transaction (query specific) system tests', () => {
                 return client.submitTransaction(tx);
             });
 
+            it('should execute a named query on a nested string property', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.namedQuery = `${type}_nestedStringValue`;
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 0';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a dynamic query on a nested string property', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.dynamicQuery = `SELECT ${resource} WHERE (conceptValue.stringValue == 'string 0')`;
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 0';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a named query on a nested string property using a parameter', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.namedQuery = `${type}_stringValueParameter`;
+                tx.parameters = JSON.stringify({
+                    inputStringValue: 'string 1'
+                });
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 1';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            it('should execute a dynamic query on a nested string property using a parameter', () => {
+                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                tx.dynamicQuery = `SELECT ${resource} WHERE (stringValue == _$inputStringValue)`;
+                tx.parameters = JSON.stringify({
+                    inputStringValue: 'string 1'
+                });
+                tx.expected = JSON.stringify(expected.filter((thing) => {
+                    return thing.conceptValue.stringValue === 'string 1';
+                }));
+                return client.submitTransaction(tx);
+            });
+
+            // Hyperledger Fabric v1.0.0 is dumb and overwrites any limit/skip fields we send in.
+            // https://jira.hyperledger.org/browse/FAB-5369
+            if (!TestUtil.isHyperledgerFabricV1()) {
+
+                it('should execute a named query using limit', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.namedQuery = `${type}_limit`;
+                    tx.expected = JSON.stringify(expected.slice(0, 2));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a dynamic query using limit', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.dynamicQuery = `SELECT ${resource} LIMIT 2`;
+                    tx.expected = JSON.stringify(expected.slice(0, 2));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a named query using skip', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.namedQuery = `${type}_skip`;
+                    tx.expected = JSON.stringify(expected.slice(4));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a dynamic query using skip', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.dynamicQuery = `SELECT ${resource} SKIP 4`;
+                    tx.expected = JSON.stringify(expected.slice(4));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a named query using a parameter for limit', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.namedQuery = `${type}_limitParameter`;
+                    tx.parameters = JSON.stringify({
+                        inputLimit: 2
+                    });
+                    tx.expected = JSON.stringify(expected.slice(0, 2));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a dynamic query using a parameter for limit', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.dynamicQuery = `SELECT ${resource} LIMIT _$inputLimit`;
+                    tx.parameters = JSON.stringify({
+                        inputLimit: 2
+                    });
+                    tx.expected = JSON.stringify(expected.slice(0, 2));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a named query using a parameter for skip', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.namedQuery = `${type}_skipParameter`;
+                    tx.parameters = JSON.stringify({
+                        inputSkip: 4
+                    });
+                    tx.expected = JSON.stringify(expected.slice(4));
+                    return client.submitTransaction(tx);
+                });
+
+                it('should execute a dynamic query using a parameter for skip', () => {
+                    const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
+                    tx.dynamicQuery = `SELECT ${resource} SKIP _$inputSkip`;
+                    tx.parameters = JSON.stringify({
+                        inputSkip: 4
+                    });
+                    tx.expected = JSON.stringify(expected.slice(4));
+                    return client.submitTransaction(tx);
+                });
+
+            }
+
         });
 
     });

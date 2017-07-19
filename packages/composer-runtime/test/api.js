@@ -239,7 +239,7 @@ describe('Api', () => {
             for (let i = 0; i < 5; i++) {
                 const object = {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset',
                     value: 'the value ' + i
                 };

@@ -3,9 +3,9 @@ layout: default
 title: Updating Hyperledger Composer
 category: tasks
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: To [update Hyperledger Composer](./updating-composer.html) to a new version, the Hyperledger Composer components must be uninstalled and reinstalled using npm.
-index-order: 7
+index-order: 707
 ---
 
 # Updating {{site.data.conrefs.composer_full}}
