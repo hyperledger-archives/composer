@@ -5,7 +5,6 @@ category: tasks
 section: managing
 sidebar: sidebars/managing.md
 excerpt:
-index-order: 8
 ---
 
 # Connector Specific Information

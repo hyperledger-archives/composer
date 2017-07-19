@@ -14,7 +14,7 @@ Composer uses the Winston logging module by default - and will use the Config mo
 
 The config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
 
-
+<!--
 ## User Applications - Dan
 ## Business Networks - Liam/Matthew
 ## CLI - David
@@ -37,7 +37,7 @@ The config module does write out a warning, if there are no configuration files 
 ## {{site.data.conrefs.hlf_full}} RC1 - David
 
 
-
+-->
 # Diagnosing Problems
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?
