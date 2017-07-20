@@ -33,17 +33,15 @@ export function dragDropFile(location, filePath) {
   // get the full path
   filePath = path.resolve(filePath);
 
-   // assert the file is present
+  // assert the file is present
   fs.accessSync(filePath, fs.constants.F_OK);
 
   // resolve the drop area
   return location.getWebElement().then((element) => {
-
       // bind a new input to the drop area
       browser.executeScript(BIND_INPUT, element).then((input) => {
-
-      // upload the file to the new input
-      (input as any).sendKeys(filePath);
+        // upload the file to the new input
+        (input as any).sendKeys(filePath);
     });
   });
 }
