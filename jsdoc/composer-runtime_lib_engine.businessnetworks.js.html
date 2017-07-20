@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.IdentityRegistry.html">composer-client.IdentityRegistry</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li><li><a href="TransactionHandler.html">TransactionHandler</a></li>
 				</ul>
 			</li>
 			
@@ -130,8 +130,19 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getBusinessNetwork', []));
         }
         let dataService = context.getDataService();
+        let sysdata;
+        let resource;
         return dataService.getCollection('$sysdata')
-            .then((sysdata) => {
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'READ');
+            })
+            .then(() => {
+                // convert to resource and then check pmerssions.
                 return sysdata.get('businessnetwork');
             })
             .then((result) => {
@@ -148,7 +159,7 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    undeployBusinessNetwork(context, args){
+    undeployBusinessNetwork(context, args) {
         const method = 'undeployBusinessNetwork';
         LOG.entry(method, context, args);
         if (args.length !== 0) {
@@ -158,18 +169,25 @@ class EngineBusinessNetworks {
         let dataService = context.getDataService();
         let sysdata;
         return dataService.getCollection('$sysdata')
-        .then((sysdata_) => {
-            sysdata = sysdata_;
-            // Validate the business network archive and store it.
-            return sysdata.get('businessnetwork');
-        })
-        .then((businessNetwork) => {
-            businessNetwork.undeployed = true;
-            return sysdata.update('businessnetwork', businessNetwork);
-        })
-        .then(() => {
-            LOG.exit(method);
-        });
+            .then((sysdata_) => {
+                sysdata = sysdata_;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                let resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'DELETE');
+            })
+            .then(() => {
+                // Validate the business network arsysregistrieschive and store it.
+                return sysdata.get('businessnetwork');
+            })
+            .then((businessNetwork) => {
+                businessNetwork.undeployed = true;
+                return sysdata.update('businessnetwork', businessNetwork);
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
 
@@ -190,7 +208,17 @@ class EngineBusinessNetworks {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-        return Promise.resolve()
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'UPDATE');
+            })
+            // return Promise.resolve()
             .then(() => {
 
                 // Load, validate, and hash the business network definition.
@@ -227,10 +255,6 @@ class EngineBusinessNetworks {
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                return dataService.getCollection('$sysdata');
-
-            })
-            .then((sysdata) => {
 
                 // Update the business network definition in the sysdata collection.
                 return sysdata.update('businessnetwork', {
@@ -283,20 +307,21 @@ class EngineBusinessNetworks {
         return dataService.getCollection('$sysregistries')
             .then((sysregistries) => {
                 return sysregistries.getAll()
-                .then((registries) => {
-                    return registries.reduce((cur, next) => {
-                        return cur.then(() => {
-                            let registryType = next.type;
-                            let registryId = next.id;
-                            LOG.debug(method, 'Deleting collection', registryType, registryId);
-                            return dataService.deleteCollection(registryType + ':' + registryId)
-                                .then(() => {
-                                    LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
-                                    return sysregistries.remove(registryType + ':' + registryId);
-                                });
-                        });
-                    }, Promise.resolve());
-                });
+                    .then((registries) => {
+                        return registries.reduce((cur, next) => {
+                            return cur.then(() => {
+                                let registryType = next.type;
+                                let registryId = next.registryId;
+
+                                LOG.debug(method, 'Deleting collection', registryType, registryId);
+                                return dataService.deleteCollection(registryType + ':' + registryId)
+                                    .then(() => {
+                                        LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
+                                        return sysregistries.remove(registryType + ':' + registryId);
+                                    });
+                            });
+                        }, Promise.resolve());
+                    });
             })
             .then(() => {
 
@@ -371,7 +396,7 @@ module.exports = EngineBusinessNetworks;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jul 13th 2017
+		on Thu Jul 20th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

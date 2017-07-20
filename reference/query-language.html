@@ -33,8 +33,8 @@ ga('send', 'pageview');
     <link href="/composer/assets/css/normalize.css" rel="stylesheet">
     <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
     <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
-
   
 </head>
 
@@ -84,29 +84,79 @@ ga('send', 'pageview');
             
             
               <ul>
-<li><a href="../introduction/introduction.html">Introduction</a></li>
-<li><a href="../installing/installing-index.html">Installing</a></li>
-<li><a href="../tutorials/tutorials.html">Tutorials</a></li>
-<li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
-<li><a href="../applications/applications-index.html">Developing Applications</a></li>
-<li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
-<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
-<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
-<li><a href="../reference/reference-index.html">Reference</a>
+<li><p><a href="../introduction/introduction.html">Introduction</a></p>
 
 <ul>
-<li><a href="../reference/MeetTheModules.html">npm Modules</a></li>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html">Installing Index</a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html">Tutorials Index</a></p>
+
+<ul>
+<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html">Integrating Index</a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html">Managing Index</a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
+<li><a href="../managing/github-oauth.html">Enabling Playground OAuth with GitHub</a></li>
+<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../reference/reference-index.html">Reference Index</a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
 <li><a href="../reference/cto_language.html">Modeling Language</a></li>
 <li><a href="../reference/acl_language.html">Access Control Language</a></li>
 <li><a href="../reference/query-language.html">Query Language</a></li>
 <li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
-<li><a href="../reference/connectionprofile.html">Connection Profile</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
-<li><a href="../reference/commands.html">CLI Commands</a></li>
-<li><a href="../jsdoc/index.html">API Documentation</a></li>
-<li><a href="../reference/glossary.html">Glossary</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/JSDOC-README.html">API Documentation</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
-<li><a href="../support/index.html">Support</a></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
 
             
@@ -204,7 +254,6 @@ ga('send', 'pageview');
   </div>
     </article>
 </div>
-
 <script>
 (function (document) {
     function clipboard_init() {
@@ -246,6 +295,7 @@ ga('send', 'pageview');
     });
 })(document);
 </script>
+<script src="/composer/assets/js/nav.js"></script>
 
     
 
@@ -254,7 +304,4 @@ ga('send', 'pageview');
 
   </div>
 </body>
-
-<!-- jQuery -->
-<script src="/composer/assets/js/jquery.js"></script>
 </html>
