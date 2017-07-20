@@ -1,6 +1,6 @@
 {
   "name": "composer-cli",
-  "version": "0.9.3",
+  "version": "0.10.1",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
     "node": ">=6",
@@ -42,10 +42,10 @@
   "dependencies": {
     "chalk": "^1.1.3",
     "cli-table": "^0.3.1",
-    "composer-admin": "0.9.3",
-    "composer-client": "0.9.3",
-    "composer-common": "0.9.3",
-    "composer-rest-server": "0.9.3",
+    "composer-admin": "0.10.1",
+    "composer-client": "0.10.1",
+    "composer-common": "0.10.1",
+    "composer-rest-server": "0.10.1",
     "homedir": "^0.6.0",
     "npm-paths": "^0.1.3",
     "nunjucks": "^3.0.0",
@@ -83,9 +83,9 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 60,
-    "branches": 50,
-    "functions": 58,
-    "lines": 60
+    "statements": 70,
+    "branches": 56,
+    "functions": 62,
+    "lines": 70
   }
 }

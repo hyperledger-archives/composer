@@ -1,0 +1,59 @@
+/**
+ * Definition of a Bond, based on the FpML schema:
+ * http://www.fpml.org/spec/fpml-5-3-2-wd-2/html/reporting/schemaDocumentation/schemas/fpml-asset-5-3_xsd/elements/bond.html
+ *
+ */
+namespace org.acme.bond
+
+enum CouponType {
+  o FIXED
+  o FLOATING
+}
+
+participant Member identified by memberId {
+  o String memberId
+  o String name
+}
+
+participant Issuer extends Member {
+}
+
+enum PeriodEnum {
+  o DAY
+  o WEEK
+  o MONTH
+  o YEAR
+}
+
+concept PaymentFrequency {
+    o Integer periodMultiplier
+    o PeriodEnum period
+}
+
+concept Bond {
+    o String[] instrumentId
+    o String description optional
+    o String currency optional
+    o String[] exchangeId
+    o String clearanceSystem optional
+    o String definition optional
+    o String seniority optional
+    o CouponType couponType optional
+    o Double couponRate optional
+    o DateTime maturity
+    o Double parValue
+    o Double faceAmount
+    o PaymentFrequency paymentFrequency
+    o String dayCountFraction
+    --> Issuer issuer
+}
+
+asset BondAsset identified by ISINCode {
+    o String ISINCode
+    o Bond bond
+}
+
+transaction PublishBond  {
+  o String ISINCode
+  o Bond bond
+}

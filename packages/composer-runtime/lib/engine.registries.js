@@ -111,6 +111,7 @@ class EngineRegistries {
         let registryType = args[0];
         let registryId = args[1];
         let registryName = args[2];
+        LOG.debug(method,'Adding registry',registryType,registryId,registryName);
         return context.getRegistryManager().add(registryType, registryId, registryName)
             .then(() => {
                 LOG.exit(method);

@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Identity Import Command
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Hyperledger Composer Identity Import Command
 ---
 

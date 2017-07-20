@@ -22,11 +22,19 @@ const sinon = require('sinon');
 
 describe('EmbeddedIdentityService', () => {
 
+    const identity = {
+        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+        name: 'bob1',
+        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+        secret: 'suchsecret',
+        certificate: ''
+    };
+
     let identityService;
     let sandbox;
 
     beforeEach(() => {
-        identityService = new EmbeddedIdentityService('bob1');
+        identityService = new EmbeddedIdentityService(identity);
         sandbox = sinon.sandbox.create();
     });
 
@@ -38,15 +46,48 @@ describe('EmbeddedIdentityService', () => {
 
         it('should create a identity service', () => {
             identityService.should.be.an.instanceOf(IdentityService);
-            identityService.userID.should.equal('bob1');
+            identityService.identity.should.equal(identity);
         });
 
     });
 
-    describe('#getCurrentUserID', () => {
+    describe('#constructor', () => {
 
-        it('should return the current user ID', () => {
-            should.equal(identityService.getCurrentUserID(), 'bob1');
+        it('should create a identity service', () => {
+            identityService.should.be.an.instanceOf(IdentityService);
+            identityService.identity.should.equal(identity);
+        });
+
+    });
+
+    describe('#getIdentifier', () => {
+
+        it('should return the identifier', () => {
+            should.equal(identityService.getIdentifier(), 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
+        });
+
+    });
+
+    describe('#getName', () => {
+
+        it('should return the name', () => {
+            should.equal(identityService.getName(), 'bob1');
+        });
+
+    });
+
+    describe('#getIssuer', () => {
+
+        it('should return the issuer', () => {
+            should.equal(identityService.getIssuer(), 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665');
+        });
+
+    });
+
+    describe('#getCertificate', () => {
+
+        it('should return the certificate', () => {
+            should.equal(identityService.getCertificate(), '');
         });
 
     });

@@ -24,6 +24,8 @@ const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+const QueryAnalyzer = require('composer-common').QueryAnalyzer;
+const util = require('util');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -756,6 +758,63 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Get all of the identities from the identity registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllIdentities(options, callback) {
+        debug('getAllIdentities', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const result = identities.map((identity) => {
+                    return this.serializer.toJSON(identity);
+                });
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getAllIdentities', 'error thrown doing getAllIdentities', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Get the identity with the specified ID from the identity registry.
+     * @param {string} id The ID for the identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getIdentityByID(id, options, callback) {
+        debug('getIdentityByID', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.get(id);
+            })
+            .then((identity) => {
+                const result = this.serializer.toJSON(identity);
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getIdentityByID', 'error thrown doing getIdentityByID', error);
+                if (error.message.match(/does not exist/)) {
+                    error.statusCode = error.status = 404;
+                }
+                callback(error);
+            });
+
+    }
+
+    /**
      * Issue an identity to the specified participant.
      * @param {string} participant The fully qualified participant ID.
      * @param {string} userID The user ID for the new identity.
@@ -775,6 +834,29 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('issueIdentity', 'error thrown doing issueIdentity', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Bind an identity to the specified participant.
+     * @param {string} participant The fully qualified participant ID.
+     * @param {string} certificate The certificate for the new identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    bindIdentity(participant, certificate, options, callback) {
+        debug('bindIdentity', participant, certificate, options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.bindIdentity(participant, certificate);
+            })
+            .then((result) => {
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('bindIdentity', 'error thrown doing bindIdentity', error);
                 callback(error);
             });
     }
@@ -829,6 +911,68 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Execute a named query and returns the results
+     * @param {string} queryName The name of the query to execute
+     * @param {object} queryParameters The query parameters
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    executeQuery( queryName, queryParameters, options, callback) {
+        debug('executeQuery', options);
+        debug('queryName', queryName);
+        debug('queryParameters', util.inspect(queryParameters));
+
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                // all query parameters come in as string
+                // so we need to coerse them to their correct types
+                // before executing a query
+                // TODO (DCS) not sure this should be done here, as it will also
+                // need to be done on the runtime side
+                const query = businessNetworkConnection.getBusinessNetwork().getQueryManager().getQuery(queryName);
+
+                if(!query) {
+                    throw new Error('Named query ' + queryName + ' does not exist in the business network.');
+                }
+
+                const qa = new QueryAnalyzer(query);
+                const parameters = qa.analyze();
+
+                for(let n=0; n < parameters.length; n++) {
+                    const param = parameters[n];
+                    const paramValue = queryParameters[param.name];
+                    switch(param.type) {
+                    case 'Integer':
+                    case 'Long':
+                        queryParameters[param.name] = parseInt(paramValue,10);
+                        break;
+                    case 'Double':
+                        queryParameters[param.name] = parseFloat(paramValue);
+                        break;
+                    case 'DateTime':
+                        queryParameters[param.name] = Date.parse(paramValue);
+                        break;
+                    case 'Boolean':
+                        queryParameters[param.name] = (paramValue === 'true');
+                        break;
+                    }
+                }
+
+                return businessNetworkConnection.query(queryName, queryParameters);
+            })
+            .then((queryResult) => {
+                const result = queryResult.map((item) => {
+                    return this.serializer.toJSON(item);
+                });
+                callback(null, result);
+            })
+            .catch((error) => {
+                callback(error);
+            });
+    }
+
+    /**
      * Get the transaction with the specified ID from the transaction registry.
      * @param {string} id The ID for the transaction.
      * @param {Object} options The LoopBack options.
@@ -873,7 +1017,7 @@ class BusinessNetworkConnector extends Connector {
                 let modelNames = new Set();
                 let namesAreUnique = true;
 
-                // Find all the types in the buiness network.
+                // Find all the types in the business network.
                 const classDeclarations = this.introspector.getClassDeclarations()
                     .filter((classDeclaration) => {
 
@@ -888,6 +1032,12 @@ class BusinessNetworkConnector extends Connector {
 
                         // Filter out any abstract types.
                         return !classDeclaration.isAbstract();
+
+                    })
+                    .filter((classDeclaration) => {
+
+                        // Filter out any system types.
+                        return !classDeclaration.isSystemType();
 
                     });
 
@@ -922,7 +1072,8 @@ class BusinessNetworkConnector extends Connector {
                 classDeclarations.forEach((classDeclaration) => {
                     models.push({
                         type : 'table',
-                        name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName()
+                        name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName(),
+                        namespaces : namespaces
                     });
                 });
 
@@ -931,6 +1082,25 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('discoverModelDefinitions', 'error thrown discovering list of model class declarations', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Retrieve the list of all named queries in the business network
+     * @param {Object} options the options provided by Loopback.
+     * @param {function} callback the callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    discoverQueries(options, callback) {
+        debug('discoverQueries', options);
+        return this.ensureConnected(options)
+            .then(() => {
+                const queries = this.businessNetworkDefinition.getQueryManager().getQueries();
+                callback(null, queries);
+            })
+            .catch((error) => {
+                debug('discoverQueries', 'error thrown discovering list of query declarations', error);
                 callback(error);
             });
     }
@@ -976,8 +1146,8 @@ class BusinessNetworkConnector extends Connector {
                     first : true,
                     modelFile : classDeclaration.getModelFile()
                 });
-                callback(null, schema);
 
+                callback(null, schema);
             })
             .catch((error) => {
                 debug('discoverSchemas', 'error thrown generating schema', error);

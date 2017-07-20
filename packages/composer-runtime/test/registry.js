@@ -43,7 +43,7 @@ describe('Registry', () => {
         mockAccessController = sinon.createStubInstance(AccessController);
         mockAccessController.check.resolves();
         mockParticipant = sinon.createStubInstance(Resource);
-        registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
+        registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry', true);
     });
 
     describe('#removeInternalProperties', () => {
@@ -59,7 +59,7 @@ describe('Registry', () => {
         it('should add properties to the object', () => {
             const object = Registry.removeInternalProperties({
                 $registryType: 'Asset',
-                $registryID: 'doges'
+                $registryId: 'doges'
             });
             object.should.deep.equal({});
         });
@@ -70,6 +70,10 @@ describe('Registry', () => {
 
         it('should be an event emitter', () => {
             registry.should.be.an.instanceOf(EventEmitter);
+            registry.type.should.equal('Asset');
+            registry.id.should.equal('doges');
+            registry.name.should.equal('The doges registry');
+            registry.system.should.be.true;
         });
 
     });
@@ -254,13 +258,13 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockResource2, 'CREATE');
                     sinon.assert.calledWith(mockDataCollection.add, 'doge1', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1'
                     });
                     sinon.assert.calledWith(mockDataCollection.add, 'doge2', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge2'
                     });
@@ -316,7 +320,7 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'CREATE');
                     sinon.assert.calledWith(mockDataCollection.add, 'doge1', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1'
                     });
@@ -405,14 +409,14 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockOldResource2, 'UPDATE');
                     sinon.assert.calledWith(mockDataCollection.update, 'doge1', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1',
                         theValue: 'newValue1'
                     });
                     sinon.assert.calledWith(mockDataCollection.update, 'doge2', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge2',
                         theValue: 'newValue2'
@@ -485,7 +489,7 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockOldResource, 'UPDATE');
                     sinon.assert.calledWith(mockDataCollection.update, 'doge1', {
                         $registryType: 'Asset',
-                        $registryID: 'doges',
+                        $registryId: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1',
                         newValue: 'newValue'
@@ -659,7 +663,7 @@ describe('Registry', () => {
             const object = registry.addInternalProperties({});
             object.should.deep.equal({
                 $registryType: 'Asset',
-                $registryID: 'doges'
+                $registryId: 'doges'
             });
         });
 

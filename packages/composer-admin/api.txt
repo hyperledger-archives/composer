@@ -6,6 +6,8 @@ class AdminConnection {
    + Promise getProfile(string) 
    + Promise getAllProfiles() 
    + Promise disconnect() 
+   + Promise install(BusinessNetworkIdentifier,Object) 
+   + Promise start(BusinessNetworkDefinition,Object) 
    + Promise deploy(BusinessNetworkDefinition,Object) 
    + Promise undeploy(string) 
    + Promise update(BusinessNetworkDefinition) 

@@ -1,6 +1,6 @@
 {
   "name": "composer-client",
-  "version": "0.9.3",
+  "version": "0.10.1",
   "description": "The node.js client library for Hyperledger Composer, a development framework for Hyperledger Fabric",
   "engines": {
     "node": ">=6",
@@ -13,7 +13,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000"
@@ -42,9 +42,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.9.3",
-    "composer-connector-hlf": "0.9.3",
-    "composer-connector-hlfv1": "0.9.3",
+    "composer-common": "0.10.1",
+    "composer-connector-hlf": "0.10.1",
+    "composer-connector-hlfv1": "0.10.1",
     "uuid": "^3.0.1"
   },
   "devDependencies": {

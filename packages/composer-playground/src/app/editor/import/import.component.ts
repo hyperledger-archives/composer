@@ -30,7 +30,24 @@ export class ImportComponent implements OnInit {
     private maxFileSize: number = 5242880;
     private supportedFileTypes: string[] = ['.bna'];
 
-    private currentBusinessNetwork = null;
+    private _currentBusinessNetwork = null;
+
+    set currentBusinessNetwork(businessNetwork) {
+        this._currentBusinessNetwork = businessNetwork;
+        if (businessNetwork instanceof BusinessNetworkDefinition) {
+            this.currentAssets = businessNetwork.getModelManager().getAssetDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+            this.currentParticipants = businessNetwork.getModelManager().getParticipantDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+            this.currentTransactions = businessNetwork.getModelManager().getTransactionDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+        }
+    }
+
+    get currentBusinessNetwork() {
+        return this._currentBusinessNetwork;
+    }
+
+    private currentAssets = [];
+    private currentParticipants = [];
+    private currentTransactions = [];
 
     private NAME = 'Empty Business Network';
     private DESC = 'Start from scratch with a blank business network';

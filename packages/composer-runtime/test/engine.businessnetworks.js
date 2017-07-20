@@ -30,6 +30,8 @@ const RegistryManager = require('../lib/registrymanager');
 const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
 const version = require('../package.json').version;
+const Serializer = require('composer-common').Serializer;
+const AccessController = require('../lib/accesscontroller');
 
 const chai = require('chai');
 chai.should();
@@ -46,8 +48,12 @@ describe('EngineBusinessNetworks', () => {
     let mockRegistryManager;
     let engine;
     let sandbox;
+    let mockSerializer, mockAccessController;
 
     beforeEach(() => {
+        mockSerializer = sinon.createStubInstance(Serializer);
+
+
         mockContainer = sinon.createStubInstance(Container);
         mockLoggingService = sinon.createStubInstance(LoggingService);
         mockContainer.getLoggingService.returns(mockLoggingService);
@@ -59,10 +65,15 @@ describe('EngineBusinessNetworks', () => {
         mockContext.transactionCommit.resolves();
         mockContext.transactionRollback.resolves();
         mockContext.transactionEnd.resolves();
+        mockContext.getSerializer.returns(mockSerializer);
         mockDataService = sinon.createStubInstance(DataService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getDataService.returns(mockDataService);
         mockContext.getRegistryManager.returns(mockRegistryManager);
+
+        mockAccessController = sinon.createStubInstance(AccessController);
+        mockContext.getAccessController.returns(mockAccessController);
+
         engine = new Engine(mockContainer);
         sandbox = sinon.sandbox.create();
     });
@@ -98,19 +109,20 @@ describe('EngineBusinessNetworks', () => {
         });
 
         it('should set the undeploy flag on a business network', () => {
-            let businessNetwork = {data:'data', hash: 'hash'};
+            let businessNetwork = { data: 'data', hash: 'hash' };
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
             sysdata.get.withArgs('businessnetwork').resolves(businessNetwork);
 
             return engine.invoke(mockContext, 'undeployBusinessNetwork', [])
-            .then(() => {
-                sinon.assert.calledOnce(sysdata.get);
-                sinon.assert.calledWith(sysdata.get, 'businessnetwork');
-                businessNetwork.undeploy = true;
-                sinon.assert.calledOnce(sysdata.update);
-                sinon.assert.calledWith(sysdata.update, 'businessnetwork', businessNetwork);
-            });
+                .then(() => {
+                    sinon.assert.calledTwice(sysdata.get);
+                    sinon.assert.calledWith(sysdata.get, 'businessnetwork');
+                    sinon.assert.calledWith(sysdata.get, 'metanetwork');
+                    businessNetwork.undeploy = true;
+                    sinon.assert.calledOnce(sysdata.update);
+                    sinon.assert.calledWith(sysdata.update, 'businessnetwork', businessNetwork);
+                });
         });
     });
 
@@ -186,10 +198,10 @@ describe('EngineBusinessNetworks', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataCollection.getAll.resolves([{
                 type: 'Asset',
-                id: 'sheeps'
+                registryId: 'sheeps'
             }, {
                 type: 'Participants',
-                id: 'farmers'
+                registryId: 'farmers'
             }]);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             mockDataService.deleteCollection.resolves();

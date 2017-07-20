@@ -10,7 +10,7 @@ import { AddCertificateComponent } from './add-certificate/add-certificate.compo
 import { AddConnectionProfileComponent } from './add-connection-profile/add-connection-profile.component';
 import { DeleteConnectionProfileComponent } from './delete-connection-profile/delete-connection-profile.component';
 import { ViewCertificateComponent } from './view-certificate/view-certificate.component';
-import { FileImporterModule } from '../file-importer/file-importer.module';
+import { FileImporterModule } from '../common/file-importer/file-importer.module';
 import { SwitchIdentityComponent } from '../test/switch-identity/switch-identity.component';
 import { FooterModule } from '../footer/footer.module';
 

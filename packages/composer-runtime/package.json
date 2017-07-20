@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime",
-  "version": "0.9.3",
+  "version": "0.10.1",
   "description": "The runtime execution environment for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -13,7 +13,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "postlint": "npm run browserify",
@@ -62,7 +62,7 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.9.3",
+    "composer-common": "0.10.1",
     "debug": "^2.6.2",
     "fast-json-patch": "^1.1.8",
     "jsonata": "^1.2.2",

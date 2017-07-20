@@ -1,0 +1,12 @@
+/*
+ * Test file for enums
+ */
+namespace org.acme
+
+
+/**
+ * Concrete enum
+ */
+enum ConcreteEnum  {
+  o TEST
+}

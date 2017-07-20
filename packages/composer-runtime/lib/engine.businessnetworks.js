@@ -44,8 +44,19 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getBusinessNetwork', []));
         }
         let dataService = context.getDataService();
+        let sysdata;
+        let resource;
         return dataService.getCollection('$sysdata')
-            .then((sysdata) => {
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'READ');
+            })
+            .then(() => {
+                // convert to resource and then check pmerssions.
                 return sysdata.get('businessnetwork');
             })
             .then((result) => {
@@ -62,7 +73,7 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    undeployBusinessNetwork(context, args){
+    undeployBusinessNetwork(context, args) {
         const method = 'undeployBusinessNetwork';
         LOG.entry(method, context, args);
         if (args.length !== 0) {
@@ -72,18 +83,25 @@ class EngineBusinessNetworks {
         let dataService = context.getDataService();
         let sysdata;
         return dataService.getCollection('$sysdata')
-        .then((sysdata_) => {
-            sysdata = sysdata_;
-            // Validate the business network archive and store it.
-            return sysdata.get('businessnetwork');
-        })
-        .then((businessNetwork) => {
-            businessNetwork.undeployed = true;
-            return sysdata.update('businessnetwork', businessNetwork);
-        })
-        .then(() => {
-            LOG.exit(method);
-        });
+            .then((sysdata_) => {
+                sysdata = sysdata_;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                let resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'DELETE');
+            })
+            .then(() => {
+                // Validate the business network arsysregistrieschive and store it.
+                return sysdata.get('businessnetwork');
+            })
+            .then((businessNetwork) => {
+                businessNetwork.undeployed = true;
+                return sysdata.update('businessnetwork', businessNetwork);
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
 
@@ -104,7 +122,17 @@ class EngineBusinessNetworks {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-        return Promise.resolve()
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'UPDATE');
+            })
+            // return Promise.resolve()
             .then(() => {
 
                 // Load, validate, and hash the business network definition.
@@ -141,10 +169,6 @@ class EngineBusinessNetworks {
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                return dataService.getCollection('$sysdata');
-
-            })
-            .then((sysdata) => {
 
                 // Update the business network definition in the sysdata collection.
                 return sysdata.update('businessnetwork', {
@@ -197,20 +221,21 @@ class EngineBusinessNetworks {
         return dataService.getCollection('$sysregistries')
             .then((sysregistries) => {
                 return sysregistries.getAll()
-                .then((registries) => {
-                    return registries.reduce((cur, next) => {
-                        return cur.then(() => {
-                            let registryType = next.type;
-                            let registryId = next.id;
-                            LOG.debug(method, 'Deleting collection', registryType, registryId);
-                            return dataService.deleteCollection(registryType + ':' + registryId)
-                                .then(() => {
-                                    LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
-                                    return sysregistries.remove(registryType + ':' + registryId);
-                                });
-                        });
-                    }, Promise.resolve());
-                });
+                    .then((registries) => {
+                        return registries.reduce((cur, next) => {
+                            return cur.then(() => {
+                                let registryType = next.type;
+                                let registryId = next.registryId;
+
+                                LOG.debug(method, 'Deleting collection', registryType, registryId);
+                                return dataService.deleteCollection(registryType + ':' + registryId)
+                                    .then(() => {
+                                        LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
+                                        return sysregistries.remove(registryType + ':' + registryId);
+                                    });
+                            });
+                        }, Promise.resolve());
+                    });
             })
             .then(() => {
 

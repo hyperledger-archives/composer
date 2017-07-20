@@ -9,7 +9,7 @@
   },
   "name": "composer",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.9.3",
+  "version": "0.10.1",
   "main": "index.js",
   "private": true,
   "scripts": {

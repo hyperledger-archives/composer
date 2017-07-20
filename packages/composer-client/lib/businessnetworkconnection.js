@@ -25,9 +25,11 @@ const FSConnectionProfileStore = require('composer-common').FSConnectionProfileS
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
 const Query = require('./query');
+const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
+const IdentityRegistry = require('./identityregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 
@@ -289,6 +291,33 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
+     * Get the identity registry.
+     * @example
+     * // Get the transaction registry
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.getIdentityRegistry();
+     * })
+     * .then(function(identityRegistry){
+     *     // Retrieved Identity Registry
+     * });
+     * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
+     */
+    getIdentityRegistry() {
+        Util.securityCheck(this.securityContext);
+        return IdentityRegistry
+            .getIdentityRegistry(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
+            .then((identityRegistry) => {
+                if (identityRegistry) {
+                    return identityRegistry;
+                } else {
+                    throw new Error('Failed to find the default identity registry');
+                }
+            });
+    }
+
+    /**
      * Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.
      * @example
      * // Connect and log in to HLF
@@ -322,7 +351,7 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
-                return this.connection.ping(this.securityContext);
+                return this.ping();
             })
             .then(() => {
                 return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
@@ -525,16 +554,68 @@ class BusinessNetworkConnection extends EventEmitter {
      * been tested. The promise will be rejected if the version is incompatible.
      */
     ping() {
-        Util.securityCheck(this.securityContext);
-        return this.connection.ping(this.securityContext);
+        const method = 'ping';
+        LOG.entry(method);
+        return this.pingInner()
+            .catch((error) => {
+                if (error.message.match(/ACTIVATION_REQUIRED/)) {
+                    LOG.debug(method, 'Activation required, activating ...');
+                    return this.activate()
+                        .then(() => {
+                            return this.pingInner();
+                        });
+                }
+                throw error;
+            })
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
     }
 
     /**
-     * Issue an identity with the specified user ID and map it to the specified
+     * Test the connection to the runtime and verify that the version of the
+     * runtime is compatible with this level of the client node.js module.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    pingInner() {
+        const method = 'pingInner';
+        LOG.entry(method);
+        Util.securityCheck(this.securityContext);
+        return this.connection.ping(this.securityContext)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Activate the current identity on the currently connected business network.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    activate() {
+        const method = 'activate';
+        LOG.entry(method);
+        const json = {
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity'
+        };
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Issue an identity with the specified name and map it to the specified
      * participant.
-     * @param {Resource|string} participant The participant, or the fully qualified
-     * identifier of the participant. The participant must already exist.
-     * @param {string} userID The user ID for the identity.
+     * @param {Resource|Relationship|string} participant The participant, a
+     * relationship to the participant, or the fully qualified identifier of
+     * the participant. The participant must already exist.
+     * @param {string} identityName The name for the new identity.
      * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should have
      * permissions to create additional new identities. False by default.
@@ -543,41 +624,40 @@ class BusinessNetworkConnection extends EventEmitter {
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    issueIdentity(participant, userID, options) {
+    issueIdentity(participant, identityName, options) {
         const method = 'issueIdentity';
-        LOG.entry(method, participant, userID);
+        LOG.entry(method, participant, identityName);
         if (!participant) {
             throw new Error('participant not specified');
-        } else if (!userID) {
-            throw new Error('userID not specified');
+        } else if (!identityName) {
+            throw new Error('identityName not specified');
         }
-        let participantFQI;
-        let participantId;
-        let participantType;
+        const factory = this.getBusinessNetwork().getFactory();
         if (participant instanceof Resource) {
-            participantFQI = participant.getFullyQualifiedIdentifier();
-            participantId = participant.getIdentifier();
-            participantType = participant.getFullyQualifiedType();
+            participant = factory.newRelationship(participant.getNamespace(), participant.getType(), participant.getIdentifier());
+        } else if (participant instanceof Relationship) {
+            // This is OK!
         } else {
-            participantFQI = participant;
-            participantId = participantFQI.substring(participantFQI.lastIndexOf('#') + 1);
-            participantType = participantFQI.substr(0, participantFQI.lastIndexOf('#'));
+            participant = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), participant);
         }
-
-        Util.securityCheck(this.securityContext);
-        return this.getParticipantRegistry(participantType)
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+        Object.assign(transaction, {
+            participant,
+            identityName
+        });
+        return this.getParticipantRegistry(participant.getFullyQualifiedType())
             .then((participantRegistry) => {
-                return participantRegistry.exists(participantId);
+                return participantRegistry.exists(participant.getIdentifier());
             })
             .then((exists) => {
                 if (exists) {
-                    return this.connection.createIdentity(this.securityContext, userID, options);
+                    return this.connection.createIdentity(this.securityContext, identityName, options);
                 } else {
-                    throw new Error(`Participant '${participantFQI}' does not exist `);
+                    throw new Error(`Participant '${participant.getFullyQualifiedIdentifier()}' does not exist `);
                 }
             })
             .then((identity) => {
-                return Util.invokeChainCode(this.securityContext, 'addParticipantIdentity', [participantFQI, userID])
+                return this.submitTransaction(transaction)
                     .then(() => {
                         LOG.exit(method, identity);
                         return identity;
@@ -586,8 +666,45 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
+     * Bind an existing identity to the specified participant.
+     * @param {Resource|string} participant The participant, or the fully qualified
+     * identifier of the participant. The participant must already exist.
+     * @param {string} certificate The certificate for the existing identity.
+     * @return {Promise} A promise that will be fulfilled when the identity has
+     * been added to the specified participant. The promise will be rejected if
+     * the participant does not exist, or if the identity is already mapped to
+     * another participant.
+     */
+    bindIdentity(participant, certificate) {
+        const method = 'bindIdentity';
+        LOG.entry(method, participant, certificate);
+        if (!participant) {
+            throw new Error('participant not specified');
+        } else if (!certificate) {
+            throw new Error('certificate not specified');
+        }
+        const factory = this.getBusinessNetwork().getFactory();
+        if (participant instanceof Resource) {
+            participant = factory.newRelationship(participant.getNamespace(), participant.getType(), participant.getIdentifier());
+        } else if (participant instanceof Relationship) {
+            // This is OK!
+        } else {
+            participant = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), participant);
+        }
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+        Object.assign(transaction, {
+            participant,
+            certificate
+        });
+        return this.submitTransaction(transaction)
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
      * Revoke the specified identity by removing any existing mapping to a participant.
-     * @param {string} identity The identity, for example the enrollment ID.
+     * @param {Resource|string} identity The identity, or the identifier of the identity.
      * @return {Promise} A promise that will be fulfilled when the identity has
      * been removed from the specified participant. The promise will be rejected if
      * the participant does not exist, or if the identity is not mapped to the
@@ -599,10 +716,21 @@ class BusinessNetworkConnection extends EventEmitter {
         if (!identity) {
             throw new Error('identity not specified');
         }
-        Util.securityCheck(this.securityContext);
+        const factory = this.getBusinessNetwork().getFactory();
+        if (identity instanceof Resource) {
+            identity = factory.newRelationship(identity.getNamespace(), identity.getType(), identity.getIdentifier());
+        } else if (identity instanceof Relationship) {
+            // This is OK!
+        } else {
+            identity = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), identity, 'org.hyperledger.composer.system', 'Identity');
+        }
+        const transaction = factory.newTransaction('org.hyperledger.composer.system', 'RevokeIdentity');
+        Object.assign(transaction, {
+            identity
+        });
         // It is not currently possible to revoke the certificate, so we just call
         // the runtime to remove the mapping.
-        return Util.invokeChainCode(this.securityContext, 'removeIdentity', [identity])
+        return this.submitTransaction(transaction)
           .then(() => {
               LOG.exit(method);
           });
