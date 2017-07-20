@@ -19,41 +19,10 @@
             </div>
         </h2>
         <div class="identities">
-            <div class="identity" *ngFor="let identity of connectionProfile.identities">
-                <div class="top-section">
-                    <div class="userId-image">
-                        <span>{{identity.userId.substring(0,2)}}</span>
-                    </div>
-                    <div class="userId">
-                        {{identity.userId}}
-                    </div>
-                    <div class="action-buttons">
-                        <button type="button" class="action circular" (click)="removeIdentity(connectionProfile.name, identity.userId)">
-                            <svg class="ibm-icon vertical-top" aria-hidden="true">
-                                <use xlink:href="#icon-trash_32"></use>
-                            </svg>
-                        </button>
-                        <button type="button" class="action circular">
-                            <svg class="ibm-icon vertical-top" aria-hidden="true">
-                                <use xlink:href="#icon-upload_32"></use>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="bottom-section">
-                    <p class="business-network">BUSINESS NETWORK</p>
-                    <p>{{identity.businessNetwork}}</p>
-                    <div class="connect">
-                        <button id="login-{{profileIndex}}-{{identity.userId}}" type="button" class="action"
-                                (click)="changeIdentity(connectionProfile.name, identity.userId)">
-                            <span>Connect now</span>
-                            <svg class="ibm-icon vertical-top" aria-hidden="true">
-                                <use xlink:href="#icon-forward_16"></use>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <identity-card *ngFor="let identity of connectionProfile.identities" [identity]="identity"
+                           (onConnect)="changeIdentity(connectionProfile.name, identity.userId)"
+                           (onDelete)="removeIdentity(connectionProfile.name, identity.userId)">
+            </identity-card>
         </div>
     </div>
 </section>
