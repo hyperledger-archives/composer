@@ -17,6 +17,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise participantRegistryExists(string) 
    + Promise addParticipantRegistry(string,string) 
    + Promise getTransactionRegistry() 
+   + Promise getIdentityRegistry() 
    + Promise connect(string,string,string,string,Object) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 
@@ -24,7 +25,11 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise query(Object) 
    + Promise ping() 
    + Promise issueIdentity(string,object,boolean) 
-   + Promise revokeIdentity(string) 
+   + Promise bindIdentity(string) 
+   + Promise revokeIdentity() 
+}
+class IdentityRegistry extends Registry {
+   + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 
 }
 class ParticipantRegistry extends Registry {
    + Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer) 

@@ -19,9 +19,7 @@ const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
-const fs = require('fs');
 const loopback = require('loopback');
-const path = require('path');
 const Util = require('composer-common').Util;
 
 const chai = require('chai');
@@ -70,8 +68,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
-                const banana = fs.readFileSync(path.resolve(__dirname, 'bond-network.bna'));
-                return BusinessNetworkDefinition.fromArchive(banana);
+                return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
             })
             .then((businessNetworkDefinition) => {
                 serializer = businessNetworkDefinition.getSerializer();

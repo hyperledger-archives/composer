@@ -1,6 +1,6 @@
 {
   "name": "composer-playground-api",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "The REST API for the Hyperledger Composer Playground",
   "engines": {
     "node": ">=6",
@@ -14,7 +14,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "start": "node cli.js",
@@ -58,8 +58,8 @@
   "dependencies": {
     "async": "^2.5.0",
     "body-parser": "^1.17.0",
-    "composer-common": "0.9.3",
-    "composer-connector-server": "0.9.3",
+    "composer-common": "0.10.0",
+    "composer-connector-server": "0.10.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "http-status": "^1.0.1",

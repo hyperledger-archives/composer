@@ -24,20 +24,20 @@ class EmbeddedSecurityContext extends SecurityContext {
     /**
      * Constructor.
      * @param {Connection} connection The owning connection.
-     * @param {String} userID The current user ID.
+     * @param {Object} identity The current identity.
      */
-    constructor(connection, userID) {
+    constructor(connection, identity) {
         super(connection);
-        this.userID = userID;
+        this.identity = identity;
         this.chaincodeID = null;
     }
 
     /**
-     * Get the current user ID.
-     * @return {string} The current user ID.
+     * Get the current identity.
+     * @return {string} The current identity.
      */
-    getUserID() {
-        return this.userID;
+    getIdentity() {
+        return this.identity;
     }
 
     /**

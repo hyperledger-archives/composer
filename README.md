@@ -29,9 +29,8 @@ Suggested reading list is:
 
 - [Introduction](https://hyperledger.github.io/composer/introduction/introduction.html)
 - [Introduction Video](https://www.youtube.com/watch?v=fdFUsrsv5iw&t=23s)
-- [Quick Start](https://hyperledger.github.io/composer/installing/quickstart.html)
-- [Quick Start Video](https://www.youtube.com/watch?v=pEHBIfb_iqc&t=5s)
-- [Tutorials](https://hyperledger.github.io/composer/tutorials/tutorialindex.html)
+- [Quick Start](https://hyperledger.github.io/composer/installing/installing-index.html)
+- [Tutorials](https://hyperledger.github.io/composer/tutorials/tutorials.html)
 
 # Getting in touch
 

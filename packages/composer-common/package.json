@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "Hyperledger Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
@@ -9,13 +9,13 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "prepublish": "node ./scripts/systemModelgen.js && pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs && pegjs --allowed-start-rules Start,SelectStatement ./lib/query/parser.pegjs && node ./scripts/tsgen.js",
+    "prepublish": "node ./scripts/systemmodelgen.js && pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs && pegjs --allowed-start-rules Start,SelectStatement ./lib/query/parser.pegjs && node ./scripts/tsgen.js",
     "pretest": "npm run prepublish && npm run lint",
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-common.js",
     "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000"
@@ -115,9 +115,9 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 96,
-    "branches": 91,
-    "functions": 96,
-    "lines": 96
+    "statements": 99,
+    "branches": 96,
+    "functions": 98,
+    "lines": 99
   }
 }

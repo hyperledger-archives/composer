@@ -12,7 +12,7 @@ index-order: 203
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-RC. The default is for v1.0-RC and we suggest this is the one you use.
+There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0. The default is for v1.0 and we suggest this is the one you use.
 
 ## Before you begin
 
@@ -31,7 +31,7 @@ A code editor of your choice, we recommend VSCode.
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
-curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 ```
@@ -107,7 +107,7 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv0.6
 
-    {{site.data.conrefs.hlf_full}} v1.0-RC is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0 is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 

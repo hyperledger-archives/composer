@@ -60,3 +60,19 @@ rule R7 {
     condition: (p1.asset.owner.firstName === p2.asset.owner.firstName && p1.asset.owner.asset.owner.lastName === p2.asset.owner.asset.owner.lastName)
     action: ALLOW
 }
+
+rule R8 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.Network"
+    action: ALLOW
+}
+
+rule R9 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: READ
+    resource: "org.hyperledger.composer.system.Registry"
+    action: ALLOW
+}

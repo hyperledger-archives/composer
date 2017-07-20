@@ -389,6 +389,36 @@ class LoopbackVisitor {
     }
 
     /**
+     * Given a primitive Composer type returns the corresponding loopback type
+     * @param {string} type - the composer primitive type name
+     * @return {string} the loopback type
+     * @private
+     */
+    static toLoopbackType(type) {
+
+        let result = 'string';
+
+        switch (type) {
+        case 'String':
+            result = 'string';
+            break;
+        case 'Double':
+        case 'Integer':
+        case 'Long':
+            result= 'number';
+            break;
+        case 'DateTime':
+            result = 'date';
+            break;
+        case 'Boolean':
+            result = 'boolean';
+            break;
+        }
+
+        return result;
+    }
+
+    /**
      * Visitor design pattern
      * @param {Field} field - the object being visited
      * @param {Object} parameters - the parameter
@@ -404,22 +434,7 @@ class LoopbackVisitor {
 
             // Render the type as JSON Schema.
             jsonSchema = {};
-            switch (field.getType()) {
-            case 'String':
-                jsonSchema.type = 'string';
-                break;
-            case 'Double':
-            case 'Integer':
-            case 'Long':
-                jsonSchema.type = 'number';
-                break;
-            case 'DateTime':
-                jsonSchema.type = 'date';
-                break;
-            case 'Boolean':
-                jsonSchema.type = 'boolean';
-                break;
-            }
+            jsonSchema.type = LoopbackVisitor.toLoopbackType(field.getType());
 
             // If this field has a default value, add it.
             if (field.getDefaultValue()) {
