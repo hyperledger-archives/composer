@@ -17,8 +17,6 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const fs = require('fs');
-const path = require('path');
 const server = require('../../server/server');
 
 const chai = require('chai');
@@ -42,8 +40,7 @@ describe('server', () => {
             return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
-            const banana = fs.readFileSync(path.resolve(__dirname, '..', 'bond-network.bna'));
-            return BusinessNetworkDefinition.fromArchive(banana);
+            return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
