@@ -76,6 +76,14 @@ class MockConnectionProfileComponent {
     public profileUpdated: EventEmitter<any> = new EventEmitter<any>();
 }
 
+@Component({
+    selector: 'identity-card',
+    template: ''
+})
+class MockIdentityCardComponent {
+    @Input() identity: any;
+}
+
 describe(`LoginComponent`, () => {
 
     let component: LoginComponent;
@@ -113,7 +121,8 @@ describe(`LoginComponent`, () => {
         TestBed.configureTestingModule({
             declarations: [
                 LoginComponent,
-                MockConnectionProfileComponent
+                MockConnectionProfileComponent,
+                MockIdentityCardComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
