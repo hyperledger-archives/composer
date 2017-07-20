@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-runtime/lib/querycompiler.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/query/queryanalyzer.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-runtime/lib/querycompiler.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/query/queryanalyzer.js</h1>
     
 <section>
     <article>
@@ -100,42 +100,47 @@
 
 'use strict';
 
-const AssetDeclaration = require('composer-common').AssetDeclaration;
-const CompiledQueryBundle = require('./compiledquerybundle');
-const createHash = require('sha.js');
-const Limit = require('composer-common').Limit;
-const Logger = require('composer-common').Logger;
-const OrderBy = require('composer-common').OrderBy;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
-const Query = require('composer-common').Query;
-const QueryFile = require('composer-common').QueryFile;
-const QueryManager = require('composer-common').QueryManager;
-const Select = require('composer-common').Select;
-const Skip = require('composer-common').Skip;
-const TransactionDeclaration = require('composer-common').TransactionDeclaration;
-const Where = require('composer-common').Where;
-
-const LOG = Logger.getLog('QueryCompiler');
+const Limit = require('./limit');
+const Logger = require('../log/logger');
+const OrderBy = require('./orderby');
+const Query = require('./query');
+const Select = require('./select');
+const Skip = require('./skip');
+const Where = require('./where');
+const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
+const LOG = Logger.getLog('QueryAnalyzer');
 
 /**
- * A query compiler compiles all queries in a query manager into a compiled
- * query bundle that can easily be called by the runtime.
- * @protected
+ * The query analyzer visits a query and extracts the names and types of all parameters
+ * @private
  */
-class QueryCompiler {
+class QueryAnalyzer {
 
     /**
-     * Compile all the queries in the specified query manager into a compiled
-     * query bundle for use by the runtime.
-     * @param {QueryManager} queryManager The query manager to process.
-     * @return {CompiledQueryBundle} The compiled query bundle.
+     * Create an Query from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {Query} query - the composer query for process
+     * @throws {IllegalModelException}
      */
-    compile(queryManager) {
-        const method = 'compile';
-        LOG.entry(method, queryManager);
-        const compiledQueries = queryManager.accept(this, {});
-        const result = new CompiledQueryBundle(this, queryManager, compiledQueries);
+    constructor(query) {
+        if (!query) {
+            throw new Error('Invalid query');
+        }
+
+        this.query = query;
+    }
+
+    /**
+     * Extract the names and types of query parameters
+     * @return {object[]} The names and types of the query parameters
+     */
+    analyze() {
+        const method = 'analyze';
+        LOG.entry(method);
+        const result = this.query.accept(this, {});
         LOG.exit(method, result);
+
         return result;
     }
 
@@ -150,11 +155,7 @@ class QueryCompiler {
         const method = 'visit';
         LOG.entry(method, thing, parameters);
         let result = null;
-        if (thing instanceof QueryManager) {
-            result = this.visitQueryManager(thing, parameters);
-        } else if (thing instanceof QueryFile) {
-            result = this.visitQueryFile(thing, parameters);
-        } else if (thing instanceof Query) {
+        if (thing instanceof Query) {
             result = this.visitQuery(thing, parameters);
         } else if (thing instanceof Select) {
             result = this.visitSelect(thing, parameters);
@@ -182,48 +183,6 @@ class QueryCompiler {
     }
 
     /**
-     * Visitor design pattern; handle a query manager by visiting all of the query files.
-     * @param {QueryManager} queryManager The query manager being visited.
-     * @param {Object} parameters The parameters.
-     * @return {Object} The result of visiting, or null.
-     * @private
-     */
-    visitQueryManager(queryManager, parameters) {
-        const method = 'visitQueryManager';
-        LOG.entry(method, queryManager, parameters);
-
-        // Compile all of the query files in this query manager.
-        let compiledQueries = [];
-        const queryFile = queryManager.getQueryFile();
-        if (queryFile) {
-            compiledQueries = queryManager.getQueryFile().accept(this, parameters);
-        }
-
-        LOG.exit(method, compiledQueries);
-        return compiledQueries;
-    }
-
-    /**
-     * Visitor design pattern; handle a query file by visiting all of the queries.
-     * @param {QueryFile} queryFile The query file being visited.
-     * @param {Object} parameters The parameters.
-     * @return {Object} The result of visiting, or null.
-     * @private
-     */
-    visitQueryFile(queryFile, parameters) {
-        const method = 'visitQueryFile';
-        LOG.entry(method, queryFile, parameters);
-
-        // Compile all of the queries in this query file.
-        const compiledQueries = queryFile.getQueries().map((query) => {
-            return query.accept(this, parameters);
-        });
-
-        LOG.exit(method, compiledQueries);
-        return compiledQueries;
-    }
-
-    /**
      * Visitor design pattern; handle a query by visiting the select statement.
      * @param {Query} query The query being visited.
      * @param {Object} parameters The parameters.
@@ -240,100 +199,10 @@ class QueryCompiler {
         parameters.requiredParameters = requiredParameters;
         const parametersToUse = {};
         parameters.parametersToUse = parametersToUse;
-        const compiledQuery = select.accept(this, parameters);
-
-        // If there are no required parameters, then we can use a trivial generator function.
-        let compiledQueryGenerator;
-        if (requiredParameters.length === 0) {
-
-            // Serialize the compiled query string and always return that.
-            compiledQueryGenerator = this.buildTrivialCompiledQueryGenerator(compiledQuery);
-
-        // Otherwise we have to build a more complex generator function.
-        } else {
-
-            // No short cuts here!
-            compiledQueryGenerator = this.buildComplexCompiledQueryGenerator(compiledQuery, requiredParameters, parametersToUse);
-
-        }
-
-        // Generate a hash for the query.
-        const hash = this.generateQueryHash(query);
-
-        // Generate a result object containing all the data.
-        const result = {
-            name: query.getName(),
-            text: select.getText(),
-            hash: hash,
-            generator: compiledQueryGenerator
-        };
+        const result = select.accept(this, parameters);
 
         LOG.exit(method, result);
         return result;
-    }
-
-    /**
-     * Build a trivial (no parameters) compiled query generator.
-     * @param {Object} compiledQuery The compiled query.
-     * @return {Function} The compiled query generator.
-     */
-    buildTrivialCompiledQueryGenerator(compiledQuery) {
-        const compiledQueryString = JSON.stringify(compiledQuery);
-        return (inputParameters) => {
-            if (Object.keys(inputParameters).length !== 0) {
-                throw new Error('No parameters should be specified for this query');
-            }
-            return compiledQueryString;
-        };
-    }
-
-    /**
-     * Build a complex (one or more parameters) compiled query generator.
-     * @param {Object} compiledQuery The compiled query.
-     * @param {string[]} requiredParameters The required parameters.
-     * @param {Object} parametersToUse The parameters to use.
-     * @return {Function} The compiled query generator.
-     */
-    buildComplexCompiledQueryGenerator(compiledQuery, requiredParameters, parametersToUse) {
-        return (inputParameters) => {
-
-            // Check for all required parameters.
-            requiredParameters.forEach((requiredParameter) => {
-                if (inputParameters[requiredParameter] === undefined) {
-                    throw new Error('Required parameter ' + requiredParameter + ' has not been specified');
-                }
-            });
-
-            // Check for any extraneous parameters.
-            Object.keys(inputParameters).forEach((inputParameter) => {
-                if (requiredParameters.indexOf(inputParameter) === -1) {
-                    throw new Error('Invalid or extraneous parameter ' + inputParameter + ' has been specified');
-                }
-            });
-
-            // Delete all parameters from the last execution.
-            Object.keys(parametersToUse).forEach((parameterToUse) => {
-                delete parametersToUse[parameterToUse];
-            });
-
-            // Assign the input parameters and serialize the compiled query string.
-            // Note that this will fire all the functions which look up parameters
-            // from the parameters to use object.
-            Object.assign(parametersToUse, inputParameters);
-            return JSON.stringify(compiledQuery);
-
-        };
-    }
-
-    /**
-     * Generate a unique hash for the query.
-     * @param {Query} query The query.
-     * @return {string} A unique hash for the query.
-     */
-    generateQueryHash(query) {
-        const text = query.getSelect().getText();
-        const sha256 = createHash('sha256');
-        return sha256.update(text, 'utf8').digest('hex');
     }
 
     /**
@@ -347,72 +216,36 @@ class QueryCompiler {
         const method = 'visitSelect';
         LOG.entry(method, select, parameters);
 
-        // Handle the resource clause, which will always exist.
-        const resource = select.getResource();
-        const query = {
-            selector: {}
-        };
-        query.selector.$class = resource;
-
-        // Look up the type for this resource.
-        const modelManager = select.getQuery().getQueryFile().getModelManager();
-        const classDeclaration = modelManager.getType(resource);
-        if (classDeclaration instanceof AssetDeclaration) {
-            query.selector.$registryType = 'Asset';
-        } else if (classDeclaration instanceof ParticipantDeclaration) {
-            query.selector.$registryType = 'Participant';
-        } else if (classDeclaration instanceof TransactionDeclaration) {
-            query.selector.$registryType = 'Transaction';
-        } else {
-            throw new Error('The query compiler does not support resources of this type');
-        }
-
-        // Handle the from clause, if it exists.
-        const registry = select.getRegistry();
-        if (registry) {
-            query.selector.$registryId = registry;
-        } else {
-            query.selector.$registryId = resource;
-        }
+        let results = [];
 
         // Handle the where clause, if it exists.
         const where = select.getWhere();
         if (where) {
-            const queryAdditions = where.accept(this, parameters);
-            Object.assign(query.selector, queryAdditions.selector);
+            results = results.concat(where.accept(this, parameters));
         }
 
         // Handle the order by clause, if it exists.
         const orderBy = select.getOrderBy();
         if (orderBy) {
-            const queryAdditions = orderBy.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            results = results.concat(orderBy.accept(this, parameters));
         }
 
         // Handle the limit clause, if it exists. Note that the limit
         // clause can reference a parameter.
         const limit = select.getLimit();
         if (limit) {
-            const queryAdditions = limit.accept(this, parameters);
-            Object.keys(queryAdditions).forEach((key) => {
-                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
-                Object.defineProperty(query, key, prop);
-            });
+            results = results.concat(limit.accept(this, parameters));
         }
 
         // Handle the skip clause, if it exists. Note that the skip
         // clause can reference a parameter.
         const skip = select.getSkip();
         if (skip) {
-            const queryAdditions = skip.accept(this, parameters);
-            Object.keys(queryAdditions).forEach((key) => {
-                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
-                Object.defineProperty(query, key, prop);
-            });
+            results = results.concat(skip.accept(this, parameters));
         }
 
-        LOG.exit(method, query);
-        return query;
+        LOG.exit(method, results);
+        return results;
     }
 
     /**
@@ -428,11 +261,7 @@ class QueryCompiler {
 
         // Simply visit the AST, which will generate a selector.
         // The root of the AST is probably a binary expression.
-        const selector = this.visit(where.getAST(), parameters);
-        const result = {
-            selector
-        };
-
+        const result = this.visit(where.getAST(), parameters);
         LOG.exit(method, result);
         return result;
     }
@@ -447,17 +276,7 @@ class QueryCompiler {
     visitOrderBy(orderBy, parameters) {
         const method = 'visitOrderBy';
         LOG.entry(method, orderBy, parameters);
-
-        // Iterate over the sort criteria.
-        const result = {
-            sort: []
-        };
-        orderBy.getSortCriteria().forEach((sort) => {
-            const temp = {};
-            temp[sort.getPropertyPath()] = sort.getDirection().toLowerCase();
-            result.sort.push(temp);
-        });
-
+        const result = [];
         LOG.exit(method, result);
         return result;
     }
@@ -472,24 +291,11 @@ class QueryCompiler {
     visitLimit(limit, parameters) {
         const method = 'visitLimit';
         LOG.entry(method, limit, parameters);
-
         // Get the limit value from the AST.
-        const limitValue = this.visit(limit.getAST(), parameters);
-
-        // Define a limit property on the query; if the limit value is a parameter,
-        // then define a getter to read the current parameter setting.
-        const property = {
-            enumerable: true,
-            configurable: false
-        };
-        if (typeof limitValue === 'function') {
-            property.get = limitValue;
-        } else {
-            property.value = limitValue;
+        const result = this.visit(limit.getAST(), parameters);
+        if (result.length > 0) {
+            result[0].type = 'Integer';
         }
-        const result = {};
-        Object.defineProperty(result, 'limit', property);
-
         LOG.exit(method, result);
         return result;
     }
@@ -504,24 +310,12 @@ class QueryCompiler {
     visitSkip(skip, parameters) {
         const method = 'visitSkip';
         LOG.entry(method, skip, parameters);
-
         // Get the skip value from the AST.
-        const skipValue = this.visit(skip.getAST(), parameters);
+        const result = this.visit(skip.getAST(), parameters);
 
-        // Define a skip property on the query; if the skip value is a parameter,
-        // then define a getter to read the current parameter setting.
-        const property = {
-            enumerable: true,
-            configurable: false
-        };
-        if (typeof skipValue === 'function') {
-            property.get = skipValue;
-        } else {
-            property.value = skipValue;
+        if (result.length > 0) {
+            result[0].type = 'Integer';
         }
-        const result = {};
-        Object.defineProperty(result, 'skip', property);
-
         LOG.exit(method, result);
         return result;
     }
@@ -539,15 +333,12 @@ class QueryCompiler {
 
         // Binary expressions are handled differently in Mango based on the type,
         // so figure out the type and handle it appropriately.
-        const arrayCombinationOperators = [ 'AND', 'OR' ];
-        const conditionOperators = [ '&lt;', '&lt;=', '>', '>=', '==', '!=' ];
+        const arrayCombinationOperators = ['AND', 'OR'];
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
-        } else if (conditionOperators.indexOf(ast.operator) !== -1) {
-            result = this.visitConditionOperator(ast, parameters);
         } else {
-            throw new Error('The query compiler does not support this binary expression');
+            result = this.visitConditionOperator(ast, parameters);
         }
 
         LOG.exit(method, result);
@@ -567,23 +358,9 @@ class QueryCompiler {
         const method = 'visitArrayCombinationOperator';
         LOG.entry(method, ast, parameters);
 
-        // Map the input operator to the Mango operator.
-        const validOperators = {
-            AND: '$and',
-            OR: '$or'
-        };
-        const operator = validOperators[ast.operator];
-        if (!operator) {
-            throw new Error('The query compiler does not support this operator');
-        }
-
-        // Build the Mango selector for this operator.
-        const result = {};
-        result[operator] = [
-            this.visit(ast.left, parameters),
-            this.visit(ast.right, parameters)
-        ];
-
+        let result = [];
+        result = result.concat(this.visit(ast.left, parameters));
+        result = result.concat(this.visit(ast.right, parameters));
         LOG.exit(method, result);
         return result;
     }
@@ -601,79 +378,23 @@ class QueryCompiler {
         const method = 'visitConditionOperator';
         LOG.entry(method, ast, parameters);
 
-        // Map the input operator to the Mango operator.
-        const validOperators = {
-            '&lt;': '$lt',
-            '&lt;=': '$lte',
-            '>': '$gt',
-            '>=': '$gte',
-            '==': '$eq',
-            '!=': '$ne'
-        };
-        let operator = validOperators[ast.operator];
-        if (!operator) {
-            throw new Error('The query compiler does not support this operator');
-        }
-
-        // Grab the left hand side of this expression.
-        let left = this.visit(ast.left, parameters);
-        const leftIsIdentifier = (ast.left.type === 'Identifier' &amp;&amp; typeof left !== 'function');
-        const leftIsMemberExpression = (ast.left.type === 'MemberExpression');
-        const leftIsVariable = leftIsIdentifier || leftIsMemberExpression;
-        const leftIsLiteral = (ast.left.type === 'Literal' || typeof left === 'function');
+        let result = [];
 
         // Grab the right hand side of this expression.
-        let right = this.visit(ast.right, parameters);
-        const rightIsIdentifier = (ast.right.type === 'Identifier' &amp;&amp; typeof right !== 'function');
-        const rightIsMemberExpression = (ast.right.type === 'MemberExpression');
-        const rightIsVariable = rightIsIdentifier || rightIsMemberExpression;
-        const rightIsLiteral = (ast.right.type === 'Literal' || typeof right === 'function');
+        const rhs = this.visit(ast.right, parameters);
+        const lhs = this.visit(ast.left, parameters);
 
-        // Check for invalid left and right expressions.
-        if (leftIsLiteral === rightIsLiteral || leftIsVariable === rightIsVariable) {
-            // Either two literals or two identifiers.
-            throw new Error('The query compiler cannot compile condition operators that do not have an identifier and a literal');
+        // if the rhs is a string, it is the name of a property
+        if (typeof rhs === 'string' &amp;&amp; (lhs instanceof Array &amp;&amp; lhs.length > 0)) {
+            lhs[0].type = this.getPropertyType(rhs);
+            result = result.concat(lhs);
         }
 
-        // Check for a conditional with a literal on the left, and swap the operands.
-        if (leftIsLiteral) {
-
-            // Since we are going to swap the operands around, we also need to change the operator.
-            const mirrorOperators = {
-                '&lt;': '$gt',   // a &lt; b becomes b > a
-                '&lt;=': '$gte', // a &lt;= b becomes b >= a
-                '>': '$lt',   // a > b becomes b &lt; a
-                '>=': '$lte', // a >= b becomes b &lt;= a
-                '==': '$eq',  // no change
-                '!=': '$ne'   // no change
-            };
-            operator = mirrorOperators[ast.operator];
-
-            // Swap the operands around.
-            const temp = left;
-            left = right;
-            right = temp;
-
+        // if the lhs is a string, it is the name of a property
+        if (typeof lhs === 'string' &amp;&amp; (rhs instanceof Array &amp;&amp; rhs.length > 0)) {
+            rhs[0].type = this.getPropertyType(lhs);
+            result = result.concat(rhs);
         }
-
-        // Validate the right hand side; it can be any primitive value.
-        if (right !== null &amp;&amp; typeof right === 'object') {
-            throw new Error('The query compiler cannot compile a condition with a complex value literal');
-        }
-
-        // Build the Mango selector for this operator.
-        const result = {};
-        result[left] = {};
-        const property = {
-            enumerable: true,
-            configurable: false
-        };
-        if (typeof right === 'function') {
-            property.get = right;
-        } else {
-            property.value = right;
-        }
-        Object.defineProperty(result[left], operator, property);
 
         LOG.exit(method, result);
         return result;
@@ -696,22 +417,72 @@ class QueryCompiler {
         const parameterMatch = ast.name.match(/^_\$(.+)/);
         if (parameterMatch) {
             const parameterName = parameterMatch[1];
-            parameters.requiredParameters.push(parameterName);
-            const parametersToUse = parameters.parametersToUse;
-            const selector = () => {
-                return parametersToUse[parameterName];
-            };
-            LOG.exit(method, selector);
-            return selector;
+            LOG.exit(method, parameterName);
+
+            // We return a parameter object with a null type
+            // performing the type inference in the parent visit
+            return [{
+                name: parameterName,
+                type: null
+            }];
         }
 
         // Otherwise it's a property name.
-        // TODO: We should validate that it is a property name!
         const selector = ast.name;
         LOG.exit(method, selector);
         return selector;
+
     }
 
+    /**
+     * Visitor design pattern; handle a literal.
+     * Literals are just plain old literal values ;-)
+     * @param {string} parameterName The parameter name or name with nested structure e.g A.B.C
+     * @return {string} The result of the parameter type or null
+     * @private
+     */
+    getPropertyType(parameterName) {
+        const method = 'getParameterType';
+        LOG.entry(method, parameterName);
+
+        // The grammar ensures that the resource property is set.
+        const modelManager = this.query.getQueryFile().getModelManager();
+        const resource = this.query.getSelect().getResource();
+
+        let result = null;
+        const parameterNames = parameterName.split('.');
+
+        // checks the resource type exists
+        let classDeclaration = modelManager.getType(resource);
+
+        for (let n = 0; n &lt; parameterNames.length; n++) {
+            const property = classDeclaration.getProperty(parameterNames[n]);
+
+            if (property !== null) {
+                // enums are relationships are represented as strings
+                if (property.isTypeEnum() || property instanceof RelationshipDeclaration) {
+                    result = 'String';
+                    break;
+                } else if (property.isPrimitive()) {
+                    result = property.getType();
+                    break;
+                } else {
+                    const resource = property.getFullyQualifiedTypeName();
+                    classDeclaration = modelManager.getType(resource);
+                    property.validate(classDeclaration);
+                }
+            } else {
+                throw new Error('Property ' + parameterNames[n] + ' does not exist on ' + resource);
+            }
+        }
+
+        if (result === null) {
+            throw new Error('Property ' + parameterName + ' is not a primitive, enum or relationship on ' + resource);
+        }
+
+        LOG.exit(method, result);
+        return result;
+    }
     /**
      * Visitor design pattern; handle a literal.
      * Literals are just plain old literal values ;-)
@@ -723,9 +494,9 @@ class QueryCompiler {
     visitLiteral(ast, parameters) {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
-        const selector = ast.value;
-        LOG.exit(method, selector);
-        return selector;
+        const result = [];
+        LOG.exit(method, result);
+        return result;
     }
 
     /**
@@ -744,10 +515,9 @@ class QueryCompiler {
         LOG.exit(method, selector);
         return selector;
     }
-
 }
 
-module.exports = QueryCompiler;
+module.exports = QueryAnalyzer;
 </pre>
     </article>
 </section>
