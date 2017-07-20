@@ -6,11 +6,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoginComponent } from './login.component';
 import { LoginRoutingModule } from './login-routing.module';
+import { IdentityCardComponent } from './identity-card';
 import { ConnectionProfileModule } from '../connection-profile/connection-profile.module';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule],
-    declarations: [LoginComponent],
+    entryComponents: [IdentityCardComponent],
+    declarations: [LoginComponent, IdentityCardComponent],
 })
 
 export class LoginModule {
