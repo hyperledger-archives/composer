@@ -34,7 +34,7 @@ ga('send', 'pageview');
     <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
     <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
   
 </head>
 
@@ -156,7 +156,7 @@ ga('send', 'pageview');
 <li><a href="../reference/JSDOC-README.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
-<li><p><a href="../support/.html">Support</a></p></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
 
             
@@ -199,7 +199,7 @@ ga('send', 'pageview');
 
 <h2 id="types-of-queries">Types of Queries</h2>
 
-<p>{site.data.conrefs.composer}} supports two types of queries: named queries and dynamic queries. Named queries are specified in the business network definition and are exposed as GET methods by the composer-rest-server component. Dynamic queries may be constructed dynamically at runtime within a Transaction Processor function, or from client code.</p>
+<p>Hyperledger Composer supports two types of queries: named queries and dynamic queries. Named queries are specified in the business network definition and are exposed as GET methods by the composer-rest-server component. Dynamic queries may be constructed dynamically at runtime within a Transaction Processor function, or from client code.</p>
 
 <h2 id="writing-named-queries">Writing Named Queries</h2>
 
@@ -221,9 +221,9 @@ ga('send', 'pageview');
 
 <p>The named query below is defined in terms of 3 parameters:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">query Q18 {
-    description: "Select all drivers aged older than PARAM" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than PARAM"
+    statement:
+        SELECT org.acme.Driver
             WHERE (_$ageParam &lt; age)
                 ORDER BY [lastName ASC, firstName DESC]
                     LIMIT _$limitParam

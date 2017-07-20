@@ -34,7 +34,7 @@ ga('send', 'pageview');
     <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
     <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
   
 </head>
 
@@ -156,7 +156,7 @@ ga('send', 'pageview');
 <li><a href="../reference/JSDOC-README.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
-<li><p><a href="../support/.html">Support</a></p></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
 
             
@@ -263,6 +263,14 @@ rule Default {
     operation: ALL
     resource: "org.acme.mynetwork.*"
     action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
 }
 </code></pre></div>
 <p>This access control simply allows all participants access to all resources.</p>
