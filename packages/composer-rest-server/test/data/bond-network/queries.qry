@@ -1,0 +1,4 @@
+query findBondByFaceAmount {
+    description: "Find all bonds with a face amount greater than _$faceAmount"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.faceAmount > _$faceAmount)
+}
