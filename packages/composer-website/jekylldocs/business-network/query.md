@@ -20,7 +20,7 @@ Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded
 
 ## Types of Queries
 
-{site.data.conrefs.composer}} supports two types of queries: named queries and dynamic queries. Named queries are specified in the business network definition and are exposed as GET methods by the composer-rest-server component. Dynamic queries may be constructed dynamically at runtime within a Transaction Processor function, or from client code.
+{{site.data.conrefs.composer_full}} supports two types of queries: named queries and dynamic queries. Named queries are specified in the business network definition and are exposed as GET methods by the composer-rest-server component. Dynamic queries may be constructed dynamically at runtime within a Transaction Processor function, or from client code.
 
 ## Writing Named Queries
 
@@ -47,9 +47,9 @@ The named query below is defined in terms of 3 parameters:
 
 ```
 query Q18 {
-    description: "Select all drivers aged older than PARAM" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than PARAM"
+    statement:
+        SELECT org.acme.Driver
             WHERE (_$ageParam < age)
                 ORDER BY [lastName ASC, firstName DESC]
                     LIMIT _$limitParam
