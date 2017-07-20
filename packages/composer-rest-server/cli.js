@@ -22,6 +22,7 @@ const clear = require('clear');
 const figlet = require('figlet');
 const server = require('./server/server');
 const Util = require('./lib/util');
+let _ = require('lodash');
 
 const yargs = require('yargs')
     .wrap(null)
@@ -33,6 +34,14 @@ const yargs = require('yargs')
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
     .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
+    .alias('v', 'version')
+    .version(() => {
+        return getInfo('composer-rest-server')+
+          getInfo('composer-admin')+getInfo('composer-client')+
+          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
+          getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
+          getInfo('composer-connector-hlfv1');
+    })
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -130,3 +139,21 @@ module.exports = promise.then((composer) => {
     console.error(error);
     process.exit(1);
 });
+
+/**
+ * [getInfo description]
+ * @param  {[type]} moduleName [description]
+ * @return {[type]}            [description]
+ */
+function getInfo(moduleName) {
+
+    try{
+        let pjson = ((moduleName=== 'composer-rest-server') ? require('./package.json') : require(moduleName).version);
+        return _.padEnd(pjson.name,30) + ' v'+pjson.version+'\n';
+    }
+    catch (error){
+      // oh well - we'll just return a blank string
+        return '';
+    }
+
+}

@@ -308,7 +308,10 @@ class QueryCompiler {
         const limit = select.getLimit();
         if (limit) {
             const queryAdditions = limit.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         // Handle the skip clause, if it exists. Note that the skip
@@ -316,7 +319,10 @@ class QueryCompiler {
         const skip = select.getSkip();
         if (skip) {
             const queryAdditions = skip.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         LOG.exit(method, query);

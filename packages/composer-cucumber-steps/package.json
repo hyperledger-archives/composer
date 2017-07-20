@@ -7,7 +7,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "test-inner": "mocha --recursive -t 10000 && cucumber-js",

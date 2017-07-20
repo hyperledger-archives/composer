@@ -431,6 +431,42 @@ describe('QueryCompiler', () => {
             });
         });
 
+        it('should compile a select statement with a limit clause with a parameter value', () => {
+            const requiredParameters = [];
+            const parametersToUse = {};
+            const result = queryCompiler.visitSelect(selectsFromQueries.Q6, {
+                requiredParameters,
+                parametersToUse
+            });
+            parametersToUse.mylimit = 5;
+            result.should.deep.equal({
+                selector: {
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
+                },
+                limit: 5
+            });
+        });
+
+        it('should compile a select statement with a skip clause with a parameter value', () => {
+            const requiredParameters = [];
+            const parametersToUse = {};
+            const result = queryCompiler.visitSelect(selectsFromQueries.Q7, {
+                requiredParameters,
+                parametersToUse
+            });
+            parametersToUse.myskip = 5;
+            result.should.deep.equal({
+                selector: {
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
+                },
+                skip: 5
+            });
+        });
+
     });
 
     describe('#visitWhere', () => {

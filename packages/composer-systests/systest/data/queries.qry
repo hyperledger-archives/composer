@@ -37,3 +37,43 @@ query participants_nestedStringValueParameter {
     description: ""
     statement: SELECT systest.queries.SampleParticipant WHERE (conceptValue.stringValue == _$inputStringValue)
 }
+
+query assets_limit {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset LIMIT 2
+}
+
+query participants_limit {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant LIMIT 2
+}
+
+query assets_skip {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset SKIP 4
+}
+
+query participants_skip {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant SKIP 4
+}
+
+query assets_limitParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset LIMIT _$inputLimit
+}
+
+query participants_limitParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant LIMIT _$inputLimit
+}
+
+query assets_skipParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset SKIP _$inputSkip
+}
+
+query participants_skipParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant SKIP _$inputSkip
+}
