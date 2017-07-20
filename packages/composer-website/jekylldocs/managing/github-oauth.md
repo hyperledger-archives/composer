@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Enabling Playground OAuth with GitHub
+title: Enabling playground OAuth with GitHub
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
