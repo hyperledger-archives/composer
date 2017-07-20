@@ -65,8 +65,6 @@ export class EditorFileComponent {
     private editorContent;
     private editorType;
 
-    private previewContent; // used for the README marked() version
-
     @Input()
     set editorFile(editorFile: any) {
         if (editorFile) {
@@ -75,8 +73,13 @@ export class EditorFileComponent {
         }
     }
 
+    private _previewReadmeActive: boolean = false;
+    private previewContent; // used for the README marked() version
+
     @Input()
-    private previewReadmeActive: boolean;
+    set previewReadmeActive(previewReadme: boolean) {
+        this._previewReadmeActive = previewReadme;
+    }
 
     constructor(private clientService: ClientService) {
     }
@@ -174,8 +177,4 @@ export class EditorFileComponent {
         this.previousCode = this.editorContent;
         this.setCurrentCode();
     }
-
-    // setReadmePreview(preview: boolean) {
-    //     this.previewContentActive = preview;
-    // }
 }
