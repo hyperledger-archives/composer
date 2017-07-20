@@ -7,9 +7,14 @@ import { dragDropFile } from '../utils/fileUtils';
 export class AddFile {
 
   // Wait for modal to appear
-  static waitForAddFileModalToAppear() {
+  static waitToAppear() {
       browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
       return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
+  }
+
+  // Wait for modal to disappear
+  static waitToDisappear() {
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
   }
 
   // Cancel Add

@@ -4,6 +4,14 @@ import { OperationsHelper } from '../utils/operations-helper';
 
 describe('Welcome Splash', (() => {
 
+  beforeAll(() =>  {
+    browser.waitForAngularEnabled(false);
+  });
+
+  afterAll(() =>  {
+    browser.waitForAngularEnabled(true);
+  });
+
   // Navigate to Editor base page
   beforeEach(() =>  {
     browser.get(browser.baseUrl);

@@ -101,7 +101,7 @@ describe('Editor Define', (() => {
 
         // Check that the import has succeeded
         // -import modal disappears
-        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
+        Import.waitToDisappear();
         // -success message
         OperationsHelper.processExpectedSuccess();
         // -expected files in navigator (Just a readme)
@@ -128,7 +128,7 @@ describe('Editor Define', (() => {
 
         // Check that the import has succeeded
         // -import modal disappears
-        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
+        Import.waitToDisappear();
         // -success message
         OperationsHelper.processExpectedSuccess();
         // -expected files in navigator (Just a readme)
@@ -189,14 +189,23 @@ describe('Editor Define', (() => {
     beforeEach(() =>  {
         Editor.clickAddFile()
         .then(() => {
-            AddFile.waitForAddFileModalToAppear();
+            AddFile.waitToAppear();
         });
+    });
+
+    afterAll(() =>  {
+        // Reset network
+        Editor.clickImportBND();
+        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+        Replace.confirmReplace();
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
     });
 
     it('should bring up an AddFile modal that can be closed by cancel button', (() => {
         AddFile.clickCancelAdd();
 
-        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
+        AddFile.waitToDisappear();
         // -deploy not enabled
         Editor.retrieveNavigatorFileActionButtons()
         .then((buttonlist: any) => {
@@ -209,7 +218,7 @@ describe('Editor Define', (() => {
     it('should bring up an AddFile modal that can be closed by X button', (() => {
         AddFile.clickExitAdd();
 
-        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 10000);
+        AddFile.waitToDisappear();
         // -deploy not enabled
         Editor.retrieveNavigatorFileActionButtons()
         .then((buttonlist: any) => {
@@ -585,6 +594,8 @@ describe('Editor Define', (() => {
     it('should prevent the addition of a file with an invalid file extension', (() => {
         AddFile.selectFromFile('./e2e/data/files/importBanned.wombat');
         ErrorAlert.clickCloseError();
+        ErrorAlert.waitToDisappear();
+        AddFile.clickCancelAdd();
     }));
   }));
 

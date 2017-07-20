@@ -12,4 +12,9 @@ export class ErrorAlert {
     return OperationsHelper.click(element(by.id('error_close')));
   }
 
+  // wait to disappear
+  static waitToDisappear() {
+    browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.error'))), 5000);
+  }
+
 }

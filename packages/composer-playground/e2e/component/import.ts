@@ -39,7 +39,11 @@ export class Import {
       browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
   }
 
-  static waitForImportModalToAppear() {
+  static waitToAppear() {
       browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
+  }
+
+  static waitToDisappear() {
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
   }
 }

@@ -28,10 +28,11 @@ childProtractor.stderr.on('data', function(data) {
 });
 // Capture Protactor return code
 childProtractor.on('close', function(code) {
-    console.log('Return code: ', code);
-    if(!code) {
+    console.log('Protractor return code: ', code);
+    if(code !== 0) {
         code = 1;
     }
+    console.log('Exit return code: ', code);
     childAPI.kill();
     childServer.kill();
     process.exit(code);
