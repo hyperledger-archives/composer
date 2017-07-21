@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.10.1 {80d7bec19c14b30b26e2ec6239b16bc7} 2017-07-21
+- added upgrade method.
+
 Version 0.10.0 {3af411e8da53bb013ab9718ed5980c20} 2017-07-17
 - added install and start method.
 

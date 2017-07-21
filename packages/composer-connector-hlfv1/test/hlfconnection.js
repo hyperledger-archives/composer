@@ -1710,7 +1710,7 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#ping', () => {
+    describe.only('#ping', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
@@ -1756,7 +1756,7 @@ describe('HLFConnection', () => {
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
             return connection.ping(mockSecurityContext)
-                .should.be.rejectedWith(/is incompatible with/);
+                .should.be.rejectedWith(/is not compatible with/);
         });
 
         it('should handle a chaincode running a prelease build at the same version as the connector', () => {
@@ -1789,7 +1789,24 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should throw for a chaincode running a prelease build at a different version to the connector', () => {
+        it('should handle a chaincode running a older pre-release build than that of the connector', () => {
+            const oldVersion = connectorPackageJSON.version;
+            connectorPackageJSON.version += '-20170202';
+            const response = {
+                version: oldVersion + '-20170101',
+                participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
+            };
+            sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
+            return connection.ping(mockSecurityContext)
+                .then((result) => {
+                    sinon.assert.calledOnce(connection.queryChainCode);
+                    sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal(response);
+                });
+        });
+
+
+        it('should throw if chaincode running a prelease build is newer than the connector', () => {
             const oldVersion = connectorPackageJSON.version;
             connectorPackageJSON.version += '-20170101';
             const response = {
@@ -1798,7 +1815,7 @@ describe('HLFConnection', () => {
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
             return connection.ping(mockSecurityContext)
-                .should.be.rejectedWith(/is incompatible with/);
+                .should.be.rejectedWith(/is not compatible with/);
         });
 
         it('should handle errors invoking the chaincode', () => {

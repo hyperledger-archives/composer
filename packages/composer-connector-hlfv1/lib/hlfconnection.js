@@ -496,7 +496,7 @@ class HLFConnection extends Connection {
 
     /**
      * Deploy all business network artifacts.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {HLFSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
      * @param {Object} deployOptions connector specific deployment options
      * @param {string} deployOptions.logLevel the level of logging for the composer runtime
@@ -668,7 +668,7 @@ class HLFConnection extends Connection {
 
     /**
      * Test ("ping") the connection to the business network.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {HLFSecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the
      * business network has been tested, or rejected with an error.
      */
@@ -680,24 +680,19 @@ class HLFConnection extends Connection {
         HLFUtil.securityCheck(securityContext);
 
         // Submit a call to the ping function in the chaincode.
-        return this.queryChainCode(securityContext, 'ping', [])
-            .then((buffer) => {
-
-                // Parse the response.
-                const response = JSON.parse(buffer.toString());
-
-                // Is the runtime using a prerelease version?
+        return this._checkRuntimeVersions(securityContext)
+            .then((results) => {
+                const isCompatible = results[0];
+                const response = results[1];
                 const runtimeVersion = response.version;
-                const prerelease = (semver.prerelease(runtimeVersion) !== null);
 
-                // If the runtime is using a prerelease version, then we must exactly match that version.
-                // If the runtime is using a normal version, then our client version should be greater than or equal.
-                const range = (prerelease ? runtimeVersion : `^${runtimeVersion}`);
-                if (!semver.satisfies(connectorPackageJSON.version, range)) {
-                    LOG.error('ping', 'Version mismatch', connectorPackageJSON.version, runtimeVersion, range);
-                    throw new Error(`Deployed chain-code (${response.version}) is incompatible with client (${connectorPackageJSON.version})`);
+                // Check our client version should be greater than or equal but only a micro version change.
+                const range =  `^${runtimeVersion}`;
+                if (!isCompatible) {
+                    LOG.error(method, 'Version mismatch', connectorPackageJSON.version, runtimeVersion, range);
+                    throw new Error(`Composer runtime (${runtimeVersion}) is not compatible with client (${connectorPackageJSON.version})`);
                 } else {
-                    LOG.info('ping', 'Successful ping', connectorPackageJSON.version, runtimeVersion, range);
+                    LOG.info(method, 'Successful ping', connectorPackageJSON.version, runtimeVersion, range);
                 }
                 LOG.exit(method, response);
                 return response;
@@ -710,6 +705,33 @@ class HLFConnection extends Connection {
             });
     }
 
+    /**
+     * perform a ping and check runtime versions haven't changed major/minor version numbers.
+     * Changes to micro version numbers are acceptable.
+     *
+     * @param {HLFSecurityContext} securityContext The participant's security context.
+     * @returns {Promise} which resolves to an array containing whether runtimes are compatible and the ping response,
+     * or is rejected with an error.
+     */
+    _checkRuntimeVersions(securityContext) {
+        const method = '_checkRuntimeVersions';
+        LOG.entry(method, securityContext);
+
+        return this.queryChainCode(securityContext, 'ping', [])
+            .then((buffer) => {
+
+                // Parse the response.
+                const response = JSON.parse(buffer.toString());
+                const runtimeVersion = response.version;
+
+                // Check our client version should be greater than or equal but only a micro version change.
+                const range =  `^${runtimeVersion}`;
+                const result = [semver.satisfies(connectorPackageJSON.version, range), response];
+                LOG.exit(method, result);
+                return result;
+            });
+
+    }
 
     /**
      * Invoke a "query" chaincode function with the specified name and arguments.
@@ -1024,19 +1046,13 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, businessNetworkIdentifier);
 
         let txId;
-        // Submit a call to the ping function in the chaincode.
-        return this.queryChainCode(securityContext, 'ping', [])
-            .then((buffer) => {
-
-                // Parse the response.
-                const response = JSON.parse(buffer.toString());
-                const runtimeVersion = response.version;
-
-                // here we will explicitly allow unstable upgrades.
-                const range = `^${runtimeVersion}`;
-                if (!semver.satisfies(connectorPackageJSON.version, range)) {
-                    LOG.error(method, 'Version mismatch, cannot upgrade', connectorPackageJSON.version, runtimeVersion, range);
-                    throw new Error(`New runtime version (${response.version}) compared to (${connectorPackageJSON.version}) has changed major or minor version and cannot be upgraded.`);
+        // Submit a call to the ping to ensure only the micro version has changed, not minor or major.
+        return this._checkRuntimeVersions(securityContext)
+            .then((results) => {
+                const isCompatible = results[0];
+                const response = results[1];
+                if (!isCompatible) {
+                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${response.version}) has changed major or minor version and cannot be upgraded.`);
                 }
                 return this._initializeChannel();
             })
