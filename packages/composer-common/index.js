@@ -47,7 +47,7 @@ if (!nodeHasNewBufferVersion()) {
     };
     Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
 }
-
+module.exports.AclRule = require('./lib/acl/aclrule');
 module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
@@ -74,6 +74,7 @@ module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
 module.exports.FileWriter = require('./lib/codegen/filewriter');
 module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
+module.exports.FunctionDeclaration = require('./lib/introspect/functiondeclaration');
 module.exports.Globalize = require('./lib/globalize');
 module.exports.Introspector = require('./lib/introspect/introspector');
 module.exports.Limit = require('./lib/query/limit');
