@@ -330,10 +330,23 @@ class AdminConnection {
     }
 
     /**
-     * TODO:DAVE
-     * @param {any} businessNetworkIdentifier the business network id to upgrade the runtime
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * updated.
+     * Upgrades an existing business network's composer runtime to a later level.
+     * The connection must be connected for this method to succeed.
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network whose runtime is to be upgraded.
+     * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
+     * or rejected otherwise.
+     * @example
+     * // Upgrade the Hyperledger Composer runtime
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.upgrade(businessNetworkDefinition.getName())
+     * .then(function(){
+     *     // Business network definition installed
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+
      * @memberof AdminConnection
      */
     upgrade(businessNetworkIdentifier) {

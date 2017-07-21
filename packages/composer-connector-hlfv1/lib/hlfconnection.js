@@ -1045,6 +1045,10 @@ class HLFConnection extends Connection {
         const method = 'upgrade';
         LOG.entry(method, securityContext, businessNetworkIdentifier);
 
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        }
+
         let txId;
         // Submit a call to the ping to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)

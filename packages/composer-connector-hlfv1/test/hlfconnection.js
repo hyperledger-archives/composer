@@ -1710,7 +1710,127 @@ describe('HLFConnection', () => {
 
     });
 
-    describe.only('#ping', () => {
+    describe('#upgrade', () => {
+
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            sandbox.stub(connection, '_validateResponses').returns();
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            connection._connectToEventHubs();
+        });
+
+        it('should throw if businessNetworkIdentifier not specified', () => {
+            (() => {
+                connection.upgrade(mockSecurityContext, null);
+            }).should.throw(/businessNetworkIdentifier not specified/);
+        });
+
+        it('should upgrade the business network', () => {
+            sandbox.stub(global, 'setTimeout');
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            // This is the upgrade proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+                .then(() => {
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
+                    sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'upgrade'
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should throw if runtime version check fails', () => {
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves([false, {version: '1.0.0'}]);
+            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+                .should.be.rejectedWith(/cannot be upgraded/);
+        });
+
+        it('should throw if upgrade response fails to validate', () => {
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            const errorResp = new Error('such error');
+            const upgradeResponses = [ errorResp ];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            connection._checkRuntimeVersions.resolves([true, {version: '1.0.0'}]);
+            mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
+            connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
+            // This is the event hub response.
+            //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+                .should.be.rejectedWith(/such error/);
+        });
+
+        // TODO: should extract out _waitForEvents
+        it('should throw an error if the orderer throws an error', () => {
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            // This is the instantiate proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'FAILURE'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
+            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+                .should.be.rejectedWith(/Failed to commit transaction/);
+        });
+
+        it('should throw an error if peer says transaction not valid', () => {
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            // This is the instantiate proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response to indicate transaction not valid
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
+            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+                .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
+        });
+
+    });
+
+
+    describe('#ping & _checkRuntimeVersions', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
