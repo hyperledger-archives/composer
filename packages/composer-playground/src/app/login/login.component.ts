@@ -190,6 +190,22 @@ export class LoginComponent implements OnInit {
         return this.loadIdentityCards();
     }
 
+    importIdentity() {
+        this.drawerService.open(ImportIdentityComponent).result.then((result) => {
+            return this.identityCardService.addIdentityCard(result);
+        }).then((cardRef) => {
+            this.alertService.successStatus$.next({
+                    title: 'ID Card imported',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully imported',
+                    icon: '#icon-role_24'
+                });
+        }).then(() => {
+            return this.loadIdentityCards();
+        }).catch((reason) => {
+            this.alertService.errorStatus$.next(reason);
+        });
+    }
+
     removeIdentity(cardRef): void {
         let userId: string = this.idCards.get(cardRef).getName();
         const confirmModalRef = this.modalService.open(DeleteComponent);

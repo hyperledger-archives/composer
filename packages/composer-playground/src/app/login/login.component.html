@@ -1,7 +1,7 @@
 <section *ngIf="!showSubScreen" class="header">
     <h1 class="left-align">My Wallet</h1>
     <div class="right-align" *ngIf="!showSubScreen">
-        <button type="button" class="secondary">
+        <button type="button" class="secondary" (click)="importIdentity()">
             <span>Import ID Card</span>
         </button>
         <button type="button" class="secondary" (click)="createIdCard()">
