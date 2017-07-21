@@ -343,8 +343,6 @@ class HLFConnection extends Connection {
             .then(() => {
                 let txId = this.client.newTransactionID();
 
-                console.log('######'+txId.getTransactionID().toString());
-
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
 
@@ -427,7 +425,6 @@ class HLFConnection extends Connection {
                 businessNetworkArchive = bna;
                 // prepare and send the instantiate proposal
                 finalTxId = this.client.newTransactionID();
-                console.log('######'+finalTxId.getTransactionID().toString());
 
                 let initArgs = {};
                 if (startOptions && startOptions.logLevel) {
@@ -742,7 +739,6 @@ class HLFConnection extends Connection {
         });
 
         let txId = this.client.newTransactionID();
-      console.log('######'+txId.getTransactionID().toString());
 
         // Submit the query request.
         const request = {
