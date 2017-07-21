@@ -316,16 +316,10 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
         });
 
-        it('should throw if enrollmentID not specified', () => {
+        it('should throw if identity not specified', () => {
             (() => {
                 connection.login(null, 'adminpw');
-            }).should.throw(/enrollmentID not specified/);
-        });
-
-        it('should throw if enrollmentSecret not specified', () => {
-            (() => {
-                connection.login('admin', null);
-            }).should.throw(/enrollmentSecret not specified/);
+            }).should.throw(/identity not specified/);
         });
 
         it('should load an already enrolled user from the state store', () => {

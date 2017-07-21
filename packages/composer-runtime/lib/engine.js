@@ -95,6 +95,11 @@ class Engine {
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
             LOG.info('runtime has been upgraded');
+            //TODO: Here we would need to invoke migrations if we are to support
+            //upgrading from anything more than just micro version changes of the
+            //runtime. Currently not supported and the connector will not allow
+            //the upgrade. We could add a check here as well and reject the upgrade
+            //but it's overkill at the moment.
             return Promise.resolve();
         }
 
@@ -240,8 +245,6 @@ class Engine {
                 LOG.exit(method);
             });
     }
-
-
 
     /**
      * Handle an initialisation (deploy) request.

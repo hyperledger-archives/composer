@@ -38,7 +38,7 @@ class Upgrade {
         let spinner;
 
         return (() => {
-            spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
+            spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.connect(argv.connectionProfileName, argv.installId, argv.installSecret, null);
         })()

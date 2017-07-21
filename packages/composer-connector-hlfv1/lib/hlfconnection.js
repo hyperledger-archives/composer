@@ -44,12 +44,12 @@ class HLFConnection extends Connection {
 
     /**
      * Create a new user.
-     * @param {string} enrollmentID The enrollment ID.
+     * @param {string} identity The identity of the user.
      * @param {Client} client The client.
      * @return {User} A new user.
      */
-    static createUser(enrollmentID, client) {
-        let user = new User(enrollmentID);
+    static createUser(identity, client) {
+        let user = new User(identity);
         user.setCryptoSuite(client.getCryptoSuite());
         return user;
     }
@@ -245,24 +245,23 @@ class HLFConnection extends Connection {
 
     /**
      * Login as a participant on the business network.
-     * @param {string} enrollmentID The enrollment ID of the participant.
-     * @param {string} enrollmentSecret The enrollment secret of the participant.
+     * @param {string} identity The identity which represents the required crypto material.
+     * @param {string} enrollmentSecret The enrollment secret of the participant if required to obtain the
+     * crypto material from a Certificate Authority.
      * @return {Promise} A promise that is resolved with a {@link SecurityContext}
      * object representing the logged in participant, or rejected with a login error.
      */
-    login(enrollmentID, enrollmentSecret) {
+    login(identity, enrollmentSecret) {
         const method = 'login';
-        LOG.entry(method, enrollmentID);
+        LOG.entry(method, identity);
 
         // Validate all the arguments.
-        if (!enrollmentID) {
-            throw new Error('enrollmentID not specified');
-        } else if (!enrollmentSecret) {
-            throw new Error('enrollmentSecret not specified');
+        if (!identity) {
+            throw new Error('identity not specified');
         }
 
         // Get the user context (certificate) from the state store.
-        return this.client.getUserContext(enrollmentID, true)
+        return this.client.getUserContext(identity, true)
             .then((user) => {
 
                 // If the user exists and is enrolled, we use the data from the state store.
@@ -272,7 +271,7 @@ class HLFConnection extends Connection {
                     return user;
                 } else {
                     LOG.debug(method, 'User not enrolled, submitting enrollment request');
-                    return this.enroll(enrollmentID, enrollmentSecret);
+                    return this.enroll(identity, enrollmentSecret);
                 }
             })
             .then((user) => {
@@ -280,7 +279,7 @@ class HLFConnection extends Connection {
                 // Now we can create a security context.
                 LOG.debug(method, 'Creating new security context');
                 let result = new HLFSecurityContext(this);
-                result.setUser(enrollmentID);
+                result.setUser(identity);
                 this.user = user;
 
                 // now we can connect to the eventhubs
@@ -711,6 +710,7 @@ class HLFConnection extends Connection {
             });
     }
 
+
     /**
      * Invoke a "query" chaincode function with the specified name and arguments.
      * @param {SecurityContext} securityContext The participant's security context.
@@ -876,7 +876,6 @@ class HLFConnection extends Connection {
         }
         options = options || {};
 
-        //TODO: org1 is one of the default affiliations in fabric-ca-server
         return new Promise((resolve, reject) => {
             let registerRequest = {
                 enrollmentID: userID,
@@ -1013,10 +1012,11 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Upgrade chaincode to a newer version
+     * Upgrade runtime to a newer version
      * @param {any} securityContext security context
-     * @param {any} businessNetworkIdentifier bna id
-     * @returns {Promise} a promise
+     * @param {string} businessNetworkIdentifier The identifier of the business network to upgrade
+     * @return {Promise} A promise that is resolved when the runtime has been upgraded,
+     * or rejected with an error.
      * @memberof HLFConnection
      */
     upgrade(securityContext, businessNetworkIdentifier) {
@@ -1024,7 +1024,22 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, businessNetworkIdentifier);
 
         let txId;
-        return this._initializeChannel()
+        // Submit a call to the ping function in the chaincode.
+        return this.queryChainCode(securityContext, 'ping', [])
+            .then((buffer) => {
+
+                // Parse the response.
+                const response = JSON.parse(buffer.toString());
+                const runtimeVersion = response.version;
+
+                // here we will explicitly allow unstable upgrades.
+                const range = `^${runtimeVersion}`;
+                if (!semver.satisfies(connectorPackageJSON.version, range)) {
+                    LOG.error(method, 'Version mismatch, cannot upgrade', connectorPackageJSON.version, runtimeVersion, range);
+                    throw new Error(`New runtime version (${response.version}) compared to (${connectorPackageJSON.version}) has changed major or minor version and cannot be upgraded.`);
+                }
+                return this._initializeChannel();
+            })
             .then(() => {
                 txId = this.client.newTransactionID();
 
