@@ -147,7 +147,13 @@ exports.getLogger = function (config,configElements){
 
     // process the file name and make sure the directory has been created
     let resolvedFilename = config.file.filename.replace(/PID/g, process.pid);
-    let dir = './logs';
+
+    // process the filename and get the timestampe replaced
+    let d = new Date();
+    let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1,d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
+    resolvedFilename = resolvedFilename.replace(/TIMESTAMP/g, timestamp);
+
+    let dir = './composer-logs';
     fs.ensureDirSync(dir);
 
     // create the Winston logger with the two transports.
