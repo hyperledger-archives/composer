@@ -155,7 +155,7 @@ Issue  from the `fabric-tools` directory
 
 Issue from the `fabric-tools` directory
 ```
-./stop.sh
+./stopFabric.sh
 ```
 
 **Create Composer Profile**
