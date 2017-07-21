@@ -144,7 +144,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying disconnect. ' + error);
+                const newError = new Error('Error trying disconnect. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -194,7 +194,7 @@ class HLFConnection extends Connection {
                 return user;
             })
             .catch((error) => {
-                const newError = new Error('error trying to enroll user. ' + error);
+                const newError = new Error('Error trying to enroll user. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -289,7 +289,7 @@ class HLFConnection extends Connection {
 
             })
             .catch((error) => {
-                const newError = new Error('error trying login and get user Context. ' + error);
+                const newError = new Error('Error trying login and get user Context. ' + error);
                 LOG.error(method, error);
                 throw newError;
             });
@@ -370,7 +370,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying install chaincode. ' + error);
+                const newError = new Error('Error trying install chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -488,7 +488,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying to instantiate chaincode. ' + error);
+                const newError = new Error('Error trying to instantiate chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -537,7 +537,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying deploy. ' + error);
+                const newError = new Error('Error trying deploy. ' + error);
                 LOG.error(method, error);
                 throw newError;
             });
@@ -622,7 +622,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying undeploy. ' + error);
+                const newError = new Error('Error trying undeploy. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -660,7 +660,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying to update business network. ' + error);
+                const newError = new Error('Error trying to update business network. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -679,27 +679,20 @@ class HLFConnection extends Connection {
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
-        // Submit a call to the ping function in the chaincode.
+        // Check our client version should be greater than or equal but only a micro version change.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
                 const isCompatible = results[0];
                 const response = results[1];
-                const runtimeVersion = response.version;
-
-                // Check our client version should be greater than or equal but only a micro version change.
-                const range =  `^${runtimeVersion}`;
                 if (!isCompatible) {
-                    LOG.error(method, 'Version mismatch', connectorPackageJSON.version, runtimeVersion, range);
-                    throw new Error(`Composer runtime (${runtimeVersion}) is not compatible with client (${connectorPackageJSON.version})`);
-                } else {
-                    LOG.info(method, 'Successful ping', connectorPackageJSON.version, runtimeVersion, range);
+                    throw new Error(`Composer runtime (${response.version}) is not compatible with client (${connectorPackageJSON.version})`);
                 }
                 LOG.exit(method, response);
                 return response;
 
             })
             .catch((error) => {
-                const newError = new Error('error trying to ping. ' + error);
+                const newError = new Error('Error trying to ping. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -785,7 +778,7 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                const newError = new Error('error trying to query chaincode. ' + error);
+                const newError = new Error('Error trying to query chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -866,7 +859,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying invoke chaincode. ' + error);
+                const newError = new Error('Error trying invoke chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -982,7 +975,7 @@ class HLFConnection extends Connection {
                 return result;
             })
             .catch((error) => {
-                const newError = new Error('error trying to list instantiated chaincodes. ' + error);
+                const newError = new Error('Error trying to list instantiated chaincodes. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -1050,7 +1043,7 @@ class HLFConnection extends Connection {
         }
 
         let txId;
-        // Submit a call to the ping to ensure only the micro version has changed, not minor or major.
+        // check runtime versions to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
                 const isCompatible = results[0];
@@ -1104,7 +1097,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying upgrade chaincode. ' + error);
+                const newError = new Error('Error trying upgrade chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
