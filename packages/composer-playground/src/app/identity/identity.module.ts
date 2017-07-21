@@ -6,7 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { IdentityRoutingModule } from './identity-routing.module';
 import { ConnectionProfileComponent } from './connection-profile.component';
 
-import { FileImporterModule } from '../file-importer/file-importer.module';
+import { FileImporterModule } from '../common/file-importer/file-importer.module';
 import { AddIdentityComponent } from './add-identity/add-identity.component';
 import { IdentityIssuedComponent } from './identity-issued/identity-issued.component';
 import { IssueIdentityComponent } from './issue-identity/issue-identity.component';
