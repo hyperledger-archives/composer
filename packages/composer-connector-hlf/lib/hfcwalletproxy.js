@@ -70,7 +70,7 @@ class HFCWalletProxy {
             })
             .catch((error) => {
                 LOG.debug(method, error);
-                return cb(error);
+                return cb(new Error(error));
             });
     }
 
@@ -100,7 +100,7 @@ class HFCWalletProxy {
             })
             .catch((error) => {
                 LOG.error(method, error);
-                return cb(error);
+                return cb(new Error(error));
             });
     }
 

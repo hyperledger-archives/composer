@@ -45,12 +45,11 @@
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
+    "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
     "proxyquire": "^1.7.11",
     "serializerr": "^1.0.3",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2",
+    "sinon": "^2.3.8",
     "watchify": "^3.7.0"
   },
   "dependencies": {

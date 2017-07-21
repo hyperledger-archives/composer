@@ -26,12 +26,12 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    argv.thePromise =  Import.handler(argv)
+    argv.thePromise = Import.handler(argv)
     .then(() => {
         return;
     })
     .catch((error) => {
-        throw error;
+        throw new Error(error);
     });
     return argv.thePromise;
 };

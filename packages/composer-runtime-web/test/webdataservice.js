@@ -18,17 +18,19 @@ const DataService = require('composer-runtime').DataService;
 const WebDataService = require('..').WebDataService;
 
 require('chai').should();
+const sinon = require('sinon');
 
 describe('WebDataService', () => {
 
+    let sandbox;
     let dataService;
 
     beforeEach(() => {
-        dataService = new WebDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
-        return dataService.destroy();
+        sandbox.restore();
     });
 
     describe('#constructor', () => {

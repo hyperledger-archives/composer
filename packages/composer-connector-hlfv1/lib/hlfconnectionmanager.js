@@ -393,7 +393,7 @@ class HLFConnectionManager extends ConnectionManager {
             })
             .catch((error) => {
                 LOG.error(method, error);
-                throw error;
+                throw new Error(error);
             });
     }
 

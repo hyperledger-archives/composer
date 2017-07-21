@@ -18,7 +18,7 @@ const WebHTTPService = require('..').WebHTTPService;
 
 const chai = require('chai');
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 require('chai-as-promised');
 chai.should();
 //const expect = chai.expect;

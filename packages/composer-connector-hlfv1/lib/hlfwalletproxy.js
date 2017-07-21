@@ -74,7 +74,7 @@ class HLFWalletProxy extends KeyValueStore {
             })
             .catch((error) => {
                 LOG.error(method, error);
-                throw error;
+                throw new Error(error);
             });
     }
 
@@ -101,7 +101,7 @@ class HLFWalletProxy extends KeyValueStore {
             })
             .catch((error) => {
                 LOG.error(method, error);
-                throw error;
+                throw new Error(error);
             });
     }
 

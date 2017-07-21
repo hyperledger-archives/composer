@@ -19,7 +19,7 @@ const Wallet = require('composer-common').Wallet;
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('HFCWalletProxy', () => {
 
