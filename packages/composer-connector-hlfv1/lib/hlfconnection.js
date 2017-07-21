@@ -682,13 +682,11 @@ class HLFConnection extends Connection {
         // Check our client version should be greater than or equal but only a micro version change.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
-                const isCompatible = results[0];
-                const response = results[1];
-                if (!isCompatible) {
-                    throw new Error(`Composer runtime (${response.version}) is not compatible with client (${connectorPackageJSON.version})`);
+                if (!results.isCompatible) {
+                    throw new Error(`Composer runtime (${results.response.version}) is not compatible with client (${connectorPackageJSON.version})`);
                 }
-                LOG.exit(method, response);
-                return response;
+                LOG.exit(method, results.response);
+                return results.response;
 
             })
             .catch((error) => {
@@ -719,7 +717,7 @@ class HLFConnection extends Connection {
 
                 // Check our client version should be greater than or equal but only a micro version change.
                 const range =  `^${runtimeVersion}`;
-                const result = [semver.satisfies(connectorPackageJSON.version, range), response];
+                const result = {isCompatible: semver.satisfies(connectorPackageJSON.version, range), response: response};
                 LOG.exit(method, result);
                 return result;
             });
@@ -1046,10 +1044,8 @@ class HLFConnection extends Connection {
         // check runtime versions to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
-                const isCompatible = results[0];
-                const response = results[1];
-                if (!isCompatible) {
-                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${response.version}) has changed major or minor version and cannot be upgraded.`);
+                if (!results.isCompatible) {
+                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${results.response.version}) has changed major or minor version and cannot be upgraded.`);
                 }
                 return this._initializeChannel();
             })

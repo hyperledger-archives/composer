@@ -1728,7 +1728,7 @@ describe('HLFConnection', () => {
 
         it('should upgrade the business network', () => {
             sandbox.stub(global, 'setTimeout');
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             // This is the upgrade proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1762,29 +1762,26 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if runtime version check fails', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves([false, {version: '1.0.0'}]);
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
             return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
         it('should throw if upgrade response fails to validate', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             const errorResp = new Error('such error');
             const upgradeResponses = [ errorResp ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            connection._checkRuntimeVersions.resolves([true, {version: '1.0.0'}]);
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            // This is the event hub response.
-            //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
             return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
                 .should.be.rejectedWith(/such error/);
         });
 
         // TODO: should extract out _waitForEvents
         it('should throw an error if the orderer throws an error', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1799,14 +1796,12 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves([true, {version: '1.0.0'}]);
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1829,12 +1824,9 @@ describe('HLFConnection', () => {
 
     });
 
-
-    describe('#ping & _checkRuntimeVersions', () => {
+    describe('#_checkRuntimeVersions', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
-            connection._connectToEventHubs();
         });
 
         it('should handle a chaincode with the same version as the connector', () => {
@@ -1843,11 +1835,12 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
+            return connection._checkRuntimeVersions(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
-                    result.should.deep.equal(response);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.true;
                 });
         });
 
@@ -1859,15 +1852,16 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
+            return connection._checkRuntimeVersions(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
-                    result.should.deep.equal(response);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.true;
                 });
         });
 
-        it('should throw for a chaincode with a greater version than the connector', () => {
+        it('should handle a chaincode with a greater version than the connector as not compatible', () => {
             const version = connectorPackageJSON.version;
             const newVersion = semver.inc(version, 'major');
             const response = {
@@ -1875,22 +1869,12 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
-                .should.be.rejectedWith(/is not compatible with/);
-        });
-
-        it('should handle a chaincode running a prelease build at the same version as the connector', () => {
-            connectorPackageJSON.version += '-20170101';
-            const response = {
-                version: connectorPackageJSON.version,
-                participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
-            };
-            sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
+            return connection._checkRuntimeVersions(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
-                    result.should.deep.equal(response);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.false;
                 });
         });
 
@@ -1901,11 +1885,28 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
+            return connection._checkRuntimeVersions(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
-                    result.should.deep.equal(response);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.true;
+                });
+        });
+
+        it('should handle a chaincode running a prelease build at the same version as the connector', () => {
+            connectorPackageJSON.version += '-20170101';
+            const response = {
+                version: connectorPackageJSON.version,
+                participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
+            };
+            sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
+            return connection._checkRuntimeVersions(mockSecurityContext)
+                .then((result) => {
+                    sinon.assert.calledOnce(connection.queryChainCode);
+                    sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.true;
                 });
         });
 
@@ -1917,16 +1918,17 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
+            return connection._checkRuntimeVersions(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
-                    result.should.deep.equal(response);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.true;
                 });
         });
 
 
-        it('should throw if chaincode running a prelease build is newer than the connector', () => {
+        it('should handle a chaincode running a prelease build is newer than the connector saying it isn\'t compatible', () => {
             const oldVersion = connectorPackageJSON.version;
             connectorPackageJSON.version += '-20170101';
             const response = {
@@ -1934,12 +1936,58 @@ describe('HLFConnection', () => {
                 participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
             };
             sandbox.stub(connection, 'queryChainCode').resolves(Buffer.from(JSON.stringify(response)));
-            return connection.ping(mockSecurityContext)
-                .should.be.rejectedWith(/is not compatible with/);
+            return connection._checkRuntimeVersions(mockSecurityContext)
+                .then((result) => {
+                    sinon.assert.calledOnce(connection.queryChainCode);
+                    sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.response.should.deep.equal(response);
+                    result.isCompatible.should.be.false;
+                });
         });
 
         it('should handle errors invoking the chaincode', () => {
             sandbox.stub(connection, 'queryChainCode').rejects('such error');
+            return connection._checkRuntimeVersions(mockSecurityContext)
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
+    describe('#ping', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
+
+        it('should handle a compatible runtime', () => {
+            const response = {
+                version: connectorPackageJSON.version,
+                participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
+            };
+            const results = {isCompatible: true, response: response};
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves(results);
+            return connection.ping(mockSecurityContext)
+                .then((result) => {
+                    result.should.deep.equal(response);
+                });
+        });
+
+        it('should handle an incompatible runtime', () => {
+            const version = connectorPackageJSON.version;
+            const newVersion = semver.inc(version, 'major');
+            const response = {
+                version: newVersion,
+                participant: 'org.acme.biznet.Person#SSTONE1@uk.ibm.com'
+            };
+            const results = {isCompatible: false, response: response};
+            sandbox.stub(connection, '_checkRuntimeVersions').resolves(results);
+            return connection.ping(mockSecurityContext)
+                .should.be.rejectedWith(/is not compatible with/);
+        });
+
+        it('should handle errors thrown from the runtime check', () => {
+            sandbox.stub(connection, '_checkRuntimeVersions').rejects('such error');
             return connection.ping(mockSecurityContext)
                 .should.be.rejectedWith(/such error/);
         });
