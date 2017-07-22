@@ -62,14 +62,19 @@ export class TransactionComponent implements OnInit {
         .then(() => {
 
             let introspector = this.clientService.getBusinessNetwork().getIntrospector();
-            let modelClassDeclarations = introspector.getClassDeclarations();
-
-            modelClassDeclarations.forEach((modelClassDeclaration) => {
-                // Generate list of all known (non-abstract) transaction types
-                if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
-                    this.transactionTypes.push(modelClassDeclaration);
-                }
-            });
+            this.transactionTypes = introspector.getClassDeclarations()
+                .filter((modelClassDeclaration) => {
+                    // Transactions only please!
+                    return modelClassDeclaration instanceof TransactionDeclaration;
+                })
+                .filter((modelClassDeclaration) => {
+                    // Filter out abstract transaction types.
+                    return !modelClassDeclaration.isAbstract();
+                })
+                .filter((modelClassDeclaration) => {
+                    // Filter out system transaction types.
+                    return !modelClassDeclaration.isSystemType();
+                });
 
             // Set first in list as selectedTransaction
             if (this.transactionTypes && this.transactionTypes.length > 0) {
