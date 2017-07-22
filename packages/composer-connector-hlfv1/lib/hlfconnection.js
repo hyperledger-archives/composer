@@ -342,6 +342,7 @@ class HLFConnection extends Connection {
             })
             .then(() => {
                 let txId = this.client.newTransactionID();
+
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
 
@@ -738,7 +739,6 @@ class HLFConnection extends Connection {
         });
 
         let txId = this.client.newTransactionID();
-
 
         // Submit the query request.
         const request = {

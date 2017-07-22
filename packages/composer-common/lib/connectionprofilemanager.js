@@ -120,7 +120,7 @@ class ConnectionProfileManager {
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
-                                LOG.error(METHOD,'No yet located the module ',e.message);
+                                LOG.info(METHOD,'No yet located the module ',e.message);
                                 // Continue to search the parent.
                             }
                             curmod = curmod.parent;
@@ -134,7 +134,7 @@ class ConnectionProfileManager {
                                     return true;
                                 } catch (e) {
                                     // Search the next one.
-                                    LOG.debug(METHOD,e);
+                                    LOG.info(METHOD,e);
                                     return false;
                                 }
                             });
