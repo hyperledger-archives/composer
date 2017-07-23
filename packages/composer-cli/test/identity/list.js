@@ -26,7 +26,6 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const List = require('../../lib/cmds/identity/listCommand.js');
 
 const sinon = require('sinon');
-require('sinon-as-promised');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
