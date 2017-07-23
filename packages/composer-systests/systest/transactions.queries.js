@@ -28,7 +28,6 @@ chai.use(require('chai-as-promised'));
 describe('Transaction (query specific) system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
     let assetsAsJSON;
     let participantsAsJSON;
@@ -119,8 +118,7 @@ describe('Transaction (query specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition, true)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-queries')
                     .then((result) => {

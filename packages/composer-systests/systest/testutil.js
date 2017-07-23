@@ -24,8 +24,8 @@ const path = require('path');
 const sleep = require('sleep-promise');
 const Util = require('composer-common').Util;
 
-let adminConnection;
 let client;
+let forceDeploy = false;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -169,21 +169,29 @@ class TestUtil {
      * connected instance of BusinessNetworkConnection.
      */
     static setUp() {
+        const adminConnection = new AdminConnection();
+        forceDeploy = false;
         return TestUtil.waitForPorts()
-            .then(function () {
-                adminConnection = new AdminConnection();
-                let adminOptions;
+            .then(() => {
+
+                // Create all necessary configuration for the web runtime.
                 if (TestUtil.isWeb()) {
                     const BrowserFS = require('browserfs');
                     BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
                     ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
-                    adminOptions = {
+                    console.log('Calling AdminConnection.createProfile() ...');
+                    return adminConnection.createProfile('composer-systests', {
                         type: 'web'
-                    };
+                    });
+
+                // Create all necessary configuration for the embedded runtime.
                 } else if (TestUtil.isEmbedded()) {
-                    adminOptions = {
+                    console.log('Calling AdminConnection.createProfile() ...');
+                    return adminConnection.createProfile('composer-systests', {
                         type: 'embedded'
-                    };
+                    });
+
+                // Create all necessary configuration for the embedded runtime hosted via the connector server.
                 } else if (TestUtil.isProxy()) {
                     // A whole bunch of dynamic requires to trick browserify.
                     const ConnectorServer = dynamicRequire('composer-connector-server');
@@ -194,9 +202,6 @@ class TestUtil {
                     const socketIO = dynamicRequire('socket.io');
                     // We are using the embedded connector, but we configure it to route through the
                     // proxy connector and connector server.
-                    adminOptions = {
-                        type: 'embedded'
-                    };
                     const connectionProfileStore = new FSConnectionProfileStore(fs);
                     ConnectionProfileManager.registerConnectionManager('embedded', ProxyConnectionManager);
                     const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
@@ -214,113 +219,200 @@ class TestUtil {
                     io.on('disconnect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
                     });
-                } else if (TestUtil.isHyperledgerFabric()) {
-                    // hlf need to decide if v1 or 0.6
-                    let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
+                    console.log('Calling AdminConnection.createProfile() ...');
+                    return adminConnection.createProfile('composer-systests', {
+                        type: 'embedded'
+                    });
+
+                // Create all necessary configuration for Hyperledger Fabric v0.6.
+                } else if (TestUtil.isHyperledgerFabricV06()) {
+                    const keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
                     mkdirp.sync(keyValStore);
-                    if (TestUtil.isHyperledgerFabricV1()) {
-                        if (process.env.SYSTEST.match('tls$')) {
-                            console.log('setting up TLS Connection Profile for HLF V1');
-                            adminOptions = {
-                                type: 'hlfv1',
-                                orderers: [
-                                    {
-                                        url: 'grpcs://localhost:7050',
-                                        hostnameOverride: 'orderer.example.com',
-                                        cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
-                                    }
-                                ],
-                                ca: {
-                                    url: 'https://localhost:7054',
-                                    name: 'ca.org1.example.com'
+                    const connectionProfile = {
+                        type: 'hlf',
+                        keyValStore: keyValStore,
+                        membershipServicesURL: 'grpc://localhost:7054',
+                        peerURL: 'grpc://localhost:7051',
+                        eventHubURL: 'grpc://localhost:7053'
+                    };
+                    if (process.env.COMPOSER_DEPLOY_WAIT_SECS) {
+                        connectionProfile.deployWaitTime = parseInt(process.env.COMPOSER_DEPLOY_WAIT_SECS);
+                        console.log('COMPOSER_DEPLOY_WAIT_SECS set, using: ', connectionProfile.deployWaitTime);
+                    }
+                    if (process.env.COMPOSER_INVOKE_WAIT_SECS) {
+                        connectionProfile.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
+                        console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', connectionProfile.invokeWaitTime);
+                    }
+                    console.log('Calling AdminConnection.createProfile() ...');
+                    return adminConnection.createProfile('composer-systests', connectionProfile);
+
+                // Create all necessary configuration for Hyperledger Fabric v1.0.
+                } else if (TestUtil.isHyperledgerFabricV1()) {
+                    const keyValStoreOrg1 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org1');
+                    mkdirp.sync(keyValStoreOrg1);
+                    const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
+                    mkdirp.sync(keyValStoreOrg2);
+                    let connectionProfileOrg1, connectionProfileOrg2;
+                    if (process.env.SYSTEST.match('tls$')) {
+                        console.log('setting up TLS Connection Profile for HLF V1');
+                        connectionProfileOrg1 = {
+                            type: 'hlfv1',
+                            orderers: [
+                                {
+                                    url: 'grpcs://localhost:7050',
+                                    hostnameOverride: 'orderer.example.com',
+                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                }
+                            ],
+                            ca: {
+                                url: 'https://localhost:7054',
+                                name: 'ca.org1.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpcs://localhost:7051',
+                                    eventURL: 'grpcs://localhost:7053',
+                                    hostnameOverride: 'peer0.org1.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                 },
-                                peers: [
-                                    {
-                                        requestURL: 'grpcs://localhost:7051',
-                                        eventURL: 'grpcs://localhost:7053',
-                                        hostnameOverride: 'peer0.org1.example.com',
-                                        cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
-                                    }
-                                ],
-                                keyValStore: keyValStore,
-                                channel: 'composerchannel',
-                                mspID: 'Org1MSP',
-                                timeout: '300'
-                            };
-                        } else {
-                            console.log('setting up Non-TLS Connection Profile for HLF V1');
-                            adminOptions = {
-                                type: 'hlfv1',
-                                orderers: [
-                                    'grpc://localhost:7050'
-                                ],
-                                ca: {
-                                    url: 'http://localhost:7054',
-                                    name: 'ca.org1.example.com'
+                                {
+                                    requestURL: 'grpcs://localhost:8051',
+                                    hostnameOverride: 'peer0.org2.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                }
+                            ],
+                            keyValStore: keyValStoreOrg1,
+                            channel: 'composerchannel',
+                            mspID: 'Org1MSP',
+                            timeout: '300'
+                        };
+                        connectionProfileOrg2 = {
+                            type: 'hlfv1',
+                            orderers: [
+                                {
+                                    url: 'grpcs://localhost:7050',
+                                    hostnameOverride: 'orderer.example.com',
+                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                }
+                            ],
+                            ca: {
+                                url: 'https://localhost:8054',
+                                name: 'ca.org2.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpcs://localhost:8051',
+                                    eventURL: 'grpcs://localhost:8053',
+                                    hostnameOverride: 'peer0.org2.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
                                 },
-                                peers: [
-                                    {
-                                        requestURL: 'grpc://localhost:7051',
-                                        eventURL: 'grpc://localhost:7053'
-                                    }
-                                ],
-                                channel: 'composerchannel',
-                                mspID: 'Org1MSP',
-                                timeout: '300',
-                                keyValStore: keyValStore
-                            };
-                        }
+                                {
+                                    requestURL: 'grpcs://localhost:7051',
+                                    hostnameOverride: 'peer0.org1.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                                }
+                            ],
+                            keyValStore: keyValStoreOrg2,
+                            channel: 'composerchannel',
+                            mspID: 'Org2MSP',
+                            timeout: '300'
+                        };
                     } else {
-                        adminOptions = {
-                            type: 'hlf',
-                            keyValStore: keyValStore,
-                            membershipServicesURL: 'grpc://localhost:7054',
-                            peerURL: 'grpc://localhost:7051',
-                            eventHubURL: 'grpc://localhost:7053'
+                        console.log('setting up Non-TLS Connection Profile for HLF V1');
+                        connectionProfileOrg1 = {
+                            type: 'hlfv1',
+                            orderers: [
+                                'grpc://localhost:7050'
+                            ],
+                            ca: {
+                                url: 'http://localhost:7054',
+                                name: 'ca.org1.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpc://localhost:7051',
+                                    eventURL: 'grpc://localhost:7053'
+                                },
+                                {
+                                    requestURL: 'grpc://localhost:8051'
+                                }
+                            ],
+                            channel: 'composerchannel',
+                            mspID: 'Org1MSP',
+                            timeout: '300',
+                            keyValStore: keyValStoreOrg1
+                        };
+                        connectionProfileOrg2 = {
+                            type: 'hlfv1',
+                            orderers: [
+                                'grpc://localhost:7050'
+                            ],
+                            ca: {
+                                url: 'http://localhost:8054',
+                                name: 'ca.org2.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpc://localhost:8051',
+                                    eventURL: 'grpc://localhost:8053'
+                                },
+                                {
+                                    requestURL: 'grpc://localhost:7051',
+                                }
+                            ],
+                            channel: 'composerchannel',
+                            mspID: 'Org2MSP',
+                            timeout: '300',
+                            keyValStore: keyValStoreOrg2
                         };
                     }
+                    if (process.env.COMPOSER_TIMEOUT_SECS) {
+                        connectionProfileOrg1.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
+                        connectionProfileOrg2.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
+                        console.log('COMPOSER_TIMEOUT_SECS set, using: ', connectionProfileOrg1.timeout, connectionProfileOrg2.timeout);
+                    }
+                    console.log('Calling AdminConnection.createProfile() ...');
+                    return adminConnection.createProfile('composer-systests-org1', connectionProfileOrg1)
+                        .then(() => {
+                            return adminConnection.createProfile('composer-systests-org2', connectionProfileOrg2);
+                        })
+                        .then(() => {
+                            connectionProfileOrg1.peers.pop();
+                            return adminConnection.createProfile('composer-systests-org1-solo', connectionProfileOrg1);
+                        })
+                        .then(() => {
+                            connectionProfileOrg2.peers.pop();
+                            return adminConnection.createProfile('composer-systests-org2-solo', connectionProfileOrg2);
+                        });
                 } else {
                     throw new Error('I do not know what kind of tests you want me to run!');
                 }
-                if (process.env.COMPOSER_DEPLOY_WAIT_SECS) {
-                    adminOptions.deployWaitTime = parseInt(process.env.COMPOSER_DEPLOY_WAIT_SECS);
-                    console.log('COMPOSER_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
-                }
-                if (process.env.COMPOSER_INVOKE_WAIT_SECS) {
-                    adminOptions.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
-                    console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
-                }
-                if (process.env.COMPOSER_TIMEOUT_SECS) {
-                    adminOptions.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
-                    console.log('COMPOSER_TIMEOUT_SECS set, using: ', adminOptions.timeout);
-                }
 
-                console.log('Calling AdminConnection.createProfile() ...');
-                return adminConnection.createProfile('composer-systests', adminOptions);
             })
-            .then(function () {
+            .then(() => {
                 console.log('Called AdminConnection.createProfile()');
                 if (TestUtil.isHyperledgerFabricV1()) {
                     let fs = dynamicRequire('fs');
-                    let org = 'org1';
-                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/keystore/cf961334129e4cf283c1144356f36a394d6b65a75ecff835f5d5de545a006141_sk');
-                    let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/signcerts/Admin@org1.example.com-cert.pem');
-                    let signerCert = fs.readFileSync(certPath).toString();
-                    let key = fs.readFileSync(keyPath).toString();
                     console.log('Calling AdminConnection.importIdentity() ...');
-                    return adminConnection.importIdentity('composer-systests', 'Org1PeerAdmin', signerCert, key);
+                    const admins = [
+                        { org: 'org1', keyFile: 'key.pem' },
+                        { org: 'org2', keyFile: 'key.pem' }
+                    ];
+                    return admins.reduce((promise, admin) => {
+                        const org = admin.org;
+                        const keyFile = admin.keyFile;
+                        return promise.then(() => {
+                            let keyPath = path.join(__dirname, `../hlfv1/crypto-config/peerOrganizations/${org}.example.com/users/Admin@${org}.example.com/msp/keystore/${keyFile}`);
+                            let certPath = path.join(__dirname, `../hlfv1/crypto-config/peerOrganizations/${org}.example.com/users/Admin@${org}.example.com/msp/signcerts/Admin@${org}.example.com-cert.pem`);
+                            let signerCert = fs.readFileSync(certPath).toString();
+                            let key = fs.readFileSync(keyPath).toString();
+                            return adminConnection.importIdentity(`composer-systests-${org}`, 'PeerAdmin', signerCert, key);
+                        });
+                    }, Promise.resolve())
+                        .then(() => {
+                            console.log('Called AdminConnection.importIdentity() ...');
+                        });
                 }
-            })
-            .then(function () {
-                console.log('Called AdminConnection.importIdentity() ...');
-                console.log('Calling AdminConnection.connect() ...');
-                let user = TestUtil.isHyperledgerFabricV1() ? 'Org1PeerAdmin' : 'admin';
-                let password = TestUtil.isHyperledgerFabricV1() ? 'NOTNEEDED' : 'Xurw3yU9zI0l';
-                return adminConnection.connect('composer-systests', user, password);
-            })
-            .then(function () {
-                console.log('Called AdminConnection.connect()');
-                console.log('');
             });
     }
 
@@ -330,25 +422,8 @@ class TestUtil {
      * connected instance of BusinessNetworkConnection.
      */
     static tearDown() {
-        if (!adminConnection) {
-            throw new Error('Must call setUp successfully before calling tearDown');
-        }
-        console.log('Calling adminConnection.disconnect() ...');
-        return adminConnection.disconnect()
-            .then(function () {
-                console.log('Called adminConnection.disconnect()');
-            });
-    }
-
-    /**
-     * Get a configured and connected instance of AdminConnection.
-     * @return {AdminConnection} - a configured and connected instance of AdminConnection.
-     */
-    static getAdmin() {
-        if (!adminConnection) {
-            throw new Error('Must call setUp successfully before calling getAdmin');
-        }
-        return adminConnection;
+        forceDeploy = false;
+        return Promise.resolve();
     }
 
     /**
@@ -378,14 +453,127 @@ class TestUtil {
         })
         .then(() => {
             enrollmentID = enrollmentID || 'admin';
-            let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+            let password = TestUtil.isHyperledgerFabricV1() ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
             // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
-            return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
+            if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
+                return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
+            } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
+                return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
+            } else {
+                return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
+            }
         })
         .then(() => {
             return thisClient;
         });
+    }
+
+    /**
+     * Deploy the specified business network definition.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - the business network definition to deploy.
+     * @param {boolean} [forceDeploy_] - force use of the deploy API instead of install and start.
+     * @return {Promise} - a promise that will be resolved when complete.
+     */
+    static deploy(businessNetworkDefinition, forceDeploy_) {
+        const adminConnection = new AdminConnection();
+        forceDeploy = forceDeploy_;
+        if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
+            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
+            return Promise.resolve()
+                .then(() => {
+                    // Connect and install the runtime onto the peers for org1.
+                    return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
+                })
+                .then(() => {
+                    return adminConnection.install(businessNetworkDefinition.getName());
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                })
+                .then(() => {
+                    // Connect and install the runtime onto the peers for org2.
+                    return adminConnection.connect('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
+                })
+                .then(() => {
+                    return adminConnection.install(businessNetworkDefinition.getName());
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                })
+                .then(() => {
+                    // Connect and start the network on the peers for org1 and org2.
+                    return adminConnection.connect('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
+                })
+                .then(() => {
+                    return adminConnection.start(businessNetworkDefinition, {
+                        endorsementPolicy: {
+                            identities: [
+                                {
+                                    role: {
+                                        name: 'member',
+                                        mspId: 'Org1MSP'
+                                    }
+                                },
+                                {
+                                    role: {
+                                        name: 'member',
+                                        mspId: 'Org2MSP'
+                                    }
+                                }
+                            ],
+                            policy: {
+                                '2-of': [
+                                    {
+                                        'signed-by': 0
+                                    },
+                                    {
+                                        'signed-by': 1
+                                    }
+                                ]
+                            }
+                        }
+                    });
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                });
+        } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
+            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
+            // Connect and deploy the network on the peers for org1.
+            return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
+                .then(() => {
+                    return adminConnection.deploy(businessNetworkDefinition);
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                });
+        } else if (!forceDeploy) {
+            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
+            // Connect, install the runtime and start the network.
+            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+                .then(() => {
+                    return adminConnection.install(businessNetworkDefinition.getName());
+                })
+                .then(() => {
+                    return adminConnection.start(businessNetworkDefinition);
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                });
+        } else if (forceDeploy) {
+            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
+            // Connect and deploy the network.
+            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+                .then(() => {
+                    return adminConnection.deploy(businessNetworkDefinition);
+                })
+                .then(() => {
+                    return adminConnection.disconnect();
+                });
+        } else {
+            throw new Error('I do not know what kind of deploy you want me to run!');
+        }
     }
 
     /**

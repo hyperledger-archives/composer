@@ -32,7 +32,6 @@ process.setMaxListeners(Infinity);
 describe('Access control system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client, aliceClient, bobClient;
     let alice, bob;
     let aliceAssetRegistry, bobAssetRegistry;
@@ -57,8 +56,7 @@ describe('Access control system tests', () => {
         });
         let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.acl'), 'utf8'));
         businessNetworkDefinition.getAclManager().setAclFile(aclFile);
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-accesscontrols')
                     .then((result) => {
