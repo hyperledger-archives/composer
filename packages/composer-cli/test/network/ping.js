@@ -21,7 +21,6 @@ const Ping = require('../../lib/cmds/network/pingCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const sinon = require('sinon');
-require('sinon-as-promised');
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';

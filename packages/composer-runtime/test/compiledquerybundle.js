@@ -22,7 +22,7 @@ const QueryManager = require('composer-common').QueryManager;
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('CompiledQueryBundle', () => {
 
