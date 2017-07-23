@@ -933,7 +933,6 @@ describe('HLFConnectionManager', () => {
                     sinon.assert.calledWith(mockClient.setStateStore, mockKeyValueStore);
                     sinon.assert.calledOnce(Client.newCryptoSuite);
                     sinon.assert.calledOnce(mockClient.setCryptoSuite);
-//                    sinon.assert.calledWith(mockClient.newCryptoSuite, null, null, { path: '/tmp/hlfabric1' });
                     sinon.assert.calledOnce(mockClient.createUser);
                     sinon.assert.calledWith(mockClient.createUser, {
                         username: 'anid',
@@ -1021,7 +1020,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should handle an error creating a default key value store', () => {
-            Client.newDefaultKeyValueStore.rejects('wow such fail');
+            Client.newDefaultKeyValueStore.rejects('Error','wow such fail');
             return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });
@@ -1033,7 +1032,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should handle an error creating a user', () => {
-            mockClient.createUser.rejects('wow such fail');
+            mockClient.createUser.rejects('Error','wow such fail');
             return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });

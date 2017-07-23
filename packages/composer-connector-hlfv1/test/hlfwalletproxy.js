@@ -77,7 +77,7 @@ describe('HLFWalletProxy', () => {
 
         it('should pass back any errors from the wallet', () => {
             mockWallet.contains.withArgs('bob1').resolves(true);
-            mockWallet.get.withArgs('bob1').rejects('ENOPERM');
+            mockWallet.get.withArgs('bob1').rejects('Error', 'ENOPERM');
             return walletProxy.getValue('member.bob1')
                 .should.be.rejectedWith(/ENOPERM/);
         });
@@ -106,7 +106,7 @@ describe('HLFWalletProxy', () => {
 
         it('should pass back any errors from the wallet', () => {
             mockWallet.contains.withArgs('bob1').resolves(true);
-            mockWallet.update.withArgs('bob1').rejects('ENOPERM');
+            mockWallet.update.withArgs('bob1').rejects('Error', 'ENOPERM');
             return walletProxy.setValue('member.bob1', 'hello world')
                 .should.be.rejectedWith(/ENOPERM/);
         });

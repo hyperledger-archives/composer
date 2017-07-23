@@ -21,7 +21,6 @@ const sinon = require('sinon');
 
 require('chai-as-promised');
 chai.should();
-//const expect = chai.expect;
 const xhr = require('xhr');
 
 /**
