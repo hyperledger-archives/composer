@@ -610,12 +610,12 @@ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 <p><em>Note: You&#39;ll notice that the flag &#39;-p&#39; specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric.</em></p>
 
 <p>After approximately 30 seconds or so, the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 
 Deploying business network from archive: my-network.bna
 Business network definition:
-Identifier: my-network@0.0.1
-Description: My very first Hyperledger Composer Network
+    Identifier: my-network@0.1.3
+    Description: The Hello World of Hyperledger Composer samples
 
 ✔ Deploying business network definition. This may take a minute...
 
@@ -629,8 +629,8 @@ Command succeeded
 <div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-version: 0.7.2
-participant: &lt;no participant found&gt;
+    version: 0.10.0
+    participant: &lt;no participant found&gt;
 
 Command succeeded
 </code></pre></div>
