@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/assetdeclaration.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/idcard.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/assetdeclaration.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/idcard.js</h1>
     
 <section>
     <article>
@@ -100,68 +100,197 @@
 
 'use strict';
 
-const ClassDeclaration = require('./classdeclaration');
-const IllegalModelException = require('./illegalmodelexception');
+const JSZip = require('jszip');
+const path = require('path');
+
+const Logger = require('./log/logger');
+const LOG = Logger.getLog('IdCard');
 
 /**
- * AssetDeclaration defines the schema (aka model or class) for
- * an Asset. It extends ClassDeclaration which manages a set of
- * fields, a super-type and the specification of an
- * identifying field.
- * @private
- * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
+ * An ID card.
  * @class
  * @memberof module:composer-common
  */
-class AssetDeclaration extends ClassDeclaration {
+class IdCard {
 
     /**
-     * Create an AssetDeclaration.
-     * @param {ModelFile} modelFile the ModelFile for this class
-     * @param {Object} ast - The AST created by the parser
-     * @throws {IllegalModelException}
-     */
-    constructor(modelFile, ast) {
-        super(modelFile, ast);
-    }
-
-    /**
-     * Returns true if this class can be pointed to by a relationship
-     *
-     * @return {boolean} true if the class may be pointed to by a relationship
-     */
-    isRelationshipTarget() {
-        return true;
-    }
-
-    /**
-     * Returns the base system type for Assets from the system namespace
-     *
-     * @return {string} the short name of the base system type
-     */
-    getSystemType() {
-        return 'Asset';
-    }
-
-    /**
-     * Semantic validation of the structure of this asset. Subclasses should
-     * override this method to impose additional semantic constraints on the
-     * contents/relations of fields.
-     *
-     * @throws {IllegalModelException}
+     * Create the BusinessNetworkDefinition.
+     * &lt;p>
+     * &lt;strong>Note: Only to be called by framework code. Applications should
+     * retrieve instances from {@link IdCard.fromArchive}&lt;/strong>
+     * @param {Object} metadata - metadata associated with the card.
+     * @param {Object} connection - connection properties associated with the card.
+     * @param {Map} credentials - map of credential filename String keys to credential data Buffer objects.
+     * @param {Map} tlscerts - map of TLS certificate filename String keys to TLS certificate data Buffer objects.
      * @private
      */
-    validate() {
-        super.validate();
+    constructor(metadata, connection, credentials, tlscerts) {
+        const method = 'constructor';
+        LOG.entry(method);
 
-        if(!this.isSystemType() &amp;&amp; this.getName() === 'Asset') {
-            throw new IllegalModelException('Asset is a reserved type name.', this.modelFile, this.ast.location);
-        }
+        this.metadata = metadata;
+        this.connection = connection;
+        this.credentials = credentials;
+        this.tlscerts = tlscerts;
+
+        LOG.exit(method);
     }
+
+    /**
+     * Name of the card. This is typically used for display purposes, and is not a unique identifier.
+     * &lt;p>
+     * This is a mandatory field.
+     * @return {String} name of the card.
+     */
+    getName() {
+        return this.metadata.name;
+    }
+
+    /**
+     * Free text description of the card.
+     * @return {String} description, or {@link undefined} if none exists.
+     */
+    getDescription() {
+        return this.metadata.description;
+    }
+
+    /**
+     * Business network to which the ID card applies. Generally this will be present but may be omitted for system
+     * cards.
+     * @return {String} description, or {@link undefined} if none exists.
+     */
+    getBusinessNetwork() {
+        return this.metadata.businessNetwork;
+    }
+
+    /**
+     * Image associated with the card.
+     * @return {Object} an object of the form &lt;i>{ name: imageFileName, data: bufferOfImageData }&lt;/i>,
+     * or {@link undefined} if none exists.
+     */
+    getImage() {
+        return this.image;
+    }
+
+    /**
+     * Connection profile for this card.
+     * @return {Object} connection profile.
+     */
+    getConnection() {
+        return this.connection;
+    }
+
+    /**
+     * Credentials associated with this card.
+     * @return {Map} Map of filename {@link String} keys to {@link Buffer} data.
+     */
+    getCredentials() {
+        return this.credentials;
+    }
+
+    /**
+     * TLS certificates used to connect to the business networks.
+     * @return {Map} Map of filename {@link String} keys to {@link Buffer} data.
+     */
+    getTlsCertificates() {
+        return this.tlscerts;
+    }
+
+    /**
+     * Create an IdCard from a card archive.
+     * @param {Buffer} buffer - the Buffer to a zip archive
+     * @return {Promise} Promise to the instantiated IdCard
+     */
+    static fromArchive(buffer) {
+        const method = 'fromArchive';
+        LOG.entry(method, buffer.length);
+
+        return JSZip.loadAsync(buffer).then((zip) => {
+            let promise = Promise.resolve();
+
+            let metadata;
+            let image;
+            let connection;
+            const credentials = new Map();
+            const tlscerts = new Map();
+
+            LOG.debug(method, 'Loading connection.json');
+            const connectionFile = zip.file('connection.json');
+            if (!connectionFile) {
+                throw Error('Required file not found: connection.json');
+            }
+
+            promise = promise.then(() => {
+                return connectionFile.async('string');
+            }).then((connectionContent) => {
+                connection = JSON.parse(connectionContent);
+            });
+
+            LOG.debug(method, 'Loading metadata.json');
+            const metadataFile = zip.file('metadata.json');
+            if (!metadataFile) {
+                throw Error('Required file not found: metadata.json');
+            }
+
+            promise = promise.then(() => {
+                return metadataFile.async('string');
+            }).then((metadataContent) => {
+                metadata = JSON.parse(metadataContent);
+                if (!metadata.name) {
+                    throw Error('Required meta-data field not found: name');
+                }
+
+                if (metadata.image) {
+                    LOG.debug(method, 'Loading image ' + metadata.image);
+
+                    const imagePromise = zip.file(metadata.image);
+                    if (!imagePromise) {
+                        throw Error('Image file not found: ' + metadata.image);
+                    }
+
+                    return imagePromise.async('nodebuffer').then((imageContent) => {
+                        const shortFilename = path.basename(metadata.image);
+                        image = {
+                            name: shortFilename,
+                            data: imageContent
+                        };
+                    });
+                }
+            });
+
+            const loadDirectoryToMap = function(directoryName, map) {
+                // Incude '/' following directory name
+                const fileIndex = directoryName.length + 1;
+                // Find all files that are direct children of specified directory
+                const files = zip.file(new RegExp(`^${directoryName}/[^/]+$`));
+                files &amp;&amp; files.forEach((file) => {
+                    promise = promise.then(() => {
+                        return file.async('nodebuffer');
+                    }).then((content) => {
+                        const filename = file.name.slice(fileIndex);
+                        map.set(filename, content);
+                    });
+                });
+            };
+
+            LOG.debug(method, 'Loading credentials');
+            loadDirectoryToMap('credentials', credentials);
+
+            LOG.debug(method, 'Loading tlscerts');
+            loadDirectoryToMap('tlscerts', tlscerts);
+
+            return promise.then(() => {
+                const idCard = new IdCard(metadata, connection, credentials, tlscerts);
+                idCard.image = image;
+                LOG.exit(method, idCard.toString());
+                return idCard;
+            });
+        });
+    }
+
 }
 
-module.exports = AssetDeclaration;
+module.exports = IdCard;
 </pre>
     </article>
 </section>

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: Identifiable</title>
+	<title>Hyperledger Composer Class: IdCard</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Identifiable</h1>
+	<h1 class="page-title">Class: IdCard</h1>
 <section>
 
 <header>
@@ -87,11 +87,10 @@
         <h2>
             <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
         
-        Identifiable
+        IdCard
         </h2>
         
-            <div class="class-description"><p>Identifiable is an entity with a namespace, type and an identifier.</p>
-<p>This class is abstract.</p></div>
+            <div class="class-description"><p>An ID card.</p></div>
         
     
 </header>
@@ -103,7 +102,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="Identifiable"><span class="type-signature">&lt;abstract> </span>new Identifiable(modelManager, ns, type, id)</h4>
+    <h4 class="name" id="IdCard"><span class="type-signature"></span>new IdCard(metadata, connection, credentials, tlscerts)</h4>
     
     
 </dt>
@@ -111,8 +110,8 @@
 
     
     <div class="description">
-        <p>Create an instance.</p>
-<p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from Factory</strong><br></p>
+        <p>Create the BusinessNetworkDefinition.</p>
+<p><p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from IdCard.fromArchive</strong></p>
     </div>
     
 
@@ -147,13 +146,13 @@
 
         <tr>
             
-                <td class="name"><code>modelManager</code></td>
+                <td class="name"><code>metadata</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ModelManager</span>
+<span class="param-type">Object</span>
 
 
 
@@ -164,20 +163,20 @@
 
             
 
-            <td class="description last"><p>The ModelManager for this instance</p></td>
+            <td class="description last"><p>metadata associated with the card.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>connection</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
 
@@ -188,20 +187,20 @@
 
             
 
-            <td class="description last"><p>The namespace this instance.</p></td>
+            <td class="description last"><p>connection properties associated with the card.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>type</code></td>
+                <td class="name"><code>credentials</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Map</span>
 
 
 
@@ -212,20 +211,20 @@
 
             
 
-            <td class="description last"><p>The type this instance.</p></td>
+            <td class="description last"><p>map of credential filename String keys to credential data Buffer objects.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>tlscerts</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Map</span>
 
 
 
@@ -236,7 +235,7 @@
 
             
 
-            <td class="description last"><p>The identifier of this instance.</p></td>
+            <td class="description last"><p>map of TLS certificate filename String keys to TLS certificate data Buffer objects.</p></td>
         </tr>
 
     
@@ -280,8 +279,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-27">line 27</a>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-28">line 28</a>
 			</li>
 		</ul>
 	</dd>
@@ -332,7 +331,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getFullyQualifiedIdentifier"><span class="type-signature"></span>getFullyQualifiedIdentifier()</h4>
+    <h4 class="name" id=".fromArchive"><span class="type-signature">&lt;static> </span>fromArchive(buffer)</h4>
     
     
 </dt>
@@ -340,455 +339,7 @@
 
     
     <div class="description">
-        <p>Get the fully qualified identifier of this instance.<br>(namespace '.' type '#' identifier).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-71">line 71</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>the fully qualified identifier of this instance</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getIdentifier"><span class="type-signature"></span>getIdentifier()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get the identifier of this instance</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-50">line 50</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The identifier for this object</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="isRelationship"><span class="type-signature"></span>isRelationship()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Determine if this identifiable is a relationship.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-88">line 88</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if this identifiable is a relationship,<br>false if not.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="isResource"><span class="type-signature"></span>isResource()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Determine if this identifiable is a resource.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-97">line 97</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if this identifiable is a resource,<br>false if not.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="setIdentifier"><span class="type-signature"></span>setIdentifier(id)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Set the identifier of this instance</p>
+        <p>Create an IdCard from a card archive.</p>
     </div>
     
 
@@ -823,13 +374,13 @@
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>buffer</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Buffer</span>
 
 
 
@@ -840,7 +391,7 @@
 
             
 
-            <td class="description last"><p>the new identifier for this object</p></td>
+            <td class="description last"><p>the Buffer to a zip archive</p></td>
         </tr>
 
     
@@ -884,8 +435,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-58">line 58</a>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-118">line 118</a>
 			</li>
 		</ul>
 	</dd>
@@ -910,6 +461,30 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Promise to the instantiated IdCard</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -918,7 +493,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="toString"><span class="type-signature"></span>toString()</h4>
+    <h4 class="name" id="getBusinessNetwork"><span class="type-signature"></span>getBusinessNetwork()</h4>
     
     
 </dt>
@@ -926,7 +501,7 @@
 
     
     <div class="description">
-        <p>Returns the string representation of this class</p>
+        <p>Business network to which the ID card applies. Generally this will be present but may be omitted for system<br>cards.</p>
     </div>
     
 
@@ -972,8 +547,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-79">line 79</a>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-76">line 76</a>
 			</li>
 		</ul>
 	</dd>
@@ -1002,7 +577,7 @@
     
             
 <div class="param-desc">
-    <p>the string representation of the class</p>
+    <p>description, or undefined if none exists.</p>
 </div>
 
 
@@ -1030,7 +605,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="toURI"><span class="type-signature"></span>toURI()</h4>
+    <h4 class="name" id="getConnection"><span class="type-signature"></span>getConnection()</h4>
     
     
 </dt>
@@ -1038,7 +613,7 @@
 
     
     <div class="description">
-        <p>Returns a URI representation of a reference to this identifiable</p>
+        <p>Connection profile for this card.</p>
     </div>
     
 
@@ -1084,8 +659,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-105">line 105</a>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-93">line 93</a>
 			</li>
 		</ul>
 	</dd>
@@ -1114,7 +689,231 @@
     
             
 <div class="param-desc">
-    <p>the URI for the identifiable</p>
+    <p>connection profile.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getCredentials"><span class="type-signature"></span>getCredentials()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Credentials associated with this card.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-101">line 101</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Map of filename String keys to Buffer data.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Map</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getDescription"><span class="type-signature"></span>getDescription()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Free text description of the card.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-67">line 67</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>description, or undefined if none exists.</p>
 </div>
 
 
@@ -1126,6 +925,343 @@
     <dd>
         
 <span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getImage"><span class="type-signature"></span>getImage()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Image associated with the card.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-85">line 85</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>an object of the form <i>{ name: imageFileName, data: bufferOfImageData }</i>,<br>or undefined if none exists.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getName"><span class="type-signature"></span>getName()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Name of the card. This is typically used for display purposes, and is not a unique identifier.</p>
+<p><p><br>This is a mandatory field.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-59">line 59</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>name of the card.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getTlsCertificates"><span class="type-signature"></span>getTlsCertificates()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>TLS certificates used to connect to the business networks.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-109">line 109</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Map of filename String keys to Buffer data.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Map</span>
 
 
 
