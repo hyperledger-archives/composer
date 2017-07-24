@@ -601,7 +601,9 @@ class BusinessNetworkConnection extends EventEmitter {
         const method = 'activate';
         LOG.entry(method);
         const json = {
-            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity'
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
+            transactionId: uuid.v4(),
+            timestamp: new Date().toISOString()
         };
         return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
             .then(() => {

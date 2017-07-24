@@ -15,6 +15,7 @@
 
 'use strict';
 
+const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 
 const fs = require('fs');
@@ -32,7 +33,6 @@ process.setMaxListeners(Infinity);
 describe('Identity system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
     let participant;
 
@@ -52,13 +52,7 @@ describe('Identity system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        console.log('testing install/start');
-        // Have some system test perform install/start rather than deploy
-        return admin.install(businessNetworkDefinition.getName())
-            .then(() => {
-                return admin.start(businessNetworkDefinition);
-            })
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-identities')
                     .then((result) => {
@@ -108,7 +102,7 @@ describe('Identity system tests', () => {
         } else if (TestUtil.isHyperledgerFabricV1()) {
             const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
-            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/8b627256737cb372d6e51036b74f2952181000bc4a3a7123acea36ee909b454c_sk');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
             privateKey = fs.readFileSync(privateKeyFile, 'utf8');
         } else {
             certificate = [
@@ -120,7 +114,12 @@ describe('Identity system tests', () => {
         }
         return client.bindIdentity(participant, certificate)
             .then(() => {
-                return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                const admin = new AdminConnection();
+                if (TestUtil.isHyperledgerFabricV1()) {
+                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
+                } else {
+                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                }
             })
             .then(() => {
                 return TestUtil.getClient('systest-identities', identity, 'not used');
@@ -198,9 +197,9 @@ describe('Identity system tests', () => {
         if (TestUtil.isHyperledgerFabricV06()) {
             return this.skip();
         } else if (TestUtil.isHyperledgerFabricV1()) {
-            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/signcerts/User2@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
-            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/8b627256737cb372d6e51036b74f2952181000bc4a3a7123acea36ee909b454c_sk');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/keystore/key.pem');
             privateKey = fs.readFileSync(privateKeyFile, 'utf8');
         } else {
             certificate = [
@@ -212,7 +211,12 @@ describe('Identity system tests', () => {
         }
         return client.bindIdentity(participant, certificate)
             .then(() => {
-                return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                const admin = new AdminConnection();
+                if (TestUtil.isHyperledgerFabricV1()) {
+                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
+                } else {
+                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                }
             })
             .then(() => {
                 return TestUtil.getClient('systest-identities', identity, 'not used');

@@ -10,7 +10,7 @@ index-order: 202
 
 # Installing and running {{site.data.conrefs.composer_full}} Playground locally
 
-This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0 RC 1.
+This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0.
 
 {{site.data.conrefs.composer_full}} Playground can also be used in a "browser only" mode, without a running instance of {{site.data.conrefs.hlf_full}}. When used in this mode, all the functionality of {{site.data.conrefs.composer_full}} Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
 
@@ -39,17 +39,17 @@ docker images -aq | xargs docker rmi -f
 2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.
 
 
-## Deploying business networks to {{site.data.conrefs.hlf_full}} RC
+## Deploying business networks to {{site.data.conrefs.hlf_full}} v1.0
 
-In {{site.data.conrefs.hlf_full}} RC peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
+In {{site.data.conrefs.hlf_full}} v1.0 peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
 
 When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text `admin`, for example, `PeerAdmin`, `myadmin`, `Admin` or `AdminPeer` are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
 
-Due to many breaking API changes between {{site.data.conrefs.hlf_full}} v1.0 alpha 1 and {{site.data.conrefs.hlf_full}} v1.0 RC, {{site.data.conrefs.composer_full}} only supports the RC level and cannot support older versions of {{site.data.conrefs.hlf_full}} v1.0 (e.g. alpha 1).
+Due to many breaking API changes between {{site.data.conrefs.hlf_full}} v1.0 alpha 1 and {{site.data.conrefs.hlf_full}} v1.0, {{site.data.conrefs.composer_full}} only supports {{site.data.conrefs.hlf_full}} v1.0 and cannot support older versions of {{site.data.conrefs.hlf_full}} v1.0 (e.g. alpha 1).
 
 ### Deploying business networks using Playground locally
 
-When deploying a business network to {{site.data.conrefs.hlf_full}} RC using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
+When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
 
 
 ---

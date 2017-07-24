@@ -24,6 +24,9 @@ const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelManager = require('composer-common').ModelManager;
+const Query = require('composer-common').Query;
+const QueryManager = require('composer-common').QueryManager;
+const QueryFile = require('composer-common').QueryFile;
 const NodeCache = require('node-cache');
 const ParticipantRegistry = require('composer-client/lib/participantregistry');
 const Serializer = require('composer-common').Serializer;
@@ -34,7 +37,7 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('BusinessNetworkConnector', () => {
 
@@ -45,6 +48,11 @@ describe('BusinessNetworkConnector', () => {
     }
     asset BaseAsset identified by theValue {
         o String theValue
+        o Integer theInteger optional
+        o Boolean theBoolean optional
+        o DateTime theDateTime optional
+        o Double theDouble optional
+        o Long theLong optional
     }
     participant BaseParticipant identified by theValue {
         o String theValue
@@ -57,11 +65,13 @@ describe('BusinessNetworkConnector', () => {
     let mockBusinessNetworkConnection;
     let mockBusinessNetworkDefinition;
     let mockSerializer;
+    let mockQueryManager;
     let sandbox;
     let testConnector;
     let modelManager;
     let factory;
     let introspector;
+    let mockQueryFile;
 
     beforeEach(() => {
 
@@ -71,6 +81,12 @@ describe('BusinessNetworkConnector', () => {
             participantId : 'MockEnrollmentId',
             participantPwd : 'MockEnrollmentPwd'
         };
+
+        // create real instances
+        modelManager = new ModelManager();
+        modelManager.addModelFile(MODEL_FILE);
+        introspector = new Introspector(modelManager);
+        factory = new Factory(modelManager);
 
         // // create mocks
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -83,12 +99,6 @@ describe('BusinessNetworkConnector', () => {
         mockBusinessNetworkConnection.disconnect.resolves();
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
-
-        // // create real instances
-        modelManager = new ModelManager();
-        modelManager.addModelFile(MODEL_FILE);
-        introspector = new Introspector(modelManager);
-        factory = new Factory(modelManager);
 
         sandbox = sinon.sandbox.create();
 
@@ -2131,6 +2141,203 @@ describe('BusinessNetworkConnector', () => {
 
     });
 
+    describe('#executeQuery', () => {
+
+        beforeEach(() => {
+            // create mock query
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+            let stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+            let integerQuery = Query.buildQuery(mockQueryFile, 'integerQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theInteger==_$param1)');
+            let doubleQuery = Query.buildQuery(mockQueryFile, 'doubleQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDouble==_$param1)');
+            let longQuery = Query.buildQuery(mockQueryFile, 'longQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theLong==_$param1)');
+            let dateTimeQuery = Query.buildQuery(mockQueryFile, 'dateTimeQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDateTime==_$param1)');
+            let booleanQuery = Query.buildQuery(mockQueryFile, 'booleanQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theBoolean==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQuery.withArgs('stringQuery').returns(stringQuery);
+            mockQueryManager.getQuery.withArgs('integerQuery').returns(integerQuery);
+            mockQueryManager.getQuery.withArgs('doubleQuery').returns(doubleQuery);
+            mockQueryManager.getQuery.withArgs('longQuery').returns(longQuery);
+            mockQueryManager.getQuery.withArgs('dateTimeQuery').returns(dateTimeQuery);
+            mockQueryManager.getQuery.withArgs('booleanQuery').returns(booleanQuery);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
+        });
+
+        it('should call the executeQuery with an expected string result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'stringQuery', { param1: 'blue' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected double result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'doubleQuery', { param1: '10.2' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected long result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'longQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected integer result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'integerQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected dateTime result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'dateTimeQuery', { param1: '2007-04-05T14:30' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected boolean result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'booleanQuery', { param1: 'false' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should throw when executing a query that does not exist', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'missing', { param1: 'false' }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/Named query missing does not exist in the business network./);
+        });
+
+    });
+
+    describe('#discoverQueries', () => {
+
+        beforeEach(() => {
+            // create mock query file
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+
+            // create real query
+            const stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query',
+                'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQueries.returns([stringQuery]);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+        });
+
+        it('should return the queries in the business network definition', () => {
+
+            const cb = sinon.stub();
+            return testConnector.discoverQueries( {test: 'options' }, cb)
+                .then(( queries ) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queries)
+                    result.length.should.equal(1);
+                    result[0].getName().should.equal('stringQuery');
+                });
+        });
+
+        it('should throw when getQueries fails', () => {
+
+            mockQueryManager.getQueries.throws();
+
+            return new Promise((resolve, reject) => {
+                testConnector.discoverQueries( {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith();
+        });
+
+    });
+
     describe('#getTransactionByID', () => {
 
         let mockTransactionRegistry;
@@ -2225,15 +2432,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }]);
             });
@@ -2255,15 +2466,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });
@@ -2289,18 +2504,23 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.extra.BaseAsset'
                 }]);
             });
@@ -2322,15 +2542,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });
@@ -2410,10 +2634,30 @@ describe('BusinessNetworkConnector', () => {
                     'type': 'string'
                 },
                 'theValue' : {
-                    'description' : 'The instance identifier for this type',
-                    'id' : true,
+                    'description': 'The instance identifier for this type',
+                    'id': true,
                     'required' : true,
                     'type' : 'string'
+                },
+                'theInteger' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDouble' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theLong' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDateTime' : {
+                    'required' : false,
+                    'type' : 'date'
+                },
+                'theBoolean' : {
+                    'required' : false,
+                    'type' : 'boolean'
                 }
             },
             'relations' : {},

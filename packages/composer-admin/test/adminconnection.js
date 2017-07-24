@@ -22,6 +22,7 @@ const ConnectionManager = require('composer-common').ConnectionManager;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
+const uuid = require('uuid');
 
 const version = require('../package.json').version;
 
@@ -30,7 +31,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-require('sinon-as-promised');
 
 describe('AdminConnection', () => {
 
@@ -39,6 +39,7 @@ describe('AdminConnection', () => {
     let mockSecurityContext;
     let adminConnection;
     let sandbox;
+    let clock;
 
     const config =
         {
@@ -85,11 +86,13 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
         delete process.env.COMPOSER_CONFIG;
         sandbox = sinon.sandbox.create();
+        clock = sinon.useFakeTimers();
     });
 
     afterEach(() => {
         delete process.env.COMPOSER_CONFIG;
         sandbox.restore();
+        clock.restore();
     });
 
     describe('#constructor', () => {
@@ -349,13 +352,14 @@ describe('AdminConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -392,7 +396,8 @@ describe('AdminConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
@@ -401,12 +406,13 @@ describe('AdminConnection', () => {
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 

@@ -21,7 +21,6 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
 
 const sinon = require('sinon');
-require('sinon-as-promised');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -75,7 +74,7 @@ describe('composer identity import CLI unit tests', () => {
 
         let fsStub = sandbox.stub(fs, 'readFileSync').withArgs(CERT_PATH).returns('acert');
         fsStub.withArgs(KEY_PATH).returns('akey');
-        mockAdminConnection.importIdentity.withArgs(PROFILE_NAME, USER_ID, 'acert', 'akey').rejects('some error');
+        mockAdminConnection.importIdentity.withArgs(PROFILE_NAME, USER_ID, 'acert', 'akey').rejects('Error', 'some error');
         return Import.handler(argv)
             .should.be.rejectedWith(/some error/);
     });

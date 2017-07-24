@@ -123,12 +123,12 @@ class Factory {
     }
 
     /**
-     * Create a new Resource with a given namespace, type name and id
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
+     * Create a new Concept with a given namespace and type name
+     * @param {string} ns - the namespace of the Concept
+     * @param {string} type - the type of the Concept
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
-     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * return a {@link Concept} instead of a {@link ValidatedConcept}. Defaults to false.
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>

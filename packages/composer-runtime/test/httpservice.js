@@ -20,7 +20,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
-require('sinon-as-promised');
+
 const expect = chai.expect;
 
 describe('HTTPService', () => {
