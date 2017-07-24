@@ -12,18 +12,16 @@
   </div>
   <section class="modal-body">
     <section class="information">
-        <p>You are about to {{ fileAction || 'remove' }} the {{ fileType || 'File' }} <b>{{ fileName }}</b>{{ deleteFrom ? ' from ' + deleteFrom + '.' : '.'}}</p>
-<!--
+        <p><b>You are about to delete:</b></p>
         <section class="items">
             <div class="item"><b>{{fileType}}</b></div>
             <div class="item"><i>{{fileName}}</i></div>
         </section>
--->
         <p>{{deleteMessage}}</p>
     </section>
   </section>
   <footer>
     <button type="button" class="secondary" (click)="activeModal.dismiss()">Cancel</button>
-    <button type="button" class="delete" (click)="activeModal.close(true)">{{ confirmButtonText || 'Delete File' }}</button>
+    <button type="button" class="delete" (click)="activeModal.close(true)">Delete File</button>
   </footer>
 </div>

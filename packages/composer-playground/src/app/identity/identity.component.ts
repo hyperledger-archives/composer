@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 
 import { AddIdentityComponent } from './add-identity';
 import { IssueIdentityComponent } from './issue-identity';
@@ -21,10 +20,8 @@ import { WalletService } from '../services/wallet.service';
 })
 export class IdentityComponent implements OnInit {
 
-    myIdentities: string[];
-    allIdentities: Object[]; // array of all IDs
+    identities: string[];
     currentIdentity: string = null;
-    private deployedPackageName;
 
     constructor(private modalService: NgbModal,
                 private alertService: AlertService,
@@ -36,27 +33,14 @@ export class IdentityComponent implements OnInit {
     }
 
     ngOnInit(): Promise<any> {
-        this.deployedPackageName = this.clientService.getMetaData().getName();
-        return this.loadAllIdentities();
+        return this.loadIdentities();
     }
 
-    loadAllIdentities() {
-        return this.loadMyIdentities()
-            .then(() => {
-                return this.clientService.ensureConnected();
-            }).then(() => {
-                return this.clientService.getBusinessNetworkConnection().getIdentityRegistry();
-            }).then((registry) => {
-                return registry.getAll();
-            }).then((ids) => {
-                this.allIdentities = ids;
-            });
-    }
-
-    loadMyIdentities() {
+    loadIdentities() {
         return this.identityService.getCurrentIdentities()
             .then((currentIdentities) => {
-                this.myIdentities = currentIdentities;
+                this.identities = currentIdentities;
+
                 return this.identityService.getCurrentIdentity();
             })
             .then((currentIdentity) => {
@@ -69,7 +53,7 @@ export class IdentityComponent implements OnInit {
 
     addId() {
         this.modalService.open(AddIdentityComponent).result.then((result) => {
-            return this.loadAllIdentities();
+            return this.loadIdentities();
         }, (reason) => {
             if (reason && reason !== 1) { // someone hasn't pressed escape
                 this.alertService.errorStatus$.next(reason);
@@ -92,7 +76,7 @@ export class IdentityComponent implements OnInit {
             }
         })
             .then(() => {
-                return this.loadAllIdentities();
+                return this.loadIdentities();
             }, (reason) => {
                 this.alertService.errorStatus$.next(reason);
             });
@@ -110,7 +94,6 @@ export class IdentityComponent implements OnInit {
         return this.clientService.ensureConnected(true)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
-                return this.loadAllIdentities();
             })
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
@@ -119,98 +102,13 @@ export class IdentityComponent implements OnInit {
     }
 
     removeIdentity(userID: string) {
-
-        // show confirm/delete dialog first before taking action
-        const confirmModalRef = this.modalService.open(DeleteComponent);
-        confirmModalRef.componentInstance.headerMessage = 'Remove ID';
-        confirmModalRef.componentInstance.fileAction = 'remove';
-        confirmModalRef.componentInstance.fileType = 'ID';
-        confirmModalRef.componentInstance.fileName = userID;
-        confirmModalRef.componentInstance.deleteMessage = 'Take care when removing IDs: you usually cannot re-add them. Make sure you leave at least one ID that can be used to issue new IDs.';
-        confirmModalRef.componentInstance.confirmButtonText = 'Remove';
-
         let profileName = this.connectionProfileService.getCurrentConnectionProfile();
-
-        confirmModalRef.result
-            .then((result) => {
-                if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Removing ID',
-                        text: 'Removing identity ' + userID + ' from your wallet'
-                    });
-
-                    return this.walletService.removeFromWallet(profileName, userID)
-                        .then(() => {
-                            return this.loadAllIdentities();
-                        })
-                        .then(() => {
-                            // Send alert
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.successStatus$.next({
-                                title: 'Removal Successful',
-                                text: userID + ' was successfully removed.',
-                                icon: '#icon-trash_32'
-                            });
-                        })
-                        .catch((error) => {
-                            this.alertService.errorStatus$.next(error);
-                        });
-                }
-            }, (reason) => {
-                // runs this when user presses 'cancel' button on the modal
-                if (reason && reason !== 1) {
-                    this.alertService.busyStatus$.next(null);
-                    this.alertService.errorStatus$.next(reason);
-                }
-            });
-    }
-
-    revokeIdentity(identity) {
-
-        // show confirm/delete dialog first before taking action
-        const confirmModalRef = this.modalService.open(DeleteComponent);
-        confirmModalRef.componentInstance.headerMessage = 'Revoke Identity';
-        confirmModalRef.componentInstance.fileAction = 'revoke the permissions for';
-        confirmModalRef.componentInstance.fileType = 'identity';
-        confirmModalRef.componentInstance.fileName = identity.name;
-        confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';
-        confirmModalRef.componentInstance.confirmButtonText = 'Revoke';
-
-        confirmModalRef.result
-            .then((result) => {
-                if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Revoking identity within business network',
-                        text: 'Revoking identity ' + identity.name
-                    });
-
-                    return this.clientService.revokeIdentity(identity)
-                        .then(() => {
-                            return this.removeIdentity(identity.name);
-                        })
-                        .then(() => {
-                            return this.loadAllIdentities();
-                        })
-                        .then(() => {
-                            // Send alert
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.successStatus$.next({
-                                title: 'Revoke Successful',
-                                text: identity.name + ' was successfully revoked.',
-                                icon: '#icon-trash_32'
-                            });
-                        })
-                        .catch((error) => {
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.errorStatus$.next(error);
-                        });
-                }
-            }, (reason) => {
-                // runs this when user presses 'cancel' button on the modal
-                if (reason && reason !== 1) {
-                    this.alertService.busyStatus$.next(null);
-                    this.alertService.errorStatus$.next(reason);
-                }
+        return this.walletService.removeFromWallet(profileName, userID)
+            .then(() => {
+                return this.loadIdentities();
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
             });
     }
 }

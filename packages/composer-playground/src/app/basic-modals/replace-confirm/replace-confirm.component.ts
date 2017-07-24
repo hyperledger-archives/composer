@@ -12,7 +12,6 @@ export class ReplaceComponent {
     @Input() headerMessage: string = null;
     @Input() mainMessage: string = null;
     @Input() supplementaryMessage: string = null;
-    @Input() resource: string = null;
 
     constructor(public activeModal: NgbActiveModal) {
     }

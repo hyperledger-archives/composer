@@ -162,7 +162,7 @@ class Logger {
    */
     debug(method, msg, data) {
         const args = Array.prototype.slice.call(arguments);
-        args.unshift('debug');
+        args.unshift('debug',method,'#');
         this.intlog.apply(this, args);
     }
 
@@ -177,7 +177,7 @@ class Logger {
    */
     warn(method, msg, data) {
         const args = Array.prototype.slice.call(arguments);
-        args.unshift('warn');
+        args.unshift('warn',method,'?');
         this.intlog.apply(this, args);
     }
 
@@ -192,7 +192,7 @@ class Logger {
    */
     info(method, msg, data) {
         const args = Array.prototype.slice.call(arguments);
-        args.unshift('info');
+        args.unshift('info',method,'I');
         this.intlog.apply(this, args);
     }
 
@@ -207,7 +207,7 @@ class Logger {
    */
     verbose(method,msg, data) {
         const args = Array.prototype.slice.call(arguments);
-        args.unshift('verbose');
+        args.unshift('verbose',method,'V');
         this.intlog.apply(this, args);
     }
 
@@ -223,7 +223,7 @@ class Logger {
    */
     error(method, msg,data) {
         const args = Array.prototype.slice.call(arguments);
-        args.unshift('error');
+        args.unshift('error',method,'!!');
         this.intlog.apply(this, args);
     }
 
