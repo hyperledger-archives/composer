@@ -211,7 +211,6 @@ RegClient.prototype.get = function (url, options, callback) {
         forceMetadataFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/cat')) {
-        console.log('CALLING CAT');
         return callback(null, getMetaDataUnsortedCat);
     }
 
@@ -219,7 +218,6 @@ RegClient.prototype.get = function (url, options, callback) {
         forceMetadataFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/ant')) {
-        console.log('CALLING ANT', getMetaDataUnsortedAnt);
         return callback(null, getMetaDataUnsortedAnt);
     }
 
@@ -227,7 +225,6 @@ RegClient.prototype.get = function (url, options, callback) {
         forceMetadataFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/bat')) {
-        console.log('CALLING BAT');
         return callback(null, getMetaDataUnsortedBat);
     }
 

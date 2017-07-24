@@ -120,9 +120,6 @@ module.exports = (app) => {
         let options = [];
         packages.forEach((thePackage) => {
 
-            console.log('PACKAGE ', thePackage);
-
-            console.log('VERSIONS ', thePackage.versions);
             // For each published version of the package ...
             const versions = Object.keys(thePackage.versions)
 
