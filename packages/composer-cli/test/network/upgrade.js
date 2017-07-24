@@ -15,7 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const InstallCmd = require('../../lib/cmds/runtime/installCommand.js');
+const InstallCmd = require('../../lib/cmds/network/upgradeCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 require('chai').should();
@@ -28,7 +28,7 @@ chai.use(require('chai-as-promised'));
 
 let mockAdminConnection;
 
-describe('composer install runtime CLI unit tests', function () {
+describe('composer upgrade runtime CLI unit tests', function () {
 
     let sandbox;
 
@@ -38,7 +38,7 @@ describe('composer install runtime CLI unit tests', function () {
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
-        mockAdminConnection.deploy.resolves();
+        mockAdminConnection.upgrade.resolves();
 
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
@@ -52,8 +52,8 @@ describe('composer install runtime CLI unit tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
-            let argv = {installId: 'PeerAdmin'
-                       ,installSecret: 'Anything'
+            let argv = {upgradeId: 'PeerAdmin'
+                       ,upgradeSecret: 'Anything'
                        ,businessNetworkName: 'org-acme-biznet'
                        ,connectionProfileName: 'testProfile'};
 
@@ -62,9 +62,9 @@ describe('composer install runtime CLI unit tests', function () {
             .then ((result) => {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.installId, argv.installSecret, null);
-                sinon.assert.calledOnce(mockAdminConnection.install);
-                sinon.assert.calledWith(mockAdminConnection.install, argv.businessNetworkName, {});
+                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, null);
+                sinon.assert.calledOnce(mockAdminConnection.upgrade);
+                sinon.assert.calledWith(mockAdminConnection.upgrade, argv.businessNetworkName);
             });
         });
 

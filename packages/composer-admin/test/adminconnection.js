@@ -73,6 +73,7 @@ describe('AdminConnection', () => {
         mockConnection.invokeChainCode.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
+        mockConnection.upgrade.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
@@ -210,22 +211,20 @@ describe('AdminConnection', () => {
         it('should be able to install a business network definition', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.install(businessNetworkDefinition)
+            return adminConnection.install('org-acme-biznet')
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.install);
-                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet');
             });
         });
 
         it('should be able to install a business network definition with install options', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.install(businessNetworkDefinition, {opt: 1})
+            return adminConnection.install('org-acme-biznet', {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.install);
-                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet', {opt: 1});
             });
         });
 
@@ -257,6 +256,18 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#upgrade', () => {
+
+        it('should be able to upgrade a composer runtime', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.upgrade('org-acme-biznet')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.upgrade);
+                sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'org-acme-biznet');
+            });
+        });
+    });
 
     describe('#deploy', () => {
 

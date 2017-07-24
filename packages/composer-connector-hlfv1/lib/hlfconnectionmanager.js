@@ -427,13 +427,13 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         // set the message limits if required
-        if (connectOptions.maxSendSize && typeof connectOptions.maxSendSize === 'number' && connectOptions.maxSendSize !== 0) {
-            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
+        if (connectOptions.maxSendSize && connectOptions.maxSendSize !== 0) {
+            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
         }
 
         // set the message limits if required
-        if (connectOptions.maxRecvSize && typeof connectOptions.maxRecvSize === 'number' && connectOptions.maxRecvSize !== 0) {
-            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
+        if (connectOptions.maxRecvSize && connectOptions.maxRecvSize !== 0) {
+            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
         }
 
         // Create a new client instance.

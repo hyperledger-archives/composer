@@ -28,7 +28,7 @@ console.log('');
 let results = yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('composer archive create --inputDir .\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
+    .example('composer archive create\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
     .demand(1)
     .wrap(null)
     .strict()

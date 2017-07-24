@@ -26,15 +26,14 @@ const LogLevel = require('../../network/lib/loglevel');
 
 /**
  * <p>
- * Composer deploy command
+ * Composer start command
  * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Start {
 
    /**
-    * Command process for deploy command
+    * Command process for start command
     * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
     * @return {Promise} promise when command complete
