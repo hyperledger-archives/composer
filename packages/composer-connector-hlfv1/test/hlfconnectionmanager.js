@@ -249,33 +249,22 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should throw if peer definition is incorrect', () => {
-            let peer = {
-                requestURL: 'grpc://localhost:7051'
-            };
-            (() => {
-                HLFConnectionManager.parsePeer(peer);
-            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
-
-            peer = {
-                eventURL: 'grpc://localhost:7053'
-            };
-            (() => {
-                HLFConnectionManager.parsePeer(peer);
-            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
-            peer = {
+            peerDef = {
                 rurl: 'grpc://localhost:7051',
                 eURL: 'grpc://localhost:7051'
             };
             (() => {
-                HLFConnectionManager.parsePeer(peer);
+                HLFConnectionManager.parsePeer(peerDef);
             }).should.throw('peer incorrectly defined');
         });
 
         it('should create a new peer and eventHub with no tls', () => {
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 10, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 10, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL);
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -290,14 +279,16 @@ describe('HLFConnectionManager', () => {
             peerDef.cert = embeddedCert;
             peerDef.hostnameOverride =  'localhost';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: embeddedCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -315,15 +306,16 @@ describe('HLFConnectionManager', () => {
 
             peerDef.cert = '/some/path/to/some/file';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 7, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 7, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(fs.readFileSync, peerDef.cert);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 7000,
                 pem: 'acert'
             });
-
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -338,14 +330,16 @@ describe('HLFConnectionManager', () => {
         it('should create a new peer with tls and embedded certificate from global cert', () => {
             peerDef.hostnameOverride =  'localhost';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: embeddedCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -360,15 +354,16 @@ describe('HLFConnectionManager', () => {
 
         it('should create a new peer with tls and global file system certificate', () => {
             sandbox.stub(fs,'readFileSync').returns(new Buffer('acert'));
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 7, '/some/path/to/some/file', eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 7, '/some/path/to/some/file', peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(fs.readFileSync, '/some/path/to/some/file');
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 7000,
                 pem: 'acert'
             });
-
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -384,14 +379,16 @@ describe('HLFConnectionManager', () => {
             peerDef.hostnameOverride =  'localhost';
             peerDef.cert = overrideCert;
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: overrideCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -592,25 +589,43 @@ describe('HLFConnectionManager', () => {
 
         it('should throw if peer configuration not correct', () => {
             connectOptions.peers = [{
-                requestURL: 'grpc://localhost:7051'
-            }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
-
-            connectOptions.peers = [{
-                eventURL: 'grpc://localhost:7053'
-            }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
-            connectOptions.peers = [{
                 rurl: 'grpc://localhost:7051',
-                eURL: 'grpc://localhost:7051'
+                eURL: 'grpc://localhost:7053'
             }];
             (() => {
                 connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw('peer incorrectly defined');
+        });
+
+        it('should permit one peer with a requestURL and one peer with an eventURL', () => {
+            connectOptions.peers = [{
+                requestURL: 'grpc://localhost:7051'
+            }, {
+                eventURL: 'grpc://localhost:7053'
+            }];
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+        });
+
+        it('should throw if no peers with a requestURL are specified', () => {
+            connectOptions.peers = [{
+                eventURL: 'grpc://localhost:7053'
+            }, {
+                eventURL: 'grpc://localhost:8053'
+            }];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.throw(/You must specify at least one peer with a valid requestURL for submitting transactions/);
+        });
+
+        it('should throw if no peers with an eventURL are specified', () => {
+            connectOptions.peers = [{
+                requestURL: 'grpc://localhost:7051'
+            }, {
+                requestURL: 'grpc://localhost:8051'
+            }];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.throw(/You must specify at least one peer with a valid eventURL for receiving events/);
         });
 
         it('should throw if ca is not specified', () => {
