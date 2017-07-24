@@ -68,6 +68,25 @@ RegClient.prototype.get = function (url, options, callback) {
         }]
     };
 
+    let getUnsortedSampleNames = {
+        objects : [{
+            package : {
+                name : 'cat',
+            }
+        },
+        {
+            package : {
+                name : 'ant',
+            }
+        },
+        {
+            package : {
+                name : 'bat',
+            }
+        }
+        ]
+    };
+
     let getMetaData = {
         versions : {
             '0.1.0' : {
@@ -123,7 +142,7 @@ RegClient.prototype.get = function (url, options, callback) {
         }
     };
 
-    let getMetaDataUnsorted = {
+    let getMetaDataUnsortedCat = {
         versions : {
             '0.1.0' : {
                 engines : {
@@ -136,7 +155,12 @@ RegClient.prototype.get = function (url, options, callback) {
                     tarball : 'my tar'
                 }
             },
-            '0.2.0' : {
+        }
+    };
+
+    let getMetaDataUnsortedAnt = {
+        versions : {
+            '0.1.0' : {
                 engines : {
                     composer : '0.9.0'
                 },
@@ -147,7 +171,12 @@ RegClient.prototype.get = function (url, options, callback) {
                     tarball : 'my tar'
                 }
             },
-            '0.3.0' : {
+        }
+    };
+
+    let getMetaDataUnsortedBat = {
+        versions : {
+            '0.1.0' : {
                 engines : {
                     composer : '0.9.0'
                 },
@@ -164,8 +193,15 @@ RegClient.prototype.get = function (url, options, callback) {
     if (url.startsWith('https://registry.npmjs.org/-/v1/search') && forceSearchFail) {
         forceSearchFail = false;
         return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/-/v1/search') && sortableList) {
+        return callback(null, getUnsortedSampleNames);
     } else if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
         return callback(null, getSampleNames);
+    }
+
+    if (sortableList) {
+        sortableList = false;
+        return callback(null, getUnsortedSampleNames);
     }
 
     if (url.startsWith('https://registry.npmjs.org/bob') && forceMetadataFail) {
@@ -175,12 +211,30 @@ RegClient.prototype.get = function (url, options, callback) {
         return callback(null, getMetaData);
     }
 
-    if (sortableList) {
-        console.log('CALLING UNSORTED - sortableList is:', sortableList);
-        sortableList = false;
-        console.log('LIST OF UNSORTED IS - ', getMetaDataUnsorted);
-        return callback(null, getMetaDataUnsorted);
+    if (url.startsWith('https://registry.npmjs.org/cat') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/cat')) {
+        console.log('CALLING CAT');
+        return callback(null, getMetaDataUnsortedCat);
     }
+
+    if (url.startsWith('https://registry.npmjs.org/ant') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/ant')) {
+        console.log('CALLING ANT', getMetaDataUnsortedAnt);
+        return callback(null, getMetaDataUnsortedAnt);
+    }
+
+    if (url.startsWith('https://registry.npmjs.org/bat') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/bat')) {
+        console.log('CALLING BAT');
+        return callback(null, getMetaDataUnsortedBat);
+    }
+
 };
 
 describe('npm routes', () => {
