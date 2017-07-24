@@ -19,7 +19,7 @@ const Util = require('../lib/util');
 require('chai').should();
 const proxyquire =  require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('composer-rest-server CLI unit tests', () => {
 

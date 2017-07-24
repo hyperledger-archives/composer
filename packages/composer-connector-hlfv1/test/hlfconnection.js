@@ -41,7 +41,7 @@ const originalVersion = connectorPackageJSON.version;
 const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
-require('sinon-as-promised');
+
 
 const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
 

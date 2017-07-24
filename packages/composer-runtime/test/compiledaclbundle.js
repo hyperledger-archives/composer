@@ -21,7 +21,7 @@ const Resource = require('composer-common').Resource;
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('CompiledAclBundle', () => {
 

@@ -40,6 +40,7 @@ require('composer-common').ConnectionProfileManager.registerConnectionManagerLoa
 
 module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
 module.exports.AssetRegistry = require('./lib/assetregistry');
+module.exports.IdentityRegistry = require('./lib/identityregistry');
 module.exports.ParticipantRegisty = require('./lib/participantregistry');
 module.exports.TransactionRegistry = require('./lib/transactionregistry');
 
