@@ -279,25 +279,6 @@ describe('EditorFileComponent', () => {
 
             should.not.exist(component['editorContent']);
         });
-
-        it('should not load any file', () => {
-            component['_editorFile'] = {};
-
-            component.loadFile();
-
-            should.not.exist(component['editorContent']);
-            should.not.exist(component['editorType']);
-        });
-
-        it('should set currentError to null', () => {
-            component['_editorFile'] = {};
-            component['currentError'] = 'Test error message';
-
-            component.loadFile();
-
-            should.not.exist(component['currentError']);
-        });
-
     });
 
     describe('setCurrentCode', () => {
