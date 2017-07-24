@@ -2,8 +2,16 @@
   drawer {
     .drawer-content {
       header.drawer-header {
-        margin: $space-xlarge $space-large $space-large $space-large;
-        padding: 0 $space-medium 0 $space-medium;
+        margin: $space-xlarge 0 $space-large 0;
+        padding: 0 $space-large 0 $space-large;
+
+        h1 {
+          margin-bottom: 1.3em;
+        }
+
+        p {
+          color: $primary-text;
+        }
 
         .modal-exit {
           position: absolute;
@@ -13,15 +21,10 @@
         }
       }
 
-      section.drawer-body {
-        margin: $space-large;
-        padding: 0 $space-medium 0 $space-medium;
-      }
-
       footer.drawer-footer {
-        margin: $space-large;
+        margin: $space-large 0 $space-large 0;
         background-color: $white;
-        padding: 0 $space-medium 0 $space-medium;
+        padding: 0 $space-large 0 $space-large;
       }
     }
   }
