@@ -243,7 +243,8 @@ class EngineBusinessNetworks {
                 // in v1.0 if we queried it's existence it would still be there but
                 // we know it isn't really.
                 let registryManager = context.getRegistryManager();
-                return registryManager.add('Transaction', 'default', 'Default Transaction Registry', true);
+                LOG.debug(method,'Adding historian registry');
+                return registryManager.add('Historian', 'HistorianRegistry', 'Default Historian Registry', true);
             })
             .then(() => {
 

@@ -44,6 +44,7 @@ class EngineTransactions {
         // Find the default transaction registry.
         let registryManager = context.getRegistryManager();
         let transaction = null;
+        let historian = null;
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
@@ -52,7 +53,7 @@ class EngineTransactions {
         // Now we need to convert the JavaScript object into a transaction resource.
         LOG.debug(method, 'Parsing transaction from parsed JSON object');
         // First we parse *our* copy, that is not resolved. This is the copy that gets added to the
-        // transaction registry, and is the one in the context (for adding log entries).
+        // historian registry, and is the one in the context (for adding log entries).
         transaction = context.getSerializer().fromJSON(transactionData);
 
         // Store the transaction in the context.
@@ -103,16 +104,59 @@ class EngineTransactions {
 
                 // Get the default transaction registry.
                 LOG.debug(method, 'Getting default transaction registry');
-                return registryManager.get('Transaction', 'default');
+                return registryManager.get('Historian', 'HistorianRegistry');
 
             })
-            .then((transactionRegistry) => {
-
+            .then((result) => {
+                historian = result;
+                return;// this.createHistorianRecord(transaction,context);
+            })
+            .then((result) => {
                 // Store the transaction in the transaction registry.
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
-                return transactionRegistry.add(transaction);
+                return historian.add(transaction);
 
+            }).catch((error) => {
+                LOG.debug(method, 'ERROR',error);
             });
+
+    }
+
+    /**
+     * Creates the Historian Record for a given transaction
+     * @param {Transaction} transaction originally submitted transaction
+     * @param {Context} context of the transaction
+     * @return {Promise} resolved with the Historian Record
+     * @private
+     */
+    createHistorianRecord(transaction,context) {
+
+        // For reference the historian record looks like this
+        // asset HistorianRecord identified by transactionId {
+        //     o String      transactionId
+        //   --> Transaction transactionInvoked
+        //   --> Participant participantInvoking
+        //   --> Identity    identityUsed
+        //   --> Event[]     eventsEmitted
+        //   o DateTime      tranactionTimestamp
+        // }
+
+        // create a record from the factory
+
+        let factory = context.getFactory();
+        let record = factory.newResource('org.hyperledger.composer.system', 'HistorianRecord', transaction.getIdentifier());
+
+        return context.getIdentityManager().getIdentity()
+        .then( (result) => {
+            record.identityUsed = factory.newRelationship(result);
+            record.transactionInvoked = factory.newRelationship();
+            record.participantInvoking = factory.newRelationship(context.getParticipant());
+            record.eventsEmitted = [];
+            record.transactionTimestampe = transaction.timestamp;
+
+            return record;
+        });
+
 
     }
 

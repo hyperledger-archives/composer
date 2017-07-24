@@ -77,7 +77,7 @@ class RelationshipDeclaration extends Property {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             }
 
-            if ((namespace === ModelUtil.getSystemNamespace()) && classDecl.isEvent()) {
+            if ( namespace === ModelUtil.getSystemNamespace() ) /*&& classDecl.isEvent())*/ {
                 // Transaction relationship in event, continue
             } else if(classDeclaration.isRelationshipTarget() === false) {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);

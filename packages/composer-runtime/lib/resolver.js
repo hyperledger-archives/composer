@@ -234,6 +234,8 @@ class Resolver {
             .then(() => {
                 LOG.exit(method, resource.toString());
                 return newResource;
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -305,6 +307,8 @@ class Resolver {
                         .then((newItem) => {
                             newArray.push(newItem);
                             return newArray;
+                        }).catch( (error) => {
+                            LOG.error(method,'!!!',error);
                         });
                 });
 
@@ -315,6 +319,8 @@ class Resolver {
                 return promise.then((newArray) => {
                     newArray.push(item);
                     return newArray;
+                }).catch( (error) => {
+                    LOG.error(method,'!!!',error);
                 });
 
             }
@@ -323,6 +329,8 @@ class Resolver {
             .then((result) => {
                 LOG.exit(method, result);
                 return result;
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -345,10 +353,11 @@ class Resolver {
         } else if (classDeclaration instanceof ParticipantDeclaration) {
             classType = 'Participant';
         } else if (classDeclaration instanceof TransactionDeclaration) {
-            classType = 'Transaction';
+            classType = 'Historian';
             // Special case for this one!
-            registryId = 'default';
+            registryId = 'HistorianRegistry';
         } else {
+            LOG.debug(method, 'Unsupported class declaration type ' + classDeclaration.toString());
             throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
         }
         LOG.debug(method, 'Getting registry', registryId);
@@ -356,6 +365,8 @@ class Resolver {
             .then((registry) => {
                 LOG.exit(method, registry);
                 return registry;
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 

@@ -80,6 +80,8 @@ class EngineResources {
             })
             .then((resource) => {
                 return context.getSerializer().toJSON(resource);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then((result) => {
                 LOG.exit(method, result);
@@ -107,6 +109,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.exists(resourceId);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then((result) => {
                 LOG.exit(method, result);
@@ -137,6 +141,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.addAll(resources);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then(() => {
                 LOG.exit(method);
@@ -164,6 +170,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.add(resource);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then(() => {
                 LOG.exit(method);
@@ -193,6 +201,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.updateAll(resources);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then(() => {
                 LOG.exit(method);
@@ -220,6 +230,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.update(resource);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then(() => {
                 LOG.exit(method);
@@ -246,6 +258,8 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.removeAll(resourceIds);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             })
             .then(() => {
                 LOG.exit(method);
@@ -275,6 +289,8 @@ class EngineResources {
             })
             .then(() => {
                 LOG.exit(method);
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -320,6 +336,8 @@ class EngineResources {
             .then((result) => {
                 LOG.exit(method, result);
                 return result;
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -356,6 +374,8 @@ class EngineResources {
             .then((result) => {
                 LOG.exit(method, result);
                 return result;
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -400,6 +420,8 @@ class EngineResources {
                         LOG.exit(method, result);
                         return result;
                     });
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 
@@ -443,6 +465,8 @@ class EngineResources {
                         LOG.exit(method, result);
                         return result;
                     });
+            }).catch( (error) => {
+                LOG.error(method,'!!!',error);
             });
     }
 

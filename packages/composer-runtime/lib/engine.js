@@ -74,8 +74,16 @@ class Engine {
                 }
             }
         };
+
+
         Logger.setFunctionalLogger(loggingProxy);
         Logger._envDebug = 'composer:*';
+
+        process.on('unhandledRejection', (reason, p) => {
+            console.log('Unhandled Rejection at:', p, 'reason:', reason);
+            LOG.error('promise',reason,p);
+            // application specific logging, throwing an error, or other logic here
+        });
     }
 
     /**
@@ -224,13 +232,14 @@ class Engine {
 
             })
             .then(() => {
-
+                LOG.debug(method, 'Setting up historian');
                 // Create the default transaction registry if it does not exist.
                 let registryManager = context.getRegistryManager();
-                return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');
+                return registryManager.ensure('Historian', 'HistorianRegistry', 'Default Historian Registry');
 
             })
             .then(() => {
+                LOG.debug(method, 'Transaction Prepare');
                 return context.transactionPrepare()
                     .then(() => {
                         return context.transactionCommit();
@@ -250,6 +259,7 @@ class Engine {
                     });
             })
             .then(() => {
+                LOG.error(method,'can you see me?');
                 LOG.exit(method);
             });
     }

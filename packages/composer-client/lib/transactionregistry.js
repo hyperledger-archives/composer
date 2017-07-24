@@ -17,7 +17,7 @@
 const Registry = require('./registry');
 const Util = require('composer-common').Util;
 
-const REGISTRY_TYPE = 'Transaction';
+const REGISTRY_TYPE = 'Historian';
 
 /**
  * The TransactionRegistry is used to store a set of transactions on the blockchain.

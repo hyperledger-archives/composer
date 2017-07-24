@@ -24,14 +24,15 @@ const LOG = Logger.getLog('RegistryManager');
 const TYPE_MAP = {
     'Asset': 'AssetRegistry',
     'Participant': 'ParticipantRegistry',
-    'Transaction': 'TransactionRegistry',
-    'Network': 'Network'
+    'Transaction': 'HistorianRegistry',
+    'Network': 'Network',
+    'Historian':'HistorianRegistry'
 };
 const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',
-    'TransactionRegistry',
-    'Network'
+   'TransactionRegistry',
+    'Network','HistorianRegistry'
 ];
 
 /**
