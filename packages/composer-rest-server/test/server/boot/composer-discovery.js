@@ -26,7 +26,7 @@ const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
 

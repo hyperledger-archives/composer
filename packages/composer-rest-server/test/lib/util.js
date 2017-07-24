@@ -19,7 +19,7 @@ const Util = require('../../lib/util');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('Util', () => {
 
