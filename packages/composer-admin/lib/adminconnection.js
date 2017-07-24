@@ -21,6 +21,7 @@ const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const Logger = require('composer-common').Logger;
 const Util = require('composer-common').Util;
+const uuid = require('uuid');
 
 const LOG = Logger.getLog('AdminConnection');
 
@@ -329,6 +330,31 @@ class AdminConnection {
     }
 
     /**
+     * Upgrades an existing business network's composer runtime to a later level.
+     * The connection must be connected for this method to succeed.
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network whose runtime is to be upgraded.
+     * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
+     * or rejected otherwise.
+     * @example
+     * // Upgrade the Hyperledger Composer runtime
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.upgrade(businessNetworkDefinition.getName())
+     * .then(function(){
+     *     // Business network definition installed
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+
+     * @memberof AdminConnection
+     */
+    upgrade(businessNetworkIdentifier) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.upgrade(this.securityContext, businessNetworkIdentifier);
+    }
+
+    /**
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the node.js module.
      * @example
@@ -392,7 +418,9 @@ class AdminConnection {
         const method = 'activate';
         LOG.entry(method);
         const json = {
-            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity'
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
+            transactionId: uuid.v4(),
+            timestamp: new Date().toISOString()
         };
         return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
             .then(() => {

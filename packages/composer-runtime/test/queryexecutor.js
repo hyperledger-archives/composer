@@ -24,7 +24,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 let matchRelationship = function (fqi) {
     return sinon.match((value) => {
