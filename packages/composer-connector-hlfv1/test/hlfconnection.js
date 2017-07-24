@@ -1927,7 +1927,6 @@ describe('HLFConnection', () => {
                 });
         });
 
-
         it('should handle a chaincode running a prelease build is newer than the connector saying it isn\'t compatible', () => {
             const oldVersion = connectorPackageJSON.version;
             connectorPackageJSON.version += '-20170101';
@@ -1944,13 +1943,6 @@ describe('HLFConnection', () => {
                     result.isCompatible.should.be.false;
                 });
         });
-
-        it('should handle errors invoking the chaincode', () => {
-            sandbox.stub(connection, 'queryChainCode').rejects('such error');
-            return connection._checkRuntimeVersions(mockSecurityContext)
-                .should.be.rejectedWith(/such error/);
-        });
-
     });
 
     describe('#ping', () => {

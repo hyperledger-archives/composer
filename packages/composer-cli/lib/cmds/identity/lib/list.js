@@ -23,7 +23,6 @@ const Pretty = require('prettyjson');
  * <p>
  * Composer "identity list" command
  * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class List {
