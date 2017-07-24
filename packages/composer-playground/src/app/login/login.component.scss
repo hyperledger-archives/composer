@@ -5,10 +5,6 @@ app-login {
     width: 100vw;
     background-color: $fourth-highlight;
 
-    section.header {
-        padding: $space-large $space-large $space-medium $space-large;
-    }
-
     section.main-view {
         overflow-y: auto;
         height: calc(100vh - 63px - 70px);
@@ -24,13 +20,26 @@ app-login {
             .connection-profile-buttons {
                 display: inline-block;
                 margin-left: $space-medium;
+
+                button {
+                    &.action.circular:hover,
+                    &.action.circular:focus {
+                        background-color: $white;
+                        border-bottom: 2px solid transparent;
+                    }
+                }
             }
 
             .identities {
                 display: flex;
                 flex-wrap: wrap;
-            }
+                margin-top: $space-smedium;
 
+                identity-card {
+                    margin-left: $space-large;
+                    margin-bottom: $space-large;
+                }
+            }
         }
     }
 
