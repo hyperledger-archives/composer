@@ -734,12 +734,14 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should ignore string values for message size limits', () => {
-            connectOptions.maxSendSize = '1';
-            connectOptions.maxRecvSize = '2';
+        it('should set message size limits for string values', () => {
+            connectOptions.maxSendSize = '38';
+            connectOptions.maxRecvSize = '92';
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
-                    configSettingStub.called.should.be.false;
+                    sinon.assert.calledTwice(configSettingStub);
+                    sinon.assert.calledWith(configSettingStub, 'grpc-max-send-message-length', 38 * 1024 * 1024);
+                    sinon.assert.calledWith(configSettingStub, 'grpc-max-receive-message-length', 92 * 1024 * 1024);
                 });
         });
 

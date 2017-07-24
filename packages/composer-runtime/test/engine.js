@@ -132,6 +132,11 @@ describe('Engine', () => {
             }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"businessNetworkArchive\",\"initArgs\"\]"/);
         });
 
+        it('should accept upgrade function', () => {
+            return engine.init(mockContext, 'upgrade')
+                .then(() => {});
+        });
+
         it('should enable logging if logging specified on the init', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);

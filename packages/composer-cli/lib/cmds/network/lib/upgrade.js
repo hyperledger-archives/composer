@@ -21,14 +21,14 @@ const ora = require('ora');
 
 /**
  * <p>
- * Composer install command
+ * Composer upgrade command
  * </p>
  * @private
  */
-class Install {
+class Upgrade {
 
    /**
-    * Command process for install command
+    * Command process for upgrade command
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
@@ -38,13 +38,12 @@ class Install {
         let spinner;
 
         return (() => {
-            spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
+            spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.installId, argv.installSecret, null);
+            return adminConnection.connect(argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, null);
         })()
         .then((result) => {
-            let installOptions = cmdUtil.parseOptions(argv);
-            return adminConnection.install(argv.businessNetworkName, installOptions);
+            return adminConnection.upgrade(argv.businessNetworkName);
         }).then((result) => {
             spinner.succeed();
             console.log();
@@ -63,4 +62,4 @@ class Install {
     }
 }
 
-module.exports = Install;
+module.exports = Upgrade;
