@@ -194,14 +194,10 @@ RegClient.prototype.get = function (url, options, callback) {
         forceSearchFail = false;
         return callback('some error');
     } else if (url.startsWith('https://registry.npmjs.org/-/v1/search') && sortableList) {
+        sortableList = false;
         return callback(null, getUnsortedSampleNames);
     } else if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
         return callback(null, getSampleNames);
-    }
-
-    if (sortableList) {
-        sortableList = false;
-        return callback(null, getUnsortedSampleNames);
     }
 
     if (url.startsWith('https://registry.npmjs.org/bob') && forceMetadataFail) {
@@ -233,6 +229,11 @@ RegClient.prototype.get = function (url, options, callback) {
     } else if (url.startsWith('https://registry.npmjs.org/bat')) {
         console.log('CALLING BAT');
         return callback(null, getMetaDataUnsortedBat);
+    }
+
+    if (sortableList) {
+        sortableList = false;
+        return callback(null, getUnsortedSampleNames);
     }
 
 };
