@@ -88,13 +88,12 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
 
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
-            LOG.info('runtime has been upgraded');
+            LOG.info(method, 'runtime has been upgraded');
             //TODO: Here we would need to invoke migrations if we are to support
             //upgrading from anything more than just micro version changes of the
             //runtime. Currently not supported and the connector will not allow
