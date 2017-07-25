@@ -21,14 +21,17 @@ const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
 
 /**
- * An ID card.
+ * An ID card. Encapsulates credentials and other information required to connect to a specific business network
+ * as a specific user.
+ * <p>
+ * Instances of this class should be created using {@link IdCard.fromArchive}.
  * @class
  * @memberof module:composer-common
  */
 class IdCard {
 
     /**
-     * Create the BusinessNetworkDefinition.
+     * Create the IdCard.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link IdCard.fromArchive}</strong>
@@ -36,9 +39,10 @@ class IdCard {
      * @param {Object} connection - connection properties associated with the card.
      * @param {Map} credentials - map of credential filename String keys to credential data Buffer objects.
      * @param {Map} tlscerts - map of TLS certificate filename String keys to TLS certificate data Buffer objects.
+     * @param {Object} image - object of the form <i>{ name: imageFileName, data: bufferOfImageData }</i>.
      * @private
      */
-    constructor(metadata, connection, credentials, tlscerts) {
+    constructor(metadata, connection, credentials, tlscerts, image) {
         const method = 'constructor';
         LOG.entry(method);
 
@@ -46,6 +50,7 @@ class IdCard {
         this.connection = connection;
         this.credentials = credentials;
         this.tlscerts = tlscerts;
+        this.image = image;
 
         LOG.exit(method);
     }
@@ -69,9 +74,9 @@ class IdCard {
     }
 
     /**
-     * Business network to which the ID card applies. Generally this will be present but may be omitted for system
-     * cards.
-     * @return {String} description, or {@link undefined} if none exists.
+     * Name of the business network to which the ID card applies. Generally this will be present but may be
+     * omitted for system cards.
+     * @return {String} name, or {@link undefined} if none exists.
      */
     getBusinessNetwork() {
         return this.metadata.businessNetwork;
@@ -157,12 +162,12 @@ class IdCard {
                 if (metadata.image) {
                     LOG.debug(method, 'Loading image ' + metadata.image);
 
-                    const imagePromise = zip.file(metadata.image);
-                    if (!imagePromise) {
+                    const imageFile = zip.file(metadata.image);
+                    if (!imageFile) {
                         throw Error('Image file not found: ' + metadata.image);
                     }
 
-                    return imagePromise.async('nodebuffer').then((imageContent) => {
+                    return imageFile.async('nodebuffer').then((imageContent) => {
                         const shortFilename = path.basename(metadata.image);
                         image = {
                             name: shortFilename,
@@ -194,8 +199,7 @@ class IdCard {
             loadDirectoryToMap('tlscerts', tlscerts);
 
             return promise.then(() => {
-                const idCard = new IdCard(metadata, connection, credentials, tlscerts);
-                idCard.image = image;
+                const idCard = new IdCard(metadata, connection, credentials, tlscerts, image);
                 LOG.exit(method, idCard.toString());
                 return idCard;
             });
