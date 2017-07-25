@@ -168,6 +168,7 @@ describe('BusinessNetworkConnectionWrapper', () => {
             mockBusinessNetworkConnection.disconnect.resolves();
             return businessNetworkConnectionWrapper.disconnect()
                 .then(() => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.removeAllListeners);
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.disconnect);
                     businessNetworkConnectionWrapper.connected.should.be.false;
                     businessNetworkConnectionWrapper.connecting.should.be.false;
@@ -182,11 +183,20 @@ describe('BusinessNetworkConnectionWrapper', () => {
 
     });
 
-    describe('#getBusinessNetwork', () => {
+    describe('#getBusinessNetworkConnection', () => {
+
+        it('should get the business network connection', () => {
+            businessNetworkConnectionWrapper.businessNetworkConnection = mockBusinessNetworkConnection;
+            businessNetworkConnectionWrapper.getBusinessNetworkConnection().should.equal(mockBusinessNetworkConnection);
+        });
+
+    });
+
+    describe('#getBusinessNetworkDefinition', () => {
 
         it('should get the business network definition', () => {
             businessNetworkConnectionWrapper.businessNetwork = mockBusinessNetworkDefinition;
-            businessNetworkConnectionWrapper.getBusinessNetwork().should.equal(mockBusinessNetworkDefinition);
+            businessNetworkConnectionWrapper.getBusinessNetworkDefinition().should.equal(mockBusinessNetworkDefinition);
         });
 
     });

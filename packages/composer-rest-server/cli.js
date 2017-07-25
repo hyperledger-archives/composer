@@ -34,6 +34,7 @@ const yargs = require('yargs')
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
     .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
+    .option('w', { alias: 'websockets', describe: 'Enable event publication over WebSockets', type: 'boolean', default: process.env.COMPOSER_WEBSOCKETS || true })
     .alias('v', 'version')
     .version(() => {
         return getInfo('composer-rest-server')+
@@ -73,7 +74,8 @@ if (interactive) {
                 participantId: answers.userid,
                 participantPwd: answers.secret,
                 namespaces: answers.namespaces,
-                security: answers.security
+                security: answers.security,
+                websockets: answers.websockets
             };
             console.log('\nTo restart the REST server using the same options, issue the following command:');
             let cmd = [ 'composer-rest-server' ];
@@ -85,6 +87,7 @@ if (interactive) {
                 '-N': 'namespaces',
                 '-P': 'port',
                 '-S': 'security',
+                '-w': 'websockets'
             };
             for (let arg in args) {
                 const propName = args[arg];
@@ -109,7 +112,8 @@ if (interactive) {
             participantPwd: yargs.s,
             namespaces: yargs.N,
             port: yargs.P,
-            security: yargs.S
+            security: yargs.S,
+            websockets: yargs.w
         });
     }
 }
@@ -121,10 +125,11 @@ module.exports = promise.then((composer) => {
     return server(composer);
 
 })
-.then((app) => {
+.then((result) => {
 
     // Start the LoopBack application.
-    return app.listen(function () {
+    const app = result.app, server = result.server;
+    return server.listen(app.get('port'), () => {
         app.emit('started');
         let baseUrl = app.get('url').replace(/\/$/, '');
         console.log('Web server listening at: %s', baseUrl);

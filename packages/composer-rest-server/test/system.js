@@ -120,8 +120,8 @@ describe('System REST API unit tests', () => {
                 namespaces: 'never'
             });
         })
-        .then((app_) => {
-            app = app_;
+        .then((result) => {
+            app = result.app;
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
             return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
         })

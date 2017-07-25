@@ -19,6 +19,7 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
 const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnectionwrapper');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const EventEmitter = require('events');
 const Factory = require('composer-common').Factory;
 const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
@@ -105,7 +106,8 @@ describe('BusinessNetworkConnector', () => {
         // setup test instance
         testConnector = new BusinessNetworkConnector(settings);
         mockBusinessNetworkConnectionWrapper = sinon.createStubInstance(BusinessNetworkConnectionWrapper);
-        mockBusinessNetworkConnectionWrapper.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+        mockBusinessNetworkConnectionWrapper.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+        mockBusinessNetworkConnectionWrapper.getBusinessNetworkDefinition.returns(mockBusinessNetworkDefinition);
         mockBusinessNetworkConnectionWrapper.getSerializer.returns(mockSerializer);
         mockBusinessNetworkConnectionWrapper.getModelManager.returns(modelManager);
         mockBusinessNetworkConnectionWrapper.getIntrospector.returns(introspector);
@@ -132,6 +134,7 @@ describe('BusinessNetworkConnector', () => {
             testConnector = new BusinessNetworkConnector(settings);
             testConnector.connectionWrappers.should.be.an.instanceOf(NodeCache);
             testConnector.defaultConnectionWrapper.should.be.an.instanceOf(BusinessNetworkConnectionWrapper);
+            testConnector.eventemitter.should.be.an.instanceOf(EventEmitter);
         });
 
         it('should default the namepsaces setting if not specified', () => {
@@ -297,6 +300,24 @@ describe('BusinessNetworkConnector', () => {
 
         });
 
+        it('should connect to a business network and register for events', () => {
+            mockBusinessNetworkConnectionWrapper.connect.resolves();
+            return testConnector.connect()
+                .then(() => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.on);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.on, 'event', sinon.match.func);
+                    const cb = sinon.stub();
+                    mockSerializer.toJSON.returns({ foo: 'bar' });
+                    testConnector.eventemitter.once('event', cb);
+                    mockBusinessNetworkConnection.on.args[0][1]({ foo: 'bar' });
+                    sinon.assert.calledOnce(mockSerializer.toJSON);
+                    sinon.assert.calledWith(mockSerializer.toJSON, { foo: 'bar' });
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, { foo: 'bar' });
+                });
+
+        });
+
         it('should handle an error connecting to a business network', () => {
             const err = new Error('such error');
             mockBusinessNetworkConnectionWrapper.connect.rejects(err);
@@ -390,6 +411,35 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, err);
                 });
+        });
+
+    });
+
+    describe('#subscribe', () => {
+
+        it('should subscribe to events from the business network', () => {
+            const cb = sinon.stub();
+            testConnector.subscribe(cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
+        });
+
+    });
+
+
+    describe('#unsubscribe', () => {
+
+        it('should unsubscribe from events from the business network', () => {
+            const cb = sinon.stub();
+            testConnector.eventemitter.on('event', cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
+            testConnector.unsubscribe(cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
         });
 
     });

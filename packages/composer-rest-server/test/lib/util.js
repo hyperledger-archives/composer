@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security']);
+                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security', 'websockets']);
                 });
         });
 
