@@ -37,7 +37,7 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 const LOG = Logger.getLog('Engine');
 
@@ -130,6 +130,11 @@ describe('Engine', () => {
             (() => {
                 engine.init(mockContext, 'init', ['no', 'args', 'supported']);
             }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"businessNetworkArchive\",\"initArgs\"\]"/);
+        });
+
+        it('should accept upgrade function', () => {
+            return engine.init(mockContext, 'upgrade')
+                .then(() => {});
         });
 
         it('should enable logging if logging specified on the init', () => {

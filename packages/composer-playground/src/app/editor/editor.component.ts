@@ -298,7 +298,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     addQueryFile(query) {
         if (this.files.findIndex((file) => file.query === true) !== -1) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaces.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
             confirmModalRef.result.then((result) => {
                 this.processQueryFileAddition(query);

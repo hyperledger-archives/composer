@@ -17,10 +17,12 @@
 const boot = require('loopback-boot');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const http = require('http');
 const loopback = require('loopback');
 const loopbackPassport = require('loopback-component-passport');
 const path = require('path');
 const session = require('express-session');
+const WebSocket = require('ws');
 
 module.exports = function (composer) {
 
@@ -133,7 +135,36 @@ module.exports = function (composer) {
 
         }
 
-        return app;
+        // Create the HTTP server.
+        const server = http.createServer(app);
+
+        // The following configuration is only required if WebSockets are enabled.
+        const websockets = !!composer.websockets;
+        if (websockets) {
+
+            // Create a new WebSocket server that manages clients for us.
+            const wss = new WebSocket.Server({
+                server,
+                clientTracking: true
+            });
+
+            // Add a broadcast method that sends data to all connected clients.
+            wss.broadcast = (data) => {
+                wss.clients.forEach((client) => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(data);
+                    }
+                });
+            };
+
+            // Store the WebSocket server for the boot script to find.
+            app.set('wss', wss);
+
+        }
+
+        // Return the application and the server (both are needed to start the thing).
+        return { app, server };
+
     });
 
 };
@@ -145,10 +176,11 @@ module.exports = function (composer) {
 if (require.main === module) {
     const composerConfig = require('./composer.json');
     module.exports(composerConfig)
-        .then((app) => {
+        .then((result) => {
 
             // Start the LoopBack application.
-            return app.listen(function () {
+            const app = result.app, server = result.server;
+            return server.listen(() => {
                 app.emit('started');
                 let baseUrl = app.get('url').replace(/\/$/, '');
                 console.log('Web server listening at: %s', baseUrl);

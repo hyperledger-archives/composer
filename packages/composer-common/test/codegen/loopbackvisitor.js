@@ -918,7 +918,7 @@ describe('LoopbackVisitor', () => {
                 });
 
                 it('should use the model file of the referencing type to resolve enumeration types', () => {
-                    modelManager.addModelFile(`
+                    modelManager.updateModelFile(`
                     namespace org.acme.base
                     enum Enum {
                         o SOME_VALUE
@@ -1021,7 +1021,7 @@ describe('LoopbackVisitor', () => {
                 });
 
                 it('should use the model file of the referencing type to resolve other types', () => {
-                    modelManager.addModelFile(`
+                    modelManager.updateModelFile(`
                     namespace org.acme.base
                     asset MyInlineAsset identified by assetId {
                         o String assetId

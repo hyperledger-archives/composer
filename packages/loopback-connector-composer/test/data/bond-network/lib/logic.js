@@ -37,5 +37,39 @@ function publish(publishBond) {
         });
 }
 
+/**
+ * Publish a new bond
+ * @param {org.acme.bond.EmitBondEvent} emitBondEvent - the publishBond transaction
+ * @transaction
+ */
+function bondEventEmitter(emitBondEvent) {
+    var factory = getFactory();
+    var bondEvent = factory.newEvent('org.acme.bond', 'BondEvent');
+    bondEvent.prop1 = 'foo';
+    bondEvent.prop2 = 'bar';
+    emit(bondEvent);
+}
+
+/**
+ * Publish a new bond
+ * @param {org.acme.bond.EmitMultipleBondEvents} emitMultipleBondEvents - the publishBond transaction
+ * @transaction
+ */
+function multipleBondEventEmitter(emitMultipleBondEvents) {
+    var factory = getFactory();
+    var bondEvent = factory.newEvent('org.acme.bond', 'BondEvent');
+    bondEvent.prop1 = 'foo';
+    bondEvent.prop2 = 'bar';
+    emit(bondEvent);
+    bondEvent = factory.newEvent('org.acme.bond', 'BondEvent');
+    bondEvent.prop1 = 'rah';
+    bondEvent.prop2 = 'car';
+    emit(bondEvent);
+    bondEvent = factory.newEvent('org.acme.bond', 'BondEvent');
+    bondEvent.prop1 = 'zoo';
+    bondEvent.prop2 = 'moo';
+    emit(bondEvent);
+}
+
 /*eslint-enable no-unused-vars*/
 /*eslint-enable no-undef*/

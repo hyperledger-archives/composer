@@ -20,6 +20,7 @@ const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
+const Property = require('../../lib/introspect/property');
 const parser = require('../../lib/query/parser');
 require('chai').should();
 const sinon = require('sinon');
@@ -32,6 +33,7 @@ describe('Query', () => {
     let mockModelFile;
     let mockAssetDeclaration;
     let mockParticipantDeclaration;
+    let mockProperty;
     let sandbox;
 
     const ast = {
@@ -75,15 +77,21 @@ describe('Query', () => {
 
     beforeEach(() => {
         queryFile = sinon.createStubInstance(QueryFile);
-        mockModelManager =sinon.createStubInstance(ModelManager);
+        mockModelManager = sinon.createStubInstance(ModelManager);
         queryFile.getModelManager.returns(mockModelManager);
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+        mockAssetDeclaration.ast = {location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }};
         mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+        mockParticipantDeclaration.ast = {location: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 22, line: 1, column: 23 } }};
         mockModelManager.getModelFile.withArgs('org.acme').returns(mockModelFile);
-        mockModelManager.getType.withArgs('org.acme.Driver').returns(mockAssetDeclaration);
+        mockModelManager.getType.withArgs('org.acme.Driver').returns(mockParticipantDeclaration);
         mockModelFile.getLocalType.withArgs('Car').returns(mockAssetDeclaration);
         mockModelFile.getLocalType.withArgs('Driver').returns(mockParticipantDeclaration);
+        mockProperty = sinon.createStubInstance(Property);
+        mockProperty.getType.returns('String');
+        mockProperty.isPrimitive.returns(true);
+        mockParticipantDeclaration.getNestedProperty.withArgs('firstName').returns(mockProperty);
         sandbox = sinon.sandbox.create();
     });
 
@@ -117,7 +125,7 @@ describe('Query', () => {
             let q = new Query( queryFile, invalidAst );
             (() => {
                 q.validate();
-            }).should.throw(/Cannot read property 'isConcept' of undefined/);
+            }).should.throw(/Type does not exist undefined/);
         });
     });
 

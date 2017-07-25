@@ -19,7 +19,7 @@ const Util = require('../../lib/util');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('Util', () => {
 
@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security']);
+                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security', 'websockets']);
                 });
         });
 

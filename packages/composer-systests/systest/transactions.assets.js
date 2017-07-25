@@ -29,7 +29,6 @@ chai.use(require('chai-as-promised'));
 describe('Transaction (asset specific) system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
 
     before(function () {
@@ -47,13 +46,7 @@ describe('Transaction (asset specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        console.log('testing install/start');
-        // Have some system test perform install/start rather than deploy
-        return admin.install(businessNetworkDefinition.getName())
-            .then(() => {
-                return admin.start(businessNetworkDefinition);
-            })
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-assets')
                     .then((result) => {

@@ -57,3 +57,16 @@ transaction PublishBond  {
   o String ISINCode
   o Bond bond
 }
+
+event BondEvent {
+  o String prop1
+  o String prop2
+}
+
+transaction EmitBondEvent {
+
+}
+
+transaction EmitMultipleBondEvents {
+
+}

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IllegalModelException = require('../introspect/illegalmodelexception');
+const InvalidQueryException = require('./invalidqueryexception');
 const Limit = require('./limit');
 const OrderBy = require('./orderby');
 const Skip = require('./skip');
@@ -39,7 +39,7 @@ class Select {
      */
     constructor(query, ast) {
         if(!query || !ast) {
-            throw new IllegalModelException('Invalid Query or AST');
+            throw new InvalidQueryException('Invalid Query or AST');
         }
 
         this.ast = ast;
@@ -118,18 +118,23 @@ class Select {
     validate() {
 
         // The grammar ensures that the resource property is set.
-        const mm = this.getQuery().getQueryFile().getModelManager();
+        const resourceClassDeclaration = this.getResourceClassDeclaration();
 
-        // checks the resource type exists
-        const resourceClassDeclaration = mm.getType(this.resource);
+        if(!resourceClassDeclaration) {
+            throw new InvalidQueryException('Type does not exist ' + this.resource, this.getQuery().getQueryFile(), this.ast.location);
+        }
 
         // check that it is not an enum or concept
         if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
-            throw new Error('Can only select assets, participants and transactions.');
+            throw new InvalidQueryException('Can only select assets, participants and transactions.', this.getQuery().getQueryFile(), this.ast.location);
         }
 
         if(this.where) {
             this.where.validate();
+        }
+
+        if(this.orderBy) {
+            this.orderBy.validate();
         }
 
         if(this.limit) {
@@ -138,10 +143,6 @@ class Select {
 
         if(this.skip) {
             this.skip.validate();
-        }
-
-        if(this.orderBy) {
-            this.orderBy.validate();
         }
     }
 
@@ -152,6 +153,19 @@ class Select {
      */
     getResource() {
         return this.resource;
+    }
+
+    /**
+     * Returns the FQN of the resource of this select or null if it does not have a resource.
+     *
+     * @return {string} the fully qualified name of the select
+     */
+    getResourceClassDeclaration() {
+        // The grammar ensures that the resource property is set.
+        const mm = this.getQuery().getQueryFile().getModelManager();
+
+        // checks the resource type exists
+        return mm.getType(this.resource);
     }
 
     /**
@@ -207,6 +221,13 @@ class Select {
         return this.text;
     }
 
+    /**
+     * Return the AST for this select statement.
+     * @return {Object} The AST for this select statement.
+     */
+    getAST() {
+        return this.ast;
+    }
 }
 
 module.exports = Select;

@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-server",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "The remote connector server for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -44,10 +44,10 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.10.0",
-    "composer-connector-embedded": "0.10.0",
-    "composer-connector-hlf": "0.10.0",
-    "composer-connector-hlfv1": "0.10.0",
+    "composer-common": "0.10.1",
+    "composer-connector-embedded": "0.10.1",
+    "composer-connector-hlf": "0.10.1",
+    "composer-connector-hlfv1": "0.10.1",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.3",
     "uuid": "^3.0.1",
@@ -58,10 +58,10 @@
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
+    "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
     "proxyquire": "^1.7.11",
-    "sinon": "^1.17.7"
+    "sinon": "^2.3.8"
   },
   "nyc": {
     "exclude": [

@@ -116,7 +116,7 @@ describe('BusinessNetworkDefinition', () => {
                 let classDecl = intro.getClassDeclarations().filter( (element) => {
                     return !element.isSystemType();
                 });
-                classDecl.length.should.equal(25);
+                classDecl.length.should.equal(27);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });

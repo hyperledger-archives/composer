@@ -193,7 +193,6 @@ class ModelUtil {
             return type;
         }
     }
-
 }
 
 module.exports = ModelUtil;

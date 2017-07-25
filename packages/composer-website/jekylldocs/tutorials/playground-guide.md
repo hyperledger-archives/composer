@@ -96,6 +96,14 @@ rule Default {
     resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
 ```
 
 This access control simply allows all participants access to all resources.

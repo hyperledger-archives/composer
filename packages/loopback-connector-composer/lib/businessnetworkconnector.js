@@ -20,6 +20,7 @@ const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const Connector = require('loopback-connector').Connector;
 const crypto = require('crypto');
 const debug = require('debug')('loopback:connector:composer');
+const EventEmitter = require('events');
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
@@ -70,6 +71,9 @@ class BusinessNetworkConnector extends Connector {
                 });
         });
         this.defaultConnectionWrapper = new BusinessNetworkConnectionWrapper(settings);
+
+        // Create the event handler for this connector.
+        this.eventemitter = new EventEmitter();
 
     }
 
@@ -137,10 +141,19 @@ class BusinessNetworkConnector extends Connector {
         const connectionWrapper = this.getConnectionWrapper(null);
         return connectionWrapper.connect()
             .then(() => {
-                this.businessNetworkDefinition = connectionWrapper.getBusinessNetwork();
+
+                // Store required objects from the connection wrapper.
+                this.businessNetworkDefinition = connectionWrapper.getBusinessNetworkDefinition();
                 this.serializer = connectionWrapper.getSerializer();
                 this.modelManager = connectionWrapper.getModelManager();
                 this.introspector = connectionWrapper.getIntrospector();
+
+                // Register an event handler.
+                connectionWrapper.getBusinessNetworkConnection().on('event', (event) => {
+                    const json = this.serializer.toJSON(event);
+                    this.eventemitter.emit('event', json);
+                });
+
                 if (callback) {
                     callback();
                 }
@@ -195,6 +208,22 @@ class BusinessNetworkConnector extends Connector {
             .catch((error) => {
                 callback(error);
             });
+    }
+
+    /**
+     * Subscribe to events that are published from the business network.
+     * @param {function} listener The callback to call when an event is received.
+     */
+    subscribe(listener) {
+        this.eventemitter.on('event', listener);
+    }
+
+    /**
+     * Subscribe to events that are published from the business network.
+     * @param {function} listener The callback to call when an event is received.
+     */
+    unsubscribe(listener) {
+        this.eventemitter.removeListener('event', listener);
     }
 
     /**

@@ -245,6 +245,7 @@ class Api {
             const method = 'emit';
             LOG.entry(method, event);
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
+            event.timestamp = context.getTransaction().timestamp;
             let serializedEvent = serializer.toJSON(event, {
                 convertResourcesToRelationships: true
             });

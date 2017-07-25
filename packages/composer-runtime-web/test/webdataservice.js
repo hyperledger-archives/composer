@@ -24,7 +24,6 @@ describe('WebDataService', () => {
     let dataService;
 
     beforeEach(() => {
-        dataService = new WebDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
     });
 
     afterEach(() => {

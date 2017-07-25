@@ -26,7 +26,7 @@ const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
 
@@ -63,6 +63,7 @@ describe('composer-discovery boot script', () => {
             fs: bfs_fs
         };
         app = loopback();
+        app.set('composer', composerConfig);
         return new Promise((resolve, reject) => {
             boot(app, path.resolve(__dirname, '..', '..', '..', 'server'), (err) => {
                 if (err) {
@@ -70,14 +71,6 @@ describe('composer-discovery boot script', () => {
                 }
                 resolve();
             });
-        })
-        .then(() => {
-            app.get = (name) => {
-                if (name !== 'composer') {
-                    return null;
-                }
-                return composerConfig;
-            };
         });
     });
 
@@ -173,6 +166,28 @@ describe('composer-discovery boot script', () => {
             .then((identity) => {
                 identity.should.exist;
                 app.loopback.createDataSource.args[0][1].wallet.should.be.an.instanceOf(LoopBackWallet);
+            });
+    });
+
+    it('should subscribe to events and ignore them if WebSocket server not specified', () => {
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                app.models.System.dataSource.connector.eventemitter.emit('event', { foo: 'bar' });
+            });
+    });
+
+    it('should subscribe to events and publish them if WebSocket server is specified', () => {
+        const wss = {
+            broadcast: sinon.stub()
+        };
+        app.set('wss', wss);
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                app.models.System.dataSource.connector.eventemitter.emit('event', { foo: 'bar' });
+                sinon.assert.calledOnce(wss.broadcast);
+                sinon.assert.calledWith(wss.broadcast, '{"foo":"bar"}');
             });
     });
 
