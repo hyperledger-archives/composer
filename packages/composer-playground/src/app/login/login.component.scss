@@ -20,15 +20,53 @@ app-login {
             .connection-profile-buttons {
                 display: inline-block;
                 margin-left: $space-medium;
+////
+                    & > * {
+                        margin-top: $space-medium;
+                    }
 
-                button {
-                    &.action.circular:hover,
-                    &.action.circular:focus {
-                        background-color: $white;
-                        border-bottom: 2px solid transparent;
+                    .userId-image {
+                        background-color: $fourth-highlight;
+                        border: 1px solid $fourth-highlight;
+                        border-radius: 50%;
+                        width: 75px;
+                        height: 75px;
+                        margin: 0 auto;
+                        position: relative;
+
+                        span {
+                            position: absolute;
+                            top: 26px;
+                            right: 26px;
+                            color: $second-highlight;
+                            text-transform: uppercase;
+                        }
+                    }
+
+                    .userId {
+                        text-align: center;
+                    }
+
+                    .action-buttons {
+                        display: flex;
+                        justify-content: center;
+
+                        button:first-child {
+                            margin-right: $space-large;
+                        }
+
+                        svg {
+                            fill: $second-highlight;
+                        }
+                        button {
+                            &.action.circular:hover,
+                            &.action.circular:focus {
+                                background-color: $white;
+                                border-bottom: 2px solid transparent;
+                            }
+                        }
                     }
                 }
-            }
 
             .identities {
                 display: flex;
