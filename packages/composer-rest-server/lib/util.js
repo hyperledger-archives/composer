@@ -94,6 +94,12 @@ class Util {
                 type: 'confirm',
                 message: 'Specify if you want the generated REST API to be secured:',
                 default: false
+            },
+            {
+                name: 'websockets',
+                type: 'confirm',
+                message: 'Specify if you want to enable event publication over WebSockets:',
+                default: true
             }
         ];
 

@@ -845,6 +845,15 @@ module.exports = function (app, callback) {
 
         });
 
+        // Subscribe to events from the business network.
+        dataSource.connector.subscribe((event) => {
+            const wss = app.get('wss');
+            if (wss) {
+                const data = JSON.stringify(event);
+                wss.broadcast(data);
+            }
+        });
+
     })
     .then(() => {
         console.log('Added schemas for all types to Loopback');
