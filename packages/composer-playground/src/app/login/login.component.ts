@@ -9,6 +9,8 @@ import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { WalletService } from '../services/wallet.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DrawerService } from '../common/drawer';
+import { ImportIdentityComponent } from './import-identity';
 
 @Component({
     selector: 'app-login',
@@ -30,6 +32,7 @@ export class LoginComponent implements OnInit {
                 private initializationService: InitializationService,
                 private walletService: WalletService,
                 private modalService: NgbModal,
+                private drawerService: DrawerService,
                 private alertService: AlertService) {
 
     }

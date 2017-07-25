@@ -24,6 +24,7 @@ import { InitializationService } from '../services/initialization.service';
 import { LoginComponent } from './login.component';
 import { AlertService } from '../basic-modals/alert.service';
 import { WalletService } from '../services/wallet.service';
+import { DrawerService } from '../common/drawer';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 let should = chai.should();
@@ -76,6 +77,22 @@ class MockConnectionProfileComponent {
     public profileUpdated: EventEmitter<any> = new EventEmitter<any>();
 }
 
+@Component({
+    selector: 'identity-card',
+    template: ''
+})
+class MockIdentityCardComponent {
+    @Input() identity: any;
+}
+
+@Component({
+    selector: 'app-footer',
+    template: ''
+})
+class MockFooterComponent {
+
+}
+
 describe(`LoginComponent`, () => {
 
     let component: LoginComponent;
@@ -90,6 +107,7 @@ describe(`LoginComponent`, () => {
     let mockAlertService;
     let mockWalletService;
     let mockModal;
+    let mockDrawer;
 
     beforeEach(() => {
 
@@ -100,6 +118,7 @@ describe(`LoginComponent`, () => {
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockWalletService = sinon.createStubInstance(WalletService);
+        mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
 
         routerStub = new RouterStub();
@@ -113,7 +132,9 @@ describe(`LoginComponent`, () => {
         TestBed.configureTestingModule({
             declarations: [
                 LoginComponent,
-                MockConnectionProfileComponent
+                MockConnectionProfileComponent,
+                MockIdentityCardComponent,
+                MockFooterComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
@@ -124,6 +145,7 @@ describe(`LoginComponent`, () => {
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: WalletService, useValue: mockWalletService},
+                {provide: DrawerService, useValue: mockDrawer},
                 {provide: NgbModal, useValue: mockModal}
             ]
         });
