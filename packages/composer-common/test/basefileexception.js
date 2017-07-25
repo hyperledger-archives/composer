@@ -14,37 +14,37 @@
 
 'use strict';
 
-const BaseException = require('../../lib/baseexception');
-const BaseModelException = require('../../lib/introspect/basemodelexception');
+const BaseException = require('../lib/baseexception');
+const BaseFileException = require('../lib/basefileexception');
 
 require('chai').should();
 
-describe('BaseModelException', function () {
+describe('BaseFileException', function () {
 
     describe('#constructor', function () {
 
-        it('should return an instance of BaseException', function () {
-            let exc = new BaseModelException('message', {start: 1, end: 2}, 'full message');
+        it('should return an instance of BaseFileException', function () {
+            let exc = new BaseFileException('message', {start: 1, end: 2}, 'full message');
             exc.should.be.an.instanceOf(BaseException);
         });
 
         it('should have a fileLocation', function () {
-            let exc = new BaseModelException('message', {start: 1, end: 2}, 'full message');
+            let exc = new BaseFileException('message', {start: 1, end: 2}, 'full message');
             exc.getFileLocation().should.deep.equal({start: 1, end: 2});
         });
 
         it('should have a short message', function () {
-            let exc = new BaseModelException('message', {start: 1, end: 2}, 'full message');
+            let exc = new BaseFileException('message', {start: 1, end: 2}, 'full message');
             exc.getShortMessage().should.equal('message');
         });
 
         it('should have a stack trace', function () {
-            let exc = new BaseModelException('message', {start: 1, end: 2}, 'full message');
+            let exc = new BaseFileException('message', {start: 1, end: 2}, 'full message');
             exc.stack.should.be.a('string');
         });
 
-        it('should use messahe over fulMessage', () => {
-            let exc = new BaseModelException('message', {start: 1, end: 2});
+        it('should use message over fullMessage', () => {
+            let exc = new BaseFileException('message', {start: 1, end: 2});
             exc.message.should.equal('message');
         });
 
@@ -52,7 +52,7 @@ describe('BaseModelException', function () {
             let captureStackTrace = Error.captureStackTrace;
             Error.captureStackTrace = null;
             try {
-                new BaseModelException('message', {start: 1, end: 2}, 'full message');
+                new BaseFileException('message', {start: 1, end: 2}, 'full message');
             } finally {
                 Error.captureStackTrace = captureStackTrace;
             }

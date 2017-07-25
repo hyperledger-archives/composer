@@ -88,7 +88,9 @@ class OrderBy {
      * @private
      */
     validate() {
-        // TODO (DCS) check that the fields we are sorting by exist!
+        for(let n=0; n < this.sortCriteria.length; n++) {
+            this.sortCriteria[n].validate();
+        }
     }
 
     /**

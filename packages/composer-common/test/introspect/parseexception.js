@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BaseModelException = require('../../lib/introspect/basemodelexception');
+const BaseFileException = require('../../lib/basefileexception');
 const ParseException = require('../../lib/introspect/parseexception');
 
 require('chai').should();
@@ -26,9 +26,9 @@ describe('ParseException', function () {
 
     describe('#constructor', function () {
 
-        it('should return an instance of BaseException', function () {
+        it('should return an instance of BaseFileException', function () {
             let exc = new ParseException('message', fileLocation);
-            exc.should.be.an.instanceOf(BaseModelException);
+            exc.should.be.an.instanceOf(BaseFileException);
         });
 
         it('should have a message', function () {
