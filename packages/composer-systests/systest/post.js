@@ -28,7 +28,6 @@ chai.use(require('chai-as-promised'));
 describe('HTTP POST system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
 
     before(function () {
@@ -46,8 +45,7 @@ describe('HTTP POST system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-post')
                     .then((result) => {

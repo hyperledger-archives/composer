@@ -3,8 +3,8 @@ layout: default
 title: Writing Web or mobile applications
 category: start
 section: applications
-index-order: 2
-sidebar: sidebars/applications.md
+index-order: 502
+sidebar: sidebars/accordion-toc0.md
 excerpt: Web or mobile applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the `composer-rest-server` to [**dynamically generate a REST API from the deployed business network**](./web.html).
 ---
 

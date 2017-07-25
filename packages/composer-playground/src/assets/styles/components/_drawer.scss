@@ -1,0 +1,28 @@
+.composer {
+  drawer {
+    .drawer-content {
+      header.drawer-header {
+        margin: $space-xlarge $space-large $space-large $space-large;
+        padding: 0 $space-medium 0 $space-medium;
+
+        .modal-exit {
+          position: absolute;
+          top: 0px;
+          right: $space-smedium;
+          color: $primary-text;
+        }
+      }
+
+      section.drawer-body {
+        margin: $space-large;
+        padding: 0 $space-medium 0 $space-medium;
+      }
+
+      footer.drawer-footer {
+        margin: $space-large;
+        background-color: $white;
+        padding: 0 $space-medium 0 $space-medium;
+      }
+    }
+  }
+}

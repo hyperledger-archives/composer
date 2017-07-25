@@ -24,7 +24,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 // Install the PouchDB plugins.
 PouchDB.plugin(require('pouchdb-adapter-memory'));
@@ -57,6 +57,20 @@ describe('PouchDBDataService', () => {
     afterEach(() => {
         sandbox.restore();
         return dataService.destroy();
+    });
+
+    describe('#registerPouchDBPlugin', () => {
+
+        beforeEach(() => {
+            sandbox.stub(PouchDB, 'plugin');
+        });
+
+        it('should register a PouchDB plugin', () => {
+            PouchDBDataService.registerPouchDBPlugin({ foo: 'bar' });
+            sinon.assert.calledOnce(PouchDB.plugin);
+            sinon.assert.calledWith(PouchDB.plugin, { foo: 'bar' });
+        });
+
     });
 
     describe('#createPouchDB', () => {

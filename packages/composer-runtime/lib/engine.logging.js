@@ -63,7 +63,7 @@ class EngineLogging {
         }
         if (context.getParticipant() === null) {
             const curLogLevel = this.getContainer().getLoggingService().getLogLevel();
-            LOG.debug('current log level=' + curLogLevel);
+            LOG.debug(method, 'current log level=' + curLogLevel);
             return Promise.resolve(curLogLevel);
         }
         throw new Error('Authorization failure');

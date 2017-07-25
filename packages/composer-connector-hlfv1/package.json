@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-hlfv1",
-  "version": "0.9.2",
+  "version": "0.10.1",
   "description": "The Hyperledger Fabric v1.x Client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -11,7 +11,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "test": "nyc mocha --recursive -t 10000"
@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.9.2",
-    "composer-runtime-hlfv1": "^0.9.2",
+    "composer-common": "0.10.1",
+    "composer-runtime-hlfv1": "0.10.1",
     "fabric-ca-client": "^1.0.0",
     "fabric-client": "^1.0.0",
     "fs-extra": "^1.0.0",
@@ -56,10 +56,9 @@
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2"
+    "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
+    "sinon": "^2.3.8"
   },
   "nyc": {
     "exclude": [
@@ -75,9 +74,9 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 99,
-    "branches": 97,
+    "statements": 100,
+    "branches": 100,
     "functions": 100,
-    "lines": 99
+    "lines": 100
   }
 }

@@ -126,6 +126,24 @@ describe('ModelManager', () => {
             }).should.throw();
         });
 
+        it('should return error for duplicate namespaces for a string', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(modelBase);
+            }).should.throw(/namespace already exists/);
+        });
+
+        it('should return error for duplicate namespaces from an object', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/namespace already exists/);
+        });
+
     });
 
     describe('#addModelFiles', () => {
@@ -157,7 +175,7 @@ describe('ModelManager', () => {
         it('should add to existing model files from strings', () => {
             modelManager.addModelFile(modelBase);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.addModelFiles([modelBase, concertoModel, farm2fork]);
+            modelManager.addModelFiles([concertoModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
         });
@@ -215,6 +233,24 @@ describe('ModelManager', () => {
                 modelManager.addModelFiles([mockSystemModelFile]);
             }).should.throw();
         });
+
+        it('should return an error for duplicate namespace from strings', () => {
+            (() => {
+                modelManager.addModelFiles([concertoModel, modelBase, farm2fork, modelBase]);
+            }).should.throw(/namespace already exists/);
+        });
+
+        it('should return an error for duplicate namespace from objects', () => {
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.doge');
+            let mf2 = sinon.createStubInstance(ModelFile);
+            mf2.getNamespace.returns('org.doge.base');
+            modelManager.addModelFiles([mf1,mf2]);
+            (() => {
+                modelManager.addModelFiles([mf1]);
+            }).should.throw(/namespace already exists/);
+        });
+
     });
 
     describe('#updateModelFile', () => {
@@ -349,6 +385,16 @@ describe('ModelManager', () => {
             mf2.getNamespace.returns('org.such');
             modelManager.addModelFile(mf2);
             modelManager.getNamespaces().should.have.members(['org.hyperledger.composer.system', 'org.wow', 'org.such']);
+        });
+
+    });
+
+    describe('#getSystemTypes', () => {
+
+        it('should return all of the system core types', () => {
+            modelManager.getSystemTypes().map((classDeclaration) => {
+                return classDeclaration.getName();
+            }).should.deep.equal(['Asset', 'Participant', 'Transaction', 'Event']);
         });
 
     });

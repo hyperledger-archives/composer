@@ -29,7 +29,6 @@ chai.use(require('chai-as-promised'));
 describe('Transaction (asset specific) system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
 
     before(function () {
@@ -47,8 +46,7 @@ describe('Transaction (asset specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-assets')
                     .then((result) => {

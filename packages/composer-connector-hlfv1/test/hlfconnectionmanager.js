@@ -32,7 +32,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 const fs = require('fs');
 
 const Logger = require('composer-common').Logger;
@@ -42,22 +42,22 @@ describe('HLFConnectionManager', () => {
 
 
     const embeddedCert = '-----BEGIN CERTIFICATE-----\n' +
-'MIICKTCCAdCgAwIBAgIRALz4qIofOY8ff94YDATVyGIwCgYIKoZIzj0EAwIwZjEL\n' +
-'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
-'cmFuY2lzY28xFDASBgNVBAoTC29yZGVyZXJPcmcxMRQwEgYDVQQDEwtvcmRlcmVy\n' +
-'T3JnMTAeFw0xNzAzMDExNzM2NDFaFw0yNzAyMjcxNzM2NDFaMGYxCzAJBgNVBAYT\n' +
-'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
-'MRQwEgYDVQQKEwtvcmRlcmVyT3JnMTEUMBIGA1UEAxMLb3JkZXJlck9yZzEwWTAT\n' +
-'BgcqhkjOPQIBBggqhkjOPQMBBwNCAARNSaTugowp/Y4XcY7Hrs+m3oE/j8B/jIp3\n' +
-'H8thNhYUdkHX69wNsRB6v/vElHn6CPjUHpNAivbXw9dIz7X3aI/Xo18wXTAOBgNV\n' +
-'HQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMBAf8EBTADAQH/MCkG\n' +
-'A1UdDgQiBCBNSnciFRaLZZTIfoJlDkOPHzfDA+FLX55vPuBswruCOjAKBggqhkjO\n' +
-'PQQDAgNHADBEAiBa6k7Cax+McCHy61Jma1vLuFZswBbnsC6DqbveiKdUoAIgeyAf\n' +
-'HzWxMoVrLfPFwF75PqCjae7xnYq+RWlsHZlMGFU=\n' +
-'-----END CERTIFICATE-----';
+        'MIICKTCCAdCgAwIBAgIRALz4qIofOY8ff94YDATVyGIwCgYIKoZIzj0EAwIwZjEL\n' +
+        'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
+        'cmFuY2lzY28xFDASBgNVBAoTC29yZGVyZXJPcmcxMRQwEgYDVQQDEwtvcmRlcmVy\n' +
+        'T3JnMTAeFw0xNzAzMDExNzM2NDFaFw0yNzAyMjcxNzM2NDFaMGYxCzAJBgNVBAYT\n' +
+        'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
+        'MRQwEgYDVQQKEwtvcmRlcmVyT3JnMTEUMBIGA1UEAxMLb3JkZXJlck9yZzEwWTAT\n' +
+        'BgcqhkjOPQIBBggqhkjOPQMBBwNCAARNSaTugowp/Y4XcY7Hrs+m3oE/j8B/jIp3\n' +
+        'H8thNhYUdkHX69wNsRB6v/vElHn6CPjUHpNAivbXw9dIz7X3aI/Xo18wXTAOBgNV\n' +
+        'HQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMBAf8EBTADAQH/MCkG\n' +
+        'A1UdDgQiBCBNSnciFRaLZZTIfoJlDkOPHzfDA+FLX55vPuBswruCOjAKBggqhkjO\n' +
+        'PQQDAgNHADBEAiBa6k7Cax+McCHy61Jma1vLuFZswBbnsC6DqbveiKdUoAIgeyAf\n' +
+        'HzWxMoVrLfPFwF75PqCjae7xnYq+RWlsHZlMGFU=\n' +
+        '-----END CERTIFICATE-----';
     const overrideCert = '-----BEGIN CERTIFICATE-----\n' +
-'Override override override' +
-'-----END CERTIFICATE-----';
+        'Override override override' +
+        '-----END CERTIFICATE-----';
 
     let mockConnectionProfileManager;
     let sandbox;
@@ -249,33 +249,22 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should throw if peer definition is incorrect', () => {
-            let peer = {
-                requestURL: 'grpc://localhost:7051'
-            };
-            (() => {
-                HLFConnectionManager.parsePeer(peer);
-            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
-
-            peer = {
-                eventURL: 'grpc://localhost:7053'
-            };
-            (() => {
-                HLFConnectionManager.parsePeer(peer);
-            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
-            peer = {
+            peerDef = {
                 rurl: 'grpc://localhost:7051',
                 eURL: 'grpc://localhost:7051'
             };
             (() => {
-                HLFConnectionManager.parsePeer(peer);
+                HLFConnectionManager.parsePeer(peerDef);
             }).should.throw('peer incorrectly defined');
         });
 
         it('should create a new peer and eventHub with no tls', () => {
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 10, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 10, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL);
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -290,14 +279,16 @@ describe('HLFConnectionManager', () => {
             peerDef.cert = embeddedCert;
             peerDef.hostnameOverride =  'localhost';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: embeddedCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -315,15 +306,16 @@ describe('HLFConnectionManager', () => {
 
             peerDef.cert = '/some/path/to/some/file';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 7, undefined, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 7, undefined, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(fs.readFileSync, peerDef.cert);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 7000,
                 pem: 'acert'
             });
-
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -338,14 +330,16 @@ describe('HLFConnectionManager', () => {
         it('should create a new peer with tls and embedded certificate from global cert', () => {
             peerDef.hostnameOverride =  'localhost';
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: embeddedCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -360,15 +354,16 @@ describe('HLFConnectionManager', () => {
 
         it('should create a new peer with tls and global file system certificate', () => {
             sandbox.stub(fs,'readFileSync').returns(new Buffer('acert'));
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 7, '/some/path/to/some/file', eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 7, '/some/path/to/some/file', peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(fs.readFileSync, '/some/path/to/some/file');
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 7000,
                 pem: 'acert'
             });
-
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -384,14 +379,16 @@ describe('HLFConnectionManager', () => {
             peerDef.hostnameOverride =  'localhost';
             peerDef.cert = overrideCert;
 
-            let eventHubDefs = [];
-            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, eventHubDefs);
+            let peers = [], eventHubDefs = [];
+            HLFConnectionManager.parsePeer(peerDef, 9, embeddedCert, peers, eventHubDefs);
             sinon.assert.calledOnce(HLFConnectionManager.createPeer);
             sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
                 'request-timeout': 9000,
                 pem: overrideCert,
                 'ssl-target-name-override': peerDef.hostnameOverride
             });
+            peers.should.have.lengthOf(1);
+            peers[0].should.equal(mockPeer);
             eventHubDefs.length.should.equal(1);
             eventHubDefs.should.be.an.instanceof(Object);
             eventHubDefs[0].should.deep.equal({
@@ -592,25 +589,43 @@ describe('HLFConnectionManager', () => {
 
         it('should throw if peer configuration not correct', () => {
             connectOptions.peers = [{
-                requestURL: 'grpc://localhost:7051'
-            }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
-
-            connectOptions.peers = [{
-                eventURL: 'grpc://localhost:7053'
-            }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
-            connectOptions.peers = [{
                 rurl: 'grpc://localhost:7051',
-                eURL: 'grpc://localhost:7051'
+                eURL: 'grpc://localhost:7053'
             }];
             (() => {
                 connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw('peer incorrectly defined');
+        });
+
+        it('should permit one peer with a requestURL and one peer with an eventURL', () => {
+            connectOptions.peers = [{
+                requestURL: 'grpc://localhost:7051'
+            }, {
+                eventURL: 'grpc://localhost:7053'
+            }];
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+        });
+
+        it('should throw if no peers with a requestURL are specified', () => {
+            connectOptions.peers = [{
+                eventURL: 'grpc://localhost:7053'
+            }, {
+                eventURL: 'grpc://localhost:8053'
+            }];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.throw(/You must specify at least one peer with a valid requestURL for submitting transactions/);
+        });
+
+        it('should throw if no peers with an eventURL are specified', () => {
+            connectOptions.peers = [{
+                requestURL: 'grpc://localhost:7051'
+            }, {
+                requestURL: 'grpc://localhost:8051'
+            }];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.throw(/You must specify at least one peer with a valid eventURL for receiving events/);
         });
 
         it('should throw if ca is not specified', () => {
@@ -719,12 +734,14 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should ignore string values for message size limits', () => {
-            connectOptions.maxSendSize = '1';
-            connectOptions.maxRecvSize = '2';
+        it('should set message size limits for string values', () => {
+            connectOptions.maxSendSize = '38';
+            connectOptions.maxRecvSize = '92';
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
-                    configSettingStub.called.should.be.false;
+                    sinon.assert.calledTwice(configSettingStub);
+                    sinon.assert.calledWith(configSettingStub, 'grpc-max-send-message-length', 38 * 1024 * 1024);
+                    sinon.assert.calledWith(configSettingStub, 'grpc-max-receive-message-length', 92 * 1024 * 1024);
                 });
         });
 
@@ -925,7 +942,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should successfully import an identity', () => {
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .then(() => {
                     sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
                     sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
@@ -933,7 +950,6 @@ describe('HLFConnectionManager', () => {
                     sinon.assert.calledWith(mockClient.setStateStore, mockKeyValueStore);
                     sinon.assert.calledOnce(Client.newCryptoSuite);
                     sinon.assert.calledOnce(mockClient.setCryptoSuite);
-//                    sinon.assert.calledWith(mockClient.newCryptoSuite, null, null, { path: '/tmp/hlfabric1' });
                     sinon.assert.calledOnce(mockClient.createUser);
                     sinon.assert.calledWith(mockClient.createUser, {
                         username: 'anid',
@@ -946,83 +962,95 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should throw if profileDefinition not specified', () => {
+        it('should throw if connectionProfile not specified', () => {
             (() => {
                 connectionManager.importIdentity();
-            }).should.throw(/profileDefinition not specified or not an object/);
+            }).should.throw(/connectionProfile not specified or not a string/);
         });
 
-        it('should throw if profileDefinition not an object', () => {
+        it('should throw if connectionProfile not a string', () => {
             (() => {
-                connectionManager.importIdentity('hlfabric1');
-            }).should.throw(/profileDefinition not specified or not an object/);
+                connectionManager.importIdentity([]);
+            }).should.throw(/connectionProfile not specified or not a string/);
+        });
+
+        it('should throw if connectionOptions not specified', () => {
+            (() => {
+                connectionManager.importIdentity('connprof1');
+            }).should.throw(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if connectionOptions not an object', () => {
+            (() => {
+                connectionManager.importIdentity('connprof1', 'hlfabric1');
+            }).should.throw(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if id not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile);
+                connectionManager.importIdentity('connprof1', profile);
             }).should.throw(/id not specified or not a string/);
         });
 
         it('should throw if id not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, []);
+                connectionManager.importIdentity('connprof1', profile, []);
             }).should.throw(/id not specified or not a string/);
         });
 
         it('should throw if publicKey not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid');
+                connectionManager.importIdentity('connprof1', profile, 'anid');
             }).should.throw(/publicKey not specified or not a string/);
         });
 
         it('should throw if publicKey not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', []);
+                connectionManager.importIdentity('connprof1', profile, 'anid', []);
             }).should.throw(/publicKey not specified or not a string/);
         });
+
         it('should throw if key not specified', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert');
             }).should.throw(/privateKey not specified or not a string/);
         });
 
         it('should throw if key not a string', () => {
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 5);
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 5);
             }).should.throw(/privateKey not specified or not a string/);
         });
-
 
         it('should throw if msp id is not specified', () => {
             delete profile.mspID;
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 'akey');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
             }).should.throw(/No msp id defined/);
         });
 
         it('should throw if no keyValStore or wallet is not specified', () => {
             delete profile.keyValStore;
             (() => {
-                connectionManager.importIdentity(profile, 'anid', 'acert', 'akey');
+                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
             }).should.throw(/No key value store directory or wallet has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {
-            Client.newDefaultKeyValueStore.rejects('wow such fail');
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            Client.newDefaultKeyValueStore.rejects('Error','wow such fail');
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });
 
         it('should handle an error creating a new cryptosuite', () => {
             mockClient.setCryptoSuite.throws(new Error('another fail'));
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/another fail/);
         });
 
         it('should handle an error creating a user', () => {
-            mockClient.createUser.rejects('wow such fail');
-            return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
+            mockClient.createUser.rejects('Error','wow such fail');
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/wow such fail/);
         });
 

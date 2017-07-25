@@ -57,7 +57,6 @@ class QueryManager {
      * @return {QueryFile} The new Query file.
      */
     createQueryFile(identifier, contents) {
-
         return new QueryFile(identifier, this.modelManager, contents);
     }
 
@@ -81,13 +80,31 @@ class QueryManager {
 
     /**
      * Get the Queries associated with this QueryManager
-     * @return {Query[]} The Quries for the QueryManager or an empty array if not set
+     * @return {Query[]} The Queries for the QueryManager or an empty array if not set
      */
     getQueries() {
         if(this.queryFile) {
             return this.queryFile.getQueries();
         }
         return [];
+    }
+
+    /**
+     * Get the named Query associated with this QueryManager
+     * @param {string} name  - the name of the query
+     * @return {Query} The Query or null if it does not exist
+     */
+    getQuery(name) {
+        if(this.queryFile) {
+            const queries = this.queryFile.getQueries();
+            for(let n=0; n < queries.length; n++) {
+                const query = queries[n];
+                if(query.getName() === name) {
+                    return query;
+                }
+            }
+        }
+        return null;
     }
 
 }

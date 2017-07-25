@@ -29,13 +29,13 @@ class WebContext extends Context {
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
-     * @param {String} userID The current user ID.
+     * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
      */
-    constructor(engine, userID, eventSink) {
+    constructor(engine, identity, eventSink) {
         super(engine);
         this.dataService = new WebDataService(engine.getContainer().getUUID());
-        this.identityService = new WebIdentityService(userID);
+        this.identityService = new WebIdentityService(identity);
         this.eventSink = eventSink;
     }
 

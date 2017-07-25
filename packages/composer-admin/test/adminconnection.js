@@ -21,13 +21,16 @@ const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const SecurityContext = require('composer-common').SecurityContext;
+const Util = require('composer-common').Util;
+const uuid = require('uuid');
+
+const version = require('../package.json').version;
 
 const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-require('sinon-as-promised');
 
 describe('AdminConnection', () => {
 
@@ -35,6 +38,8 @@ describe('AdminConnection', () => {
     let mockConnection;
     let mockSecurityContext;
     let adminConnection;
+    let sandbox;
+    let clock;
 
     const config =
         {
@@ -54,21 +59,26 @@ describe('AdminConnection', () => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
+        mockSecurityContext.getConnection.returns(mockConnection);
 
         mockConnection.getConnectionManager.returns(mockConnectionManager);
         mockConnection.getIdentifier.returns('BNI@CP');
         mockConnection.disconnect.resolves();
         mockConnection.login.resolves(mockSecurityContext);
         mockConnection.deploy.resolves();
+        mockConnection.install.resolves();
+        mockConnection.start.resolves();
         mockConnection.ping.resolves();
         mockConnection.queryChainCode.resolves();
         mockConnection.invokeChainCode.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
+        mockConnection.upgrade.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
+        adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
@@ -76,10 +86,14 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
         sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
         delete process.env.COMPOSER_CONFIG;
+        sandbox = sinon.sandbox.create();
+        clock = sinon.useFakeTimers();
     });
 
     afterEach(() => {
         delete process.env.COMPOSER_CONFIG;
+        sandbox.restore();
+        clock.restore();
     });
 
     describe('#constructor', () => {
@@ -192,6 +206,69 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#install', () => {
+
+        it('should be able to install a business network definition', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.install('org-acme-biznet')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.install);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet');
+            });
+        });
+
+        it('should be able to install a business network definition with install options', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.install('org-acme-biznet', {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.install);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet', {opt: 1});
+            });
+        });
+
+    });
+
+    describe('#start', () => {
+
+        it('should be able to start a business network definition', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.start(businessNetworkDefinition)
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.start);
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, businessNetworkDefinition);
+            });
+        });
+
+        it('should be able to start a business network definition with start options', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.start(businessNetworkDefinition, {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.start);
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+            });
+        });
+
+    });
+
+    describe('#upgrade', () => {
+
+        it('should be able to upgrade a composer runtime', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.upgrade('org-acme-biznet')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.upgrade);
+                sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'org-acme-biznet');
+            });
+        });
+    });
+
     describe('#deploy', () => {
 
         it('should be able to deploy a business network definition', () => {
@@ -204,6 +281,18 @@ describe('AdminConnection', () => {
                 sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition);
             });
         });
+
+        it('should be able to deploy a business network definition with deployOptions', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.deploy);
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+            });
+        });
+
     });
 
     describe('#undeploy', () => {
@@ -234,15 +323,110 @@ describe('AdminConnection', () => {
     });
 
     describe('#ping', () => {
-        it('should not fail', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
             adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
             return adminConnection.ping()
-            .then(() => {
-                sinon.assert.calledOnce(mockConnection.ping);
-                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
-            });
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
         });
+
+        it('should ping the connection', () => {
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.ping);
+                });
+        });
+
+        it('should throw any errors that do not match ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION NOT REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
+        });
+
+        it('should activate the identity if the ping returns ACTIVATION_REQUIRED', () => {
+            mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION_REQUIRED'));
+            mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.ping()
+                .then(() => {
+                    sinon.assert.calledTwice(mockConnection.ping);
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                });
+        });
+
+    });
+
+    describe('#pingInner', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should ping the connection', () => {
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
+            adminConnection.connection = mockConnection;
+            return adminConnection.pingInner()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.ping);
+                });
+        });
+
+    });
+
+    describe('#activate', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(Util, 'securityCheck');
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(Util.securityCheck);
+                });
+        });
+
+        it('should submit a request to the chaincode for activation', () => {
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
+            adminConnection.connection = mockConnection;
+            return adminConnection.activate()
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                });
+        });
+
     });
 
     describe('#getLogLevel', () => {
@@ -288,10 +472,10 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .then(() => {
-                sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                sinon.assert.calledWith(mockConnectionManager.importIdentity, config, 'anid', 'acerttosign', 'akey');
-            });
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, 'testprofile', config, 'anid', 'acerttosign', 'akey');
+                });
         });
 
         it('should throw an error if import fails', () => {
@@ -300,7 +484,7 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .should.be.rejectedWith(/no identity imported/);
+                .should.be.rejectedWith(/no identity imported/);
         });
 
 

@@ -27,8 +27,8 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
 describe('Event system tests', function () {
+
     let businessNetworkDefinition;
-    let admin;
     let client;
 
     before(function () {
@@ -47,9 +47,7 @@ describe('Event system tests', function () {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-events')
                     .then((result) => {
@@ -87,47 +85,57 @@ describe('Event system tests', function () {
 
     afterEach(() => {
         client.removeAllListeners('event');
-        return;
     });
 
     after(() => {
-        client.removeAllListeners('event');
+        if (client) {
+            client.removeAllListeners('event');
+        }
     });
 
-    it('should emit a valid SimpleEvent', (done) => {
+    it('should emit a valid SimpleEvent', () => {
         this.timeout(1000);
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.events', 'EmitSimpleEvent');
 
         // Listen for the event
-        client.on('event', (ev) => {
-            validateEvent(ev, emitted);
-            emitted++;
-            emitted.should.equal(1);
-            done();
+        const promise = new Promise((resolve, reject) => {
+            client.on('event', (ev) => {
+                validateEvent(ev, emitted);
+                emitted++;
+                emitted.should.equal(1);
+                resolve();
+            });
         });
-        client.submitTransaction(transaction);
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return promise;
+            });
     });
 
-    it('should emit a valid ComplexEvent', (done) => {
+    it('should emit a valid ComplexEvent', () => {
         this.timeout(1000); // Delay to prevent transaction failing
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.events', 'EmitComplexEvent');
 
         // Listen for the event
-        client.on('event', (ev) => {
-            validateEvent(ev, emitted);
-            emitted++;
-            emitted.should.equal(1);
-
-            done();
+        const promise = new Promise((resolve, reject) => {
+            client.on('event', (ev) => {
+                validateEvent(ev, emitted);
+                emitted++;
+                emitted.should.equal(1);
+                resolve();
+            });
         });
-        client.submitTransaction(transaction);
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return promise;
+            });
     });
 
-    it('should emit two valid SimpleEvents', (done) => {
+    it('should emit two valid SimpleEvents', () => {
         this.timeout(1000); // Delay to prevent transaction failing
         let counts = [1, 2];
         let emitted = 0;
@@ -135,14 +143,19 @@ describe('Event system tests', function () {
         let transaction = factory.newTransaction('systest.events', 'EmitMultipleEvents');
 
         // Listen for the event
-        client.on('event', (ev) => {
-            validateEvent(ev, emitted);
-            emitted++;
-            emitted.should.equal(counts[emitted - 1]);
-            if (emitted === 2) {
-                done();
-            }
+        const promise = new Promise((resolve, reject) => {
+            client.on('event', (ev) => {
+                validateEvent(ev, emitted);
+                emitted++;
+                emitted.should.equal(counts[emitted - 1]);
+                if (emitted === 2) {
+                    resolve();
+                }
+            });
         });
-        client.submitTransaction(transaction);
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return promise;
+            });
     });
 });

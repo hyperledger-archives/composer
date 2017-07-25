@@ -19,10 +19,15 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
 const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnectionwrapper');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const EventEmitter = require('events');
 const Factory = require('composer-common').Factory;
+const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelManager = require('composer-common').ModelManager;
+const Query = require('composer-common').Query;
+const QueryManager = require('composer-common').QueryManager;
+const QueryFile = require('composer-common').QueryFile;
 const NodeCache = require('node-cache');
 const ParticipantRegistry = require('composer-client/lib/participantregistry');
 const Serializer = require('composer-common').Serializer;
@@ -33,7 +38,7 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('BusinessNetworkConnector', () => {
 
@@ -44,12 +49,16 @@ describe('BusinessNetworkConnector', () => {
     }
     asset BaseAsset identified by theValue {
         o String theValue
+        o Integer theInteger optional
+        o Boolean theBoolean optional
+        o DateTime theDateTime optional
+        o Double theDouble optional
+        o Long theLong optional
     }
     participant BaseParticipant identified by theValue {
         o String theValue
     }
-    transaction BaseTransaction identified by theValue {
-        o String theValue
+    transaction BaseTransaction {
     }`;
 
     let settings;
@@ -57,11 +66,13 @@ describe('BusinessNetworkConnector', () => {
     let mockBusinessNetworkConnection;
     let mockBusinessNetworkDefinition;
     let mockSerializer;
+    let mockQueryManager;
     let sandbox;
     let testConnector;
     let modelManager;
     let factory;
     let introspector;
+    let mockQueryFile;
 
     beforeEach(() => {
 
@@ -71,6 +82,12 @@ describe('BusinessNetworkConnector', () => {
             participantId : 'MockEnrollmentId',
             participantPwd : 'MockEnrollmentPwd'
         };
+
+        // create real instances
+        modelManager = new ModelManager();
+        modelManager.addModelFile(MODEL_FILE);
+        introspector = new Introspector(modelManager);
+        factory = new Factory(modelManager);
 
         // // create mocks
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -84,18 +101,13 @@ describe('BusinessNetworkConnector', () => {
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
 
-        // // create real instances
-        modelManager = new ModelManager();
-        modelManager.addModelFile(MODEL_FILE);
-        introspector = new Introspector(modelManager);
-        factory = new Factory(modelManager);
-
         sandbox = sinon.sandbox.create();
 
         // setup test instance
         testConnector = new BusinessNetworkConnector(settings);
         mockBusinessNetworkConnectionWrapper = sinon.createStubInstance(BusinessNetworkConnectionWrapper);
-        mockBusinessNetworkConnectionWrapper.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+        mockBusinessNetworkConnectionWrapper.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+        mockBusinessNetworkConnectionWrapper.getBusinessNetworkDefinition.returns(mockBusinessNetworkDefinition);
         mockBusinessNetworkConnectionWrapper.getSerializer.returns(mockSerializer);
         mockBusinessNetworkConnectionWrapper.getModelManager.returns(modelManager);
         mockBusinessNetworkConnectionWrapper.getIntrospector.returns(introspector);
@@ -122,6 +134,7 @@ describe('BusinessNetworkConnector', () => {
             testConnector = new BusinessNetworkConnector(settings);
             testConnector.connectionWrappers.should.be.an.instanceOf(NodeCache);
             testConnector.defaultConnectionWrapper.should.be.an.instanceOf(BusinessNetworkConnectionWrapper);
+            testConnector.eventemitter.should.be.an.instanceOf(EventEmitter);
         });
 
         it('should default the namepsaces setting if not specified', () => {
@@ -287,6 +300,24 @@ describe('BusinessNetworkConnector', () => {
 
         });
 
+        it('should connect to a business network and register for events', () => {
+            mockBusinessNetworkConnectionWrapper.connect.resolves();
+            return testConnector.connect()
+                .then(() => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.on);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.on, 'event', sinon.match.func);
+                    const cb = sinon.stub();
+                    mockSerializer.toJSON.returns({ foo: 'bar' });
+                    testConnector.eventemitter.once('event', cb);
+                    mockBusinessNetworkConnection.on.args[0][1]({ foo: 'bar' });
+                    sinon.assert.calledOnce(mockSerializer.toJSON);
+                    sinon.assert.calledWith(mockSerializer.toJSON, { foo: 'bar' });
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, { foo: 'bar' });
+                });
+
+        });
+
         it('should handle an error connecting to a business network', () => {
             const err = new Error('such error');
             mockBusinessNetworkConnectionWrapper.connect.rejects(err);
@@ -380,6 +411,35 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, err);
                 });
+        });
+
+    });
+
+    describe('#subscribe', () => {
+
+        it('should subscribe to events from the business network', () => {
+            const cb = sinon.stub();
+            testConnector.subscribe(cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
+        });
+
+    });
+
+
+    describe('#unsubscribe', () => {
+
+        it('should unsubscribe from events from the business network', () => {
+            const cb = sinon.stub();
+            testConnector.eventemitter.on('event', cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
+            testConnector.unsubscribe(cb);
+            testConnector.eventemitter.emit('event', { foo: 'bar' });
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, { foo: 'bar' });
         });
 
     });
@@ -1825,6 +1885,130 @@ describe('BusinessNetworkConnector', () => {
         });
     });
 
+    describe('#getAllIdentities', () => {
+
+        let mockIdentityRegistry;
+        let identity1, identity2;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            identity1 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id1');
+            identity2 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id2');
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get all of the identities in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.getAll.resolves([identity1, identity2]);
+            mockSerializer.toJSON.withArgs(identity1).returns({ identityId: 'id1', $class: 'sometx' });
+            mockSerializer.toJSON.withArgs(identity2).returns({ identityId: 'id2', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getAllIdentities({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.getAll);
+                    sinon.assert.calledWith(mockIdentityRegistry.getAll);
+                    const result = cb.args[0][1]; // First call, second argument (error, identities)
+                    result.should.deep.equal([{
+                        identityId: 'id1',
+                        $class: 'sometx'
+                    }, {
+                        identityId: 'id2',
+                        $class: 'sometx'
+                    }]);
+                });
+        });
+
+        it('should handle an error getting all of the identities in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.getAll.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.getAllIdentities({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.getAll);
+                    sinon.assert.calledWith(mockIdentityRegistry.getAll);
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#getIdentityByID', () => {
+
+        let mockIdentityRegistry;
+        let identity;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            identity = factory.newResource('org.hyperledger.composer.system', 'Identity', 'id1');
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').resolves(identity);
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const result = cb.args[0][1]; // First call, second argument (error, identities)
+                    result.should.deep.equal({
+                        identityId: 'id1',
+                        $class: 'sometx'
+                    });
+                });
+        });
+
+        it('should handle an error getting the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('such error'));
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+        it('should return a 404 error getting the specified identity in the identity registry', () => {
+            mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
+            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('the thing does not exist'));
+            mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockIdentityRegistry.get);
+                    sinon.assert.calledWith(mockIdentityRegistry.get, 'id1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/does not exist/);
+                    error.statusCode.should.equal(404);
+                    error.status.should.equal(404);
+                });
+        });
+
+    });
+
     describe('#issueIdentity', () => {
 
         const participant = 'org.acme.Member#bob@email.com';
@@ -1866,6 +2050,48 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, participant, userID, options);
+                    const error = cb.args[0][0]; // First call, first argument (error, identity)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#bindIdentity', () => {
+
+        const participant = 'org.acme.Member#bob@email.com';
+        const certificate = [
+            '----- BEGIN CERTIFICATE -----',
+            Buffer.from('bob@email.com').toString('base64'),
+            '----- END CERTIFICATE -----'
+        ].join('\n').concat('\n');
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+        });
+
+        it('should bind an identity', () => {
+            mockBusinessNetworkConnection.bindIdentity.withArgs(participant, certificate).resolves();
+            const cb = sinon.stub();
+            return testConnector.bindIdentity(participant, certificate, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, participant, certificate);
+                });
+        });
+
+        it('should handle an error thrown binding an identity', () => {
+            mockBusinessNetworkConnection.bindIdentity.withArgs(participant, certificate).rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.bindIdentity(participant, certificate, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, participant, certificate);
                     const error = cb.args[0][0]; // First call, first argument (error, identity)
                     error.should.match(/such error/);
                 });
@@ -1965,6 +2191,203 @@ describe('BusinessNetworkConnector', () => {
 
     });
 
+    describe('#executeQuery', () => {
+
+        beforeEach(() => {
+            // create mock query
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+            let stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+            let integerQuery = Query.buildQuery(mockQueryFile, 'integerQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theInteger==_$param1)');
+            let doubleQuery = Query.buildQuery(mockQueryFile, 'doubleQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDouble==_$param1)');
+            let longQuery = Query.buildQuery(mockQueryFile, 'longQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theLong==_$param1)');
+            let dateTimeQuery = Query.buildQuery(mockQueryFile, 'dateTimeQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theDateTime==_$param1)');
+            let booleanQuery = Query.buildQuery(mockQueryFile, 'booleanQuery', 'test query', 'SELECT org.acme.base.BaseAsset WHERE (theBoolean==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQuery.withArgs('stringQuery').returns(stringQuery);
+            mockQueryManager.getQuery.withArgs('integerQuery').returns(integerQuery);
+            mockQueryManager.getQuery.withArgs('doubleQuery').returns(doubleQuery);
+            mockQueryManager.getQuery.withArgs('longQuery').returns(longQuery);
+            mockQueryManager.getQuery.withArgs('dateTimeQuery').returns(dateTimeQuery);
+            mockQueryManager.getQuery.withArgs('booleanQuery').returns(booleanQuery);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
+        });
+
+        it('should call the executeQuery with an expected string result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'stringQuery', { param1: 'blue' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected double result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'doubleQuery', { param1: '10.2' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected long result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'longQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected integer result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'integerQuery', { param1: '100' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected dateTime result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'dateTimeQuery', { param1: '2007-04-05T14:30' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should call the executeQuery with an expected boolean result', () => {
+
+            const cb = sinon.stub();
+            return testConnector.executeQuery( 'booleanQuery', { param1: 'false' }, {test: 'options' }, cb)
+                .then(( queryResult) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queryResult)
+                    result.should.deep.equal([{
+                        $class: 'org.acme.base.BaseAsset',
+                        theValue: 'my value'
+                    }]);
+                });
+        });
+
+        it('should throw when executing a query that does not exist', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'missing', { param1: 'false' }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/Named query missing does not exist in the business network./);
+        });
+
+    });
+
+    describe('#discoverQueries', () => {
+
+        beforeEach(() => {
+            // create mock query file
+            mockQueryFile = sinon.createStubInstance(QueryFile);
+            mockQueryFile.getModelManager.returns(modelManager);
+
+            // create real query
+            const stringQuery = Query.buildQuery(mockQueryFile, 'stringQuery', 'test query',
+                'SELECT org.acme.base.BaseAsset WHERE (theValue==_$param1)');
+
+            // // create mocks
+            mockQueryManager = sinon.createStubInstance(QueryManager);
+            mockQueryManager.getQueries.returns([stringQuery]);
+
+            // // setup mocks
+            mockBusinessNetworkDefinition.getQueryManager.returns(mockQueryManager);
+
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            testConnector.serializer = mockSerializer;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+        });
+
+        it('should return the queries in the business network definition', () => {
+
+            const cb = sinon.stub();
+            return testConnector.discoverQueries( {test: 'options' }, cb)
+                .then(( queries ) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+
+                    const result = cb.args[0][1]; // First call, second argument (error, queries)
+                    result.length.should.equal(1);
+                    result[0].getName().should.equal('stringQuery');
+                });
+        });
+
+        it('should throw when getQueries fails', () => {
+
+            mockQueryManager.getQueries.throws();
+
+            return new Promise((resolve, reject) => {
+                testConnector.discoverQueries( {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith();
+        });
+
+    });
+
     describe('#getTransactionByID', () => {
 
         let mockTransactionRegistry;
@@ -2059,15 +2482,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }]);
             });
@@ -2089,15 +2516,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });
@@ -2123,18 +2554,23 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
                 }, {
                     type: 'table',
+                    namespaces: true,
                     name: 'org.acme.extra.BaseAsset'
                 }]);
             });
@@ -2156,15 +2592,19 @@ describe('BusinessNetworkConnector', () => {
                 sinon.assert.calledOnce(introspector.getClassDeclarations);
                 result.should.deep.equal([{
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseConcept'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseAsset'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseParticipant'
                 }, {
                     type: 'table',
+                    namespaces: false,
                     name: 'BaseTransaction'
                 }]);
             });
@@ -2244,10 +2684,30 @@ describe('BusinessNetworkConnector', () => {
                     'type': 'string'
                 },
                 'theValue' : {
-                    'description' : 'The instance identifier for this type',
-                    'id' : true,
+                    'description': 'The instance identifier for this type',
+                    'id': true,
                     'required' : true,
                     'type' : 'string'
+                },
+                'theInteger' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDouble' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theLong' : {
+                    'required' : false,
+                    'type' : 'number'
+                },
+                'theDateTime' : {
+                    'required' : false,
+                    'type' : 'date'
+                },
+                'theBoolean' : {
+                    'required' : false,
+                    'type' : 'boolean'
                 }
             },
             'relations' : {},

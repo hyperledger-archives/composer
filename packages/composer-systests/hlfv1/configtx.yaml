@@ -23,12 +23,14 @@ Profiles:
             ComposerConsortium:
                 Organizations:
                     - *Org1
+                    - *Org2
     ComposerChannel:
         Consortium: ComposerConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
                 - *Org1
+                - *Org2
 
 ################################################################################
 #
@@ -74,6 +76,26 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.org1.example.com
+              Port: 7051
+
+    - &Org2
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: Org2
+
+        # ID to load the MSP definition as
+        ID: Org2MSP
+
+        MSPDir: crypto-config/peerOrganizations/org2.example.com/msp
+
+        # turn off security for the peer
+        AdminPrincipal: Role.ADMIN
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.org2.example.com
               Port: 7051
 
 ################################################################################

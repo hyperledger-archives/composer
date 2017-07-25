@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Tutorials Index
+title: Tutorials
 category: tutorials
 section: tutorials
-sidebar: sidebars/tutorials.md
-index-order: 0
+sidebar: sidebars/accordion-toc0.md
+index-order: 300
 excerpt: Tutorials
 ---
 

@@ -3,9 +3,9 @@ layout: default
 title: Implementing participant-based access control
 category: tasks
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Transaction processor functions can be used to [**implement participant-based access control**](../managing/current-participant.html) by checking the participant type and identifier.
-index-order: 6
+index-order: 706
 ---
 
 # Implementing participant-based access control

@@ -17,7 +17,7 @@
 const Revoke = require ('./lib/revoke.js');
 
 module.exports.command = 'revoke [options]';
-module.exports.describe = 'Revoke an identity that was issued to a participant';
+module.exports.describe = 'Revoke an identity that was issued or bound to a participant';
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },

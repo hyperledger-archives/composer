@@ -70,7 +70,7 @@ describe('LoopbackVisitor', () => {
 
                     // Check that the Loopback model files were generated, and extract the
                     // generated schemas from the stub writer.
-                    let expectedFiles;
+                    let expectedFiles, expectedTypes;
                     if (namespaces) {
                         expectedFiles = [
                             'org.acme.base.SimpleAsset.json',
@@ -84,6 +84,18 @@ describe('LoopbackVisitor', () => {
                             'org.acme.base.Bloke.json',
                             'org.acme.base.UnitedStatesAddress.json'
                         ];
+                        expectedTypes = [
+                            'org_acme_base_SimpleAsset',
+                            'org_acme_base_BaseAsset',
+                            'org_acme_base_DerivedAsset',
+                            'org_acme_base_DerivedDerivedAsset',
+                            'org_acme_base_MyBasicTransaction',
+                            'org_acme_base_MyTransaction',
+                            'org_acme_base_MyTransactionEx',
+                            'org_acme_base_Person',
+                            'org_acme_base_Bloke',
+                            'org_acme_base_UnitedStatesAddress'
+                        ];
                     } else {
                         expectedFiles = [
                             'SimpleAsset.json',
@@ -91,14 +103,28 @@ describe('LoopbackVisitor', () => {
                             'DerivedAsset.json',
                             'DerivedDerivedAsset.json',
                             'MyBasicTransaction.json',
-                            'MyTransaction.json',
                             'MyTransactionEx.json',
                             'Person.json',
                             'Bloke.json',
                             'UnitedStatesAddress.json'
                         ];
+                        expectedTypes = [
+                            'SimpleAsset',
+                            'BaseAsset',
+                            'DerivedAsset',
+                            'DerivedDerivedAsset',
+                            'MyBasicTransaction',
+                            'MyTransactionEx',
+                            'Person',
+                            'Bloke',
+                            'UnitedStatesAddress'
+                        ];
                     }
-                    schemas.should.have.lengthOf(expectedFiles.length);
+                    // For every element of the expected files, does the schema array contain it?
+                    expectedTypes.filter((elem) => {
+                        return schemas.some((s) => { return s.name === elem; });
+
+                    }).should.have.lengthOf(expectedFiles.length);
 
                     expectedFiles.forEach((expectedFile) => {
                         sinon.assert.calledWith(mockFileWriter.openFile, expectedFile);
@@ -853,7 +879,7 @@ describe('LoopbackVisitor', () => {
                     }
                     `);
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
-                    schemas.should.deep.equal([{
+                    schemas.should.deep.include.members([{
                         acls: [],
                         // base: 'PersistedModel',
                         description: 'A concept named MyConcept',
@@ -892,7 +918,7 @@ describe('LoopbackVisitor', () => {
                 });
 
                 it('should use the model file of the referencing type to resolve enumeration types', () => {
-                    modelManager.addModelFile(`
+                    modelManager.updateModelFile(`
                     namespace org.acme.base
                     enum Enum {
                         o SOME_VALUE
@@ -910,7 +936,7 @@ describe('LoopbackVisitor', () => {
                         o MyAsset asset
                     }`);
                     const schemas = modelManager.accept(visitor, { fileWriter: mockFileWriter });
-                    schemas.should.deep.equal([
+                    schemas.should.deep.include.members([
                         {
                             name: namespaces ? 'org_acme_base_MyAsset' : 'MyAsset',
                             description: 'An asset named MyAsset',
@@ -995,7 +1021,7 @@ describe('LoopbackVisitor', () => {
                 });
 
                 it('should use the model file of the referencing type to resolve other types', () => {
-                    modelManager.addModelFile(`
+                    modelManager.updateModelFile(`
                     namespace org.acme.base
                     asset MyInlineAsset identified by assetId {
                         o String assetId
@@ -1012,7 +1038,9 @@ describe('LoopbackVisitor', () => {
                         o MyAsset asset
                     }`);
                     const schemas = modelManager.accept(visitor, { fileWriter: mockFileWriter });
-                    schemas.should.deep.equal([
+
+
+                    schemas.should.include.deep.members([
                         {
                             name: namespaces ? 'org_acme_base_MyInlineAsset' : 'MyInlineAsset',
                             description: 'An asset named MyInlineAsset',

@@ -27,7 +27,6 @@ require('chai').should();
 
 const chai = require('chai');
 const sinon = require('sinon');
-require('sinon-as-promised');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
@@ -61,7 +60,7 @@ describe('composer deploy network CLI unit tests', function () {
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
 
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
+        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
     });
@@ -369,6 +368,16 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
             });
+        });
+
+        it('show throw an error if loglevel not valid', function() {
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,loglevel: 'BAD'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            return Deploy.handler(argv)
+                .should.be.rejectedWith(/or not one of/);
+
         });
     });
 

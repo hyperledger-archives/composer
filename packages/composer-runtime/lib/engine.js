@@ -88,8 +88,20 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
+
+        // chaincode was upgraded, no change to business network and obviously
+        // nothing the runtime can do to stop it.
+        if (fcn === 'upgrade') {
+            LOG.info(method, 'runtime has been upgraded');
+            //TODO: Here we would need to invoke migrations if we are to support
+            //upgrading from anything more than just micro version changes of the
+            //runtime. Currently not supported and the connector will not allow
+            //the upgrade. We could add a check here as well and reject the upgrade
+            //but it's overkill at the moment.
+            return Promise.resolve();
+        }
+
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
         } else if (args.length !== 2) {
@@ -105,7 +117,7 @@ class Engine {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-        let sysregistries, sysidentities;
+        let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
 
@@ -160,11 +172,14 @@ class Engine {
                 return dataService.ensureCollection('$sysdata');
 
             })
-            .then((sysdata) => {
-
+            .then((sysdata_) => {
+                sysdata = sysdata_;
                 // Add the business network definition to the sysdata collection.
                 return sysdata.add('businessnetwork', businessNetworkRecord);
 
+            })
+            .then(() => {
+                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
 
@@ -178,25 +193,16 @@ class Engine {
             })
             .then(() => {
 
-                // Ensure that the system identities collection exists.
-                LOG.debug(method, 'Ensuring that sysidentities collection exists');
-                return dataService.ensureCollection('$sysidentities')
-                    .then((sysidentities_) => {
-                        sysidentities = sysidentities_;
-                    });
-
-            })
-            .then(() => {
-
                 // Initialize the context.
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
+                    function: fcn,
+                    arguments: args,
                     businessNetworkDefinition: businessNetworkDefinition,
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
                     compiledAclBundle: compiledAclBundle,
-                    sysregistries: sysregistries,
-                    sysidentities: sysidentities
+                    sysregistries: sysregistries
                 });
 
             })
@@ -270,7 +276,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize()
+            return context.initialize({ function: fcn, arguments: args })
                 .then(() => {
                     return context.transactionStart(false);
                 })
@@ -341,7 +347,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize()
+            return context.initialize({ function: fcn, arguments: args })
                 .then(() => {
                     return context.transactionStart(true);
                 })
@@ -442,7 +448,6 @@ function mixin(sourceClass) {
 }
 
 mixin(require('./engine.businessnetworks'));
-mixin(require('./engine.identities'));
 mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));

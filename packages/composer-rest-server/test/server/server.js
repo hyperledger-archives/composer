@@ -17,9 +17,8 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const fs = require('fs');
-const path = require('path');
 const server = require('../../server/server');
+const WebSocket = require('ws');
 
 const chai = require('chai');
 chai.should();
@@ -42,8 +41,7 @@ describe('server', () => {
             return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
-            const banana = fs.readFileSync(path.resolve(__dirname, '..', 'bond-network.bna'));
-            return BusinessNetworkDefinition.fromArchive(banana);
+            return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
@@ -75,8 +73,9 @@ describe('server', () => {
 
     it('should create an application without security enabled', () => {
         return server(composerConfig)
-            .then((app) => {
-                app.should.exist;
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
             });
     });
 
@@ -89,9 +88,10 @@ describe('server', () => {
             }
         });
         return server(composerConfig)
-            .then((app) => {
-                app.should.exist;
-                app.dataSources.db.settings.test.should.equal('flag');
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                result.app.dataSources.db.settings.test.should.equal('flag');
             });
     });
 
@@ -104,18 +104,20 @@ describe('server', () => {
     it('should set the port if explicitly specified', () => {
         composerConfig.port = 4321;
         return server(composerConfig)
-            .then((app) => {
-                app.should.exist;
-                app.get('port').should.equal(4321);
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                result.app.get('port').should.equal(4321);
             });
     });
 
     it('should enable security if specified', () => {
         composerConfig.security = true;
         return server(composerConfig)
-            .then((app) => {
-                app.should.exist;
-                const routes = app._router.stack.filter((r) => {
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
                     return r.route && r.route.path;
                 });
                 const routePaths = routes.map((r) => {
@@ -158,14 +160,59 @@ describe('server', () => {
         });
         composerConfig.security = true;
         return server(composerConfig)
-            .then((app) => {
-                app.should.exist;
-                const routes = app._router.stack.filter((r) => {
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
                     return r.route && r.route.path;
                 }).map((r) => {
                     return r.route.path;
                 });
                 routes.should.deep.equal(['/auth/github', '/auth/github/callback', '/auth/logout']);
+            });
+    });
+
+    it('should enable WebSockets if specified', () => {
+        composerConfig.websockets = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const wss = result.app.get('wss');
+                wss.should.be.an.instanceOf(WebSocket.Server);
+                wss.broadcast.should.be.a('function');
+            });
+    });
+
+    it('should broadcast WebSocket messages to all connected clients', () => {
+        composerConfig.websockets = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const wss = result.app.get('wss');
+                wss.should.be.an.instanceOf(WebSocket.Server);
+                wss.broadcast.should.be.a('function');
+                wss.clients = [
+                    {
+                        readyState: WebSocket.OPEN,
+                        send: sinon.stub()
+                    },
+                    {
+                        readyState: WebSocket.CONNECTING,
+                        send: sinon.stub()
+                    },
+                    {
+                        readyState: WebSocket.OPEN,
+                        send: sinon.stub()
+                    }
+                ];
+                wss.broadcast('{"foo":"bar"}');
+                sinon.assert.calledOnce(wss.clients[0].send);
+                sinon.assert.calledWith(wss.clients[0].send, '{"foo":"bar"}');
+                sinon.assert.notCalled(wss.clients[1].send);
+                sinon.assert.calledOnce(wss.clients[2].send);
+                sinon.assert.calledWith(wss.clients[2].send, '{"foo":"bar"}');
             });
     });
 

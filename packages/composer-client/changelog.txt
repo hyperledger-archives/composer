@@ -12,6 +12,10 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.9.3 {6eb4db0430cdbc024d059e7987946e24} 2017-07-11
+- Added bindIdentity
+- Added getIdentityRegistry
+
 Version 0.9.0 {d6ebf2b722345ee0f7dac56f42730f12} 2017-06-26
 - Added buildQuery and query
 - Removed deprecated BusinesNetworkConnection.existsAssetRegistry method

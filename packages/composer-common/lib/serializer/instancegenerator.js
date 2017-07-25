@@ -153,7 +153,8 @@ class InstanceGenerator {
         }
 
         const concreteSubclasses = declaration.getAssignableClassDeclarations()
-            .filter(subclass => !subclass.isAbstract());
+            .filter(subclass => !subclass.isAbstract())
+            .filter(subclass => !subclass.isSystemType());
 
         if (concreteSubclasses.length === 0) {
             const formatter = Globalize.messageFormatter('instancegenerator-newinstance-noconcreteclass');
