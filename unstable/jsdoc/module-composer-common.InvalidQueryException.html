@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/relationshipdeclaration.js</title>
+	<title>Hyperledger Composer Class: InvalidQueryException</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,116 +74,525 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/relationshipdeclaration.js</h1>
-    
+	<h1 class="page-title">Class: InvalidQueryException</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript linenums">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-'use strict';
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
+        
+        InvalidQueryException
+        </h2>
+        
+            <div class="class-description"><p>Exception thrown for invalid queries</p></div>
+        
+    
+</header>
 
-const Property = require('./property');
-const IllegalModelException = require('./illegalmodelexception');
-const ModelUtil = require('../modelutil');
 
-/**
- * Class representing a relationship between model elements
- * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
- * @private
- * @class
- * @memberof module:composer-common
- */
-class RelationshipDeclaration extends Property {
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="InvalidQueryException"><span class="type-signature"></span>new InvalidQueryException(message [, queryFile] [, fileLocation])</h4>
+    
+    
+</dt>
+<dd>
 
-    /**
-     * Create a Relationship.
-     * @param {ClassDeclaration} parent - The owner of this property
-     * @param {Object} ast - The AST created by the parser
-     * @throws {IllegalModelException}
-     */
-    constructor(parent, ast) {
-        super(parent, ast);
-    }
+    
+    <div class="description">
+        <p>Create an InvalidQueryException.</p>
+    </div>
+    
 
-    /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
-     * @throws {IllegalModelException}
-     * @private
-     */
-    validate(classDecl) {
-        super.validate(classDecl);
-        // relationship cannot point to primitive types
-        if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
-        }
+    
 
-        let classDeclaration = null;
+    
 
-        // you can't have a relationship with a primitive...
-        if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
-        } else {
-            let namespace = this.getParent().getNamespace();
+    
+    
+        <h5>Parameters:</h5>
+        
 
-            // we first try to get the type from our own model file
-            // because during validate we have not yet been added to the model manager
-            if(namespace === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
-                classDeclaration = this.getParent().getModelFile().getType(this.getType());
-            }
-            else {
-                // otherwise we have to use the modelmanager to try to load
-                try {
-                    classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
-                } catch (err) {
-                    // Let classDeclaration remain null and get handled below
-                }
-            }
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-            if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
+        <th>Type</th>
 
-            if ((namespace === ModelUtil.getSystemNamespace()) &amp;&amp; classDecl.isEvent()) {
-                // Transaction relationship in event, continue
-            } else if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-        }
-    }
+        
+        <th>Argument</th>
+        
 
-    /**
-     * Returns a string representation of this property
-     * @return {String} the string version of the property.
-     */
-    toString() {
-        return 'RelationshipDeclaration {name=' + this.name + ', type=' + this.getFullyQualifiedTypeName() + ', array=' + this.array + ', optional=' + this.optional +'}';
-    }}
+        
 
-module.exports = RelationshipDeclaration;
-</pre>
-    </article>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>the message for the exception</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>queryFile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">QueryFile</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>the optional queryFile associated with the exception</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fileLocation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>location details of the error within the model file.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>start.line</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>start line of the error location.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>start.column</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>start column of the error location.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>end.line</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>end line of the error location.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>end.column</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>end column of the error location.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_query_invalidqueryexception.js.html">composer-common/lib/query/invalidqueryexception.js</a>,
+				 <a href="composer-common_lib_query_invalidqueryexception.js.html#sunlight-1-line-26">line 26</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><p>See <a href="module-composer-common.BaseFileException.html">BaseFileException</a></p></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>BaseFileException</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="getQueryFile"><span class="type-signature"></span>getQueryFile()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the query file associated with the exception or null</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_query_invalidqueryexception.js.html">composer-common/lib/query/invalidqueryexception.js</a>,
+				 <a href="composer-common_lib_query_invalidqueryexception.js.html#sunlight-1-line-62">line 62</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the optional query file associated with the exception</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">QueryFile</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -193,6 +602,10 @@ module.exports = RelationshipDeclaration;
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>
