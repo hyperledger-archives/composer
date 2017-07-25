@@ -58,22 +58,6 @@
           Define the logic of transaction executions using JavaScript.
         </div>
       </div>
-      <div class="file-types-list-item">
-        <input type="radio" id="file-type-qry" name="file-type" [(ngModel)]="fileType" value="qry"
-               (change)="changeCurrentFileType()">
-        <label class="radio-label" for="file-type-qry">Query File (.qry)</label>
-        <div class="description">
-          Define the Query stuff in here (Note: you can only have 1 of these per .bna).
-        </div>
-      </div>
-      <div class="file-types-list-item">
-        <input type="radio" id="file-type-acl" name="file-type" [(ngModel)]="fileType" value="acl"
-               (change)="changeCurrentFileType()">
-        <label class="radio-label" for="file-type-acl">Access Control File (permissions.acl)</label>
-        <div class="description">
-          Define your access controls here (Note: you can only have 1 of these per .bna).
-        </div>
-      </div>
     </form>
   </section>
   <footer>

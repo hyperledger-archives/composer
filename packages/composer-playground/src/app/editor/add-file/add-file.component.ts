@@ -158,7 +158,7 @@ export class AddFileComponent {
             }
             this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
             this.currentFileName = scriptName;
-        } else if (this.fileType === 'cto') {
+        } else {
             let existingModels = this.clientService.getModelFiles();
             let increment = 0;
 
@@ -178,28 +178,6 @@ namespace ${newModelNamespace}`;
             let fileName = this.addModelPath + newModelNamespace + this.addModelFileExtension;
             this.currentFile = this.clientService.createModelFile(code, fileName);
             this.currentFileName = fileName;
-        } else if (this.fileType === 'qry') {
-            let code =
-                `/**
- * New query file
- */`;
-            let fileName = 'query.qry';
-            this.currentFile = this.clientService.createQueryFile(fileName, code);
-        } else {
-
-            let code =
-                `/**
- * New access control file
- */
- rule AllAccess {
-     description: "AllAccess - grant everything to everybody."
-     participant: "org.hyperledger.composer.system.Participant" 
-     operation: ALL
-     resource: "org.hyperledger.composer.system.**"
-     action: ALLOW
- }`;
-            let fileName = 'permissions.acl';
-            this.currentFile = this.clientService.createAclFile(fileName, code);
         }
     }
 }
