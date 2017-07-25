@@ -128,6 +128,8 @@ export class ClientService {
             } else if (type === 'query') {
                 let query = this.createQueryFile(id, content);
                 this.getBusinessNetwork().getQueryManager().setQueryFile(query);
+            } else if (type === 'readme') {
+                this.setBusinessNetworkReadme(content);
             }
 
             this.businessNetworkChanged$.next(true);
