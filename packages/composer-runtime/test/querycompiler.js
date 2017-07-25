@@ -45,10 +45,29 @@ describe('QueryCompiler', () => {
             o String value
         }
 
+        concept Meow {
+            o String woof
+        }
+
+        concept Neigh {
+            o Meow meow
+        }
+
+        concept Moo {
+            o Neigh neigh
+        }
+
+        concept Baa {
+            o Moo moo
+        }
+
         asset SampleAsset identified by assetId {
             o String assetId
             --> SampleParticipant owner
             o String value
+            o String foo
+            o String bar
+            o Baa baa
         }
 
         participant SampleParticipant identified by participantId {

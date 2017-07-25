@@ -102,6 +102,10 @@ class ValidatedResource extends Resource {
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
 }
+class InvalidQueryException extends BaseException {
+   + void constructor(String,QueryFile,Object,String,String,String,String) 
+   + QueryFile getQueryFile() 
+}
 class SecurityContext {
    + void constructor(Connection,string) 
    + Connection getConnection() 
