@@ -14,16 +14,16 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseFileException = require('../basefileexception');
 
 /**
  * Exception thrown for invalid queries
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseFileException
+ * @see See [BaseFileException]{@link module:composer-common.BaseFileException}
  * @class
  * @memberof module:composer-common
  */
-class InvalidQueryException extends BaseException {
+class InvalidQueryException extends BaseFileException {
 
     /**
      * Create an InvalidQueryException.

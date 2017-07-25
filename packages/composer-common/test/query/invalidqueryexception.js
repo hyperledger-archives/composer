@@ -14,43 +14,44 @@
 
 'use strict';
 
-const BaseFileException = require('../../lib/basefileexception');
-const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
-const ModelFile = require('../../lib/introspect/modelfile');
+const BaseException = require('../../lib/baseexception');
+const InvalidQueryException = require('../../lib/query/invalidqueryexception');
+const QueryFile = require('../../lib/query/queryfile');
 
 require('chai').should();
 const sinon = require('sinon');
 
 
-describe('IllegalModelException', function () {
+describe('InvalidQueryException', function () {
 
-    let modelFile;
+    let queryFile;
     let fileLocation = {start: {column: 1, line: 1}, end: {column: 1, line: 1}};
 
     beforeEach(function () {
-        modelFile = sinon.createStubInstance(ModelFile);
-        modelFile.getName.returns('model.cto');
+        queryFile = sinon.createStubInstance(QueryFile);
+        queryFile.getIdentifier.returns('queries.qry');
     });
 
     describe('#constructor', function () {
 
-        it('should return an instance of BaseFileException', function () {
-            let exc = new IllegalModelException('message', modelFile, fileLocation);
-            exc.should.be.an.instanceOf(BaseFileException);
+        it('should return an instance of BaseException', function () {
+            let exc = new InvalidQueryException('message', queryFile, fileLocation);
+            exc.should.be.an.instanceOf(BaseException);
         });
 
         it('should have a message', function () {
-            let exc = new IllegalModelException('message', modelFile, fileLocation);
-            exc.message.should.match(/message File \'model.cto\': line 1 column 1, to line 1 column 1./);
+            let exc = new InvalidQueryException('message', queryFile, fileLocation);
+            console.log(exc.message);
+            exc.message.should.match(/message File \'queries.qry\': line 1 column 1, to line 1 column 1./);
         });
 
-        it('should have a modelfile', function () {
-            let exc = new IllegalModelException('message', modelFile, fileLocation);
-            exc.getModelFile().should.equal(modelFile);
+        it('should have a queryfule', function () {
+            let exc = new InvalidQueryException('message', queryFile, fileLocation);
+            exc.getQueryFile().should.equal(queryFile);
         });
 
         it('should have a stack trace', function () {
-            let exc = new IllegalModelException('message', modelFile, fileLocation);
+            let exc = new InvalidQueryException('message', queryFile, fileLocation);
             exc.stack.should.be.a('string');
         });
 
@@ -58,7 +59,7 @@ describe('IllegalModelException', function () {
             let captureStackTrace = Error.captureStackTrace;
             Error.captureStackTrace = null;
             try {
-                new IllegalModelException('message', modelFile, fileLocation);
+                new InvalidQueryException('message', queryFile, fileLocation);
             } finally {
                 Error.captureStackTrace = captureStackTrace;
             }
