@@ -42,6 +42,16 @@ class FileWallet extends Wallet {
    + Promise update(string,string) 
    + Promise remove(string) 
 }
+class IdCard {
+   + String getName() 
+   + String getDescription() 
+   + String getBusinessNetwork() 
+   + Object getImage() 
+   + Object getConnection() 
+   + Map getCredentials() 
+   + Map getTlsCertificates() 
+   + Promise fromArchive(Buffer) 
+}
 class BaseModelException extends BaseException {
    + void constructor(string,string,string) 
    + string getFileLocation() 

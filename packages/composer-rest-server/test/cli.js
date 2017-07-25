@@ -19,7 +19,7 @@ const Util = require('../lib/util');
 require('chai').should();
 const proxyquire =  require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('composer-rest-server CLI unit tests', () => {
 
@@ -33,7 +33,8 @@ describe('composer-rest-server CLI unit tests', () => {
             userid: 'admin',
             secret: 'adminpw',
             namespaces: 'always',
-            security: false
+            security: false,
+            websockets: true
         });
         sandbox.stub(process, 'exit');
         sandbox.spy(console, 'log');
@@ -63,10 +64,16 @@ describe('composer-rest-server CLI unit tests', () => {
 
     it('should call inquirer if no arguments specified and start the server', () => {
         let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
         process.argv = [ process.argv0 ];
-        const server = sinon.stub();
-        server.resolves({
-            listen: listen
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
         });
         return proxyquire('../cli', {
             clear: () => { },
@@ -82,10 +89,13 @@ describe('composer-rest-server CLI unit tests', () => {
                 namespaces: 'always',
                 participantId: 'admin',
                 participantPwd: 'adminpw',
-                security: false
+                security: false,
+                websockets: true
             };
             sinon.assert.calledWith(server, settings);
             sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
         });
     });
 
@@ -93,16 +103,20 @@ describe('composer-rest-server CLI unit tests', () => {
         let listen = sinon.stub();
         process.argv = [ process.argv0, 'cli.js', '-n', 'org-acme-biznet' ];
         delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+
+            },
+            server: {
+                listen
+            }
+        });
         return proxyquire('../cli', {
             clear: () => { },
             chalk: {
                 yellow: () => { return ''; }
             },
-            './server/server': () => {
-                return Promise.resolve({
-                    listen: listen
-                });
-            }
+            './server/server': server
         }).then(() => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             sinon.assert.calledOnce(process.exit);
@@ -113,6 +127,8 @@ describe('composer-rest-server CLI unit tests', () => {
 
     it('should use the argumemts from yargs and start the server', () => {
         let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
@@ -121,9 +137,13 @@ describe('composer-rest-server CLI unit tests', () => {
             '-s', 'adminpw'
         ];
         delete require.cache[require.resolve('yargs')];
-        const server = sinon.stub();
-        server.resolves({
-            listen: listen
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
         });
         return proxyquire('../cli', {
             clear: () => { },
@@ -140,10 +160,13 @@ describe('composer-rest-server CLI unit tests', () => {
                 participantId: 'admin',
                 participantPwd: 'adminpw',
                 port: undefined,
-                security: false
+                security: false,
+                websockets: true
             };
             sinon.assert.calledWith(server, settings);
             sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
         });
     });
 
@@ -151,6 +174,7 @@ describe('composer-rest-server CLI unit tests', () => {
         let listen = sinon.stub();
         let emit = sinon.stub();
         let get = sinon.stub();
+        get.withArgs('port').returns(3000);
         get.withArgs('url').returns('http://localhost:3000');
         get.withArgs('loopback-component-explorer').returns(true);
         process.argv = [
@@ -161,11 +185,14 @@ describe('composer-rest-server CLI unit tests', () => {
             '-s', 'adminpw'
         ];
         delete require.cache[require.resolve('yargs')];
-        const server = sinon.stub();
-        server.resolves({
-            listen: listen,
-            emit: emit,
-            get: get
+        const server = sinon.stub().resolves({
+            app: {
+                emit,
+                get
+            },
+            server: {
+                listen
+            }
         });
         return proxyquire('../cli', {
             clear: () => { },
@@ -175,7 +202,8 @@ describe('composer-rest-server CLI unit tests', () => {
             './server/server': server
         }).then(() => {
             sinon.assert.calledOnce(listen);
-            listen.args[0][0]();
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1]();
             sinon.assert.calledOnce(emit);
             sinon.assert.calledWith(emit, 'started');
             sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
@@ -187,6 +215,7 @@ describe('composer-rest-server CLI unit tests', () => {
         let listen = sinon.stub();
         let emit = sinon.stub();
         let get = sinon.stub();
+        get.withArgs('port').returns(3000);
         get.withArgs('url').returns('http://localhost:3000');
         process.argv = [
             process.argv0, 'cli.js',
@@ -196,11 +225,14 @@ describe('composer-rest-server CLI unit tests', () => {
             '-s', 'adminpw'
         ];
         delete require.cache[require.resolve('yargs')];
-        const server = sinon.stub();
-        server.resolves({
-            listen: listen,
-            emit: emit,
-            get: get
+        const server = sinon.stub().resolves({
+            app: {
+                emit,
+                get
+            },
+            server: {
+                listen
+            }
         });
         return proxyquire('../cli', {
             clear: () => { },
@@ -210,7 +242,8 @@ describe('composer-rest-server CLI unit tests', () => {
             './server/server': server
         }).then(() => {
             sinon.assert.calledOnce(listen);
-            listen.args[0][0]();
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1]();
             sinon.assert.calledOnce(emit);
             sinon.assert.calledWith(emit, 'started');
             sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));

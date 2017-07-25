@@ -57,6 +57,7 @@
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
     "touch": "^1.0.0",
+    "ws": "^3.0.0",
     "yargs": "^8.0.1"
   },
   "devDependencies": {
@@ -70,12 +71,11 @@
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
+    "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
     "passport-github2": "^0.1.10",
     "proxyquire": "^1.7.11",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2",
+    "sinon": "^2.3.8",
     "sleep-promise": "^2.0.0"
   },
   "license-check-config": {

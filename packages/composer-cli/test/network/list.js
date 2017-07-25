@@ -29,7 +29,6 @@ require('chai').should();
 
 const chai = require('chai');
 const sinon = require('sinon');
-require('sinon-as-promised');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));

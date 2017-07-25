@@ -28,7 +28,6 @@ chai.use(require('chai-subset'));
 describe('Participant system tests', function () {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
 
     before(function () {
@@ -40,8 +39,7 @@ describe('Participant system tests', function () {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-participants')
                     .then((result) => {

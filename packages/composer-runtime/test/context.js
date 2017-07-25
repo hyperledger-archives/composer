@@ -47,7 +47,7 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('Context', () => {
 

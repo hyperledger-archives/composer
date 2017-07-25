@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Reference Index
+title: Reference
 section: reference
 index-order: 900
 sidebar: sidebars/accordion-toc0.md
@@ -15,7 +15,7 @@ The {{site.data.conrefs.composer_full}} reference material contains a number of 
 
 {% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
-{% if page.section == 'reference' and page.title != "Reference Index" or page.exception == 'API' %}
+{% if page.section == 'reference' and page.title != "Reference" or page.exception == 'API' %}
 ### {{ page.title }}
 {{ page.excerpt }}
 {% endif %}
