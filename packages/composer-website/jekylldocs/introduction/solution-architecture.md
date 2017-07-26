@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Typical Solution Architecture
-sidebar: sidebars/introduction.md
+sidebar: sidebars/accordion-toc0.md
 section: introduction
-index-order: 2.5
+index-order: 102
 ---
 
 # Typical {{site.data.conrefs.composer_full}} Solution Architecture
@@ -30,7 +30,7 @@ index-order: 2.5
 {{site.data.conrefs.composer_full}} has been designed to support different pluggable runtimes, and currently has four runtime implementations:
 
 * {{site.data.conrefs.hlf_full}} version 0.6. State is stored on the distributed ledger.
-* {{site.data.conrefs.hlf_full}} version 1.0 RC 1. State is stored on the distributed ledger.
+* {{site.data.conrefs.hlf_full}} version 1.0. State is stored on the distributed ledger.
 * Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.
 * Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.
 

@@ -22,7 +22,7 @@ const uuid = require('uuid');
 const should = require('chai').should();
 const sinon = require('sinon');
 
-describe('Factory', () => {
+describe('Factory', function() {
     const namespace = 'org.acme.test';
     const assetName = 'MyAsset';
 
@@ -39,6 +39,9 @@ describe('Factory', () => {
         }
         concept MyConcept {
             o String newValue
+        }
+        abstract asset AbstractAsset identified by assetId {
+            o String assetId
         }
         asset MyAsset identified by assetId {
             o String assetId
@@ -63,87 +66,106 @@ describe('Factory', () => {
         sandbox.restore();
     });
 
-    describe('#newResource', () => {
-        it('should throw creating a new instance without an ID', () => {
+    describe('#newResource', function() {
+        it('should throw creating a new instance without an ID', function() {
             (() => {
                 factory.newResource(namespace, assetName, null);
             }).should.throw(/Invalid or missing identifier/);
         });
 
-        it('should throw creating a new instance with an ID that is just whitespace', () => {
+        it('should throw creating a new instance with an ID that is just whitespace', function() {
             (() => {
                 factory.newResource(namespace, assetName, '     ');
             }).should.throw(/Missing identifier/);
         });
 
-        it('should create a new instance with a specified ID', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1');
+        it('should throw creating an abstract asset', function() {
+            (() => {
+                factory.newResource(namespace, 'AbstractAsset', 'MY_ID_1');
+            }).should.throw(/AbstractAsset/);
+        });
+
+        it('should throw creating a concept', function() {
+            (() => {
+                factory.newResource(namespace, 'MyConcept', 'MY_ID_1');
+            }).should.throw(/MyConcept/);
+        });
+
+        it('should create a new instance with a specified ID', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1');
             resource.assetId.should.equal('MY_ID_1');
-            should.equal(resource.newValue, undefined);
-            should.equal(resource.optionalValue, undefined);
+        });
+
+        it('should create a new validating instance by default', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1');
             should.not.equal(resource.validate, undefined);
         });
 
-        it('should create a new non-validating instance with a specified ID', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { disableValidation: true });
-            resource.assetId.should.equal('MY_ID_1');
-            should.equal(resource.newValue, undefined);
-            should.equal(resource.optionalValue, undefined);
+        it('should create a new non-validating instance', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { disableValidation: true });
             should.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated empty data', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'empty' });
-            resource.assetId.should.equal('MY_ID_1');
+        it('should not define fields if \'generate\' option is not set', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1');
+            should.equal(resource.newValue, undefined);
+        });
+
+        it('should generate empty field values', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'empty' });
+            assertEmptyFieldValues(resource);
+        });
+
+        const assertEmptyFieldValues = function(resource) {
+            should.not.equal(resource.newValue, undefined);
             resource.newValue.should.be.a('String');
             resource.newValue.length.should.equal(0);
-            should.equal(resource.optionalValue, undefined);
-            should.not.equal(resource.validate, undefined);
-        });
-
-        const validateSampleData = (resource) => {
-            resource.assetId.should.equal('MY_ID_1');
-            resource.newValue.should.be.a('String');
-            resource.newValue.length.should.not.equal(0);
-            resource.optionalValue.should.be.a('String');
-            resource.optionalValue.length.should.not.equal(0);
-            should.not.equal(resource.validate, undefined);
         };
 
-        it('should create a new instance with a specified ID and generated sample data', () => {
+        it('should generate sample field values', function() {
             const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'sample' });
-            validateSampleData(resource);
+            assertSampleFieldValues(resource);
         });
 
-        it('should generate sample data if \'generate\' option is a boolean', () => {
+        it('should generate sample field values if \'generate\' option is a boolean', function() {
             const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: true });
-            validateSampleData(resource);
+            assertSampleFieldValues(resource);
         });
 
-    });
+        const assertSampleFieldValues = function(resource) {
+            should.not.equal(resource.newValue, undefined);
+            resource.newValue.should.be.a('String');
+            resource.newValue.length.should.not.equal(0);
+        };
 
-    describe('#newResource', () => {
-
-        it('should create a new instance with a specified ID', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1');
-            resource.assetId.should.equal('MY_ID_1');
-            should.equal(resource.newValue, undefined);
-            should.not.equal(resource.validate, undefined);
+        it('should not define optional fields with generated empty data if includeOptionalFields not specified', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'empty' });
+            assertOptionalNotDefined(resource);
         });
 
-        it('should create a new non-validating instance with a specified ID', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { disableValidation: true });
-            resource.assetId.should.equal('MY_ID_1');
-            should.equal(resource.newValue, undefined);
-            should.equal(resource.validate, undefined);
+        it('should not define optional fields with generated sample data if includeOptionalFields not specified', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'sample' });
+            assertOptionalNotDefined(resource);
         });
 
-        it('should create a new instance with a specified ID and generated data', () => {
-            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: true });
-            resource.assetId.should.equal('MY_ID_1');
-            resource.newValue.should.be.a('string');
-            should.not.equal(resource.validate, undefined);
+        const assertOptionalNotDefined = function(resource) {
+            should.equal(resource.optionalValue, undefined);
+        };
+
+        it ('should define optional fields with generated empty data if includeOptionalFields is specified', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'empty', includeOptionalFields: true });
+            assertOptionalIsDefined(resource);
         });
+
+        it ('should define optional fields with generated sample data if includeOptionalFields is specified', function() {
+            const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'sample', includeOptionalFields: true });
+            assertOptionalIsDefined(resource);
+        });
+
+        const assertOptionalIsDefined = function(resource) {
+            should.not.equal(resource.optionalValue, undefined);
+            resource.optionalValue.should.be.a('String');
+        };
 
     });
 
@@ -165,6 +187,12 @@ describe('Factory', () => {
             (() => {
                 factory.newConcept(namespace, 'AbstractConcept');
             }).should.throw(/Cannot instantiate Abstract Type AbstractConcept in namespace org.acme.test/);
+        });
+
+        it('should throw creating a non-concept', function() {
+            (() => {
+                factory.newConcept(namespace, assetName);
+            }).should.throw(new RegExp(assetName));
         });
 
         it('should create a new concept', () => {

@@ -26,7 +26,7 @@ const ModelUtil = require('../modelutil');
  * ClassDeclaration defines the structure (model/schema) of composite data.
  * It is composed of a set of Properties, may have an identifying field, and may
  * have a super-type.
- * A ClassDeclaration is conceptually owned with a ModelFile which
+ * A ClassDeclaration is conceptually owned by a ModelFile which
  * defines all the classes that are part of a namespace.
  *
  * @private
@@ -97,7 +97,7 @@ class ClassDeclaration {
         else {
             // if we are not a system type, then we should set the
             // super type to the system type for this class declaration
-            if(!this.isSystemType()) {
+            if(!this.isSystemCoreType()) {
                 this.superType = this.getSystemType();
             }
         }
@@ -167,13 +167,16 @@ class ClassDeclaration {
             if(classDecl===null) {
                 throw new IllegalModelException('Could not find super type ' + this.superType, this.modelFile, this.ast.location);
             }
-            // TODO (DCS)
-            // else {
-            //     // check that assets only inherit from assets etc.
-            //     if( Object.getPrototypeOf(classDecl) !== Object.getPrototypeOf(this)) {
-            //         throw new Error('Invalid super type for ' + this.name + ' is must be of type ' + Object.getPrototypeOf(this) );
-            //     }
-            // }
+
+            // Prevent extending declaration with different type of declaration
+            const supertypeDeclaration = this.getModelFile().getType(this.superType);
+            if (supertypeDeclaration) {
+                if (this.constructor.name !== supertypeDeclaration.constructor.name) {
+                    let typeName = this.getSystemType();
+                    let superTypeName = supertypeDeclaration.getSystemType();
+                    throw new IllegalModelException(`${typeName} (${this.getName()}) cannot extend ${superTypeName} (${supertypeDeclaration.getName()})`, this.modelFile, this.ast.location);
+                }
+            }
         }
 
         if(this.idField) {
@@ -231,7 +234,7 @@ class ClassDeclaration {
             // we now validate the field, however to ensure that
             // imports are resolved correctly we validate in the context
             // of the declared type of the field for non-primitives in a different namespace
-            if(field.isPrimitive() || this.isEnum() || field.getNamespace() === this.getModelFile().getNamespace() ) {
+            if(field.isPrimitive() || this.isEnum() || field.getNamespace() === this.getNamespace() ) {
                 field.validate(this);
             }
             else {
@@ -297,14 +300,34 @@ class ClassDeclaration {
         return false;
     }
 
+     /**
+      * Returns true if this class can be pointed to by a relationship in a
+      * system model
+      *
+      * @return {boolean} true if the class may be pointed to by a relationship
+      */
+    isSystemRelationshipTarget() {
+        return this.isRelationshipTarget();
+    }
+
     /**
-     * Returns true if this class can be pointed to by a relationship in a
-     * system model
+     * Returns true is this type is in the system namespace
      *
      * @return {boolean} true if the class may be pointed to by a relationship
      */
     isSystemType() {
-        return ModelUtil.getSystemNamespace() === this.modelFile.getNamespace();
+        return ModelUtil.getSystemNamespace() === this.getNamespace();
+    }
+
+    /**
+     * Returns true if this class is a system core type - both in the system
+     * namespace, and also one of the system core types (Asset, Participant, etc).
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemCoreType() {
+        return this.isSystemType() &&
+            this.getSystemType() === this.getName();
     }
 
     /**
@@ -318,13 +341,21 @@ class ClassDeclaration {
     }
 
     /**
+     * Return the namespace of this class.
+     * @return {String} namespace - a namespace.
+     */
+    getNamespace() {
+        return this.modelFile.getNamespace();
+    }
+
+    /**
      * Returns the fully qualified name of this class.
      * The name will include the namespace if present.
      *
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.modelFile.getNamespace() + '.' + this.name;
+        return this.getNamespace() + '.' + this.name;
     }
 
     /**
@@ -524,6 +555,41 @@ class ClassDeclaration {
     }
 
     /**
+     * Get a nested property using a dotted property path
+     * @param {string} propertyPath The property name or name with nested structure e.g a.b.c
+     * @returns {Property} the property
+     * @throws {IllegalModelException} if the property path is invalid or the property does not exist
+     */
+    getNestedProperty(propertyPath) {
+
+        const propertyNames = propertyPath.split('.');
+        let classDeclaration = this;
+        let result = null;
+
+        for (let n = 0; n < propertyNames.length; n++) {
+
+            // get the nth property
+            result = classDeclaration.getProperty(propertyNames[n]);
+
+            if (result === null) {
+                throw new IllegalModelException('Property ' + propertyNames[n] + ' does not exist on ' + classDeclaration.getFullyQualifiedName(), this.modelFile, this.ast.location);
+            }
+            // not the last element, get the class of the element
+            else if( n < propertyNames.length-1) {
+                if(result.isPrimitive() || result.isTypeEnum()) {
+                    throw new Error('Property ' + propertyNames[n] + ' is a primitive or enum. Invalid property path: ' + propertyPath );
+                }
+                else {
+                    // get the nested type, this throws if the type is missing or if the type is an enum
+                    classDeclaration = classDeclaration.getModelFile().getModelManager().getType(result.getFullyQualifiedTypeName());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the string representation of this class
      * @return {String} the string representation of the class
      */
@@ -534,7 +600,6 @@ class ClassDeclaration {
         }
         return 'ClassDeclaration {id=' + this.getFullyQualifiedName() + superType + ' enum=' + this.isEnum() + ' abstract=' + this.isAbstract() + '}';
     }
-
 
 }
 

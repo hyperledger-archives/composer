@@ -21,7 +21,6 @@ const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Util = require('../util');
-const ValueGeneratorFactory = require('./valuegenerator');
 const Globalize = require('../globalize');
 
 /**
@@ -84,11 +83,8 @@ class InstanceGenerator {
      */
     visitField(field, parameters) {
         if (field.isArray()) {
-            let result = [];
-            for (let i = 0; i < 3; i++) {
-                result.push(this.getFieldValue(field, parameters));
-            }
-            return result;
+            const valueSupplier = () => this.getFieldValue(field, parameters);
+            return parameters.valueGenerator.getArray(valueSupplier);
         } else {
             return this.getFieldValue(field, parameters);
         }
@@ -102,57 +98,53 @@ class InstanceGenerator {
      */
     getFieldValue(field, parameters) {
         let type = field.getFullyQualifiedTypeName();
-        let valueGenerator = parameters.valueGenerator || ValueGeneratorFactory.sample();
+
         if (ModelUtil.isPrimitiveType(type)) {
             switch(type) {
             case 'DateTime':
-                return valueGenerator.getDateTime();
+                return parameters.valueGenerator.getDateTime();
             case 'Integer':
-                return valueGenerator.getInteger();
+                return parameters.valueGenerator.getInteger();
             case 'Long':
-                return valueGenerator.getLong();
+                return parameters.valueGenerator.getLong();
             case 'Double':
-                return valueGenerator.getDouble();
+                return parameters.valueGenerator.getDouble();
             case 'Boolean':
-                return valueGenerator.getBoolean();
+                return parameters.valueGenerator.getBoolean();
             default:
-                return valueGenerator.getString();
+                return parameters.valueGenerator.getString();
             }
         }
+
         let classDeclaration = parameters.modelManager.getType(type);
+
         if (classDeclaration instanceof EnumDeclaration) {
             let enumValues = classDeclaration.getOwnProperties();
-            return valueGenerator.getEnum(enumValues).getName();
+            return parameters.valueGenerator.getEnum(enumValues).getName();
         }
 
-        if (classDeclaration.isAbstract()) {
-            const newClassDecl = this.findConcreteSubclass(classDeclaration);
-            classDeclaration = newClassDecl;
-            type = newClassDecl.getName();
-        }
+        classDeclaration = this.findConcreteSubclass(classDeclaration);
 
         if (classDeclaration.isConcept()) {
-            let concept = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName());
+            let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
             parameters.stack.push(concept);
             return classDeclaration.accept(this, parameters);
         } else {
-            let identifierFieldName = classDeclaration.getIdentifierFieldName();
-            let idx = Math.round(Math.random() * 9999).toString();
-            idx = leftPad(idx, 4, '0');
-            let id = `${identifierFieldName}:${idx}`;
-            let resource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
+            const id = this.generateRandomId(classDeclaration);
+            let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
             parameters.stack.push(resource);
             return classDeclaration.accept(this, parameters);
         }
     }
 
     /**
-     * Find a type that extends the provided abstract type and return it.
+     * Find a concrete type that extends the provided type. If the supplied type argument is
+     * not abstract then it will be returned.
      * TODO: work out whether this has to be a leaf node or whether the closest type can be used
      * It depends really since the closest type will satisfy the model but whether it satisfies
      * any transaction code which attempts to use the generated resource is another matter.
      * @param {ClassDeclaration} declaration the class declaration.
-     * @return {ClassDeclaration} the closest extending concrete class definition - null if none are found.
+     * @return {ClassDeclaration} the closest extending concrete class definition.
      * @throws {Error} if no concrete subclasses exist.
      */
     findConcreteSubclass(declaration) {
@@ -161,7 +153,8 @@ class InstanceGenerator {
         }
 
         const concreteSubclasses = declaration.getAssignableClassDeclarations()
-            .filter(subclass => !subclass.isAbstract());
+            .filter(subclass => !subclass.isAbstract())
+            .filter(subclass => !subclass.isSystemType());
 
         if (concreteSubclasses.length === 0) {
             const formatter = Globalize.messageFormatter('instancegenerator-newinstance-noconcreteclass');
@@ -176,31 +169,36 @@ class InstanceGenerator {
     /**
      * Visitor design pattern
      * @param {RelationshipDeclaration} relationshipDeclaration - the object being visited
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
+     * @param {Object} parameters - the parameter
+     * @return {Relationship} the result of visiting
      * @private
      */
     visitRelationshipDeclaration(relationshipDeclaration, parameters) {
         let classDeclaration = parameters.modelManager.getType(relationshipDeclaration.getFullyQualifiedTypeName());
-        let identifierFieldName = classDeclaration.getIdentifierFieldName();
-        let factory = parameters.factory;
+        classDeclaration = this.findConcreteSubclass(classDeclaration);
+        const factory = parameters.factory;
+        const valueSupplier = () => {
+            const id = this.generateRandomId(classDeclaration);
+            return factory.newRelationship(classDeclaration.getNamespace(), classDeclaration.getName(), id);
+        };
         if (relationshipDeclaration.isArray()) {
-            let result = [];
-            for (let i = 0; i < 3; i++) {
-                let idx = Math.round(Math.random() * 9999).toString();
-                idx = leftPad(idx, 4, '0');
-                let id = `${identifierFieldName}:${idx}`;
-                let relationship = factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
-                result.push(relationship);
-            }
-            return result;
+            return parameters.valueGenerator.getArray(valueSupplier);
         } else {
-            let idx = Math.round(Math.random() * 9999).toString();
-            idx = leftPad(idx, 4, '0');
-            let id = `${identifierFieldName}:${idx}`;
-            let relationship = factory.newRelationship(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
-            return relationship;
+            return valueSupplier();
         }
+    }
+
+    /**
+     * Generate a random ID for a given type.
+     * @private
+     * @param {ClassDeclaration} classDeclaration - class declaration for a type.
+     * @return {String} an ID.
+     */
+    generateRandomId(classDeclaration) {
+        const prefix = classDeclaration.getIdentifierFieldName();
+        let index = Math.round(Math.random() * 9999).toString();
+        index = leftPad(index, 4, '0');
+        return `${prefix}:${index}`;
     }
 
 }

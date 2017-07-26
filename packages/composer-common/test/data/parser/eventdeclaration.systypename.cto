@@ -1,0 +1,5 @@
+namespace com.testing
+
+event Event identified by eventId{
+  o String eventId
+}

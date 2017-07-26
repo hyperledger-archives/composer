@@ -12,7 +12,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -41,6 +41,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private editActive: boolean = false; // Are the input boxes visible?
     private editingPackage: boolean = false; // Is the package.json being edited?
+    private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
     private deployedPackageName; // This is the deployed BND's package name
     private deployedPackageVersion; // This is the deployed BND's package version
@@ -210,6 +211,16 @@ export class EditorComponent implements OnInit, OnDestroy {
             });
         }
 
+        // deal with query
+        let queryFile = this.clientService.getQueryFile();
+        if (queryFile) {
+            newFiles.push({
+                query: true,
+                id: queryFile.getIdentifier(),
+                displayID: queryFile.getIdentifier()
+            });
+        }
+
         // deal with readme
         let readme = this.clientService.getMetaData().getREADME();
         if (readme) {
@@ -280,6 +291,33 @@ export class EditorComponent implements OnInit, OnDestroy {
         scriptManager.addScript(script);
         this.updateFiles();
         let index = this.findFileIndex(true, script.getIdentifier());
+        this.setCurrentFile(this.files[index]);
+        this.dirty = true;
+    }
+
+    addQueryFile(query) {
+        if (this.files.findIndex((file) => file.query === true) !== -1) {
+            const confirmModalRef = this.modalService.open(ReplaceComponent);
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
+            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+            confirmModalRef.result.then((result) => {
+                this.processQueryFileAddition(query);
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            });
+        } else {
+            this.processQueryFileAddition(query);
+        }
+    }
+
+    processQueryFileAddition(query) {
+        let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+        let queryManager: QueryManager = businessNetworkDefinition.getQueryManager();
+        queryManager.setQueryFile(query);
+        this.updateFiles();
+        let index = this.findFileIndex(true, query.getIdentifier());
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
@@ -380,6 +418,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                             this.addScriptFile(result);
                         } else if (result instanceof AclFile) {
                             this.addRuleFile(result);
+                        } else if (result instanceof QueryFile) {
+                            this.addQueryFile(result);
                         } else {
                             this.addReadme(result);
                         }
@@ -435,6 +475,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.errorStatus$.next(error);
             });
+    }
+
+    /*
+     * Sets the current README file editor state (from editor to previewer)
+     */
+    setReadmePreview(preview: boolean) {
+        this.previewReadme = preview;
     }
 
     /*
@@ -577,8 +624,18 @@ export class EditorComponent implements OnInit, OnDestroy {
             return 'Script';
         } else if (resource.acl) {
             return 'ACL';
+        } else if (resource.query) {
+            return 'Query';
         } else {
             return 'Readme';
+        }
+    }
+
+    preventNameEdit(resource: any): boolean {
+        if (resource.acl || resource.query) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -618,6 +675,14 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
+            } else if (file.query) {
+              let query = this.clientService.getQueryFile();
+              if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
+                  allValid = false;
+                  file.invalid = true;
+              } else {
+                  file.invalid = false;
+              }
             }
         }
         return allValid;

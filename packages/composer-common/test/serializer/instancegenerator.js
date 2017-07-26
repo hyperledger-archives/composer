@@ -18,30 +18,38 @@ const Factory = require('../../lib/factory');
 const InstanceGenerator = require('../../lib/serializer/instancegenerator');
 const ModelManager = require('../../lib/modelmanager');
 const TypedStack = require('../../lib/serializer/typedstack');
+const ValueGenerator = require('../../lib/serializer/valuegenerator');
 
 const chai = require('chai');
 const should = chai.should();
 
 describe('InstanceGenerator', () => {
-
     let factory;
     let modelManager;
     let parameters;
     let visitor;
+
+    const useEmptyGenerator = () => {
+        parameters.valueGenerator = ValueGenerator.empty();
+    };
+
+    const useSampleGenerator = () => {
+        parameters.valueGenerator = ValueGenerator.sample();
+    };
 
     beforeEach(() => {
         modelManager = new ModelManager();
         factory = new Factory(modelManager);
         parameters = {
             modelManager: modelManager,
-            factory: factory
+            factory: factory,
         };
+        useSampleGenerator();
         visitor = new InstanceGenerator();
     });
 
-    let test = (modelFile, additionalParams) => {
+    const test = (modelFile) => {
         modelManager.addModelFile(modelFile);
-        Object.assign(parameters, additionalParams);
         let resource = factory.newResource('org.acme.test', 'MyAsset', 'asset1');
         parameters.stack = new TypedStack(resource);
         let classDeclaration = resource.getClassDeclaration();
@@ -65,16 +73,25 @@ describe('InstanceGenerator', () => {
             resource.theValue.should.be.a('string');
         });
 
-        it('should generate a default value for a string array property', () => {
+        it('should generate empty array value for array property with empty generator ', () => {
+            useEmptyGenerator();
             let resource = test(`namespace org.acme.test
             asset MyAsset identified by assetId {
                 o String assetId
                 o String[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.a('string');
-            resource.theValues[1].should.be.a('string');
-            resource.theValues[2].should.be.a('string');
+            resource.theValues.should.be.a('Array').that.is.empty;
+        });
+
+        it('should generate one default value for a string array property with sample generator ', () => {
+            useSampleGenerator();
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o String[] theValues
+            }`);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('String');
         });
 
         it('should generate a default value for a date/time property', () => {
@@ -86,16 +103,14 @@ describe('InstanceGenerator', () => {
             resource.theValue.should.be.an.instanceOf(Date);
         });
 
-        it('should generate a default value for a date/time array property', () => {
+        it('should generate one default value for a date/time array property', () => {
             let resource = test(`namespace org.acme.test
             asset MyAsset identified by assetId {
                 o String assetId
                 o DateTime[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.an.instanceOf(Date);
-            resource.theValues[1].should.be.an.instanceOf(Date);
-            resource.theValues[2].should.be.an.instanceOf(Date);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('Date');
         });
 
         it('should generate a default value for an integer property', () => {
@@ -113,10 +128,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o Integer[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.a('number');
-            resource.theValues[1].should.be.a('number');
-            resource.theValues[2].should.be.a('number');
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('Number');
         });
 
         it('should generate a default value for a long property', () => {
@@ -134,10 +147,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o Long[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.a('number');
-            resource.theValues[1].should.be.a('number');
-            resource.theValues[2].should.be.a('number');
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('Number');
         });
 
         it('should generate a default value for a double property', () => {
@@ -155,10 +166,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o Double[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.a('number');
-            resource.theValues[1].should.be.a('number');
-            resource.theValues[2].should.be.a('number');
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('Number');
         });
 
         it('should generate a default value for a boolean property', () => {
@@ -176,10 +185,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o Boolean[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
-            resource.theValues[0].should.be.a('boolean');
-            resource.theValues[1].should.be.a('boolean');
-            resource.theValues[2].should.be.a('boolean');
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
+            resource.theValues[0].should.be.a('Boolean');
         });
 
         it('should generate a default value for an enum property', () => {
@@ -207,10 +214,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o MyEnum[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
             resource.theValues[0].should.be.oneOf(['ENUM_VAL1', 'ENUM_VAL2', 'ENUM_VAL3']);
-            resource.theValues[1].should.be.oneOf(['ENUM_VAL1', 'ENUM_VAL2', 'ENUM_VAL3']);
-            resource.theValues[2].should.be.oneOf(['ENUM_VAL1', 'ENUM_VAL2', 'ENUM_VAL3']);
         });
 
         it('should generate a default value for a relationship property', () => {
@@ -228,10 +233,8 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 --> MyAsset[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
             resource.theValues[0].getIdentifier().should.match(/^assetId:\d{4}$/);
-            resource.theValues[1].getIdentifier().should.match(/^assetId:\d{4}$/);
-            resource.theValues[2].getIdentifier().should.match(/^assetId:\d{4}$/);
         });
 
         it('should generate a default value for a resource property', () => {
@@ -258,13 +261,9 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o MyInnerAsset[] theValues
             }`);
-            resource.theValues.should.have.lengthOf(3);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(1);
             resource.theValues[0].getIdentifier().should.match(/^innerAssetId:\d{4}$/);
             resource.theValues[0].theValue.should.be.a('string');
-            resource.theValues[1].getIdentifier().should.match(/^innerAssetId:\d{4}$/);
-            resource.theValues[1].theValue.should.be.a('string');
-            resource.theValues[2].getIdentifier().should.match(/^innerAssetId:\d{4}$/);
-            resource.theValues[2].theValue.should.be.a('string');
         });
 
         it('should generate a default value for base class properties', () => {
@@ -290,7 +289,7 @@ describe('InstanceGenerator', () => {
                 o String id
                 o BaseConcept aConcept
             }`);
-            resource.aConcept.$type.should.match(/^MyConcept$/);
+            resource.aConcept.getType().should.equal('MyConcept');
         });
 
         it('should throw an error when trying to generate a resource from a model that uses an Abstract type with no concrete Implementing type', () => {
@@ -309,23 +308,44 @@ describe('InstanceGenerator', () => {
         });
 
         it('should not generate default value for optional property if not requested', () => {
-            let resource = test(`namespace org.acme.test
+            parameters.includeOptionalFields = false;
+            const resource = test(`namespace org.acme.test
             asset MyAsset identified by assetId {
                 o String assetId
                 o String theValue optional
-            }`, { includeOptionalFields: false });
+            }`);
             should.equal(resource.theValue, undefined);
         });
 
         it('should generate default value for optional property if requested', () => {
-            let resource = test(`namespace org.acme.test
+            parameters.includeOptionalFields = true;
+            const resource = test(`namespace org.acme.test
             asset MyAsset identified by assetId {
                 o String assetId
                 o String theValue optional
-            }`, { includeOptionalFields: true });
+            }`);
             resource.theValue.should.be.a('String');
+        });
+
+        it('should generate concrete subclass for abstract reference', function() {
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by id {
+                o String id
+                --> Asset theValue
+            }`);
+            resource.theValue.getType().should.equal('MyAsset');
         });
 
     });
 
+    describe('#findConcreteSubclass', () => {
+        it('should return the same declaration if it is abstract', () => {
+            const declaration = {
+                isAbstract: () => {
+                    return false;
+                }
+            };
+            visitor.findConcreteSubclass(declaration).should.deep.equal(declaration);
+        });
+    });
 });

@@ -52,7 +52,7 @@ export class IssueIdentityComponent implements OnInit {
             })
             .then((allParticipants) => {
                 return Promise.all(allParticipants.map((registryParticipant) => {
-                    return this.participants.set(registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
+                    return this.participants.set('resource:' + registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
                 }));
             })
             .then(() => {

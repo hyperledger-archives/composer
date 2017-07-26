@@ -1,6 +1,11 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
+class BaseFileException extends BaseException {
+   + void constructor(string,string,string) 
+   + string getFileLocation() 
+   + string getShortMessage() 
+}
 class BusinessNetworkDefinition {
    + void constructor(String,String,object,String) 
    + String getIdentifier() 
@@ -26,11 +31,11 @@ class BusinessNetworkMetadata {
 }
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newResource(string,string,string,Object,boolean,string) throws TypeNotFoundException
-   + Resource newConcept(string,string,Object,boolean,string) throws TypeNotFoundException
+   + Resource newResource(string,string,string,Object,boolean,string,boolean) throws TypeNotFoundException
+   + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string) 
-   + Resource newEvent(string,string,string,Object,string) 
+   + Resource newTransaction(string,string,string,Object,string,boolean) 
+   + Resource newEvent(string,string,string,Object,string,boolean) 
 }
 class FileWallet extends Wallet {
    + string getHomeDirectory() 
@@ -42,12 +47,17 @@ class FileWallet extends Wallet {
    + Promise update(string,string) 
    + Promise remove(string) 
 }
-class BaseModelException extends BaseException {
-   + void constructor(string,string,string) 
-   + string getFileLocation() 
-   + string getShortMessage() 
+class IdCard {
+   + String getName() 
+   + String getDescription() 
+   + String getBusinessNetwork() 
+   + Object getImage() 
+   + Object getConnection() 
+   + Map getCredentials() 
+   + Map getTlsCertificates() 
+   + Promise fromArchive(Buffer) 
 }
-class IllegalModelException extends BaseModelException {
+class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
    + string getModelFile() 
 }
@@ -56,7 +66,7 @@ class Introspector {
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
-class ParseException extends BaseModelException {
+class ParseException extends BaseFileException {
    + void constructor(string,string) 
 }
 class ConsoleLogger {
@@ -101,6 +111,10 @@ class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
+}
+class InvalidQueryException extends BaseFileException {
+   + void constructor(String,QueryFile,Object,String,String,String,String) 
+   + QueryFile getQueryFile() 
 }
 class SecurityContext {
    + void constructor(Connection,string) 

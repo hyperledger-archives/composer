@@ -25,7 +25,7 @@ const sinon = require('sinon');
 describe('FunctionDeclaration', () => {
 
     const modelManager = new ModelManager();
-    modelManager.addModelFile('namespace org.acme transaction TestTransaction identified by id {o String id}');
+    modelManager.addModelFile('namespace org.acme transaction TestTransaction {}');
     let mozartModel = fs.readFileSync('test/data/model/mozart.cto', 'utf8');
     modelManager.addModelFile(mozartModel, 'mozart.cto');
 

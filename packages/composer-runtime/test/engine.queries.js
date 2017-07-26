@@ -28,7 +28,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('EngineQueries', () => {
 
@@ -69,8 +69,8 @@ describe('EngineQueries', () => {
         engine = new Engine(mockContainer);
         mockCompiledQueryBundle.buildQuery.returns('5769993d7c0a008e0cb45e30a36e3f2797c47c065be7f214c5dcee90419d326f');
         mockCompiledQueryBundle.execute.resolves([
-            { $identifier: 'ASSET_1', $registryID: 'registry1' },
-            { $identifier: 'ASSET_2', $registryID: 'registry2' }
+            { $identifier: 'ASSET_1', $registryId: 'registry1' },
+            { $identifier: 'ASSET_2', $registryId: 'registry2' }
         ]);
         mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_1' }).returns(mockResource1);
         mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_2' }).returns(mockResource2);

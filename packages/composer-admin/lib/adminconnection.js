@@ -17,10 +17,13 @@
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
-const Util = require('composer-common').Util;
-
 const fs = require('fs');
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Logger = require('composer-common').Logger;
+const Util = require('composer-common').Util;
+const uuid = require('uuid');
+
+const LOG = Logger.getLog('AdminConnection');
 
 /**
  * This class creates an administration connection to a Hyperledger Composer runtime. The
@@ -89,7 +92,7 @@ class AdminConnection {
             .then((securityContext) => {
                 this.securityContext = securityContext;
                 if (businessNetworkIdentifier) {
-                    return this.connection.ping(this.securityContext);
+                    return this.ping(this.securityContext);
                 }
             });
     }
@@ -206,6 +209,58 @@ class AdminConnection {
     }
 
     /**
+     * Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation
+     * for the business network to be started. The connection mustbe connected for this method to succeed.
+     * You must pass the name of the business network that is defined in your archive that this
+     * runtime will be started with.
+     * @example
+     * // Install the Hyperledger Composer runtime
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.install(businessNetworkDefinition.getName())
+     * .then(function(){
+     *     // Business network definition installed
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network which will be used to start this runtime.
+     * @param {Object} installOptions connector specific install options
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * deployed.
+     */
+    install(businessNetworkIdentifier, installOptions) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.install(this.securityContext, businessNetworkIdentifier, installOptions);
+    }
+
+    /**
+     * Starts a business network within the runtime previously installed to the Hyperledger Fabric with
+     * the same name as the business network to be started. The connection must be connected for this
+     * method to succeed.
+     * @example
+     * // Start a Business Network Definition
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.start(businessNetworkDefinition)
+     * .then(function(){
+     *     // Business network definition is started
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
+     * @param {Object} startOptions connector specific start options
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * deployed.
+     */
+    start(businessNetworkDefinition, startOptions) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.start(this.securityContext, businessNetworkDefinition, startOptions);
+    }
+
+
+    /**
      * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
      * be connected for this method to succeed.
      * @example
@@ -275,6 +330,31 @@ class AdminConnection {
     }
 
     /**
+     * Upgrades an existing business network's composer runtime to a later level.
+     * The connection must be connected for this method to succeed.
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network whose runtime is to be upgraded.
+     * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
+     * or rejected otherwise.
+     * @example
+     * // Upgrade the Hyperledger Composer runtime
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.upgrade(businessNetworkDefinition.getName())
+     * .then(function(){
+     *     // Business network definition installed
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+
+     * @memberof AdminConnection
+     */
+    upgrade(businessNetworkIdentifier) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.upgrade(this.securityContext, businessNetworkIdentifier);
+    }
+
+    /**
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the node.js module.
      * @example
@@ -291,8 +371,61 @@ class AdminConnection {
      * been tested. The promise will be rejected if the version is incompatible.
      */
     ping() {
+        const method = 'ping';
+        LOG.entry(method);
+        return this.pingInner()
+            .catch((error) => {
+                if (error.message.match(/ACTIVATION_REQUIRED/)) {
+                    LOG.debug(method, 'Activation required, activating ...');
+                    return this.activate()
+                        .then(() => {
+                            return this.pingInner();
+                        });
+                }
+                throw error;
+            })
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Test the connection to the runtime and verify that the version of the
+     * runtime is compatible with this level of the client node.js module.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    pingInner() {
+        const method = 'pingInner';
+        LOG.entry(method);
         Util.securityCheck(this.securityContext);
-        return this.connection.ping(this.securityContext);
+        return this.connection.ping(this.securityContext)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+    }
+
+    /**
+     * Activate the current identity on the currently connected business network.
+     * @private
+     * @return {Promise} A promise that will be fufilled when the connection has
+     * been tested. The promise will be rejected if the version is incompatible.
+     */
+    activate() {
+        const method = 'activate';
+        LOG.entry(method);
+        const json = {
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
+            transactionId: uuid.v4(),
+            timestamp: new Date().toISOString()
+        };
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
     /**
@@ -373,7 +506,7 @@ class AdminConnection {
     * @example
      * // Import an identity into a profiles' wallet
      * var adminConnection = new AdminConnection();
-     * return adminConnection.import('hlfv1', 'PeerAdmin', publicKey, privateKey)
+     * return adminConnection.importIdentity('hlfv1', 'PeerAdmin', publicKey, privateKey)
      * .then(() => {
      *     // Identity imported
      *     console.log('identity imported successfully');
@@ -398,7 +531,7 @@ class AdminConnection {
                 return this.getProfile(connectionProfile);
             })
             .then((profileData) => {
-                return savedConnectionManager.importIdentity(profileData, id, publicKey, privateKey);
+                return savedConnectionManager.importIdentity(connectionProfile, profileData, id, publicKey, privateKey);
             })
             .catch((error) => {
                 throw new Error('failed to import identity. ' + error.message);

@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Enabling Playground OAuth with GitHub
+title: Enabling playground OAuth with GitHub
 category: tasks
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: By [**enabling OAuth with GitHub**](../managing/github-oauth.html), you avoid an error if the GitHub rate limit is hit.
-index-order: 5
+index-order: 705
 ---
 
 # Enabling Playground OAuth with GitHub

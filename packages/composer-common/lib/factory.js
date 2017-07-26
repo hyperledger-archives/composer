@@ -35,7 +35,6 @@ const EventDeclaration = require('./introspect/eventdeclaration');
 
 const uuid = require('uuid');
 
-
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
@@ -68,6 +67,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
@@ -112,29 +113,7 @@ class Factory {
             newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
-
-        if(options.generate) {
-            let generator;
-            let includeOptionalFields;
-            if ((/^empty$/i).test(options.generate)) {
-                generator = ValueGeneratorFactory.empty();
-                includeOptionalFields = false;
-            } else {
-                generator = ValueGeneratorFactory.sample();
-                includeOptionalFields = true;
-            }
-
-            const visitor = new InstanceGenerator();
-            const parameters = {
-                stack: new TypedStack(newObj),
-                modelManager: this.modelManager,
-                factory: this,
-                valueGenerator: generator,
-                includeOptionalFields: includeOptionalFields
-            };
-
-            classDecl.accept(visitor, parameters);
-        }
+        this.initializeNewObject(newObj, classDecl, options);
 
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
@@ -144,15 +123,17 @@ class Factory {
     }
 
     /**
-     * Create a new Resource with a given namespace, type name and id
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
+     * Create a new Concept with a given namespace and type name
+     * @param {string} ns - the namespace of the Concept
+     * @param {string} type - the type of the Concept
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
-     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * return a {@link Concept} instead of a {@link ValidatedConcept}. Defaults to false.
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
@@ -181,18 +162,7 @@ class Factory {
             newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
-
-        if(options.generate) {
-            const visitor = new InstanceGenerator();
-            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
-            const parameters = {
-                stack: new TypedStack(newObj),
-                modelManager: this.modelManager,
-                factory: this,
-                valueGenerator: generator
-            };
-            classDecl.accept(visitor, parameters);
-        }
+        this.initializeNewObject(newObj, classDecl, options);
 
         debug('Factory.newResource created concept %s', classDecl.getFullyQualifiedName() );
         return newObj;
@@ -230,6 +200,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} A resource for the new transaction.
      */
     newTransaction(ns, type, id, options) {
@@ -263,6 +235,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} A resource for the new event.
      */
     newEvent(ns, type, id, options) {
@@ -283,6 +257,54 @@ class Factory {
         event.timestamp = new Date();
 
         return event;
+    }
+
+    /**
+     * PRIVATE IMPLEMENTATION. DO NOT CALL FROM OUTSIDE THIS CLASS.
+     *
+     * Initialize the state of a newly created resource
+     * @private
+     * @param {Typed} newObject - resource to initialize.
+     * @param {ClassDeclaration} classDeclaration - class declaration for the resource.
+     * @param {Object} clientOptions - field generation options supplied by the caller.
+     */
+    initializeNewObject(newObject, classDeclaration, clientOptions) {
+        const generateParams = this.parseGenerateOptions(clientOptions);
+        if (generateParams) {
+            generateParams.stack = new TypedStack(newObject);
+            const visitor = new InstanceGenerator();
+            classDeclaration.accept(visitor, generateParams);
+        }
+    }
+
+    /**
+     * PRIVATE IMPLEMENTATION. DO NOT CALL FROM OUTSIDE THIS CLASS.
+     *
+     * Parse the client-supplied field generation options and return a corresponding set of InstanceGenerator
+     * options that can be used to initialize a resource.
+     * @private
+     * @param {Object} clientOptions - field generation options supplied by the caller.
+     * @return {Object} InstanceGenerator options.
+     */
+    parseGenerateOptions(clientOptions) {
+        if (!clientOptions.generate) {
+            return null;
+        }
+
+        const generateParams = { };
+        generateParams.modelManager = this.modelManager;
+        generateParams.factory = this;
+
+        if ((/^empty$/i).test(clientOptions.generate)) {
+            generateParams.valueGenerator = ValueGeneratorFactory.empty();
+        } else {
+            // Allow any other value for backwards compatibility with previous (truthy) behavior
+            generateParams.valueGenerator = ValueGeneratorFactory.sample();
+        }
+
+        generateParams.includeOptionalFields = clientOptions.includeOptionalFields ? true : false;
+
+        return generateParams;
     }
 
 }

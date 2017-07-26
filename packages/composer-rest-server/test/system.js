@@ -18,9 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const fs = require('fs');
 require('loopback-component-passport');
-const path = require('path');
 const server = require('../server/server');
 const version = require('../package.json').version;
 
@@ -89,6 +87,7 @@ describe('System REST API unit tests', () => {
     }];
 
     const transactionIds = [];
+    const identityIds = [];
 
     let app;
     let businessNetworkConnection;
@@ -105,8 +104,7 @@ describe('System REST API unit tests', () => {
             return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
-            const banana = fs.readFileSync(path.resolve(__dirname, 'bond-network.bna'));
-            return BusinessNetworkDefinition.fromArchive(banana);
+            return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             serializer = businessNetworkDefinition.getSerializer();
@@ -122,8 +120,8 @@ describe('System REST API unit tests', () => {
                 namespaces: 'never'
             });
         })
-        .then((app_) => {
-            app = app_;
+        .then((result) => {
+            app = result.app;
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
             return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
         })
@@ -148,6 +146,9 @@ describe('System REST API unit tests', () => {
             ]);
         })
         .then(() => {
+            return businessNetworkConnection.issueIdentity('org.acme.bond.Member#MEMBER_1', 'alice1', { issuer: true });
+        })
+        .then(() => {
             return businessNetworkConnection.issueIdentity('org.acme.bond.Member#MEMBER_2', 'bob1', { issuer: true });
         })
         .then(() => {
@@ -160,6 +161,20 @@ describe('System REST API unit tests', () => {
                         });
                 });
             }, Promise.resolve());
+        })
+        .then(() => {
+            return businessNetworkConnection.getIdentityRegistry()
+                .then((identityRegistry) => {
+                    return identityRegistry.getAll();
+                })
+                .then((identities) => {
+                    identities.sort((a, b) => {
+                        return a.name.localeCompare(b.name);
+                    })
+                    .forEach((identity) => {
+                        identityIds.push(identity.getIdentifier());
+                    });
+                });
         });
     });
 
@@ -179,28 +194,67 @@ describe('System REST API unit tests', () => {
 
     });
 
-    describe('POST /issueIdentity', () => {
+    describe('GET /identities', () => {
+
+        it('should return all of the identities', () => {
+            return chai.request(app)
+                .get('/api/system/identities')
+                .then((res) => {
+                    res.should.be.json;
+                    const identities = res.body.sort((a, b) => {
+                        return a.name.localeCompare(b.name);
+                    });
+                    identities[0].name.should.equal('alice1');
+                    identities[1].name.should.equal('bob1');
+                });
+        });
+
+    });
+
+    describe('GET /identities/:id', () => {
+
+        it('should return the specified identity', () => {
+            return chai.request(app)
+                .get('/api/system/identities/' + identityIds[0])
+                .then((res) => {
+                    res.should.be.json;
+                    const identity = res.body;
+                    identity.name.should.equal('alice1');
+                });
+        });
+
+        it('should return a 404 if the specified identity does not exist', () => {
+            return chai.request(app)
+                .get('/api/system/identities/LOL')
+                .catch((err) => {
+                    err.response.should.have.status(404);
+                });
+        });
+
+    });
+
+    describe('POST /identities/issue', () => {
 
         it('should issue an identity for a participant in the business network', () => {
             return chai.request(app)
-                .post('/api/system/issueIdentity')
+                .post('/api/system/identities/issue')
                 .send({
                     participant: 'org.acme.bond.Member#MEMBER_1',
-                    userID: 'alice1',
+                    userID: 'alice2',
                     options: {
                         issuer: true
                     }
                 })
                 .then((res) => {
                     res.should.be.json;
-                    res.body.userID.should.equal('alice1');
+                    res.body.userID.should.equal('alice2');
                     res.body.userSecret.should.be.a('string');
                 });
         });
 
         it('should return a 500 if the specified participant does not exist', () => {
             return chai.request(app)
-                .post('/api/system/issueIdentity')
+                .post('/api/system/identities/issue')
                 .send({
                     participant: 'org.acme.bond.Member#MEMBER_X',
                     userID: 'alice1',
@@ -215,13 +269,59 @@ describe('System REST API unit tests', () => {
 
     });
 
-    describe('POST /revokeIdentity', () => {
+    describe('POST /identities/bind', () => {
+
+        it('should bind an identity to a participant in the business network', () => {
+            const certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('MEMBER_1').toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            return chai.request(app)
+                .post('/api/system/identities/bind')
+                .send({
+                    participant: 'org.acme.bond.Member#MEMBER_1',
+                    certificate
+                })
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(204);
+                    res.body.should.have.lengthOf(0);
+                });
+        });
+
+        it('should return a 500 if the specified participant does not exist', () => {
+            const certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('MEMBER_1').toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            return chai.request(app)
+                .post('/api/system/identities/bind')
+                .send({
+                    participant: 'org.acme.bond.Member#MEMBER_X',
+                    certificate
+                })
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                });
+        });
+
+    });
+
+    describe('POST /identities/:id/revoke', () => {
 
         it('should revoke an identity for a participant in the business network', () => {
-            return chai.request(app)
-                .post('/api/system/revokeIdentity')
-                .send({
-                    userID: 'bob1'
+            return businessNetworkConnection.getIdentityRegistry()
+                .then((identityRegistry) => {
+                    return identityRegistry.getAll();
+                })
+                .then((identities) => {
+                    const identity = identities.find((identity) => {
+                        return identity.name === 'bob1';
+                    });
+                    return chai.request(app)
+                        .post(`/api/system/identities/${identity.getIdentifier()}/revoke`);
                 })
                 .then((res) => {
                     res.should.be.json;
@@ -232,10 +332,7 @@ describe('System REST API unit tests', () => {
 
         it('should return a 500 if the specified identity does not exist', () => {
             return chai.request(app)
-                .post('/api/system/revokeIdentity')
-                .send({
-                    userID: 'bobX'
-                })
+                .post('/api/system/identities/bobX/revoke')
                 .catch((err) => {
                     err.response.should.have.status(500);
                 });
@@ -250,7 +347,9 @@ describe('System REST API unit tests', () => {
                 .get('/api/system/transactions')
                 .then((res) => {
                     res.should.be.json;
-                    res.body.sort((a, b) => {
+                    res.body.filter((tx) => {
+                        return tx.$class === 'org.acme.bond.PublishBond';
+                    }).sort((a, b) => {
                         return a.ISINCode.localeCompare(b.ISINCode);
                     }).map((tx) => {
                         delete tx.transactionId;

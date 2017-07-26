@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Key Concepts
-sidebar: sidebars/introduction.md
+sidebar: sidebars/accordion-toc0.md
 section: introduction
-index-order: 1
+index-order: 101
 ---
 
 # Key Concepts in {{site.data.conrefs.composer_full}}

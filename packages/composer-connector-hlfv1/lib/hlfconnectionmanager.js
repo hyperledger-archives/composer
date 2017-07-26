@@ -174,29 +174,27 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {string} peer The peer URL.
      * @param {number} timeout the request timeout
      * @param {string} globalCert if provided use this unless cert is provided
+     * @param {array} peers Array to store any created peers
      * @param {array} eventHubDefs Array to store any created event hubs
-     * @return {Peer} A new peer.
      */
-    static parsePeer(peer, timeout, globalCert, eventHubDefs) {
+    static parsePeer(peer, timeout, globalCert, peers, eventHubDefs) {
         const method = 'parsePeer';
 
         const opts = HLFConnectionManager._createOpts(timeout, peer.cert, peer.hostnameOverride, globalCert);
         if (!peer.requestURL && !peer.eventURL) {
             throw new Error('peer incorrectly defined');
         }
-        if (peer.requestURL && !peer.eventURL) {
-            throw new Error(`The peer at requestURL ${peer.requestURL} has no eventURL defined`);
-        }
-        if (!peer.requestURL && peer.eventURL) {
-            throw new Error(`The peer at eventURL ${peer.eventURL} has no requestURL defined`);
-        }
 
-        const hfc_peer = HLFConnectionManager.createPeer(peer.requestURL, opts);
-        // extract and save event hub definitions for later.
-        const eventHub = HLFConnectionManager.createEventHubDefinition(peer.eventURL, opts);
-        LOG.debug(method, 'Setting event hub URL', peer.eventURL);
-        eventHubDefs.push(eventHub);
-        return hfc_peer;
+        if (peer.requestURL) {
+            const hfc_peer = HLFConnectionManager.createPeer(peer.requestURL, opts);
+            LOG.debug(method, 'Adding peer URL', peer.requestURL);
+            peers.push(hfc_peer);
+        }
+        if (peer.eventURL) {
+            const eventHub = HLFConnectionManager.createEventHubDefinition(peer.eventURL, opts);
+            LOG.debug(method, 'Setting event hub URL', peer.eventURL);
+            eventHubDefs.push(eventHub);
+        }
     }
 
     /**
@@ -345,21 +343,22 @@ class HLFConnectionManager extends ConnectionManager {
     /**
      * Import an identity into a profile wallet or keystore
      *
-     * @param {object} profileDefinition the profile definition
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
      * @param {string} publicKey the public key
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
-     *
-     * @memberOf HLFConnectionManager
      */
-    importIdentity(profileDefinition, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, profileDefinition, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, publicKey, privateKey);
 
         // validate arguments
-        if (!profileDefinition || typeof profileDefinition !== 'object') {
-            throw new Error('profileDefinition not specified or not an object');
+        if (!connectionProfile || typeof connectionProfile !== 'string') {
+            throw new Error('connectionProfile not specified or not a string');
+        } else if (!connectionOptions || typeof connectionOptions !== 'object') {
+            throw new Error('connectionOptions not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
         } else if (!publicKey || typeof publicKey !== 'string') {
@@ -369,14 +368,14 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         //default the optional wallet
-        let wallet = profileDefinition.wallet || Wallet.getWallet();
+        let wallet = connectionOptions.wallet || Wallet.getWallet();
 
         // validate the profile
-        this.validateProfileDefinition(profileDefinition, wallet);
+        this.validateProfileDefinition(connectionOptions, wallet);
 
-        let mspID = profileDefinition.mspID;
+        let mspID = connectionOptions.mspID;
         const client = HLFConnectionManager.createClient();
-        return this._setupWallet(client, wallet, profileDefinition.keyValStore)
+        return this._setupWallet(client, wallet, connectionOptions.keyValStore)
             .then(() => {
                 return client.createUser({
                     username: id,
@@ -428,13 +427,13 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         // set the message limits if required
-        if (connectOptions.maxSendSize && typeof connectOptions.maxSendSize === 'number' && connectOptions.maxSendSize !== 0) {
-            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
+        if (connectOptions.maxSendSize && connectOptions.maxSendSize !== 0) {
+            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
         }
 
         // set the message limits if required
-        if (connectOptions.maxRecvSize && typeof connectOptions.maxRecvSize === 'number' && connectOptions.maxRecvSize !== 0) {
-            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
+        if (connectOptions.maxRecvSize && connectOptions.maxRecvSize !== 0) {
+            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
         }
 
         // Create a new client instance.
@@ -449,13 +448,27 @@ class HLFConnectionManager extends ConnectionManager {
             channel.addOrderer(HLFConnectionManager.parseOrderer(orderer, connectOptions.timeout, connectOptions.globalCert));
         });
 
+        // Parse all of the peers.
+        let peers = [];
         let eventHubDefs = [];
-        // Load all of the peers into the client.
         connectOptions.peers.forEach((peer) => {
-            LOG.debug(method, 'Adding peer URL', peer);
-            channel.addPeer(HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, eventHubDefs));
+            HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, peers, eventHubDefs);
         });
 
+        // Check for at least one peer and at least one event hub.
+        if (peers.length === 0) {
+            throw new Error('You must specify at least one peer with a valid requestURL for submitting transactions');
+        } else if (eventHubDefs.length === 0) {
+            throw new Error('You must specify at least one peer with a valid eventURL for receiving events');
+        }
+
+        // Load all of the peers into the client.
+        peers.forEach((peer) => {
+            LOG.debug(method, 'Adding peer URL', peer);
+            channel.addPeer(peer);
+        });
+
+        // Set up the wallet.
         return this._setupWallet(client, wallet, connectOptions.keyValStore)
             .then(() => {
 

@@ -188,12 +188,11 @@ class ModelUtil {
      */
     static getFullyQualifiedName(namespace, type) {
         if (namespace) {
-            return namespace + '.' + type;
+            return `${namespace}.${type}`;
         } else {
             return type;
         }
     }
-
 }
 
 module.exports = ModelUtil;

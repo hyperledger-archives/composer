@@ -86,6 +86,8 @@ class QueryCompiler {
             result = this.visitIdentifier(thing, parameters);
         } else if (thing.type === 'Literal') {
             result = this.visitLiteral(thing, parameters);
+        } else if (thing.type === 'MemberExpression') {
+            result = this.visitMemberExpression(thing, parameters);
         } else {
             throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
         }
@@ -282,9 +284,9 @@ class QueryCompiler {
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {
-            query.selector.$registryID = registry;
+            query.selector.$registryId = registry;
         } else {
-            query.selector.$registryID = resource;
+            query.selector.$registryId = resource;
         }
 
         // Handle the where clause, if it exists.
@@ -306,7 +308,10 @@ class QueryCompiler {
         const limit = select.getLimit();
         if (limit) {
             const queryAdditions = limit.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         // Handle the skip clause, if it exists. Note that the skip
@@ -314,7 +319,10 @@ class QueryCompiler {
         const skip = select.getSkip();
         if (skip) {
             const queryAdditions = skip.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         LOG.exit(method, query);
@@ -524,15 +532,19 @@ class QueryCompiler {
         // Grab the left hand side of this expression.
         let left = this.visit(ast.left, parameters);
         const leftIsIdentifier = (ast.left.type === 'Identifier' && typeof left !== 'function');
+        const leftIsMemberExpression = (ast.left.type === 'MemberExpression');
+        const leftIsVariable = leftIsIdentifier || leftIsMemberExpression;
         const leftIsLiteral = (ast.left.type === 'Literal' || typeof left === 'function');
 
         // Grab the right hand side of this expression.
         let right = this.visit(ast.right, parameters);
         const rightIsIdentifier = (ast.right.type === 'Identifier' && typeof right !== 'function');
+        const rightIsMemberExpression = (ast.right.type === 'MemberExpression');
+        const rightIsVariable = rightIsIdentifier || rightIsMemberExpression;
         const rightIsLiteral = (ast.right.type === 'Literal' || typeof right === 'function');
 
         // Check for invalid left and right expressions.
-        if (leftIsLiteral === rightIsLiteral || leftIsIdentifier === rightIsIdentifier) {
+        if (leftIsLiteral === rightIsLiteral || leftIsVariable === rightIsVariable) {
             // Either two literals or two identifiers.
             throw new Error('The query compiler cannot compile condition operators that do not have an identifier and a literal');
         }
@@ -626,6 +638,23 @@ class QueryCompiler {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
         const selector = ast.value;
+        LOG.exit(method, selector);
+        return selector;
+    }
+
+    /**
+     * Visitor design pattern; handle a member expression.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitMemberExpression(ast, parameters) {
+        const method = 'visitMemberExpression';
+        LOG.entry(method, ast, parameters);
+        const property = this.visit(ast.property, parameters);
+        const object = this.visit(ast.object, parameters);
+        const selector = `${object}.${property}`;
         LOG.exit(method, selector);
         return selector;
     }

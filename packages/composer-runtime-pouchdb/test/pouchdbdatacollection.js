@@ -24,7 +24,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 // Install the PouchDB plugins.
 PouchDB.plugin(require('pouchdb-adapter-memory'));

@@ -3,8 +3,8 @@ layout: default
 title: Developer Guide
 category: tutorials
 section: tutorials
-index-order: 2
-sidebar: sidebars/tutorials.md
+index-order: 302
+sidebar: sidebars/accordion-toc0.md
 excerpt: "The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric."
 ---
 
@@ -490,12 +490,12 @@ _Note: You'll notice that the flag '-p' specifies that we should use a v1 connec
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
 ```
-user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 
 Deploying business network from archive: my-network.bna
 Business network definition:
-Identifier: my-network@0.0.1
-Description: My very first Hyperledger Composer Network
+	Identifier: my-network@0.1.3
+	Description: The Hello World of Hyperledger Composer samples
 
 ✔ Deploying business network definition. This may take a minute...
 
@@ -515,8 +515,8 @@ Which should give the following output:
 user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-version: 0.7.2
-participant: <no participant found>
+	version: 0.10.0
+	participant: <no participant found>
 
 Command succeeded
 ```

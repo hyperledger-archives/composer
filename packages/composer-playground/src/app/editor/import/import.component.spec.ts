@@ -14,6 +14,7 @@ import { ClientService } from '../../services/client.service';
 import { SampleBusinessNetworkService } from '../../services/samplebusinessnetwork.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../../basic-modals/alert.service';
+import { BusinessNetworkDefinition, ClassDeclaration } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -128,6 +129,33 @@ describe('ImportComponent', () => {
 
     afterAll(() => {
         sandbox.restore();
+    });
+
+    describe('currentBusinessNetwork', () => {
+        let mockBusinessNetworkDefinition;
+        let stub1 = sinon.createStubInstance(ClassDeclaration);
+        beforeEach(() => {
+            stub1.isAbstract.returns(true);
+            stub1.isSystemType.returns(false);
+
+            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.getModelManager.returns({
+                getAssetDeclarations: () => {
+                    return [stub1];
+                },
+                getParticipantDeclarations: () => {
+                    return [stub1];
+                },
+                getTransactionDeclarations: () => {
+                    return [stub1];
+                }
+            });
+        });
+
+        it('should set the correct values for _currentBusinessNetwork', () => {
+            component['currentBusinessNetwork'] = mockBusinessNetworkDefinition;
+            component['currentAssets'].should.deep.equal([]);
+        });
     });
 
     describe('ngInit', () => {
@@ -378,37 +406,20 @@ describe('ImportComponent', () => {
         });
     });
 
-    describe('orderGitHubNetworks', () => {
+    describe('addEmptyNetworkOption', () => {
 
         const BASIC_SAMPLE = 'basic-sample-network';
-        const CAR_AUCTION = 'carauction-network';
         const FOO = 'foo';
         const BAR = 'bar';
-        const primaryNetworkNames = [BASIC_SAMPLE, CAR_AUCTION];
 
-        it('should return an array only allowing an empty project to be created when an empty array is input', () => {
-            let result = component.orderGitHubProjects([]);
-            result.length.should.equal(1);
-            result[0].name.should.equal('Empty Business Network');
-        });
-
-        it('should order the list of networks correctly if a list of networks is passed in', () => {
-            let INPUT_NETWORKS = [{name: FOO}, {name: BASIC_SAMPLE}, {name: CAR_AUCTION}];
-            let result = component.orderGitHubProjects(INPUT_NETWORKS);
+        it('should correctly add an empty network option to the start of the list', () => {
+            let INPUT_NETWORKS = [{name: BASIC_SAMPLE}, {name: BAR}, {name: FOO}];
+            let result = component.addEmptyNetworkOption(INPUT_NETWORKS);
             result.length.should.equal(4);
             result[0].name.should.equal(EMPTY_NETWORK.name);
             result[1].name.should.equal(BASIC_SAMPLE);
-            result[2].name.should.equal(CAR_AUCTION);
-            result[3].name.should.equal(FOO);
-        });
-
-        it('should order the list of networks correctly if a list of networks is passed in without the primary network names', () => {
-            let INPUT_NETWORKS = [{name: FOO}, {name: BAR}];
-            let result = component.orderGitHubProjects(INPUT_NETWORKS);
-            result.length.should.equal(3);
-            result[0].name.should.equal(EMPTY_NETWORK.name);
-            result[1].name.should.equal(FOO);
             result[2].name.should.equal(BAR);
+            result[3].name.should.equal(FOO);
         });
     });
 

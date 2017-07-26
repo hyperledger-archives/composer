@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Developing Business Networks
+title: Developing Business Networks
 category: concepts
 section: business-network
-index-order: 0
-sidebar: sidebars/businessnetworks.md
+index-order: 400
+sidebar: sidebars/accordion-toc0.md
 excerpt: Overview of Developing Business Networks
 ---
 

@@ -19,8 +19,7 @@ const ConnectionProfileManager = require('../lib/connectionprofilemanager');
 
 const chai = require('chai');
 chai.should();
-const expect = require('chai').expect;
-chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 describe('ConnectionManager', () => {
@@ -34,12 +33,9 @@ describe('ConnectionManager', () => {
     describe('#constructor', () => {
 
         it('should throw if no connection profile manager', () => {
-
-            expect(() => {
-                let cm = new ConnectionManager(null);
-                cm.should.be.null;
-            })
-          .to.throw(/Must create ConnectionManager with a ConnectionProfileManager/);
+            (() => {
+                new ConnectionManager(null);
+            }).should.throw(/Must create ConnectionManager with a ConnectionProfileManager/);
         });
 
     });
@@ -48,7 +44,6 @@ describe('ConnectionManager', () => {
 
         it('should get connection profile manager', () => {
             let cm = new ConnectionManager(mockConnectionProfileManager);
-            cm.should.not.be.null;
             cm.getConnectionProfileManager().should.equal(mockConnectionProfileManager);
         });
 
@@ -57,17 +52,21 @@ describe('ConnectionManager', () => {
     describe('#connect', () => {
 
         it('should throw as abstract', () => {
-
             let cm = new ConnectionManager(mockConnectionProfileManager);
-            cm.should.not.be.null;
-            return cm.connect('profile', 'network')
-                  .then(() => {
-                      true.should.be.false;
-                  })
-                  .catch((err) => {
-                      err.message.should.match(/abstract function called/);
-                  });
+            return cm.connect('profile', 'network', { connect: 'options' })
+                .should.be.rejectedWith(/abstract function called/);
         });
+
+    });
+
+    describe('#importIdentity', () => {
+
+        it('should throw as abstract', () => {
+            let cm = new ConnectionManager(mockConnectionProfileManager);
+            return cm.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
     });
 
 });

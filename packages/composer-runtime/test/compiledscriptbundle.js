@@ -20,9 +20,11 @@ const Factory = require('composer-common').Factory;
 const ModelManager = require('composer-common').ModelManager;
 const ScriptManager = require('composer-common').ScriptManager;
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('CompiledScriptBundle', () => {
 
@@ -101,16 +103,16 @@ describe('CompiledScriptBundle', () => {
 
     describe('#execute', () => {
 
-        it('should throw if no functions could be found', () => {
+        it('should not throw if no functions could be found', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns([]);
-            (() => {
-                compiledScriptBundle.execute(mockApi, transactions[0]);
-            }).should.throw(/Could not find any functions/);
+            return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.equal(0);
         });
 
         it('should call a single function', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.equal(1)
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -122,6 +124,7 @@ describe('CompiledScriptBundle', () => {
         it('should call a single function returning a promise', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt2']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.equal(1)
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -133,6 +136,7 @@ describe('CompiledScriptBundle', () => {
         it('should call multiple functions', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt3a', 'doIt3b']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.equal(2)
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -146,6 +150,7 @@ describe('CompiledScriptBundle', () => {
         it('should call multiple functions returning a promise', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt4a', 'doIt4b']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.equal(2)
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);

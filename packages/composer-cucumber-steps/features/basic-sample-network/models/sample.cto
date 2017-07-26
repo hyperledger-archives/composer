@@ -23,4 +23,5 @@ transaction SampleTransaction {
 event SampleEvent {
   o String oldValue
   o String newValue
+  --> SampleAsset asset
 }

@@ -27,7 +27,6 @@ const Add = require('../../lib/cmds/participant/addCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const sinon = require('sinon');
-require('sinon-as-promised');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));

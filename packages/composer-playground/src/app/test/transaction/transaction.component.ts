@@ -30,6 +30,7 @@ export class TransactionComponent implements OnInit {
     private selectedTransactionName: string = null;
     private hiddenTransactionItems = new Map();
     private submittedTransaction = null;
+    private includeOptionalFields: boolean = false;
 
     private resourceDefinition: string = null;
     private submitInProgress: boolean = false;
@@ -61,14 +62,13 @@ export class TransactionComponent implements OnInit {
         .then(() => {
 
             let introspector = this.clientService.getBusinessNetwork().getIntrospector();
-            let modelClassDeclarations = introspector.getClassDeclarations();
-
-            modelClassDeclarations.forEach((modelClassDeclaration) => {
-                // Generate list of all known (non-abstract) transaction types
-                if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
-                    this.transactionTypes.push(modelClassDeclaration);
-                }
-            });
+            this.transactionTypes = introspector.getClassDeclarations()
+                .filter((modelClassDeclaration) => {
+                    // Non-abstract, non-system transactions only please!
+                    return !modelClassDeclaration.isAbstract() &&
+                           !modelClassDeclaration.isSystemType() &&
+                            modelClassDeclaration instanceof TransactionDeclaration;
+                });
 
             // Set first in list as selectedTransaction
             if (this.transactionTypes && this.transactionTypes.length > 0) {
@@ -121,7 +121,10 @@ export class TransactionComponent implements OnInit {
     private generateTransactionDeclaration(withSampleData?: boolean): void {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let factory = businessNetworkDefinition.getFactory();
-        const generateParameters = {generate: withSampleData ? 'sample' : 'empty'};
+        const generateParameters = {
+            generate: withSampleData ? 'sample' : 'empty',
+            includeOptionalFields: this.includeOptionalFields
+        };
         let resource = factory.newTransaction(
             this.selectedTransaction.getModelFile().getNamespace(),
             this.selectedTransaction.getName(),

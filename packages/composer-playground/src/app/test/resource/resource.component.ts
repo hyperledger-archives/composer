@@ -28,7 +28,7 @@ import 'codemirror/addon/scroll/simplescrollbars';
 
 export class ResourceComponent implements OnInit {
 
-    @Input() registryID: string;
+    @Input() registryId: string;
     @Input() resource: any = null;
 
     private resourceAction: string = null;
@@ -37,6 +37,7 @@ export class ResourceComponent implements OnInit {
     private resourceDeclaration: ClassDeclaration = null;
     private actionInProgress: boolean = false;
     private definitionError: string = null;
+    private includeOptionalFields: boolean = false;
 
     private codeConfig = {
         lineNumbers: true,
@@ -68,7 +69,7 @@ export class ResourceComponent implements OnInit {
             let modelClassDeclarations = introspector.getClassDeclarations();
 
             modelClassDeclarations.forEach((modelClassDeclaration) => {
-                if (this.registryID === modelClassDeclaration.getFullyQualifiedName()) {
+                if (this.registryId === modelClassDeclaration.getFullyQualifiedName()) {
 
                     // Set resource declaration
                     this.resourceDeclaration = modelClassDeclaration;
@@ -118,7 +119,10 @@ export class ResourceComponent implements OnInit {
         idx = leftPad(idx, 4, '0');
         let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
         try {
-            const generateParameters = {generate: withSampleData ? 'sample' : 'empty'};
+            const generateParameters = {
+                generate: withSampleData ? 'sample' : 'empty',
+                includeOptionalFields: this.includeOptionalFields
+            };
             let resource = factory.newResource(
                 this.resourceDeclaration.getModelFile().getNamespace(),
                 this.resourceDeclaration.getName(),
@@ -181,7 +185,7 @@ export class ResourceComponent implements OnInit {
     private retrieveResourceRegistry(type) {
 
         let client = this.clientService;
-        let id = this.registryID;
+        let id = this.registryId;
 
         function isAsset() {
             return client.getBusinessNetworkConnection().getAssetRegistry(id);
