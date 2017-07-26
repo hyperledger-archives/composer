@@ -151,6 +151,9 @@ class Serializer {
      * are specified for relationship fields into relationships, false by default.
      * @param {boolean} options.permitResourcesForRelationships - Permit resources in the
      * place of relationships (serializing them as resources), false by default.
+     * @param {boolean} options.deduplicateResources - Generate $id for resources and
+     * if a resources appears multiple times in the object graph only the first instance is
+     * serialized in full, subsequent instances are replaced with a reference to the $id
      * @return {Object} - The Javascript Object that represents the resource
      * @throws {Error} - throws an exception if resource is not an instance of
      * Resource or fails validation.
@@ -165,6 +168,7 @@ class Serializer {
         parameters.stack = new TypedStack(resource);
         parameters.modelManager = this.modelManager;
         parameters.seenResources = new Set();
+        parameters.dedupeResources = new Set();
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
         // validate the resource against the model
@@ -179,7 +183,8 @@ class Serializer {
 
         const generator = new JSONGenerator(
             options.convertResourcesToRelationships === true,
-            options.permitResourcesForRelationships === true
+            options.permitResourcesForRelationships === true,
+            options.deduplicateResources === true
         );
         const writer = new JSONWriter();
         parameters.writer = writer;

@@ -301,16 +301,14 @@ class Api {
          * @method module:composer-runtime#post
          * @param {string} url The URL to post the data to
          * @param {Typed} typed The typed instance to be posted. The instance will be serialized to JSON.
+         * @param {object} options The options that are passed to Serializer.toJSON
          * @return {Promise} A promise. The promise is resolved with a HttpResponse
          * that represents the result of the HTTP POST.
          * @public
          */
-        this.post = function post(url, typed) {
+        this.post = function post(url, typed, options) {
             const method = 'post';
             LOG.entry(method, url, typed);
-            const options = {};
-            options.convertResourcesToRelationships = true;
-            options.permitResourcesForRelationships = true;
             const data = serializer.toJSON(typed, options);
             LOG.debug(method, typed.getFullyQualifiedType(), data);
 
