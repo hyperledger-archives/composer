@@ -45,6 +45,7 @@ class EngineTransactions {
         let registryManager = context.getRegistryManager();
         let transaction = null;
         let historian = null;
+        let txRegistry = null;
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
@@ -109,12 +110,23 @@ class EngineTransactions {
             })
             .then((result) => {
                 historian = result;
-                return;// this.createHistorianRecord(transaction,context);
+                // Get the default transaction registry.
+                LOG.debug(method, 'Getting default transaction registry');
+                return registryManager.get('Transaction', 'default');
+            })
+            .then((result) => {
+                txRegistry = result;
+                // Store the transaction in the transaction registry.
+                LOG.debug(method, 'Storing executed transaction in transaction registry');
+                return txRegistry.add(transaction);
+            })
+            .then(()=>{
+                return this.createHistorianRecord(transaction,context);
             })
             .then((result) => {
                 // Store the transaction in the transaction registry.
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
-                return historian.add(transaction);
+                return historian.add(result);
 
             }).catch((error) => {
                 LOG.debug(method, 'ERROR',error);
@@ -145,18 +157,33 @@ class EngineTransactions {
 
         let factory = context.getFactory();
         let record = factory.newResource('org.hyperledger.composer.system', 'HistorianRecord', transaction.getIdentifier());
+        let participant = context.getParticipant();
+        if (!participant){
+            record.participantInvoking = null;
+        } else {
+            record.participantInvoking = factory.newRelationship('org.hyperledger.composer.system','Participant',participant.getIdentifier());
+        }
+        record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
+        record.transactionTimestamp = transaction.timestamp;
+
+
+        let evtSvr = context.getEventService();
+        if(!evtSvr){
+            record.eventsEmitted = [];
+        } else {
+            record.eventsEmitted = [];
+            //record.eventsEmitted = evtSvr.getEvents();
+        }
 
         return context.getIdentityManager().getIdentity()
         .then( (result) => {
-            record.identityUsed = factory.newRelationship(result);
-            record.transactionInvoked = factory.newRelationship();
-            record.participantInvoking = factory.newRelationship(context.getParticipant());
-            record.eventsEmitted = [];
-            record.transactionTimestampe = transaction.timestamp;
-
+            record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
+            return;
+        }).catch((error) => {
+            LOG.error('createHistorianRecord',error);
+        }).then(()=>{
             return record;
         });
-
 
     }
 

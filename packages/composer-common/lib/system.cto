@@ -92,11 +92,11 @@ asset Network identified by networkId {
  */
 asset HistorianRecord identified by transactionId {
     o String      transactionId
-  --> Transaction transactionInvoked
-  --> Participant participantInvoking
-  --> Identity    identityUsed
-  --> Event[]     eventsEmitted
-  o DateTime      tranactionTimestamp
+  --> Transaction transactionInvoked   
+  --> Participant participantInvoking  optional
+  --> Identity    identityUsed         optional
+  o Event[]     eventsEmitted        optional
+  o DateTime      transactionTimestamp
   // --> Delta[] deltas --- patience patience
 }
 

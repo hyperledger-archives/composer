@@ -21,17 +21,19 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
+
+// TODO: Address the use of these two arrays - indicative of something not correct.
 const TYPE_MAP = {
     'Asset': 'AssetRegistry',
     'Participant': 'ParticipantRegistry',
-    'Transaction': 'HistorianRegistry',
+    'Transaction': 'TransactionRegistry',
     'Network': 'Network',
     'Historian':'HistorianRegistry'
 };
 const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',
-   'TransactionRegistry',
+    'TransactionRegistry',
     'Network','HistorianRegistry'
 ];
 

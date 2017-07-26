@@ -17,17 +17,17 @@
 const Registry = require('./registry');
 const Util = require('composer-common').Util;
 
-const REGISTRY_TYPE = 'Transaction';
+const REGISTRY_TYPE = 'Historian';
 
 /**
- * The TransactionRegistry is used to store a set of transactions on the blockchain.
+ * The Historian is used to store a set of HistorianRecords on the blockchain.
  * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p>
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
  * @class
  * @memberof module:composer-client
  */
-class TransactionRegistry extends Registry {
+class Historian extends Registry {
 
     /**
      * Get a list of all existing transaction registries.
@@ -39,7 +39,7 @@ class TransactionRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
      * instances representing the transaction registries.
      */
-    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer) {
+    static getAllHistorians(securityContext, modelManager, factory, serializer) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -51,7 +51,7 @@ class TransactionRegistry extends Registry {
         return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
             .then((transactionRegistries) => {
                 return transactionRegistries.map((transactionRegistry) => {
-                    return new TransactionRegistry(transactionRegistry.id, transactionRegistry.name, securityContext, modelManager, factory, serializer);
+                    return new Historian(transactionRegistry.id, transactionRegistry.name, securityContext, modelManager, factory, serializer);
                 });
             });
     }
@@ -67,7 +67,7 @@ class TransactionRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
      * instance representing the transaction registry.
      */
-    static getTransactionRegistry(securityContext, id, modelManager, factory, serializer) {
+    static getHistorian(securityContext, id, modelManager, factory, serializer) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -80,7 +80,7 @@ class TransactionRegistry extends Registry {
         }
         return Registry.getRegistry(securityContext, REGISTRY_TYPE, id)
             .then((registry) => {
-                return new TransactionRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer);
+                return new Historian(registry.id, registry.name, securityContext, modelManager, factory, serializer);
             });
     }
 
@@ -96,7 +96,7 @@ class TransactionRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
      * instance representing the new transaction registry.
      */
-    static addTransactionRegistry(securityContext, id, name, modelManager, factory, serializer) {
+    static addHistorian(securityContext, id, name, modelManager, factory, serializer) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -111,7 +111,7 @@ class TransactionRegistry extends Registry {
         }
         return Registry.addRegistry(securityContext, REGISTRY_TYPE, id, name)
             .then(() => {
-                return new TransactionRegistry(id, name, securityContext, modelManager, factory, serializer);
+                return new Historian(id, name, securityContext, modelManager, factory, serializer);
             });
     }
 
@@ -142,7 +142,7 @@ class TransactionRegistry extends Registry {
      * @private
      */
     add(resource) {
-        throw new Error('cannot add transactions to a transaction registry');
+        throw new Error('cannot add transactions to the Historian');
     }
 
     /**
@@ -153,7 +153,7 @@ class TransactionRegistry extends Registry {
      * @private
      */
     addAll(resources) {
-        throw new Error('cannot add transactions to a transaction registry');
+        throw new Error('cannot add transactions to the Historian');
     }
 
     /**
@@ -164,7 +164,7 @@ class TransactionRegistry extends Registry {
      * @private
      */
     update(resource) {
-        throw new Error('cannot update transactions in a transaction registry');
+        throw new Error('cannot update transactions in the Historian');
     }
 
     /**
@@ -175,7 +175,7 @@ class TransactionRegistry extends Registry {
      * @private
      */
     updateAll(resources) {
-        throw new Error('cannot update transactions in a transaction registry');
+        throw new Error('cannot update transactions in the Historian');
     }
 
     /**
@@ -186,7 +186,7 @@ class TransactionRegistry extends Registry {
      * @private
      */
     remove(resource) {
-        throw new Error('cannot remove transactions from a transaction registry');
+        throw new Error('cannot remove transactions from the Historian');
     }
 
     /**
@@ -197,9 +197,9 @@ class TransactionRegistry extends Registry {
      * @private
      */
     removeAll(resources) {
-        throw new Error('cannot remove transactions from a transaction registry');
+        throw new Error('cannot remove transactions from the Historian');
     }
 
 }
 
-module.exports = TransactionRegistry;
+module.exports = Historian;
