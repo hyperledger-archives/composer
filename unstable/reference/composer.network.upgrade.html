@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer CLI Commands | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network Upgrade CLI | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer CLI Commands</p>
+          <p>Hyperledger Composer Network Upgrade CLI</p>
           </div>
 
           <nav class="context-nav">
@@ -185,91 +185,28 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-command-line">Hyperledger Composer Command Line</h1>
+              <h1 id="hyperledger-composer-network-upgrade">Hyperledger Composer Network Upgrade</h1>
 
 <hr>
 
-<p>The Hyperledger Composer command line application, <code>composer</code>, can be used to perform multiple
-administrative, operational, and development tasks.</p>
+<p>The <code>composer network upgrade</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-archive&gt; -p &lt;connection-profile-Name&gt; -i &lt;upgrade-Id&gt; -s &lt;upgrade-Secret&gt;
+</code></pre></div>
+<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been deployed to a blockchain node by using the <code>composer runtime install</code> command.</p>
 
-<p>The Hyperledger Composer command line application can be installed using npm:</p>
+<p><em>Please Note</em>: <code>composer network upgrade</code> is only suitable for upgrading between micro versions of the Hyperledger Composer runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.</p>
 
-<p><code>npm install -g composer-cli</code></p>
+<h3 id="options">Options</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade [options]
 
-<p><em>Please note: When using Ubuntu this command will fail when running in a root user shell.</em></p>
-
-<h2 id="business-network-archives">Business Network Archives</h2>
-
-<p><code>composer archive create</code></p>
-
-<p>Create a Business Network Archive from a directory on disk: <a href="./composer.archive.create.html">composer archive create</a></p>
-
-<p><code>composer archive list</code></p>
-
-<p>Verify the contents of a Business Network Archive on disk: <a href="./composer.archive.list.html">composer archive list</a></p>
-
-<h2 id="business-network-management">Business Network management</h2>
-
-<p><code>composer network deploy</code></p>
-
-<p>Deploy a Business Network Definition: <a href="./composer.network.deploy.html">composer network deploy</a></p>
-
-<p><code>composer network undeploy</code></p>
-
-<p>Permanently disable a business network definition: <a href="./composer.network.undeploy.html">composer network undeploy</a></p>
-
-<p><code>composer network list</code></p>
-
-<p>List the contents of a deployed Business Network: <a href="./composer.network.list.html">composer network list</a></p>
-
-<p><code>composer network logLevel</code></p>
-
-<p>Return or update the log level for the composer runtime: <a href="./composer.network.logLevel.html"><code>composer network logLevel</code></a></p>
-
-<p><code>composer network ping</code></p>
-
-<p>Test the connection to a deployed a Business Network: <a href="./composer.network.ping.html">composer network ping</a></p>
-
-<p><code>composer network update</code></p>
-
-<p>Update a deployed Business Network: <a href="./composer.network.update.html">composer network update</a></p>
-
-<p><code>composer network upgrade</code></p>
-
-<p>Upgrade the Hyperledger Composer runtime of a specific deployed business network: <a href="./composer.network.upgrade.html">composer network upgrade</a></p>
-
-<p><code>composer network start</code></p>
-
-<p>Deploy a business network archive to a Hyperledger Fabric endorsing peer that already has the Hyperledger Composer runtime installed: <a href="./composer.network.start.html">composer network start</a></p>
-
-<p><code>composer runtime install</code></p>
-
-<p>Install the Hyperledger Composer runtime to a Hyperledger Fabric endorsing peer: <a href="./composer.runtime.install.html">composer runtime install</a></p>
-
-<h2 id="participant-and-identity-management">Participant and Identity management</h2>
-
-<p><code>composer participant add</code></p>
-
-<p>Adds a participant to a participant registry: <a href="./composer.participant.add.html">composer participant add</a></p>
-
-<p><code>composer identity issue</code></p>
-
-<p>Issue an identity to a participant: <a href="./composer.identity.issue.html">composer identity issue</a></p>
-
-<p><code>composer identity revoke</code></p>
-
-<p>Revoke an identity from a participant: <a href="./composer.identity.revoke.html">composer identity revoke</a></p>
-
-<p><code>composer identity import</code></p>
-
-<p>Import an identity to your local identity wallet: <a href="./composer.identity.import.html">composer identity import</a></p>
-
-<h2 id="transaction-execution">Transaction execution</h2>
-
-<p><code>composer transaction submit</code></p>
-
-<p>Submit a transaction for execution: <a href="./composer.transaction.submit.html">composer transaction submit</a></p>
-
+Options:
+  --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
+  --businessNetworkName, -n    The business network name whose runtime will be upgraded  [string] [required]
+  --connectionProfileName, -p  The connection profile name  [string] [required]
+  --upgradeId, -i              The id of the user permitted to upgrade the runtime  [string] [required]
+  --upgradeSecret, -s          The secret of the user permitted to upgrade the runtime, if required  [string]
+</code></pre></div>
             
           </section>
         </div>
