@@ -1,6 +1,11 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
+class BaseFileException extends BaseException {
+   + void constructor(string,string,string) 
+   + string getFileLocation() 
+   + string getShortMessage() 
+}
 class BusinessNetworkDefinition {
    + void constructor(String,String,object,String) 
    + String getIdentifier() 
@@ -45,19 +50,13 @@ class FileWallet extends Wallet {
 class IdCard {
    + String getName() 
    + String getDescription() 
-   + String getBusinessNetwork() 
-   + Object getImage() 
-   + Object getConnection() 
-   + Map getCredentials() 
-   + Map getTlsCertificates() 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + Object getEnrollmentCredentials() 
    + Promise fromArchive(Buffer) 
 }
-class BaseModelException extends BaseException {
-   + void constructor(string,string,string) 
-   + string getFileLocation() 
-   + string getShortMessage() 
-}
-class IllegalModelException extends BaseModelException {
+class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
    + string getModelFile() 
 }
@@ -66,7 +65,7 @@ class Introspector {
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
-class ParseException extends BaseModelException {
+class ParseException extends BaseFileException {
    + void constructor(string,string) 
 }
 class ConsoleLogger {
@@ -111,6 +110,10 @@ class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
+}
+class InvalidQueryException extends BaseFileException {
+   + void constructor(String,QueryFile,Object,String,String,String,String) 
+   + QueryFile getQueryFile() 
 }
 class SecurityContext {
    + void constructor(Connection,string) 

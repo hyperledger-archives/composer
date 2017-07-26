@@ -228,9 +228,12 @@ describe('EditorFileComponent', () => {
                 readme: true,
             };
 
+            component['_previewReadmeActive'] = false;
+
             component.loadFile();
 
-            component['editorContent'].should.deep.equal(`<p>readme</p>\n`);
+            component['editorContent'].should.deep.equal(`readme`);
+            component['previewContent'].should.deep.equal(`<p>readme</p>\n`);
             component['editorType'].should.equal('readme');
         });
 
@@ -241,6 +244,62 @@ describe('EditorFileComponent', () => {
 
             component['_editorFile'] = {
                 readme: true,
+            };
+
+            component['_previewReadmeActive'] = false;
+
+            component.loadFile();
+
+            should.not.exist(component['editorContent']);
+        });
+
+        it('should load a query file', () => {
+            mockClientService.getQueryFile.returns({
+                getDefinitions: sinon.stub().returns('my query')
+            });
+
+            component['_editorFile'] = {
+                query: true,
+            };
+
+            component.loadFile();
+
+            component['editorContent'].should.equal('my query');
+            component['editorType'].should.equal('code');
+        });
+
+        it('should load a query file but not find it', () => {
+            mockClientService.getQueryFile.returns(null);
+
+            component['_editorFile'] = {
+                query: true,
+            };
+
+            component.loadFile();
+
+            should.not.exist(component['editorContent']);
+        });
+
+        it('should load a query file', () => {
+            mockClientService.getQueryFile.returns({
+                getDefinitions: sinon.stub().returns('my query')
+            });
+
+            component['_editorFile'] = {
+                query: true,
+            };
+
+            component.loadFile();
+
+            component['editorContent'].should.equal('my query');
+            component['editorType'].should.equal('code');
+        });
+
+        it('should load a query file but not find it', () => {
+            mockClientService.getQueryFile.returns(null);
+
+            component['_editorFile'] = {
+                query: true,
             };
 
             component.loadFile();
@@ -370,6 +429,34 @@ describe('EditorFileComponent', () => {
             should.not.exist(component['currentError']);
         });
 
+        it('should set the readme file', () => {
+            component['_editorFile'] = {
+                readme: true,
+                id: 'readme'
+            };
+
+            component['editorContent'] = 'my readme';
+
+            component.setCurrentCode();
+
+            mockClientService.updateFile.should.have.been.calledWith('readme', 'my readme', 'readme');
+        });
+
+        it('should compile the readme file', () => {
+            component['_editorFile'] = {
+                readme: true,
+                id: 'readme'
+            };
+
+            component['_previewReadmeActive'] = true;
+
+            component['editorContent'] = 'my readme';
+
+            component.setCurrentCode();
+
+            component['previewContent'].should.equal(`<p>my readme</p>\n`);
+        });
+
         it('should set current error on error', () => {
             mockClientService.updateFile.returns('some error');
             component['_editorFile'] = {
@@ -436,6 +523,15 @@ describe('EditorFileComponent', () => {
             component.onCodeChanged();
 
             mockSetCurrentCode.should.not.have.been.called;
+        });
+
+        it('should compile the readme on preview', () => {
+            mockSetCurrentCode.reset();
+            component['_previewReadmeActive'] = true;
+
+            component.onCodeChanged();
+
+            mockSetCurrentCode.should.have.been.called;
         });
     });
 });

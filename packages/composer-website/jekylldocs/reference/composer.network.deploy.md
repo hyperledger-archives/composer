@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Network Deploy CLI
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Composer Network Deploy CLI
 ---
 
@@ -10,7 +10,7 @@ excerpt: Composer Network Deploy CLI
 
 ---
 
-The `composer network deploy` utility is used to deploy a business network archive from local disk to a Hyperledger Fabric runtime.
+The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 runtime.
 
 ```
 composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
@@ -43,7 +43,7 @@ Command completed successfully.
 
 ## {{site.data.conrefs.hlf_full}} Endorsement Policies
 
-The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} RC endorsement policies can be sent using the `-o` and `-O` options in several ways.
+The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} v1.0 endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 

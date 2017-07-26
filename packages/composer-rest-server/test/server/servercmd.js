@@ -19,7 +19,7 @@
 require('chai').should();
 const proxyquire =  require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('servercmd', () => {
 

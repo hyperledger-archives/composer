@@ -19,7 +19,6 @@ const boot = require('loopback-boot');
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const composerDiscovery = require('../../../server/boot/composer-discovery');
-const fs = require('fs');
 const loopback = require('loopback');
 require('loopback-component-passport');
 const LoopBackWallet = require('../../../lib/loopbackwallet');
@@ -27,7 +26,7 @@ const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
 
@@ -47,8 +46,7 @@ describe('composer-discovery boot script', () => {
             return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
-            const banana = fs.readFileSync(path.resolve(__dirname, '..', '..', 'bond-network.bna'));
-            return BusinessNetworkDefinition.fromArchive(banana);
+            return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
@@ -65,6 +63,7 @@ describe('composer-discovery boot script', () => {
             fs: bfs_fs
         };
         app = loopback();
+        app.set('composer', composerConfig);
         return new Promise((resolve, reject) => {
             boot(app, path.resolve(__dirname, '..', '..', '..', 'server'), (err) => {
                 if (err) {
@@ -72,14 +71,6 @@ describe('composer-discovery boot script', () => {
                 }
                 resolve();
             });
-        })
-        .then(() => {
-            app.get = (name) => {
-                if (name !== 'composer') {
-                    return null;
-                }
-                return composerConfig;
-            };
         });
     });
 
@@ -131,6 +122,20 @@ describe('composer-discovery boot script', () => {
             });
     });
 
+    it('should handle an error from discovering the queries', () => {
+        const originalCreateDataSource = app.loopback.createDataSource;
+        sandbox.stub(app.loopback, 'createDataSource', (name, settings) => {
+            let result = originalCreateDataSource.call(app.loopback, name, settings);
+            sandbox.stub(result.connector, 'discoverQueries').yields(new Error('such error'));
+            return result;
+        });
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                sinon.assert.calledOnce(cb);
+            });
+    });
+
     it('should handle an error from discovering the schemas', () => {
         const originalCreateDataSource = app.loopback.createDataSource;
         sandbox.stub(app.loopback, 'createDataSource', (name, settings) => {
@@ -161,6 +166,28 @@ describe('composer-discovery boot script', () => {
             .then((identity) => {
                 identity.should.exist;
                 app.loopback.createDataSource.args[0][1].wallet.should.be.an.instanceOf(LoopBackWallet);
+            });
+    });
+
+    it('should subscribe to events and ignore them if WebSocket server not specified', () => {
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                app.models.System.dataSource.connector.eventemitter.emit('event', { foo: 'bar' });
+            });
+    });
+
+    it('should subscribe to events and publish them if WebSocket server is specified', () => {
+        const wss = {
+            broadcast: sinon.stub()
+        };
+        app.set('wss', wss);
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                app.models.System.dataSource.connector.eventemitter.emit('event', { foo: 'bar' });
+                sinon.assert.calledOnce(wss.broadcast);
+                sinon.assert.calledWith(wss.broadcast, '{"foo":"bar"}');
             });
     });
 

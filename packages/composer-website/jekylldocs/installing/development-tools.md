@@ -3,16 +3,16 @@ layout: default
 title: Installing a development environment
 category: start
 section: installing
-sidebar: sidebars/installing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
-index-order: 3
+index-order: 203
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-RC. The default is for v1.0-RC and we suggest this is the one you use.
+There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0. The default is for v1.0 and we suggest this is the one you use.
 
 ## Before you begin
 
@@ -25,13 +25,14 @@ Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
 npm: 3.10.x
 git: 2.9.x
+Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
-curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 ```
@@ -107,7 +108,7 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv0.6
 
-    {{site.data.conrefs.hlf_full}} v1.0-RC is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0 is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 
@@ -155,7 +156,7 @@ Issue  from the `fabric-tools` directory
 
 Issue from the `fabric-tools` directory
 ```
-./stop.sh
+./stopFabric.sh
 ```
 
 **Create Composer Profile**

@@ -58,17 +58,48 @@ class EngineTransactions {
         // Store the transaction in the context.
         context.setTransaction(transaction);
 
+        // This is the count of transaction processor functions executed.
+        let totalCount = 0;
+
         // Resolve the users copy of the transaction.
         LOG.debug(method, 'Parsed transaction, resolving it', transaction);
+        let resolvedTransaction;
         return context.getResolver().resolve(transaction)
-            .then((resolvedTransaction) => {
+            .then((resolvedTransaction_) => {
 
-                // Execute the transaction.
-                let api = context.getApi();
-                return context.getCompiledScriptBundle().execute(api, resolvedTransaction);
+                // Save the resolved transaction.
+                resolvedTransaction = resolvedTransaction_;
+
+                // Execute any system transaction processor functions.
+                const api = context.getApi();
+                return context.getTransactionHandlers().reduce((promise, transactionHandler) => {
+                    return promise.then(() => {
+                        return transactionHandler.execute(api, resolvedTransaction)
+                            .then((count) => {
+                                totalCount += count;
+                            });
+                    });
+                }, Promise.resolve());
 
             })
             .then(() => {
+
+                // Execute any user transaction processor functions.
+                const api = context.getApi();
+                return context.getCompiledScriptBundle().execute(api, resolvedTransaction)
+                    .then((count) => {
+                        totalCount += count;
+                    });
+
+            })
+            .then(() => {
+
+                // Check that a transaction processor function was executed.
+                if (totalCount === 0) {
+                    const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
+                    LOG.error(method, error);
+                    throw error;
+                }
 
                 // Get the default transaction registry.
                 LOG.debug(method, 'Getting default transaction registry');

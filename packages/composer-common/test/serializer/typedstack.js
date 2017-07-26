@@ -45,4 +45,15 @@ describe('TypedStack', function () {
             assert.throws( function() {ts.pop(Number);}, /.+Found: ROOT/, 'did not throw with expected message');
         });
     });
+
+    describe('#peek', () => {
+        it('should throw an error if value given is null', () => {
+            const ts = new TypedStack('ROOT');
+            (() => {
+                // Set the top of the stack to null
+                ts.stack = [null];
+                ts.peek(null);
+            }).should.throw(/Pop returned invalid data/);
+        });
+    });
 });

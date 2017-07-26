@@ -2,8 +2,8 @@
 layout: default
 title: Hyperledger Composer CLI Commands
 section: reference
-index-order: 8
-sidebar: sidebars/reference.md
+index-order: 908
+sidebar: sidebars/accordion-toc0.md
 excerpt: The [**list of all Hyperledger Composer CLI commands**](./commands.html) for performing multiple administrative, operational, and development tasks.
 ---
 
@@ -55,6 +55,14 @@ Test the connection to a deployed a Business Network: [composer network ping](./
 `composer network update`
 
 Update a deployed Business Network: [composer network update](./composer.network.update.md)
+
+`composer network start`
+
+Deploy a business network archive to a {{site.data.conrefs.hlf_full}} endorsing peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
+
+`composer runtime install`
+
+Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} endorsing peer: [composer runtime install](./composer.runtime.install.md)
 
 ## Participant and Identity management
 

@@ -26,13 +26,14 @@ const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
+const TransactionHandler = require('../lib/transactionhandler');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('EngineTransactions', () => {
 
@@ -47,6 +48,8 @@ describe('EngineTransactions', () => {
     let mockScriptManager;
     let mockCompiledScriptBundle;
     let mockRegistry;
+    let mockTransactionHandler1;
+    let mockTransactionHandler2;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -71,29 +74,95 @@ describe('EngineTransactions', () => {
         mockScriptManager = sinon.createStubInstance(ScriptManager);
         mockContext.getScriptManager.returns(mockScriptManager);
         mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-        mockCompiledScriptBundle.execute.resolves();
+        mockCompiledScriptBundle.execute.resolves(0);
         mockContext.getCompiledScriptBundle.returns(mockCompiledScriptBundle);
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+        mockTransactionHandler1 = sinon.createStubInstance(TransactionHandler);
+        mockTransactionHandler1.execute.resolves(0);
+        mockTransactionHandler2 = sinon.createStubInstance(TransactionHandler);
+        mockTransactionHandler2.execute.resolves(0);
+        mockContext.getTransactionHandlers.returns([mockTransactionHandler1, mockTransactionHandler2]);
     });
 
     describe('#submitTransaction', () => {
+
+        let fakeJSON;
+        let mockResolvedTransaction;
+        let mockTransaction;
+
+        beforeEach(() => {
+            fakeJSON = { fake: 'data' };
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.$resolved = false;
+            mockResolvedTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.$resolved = true;
+            mockSerializer.fromJSON.withArgs(fakeJSON).onFirstCall().returns(mockTransaction);
+            mockResolver.resolve.withArgs(mockTransaction).resolves(mockResolvedTransaction);
+        });
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'submitTransaction', ['no', 'args', 'supported', 'here']);
             return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["registryId","serializedResource"\]"/);
         });
 
-        it('should execute the transaction', () => {
-            const fakeJSON = { fake: 'data' };
-            let mockTransaction = sinon.createStubInstance(Resource);
-            mockTransaction.$resolved = false;
-            let mockResolvedTransaction = sinon.createStubInstance(Resource);
-            mockTransaction.$resolved = true;
-            mockSerializer.fromJSON.withArgs(fakeJSON).onFirstCall().returns(mockTransaction);
-            mockResolver.resolve.withArgs(mockTransaction).resolves(mockResolvedTransaction);
+        it('should throw if no handlers for the transaction', () => {
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .should.be.rejectedWith(/Could not find any functions to execute for transaction/);
+        });
+
+        it('should execute the transaction using a system handler', () => {
+            mockTransactionHandler1.execute.resolves(1);
             return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
                 .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using multiple system handlers', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockTransactionHandler2.execute.resolves(1);
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockTransactionHandler2.execute);
+                    mockTransactionHandler2.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler2.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using a user handler', () => {
+            mockCompiledScriptBundle.execute.resolves(1);
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockCompiledScriptBundle.execute);
+                    mockCompiledScriptBundle.execute.args[0][0].should.equal(mockApi);
+                    mockCompiledScriptBundle.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using multiple system handlers and a user handler', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockTransactionHandler2.execute.resolves(1);
+            mockCompiledScriptBundle.execute.resolves(1);
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockTransactionHandler2.execute);
+                    mockTransactionHandler2.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler2.execute.args[0][1].should.equal(mockResolvedTransaction);
                     sinon.assert.calledOnce(mockCompiledScriptBundle.execute);
                     mockCompiledScriptBundle.execute.args[0][0].should.equal(mockApi);
                     mockCompiledScriptBundle.execute.args[0][1].should.equal(mockResolvedTransaction);

@@ -20,8 +20,13 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
+const path = require('path');
 const server = require('./server/server');
 const Util = require('./lib/util');
+const _ = require('lodash');
+
+const defaultTlsCertificate = path.resolve(__dirname, 'cert.pem');
+const defaultTlsKey = path.resolve(__dirname, 'key.pem');
 
 const yargs = require('yargs')
     .wrap(null)
@@ -33,6 +38,18 @@ const yargs = require('yargs')
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
     .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
+    .option('w', { alias: 'websockets', describe: 'Enable event publication over WebSockets', type: 'boolean', default: process.env.COMPOSER_WEBSOCKETS || true })
+    .option('t', { alias: 'tls', describe: 'Enable TLS security for the REST API', type: 'boolean', default: process.env.COMPOSER_TLS || false })
+    .option('c', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
+    .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
+    .alias('v', 'version')
+    .version(() => {
+        return getInfo('composer-rest-server')+
+          getInfo('composer-admin')+getInfo('composer-client')+
+          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
+          getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
+          getInfo('composer-connector-hlfv1');
+    })
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -64,7 +81,11 @@ if (interactive) {
                 participantId: answers.userid,
                 participantPwd: answers.secret,
                 namespaces: answers.namespaces,
-                security: answers.security
+                security: answers.security,
+                websockets: answers.websockets,
+                tls: answers.tls,
+                tlscert: answers.tlscert,
+                tlskey: answers.tlskey
             };
             console.log('\nTo restart the REST server using the same options, issue the following command:');
             let cmd = [ 'composer-rest-server' ];
@@ -76,6 +97,10 @@ if (interactive) {
                 '-N': 'namespaces',
                 '-P': 'port',
                 '-S': 'security',
+                '-w': 'websockets',
+                '-t': 'tls',
+                '-c': 'tlscert',
+                '-k': 'tlskey'
             };
             for (let arg in args) {
                 const propName = args[arg];
@@ -100,7 +125,11 @@ if (interactive) {
             participantPwd: yargs.s,
             namespaces: yargs.N,
             port: yargs.P,
-            security: yargs.S
+            security: yargs.S,
+            websockets: yargs.w,
+            tls: yargs.t,
+            tlscert: yargs.c,
+            tlskey: yargs.k
         });
     }
 }
@@ -112,10 +141,11 @@ module.exports = promise.then((composer) => {
     return server(composer);
 
 })
-.then((app) => {
+.then((result) => {
 
     // Start the LoopBack application.
-    return app.listen(function () {
+    const app = result.app, server = result.server;
+    return server.listen(app.get('port'), () => {
         app.emit('started');
         let baseUrl = app.get('url').replace(/\/$/, '');
         console.log('Web server listening at: %s', baseUrl);
@@ -130,3 +160,21 @@ module.exports = promise.then((composer) => {
     console.error(error);
     process.exit(1);
 });
+
+/**
+ * [getInfo description]
+ * @param  {[type]} moduleName [description]
+ * @return {[type]}            [description]
+ */
+function getInfo(moduleName) {
+
+    try{
+        let pjson = ((moduleName=== 'composer-rest-server') ? require('./package.json') : require(moduleName).version);
+        return _.padEnd(pjson.name,30) + ' v'+pjson.version+'\n';
+    }
+    catch (error){
+      // oh well - we'll just return a blank string
+        return '';
+    }
+
+}

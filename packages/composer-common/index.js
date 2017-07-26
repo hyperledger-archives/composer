@@ -47,15 +47,18 @@ if (!nodeHasNewBufferVersion()) {
     };
     Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
 }
-
+module.exports.AclRule = require('./lib/acl/aclrule');
 module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
-module.exports.BaseModelException = require('./lib/introspect/basemodelexception');
+module.exports.BaseFileException = require('./lib/basefileexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.BusinessNetworkMetadata = require('./lib/businessnetworkmetadata');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
+module.exports.EnumDeclaration = require('./lib/introspect/enumdeclaration');
+module.exports.EnumValueDeclaration = require('./lib/introspect/enumvaluedeclaration');
+module.exports.Field = require('./lib/introspect/field');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');
 module.exports.ComboConnectionProfileStore = require('./lib/comboconnectionprofilestore');
 module.exports.Concept = require('./lib/model/concept');
@@ -71,7 +74,9 @@ module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
 module.exports.FileWriter = require('./lib/codegen/filewriter');
 module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
+module.exports.FunctionDeclaration = require('./lib/introspect/functiondeclaration');
 module.exports.Globalize = require('./lib/globalize');
+module.exports.IdCard = require('./lib/idcard');
 module.exports.Introspector = require('./lib/introspect/introspector');
 module.exports.Limit = require('./lib/query/limit');
 module.exports.Logger = require('./lib/log/logger');
@@ -82,6 +87,7 @@ module.exports.OrderBy = require('./lib/query/orderby');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');
 module.exports.Property = require('./lib/introspect/property');
 module.exports.Query = require('./lib/query/query');
+module.exports.QueryAnalyzer = require('./lib/query/queryanalyzer.js');
 module.exports.QueryFile = require('./lib/query/queryfile');
 module.exports.QueryManager = require('./lib/querymanager');
 module.exports.Relationship = require('./lib/model/relationship');

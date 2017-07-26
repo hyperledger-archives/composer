@@ -144,7 +144,6 @@ class Query {
     getSelect() {
         return this.select;
     }
-
 }
 
 module.exports = Query;

@@ -1,4 +1,5 @@
 {
+    "name": "hlfv1",
     "type": "hlfv1",
     "orderers": [
         {

@@ -3,9 +3,9 @@ layout: default
 title: Participants and identities
 category: concepts
 section: managing
-sidebar: sidebars/managing.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Participants and identities are core concepts of Hyperledger Composer. A participant is a member of business networks and might represent individuals or organizations. Participants have identity documents which can be validated to prove their identity. For more information, see [**participants and identities**](../managing/participantsandidentities.html).
-index-order: 1
+index-order: 701
 ---
 
 # Participants and Identities

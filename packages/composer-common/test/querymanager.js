@@ -28,6 +28,7 @@ const sinon = require('sinon');
 describe('QueryManager', () => {
 
     const testQuery = fs.readFileSync(path.resolve(__dirname, 'query', 'test.qry'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, 'query', 'model.cto'), 'utf8');
 
     let modelManager;
     let queryFile;
@@ -36,6 +37,7 @@ describe('QueryManager', () => {
 
     beforeEach(() => {
         modelManager = new ModelManager();
+        modelManager.addModelFile(testModel);
         queryFile = sinon.createStubInstance(QueryFile);
         queryFile.getQueries.returns(dummyQueries);
         sandbox = sinon.sandbox.create();
@@ -77,6 +79,23 @@ describe('QueryManager', () => {
             qm.setQueryFile(queryFile);
             qm.getQueryFile().should.equal(queryFile);
             qm.getQueries().should.equal(dummyQueries);
+        });
+    });
+
+    describe('#getQuery', () => {
+
+        it('should return a named query', () => {
+            let qm = new QueryManager(modelManager);
+            let queryFile = qm.createQueryFile('test.qrl', testQuery);
+            qm.setQueryFile(queryFile);
+            qm.getQuery('Q23').getName().should.equal('Q23');
+        });
+
+        it('should return null for unknown query', () => {
+            let qm = new QueryManager(modelManager);
+            let queryFile = qm.createQueryFile('test.qrl', testQuery);
+            qm.setQueryFile(queryFile);
+            (qm.getQuery('xxxx') === null).should.be.true;
         });
     });
 

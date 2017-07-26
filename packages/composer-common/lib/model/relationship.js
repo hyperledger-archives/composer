@@ -98,9 +98,14 @@ class Relationship extends Identifiable {
 
         // old style relationships do not have a schema
         if (protocol !== 'resource') {
-            ns = defaultNamespace;
-            type = defaultType;
-            id = uriAsString;
+            if (resource) {
+                ns = ModelUtils.getNamespace(resource);
+                type = ModelUtils.getShortName(resource);
+            } else {
+                ns = defaultNamespace;
+                type = defaultType;
+                id = uriAsString;
+            }
         } else {
             ns = ModelUtils.getNamespace(resource);
             type = ModelUtils.getShortName(resource);

@@ -20,26 +20,8 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-// const ENCODING = 'utf8';
-
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = `
-    namespace org.hyperledger.composer.system
-
-    abstract asset Asset {  }
-
-    abstract participant Participant {   }
-
-    abstract transaction Transaction identified by transactionId{
-      o String transactionId
-      o DateTime timestamp
-    }
-
-    abstract event Event identified by eventId{
-      o String eventId
-      o DateTime timestamp
-    }
-`;
+const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
 
 /**
  * <p>
@@ -152,8 +134,13 @@ class ModelManager {
             throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
         }
 
-        m.validate();
-        this.modelFiles[m.getNamespace()] = m;
+        if (!this.modelFiles[m.getNamespace()]) {
+            m.validate();
+            this.modelFiles[m.getNamespace()] = m;
+        } else {
+            throw new Error('namespace already exists');
+        }
+
         return m;
     }
 
@@ -239,14 +226,24 @@ class ModelManager {
                     if (m.isSystemModelFile()){
                         throw new Error('System namespace can not be updated');
                     }
-                    this.modelFiles[m.getNamespace()] = m;
-                    newModelFiles.push(m);
+                    if (!this.modelFiles[m.getNamespace()]) {
+                        this.modelFiles[m.getNamespace()] = m;
+                        newModelFiles.push(m);
+                    }
+                    else {
+                        throw new Error('namespace already exists');
+                    }
                 } else {
                     if (modelFile.isSystemModelFile()){
                         throw new Error('System namespace can not be updated');
                     }
-                    this.modelFiles[modelFile.getNamespace()] = modelFile;
-                    newModelFiles.push(modelFile);
+                    if (!this.modelFiles[modelFile.getNamespace()]) {
+                        this.modelFiles[modelFile.getNamespace()] = modelFile;
+                        newModelFiles.push(modelFile);
+                    }
+                    else {
+                        throw new Error('namespace already exists');
+                    }
                 }
             }
 
@@ -392,7 +389,10 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations();
+        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+            .filter((classDeclaration) => {
+                return classDeclaration.isSystemCoreType();
+            });
     }
 
     /**

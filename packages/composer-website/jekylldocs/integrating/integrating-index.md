@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Integrating Index
+title: Integrating Existing Systems
 category: concepts
 section: integrating
-index-order: 0
-sidebar: sidebars/integrating.md
+index-order: 600
+sidebar: sidebars/accordion-toc0.md
 excerpt: How to create a new Connection Profile
 ---
 
@@ -16,7 +16,7 @@ excerpt: How to create a new Connection Profile
 
 {% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
-{% if page.section == 'integrating' and page.title != "Integrating Index" %}
+{% if page.section == 'integrating' and page.title != "Integrating Existing Systems" %}
 ### {{ page.title }}
 {{ page.excerpt }}
 {% endif %}
