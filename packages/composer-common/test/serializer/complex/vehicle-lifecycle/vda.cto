@@ -1,0 +1,150 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Model based on the DVLA vehicle definition and registration process
+ */
+namespace org.vda
+
+import composer.base.Person
+
+/**
+ * Based on DVLA document V355/1
+ */
+enum TaxClass {
+  o PRIVATE_LIGHT_GOODS
+  o PETROL_CAR
+  o DIESEL_CAR
+  o ALTERNATIVE_FUEL_CAR
+  o LIGHT_GOODS_VEHICLE
+  o EURO4_LIGHT_GOODS_VEHICLE
+  o EURO5_LIGHT_GOODS_VEHICLE
+  o HEAVY_GOODS_VEHICLE
+  o PRIVATE_HEAVY_GOODS_VEHICLE
+  o SPECIAL_TYPES
+  o HAULAGE_VEHICLES
+  o BUS
+  o MOTORCYCLE
+  o ELECTRIC_MOTOCYCLE
+  o SPECIAL_VEHICLES
+  o SMALL_ISLAND_VEHICLES
+  o RECOVERY_VEHICLE
+  o SPECIAL_CONCESSIONARY
+  o EMERGENCY_VEHICLE
+  o EXCEMPT_VEHICLE
+}
+
+concept VehicleDetails {
+  o String make
+  o String modelType
+  o String colour
+  o String vin optional
+  o String modelVariant optional
+  o String modelVersion optional
+  o String bodyType optional
+  o TaxClass taxationClass optional
+  o Integer revenueWeight optional
+  o Integer cylinderCapacity optional
+  o Double co2 optional // g/km
+  o String typeOfFuel optional
+  o Integer numberOfSeats optional
+  o Integer numberOfStandingPlaces optional
+  o String wheelPlan optional
+  o String vehicleCategory optional
+  o String typeApprovalNumber optional
+  o Double maxNetPower optional // kW
+  o String engineNumber optional
+  o Double maxPermissibleMass optional
+  o Double massInService optional
+  o Double powerWeightRatio optional
+  o TrailerDetails trailerDetails optional
+  o SoundDetails soundDetails optional
+  o ExhaustEmissions exhaustEmissions optional
+}
+
+concept TrailerDetails {
+  o Double maxPermissibleTowableMassBraked
+  o Double maxPermissibleTowableMassUnbraked
+}
+
+concept SoundDetails {
+  o Double stationary
+  o Double engineSpeed
+  o Double driveBy
+}
+
+concept ExhaustEmissions {
+  o Double co
+  o Double hc
+  o Double nox
+  o Double hc_plus_nox
+  o Double particulates
+}
+
+concept VehicleTransferLogEntry {
+  --> Vehicle vehicle
+  --> Person buyer
+  --> Person seller optional
+  o DateTime timestamp
+}
+
+/**
+ * Based on the DVLA V62 document
+ */
+transaction ApplicationForVehicleRegistrationCertificate {
+  o VehicleDetails vehicleDetails
+  --> Person keeper
+  o String dvlaFleetNumber optional
+  o String driversLicenseNumber optional
+  o Long mileage optional
+  o String previousPostCode optional
+}
+
+abstract transaction VehicleTransaction  {
+  --> Vehicle vehicle
+}
+
+
+/**
+ * DVLA V5C
+ */
+transaction PrivateVehicleTransfer extends VehicleTransaction {
+  --> Person seller
+  --> Person buyer
+  o String specialNotes optional
+}
+
+enum VehicleStatus {
+  o ACTIVE
+  o OFF_THE_ROAD
+  o SCRAPPED
+}
+
+asset Vehicle identified by vin {
+  o String vin
+  o VehicleDetails vehicleDetails
+  o VehicleStatus vehicleStatus
+  --> Person owner optional
+  o String numberPlate optional
+  o String suspiciousMessage optional
+  o VehicleTransferLogEntry[] logEntries optional
+}
+
+transaction ScrapVehicle extends VehicleTransaction {
+  o VehicleTransaction[] logEntries optional
+}
+
+transaction UpdateSuspicious extends VehicleTransaction {
+  o String message
+}
