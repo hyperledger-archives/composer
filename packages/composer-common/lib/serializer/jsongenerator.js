@@ -18,6 +18,7 @@ const ClassDeclaration = require('../introspect/classdeclaration');
 const Field = require('../introspect/field');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Resource = require('../model/resource');
+const Identifiable = require('../model/identifiable');
 const Typed = require('../model/typed');
 const Concept = require('../model/concept');
 const ModelUtil = require('../modelutil');
@@ -42,10 +43,14 @@ class JSONGenerator {
      * are specified for relationship fields into relationships, false by default.
      * @param {boolean} [permitResourcesForRelationships] Permit resources in the
      * place of relationships (serializing them as resources), false by default.
+     * @param {boolean} [deduplicateResources] If resources appear several times
+     * in the object graph only the first instance is serialized, with only the $id
+     * written for subsequent instances, false by default.
      */
-    constructor(convertResourcesToRelationships, permitResourcesForRelationships) {
+    constructor(convertResourcesToRelationships, permitResourcesForRelationships, deduplicateResources) {
         this.convertResourcesToRelationships = convertResourcesToRelationships;
         this.permitResourcesForRelationships = permitResourcesForRelationships;
+        this.deduplicateResources = deduplicateResources;
     }
 
     /**
@@ -63,7 +68,7 @@ class JSONGenerator {
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else {
-            throw new Error('Unrecognised ' + JSON.stringify(thing) );
+            throw new Error('Unrecognised ' + JSON.stringify(thing));
         }
     }
 
@@ -75,24 +80,47 @@ class JSONGenerator {
      * @private
      */
     visitClassDeclaration(classDeclaration, parameters) {
-        parameters.writer.openObject();
-        parameters.writer.writeKeyStringValue('$class', classDeclaration.getFullyQualifiedName());
 
         const obj = parameters.stack.pop();
-        if(!((obj instanceof Resource) || (obj instanceof Concept))) {
-            throw new Error('Expected a Resource or a Concept, but found ' + obj );
+        if (!((obj instanceof Resource) || (obj instanceof Concept))) {
+            throw new Error('Expected a Resource or a Concept, but found ' + obj);
         }
-        const properties = classDeclaration.getProperties();
-        for(let n=0; n < properties.length; n++) {
-            const property = properties[n];
-            const value = obj[property.getName()];
-            if(!Util.isNull(value)) {
-                parameters.stack.push(value);
-                property.accept(this,parameters);
+
+        let writeFields = true;
+        let id = null;
+
+        if (obj instanceof Identifiable && this.deduplicateResources) {
+            id = obj.toURI();
+            if( parameters.dedupeResources.has(id)) {
+                writeFields = false;
+                parameters.writer.writeStringValue( id );
+            }
+            else {
+                parameters.dedupeResources.add(id);
             }
         }
 
-        parameters.writer.closeObject();
+        if (writeFields) {
+            parameters.writer.openObject();
+            parameters.writer.writeKeyStringValue('$class', classDeclaration.getFullyQualifiedName());
+
+            if(this.deduplicateResources && id) {
+                parameters.writer.writeKeyStringValue('$id', id );
+            }
+
+            const properties = classDeclaration.getProperties();
+            for (let n = 0; n < properties.length; n++) {
+                const property = properties[n];
+                const value = obj[property.getName()];
+                if (!Util.isNull(value)) {
+                    parameters.stack.push(value);
+                    property.accept(this, parameters);
+                }
+            }
+
+            parameters.writer.closeObject();
+        }
+
         return null;
     }
 
@@ -106,26 +134,23 @@ class JSONGenerator {
     visitField(field, parameters) {
         const obj = parameters.stack.pop();
         parameters.writer.writeKey(field.getName());
-        if(field.isArray()) {
+        if (field.isArray()) {
             parameters.writer.openArray();
-            for(let n=0; n < obj.length; n++) {
+            for (let n = 0; n < obj.length; n++) {
                 const item = obj[n];
-                if(!field.isPrimitive() && !ModelUtil.isEnum(field)) {
+                if (!field.isPrimitive() && !ModelUtil.isEnum(field)) {
                     parameters.writer.writeComma();
                     parameters.stack.push(item, Typed);
                     const classDecl = parameters.modelManager.getType(item.getFullyQualifiedType());
                     classDecl.accept(this, parameters);
-                }
-                else {
-                    parameters.writer.writeArrayValue(this.convertToJSON(field,item));
+                } else {
+                    parameters.writer.writeArrayValue(this.convertToJSON(field, item));
                 }
             }
             parameters.writer.closeArray();
-        }
-        else if(field.isPrimitive() || ModelUtil.isEnum(field)) {
-            parameters.writer.writeValue(this.convertToJSON(field,obj));
-        }
-        else {
+        } else if (field.isPrimitive() || ModelUtil.isEnum(field)) {
+            parameters.writer.writeValue(this.convertToJSON(field, obj));
+        } else {
             parameters.stack.push(obj);
             const classDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
             classDeclaration.accept(this, parameters);
@@ -142,19 +167,22 @@ class JSONGenerator {
      * @return {string} the text representation
      */
     convertToJSON(field, obj) {
-        switch(field.getType()) {
-        case 'DateTime': {
-            return `"${obj.toISOString()}"`;
-        }
+        switch (field.getType()) {
+        case 'DateTime':
+            {
+                return `"${obj.toISOString()}"`;
+            }
         case 'Integer':
         case 'Long':
         case 'Double':
-        case 'Boolean':{
-            return `${obj.toString()}`;
-        }
-        default: {
-            return JSON.stringify(obj.toString());
-        }
+        case 'Boolean':
+            {
+                return `${obj.toString()}`;
+            }
+        default:
+            {
+                return JSON.stringify(obj.toString());
+            }
         }
     }
 
@@ -169,14 +197,14 @@ class JSONGenerator {
         const obj = parameters.stack.pop();
         parameters.writer.writeKey(relationshipDeclaration.getName());
 
-        if(relationshipDeclaration.isArray()) {
+        if (relationshipDeclaration.isArray()) {
             parameters.writer.openArray();
-            for(let n=0; n < obj.length; n++) {
+            for (let n = 0; n < obj.length; n++) {
                 const item = obj[n];
                 if (this.permitResourcesForRelationships && item instanceof Resource) {
                     let fqi = item.getFullyQualifiedIdentifier();
                     if (parameters.seenResources.has(fqi)) {
-                        let relationshipText = this.getRelationshipText(relationshipDeclaration, item );
+                        let relationshipText = this.getRelationshipText(relationshipDeclaration, item);
                         parameters.writer.writeStringValue(relationshipText);
                     } else {
                         parameters.seenResources.add(fqi);
@@ -187,16 +215,15 @@ class JSONGenerator {
                         parameters.seenResources.delete(fqi);
                     }
                 } else {
-                    let relationshipText = this.getRelationshipText(relationshipDeclaration, item );
+                    let relationshipText = this.getRelationshipText(relationshipDeclaration, item);
                     parameters.writer.writeArrayStringValue(relationshipText);
                 }
             }
             parameters.writer.closeArray();
-        }
-        else if (this.permitResourcesForRelationships && obj instanceof Resource) {
+        } else if (this.permitResourcesForRelationships && obj instanceof Resource) {
             let fqi = obj.getFullyQualifiedIdentifier();
             if (parameters.seenResources.has(fqi)) {
-                let relationshipText = this.getRelationshipText(relationshipDeclaration, obj );
+                let relationshipText = this.getRelationshipText(relationshipDeclaration, obj);
                 parameters.writer.writeStringValue(relationshipText);
             } else {
                 parameters.seenResources.add(fqi);
@@ -206,24 +233,24 @@ class JSONGenerator {
                 parameters.seenResources.delete(fqi);
             }
         } else {
-            let relationshipText = this.getRelationshipText(relationshipDeclaration, obj );
+            let relationshipText = this.getRelationshipText(relationshipDeclaration, obj);
             parameters.writer.writeStringValue(relationshipText);
         }
         return null;
     }
 
     /**
-    * Returns the persistent format for a relationship.
-    * @param {RelationshipDeclaration} relationshipDeclaration - the relationship being persisted
-    * @param {Identifiable} relationshipOrResource - the relationship or the resource
-    * @returns {string} the text to use to persist the relationship
-    */
+     * Returns the persistent format for a relationship.
+     * @param {RelationshipDeclaration} relationshipDeclaration - the relationship being persisted
+     * @param {Identifiable} relationshipOrResource - the relationship or the resource
+     * @returns {string} the text to use to persist the relationship
+     */
     getRelationshipText(relationshipDeclaration, relationshipOrResource) {
-        if(relationshipOrResource instanceof Resource) {
+        if (relationshipOrResource instanceof Resource) {
             const allowRelationships =
                 this.convertResourcesToRelationships || this.permitResourcesForRelationships;
-            if(!allowRelationships) {
-                throw new Error('Did not find a relationship for ' + relationshipDeclaration.getFullyQualifiedTypeName() + ' found ' + relationshipOrResource );
+            if (!allowRelationships) {
+                throw new Error('Did not find a relationship for ' + relationshipDeclaration.getFullyQualifiedTypeName() + ' found ' + relationshipOrResource);
             }
         }
         return relationshipOrResource.toURI();

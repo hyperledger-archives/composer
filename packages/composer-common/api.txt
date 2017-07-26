@@ -125,7 +125,7 @@ class SecurityException extends BaseException {
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
-   + Object toJSON(Resource,Object,boolean,boolean,boolean) throws Error
+   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean) 
 }
 class ValidationException extends BaseException {
