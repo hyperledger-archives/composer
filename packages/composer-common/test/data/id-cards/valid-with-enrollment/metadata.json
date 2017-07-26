@@ -1,0 +1,8 @@
+{
+    "name": "Conga",
+    "description": "A valid ID card",
+    "businessNetwork": "org-acme-biznet",
+    "image": "images/conga.png",
+    "enrollmentId": "conga",
+    "enrollmentSecret": "super-secret-passphrase"
+}

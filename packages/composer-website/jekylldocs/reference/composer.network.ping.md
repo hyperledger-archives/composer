@@ -15,7 +15,7 @@ Note that ping also returns the participant information for the identity that wa
 an identity has been issued for the participant.
 
 ```
-composer network ping -n <business-network-id> -i <enrollment-id> -s <enrollment-secret>
+composer network ping -n <business-network-name> -p <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
 ```
 
 ### Options
@@ -31,9 +31,9 @@ composer network ping -n <business-network-id> -i <enrollment-id> -s <enrollment
 ## Example Output
 
 ```
-composer network ping -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+composer network ping -n digitalproperty-network -p hlfv1 -i admin -s adminpw
 The connection to the network was successfully tested:
-  version = 0.4.1
+  version = 0.10.0
   participant = <no participant found>
 Command completed successfully.
 ```
