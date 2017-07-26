@@ -14,7 +14,11 @@
 
 'use strict';
 
-const inquirer    = require('inquirer');
+const inquirer = require('inquirer');
+const path = require('path');
+
+const defaultTlsCertificate = path.resolve(__dirname, '..', 'cert.pem');
+const defaultTlsKey = path.resolve(__dirname, '..', 'key.pem');
 
 /**
  * Utility methods for the LoopBack server.
@@ -94,7 +98,37 @@ class Util {
                 type: 'confirm',
                 message: 'Specify if you want the generated REST API to be secured:',
                 default: false
-            }
+            },
+            {
+                name: 'websockets',
+                type: 'confirm',
+                message: 'Specify if you want to enable event publication over WebSockets:',
+                default: true
+            },
+            {
+                name: 'tls',
+                type: 'confirm',
+                message: 'Specify if you want to enable TLS security for the REST API:',
+                default: false
+            },
+            {
+                name: 'tlscert',
+                type: 'string',
+                message: 'Enter the path to the file containing the TLS certificate:',
+                default: defaultTlsCertificate,
+                when: (answers) => {
+                    return answers.tls;
+                }
+            },
+            {
+                name: 'tlskey',
+                type: 'string',
+                message: 'Enter the path to the file containing the TLS private key:',
+                default: defaultTlsKey,
+                when: (answers) => {
+                    return answers.tls;
+                }
+            },
         ];
 
         return inquirer.prompt(questions);

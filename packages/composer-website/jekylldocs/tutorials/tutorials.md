@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Tutorials Index
+title: Tutorials
 category: tutorials
 section: tutorials
 sidebar: sidebars/accordion-toc0.md

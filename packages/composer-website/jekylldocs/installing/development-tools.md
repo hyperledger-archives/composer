@@ -25,6 +25,7 @@ Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
 npm: 3.10.x
 git: 2.9.x
+Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
@@ -155,7 +156,7 @@ Issue  from the `fabric-tools` directory
 
 Issue from the `fabric-tools` directory
 ```
-./stop.sh
+./stopFabric.sh
 ```
 
 **Create Composer Profile**

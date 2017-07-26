@@ -1,10 +1,11 @@
 ---
-index-order: 909
+layout: default
 title: API Documentation
 section: reference
-layout: default
 exception: API
-excerpt: The Client, Admin, and Runtime components of Hyperledger Composer contain [JavaScript APIs](../jsdoc/index.html) for application integration.  
+sidebar: sidebars/accordion-toc0.md
+excerpt: The Client, Admin, and Runtime components of Hyperledger Composer contain [JavaScript APIs](../jsdoc/index.html) for application integration.
+index-order: 909
 ---
 
 # Hyperledger Composer API

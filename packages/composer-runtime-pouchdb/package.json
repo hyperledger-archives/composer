@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-pouchdb",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Common PouchDB based runtime container code for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -33,10 +33,9 @@
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2",
+    "mocha": "^3.4.2",
+    "nyc": "^11.1.0",
+    "sinon": "^2.3.8",
     "watchify": "^3.7.0"
   },
   "license-check-config": {
@@ -52,8 +51,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.10.0",
-    "composer-runtime": "0.10.0",
+    "composer-common": "0.10.1",
+    "composer-runtime": "0.10.1",
     "debug": "^2.6.2",
     "istanbul-lib-instrument": "^1.7.2",
     "pouchdb-collate": "~6.2.0",

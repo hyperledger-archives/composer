@@ -26,7 +26,7 @@ describe('Where', () => {
     let sandbox;
     let mockSelect;
 
-    const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (prop = "value")', { startRule: 'SelectStatement' });
+    const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (prop == "value")', { startRule: 'SelectStatement' });
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockSelect = sinon.createStubInstance(Select);
@@ -73,17 +73,11 @@ describe('Where', () => {
 
     });
 
-    describe('#validate', () => {
-
-       // TODO no validation method implemented yet
-
-    });
-
     describe('#getAST', () => {
 
         it('should return the AST with expected where type', () => {
             const w = new Where(mockSelect, selectWhere.where);
-            w.getAST().type.should.equal('AssignmentExpression');
+            w.getAST().type.should.equal('BinaryExpression');
         });
     });
 });

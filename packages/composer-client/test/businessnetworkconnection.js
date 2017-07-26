@@ -40,11 +40,12 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('BusinessNetworkConnection', () => {
 
     let sandbox;
+    let clock;
     let businessNetworkConnection;
     let mockSecurityContext;
     let mockConnection;
@@ -58,6 +59,7 @@ describe('BusinessNetworkConnection', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        clock = sinon.useFakeTimers();
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext.getConnection.returns(mockConnection);
@@ -96,6 +98,7 @@ describe('BusinessNetworkConnection', () => {
 
     afterEach(() => {
         sandbox.restore();
+        clock.restore();
         delete process.env.COMPOSER_CONFIG;
     });
 
@@ -857,13 +860,14 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -900,7 +904,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
@@ -909,12 +913,13 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 

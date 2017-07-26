@@ -110,6 +110,11 @@ class BusinessNetworkConnectionWrapper {
      */
     disconnect () {
         debug('disconnect');
+
+        // Remove all registered event listeners.
+        this.businessNetworkConnection.removeAllListeners();
+
+        // Now disconnect from the business network.
         return this.businessNetworkConnection.disconnect()
             .then(() => {
                 this.connected = this.connecting = false;
@@ -122,9 +127,17 @@ class BusinessNetworkConnectionWrapper {
 
     /**
      * Returns the currently connected BusinessNetworkDefinition
+     * @returns {BusinessNetworkConnection} the business network
+     */
+    getBusinessNetworkConnection() {
+        return this.businessNetworkConnection;
+    }
+
+    /**
+     * Returns the currently connected BusinessNetworkDefinition
      * @returns {BusinessNetworkDefinition} the business network
      */
-    getBusinessNetwork() {
+    getBusinessNetworkDefinition() {
         return this.businessNetwork;
     }
 

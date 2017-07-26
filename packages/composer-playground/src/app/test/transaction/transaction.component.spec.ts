@@ -151,6 +151,16 @@ describe('TransactionComponent', () => {
             mockBusinessNetwork.getIntrospector.should.be.called;
             component['transactionTypes'].length.should.equal(0);
         }));
+
+        it('should not set transactionTypes when system class', fakeAsync(() => {
+            sandbox.stub(component, 'generateTransactionDeclaration');
+            mockTransaction.isSystemType.returns(true);
+            mockIntrospector.getClassDeclarations.returns([mockTransaction]);
+            component.ngOnInit();
+            tick();
+            mockBusinessNetwork.getIntrospector.should.be.called;
+            component['transactionTypes'].length.should.equal(0);
+        }));
     });
 
     describe('#onTransactionSelect', () => {

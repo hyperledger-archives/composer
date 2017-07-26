@@ -21,20 +21,18 @@ const ora = require('ora');
 
 /**
  * <p>
- * Composer deploy command
+ * Composer install command
  * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Install {
 
    /**
-    * Command process for deploy command
+    * Command process for install command
     * @param {string} argv argument list from composer command
-    * @param {boolean} updateOption true if the network is to be updated
     * @return {Promise} promise when command complete
     */
-    static handler(argv, updateOption) {
+    static handler(argv) {
 
         let adminConnection;
         let spinner;

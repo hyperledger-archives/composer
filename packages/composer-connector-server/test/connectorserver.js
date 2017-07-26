@@ -25,7 +25,7 @@ const uuid = require('uuid');
 
 const should = require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('ConnectorServer', () => {
 

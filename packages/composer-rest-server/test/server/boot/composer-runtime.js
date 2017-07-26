@@ -23,7 +23,7 @@ const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('composer-runtime boot script', () => {
 

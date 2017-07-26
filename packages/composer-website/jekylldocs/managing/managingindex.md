@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Managing Index
+title: Managing a Deployed Business Network
 category: concepts
 section: managing
 index-order: 700
@@ -12,7 +12,7 @@ excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 
 {% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
-{% if page.section == 'managing' and page.title != "Managing Index" %}
+{% if page.section == 'managing' and page.title != "Managing a Deployed Business Network" %}
 ### {{ page.title }}
 {{ page.excerpt }}
 {% endif %}
