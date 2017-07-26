@@ -135,6 +135,18 @@ app-editor {
         margin-left: auto;
         padding-top:4px;
     }
+
+    .readme_icon_edit {
+      flex-shrink: 1;
+      padding-top:4px;
+    }
+
+    .readme_icon_preview {
+      flex-shrink: 1;
+      margin-left: auto;
+      padding-top:4px;
+      padding-right: 10px;
+    }
   }
 
   .CodeMirror {
