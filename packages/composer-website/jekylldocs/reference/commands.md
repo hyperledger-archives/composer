@@ -56,6 +56,10 @@ Test the connection to a deployed a Business Network: [composer network ping](./
 
 Update a deployed Business Network: [composer network update](./composer.network.update.md)
 
+`composer network upgrade`
+
+Upgrade a running version of {{site.data.conrefs.composer_full}} to the latest version: [composer network upgrade](./composer.network.upgrade.md)
+
 `composer network start`
 
 Deploy a business network archive to a {{site.data.conrefs.hlf_full}} endorsing peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
