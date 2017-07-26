@@ -15,6 +15,7 @@
 
 'use strict';
 
+const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 
 const fs = require('fs');
@@ -32,7 +33,6 @@ process.setMaxListeners(Infinity);
 describe('Identity system tests', () => {
 
     let businessNetworkDefinition;
-    let admin;
     let client;
     let participant;
 
@@ -52,8 +52,7 @@ describe('Identity system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetworkDefinition)
+        return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-identities')
                     .then((result) => {
@@ -95,20 +94,68 @@ describe('Identity system tests', () => {
             });
     });
 
+    it('should bind an identity and make it available for a ping request', function () {
+        let identity, certificate, privateKey;
+        identity = uuid.v4();
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        } else if (TestUtil.isHyperledgerFabricV1()) {
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+        } else {
+            certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('User1@org1.example.com' + ':' + uuid.v4()).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            privateKey = 'not used';
+        }
+        return client.bindIdentity(participant, certificate)
+            .then(() => {
+                const admin = new AdminConnection();
+                if (TestUtil.isHyperledgerFabricV1()) {
+                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
+                } else {
+                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                }
+            })
+            .then(() => {
+                return TestUtil.getClient('systest-identities', identity, 'not used');
+            })
+            .then((result) => {
+                client = result;
+                return client.ping();
+            })
+            .then((result) => {
+                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
+            });
+    });
+
     it('should throw an exception for a ping request using a revoked identity', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
+        let identityName = uuid.v4();
+        return client.issueIdentity(participant, identityName)
             .then((identity) => {
                 return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
+                return client.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const identity = identities.find((identity) => {
+                    return identity.name === identityName;
+                });
                 return client.revokeIdentity(identity);
             })
             .then(() => {
                 return client.ping();
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity has been revoked/);
     });
 
     it('should throw an exception for a ping request using a identity that is mapped to a non-existent participant', () => {
@@ -127,7 +174,7 @@ describe('Identity system tests', () => {
                 client = result;
                 return client.ping();
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
     it('should issue an identity and make the participant available for transaction processor functions', () => {
@@ -144,14 +191,61 @@ describe('Identity system tests', () => {
             });
     });
 
+    it('should bind an identity and make the participant available for transaction processor functions', function () {
+        let identity, certificate, privateKey;
+        identity = uuid.v4();
+        if (TestUtil.isHyperledgerFabricV06()) {
+            return this.skip();
+        } else if (TestUtil.isHyperledgerFabricV1()) {
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/signcerts/User2@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/keystore/key.pem');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+        } else {
+            certificate = [
+                '----- BEGIN CERTIFICATE -----',
+                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64'),
+                '----- END CERTIFICATE -----'
+            ].join('\n').concat('\n');
+            privateKey = 'not used';
+        }
+        return client.bindIdentity(participant, certificate)
+            .then(() => {
+                const admin = new AdminConnection();
+                if (TestUtil.isHyperledgerFabricV1()) {
+                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
+                } else {
+                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
+                }
+            })
+            .then(() => {
+                return TestUtil.getClient('systest-identities', identity, 'not used');
+            })
+            .then((result) => {
+                client = result;
+                let factory = client.getBusinessNetwork().getFactory();
+                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
+                return client.submitTransaction(transaction);
+            });
+    });
+
     it('should throw an exception for a transaction processor function using a revoked identity', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
+        let identityName = uuid.v4();
+        return client.issueIdentity(participant, identityName)
             .then((identity) => {
                 return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
+                return client.getIdentityRegistry();
+            })
+            .then((identityRegistry) => {
+                return identityRegistry.getAll();
+            })
+            .then((identities) => {
+                const identity = identities.find((identity) => {
+                    return identity.name === identityName;
+                });
                 return client.revokeIdentity(identity);
             })
             .then(() => {
@@ -159,7 +253,7 @@ describe('Identity system tests', () => {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity has been revoked/);
     });
 
     it('should throw an exception for a transaction processor function using a identity that is mapped to a non-existent participant', () => {
@@ -180,7 +274,7 @@ describe('Identity system tests', () => {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
 });

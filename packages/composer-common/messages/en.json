@@ -68,6 +68,12 @@
         "resourcevalidator-invalidfieldassignment": "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}",
         "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier.",
 
-        "typenotfounderror-defaultmessage": "Type not found: {typeName}"
+        "typenotfounderror-defaultmessage": "Type not found: {typeName}",
+
+        "whereastvalidator-propertytypeviolation": "Property {propertyName} cannot be compared with {value} ({typeOfValue}) expected type {fieldType}",
+        "whereastvalidator-enum-propertytypeviolation": "Enum property {propertyName} cannot be compared with {value} ({typeOfValue}) expected a String",
+        "whereastvalidator-relationship-propertytypeviolation": "Relationship {propertyName} cannot be compared with {value} ({typeOfValue}) expected type String",
+         "whereastvalidator-unsupportedtype": "Property {propertyName} of type {fieldType} cannot be compared with a literal value.",
+        "whereastvalidator-invalidoperator": "Property {propertyName} cannot be compared using the {operator} operator."
     }
 }

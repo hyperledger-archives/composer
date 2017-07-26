@@ -23,6 +23,7 @@ const DataService = require('../lib/dataservice');
 const EventService = require('../lib/eventservice');
 const HTTPService = require('../lib/httpservice');
 const Factory = require('../lib/api/factory');
+const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/api/participantregistry');
 const Query = require('../lib/api/query');
 const realFactory = require('composer-common').Factory;
@@ -37,13 +38,14 @@ chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('Api', () => {
 
     let mockContext;
-    let mockFactory;
-    let mockSerializer;
+    let modelManager;
+    let factory;
+    let serializer;
     let mockParticipant;
     let mockRegistryManager;
     let mockEventService;
@@ -55,10 +57,23 @@ describe('Api', () => {
 
     beforeEach(() => {
         mockContext = sinon.createStubInstance(Context);
-        mockFactory = sinon.createStubInstance(realFactory);
-        mockContext.getFactory.returns(mockFactory);
-        mockSerializer = sinon.createStubInstance(realSerializer);
-        mockContext.getSerializer.returns(mockSerializer);
+        modelManager = new ModelManager();
+        modelManager.addModelFile(`
+        namespace org.doge
+        transaction DogeTransaction {
+        }
+        event DogeEvent {
+        }`);
+        modelManager.addModelFile(`
+        namespace org.acme.sample
+        asset SampleAsset identified by assetId {
+            o String assetId
+            o String value
+        }`);
+        factory = new realFactory(modelManager);
+        mockContext.getFactory.returns(factory);
+        serializer = new realSerializer(factory, modelManager);
+        mockContext.getSerializer.returns(serializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockContext.getParticipant.returns(mockParticipant);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
@@ -157,57 +172,55 @@ describe('Api', () => {
     });
 
     describe('#post', () => {
-        let mockTransaction;
+        let transaction;
+        let spy;
 
         beforeEach(() => {
-            mockTransaction = sinon.createStubInstance(Resource);
-            mockTransaction.getFullyQualifiedType.returns('much.wow');
+            transaction = factory.newResource('org.doge', 'DogeTransaction', 'doge1');
+            transaction.timestamp = new Date(545184000000);
             mockHTTPService.post.resolves({foo : 'bar'});
-            mockSerializer.toJSON.withArgs(mockTransaction).onFirstCall().returns({
-                $class: 'org.doge.DogeTransaction',
-                assetId: 'doge1'
-            });
+            spy = sinon.spy(serializer, 'toJSON');
         });
 
         it('should make an POST request using the HTTP service', () => {
-            return api.post('url', mockTransaction)
+            return api.post('url', transaction)
                 .should.eventually.have.property('foo')
                 .then(() => {
-                    sinon.assert.calledOnce(mockSerializer.toJSON);
-                    sinon.assert.calledWith(mockSerializer.toJSON, mockTransaction, { convertResourcesToRelationships: true, permitResourcesForRelationships: true });
+                    sinon.assert.calledWith(spy, transaction, { convertResourcesToRelationships: true, permitResourcesForRelationships: true, validate: true });
                     sinon.assert.calledOnce(mockHTTPService.post);
                     sinon.assert.calledWith(mockHTTPService.post, 'url', {
                         $class: 'org.doge.DogeTransaction',
-                        assetId: 'doge1'
+                        timestamp: '1987-04-12T00:00:00.000Z',
+                        transactionId: 'doge1'
                     });
                 });
         });
     });
 
     describe('#emit', () => {
-        let mockTransaction;
-        let mockEvent;
+        let transaction;
+        let event;
+        let spy;
 
         beforeEach(() => {
-            mockTransaction = sinon.createStubInstance(Resource);
-            mockEvent = sinon.createStubInstance(Resource);
-            mockTransaction.getIdentifier.returns('much.wow');
-            mockContext.getTransaction.returns(mockTransaction);
+            transaction = factory.newResource('org.doge', 'DogeTransaction', 'doge1');
+            transaction.timestamp = new Date(545184000000);
+            event = factory.newResource('org.doge', 'DogeEvent', 'doge1');
+            event.timestamp = new Date(545184000000);
+            mockContext.getTransaction.returns(transaction);
             mockContext.getEventNumber.returns(0);
-            mockSerializer.toJSON.withArgs(mockEvent).onFirstCall().returns({
-                $class: 'org.doge.DogeEvent',
-                assetId: 'doge1'
-            });
+            spy = sinon.spy(serializer, 'toJSON');
         });
 
         it('should emit the event using the event service', () => {
-            api.emit(mockEvent);
-            sinon.assert.calledOnce(mockSerializer.toJSON);
-            sinon.assert.calledWith(mockSerializer.toJSON, mockEvent, { convertResourcesToRelationships: true });
+            api.emit(event);
+            sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, event, { convertResourcesToRelationships: true, validate: true });
             sinon.assert.calledOnce(mockEventService.emit);
             sinon.assert.calledWith(mockEventService.emit, {
                 $class: 'org.doge.DogeEvent',
-                assetId: 'doge1'
+                timestamp: '1987-04-12T00:00:00.000Z',
+                eventId: 'doge1#0'
             });
         });
     });
@@ -231,30 +244,26 @@ describe('Api', () => {
             param1: 'hello 1',
             param2: 100.56
         };
-        let mockResources;
+        let resources;
 
         beforeEach(() => {
             const mockObjects = [];
-            mockResources = [];
+            resources = [];
             for (let i = 0; i < 5; i++) {
                 const object = {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset',
+                    assetId: 'ASSET_' + i,
                     value: 'the value ' + i
                 };
                 mockObjects.push(object);
-                const filteredObject = {
-                    $class: 'org.acme.sample.SampleAsset',
-                    value: 'the value ' + i
-                };
-                const resource = sinon.createStubInstance(Resource);
-                resource.$identifier = 'id' + i;
-                mockSerializer.fromJSON.withArgs(filteredObject).returns(resource);
+                const resource = factory.newResource('org.acme.sample', 'SampleAsset', 'ASSET_' + i);
+                resource.value = 'the value ' + i;
                 if (i % 2 === 0) {
                     mockAccessController.check.withArgs(resource, 'READ').rejects(new Error('access denied'));
                 } else {
-                    mockResources.push(resource);
+                    resources.push(resource);
                 }
             }
             mockCompiledQueryBundle.execute.withArgs(mockDataService, queryID).resolves(mockObjects);
@@ -271,22 +280,20 @@ describe('Api', () => {
 
         it('should perform a query using a named query', () => {
             return api.query(queryID)
-                .should.eventually.be.deep.equal(mockResources)
+                .should.eventually.be.deep.equal(resources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
                     sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID);
-                    sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
         });
 
         it('should perform a query using a named query and parameters', () => {
             return api.query(queryID, queryParams)
-                .should.eventually.be.deep.equal(mockResources)
+                .should.eventually.be.deep.equal(resources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
                     sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID, queryParams);
-                    sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
         });
@@ -294,11 +301,10 @@ describe('Api', () => {
         it('should perform a query using a built query', () => {
             const query = new Query(queryHash);
             return api.query(query)
-                .should.eventually.be.deep.equal(mockResources)
+                .should.eventually.be.deep.equal(resources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
                     sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash);
-                    sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
         });
@@ -306,11 +312,10 @@ describe('Api', () => {
         it('should perform a query using a built query and parameters', () => {
             const query = new Query(queryHash);
             return api.query(query, queryParams)
-                .should.eventually.be.deep.equal(mockResources)
+                .should.eventually.be.deep.equal(resources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
                     sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash, queryParams);
-                    sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
         });

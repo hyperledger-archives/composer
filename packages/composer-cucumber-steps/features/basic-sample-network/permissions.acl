@@ -1,6 +1,14 @@
 /**
  * Sample access control list.
  */
+rule AllAccess {
+  description: "AllAccess - grant everything to everybody"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
 rule EverybodyCanReadEverything {
     description: "Allow all participants read access to all resources"
     participant: "org.acme.sample.SampleParticipant"
@@ -25,3 +33,4 @@ rule OwnerHasFullAccessToTheirAssets {
     condition: (r.owner.getIdentifier() === p.getIdentifier())
     action: ALLOW
 }
+

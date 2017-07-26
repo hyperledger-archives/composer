@@ -18,9 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const fs = require('fs');
 require('loopback-component-passport');
-const path = require('path');
 const server = require('../server/server');
 
 const chai = require('chai');
@@ -141,8 +139,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
-                const banana = fs.readFileSync(path.resolve(__dirname, 'bond-network.bna'));
-                return BusinessNetworkDefinition.fromArchive(banana);
+                return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
             })
             .then((businessNetworkDefinition) => {
                 serializer = businessNetworkDefinition.getSerializer();
@@ -158,8 +155,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     namespaces: namespaces
                 });
             })
-            .then((app_) => {
-                app = app_;
+            .then((result) => {
+                app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
                 return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })

@@ -19,7 +19,7 @@ const Wallet = require('composer-common').Wallet;
 
 require('chai').should();
 const sinon = require('sinon');
-require('sinon-as-promised');
+
 
 describe('HFCWalletProxy', () => {
 
@@ -76,7 +76,7 @@ describe('HFCWalletProxy', () => {
 
         it('should pass back any errors from the wallet', () => {
             mockWallet.contains.withArgs('bob1').resolves(true);
-            mockWallet.get.withArgs('bob1').rejects('ENOPERM');
+            mockWallet.get.withArgs('bob1').rejects('Error', 'ENOPERM');
             let cb = sinon.stub();
             return walletProxy.getValue('member.bob1', cb)
                 .then(() => {
@@ -115,7 +115,7 @@ describe('HFCWalletProxy', () => {
 
         it('should pass back any errors from the wallet', () => {
             mockWallet.contains.withArgs('bob1').resolves(true);
-            mockWallet.update.withArgs('bob1').rejects('ENOPERM');
+            mockWallet.update.withArgs('bob1').rejects('Error', 'ENOPERM');
             let cb = sinon.stub();
             return walletProxy.setValue('member.bob1', 'hello world', cb)
                 .then(() => {

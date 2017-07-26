@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Network Update CLI
 section: reference-command
-sidebar: sidebars/reference.md
+sidebar: sidebars/accordion-toc0.md
 excerpt: Composer Network Update CLI
 ---
 
@@ -10,7 +10,7 @@ excerpt: Composer Network Update CLI
 
 ---
 
-The `composer network update` utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.
+The `composer network update` utility is used to update a deployed business network archive from local disk to a {{site.data.conrefs.hlf_full}} runtime.
 
 ```
 composer network update -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>

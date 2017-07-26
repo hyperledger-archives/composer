@@ -45,10 +45,29 @@ describe('QueryCompiler', () => {
             o String value
         }
 
+        concept Meow {
+            o String woof
+        }
+
+        concept Neigh {
+            o Meow meow
+        }
+
+        concept Moo {
+            o Neigh neigh
+        }
+
+        concept Baa {
+            o Moo moo
+        }
+
         asset SampleAsset identified by assetId {
             o String assetId
             --> SampleParticipant owner
             o String value
+            o String foo
+            o String bar
+            o Baa baa
         }
 
         participant SampleParticipant identified by participantId {
@@ -237,7 +256,7 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q1');
             compiled.hash.should.equal('d35890cac366631b31745dc6376e5d8414ef441ff66c606505f6bed898d9700c');
             compiled.generator.should.be.a('function');
-            compiled.generator({}).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({}).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
         });
 
         it('should compile a query with parameters', () => {
@@ -245,7 +264,7 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q8');
             compiled.hash.should.equal('c4a085154080078b7a2a1f572f92a28bc679b1e40526343aed4460fc62757a9b');
             compiled.generator.should.be.a('function');
-            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
         });
 
         it('should compile a query with parameters that be can changed for each execution', () => {
@@ -253,9 +272,9 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q8');
             compiled.hash.should.equal('c4a085154080078b7a2a1f572f92a28bc679b1e40526343aed4460fc62757a9b');
             compiled.generator.should.be.a('function');
-            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
-            compiled.generator({ foo: 'Black hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Black hat"}}}');
-            compiled.generator({ foo: 'Red hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Red hat"}}}');
+            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({ foo: 'Black hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"Black hat"}}}');
+            compiled.generator({ foo: 'Red hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","value":{"$eq":"Red hat"}}}');
         });
 
         it('should compile a query with nested parameters', () => {
@@ -263,7 +282,7 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q14');
             compiled.hash.should.equal('951f2465d94148ffbe2e4c081fe6c8f73f95056ccdb8be3dcb8180ba6f3d9098');
             compiled.generator.should.be.a('function');
-            compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
+            compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryId":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
         });
 
     });
@@ -319,7 +338,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset'
                 }
             });
@@ -330,7 +349,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Participant',
-                    $registryID: 'org.acme.sample.SampleParticipant',
+                    $registryId: 'org.acme.sample.SampleParticipant',
                     $class: 'org.acme.sample.SampleParticipant'
                 }
             });
@@ -341,7 +360,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Transaction',
-                    $registryID: 'org.acme.sample.SampleTransaction',
+                    $registryId: 'org.acme.sample.SampleTransaction',
                     $class: 'org.acme.sample.SampleTransaction'
                 }
             });
@@ -359,7 +378,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset',
                     value: {
                         $eq: 'Green hat'
@@ -373,7 +392,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'DogesSampleAssets',
+                    $registryId: 'DogesSampleAssets',
                     $class: 'org.acme.sample.SampleAsset'
                 }
             });
@@ -384,7 +403,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset'
                 },
                 sort: [
@@ -399,7 +418,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset'
                 },
                 limit: 5
@@ -411,7 +430,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset',
                 },
                 skip: 10
@@ -423,11 +442,47 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Asset',
-                    $registryID: 'org.acme.sample.SampleAsset',
+                    $registryId: 'org.acme.sample.SampleAsset',
                     $class: 'org.acme.sample.SampleAsset'
                 },
                 limit: 5,
                 skip: 10
+            });
+        });
+
+        it('should compile a select statement with a limit clause with a parameter value', () => {
+            const requiredParameters = [];
+            const parametersToUse = {};
+            const result = queryCompiler.visitSelect(selectsFromQueries.Q6, {
+                requiredParameters,
+                parametersToUse
+            });
+            parametersToUse.mylimit = 5;
+            result.should.deep.equal({
+                selector: {
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
+                },
+                limit: 5
+            });
+        });
+
+        it('should compile a select statement with a skip clause with a parameter value', () => {
+            const requiredParameters = [];
+            const parametersToUse = {};
+            const result = queryCompiler.visitSelect(selectsFromQueries.Q7, {
+                requiredParameters,
+                parametersToUse
+            });
+            parametersToUse.myskip = 5;
+            result.should.deep.equal({
+                selector: {
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
+                },
+                skip: 5
             });
         });
 

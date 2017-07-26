@@ -63,8 +63,8 @@ class QueryFile {
     }
 
     /**
-     * Returns the identifier of this Query File.
-     * @return {string} the identifier of this Query File
+     * Returns the name of this Query File.
+     * @return {string} the name of this Query File
      */
     getIdentifier() {
         return this.identifier;

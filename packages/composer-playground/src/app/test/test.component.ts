@@ -3,6 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
+import { TransactionDeclaration } from 'composer-common';
 import { TransactionService } from '../services/transaction.service';
 
 @Component({
@@ -15,6 +16,7 @@ import { TransactionService } from '../services/transaction.service';
 
 export class TestComponent implements OnInit, OnDestroy {
 
+    hasTransactions = false;
     private assetRegistries = [];
     private participantRegistries = [];
     private transactionRegistry = null;
@@ -32,6 +34,16 @@ export class TestComponent implements OnInit, OnDestroy {
         return this.clientService.ensureConnected()
             .then(() => {
                 this.initializeEventListener();
+
+                let introspector = this.clientService.getBusinessNetwork().getIntrospector();
+                let modelClassDeclarations = introspector.getClassDeclarations();
+                modelClassDeclarations.forEach((modelClassDeclaration) => {
+                    // Generate list of all known (non-abstract) transaction types
+                    if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
+                        this.hasTransactions = true;
+                    }
+                });
+
                 return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()
                     .then((assetRegistries) => {
                         assetRegistries.forEach((assetRegistry) => {
@@ -86,20 +98,20 @@ export class TestComponent implements OnInit, OnDestroy {
     }
 
     submitTransaction() {
-         const modalRef = this.modalService.open(TransactionComponent);
-         modalRef.result.then((transaction) => {
+        const modalRef = this.modalService.open(TransactionComponent);
+        modalRef.result.then((transaction) => {
             // refresh current resource list
-             if (this.chosenRegistry === this.transactionRegistry) {
+            if (this.chosenRegistry === this.transactionRegistry) {
                 this.registryReload = !this.registryReload;
             } else {
                 this.chosenRegistry = this.transactionRegistry;
             }
 
-             this.transactionService.reset(transaction, this.eventsTriggered);
-             let plaural = (this.eventsTriggered.length > 1) ? 's' : '';
+            this.transactionService.reset(transaction, this.eventsTriggered);
+            let plaural = (this.eventsTriggered.length > 1) ? 's' : '';
 
-             let txMessage = `<p>Transaction ID <b>${transaction.getIdentifier()}</b> was submitted</p>`;
-             let message = {
+            let txMessage = `<p>Transaction ID <b>${transaction.getIdentifier()}</b> was submitted</p>`;
+            let message = {
                 title: 'Submit Transaction Successful',
                 text: txMessage.toString(),
                 icon: '#icon-transaction',
@@ -107,15 +119,15 @@ export class TestComponent implements OnInit, OnDestroy {
                 linkCallback: null
             };
 
-             if (this.eventsTriggered.length > 0) {
-                 message.link = `${this.eventsTriggered.length} event${plaural} triggered`;
-                 message.linkCallback = () => {
+            if (this.eventsTriggered.length > 0) {
+                message.link = `${this.eventsTriggered.length} event${plaural} triggered`;
+                message.linkCallback = () => {
                     this.transactionService.event$.next('event');
                 };
-                 this.eventsTriggered = [];
+                this.eventsTriggered = [];
             }
 
-             this.alertService.successStatus$.next(message);
+            this.alertService.successStatus$.next(message);
         });
     }
 

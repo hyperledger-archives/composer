@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BaseModelException = require('../../lib/introspect/basemodelexception');
+const BaseFileException = require('../../lib/basefileexception');
 const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ModelFile = require('../../lib/introspect/modelfile');
 
@@ -34,9 +34,9 @@ describe('IllegalModelException', function () {
 
     describe('#constructor', function () {
 
-        it('should return an instance of BaseException', function () {
+        it('should return an instance of BaseFileException', function () {
             let exc = new IllegalModelException('message', modelFile, fileLocation);
-            exc.should.be.an.instanceOf(BaseModelException);
+            exc.should.be.an.instanceOf(BaseFileException);
         });
 
         it('should have a message', function () {

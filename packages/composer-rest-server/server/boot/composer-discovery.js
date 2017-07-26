@@ -16,6 +16,9 @@
 
 const connector = require('loopback-connector-composer');
 const LoopBackWallet = require('../../lib/loopbackwallet');
+const QueryAnalyzer = require('composer-common').QueryAnalyzer;
+const ModelUtil = require('composer-common').ModelUtil;
+const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 
 /**
  * Find or create the system wallet for storing identities in.
@@ -111,6 +114,33 @@ function createSystemModel(app, dataSource) {
 }
 
 /**
+ * Create all of the Composer system models.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function createQueryModel(app, dataSource) {
+
+    // Create the query model schema.
+    let modelSchema = {
+        name: 'Query',
+        description: 'Named queries',
+        plural: '/queries',
+        base: 'Model'
+    };
+    modelSchema = updateModelSchema(modelSchema);
+
+    // Create the query model which is an anchor for all query methods.
+    const Query = app.loopback.createModel(modelSchema);
+
+    // Register the query model.
+    app.model(Query, {
+        dataSource: dataSource,
+        public: true
+    });
+
+}
+
+/**
  * Register all of the Composer system methods.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
@@ -124,7 +154,10 @@ function registerSystemMethods(app, dataSource) {
     // Register all system methods
     const registerMethods = [
         registerPingMethod,
+        registerGetAllIdentitiesMethod,
+        registerGetIdentityByIDMethod,
         registerIssueIdentityMethod,
+        registerBindIdentityMethod,
         registerRevokeIdentityMethod,
         registerGetAllTransactionsMethod,
         registerGetTransactionByIDMethod
@@ -133,6 +166,96 @@ function registerSystemMethods(app, dataSource) {
         registerMethod(app, dataSource, System, connector);
     });
 
+}
+
+/**
+ * Register all of the Composer query methods.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {boolean} namespaces true if types should be fully qualified
+ * @returns {Promise} a promise when complete
+ */
+function registerQueryMethods(app, dataSource, namespaces) {
+
+    // Grab the query model.
+    const Query = app.models.Query;
+    const connector = dataSource.connector;
+
+    return new Promise((resolve, reject) => {
+        connector.discoverQueries(null, (error, queries) => {
+            if (error) {
+                return reject(error);
+            }
+
+            queries.forEach((query) => {
+                registerQueryMethod(app, dataSource, Query, connector, query, namespaces);
+            });
+
+            resolve(queries);
+        });
+    });
+}
+
+/**
+ * Register a composer named query method at a GET method on the REST API. The
+ * parameters for the named query are exposed as GET query parameters.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} Query The LoopBack Query model
+ * @param {Object} connector The LoopBack connector.
+ * @param {Query} query the named Composer query to register
+ * @param {boolean} namespaces true if types should be fully qualified
+ */
+function registerQueryMethod(app, dataSource, Query, connector, query, namespaces) {
+
+    console.log('Registering named query: ' + query.getName());
+    const qa = new QueryAnalyzer(query);
+    const parameters = qa.analyze();
+    const returnType = namespaces
+        ? query.getSelect().getResource()
+            : ModelUtil.getShortName(query.getSelect().getResource());
+
+    // declare the arguments to the query method
+    let accepts = [];
+
+    // we need the HTTP request so we can get the named parameters off the query string
+    accepts.push({'arg': 'req', 'type': 'object', 'http': {source: 'req'}});
+    accepts.push({'arg': 'options', 'type': 'object', 'http': 'optionsFromRequest'});
+
+    // we need to declare the parameters and types so that the LoopBack UI
+    // will generate the web form to enter them
+    for(let n=0; n < parameters.length; n++) {
+        const param = parameters[n];
+        accepts.push( {arg: param.name, type: LoopbackVisitor.toLoopbackType(param.type), required: true, http: {verb : 'get', source: 'query'}} );
+    }
+
+    // Define and register dynamic query method
+    /* istanbul ignore next */
+    const queryMethod = {
+        [query.getName()]() {
+            const args = [].slice.apply(arguments);
+            const httpRequest = args[0];
+            const options = args[1];
+            const callback = args[args.length-1];
+            connector.executeQuery( query.getName(), httpRequest.query, options, callback);
+        }
+    };
+    Object.assign(Query, queryMethod);
+
+    Query.remoteMethod(
+        query.getName(), {
+            description: query.getDescription(),
+            accepts: accepts,
+            returns: {
+                type : [ returnType ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/' + query.getName()
+            }
+        }
+    );
 }
 
 /**
@@ -192,6 +315,81 @@ function registerPingMethod(app, dataSource, System, connector) {
 }
 
 /**
+ * Register the 'getAllIdentities' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetAllIdentitiesMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getAllIdentities = (options, callback) => {
+        connector.getAllIdentities(options, callback);
+    };
+    System.remoteMethod(
+        'getAllIdentities', {
+            description: 'Get all identities from the identity registry',
+            accepts: [{
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/identities'
+            }
+        }
+    );
+
+}
+
+/**
+ * Register the 'getIdentityByID' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetIdentityByIDMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getIdentityByID = (id, options, callback) => {
+        connector.getIdentityByID(id, options, callback);
+    };
+    System.remoteMethod(
+        'getIdentityByID', {
+            description: 'Get the specified identity from the identity registry',
+            accepts: [{
+                arg: 'id',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: 'object',
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/identities/:id'
+            }
+        }
+    );
+
+}
+
+/**
  * Register the 'issueIdentity' Composer system method.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
@@ -208,7 +406,7 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
         properties: {
             participant: {
                 type: 'string',
-                required: false
+                required: true
             },
             userID: {
                 type: 'string',
@@ -271,7 +469,68 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
             },
             http: {
                 verb: 'post',
-                path: '/issueIdentity'
+                path: '/identities/issue'
+            }
+        }
+    );
+
+}
+
+
+
+/**
+ * Register the 'bindIdentity' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerBindIdentityMethod(app, dataSource, System, connector) {
+
+    // Create and register the models.
+    const BindIdentityRequest = app.loopback.createModel({
+        name: 'BindIdentityRequest',
+        description: 'The request to the bindIdentity method',
+        base: 'Model',
+        properties: {
+            participant: {
+                type: 'string',
+                required: false
+            },
+            certificate: {
+                type: 'string',
+                required: true
+            }
+        },
+        hidden: [ 'id' ]
+    });
+    app.model(BindIdentityRequest, {
+        dataSource: dataSource,
+        public: false
+    });
+
+    // Define and register the method.
+    System.bindIdentity = (data, options, callback) => {
+        connector.bindIdentity(data.participant, data.certificate, options, callback);
+    };
+    System.remoteMethod(
+        'bindIdentity', {
+            description: 'Bind an identity to the specified participant',
+            accepts: [{
+                arg: 'data',
+                type: 'BindIdentityRequest',
+                required: true,
+                http: {
+                    source: 'body'
+                }
+            }, {
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            http: {
+                verb: 'post',
+                path: '/identities/bind'
             }
         }
     );
@@ -287,37 +546,19 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
  */
 function registerRevokeIdentityMethod(app, dataSource, System, connector) {
 
-    // Create and register the models.
-    const RevokeIdentityRequest = app.loopback.createModel({
-        name: 'RevokeIdentityRequest',
-        description: 'The request to the revokeIdentity method',
-        base: 'Model',
-        properties: {
-            userID: {
-                type: 'string',
-                required: true
-            }
-        },
-        hidden: [ 'id' ]
-    });
-    app.model(RevokeIdentityRequest, {
-        dataSource: dataSource,
-        public: false
-    });
-
     // Define and register the method.
     System.revokeIdentity = (data, options, callback) => {
-        connector.revokeIdentity(data.userID, options, callback);
+        connector.revokeIdentity(data, options, callback);
     };
     System.remoteMethod(
         'revokeIdentity', {
             description: 'Revoke the specified identity',
             accepts: [{
-                arg: 'data',
-                type: 'RevokeIdentityRequest',
+                arg: 'id',
+                type: 'string',
                 required: true,
                 http: {
-                    source: 'body'
+                    source: 'path'
                 }
             }, {
                 arg: 'options',
@@ -326,7 +567,7 @@ function registerRevokeIdentityMethod(app, dataSource, System, connector) {
             }],
             http: {
                 verb: 'post',
-                path: '/revokeIdentity'
+                path: '/identities/:id/revoke'
             }
         }
     );
@@ -557,6 +798,9 @@ module.exports = function (app, callback) {
         // Register the system methods.
         registerSystemMethods(app, dataSource);
 
+        // Create the query model
+        createQueryModel(app, dataSource);
+
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
         console.log('Discovering types from business network definition ...');
@@ -564,6 +808,12 @@ module.exports = function (app, callback) {
 
     })
     .then((modelDefinitions) => {
+
+        /* istanbul ignore else */
+        if(modelDefinitions.length>0) {
+            // Register the named query methods, passing in whether we should use namespaces
+            registerQueryMethods(app, dataSource, modelDefinitions[0].namespaces);
+        }
 
         // For each model definition (type), we need to generate a Loopback model definition JSON file.
         console.log('Discovered types from business network definition');
@@ -595,12 +845,22 @@ module.exports = function (app, callback) {
 
         });
 
+        // Subscribe to events from the business network.
+        dataSource.connector.subscribe((event) => {
+            const wss = app.get('wss');
+            if (wss) {
+                const data = JSON.stringify(event);
+                wss.broadcast(data);
+            }
+        });
+
     })
     .then(() => {
         console.log('Added schemas for all types to Loopback');
         callback();
     })
     .catch((error) => {
+        console.log('Exception: ' + error );
         callback(error);
     });
 };

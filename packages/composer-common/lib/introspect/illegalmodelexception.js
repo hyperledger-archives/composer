@@ -14,16 +14,16 @@
 
 'use strict';
 
-const BaseModelException = require('./basemodelexception');
+const BaseFileException = require('../basefileexception');
 
 /**
  * Exception throws when a composer file is semantically invalid
- * @extends BaseModelException
- * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
+ * @extends BaseFileException
+ * @see See [BaseFileException]{@link module:composer-common.BaseFileException}
  * @class
  * @memberof module:composer-common
  */
-class IllegalModelException extends BaseModelException {
+class IllegalModelException extends BaseFileException {
 
     /**
      * Create an IllegalModelException.

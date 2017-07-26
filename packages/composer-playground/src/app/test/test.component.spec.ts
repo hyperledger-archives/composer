@@ -16,6 +16,9 @@ import * as sinon from 'sinon';
 
 import * as chai from 'chai';
 import { BusinessNetworkConnection } from 'composer-client';
+import { Introspector,
+         BusinessNetworkDefinition,
+         TransactionDeclaration } from 'composer-common';
 
 let should = chai.should();
 
@@ -46,8 +49,16 @@ describe('TestComponent', () => {
     let mockAlertService;
     let mockTransactionService;
     let mockModal;
-
+    let mockIntrospector;
+    let mockBusinessNetwork;
     let mockBusinessNetworkConnection;
+    let mockTransaction;
+
+    class MockModelClass {
+        isAbstract(): boolean {
+            return true;
+        }
+    }
 
     let sandbox;
 
@@ -58,6 +69,12 @@ describe('TestComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockModal = sinon.createStubInstance(NgbModal);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
+        mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockIntrospector = sinon.createStubInstance(Introspector);
+        mockTransaction = sinon.createStubInstance(TransactionDeclaration);
+
+        mockClientService.getBusinessNetwork.returns(mockBusinessNetwork);
+        mockBusinessNetwork.getIntrospector.returns(mockIntrospector);
         mockTransactionService = sinon.createStubInstance(TransactionService);
         mockBusinessNetworkConnection.listenerCount.returns(0);
         mockBusinessNetworkConnection.on = sinon.stub();
@@ -83,7 +100,9 @@ describe('TestComponent', () => {
     });
 
     describe('ngOnInit', () => {
+
         beforeEach(() => {
+            mockIntrospector.getClassDeclarations.returns([mockTransaction]);
             mockAlertService.errorStatus$ = {next: sinon.stub()};
         });
 
@@ -91,13 +110,52 @@ describe('TestComponent', () => {
             component.should.be.ok;
         });
 
-        it('should load all the registries', fakeAsync(() => {
+        it('should load all the registries and hasTransactions should be true', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
             mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+
+            component.ngOnInit();
+            tick();
+
+            mockClientService.getBusinessNetworkConnection.should.have.been.called;
+            mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
+
+            component['assetRegistries'].length.should.equal(2);
+
+            component['assetRegistries'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
+            component['assetRegistries'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+
+            mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
+
+            component['participantRegistries'].length.should.equal(2);
+
+            component['participantRegistries'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+            component['participantRegistries'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
+
+            mockBusinessNetworkConnection.getTransactionRegistry.should.have.been.called;
+
+            component['transactionRegistry'].should.equal('transactionRegistry');
+
+            component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+
+            mockClientService.getBusinessNetwork.should.have.been.called;
+            mockBusinessNetwork.getIntrospector.should.have.been.called;
+            mockIntrospector.getClassDeclarations.should.have.been.called;
+            component.hasTransactions.should.be.true;
+        }));
+
+        it('should load all the registries and hasTransactions should be false', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
+            mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockIntrospector.getClassDeclarations.returns([new MockModelClass()]);
 
             component.ngOnInit();
 
@@ -123,6 +181,11 @@ describe('TestComponent', () => {
             component['transactionRegistry'].should.equal('transactionRegistry');
 
             component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+
+            mockClientService.getBusinessNetwork.should.have.been.called;
+            mockBusinessNetwork.getIntrospector.should.have.been.called;
+            mockIntrospector.getClassDeclarations.should.have.been.called;
+            component.hasTransactions.should.be.false;
         }));
 
         it('should set chosen registry to first asset one if no participant registries', fakeAsync(() => {
@@ -213,7 +276,6 @@ describe('TestComponent', () => {
     });
 
     describe('submitTransaction', () => {
-        let mockTransaction;
         beforeEach(() => {
             mockTransaction = sinon.createStubInstance(Resource);
             mockTransaction.getIdentifier.returns(1);

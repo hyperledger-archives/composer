@@ -81,7 +81,7 @@ export class RegistryComponent {
 
     openNewResourceModal() {
         const modalRef = this.modalService.open(ResourceComponent);
-        modalRef.componentInstance.registryID = this._registry.id;
+        modalRef.componentInstance.registryId = this._registry.id;
         modalRef.result.then(() => {
             // refresh current resource list
             this.loadResources();
@@ -96,7 +96,7 @@ export class RegistryComponent {
 
     editResource(resource: any) {
         const editModalRef = this.modalService.open(ResourceComponent);
-        editModalRef.componentInstance.registryID = this._registry.id;
+        editModalRef.componentInstance.registryId = this._registry.id;
         editModalRef.componentInstance.resource = resource;
         editModalRef.result.then(() => {
             // refresh current resource list

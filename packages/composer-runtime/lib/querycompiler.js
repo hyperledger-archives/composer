@@ -284,9 +284,9 @@ class QueryCompiler {
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {
-            query.selector.$registryID = registry;
+            query.selector.$registryId = registry;
         } else {
-            query.selector.$registryID = resource;
+            query.selector.$registryId = resource;
         }
 
         // Handle the where clause, if it exists.
@@ -308,7 +308,10 @@ class QueryCompiler {
         const limit = select.getLimit();
         if (limit) {
             const queryAdditions = limit.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         // Handle the skip clause, if it exists. Note that the skip
@@ -316,7 +319,10 @@ class QueryCompiler {
         const skip = select.getSkip();
         if (skip) {
             const queryAdditions = skip.accept(this, parameters);
-            Object.assign(query, queryAdditions);
+            Object.keys(queryAdditions).forEach((key) => {
+                const prop = Object.getOwnPropertyDescriptor(queryAdditions, key);
+                Object.defineProperty(query, key, prop);
+            });
         }
 
         LOG.exit(method, query);

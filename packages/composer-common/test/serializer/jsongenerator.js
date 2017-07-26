@@ -292,6 +292,17 @@ describe('JSONGenerator', () => {
             options.writer.getBuffer().should.equal('"next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1""resource:org.acme.SimpleAssetCircleArray#DOGE_2"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_1"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3""resource:org.acme.SimpleAssetCircleArray#DOGE_1"]}]}]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2""resource:org.acme.SimpleAssetCircleArray#DOGE_3"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_2"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_1""resource:org.acme.SimpleAssetCircleArray#DOGE_2"]}]}]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_3","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":[{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3""resource:org.acme.SimpleAssetCircleArray#DOGE_1"]}"resource:org.acme.SimpleAssetCircleArray#DOGE_3"]},{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_2","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_3",{"$class":"org.acme.SimpleAssetCircleArray","assetId":"DOGE_1","next":["resource:org.acme.SimpleAssetCircleArray#DOGE_2""resource:org.acme.SimpleAssetCircleArray#DOGE_3"]}]}]}]');
         });
 
+        it('should throw if stack contains something other than a Resource or Concept', () => {
+            jsonGenerator = new JSONGenerator(false, true);
+            let options = {
+                writer: new JSONWriter(),
+                stack: new TypedStack({})
+            };
+            options.stack.push('string');
+            (() => {
+                jsonGenerator.visitClassDeclaration(relationshipDeclaration4, options);
+            }).should.throw(/Expected a Resource or a Concept/);
+        });
     });
 
     describe('#getRelationshipText', () => {

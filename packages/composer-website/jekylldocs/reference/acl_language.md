@@ -2,8 +2,8 @@
 layout: default
 title: Access Control Language
 section: reference
-index-order: 3
-sidebar: sidebars/reference.md
+index-order: 903
+sidebar: sidebars/accordion-toc0.md
 excerpt: The [**Hyperledger Composer access control language**](./acl_language.html) provides declarative access control over the elements of the domain model. Access control rules define actions that individual participants or participant groups can perform on resources in the business network, including conditional actions.
 ---
 
@@ -13,13 +13,100 @@ excerpt: The [**Hyperledger Composer access control language**](./acl_language.h
 
 {{site.data.conrefs.composer_full}} includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can determine which users/roles are permitted to create, read, update or delete elements in a business network's domain model.
 
-### Evaluation of Access Control Rules
+## Network Access Control
+
+{{site.data.conrefs.composer_full}} differentiates between access control for resources within a business network (business access control) and access control for network administrative changes (network access control). Business access control and network access control are both defined in the access control file (`.acl`) for a business network.
+
+Network access control uses the system namespace, which is implicitly extended by all resources in a business network; and grants or denies access to specific actions as defined below, and is intended to allow for more nuanced access to certain network-level operations.
+
+### What does network access control allow or disallow?
+
+Network access control affects the following CLI commands:
+
+
+#### Composer Network
+
+**composer network deploy**
+
+Network access is required to use the CREATE operation for registries and networks.
+
+**composer network download**
+
+Network access is required to use the READ operation for registries and networks.
+
+**composer network list**
+
+Network access is required to use the READ operation for registries and networks.
+
+**composer network logLevel**
+
+Network access is required to use the UPDATE operation for networks.
+
+**composer network ping**
+
+Network access is required to use the READ operation on registries and networks.
+
+**composer network undeploy**
+
+Network access is required to use the DELETE operation on registries and networks.
+
+**composer network update**
+
+Network access is required to use the UPDATE or CREATE operation on registries, or the UPDATE operation on networks.
+
+
+#### Composer Identity
+
+**composer network import**
+
+Network access is required to use the UPDATE operation on identity registries or the CREATE operation on identities.
+
+**composer network issue**
+
+Network access is required to use the UPDATE operation on identity registries or the CREATE operation on identities.
+
+**composer network revoke**
+
+Network access is required to use the UPDATE operation on identity registries or the DELETE operation on identities.
+
+#### Composer Participant
+
+**composer network add**
+
+Network access is required to use the CREATE operation on participants or the UPDATE operation on participant registries.
+
+### Granting network access control
+
+Network access is granted using the system namespace. The system namespace is always `org.hyperledger.composer.system.Network` for network access, and `org.hyperledger.composer.system` for all access. The following access control rules gives the **networkControl** participant the authority to use all operations with network commands.
+
+rule networkControlPermission {
+  description:  "networkControl can access network commands"
+  participant: "org.acme.vehicle.auction.networkControl"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.Network"
+  action: ALLOW  
+}
+
+The following access control rule will give all participants access to all operations and commands in the business network, including network access and business access.
+
+```
+rule AllAccess {
+  description: "AllAccess - grant everything to everybody"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+```
+
+
+## Evaluation of Access Control Rules
 
 Access control for a business network is defined by an ordered set of ACL rules. The rules are evaluated in order, and the first rule whose condition matches determines whether access is granted or denied. If no rule match then access is **denied**.
 
 ACL rules are defined in a file called `permissions.acl` in the root of the business network. If this file is missing from the business network then all access is **permitted**.
 
-### Access Control Rule Grammar
+## Access Control Rule Grammar
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
@@ -71,6 +158,7 @@ Multiple ACL rules may be defined that conceptually define a decision table. The
 **Resource** defines the things that the ACL rule applies to. This can be a class, all classes within a namespace, or all classes under a namespace. It can also be an instance of a class.
 
 Resource Examples:
+
 - Namespace: org.example.*
 - Namespace (recursive): org.example.**
 - Class in namespace: org.example.Car
@@ -86,7 +174,7 @@ Resource Examples:
 
 **Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 
-### Examples
+## Examples
 
 Example ACL rules (in evaluation order):
 

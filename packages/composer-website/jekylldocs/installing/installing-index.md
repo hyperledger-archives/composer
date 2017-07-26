@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Installing Index
+title: Installing Hyperledger Composer
 category: tasks
-sidebar: sidebars/installing.md
+sidebar: sidebars/accordion-toc0.md
 section: installing
-index-order: 0
+index-order: 200
 excerpt: Tutorials
 ---
 
@@ -14,7 +14,7 @@ excerpt: Tutorials
 
 {% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
-{% if page.section == 'installing' and page.title != "Installing Index" %}
+{% if page.section == 'installing' and page.title != "Installing" %}
 ### {{ page.title }}
 {{ page.excerpt }}
 {% endif %}

@@ -69,6 +69,34 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to import an identity.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @param {string} publicKey the public key
+     * @param {string} privateKey the private key
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, callback) {
+        const method = 'connectionManagerImportIdentity';
+        LOG.entry(method, connectionProfile, id, publicKey, privateKey);
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey);
+            })
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
      * Handle a request from the client to connect to a business network.
      * @param {string} connectionProfile The connection profile name.
      * @param {string} businessNetworkIdentifier The business network identifier.
@@ -169,6 +197,90 @@ class ConnectorServer {
                     LOG.debug(method, events);
                     this.socket.emit('events', connectionID, events);
                 });
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Handle a request from the client to install the runtime.
+     * @param {string} connectionID The connection ID.
+     * @param {string} securityContextID The security context ID.
+     * @param {string} businessNetworkIdentifier The business network identifier
+     * @param {Object} installOptions connector specific install options
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionInstall(connectionID, securityContextID, businessNetworkIdentifier, installOptions, callback) {
+        const method = 'connectionDeploy';
+        LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, installOptions);
+        let connection = this.connections[connectionID];
+        if (!connection) {
+            let error = new Error(`No connection found with ID ${connectionID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let securityContext = this.securityContexts[securityContextID];
+        if (!securityContext) {
+            let error = new Error(`No security context found with ID ${securityContextID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        return connection.install(securityContext, businessNetworkIdentifier, installOptions)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Handle a request from the client to start a business network.
+     * @param {string} connectionID The connection ID.
+     * @param {string} securityContextID The security context ID.
+     * @param {string} businessNetworkBase64 The business network archive, as a base64 encoded string.
+     * @param {Object} startOptions connector specific start options
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionStart(connectionID, securityContextID, businessNetworkBase64, startOptions, callback) {
+        const method = 'connectionDeploy';
+        LOG.entry(method, connectionID, securityContextID, businessNetworkBase64, startOptions);
+        let connection = this.connections[connectionID];
+        if (!connection) {
+            let error = new Error(`No connection found with ID ${connectionID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let securityContext = this.securityContexts[securityContextID];
+        if (!securityContext) {
+            let error = new Error(`No security context found with ID ${securityContextID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
+        return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
+            .then((businessNetworkDefinition) => {
+                return connection.start(securityContext, businessNetworkDefinition, startOptions);
+            })
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
             })
             .catch((error) => {
                 LOG.error(error);

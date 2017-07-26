@@ -26,14 +26,31 @@ export class ImportComponent implements OnInit {
     private deployInProgress: boolean = false;
     private gitHubInProgress: boolean = false;
     private sampleNetworks = [];
-    private primaryNetworkNames = ['basic-sample-network', 'carauction-network'];
+    private primaryNetworkNames = ['basic-sample-network'];
     private chosenNetwork = null;
     private expandInput: boolean = false;
 
     private maxFileSize: number = 5242880;
     private supportedFileTypes: string[] = ['.bna'];
 
-    private currentBusinessNetwork = null;
+    private _currentBusinessNetwork = null;
+
+    set currentBusinessNetwork(businessNetwork) {
+        this._currentBusinessNetwork = businessNetwork;
+        if (businessNetwork instanceof BusinessNetworkDefinition) {
+            this.currentAssets = businessNetwork.getModelManager().getAssetDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+            this.currentParticipants = businessNetwork.getModelManager().getParticipantDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+            this.currentTransactions = businessNetwork.getModelManager().getTransactionDeclarations().filter((d) => !d.isAbstract() && !d.isSystemType());
+        }
+    }
+
+    get currentBusinessNetwork() {
+        return this._currentBusinessNetwork;
+    }
+
+    private currentAssets = [];
+    private currentParticipants = [];
+    private currentTransactions = [];
 
     private NAME = 'Empty Business Network';
     private DESC = 'Start from scratch with a blank business network';
@@ -61,7 +78,7 @@ export class ImportComponent implements OnInit {
         this.gitHubInProgress = true;
         this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
-                this.sampleNetworks = this.orderGitHubProjects(sampleNetworkList);
+                this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
                 this.gitHubInProgress = false;
 
             })
@@ -71,26 +88,17 @@ export class ImportComponent implements OnInit {
             });
     }
 
-    orderGitHubProjects(networks: any[]): any[] {
+    addEmptyNetworkOption(networks: any[]): any[] {
 
         let newOrder = [];
+
+        // Append new network option to the list.
         newOrder.push(this.EMPTY_BIZNET);
 
-        for (let i = 0; i < this.primaryNetworkNames.length; i++) {
-            let primaryName = this.primaryNetworkNames[i];
-            for (let j = 0; j < networks.length; j++) {
-                let network = networks[j];
-                if (primaryName === network.name) {
-                    newOrder.push(network);
-                }
-            }
-        }
         for (let i = 0; i < networks.length; i++) {
-            let network = networks[i];
-            if (this.primaryNetworkNames.indexOf(network.name) === -1) {
-                newOrder.push(network);
-            }
+            newOrder.push(networks[i]);
         }
+
         return newOrder;
     }
 

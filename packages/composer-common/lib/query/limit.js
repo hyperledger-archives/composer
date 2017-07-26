@@ -78,7 +78,6 @@ class Limit {
      * @private
      */
     validate() {
-        // TODO (DCS) walk the AST and check that the properties exist in the model!
     }
 
     /**

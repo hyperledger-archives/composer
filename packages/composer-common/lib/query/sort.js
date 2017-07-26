@@ -90,6 +90,8 @@ class Sort {
      * @private
      */
     validate() {
+        // check that the property exists
+        this.getOrderBy().getSelect().getResourceClassDeclaration().getNestedProperty(this.propertyPath);
     }
 
     /**
