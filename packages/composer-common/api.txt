@@ -45,11 +45,10 @@ class FileWallet extends Wallet {
 class IdCard {
    + String getName() 
    + String getDescription() 
-   + String getBusinessNetwork() 
-   + Object getImage() 
-   + Object getConnection() 
-   + Map getCredentials() 
-   + Map getTlsCertificates() 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + Object getEnrollmentCredentials() 
    + Promise fromArchive(Buffer) 
 }
 class BaseModelException extends BaseException {

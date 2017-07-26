@@ -91,6 +91,16 @@ describe('IdCard', function() {
             });
         });
 
+        it('should throw error on missing name field in connection.json', function() {
+            return readIdCardAsync('missing-connection-name').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer).then(function resolved(card) {
+                    throw Error('Card loaded without error');
+                }, function rejected(error) {
+                    error.message.should.include('name');
+                });
+            });
+        });
+
         it('should throw error on missing metadata.json', function() {
             return readIdCardAsync('missing-metadata').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer).then(function resolved(card) {
@@ -111,59 +121,38 @@ describe('IdCard', function() {
             });
         });
 
-        it('should throw error on invalid image field in metadata', function() {
-            return readIdCardAsync('invalid-metadata-image').then((readBuffer) => {
-                return IdCard.fromArchive(readBuffer).then(function resolved(card) {
-                    throw Error('Card loaded without error');
-                }, function rejected(error) {
-                    error.message.should.include('NON_EXISTENT_IMAGE_FILENAME');
-                });
-            });
-        });
-
         it('should load all metadata', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                card.getName().should.equal('com.example.cards.Dan');
-                card.getDescription().should.equal('Dan\'s Card for Production Network');
-                card.getBusinessNetwork().should.equal('org-acme-biznet');
-                card.getImage().should.exist;
+                card.getName().should.equal('Conga');
+                card.getDescription().should.equal('A valid ID card');
+                card.getBusinessNetworkName().should.equal('org-acme-biznet');
+                should.not.exist(card.getEnrollmentCredentials());
             });
         });
 
-        it('should load connection details', function() {
-            return readIdCardAsync('valid').then((readBuffer) => {
-                return IdCard.fromArchive(readBuffer);
-            }).then((card) => {
-                card.getConnection().should.be.an('Object');
-            });
-        });
-
-        it('should load an image named in metadata.json', function() {
-            return readIdCardAsync('valid').then((readBuffer) => {
-                return IdCard.fromArchive(readBuffer);
-            }).then((card) => {
-                const image = card.getImage();
-                image.name.should.be.a('String');
-                image.data.should.be.an.instanceof(Buffer);
-            });
-        });
-
-        it('should refer to an image by short filename', function() {
-            return readIdCardAsync('valid').then((readBuffer) => {
-                return IdCard.fromArchive(readBuffer);
-            }).then((card) => {
-                const image = card.getImage();
-                image.name.should.equal('conga.png');
-            });
-        });
-
-        it('should have an undefined image field if no image specified in metadata.json', function() {
+        it('should return empty string if no business network name defined', function() {
             return readIdCardAsync('minimal').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                should.equal(card.getImage(), undefined);
+                card.getBusinessNetworkName().should.be.empty;
+            });
+        });
+
+        it('should return empty string if no description defined', function() {
+            return readIdCardAsync('minimal').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                card.getDescription().should.be.empty;
+            });
+        });
+
+        it('should load connection profile', function() {
+            return readIdCardAsync('valid').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                card.getConnectionProfile().should.be.an('Object');
             });
         });
 
@@ -172,20 +161,18 @@ describe('IdCard', function() {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
                 const credentials = card.getCredentials();
-                credentials.should.be.an.instanceof(Map);
-                credentials.size.should.equal(6);
-                credentials.get('PeerAdmin').should.be.an.instanceof(Buffer);
+                credentials.public.should.include('-----BEGIN PUBLIC KEY-----');
+                credentials.private.should.include('-----BEGIN PRIVATE KEY-----');
             });
         });
 
-        it('should load tlscerts', function() {
-            return readIdCardAsync('valid').then((readBuffer) => {
+        it('should load enrollment credentials', function() {
+            return readIdCardAsync('valid-with-enrollment').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                const tlscerts = card.getTlsCertificates();
-                tlscerts.should.be.an.instanceof(Map);
-                tlscerts.size.should.equal(3);
-                tlscerts.get('ca.crt').should.be.an.instanceof(Buffer);
+                const credentials = card.getEnrollmentCredentials();
+                credentials.id.should.equal('conga');
+                credentials.secret.should.equal('super-secret-passphrase');
             });
         });
 
