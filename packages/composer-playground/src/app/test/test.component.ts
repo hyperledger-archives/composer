@@ -34,6 +34,7 @@ export class TestComponent implements OnInit, OnDestroy {
         return this.clientService.ensureConnected()
             .then(() => {
                 this.initializeEventListener();
+
                 let introspector = this.clientService.getBusinessNetwork().getIntrospector();
                 let modelClassDeclarations = introspector.getClassDeclarations();
                 modelClassDeclarations.forEach((modelClassDeclaration) => {

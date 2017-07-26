@@ -279,52 +279,6 @@ describe('EditorFileComponent', () => {
 
             should.not.exist(component['editorContent']);
         });
-
-        it('should load a query file', () => {
-            mockClientService.getQueryFile.returns({
-                getDefinitions: sinon.stub().returns('my query')
-            });
-
-            component['_editorFile'] = {
-                query: true,
-            };
-
-            component.loadFile();
-
-            component['editorContent'].should.equal('my query');
-            component['editorType'].should.equal('code');
-        });
-
-        it('should load a query file but not find it', () => {
-            mockClientService.getQueryFile.returns(null);
-
-            component['_editorFile'] = {
-                query: true,
-            };
-
-            component.loadFile();
-
-            should.not.exist(component['editorContent']);
-        });
-
-        it('should not load any file', () => {
-            component['_editorFile'] = {};
-
-            component.loadFile();
-
-            should.not.exist(component['editorContent']);
-            should.not.exist(component['editorType']);
-        });
-
-        it('should set currentError to null', () => {
-            component['_editorFile'] = {};
-            component['currentError'] = 'Test error message';
-
-            component.loadFile();
-
-            should.not.exist(component['currentError']);
-        });
-
     });
 
     describe('setCurrentCode', () => {

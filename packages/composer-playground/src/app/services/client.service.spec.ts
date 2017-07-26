@@ -34,7 +34,6 @@ describe('ClientService', () => {
     let aclFileMock;
     let queryFileMock;
     let mockLocalStorage;
-    let queryFileMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
