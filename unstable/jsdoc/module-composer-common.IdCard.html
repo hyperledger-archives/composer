@@ -90,7 +90,8 @@
         IdCard
         </h2>
         
-            <div class="class-description"><p>An ID card.</p></div>
+            <div class="class-description"><p>An ID card. Encapsulates credentials and other information required to connect to a specific business network<br>as a specific user.</p>
+<p><p><br>Instances of this class should be created using IdCard.fromArchive.</p></div>
         
     
 </header>
@@ -102,7 +103,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="IdCard"><span class="type-signature"></span>new IdCard(metadata, connection, credentials, tlscerts)</h4>
+    <h4 class="name" id="IdCard"><span class="type-signature"></span>new IdCard(metadata, connectionProfile, credentials)</h4>
     
     
 </dt>
@@ -110,7 +111,7 @@
 
     
     <div class="description">
-        <p>Create the BusinessNetworkDefinition.</p>
+        <p>Create the IdCard.</p>
 <p><p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from IdCard.fromArchive</strong></p>
     </div>
     
@@ -170,7 +171,7 @@
 
         <tr>
             
-                <td class="name"><code>connection</code></td>
+                <td class="name"><code>connectionProfile</code></td>
             
 
             <td class="type">
@@ -187,7 +188,7 @@
 
             
 
-            <td class="description last"><p>connection properties associated with the card.</p></td>
+            <td class="description last"><p>connection profile associated with the card.</p></td>
         </tr>
 
     
@@ -200,7 +201,7 @@
             <td class="type">
             
                 
-<span class="param-type">Map</span>
+<span class="param-type">Object</span>
 
 
 
@@ -211,31 +212,7 @@
 
             
 
-            <td class="description last"><p>map of credential filename String keys to credential data Buffer objects.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tlscerts</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Map</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>map of TLS certificate filename String keys to TLS certificate data Buffer objects.</p></td>
+            <td class="description last"><p>credentials used to connect to business network.</p></td>
         </tr>
 
     
@@ -280,7 +257,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-28">line 28</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-30">line 30</a>
 			</li>
 		</ul>
 	</dd>
@@ -436,7 +413,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-118">line 118</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-128">line 128</a>
 			</li>
 		</ul>
 	</dd>
@@ -493,7 +470,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getBusinessNetwork"><span class="type-signature"></span>getBusinessNetwork()</h4>
+    <h4 class="name" id="getBusinessNetworkName"><span class="type-signature"></span>getBusinessNetworkName()</h4>
     
     
 </dt>
@@ -501,7 +478,7 @@
 
     
     <div class="description">
-        <p>Business network to which the ID card applies. Generally this will be present but may be omitted for system<br>cards.</p>
+        <p>Name of the business network to which the ID card applies. Generally this will be present but may be<br>omitted for system cards.</p>
     </div>
     
 
@@ -548,7 +525,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-76">line 76</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-83">line 83</a>
 			</li>
 		</ul>
 	</dd>
@@ -577,7 +554,7 @@
     
             
 <div class="param-desc">
-    <p>description, or undefined if none exists.</p>
+    <p>business network name.</p>
 </div>
 
 
@@ -605,7 +582,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getConnection"><span class="type-signature"></span>getConnection()</h4>
+    <h4 class="name" id="getConnectionProfile"><span class="type-signature"></span>getConnectionProfile()</h4>
     
     
 </dt>
@@ -614,6 +591,7 @@
     
     <div class="description">
         <p>Connection profile for this card.</p>
+<p><p><br>This is a mandatory field.</p>
     </div>
     
 
@@ -725,7 +703,7 @@
 
     
     <div class="description">
-        <p>Credentials associated with this card.</p>
+        <p>Credentials associated with this card, and which are used to connect to the associated business network.</p>
     </div>
     
 
@@ -801,7 +779,7 @@
     
             
 <div class="param-desc">
-    <p>Map of filename String keys to Buffer data.</p>
+    <p>credentials in the form <em>{ public: publicKey, private: privateKey }</em>, if they exist.</p>
 </div>
 
 
@@ -812,7 +790,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Map</span>
+<span class="param-type">Object</span>
 
 
 
@@ -884,7 +862,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-67">line 67</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-74">line 74</a>
 			</li>
 		</ul>
 	</dd>
@@ -913,7 +891,7 @@
     
             
 <div class="param-desc">
-    <p>description, or undefined if none exists.</p>
+    <p>card description.</p>
 </div>
 
 
@@ -941,7 +919,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getImage"><span class="type-signature"></span>getImage()</h4>
+    <h4 class="name" id="getEnrollmentCredentials"><span class="type-signature"></span>getEnrollmentCredentials()</h4>
     
     
 </dt>
@@ -949,7 +927,7 @@
 
     
     <div class="description">
-        <p>Image associated with the card.</p>
+        <p>Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to<br>enroll with a business network and obtain certificates.</p>
     </div>
     
 
@@ -996,7 +974,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-85">line 85</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-111">line 111</a>
 			</li>
 		</ul>
 	</dd>
@@ -1025,7 +1003,7 @@
     
             
 <div class="param-desc">
-    <p>an object of the form <i>{ name: imageFileName, data: bufferOfImageData }</i>,<br>or undefined if none exists.</p>
+    <p>enrollment credentials in the form <em>{ id: enrollmentId, secret: enrollmentSecret }</em>, if<br>they exist.</p>
 </div>
 
 
@@ -1109,7 +1087,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-59">line 59</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-66">line 66</a>
 			</li>
 		</ul>
 	</dd>
@@ -1150,118 +1128,6 @@
     <dd>
         
 <span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getTlsCertificates"><span class="type-signature"></span>getTlsCertificates()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>TLS certificates used to connect to the business networks.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-109">line 109</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Map of filename String keys to Buffer data.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Map</span>
 
 
 
