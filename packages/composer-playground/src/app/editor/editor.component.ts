@@ -41,6 +41,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private editActive: boolean = false; // Are the input boxes visible?
     private editingPackage: boolean = false; // Is the package.json being edited?
+    private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
     private deployedPackageName; // This is the deployed BND's package name
     private deployedPackageVersion; // This is the deployed BND's package version
@@ -474,6 +475,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.errorStatus$.next(error);
             });
+    }
+
+    /*
+     * Sets the current README file editor state (from editor to previewer)
+     */
+    setReadmePreview(preview: boolean) {
+        this.previewReadme = preview;
     }
 
     /*

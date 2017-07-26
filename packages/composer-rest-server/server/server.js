@@ -17,7 +17,9 @@
 const boot = require('loopback-boot');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 const http = require('http');
+const https = require('https');
 const loopback = require('loopback');
 const loopbackPassport = require('loopback-component-passport');
 const path = require('path');
@@ -75,10 +77,12 @@ module.exports = function (composer) {
     .then((composer) => {
 
         // Set the port if one was specified.
+        const protocol = composer.tls ? 'https' : 'http';
         if (composer.port) {
             app.set('port', composer.port);
-            app.set('url', 'http://localhost:' + composer.port + '/');
         }
+        const port = app.get('port');
+        app.set('url', `${protocol}://localhost:${port}/`);
 
         // Support JSON encoded bodies.
         app.middleware('parse', bodyParser.json());
@@ -136,7 +140,15 @@ module.exports = function (composer) {
         }
 
         // Create the HTTP server.
-        const server = http.createServer(app);
+        let server;
+        const tls = !!composer.tls;
+        if (tls) {
+            const cert = fs.readFileSync(composer.tlscert, 'utf8');
+            const key = fs.readFileSync(composer.tlskey, 'utf8');
+            server = https.createServer({ cert, key }, app);
+        } else {
+            server = http.createServer(app);
+        }
 
         // The following configuration is only required if WebSockets are enabled.
         const websockets = !!composer.websockets;

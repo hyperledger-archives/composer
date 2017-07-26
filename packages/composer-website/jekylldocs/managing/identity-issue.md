@@ -20,7 +20,7 @@ certificate.
 ## Before you start
 
 Before you follow these steps, you must have added a participant to a participant
-registry.
+registry. The **issuer** of a new identity (whether using command line or using the Javascript APIs below) must itself have 'issuer' authority and as appropriate, ACLs that permit him/her issue the identity (to be associated with the participant) in Composer.
 
 The procedure below shows an example using the following model of a participant
 from the Getting Started walkthrough.
@@ -40,11 +40,19 @@ of that participant has been created and placed into a participant registry.
 
 ## Procedure
 
-1. Issue an identity to the participant
+1. Connect and Issue an identity to the participant
   * JavaScript API
+  
+  
 
   ```javascript
-  let businessNetworkConnection = /* TODO: get a business network connection */
+ /* replace with your connection info   */
+   this.businessNetworkConnection = new BusinessNetworkConnection();
+   this.businessNetworkConnection.connect('hlfv1', 'net.biz.digitalPropertyNetwork', participantId, participantPwd)
+   .then((result) => {
+   this.businessNetworkDefinition = result;
+   });
+
   businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
       .then((result) => {
           console.log(`userID = ${result.userID}`);
