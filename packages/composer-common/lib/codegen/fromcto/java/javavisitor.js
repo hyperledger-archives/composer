@@ -203,7 +203,12 @@ public abstract class Resource
         classDeclaration.getModelFile().getImports().forEach((imported) => {
             parameters.fileWriter.writeLine(0, 'import ' + imported + ';' );
         });
-        parameters.fileWriter.writeLine(0, '');
+
+        if(classDeclaration.isConcept()) {
+            parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.JsonIgnoreProperties;');
+            parameters.fileWriter.writeLine(0, '');
+            parameters.fileWriter.writeLine(0, '@JsonIgnoreProperties({"$class"})');
+        }
 
         let isAbstract = '';
         if( classDeclaration.isAbstract() ) {
