@@ -239,19 +239,28 @@ class Engine {
                 Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
 
                 // Cache the compiled script bundle.
-                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
+                if (!compiledScriptBundle) {
+                    compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                    Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                }
 
                 // Cache the compiled query bundle.
-                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-                LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-                Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                compiledQueryBundle = Context.getCachedCompiledQueryBundle(businessNetworkHash);
+                if (!compiledQueryBundle) {
+                    compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                    LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
+                    Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                }
 
                 // Cache the compiled ACL bundle.
-                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                compiledAclBundle = Context.getCachedCompiledAclBundle(businessNetworkHash);
+                if (!compiledAclBundle) {
+                    compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                    Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                }
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
