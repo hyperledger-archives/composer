@@ -72,6 +72,7 @@ module.exports.FileWallet = require('./lib/filewallet');
 module.exports.FileWriter = require('./lib/codegen/filewriter');
 module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
 module.exports.Globalize = require('./lib/globalize');
+module.exports.IdCard = require('./lib/idcard');
 module.exports.Introspector = require('./lib/introspect/introspector');
 module.exports.Limit = require('./lib/query/limit');
 module.exports.Logger = require('./lib/log/logger');
