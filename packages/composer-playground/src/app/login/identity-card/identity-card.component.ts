@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
+import { IdCard } from 'composer-common';
+
 @Component({
     selector: 'identity-card',
     templateUrl: './identity-card.component.html',
@@ -11,7 +13,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class IdentityCardComponent {
 
     @Input()
-    identity: any;
+    identity: IdCard;
 
     @Input()
     preview: boolean = false;
@@ -29,24 +31,24 @@ export class IdentityCardComponent {
     onExport: EventEmitter<string> = new EventEmitter<string>();
 
     connect() {
-        this.onConnect.emit(this.identity.userId);
+        this.onConnect.emit(this.identity.getName());
     }
 
     dismiss() {
-        this.onDismiss.emit(this.identity.userId);
+        this.onDismiss.emit(this.identity.getName());
     }
 
     delete() {
-        this.onDelete.emit(this.identity.userId);
+        this.onDelete.emit(this.identity.getName());
     }
 
     export() {
-        this.onExport.emit(this.identity.userId);
+        this.onExport.emit(this.identity.getName());
     }
 
     getInitials<String>() {
         let result;
-        let userId = this.identity.userId;
+        let userId = this.identity.getName();
         let regexp = /^(\S)\S*\s*(\S?)/i;
         let matches = regexp.exec(userId);
 

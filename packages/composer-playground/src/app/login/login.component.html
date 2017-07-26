@@ -1,5 +1,5 @@
 <section *ngIf="!showSubScreen" class="header">
-    <div class="left-align">My Wallet</div>
+    <h1 class="left-align">My Wallet</h1>
     <div class="right-align" *ngIf="!showSubScreen">
         <button type="button" class="secondary">
             <span>Import ID Card</span>
@@ -10,18 +10,10 @@
     </div>
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
-    <div class="connection-profile" *ngFor="let connectionProfile of connectionProfiles; let profileIndex = index">
-        <h2>Identities for {{connectionProfile.name === '$default' ? 'Web Browser' : connectionProfile.name }}
+    <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
+        <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}
             <div class="connection-profile-buttons">
-                <button *ngIf="connectionProfile.name !== '$default'" id="editConnectionProfileButton" type="button"
-                        class="action circular"
-                        (click)="editConnectionProfile(connectionProfile)">
-                    <svg class="ibm-icon vertical-top" aria-hidden="true">
-                        <use xlink:href="#icon-edit_24"></use>
-                    </svg>
-                </button>
-                <button id="deployButton" type="button" class="action circular"
-                        (click)="deployNetwork(connectionProfile)">
+                <button id="deployButton" type="button" class="action circular">
                     <svg class="ibm-icon vertical-top" aria-hidden="true">
                         <use xlink:href="#icon-deploy_24"></use>
                     </svg>
@@ -29,9 +21,9 @@
             </div>
         </h2>
         <div class="identities">
-            <identity-card *ngFor="let identity of connectionProfile.identities" [identity]="identity"
-                           (onConnect)="changeIdentity(connectionProfile.name, identity.userId)"
-                           (onDelete)="removeIdentity(connectionProfile.name, identity.userId)">
+            <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)" [identity]="idCards.get(cardRef)"
+                           (onConnect)="changeIdentity(cardRef)"
+                           (onDelete)="removeIdentity(cardRef)">
             </identity-card>
         </div>
     </div>

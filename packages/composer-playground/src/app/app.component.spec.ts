@@ -12,19 +12,18 @@ import { Directive, Input, Injectable } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ClientService } from './services/client.service';
 import { InitializationService } from './services/initialization.service';
-import { ConnectionProfileService } from './services/connectionprofile.service';
 import { IdentityService } from './services/identity.service';
+import { IdentityCardService } from './services/identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AlertService } from './basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
-import { WalletService } from './services/wallet.service';
 import { AboutService } from './services/about.service';
 import { TransactionService } from './services/transaction.service';
 
-import { FileWallet } from 'composer-common';
+import { FileWallet, IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
 
@@ -149,10 +148,10 @@ describe('AppComponent', () => {
     let mockModal;
     let mockAdminService;
     let mockTransactionService;
-    let mockConnectionProfileService;
     let mockBusinessNetworkConnection;
-    let mockWalletService;
+    let mockIdCard;
     let mockIdentityService;
+    let mockIdentityCardService;
     let mockLocalStorageService;
     let mockAboutService;
     let mockAdminConnection;
@@ -171,9 +170,11 @@ describe('AppComponent', () => {
         mockModal = sinon.createStubInstance(NgbModal);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockAdminService = sinon.createStubInstance(AdminService);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockWalletService = sinon.createStubInstance(WalletService);
+        mockIdCard = sinon.createStubInstance(IdCard);
+        mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
         mockIdentityService = sinon.createStubInstance(IdentityService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+        mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
@@ -201,9 +202,8 @@ describe('AppComponent', () => {
                 {provide: ActivatedRoute, useValue: activatedRoute},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: WalletService, useValue: mockWalletService},
                 {provide: IdentityService, useValue: mockIdentityService},
+                {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
                 {provide: AboutService, useValue: mockAboutService},
                 {provide: TransactionService, useValue: mockTransactionService}
@@ -301,7 +301,6 @@ describe('AppComponent', () => {
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
-            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -319,7 +318,6 @@ describe('AppComponent', () => {
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
-            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -351,7 +349,6 @@ describe('AppComponent', () => {
             routerStub.eventParams = {url: '/editor', nav: 'end'};
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
-            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
 
             updateComponent();
 
@@ -499,145 +496,6 @@ describe('AppComponent', () => {
             mockOnError = sinon.stub(component, 'onErrorStatus');
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
         }));
-
-        it('should load the connection profiles when local and logged in', fakeAsync(() => {
-
-            component['showHeaderLinks'] = true;
-            component['connectionProfiles'] = [{name: 'test_name'}];
-            mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
-            mockInitializationService.isWebOnly.returns(Promise.resolve(false));
-            let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            tick();
-
-            // update now got info back about if local or not
-            updateComponent();
-
-            mockConnectionProfileService.getCurrentConnectionProfile.should.have.been.called;
-            updateConnectionDataMock.should.have.been.calledTwice;
-
-            mockInitializationService.initialize.should.have.been.called;
-
-            component['usingLocally'].should.equal(true);
-
-            links.length.should.equal(3);
-            links[0].linkParams.should.deep.equal(['editor']);
-            links[1].linkParams.should.deep.equal(['test']);
-            links[2].linkParams.should.deep.equal(['identity']);
-        }));
-
-        it('should load the connection profiles when web only and logged in', fakeAsync(() => {
-
-            component['showHeaderLinks'] = true;
-            component['connectionProfiles'] = [{name: 'test_name'}];
-            mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
-            mockInitializationService.isWebOnly.returns(Promise.resolve(true));
-            let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            tick();
-
-            // update now got info back about if local or not
-            updateComponent();
-
-            mockConnectionProfileService.getCurrentConnectionProfile.should.have.been.called;
-            updateConnectionDataMock.should.have.been.calledTwice;
-
-            mockInitializationService.initialize.should.have.been.called;
-
-            component['usingLocally'].should.equal(false);
-
-            links.length.should.equal(3);
-            links[0].linkParams.should.deep.equal(['editor']);
-            links[1].linkParams.should.deep.equal(['test']);
-            links[2].linkParams.should.deep.equal(['identity']);
-        }));
-
-        it('should load the connection profiles when local but not logged in', fakeAsync(() => {
-            mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
-            mockInitializationService.isWebOnly.returns(Promise.resolve(false));
-            let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            tick();
-
-            // update now got info back about if local or not
-            updateComponent();
-
-            mockConnectionProfileService.getCurrentConnectionProfile.should.have.been.called;
-            updateConnectionDataMock.should.have.been.calledTwice;
-
-            mockInitializationService.initialize.should.have.been.called;
-
-            component['usingLocally'].should.equal(true);
-
-            links.length.should.equal(0);
-        }));
-
-        it('should load the connection profiles when web only but not logged in', fakeAsync(() => {
-            mockIdentityService.getCurrentIdentity.returns(Promise.resolve('bob'));
-            mockInitializationService.isWebOnly.returns(Promise.resolve(true));
-            let updateConnectionDataMock = sinon.stub(component, 'updateConnectionData').returns(Promise.resolve());
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            tick();
-
-            // update now got info back about if local or not
-            updateComponent();
-
-            mockConnectionProfileService.getCurrentConnectionProfile.should.have.been.called;
-            updateConnectionDataMock.should.have.been.calledTwice;
-
-            mockInitializationService.initialize.should.have.been.called;
-
-            component['usingLocally'].should.equal(false);
-
-            links.length.should.equal(0);
-        }));
-    });
-
-    describe('updateConnectionData', () => {
-        let mockOnBusy;
-        let mockOnError;
-        let mockQueryParamsUpdated;
-
-        beforeEach(async(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-        }));
-
-        it('should update the connection profile data', fakeAsync(() => {
-            mockAdminConnection.getAllProfiles.returns(Promise.resolve(Promise.resolve({bob: {type: 'web'}})));
-            mockAdminService.getAdminConnection.returns(mockAdminConnection);
-            mockIdentityService.getCurrentIdentities.returns(Promise.resolve(['bob', 'fred']));
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            component.updateConnectionData();
-
-            tick();
-
-            component['connectionProfiles'].length.should.equal(1);
-            component['connectionProfiles'].should.deep.equal([{default: false, name: 'bob', profile: {type: 'web'}}]);
-
-            component['identities'].should.deep.equal(['bob', 'fred']);
-        }));
     });
 
     describe('onBusyStatus', () => {
@@ -653,8 +511,6 @@ describe('AppComponent', () => {
         }));
 
         it('should not show if in web mode', () => {
-            mockConnectionProfileService.getCurrentConnectionProfile.returns('$default');
-
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -669,6 +525,7 @@ describe('AppComponent', () => {
         });
 
         it('should open the modal', () => {
+            mockIdCard.getConnectionProfile.returns({name: 'notWebMode'});
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -685,6 +542,7 @@ describe('AppComponent', () => {
         });
 
         it('should open the modal and update the status', () => {
+            mockIdCard.getConnectionProfile.returns({name: 'notWebMode'});
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -705,6 +563,7 @@ describe('AppComponent', () => {
         });
 
         it('should open the modal and close it', () => {
+            mockIdCard.getConnectionProfile.returns({name: 'notWebMode'});
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -725,6 +584,7 @@ describe('AppComponent', () => {
         });
 
         it('should not open the modal if no message', () => {
+            mockIdCard.getConnectionProfile.returns({name: 'notWebMode'});
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -772,6 +632,33 @@ describe('AppComponent', () => {
             updateComponent();
 
             mockOnError.restore();
+
+            component.onErrorStatus(null);
+
+            mockModal.open.should.not.have.been.called;
+        });
+    });
+
+    describe('onEvent', () => {
+        let mockQueryParamsUpdated;
+
+        beforeEach(() => {
+            activatedRoute.testParams = {};
+            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
+            mockModal.open.returns({componentInstance: {}});
+        });
+
+        it('should deal with event', () => {
+            updateComponent();
+
+            component.onEvent('message');
+
+            mockModal.open.should.have.been.called;
+
+        });
+
+        it('should not show if no message', () => {
+            updateComponent();
 
             component.onErrorStatus(null);
 
@@ -999,8 +886,6 @@ describe('AppComponent', () => {
             tick();
 
             mockClientService.disconnect.should.have.been.called;
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith(null);
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith(null);
             mockIdentityService.setLoggedIn.should.have.been.calledWith(false);
             routerStub.navigate.should.have.been.calledWith(['/login']);
         }));

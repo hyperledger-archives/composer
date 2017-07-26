@@ -8,7 +8,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { BusinessNetworkDefinition } from 'composer-common';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
+import { IdentityCardService } from '../services/identity-card.service';
 
 @Component({
     selector: 'import-business-network',
@@ -47,13 +47,13 @@ export class ImportComponent implements OnInit {
                 private sampleBusinessNetworkService: SampleBusinessNetworkService,
                 private alertService: AlertService,
                 private adminService: AdminService,
-                private connectionProfileService: ConnectionProfileService) {
+                private identityCardService: IdentityCardService) {
 
     }
 
     ngOnInit(): Promise<void> {
         this.currentBusinessNetwork = null;
-        this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        this.currentConnectionProfile = this.identityCardService.getCurrentConnectionProfile().name;
 
         return this.adminService.connectWithoutNetwork(false)
             .then(() => {

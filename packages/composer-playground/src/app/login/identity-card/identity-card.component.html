@@ -11,7 +11,7 @@
         <div class="image-placeholder">
             <span class="initials">{{getInitials()}}</span>
         </div>
-        <p>{{identity.userId}}</p>
+        <p>{{identity.getName()}}</p>
     </section>
     <section *ngIf="!preview" class="actions">
         <button type="button" class="action circular delete"
@@ -29,11 +29,11 @@
     </section>
     <section *ngIf="preview" class="connection-profile-details">
         <h3>Connection Profile</h3>
-        <p>{{identity.profile}}</p>
+        <p>{{identity.getConnectionProfile().name}}</p>
     </section>
     <section class="business-network-details">
         <h3>Business Network</h3>
-        <p>{{identity.businessNetwork}}</p>
+        <p>{{identity.getBusinessNetworkName()}}</p>
     </section>
     <footer>
         <button *ngIf="!preview" type="button" class="action connect"

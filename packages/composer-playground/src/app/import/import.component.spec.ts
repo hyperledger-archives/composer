@@ -18,7 +18,7 @@ import { BusinessNetworkDefinition, ClassDeclaration } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
+import { IdentityCardService } from '../services/identity-card.service';
 
 let should = chai.should();
 
@@ -82,7 +82,7 @@ describe('ImportComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
-    let mockConnectionProfileService;
+    let mockIdentityCardService;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -90,7 +90,7 @@ describe('ImportComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -109,7 +109,7 @@ describe('ImportComponent', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: NgbModal, useValue: mockNgbModal},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService}],
+                {provide: IdentityCardService, useValue: mockIdentityCardService}],
         });
 
         sandbox = sinon.sandbox.create();
@@ -131,6 +131,7 @@ describe('ImportComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
+            mockIdentityCardService.getCurrentConnectionProfile.returns({name: 'myNetwork'});
             mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });

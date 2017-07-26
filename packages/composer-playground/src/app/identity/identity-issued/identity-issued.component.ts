@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ConnectionProfileService } from '../../services/connectionprofile.service';
+import { IdentityCardService } from '../../services/identity-card.service';
 import { WalletService } from '../../services/wallet.service';
 
 @Component({
@@ -18,14 +18,15 @@ export class IdentityIssuedComponent {
     @Input() userSecret: string;
 
     constructor(private activeModal: NgbActiveModal,
-                private connectionProfileService: ConnectionProfileService,
+                private identityCardService: IdentityCardService,
                 private walletService: WalletService) {
 
     }
 
     addToWallet() {
-        let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
-        let wallet = this.walletService.getWallet(connectionProfileName);
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let wallet = this.walletService.getWallet(connectionProfileRef);
 
         return wallet.contains(this.userID)
         .then((inWallet) => {
