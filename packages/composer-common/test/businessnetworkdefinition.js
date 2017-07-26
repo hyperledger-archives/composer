@@ -94,26 +94,9 @@ describe('BusinessNetworkDefinition', () => {
         });
     });
 
-    describe('#setters', () => {
-
-        it('should be able set a Readme', () => {
-            let newReadme = 'Read the readme';
-            businessNetworkDefinition.setReadme(newReadme);
-            businessNetworkDefinition.getMetadata().getREADME().should.equal(newReadme);
-        });
-
-        it('should be able set packageJson', () => {
-            let packageJson = {};
-            packageJson.name = businessNetworkDefinition.getName();
-            packageJson.version = businessNetworkDefinition.getVersion();
-            packageJson.description = 'new description';
-            businessNetworkDefinition.setPackageJson(packageJson);
-
-            businessNetworkDefinition.getMetadata().getPackageJson().should.deep.equal(packageJson);
-        });
-    });
-
     describe('#archives', () => {
+
+
 
         it('should be able to correctly create a business network from a plain directory', () => {
 
