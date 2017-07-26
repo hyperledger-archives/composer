@@ -203,19 +203,21 @@ git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 </code></pre></div>
+<p><strong>Please do not install Composer as a superuser, use &#39;sudo&#39; or the &#39;root&#39; user if on Linux (doing will can cause issues with the install). Composer should be installed as non-priviledged user</strong></p>
+
 <p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 </code></pre></div>
-<p>Next run the script - as this uses sudo you will be prompted for your password.</p>
+<p>Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">./prereqs-ubuntu.sh
 </code></pre></div>
 <hr>
 
 <h2 id="step-1-installing-hyperledger-composer-development-tools">Step 1: Installing Hyperledger Composer development tools</h2>
 
-<p>The development tools you&#39;ll need can all be installed with <code>npm install -g</code>.</p>
+<p>The development tools you&#39;ll need can all be installed (as a non-privileged user eg non-root) with <code>npm install -g</code>.</p>
 
 <ol>
 <li><p>To install <code>composer-cli</code> run the following command:</p>
@@ -269,10 +271,10 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 
 tar xvzf fabric-dev-servers.tar.gz
 </code></pre></div></li>
-<li><p>Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.</p>
+<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv0.6
 </code></pre></div>
-<p>Hyperledger Fabric v1.0 is the default, but to &#39;unset&#39; the v0.6, or to be explicit in using v1 use this command</p>
+<p>Hyperledger Fabric To &#39;unset&#39; a v0.6 export, or to be explicit in using v1 Fabric, use this command</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
 </code></pre></div></li>
 <li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.</p>
