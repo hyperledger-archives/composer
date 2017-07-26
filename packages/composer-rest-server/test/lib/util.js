@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security', 'websockets']);
+                    names.should.deep.equal(['profilename', 'businessNetworkId', 'userid', 'secret', 'namespaces', 'security', 'websockets', 'tls', 'tlscert', 'tlskey']);
                 });
         });
 
@@ -97,6 +97,32 @@ describe('Util', () => {
                     });
                     question.validate('').should.match(/Please enter/);
                     question.validate('adminpw').should.be.true;
+                });
+        });
+
+        it('should only enable the TLS certificate question if TLS enabled', () => {
+            return Util.getConnectionSettings()
+                .then(() => {
+                    sinon.assert.calledOnce(inquirer.prompt);
+                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
+                    const question = questions.find((question) => {
+                        return question.name === 'tlscert';
+                    });
+                    question.when({ tls: false }).should.be.false;
+                    question.when({ tls: true }).should.be.true;
+                });
+        });
+
+        it('should only enable the TLS key question if TLS enabled', () => {
+            return Util.getConnectionSettings()
+                .then(() => {
+                    sinon.assert.calledOnce(inquirer.prompt);
+                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
+                    const question = questions.find((question) => {
+                        return question.name === 'tlskey';
+                    });
+                    question.when({ tls: false }).should.be.false;
+                    question.when({ tls: true }).should.be.true;
                 });
         });
 
