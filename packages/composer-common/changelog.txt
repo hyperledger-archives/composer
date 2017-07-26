@@ -11,7 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.10.1 {ac4a5b035d77bfa46eeadf4b312eab8f} 2017-07-21
+Version 0.10.1 {fe6fa1850003a7c5d47bf43e3ab8d628} 2017-07-24
+- Added InvalidQueryException, BaseFileException
 - Added IdCard to composer-common package
 
 Version 0.9.2 {60327250ee4f059647020f8aee5ed67b} 2017-07-06

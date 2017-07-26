@@ -294,19 +294,23 @@ class QueryAnalyzer {
 
         let result = [];
 
-        // Grab the right hand side of this expression.
+        // Grab both side of the expression.
         const rhs = this.visit(ast.right, parameters);
         const lhs = this.visit(ast.left, parameters);
 
         // if the rhs is a string, it is the name of a property
+        // and we infer the type of the lhs from the model
+        // if the lhs is a parameter
         if (typeof rhs === 'string' && (lhs instanceof Array && lhs.length > 0)) {
-            lhs[0].type = this.getPropertyType(rhs);
+            lhs[0].type = this.getParameterType(rhs);
             result = result.concat(lhs);
         }
 
         // if the lhs is a string, it is the name of a property
+        // and we infer the type of the rhs from the model
+        // if the rhs is a parameter
         if (typeof lhs === 'string' && (rhs instanceof Array && rhs.length > 0)) {
-            rhs[0].type = this.getPropertyType(lhs);
+            rhs[0].type = this.getParameterType(lhs);
             result = result.concat(rhs);
         }
 
@@ -351,55 +355,6 @@ class QueryAnalyzer {
     /**
      * Visitor design pattern; handle a literal.
      * Literals are just plain old literal values ;-)
-     * @param {string} parameterName The parameter name or name with nested structure e.g A.B.C
-     * @return {string} The result of the parameter type or null
-     * @private
-     */
-    getPropertyType(parameterName) {
-        const method = 'getParameterType';
-        LOG.entry(method, parameterName);
-
-        // The grammar ensures that the resource property is set.
-        const modelManager = this.query.getQueryFile().getModelManager();
-        const resource = this.query.getSelect().getResource();
-
-        let result = null;
-        const parameterNames = parameterName.split('.');
-
-        // checks the resource type exists
-        let classDeclaration = modelManager.getType(resource);
-
-        for (let n = 0; n < parameterNames.length; n++) {
-            const property = classDeclaration.getProperty(parameterNames[n]);
-
-            if (property !== null) {
-                // enums are relationships are represented as strings
-                if (property.isTypeEnum() || property instanceof RelationshipDeclaration) {
-                    result = 'String';
-                    break;
-                } else if (property.isPrimitive()) {
-                    result = property.getType();
-                    break;
-                } else {
-                    const resource = property.getFullyQualifiedTypeName();
-                    classDeclaration = modelManager.getType(resource);
-                    property.validate(classDeclaration);
-                }
-            } else {
-                throw new Error('Property ' + parameterNames[n] + ' does not exist on ' + resource);
-            }
-        }
-
-        if (result === null) {
-            throw new Error('Property ' + parameterName + ' is not a primitive, enum or relationship on ' + resource);
-        }
-
-        LOG.exit(method, result);
-        return result;
-    }
-    /**
-     * Visitor design pattern; handle a literal.
-     * Literals are just plain old literal values ;-)
      * @param {Object} ast The abstract syntax tree being visited.
      * @param {Object} parameters The parameters.
      * @return {Object} The result of visiting, or null.
@@ -428,6 +383,37 @@ class QueryAnalyzer {
         const selector = `${object}.${property}`;
         LOG.exit(method, selector);
         return selector;
+    }
+
+    /**
+     * Get the parameter type for a property path on a resource
+     * @param {string} parameterName The parameter name or name with nested structure e.g A.B.C
+     * @return {string} The type to use for the parameter
+     * @throws {Error} if the property does not exist or is of an unsupported type
+     * @private
+     */
+    getParameterType(parameterName) {
+        const method = 'getParameterType';
+        LOG.entry(method, parameterName);
+
+        const classDeclaration = this.query.getSelect().getResourceClassDeclaration();
+        const property = classDeclaration.getNestedProperty(parameterName);
+
+        let result = null;
+
+        // enums and relationships are represented as strings
+        if (property.isTypeEnum() || property instanceof RelationshipDeclaration) {
+            result = 'String';
+        } else if (property.isPrimitive()) {
+            // primities are returned as-is
+            result = property.getType();
+        } else {
+            // anything else is not supported
+            throw new Error('Unsupported property type ' + property.getFullyQualifiedName());
+        }
+
+        LOG.exit(method, result);
+        return result;
     }
 }
 

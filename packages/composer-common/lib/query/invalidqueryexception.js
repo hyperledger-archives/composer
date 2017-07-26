@@ -17,29 +17,29 @@
 const BaseFileException = require('../basefileexception');
 
 /**
- * Exception throws when a composer file is semantically invalid
+ * Exception thrown for invalid queries
  * @extends BaseFileException
  * @see See [BaseFileException]{@link module:composer-common.BaseFileException}
  * @class
  * @memberof module:composer-common
  */
-class IllegalModelException extends BaseFileException {
+class InvalidQueryException extends BaseFileException {
 
     /**
-     * Create an IllegalModelException.
+     * Create an InvalidQueryException.
      * @param {String} message - the message for the exception
-     * @param {ModelFile} [modelFile] - the optional modelfile associated with the exception
+     * @param {QueryFile} [queryFile] - the optional queryFile associated with the exception
      * @param {Object} [fileLocation] - location details of the error within the model file.
      * @param {String} fileLocation.start.line - start line of the error location.
      * @param {String} fileLocation.start.column - start column of the error location.
      * @param {String} fileLocation.end.line - end line of the error location.
      * @param {String} fileLocation.end.column - end column of the error location.
      */
-    constructor(message, modelFile, fileLocation) {
+    constructor(message, queryFile, fileLocation) {
 
         let messageSuffix = '';
-        if(modelFile && modelFile.getName()) {
-            messageSuffix = 'File \'' + modelFile.getName() + '\': ' ;
+        if(queryFile && queryFile.getIdentifier()) {
+            messageSuffix = 'File \'' + queryFile.getIdentifier() + '\': ' ;
         }
 
         if(fileLocation) {
@@ -52,16 +52,16 @@ class IllegalModelException extends BaseFileException {
         messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
 
         super(message, fileLocation, message + ' ' + messageSuffix);
-        this.modelFile = modelFile;
+        this.queryFile = queryFile;
     }
 
     /**
-     * Returns the modelfile associated with the exception or null
-     * @return {string} the optional filename associated with the model
+     * Returns the query file associated with the exception or null
+     * @return {QueryFile} the optional query file associated with the exception
      */
-    getModelFile() {
-        return this.modelFile;
+    getQueryFile() {
+        return this.queryFile;
     }
 }
 
-module.exports = IllegalModelException;
+module.exports = InvalidQueryException;

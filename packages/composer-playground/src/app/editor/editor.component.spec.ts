@@ -33,6 +33,9 @@ let should = chai.should();
 class MockEditorFileDirective {
     @Input()
     public editorFile;
+
+    @Input()
+    public previewReadmeActive;
 }
 
 @Directive({
