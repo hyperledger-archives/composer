@@ -1,4 +1,4 @@
-<section *ngIf="!editingConectionProfile" class="main-view">
+<section *ngIf="!showSubScreen" class="header">
     <header class="flex-container">
         <h1 class="flex">My Wallet</h1>
 
@@ -6,17 +6,20 @@
             <span>Import ID Card</span>
         </button>
     </header>
-
+</section>
+<section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfile of connectionProfiles; let profileIndex = index">
         <h2>Identities for {{connectionProfile.name === '$default' ? 'Web Browser' : connectionProfile.name }}
             <div class="connection-profile-buttons">
-                <button  *ngIf="connectionProfile.name !== '$default'" id="editConnectionProfileButton" type="button" class="action circular"
+                <button *ngIf="connectionProfile.name !== '$default'" id="editConnectionProfileButton" type="button"
+                        class="action circular"
                         (click)="editConnectionProfile(connectionProfile)">
                     <svg class="ibm-icon vertical-top" aria-hidden="true">
                         <use xlink:href="#icon-edit_24"></use>
                     </svg>
                 </button>
-                <button id="deployButton" type="button" class="action circular">
+                <button id="deployButton" type="button" class="action circular"
+                        (click)="deployNetwork(connectionProfile)">
                     <svg class="ibm-icon vertical-top" aria-hidden="true">
                         <use xlink:href="#icon-deploy_24"></use>
                     </svg>
@@ -31,16 +34,22 @@
         </div>
     </div>
 </section>
-<section class="edit-connection-profile" *ngIf="editingConectionProfile">
+<section class="sub-view" *ngIf="showSubScreen">
     <div class="header">
-        <button type="button" class="action" (click)="finishedEditingConnectionProfile()">
+        <button type="button" class="action" (click)="closeSubView()">
             <svg class="ibm-icon vertical-top rotate" aria-hidden="true">
                 <use xlink:href="#icon-forward_16"></use>
             </svg>
             <span>My Wallet</span>
         </button>
     </div>
-    <connection-profile (profileUpdated)="finishedEditingConnectionProfile()"
-                             [connectionProfile]="editingConectionProfile"></connection-profile>
+    <div *ngIf="editingConectionProfile">
+        <connection-profile (profileUpdated)="finishedEditingConnectionProfile()"
+                            [connectionProfile]="editingConectionProfile"></connection-profile>
+    </div>
+    <div *ngIf="showDeployNetwork">
+        <import-business-network class="deploy" [deployNetwork]="true"
+                                 (finishedSampleImport)="finishedDeploying()"></import-business-network>
+    </div>
 </section>
 <app-footer></app-footer>
