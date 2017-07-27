@@ -10,9 +10,9 @@ excerpt: Composer Runtime Install
 
 ---
 
-The `composer runtime install` command is used to install the {{site.data.conrefs.composer_full}} runtime on the {{site.data.conrefs.hlf_full}} endorsing peers of the blockchain network you are connecting to. This command must be run before the `composer network start` command.
+The `composer runtime install` command is used to install the {{site.data.conrefs.composer_full}} runtime on the {{site.data.conrefs.hlf_full}} peers of the blockchain network you are connecting to. This command must be run before the `composer network start` command.
 
-_Please Note_: The `--businessNetworkName, -n` option **must** contain the same name as the business network name you intend to run on the {{site.data.conrefs.hlf_full}} endorsing peers. Only business networks with names matching the `--businessNetworkName, -n` option given in this command will successfully run.
+_Please Note_: The `--businessNetworkName, -n` option **must** contain the same name as the business network name you intend to run on the {{site.data.conrefs.hlf_full}} peers. Only business networks with names matching the `--businessNetworkName, -n` option given in this command will successfully run.
 
 ```
 composer runtime install -n <businessNetworkName> -p <connectionProfileName> -i <installId> -s <installSecret>
