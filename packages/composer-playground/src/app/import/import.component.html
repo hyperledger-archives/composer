@@ -1,0 +1,152 @@
+<div class="choose-network">
+    <h2>{{deployNetwork ? 'Deploy New Business Network' : 'Import/Replace Network'}}</h2>
+    <section *ngIf="deployNetwork">
+        <h3 class="title">1. Basic Information</h3>
+        <div class="information">
+            <div>
+                <label for="import-businessNetworkName">Give your new Business Network a name:</label>
+                <input type="text" id="import-businessNetworkName" [(ngModel)]="networkName"
+                       placeholder="eg commodity-trading">
+            </div>
+            <div>
+                <label for="import-businessNetworkDescription">Describe what your Business Network will be used
+                    for:</label>
+                <textarea rows="4" id="import-businessNetworkDescription" [(ngModel)]="networkDescription"
+                          placeholder="eg Track the exchange of Commodities between traders on a blockchain"></textarea>
+            </div>
+        </div>
+    </section>
+    <section fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
+             (fileDragDropFileRejected)="fileRejected($event)"
+             (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
+             [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
+        <h3 class="title" *ngIf="deployNetwork">2. Model Network Starter Template</h3>
+        <div>
+            <h3 class="sub-title">Choose a Business Network Definition to {{deployNetwork ? 'start with:' : 'replace
+                your current
+                one:'}}</h3>
+
+            <p>Choose a sample to play with, start a new project, or import your previous work</p>
+
+            <div class="github-spinner" *ngIf="npmInProgress">
+                <div class="ibm-spinner-indeterminate medium loop">
+                    <div class="loader">
+                        <svg class="circular" viewBox="25 25 50 50">
+                            <circle class="circle-path" cx="50" cy="50" r="20"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!npmInProgress" class="sample-network-list-container">
+                <div class="sample-network-list"
+                     [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}">
+                    <div class="sample-network-list-item"
+                         [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
+                         (click)="selectNetwork(sampleNetworks[1])">
+                        <img src="{{sampleNetworks[1].networkImage}}">
+                        <div class="sample-network-name">{{sampleNetworks[1].name}}</div>
+                    </div>
+                    <div class="sample-network-list-item" (click)="selectNetwork(sampleNetworks[0])">
+                        <svg>
+                            <use xlink:href="#icon-default-network"></use>
+                        </svg>
+                        <div class="sample-network-name">{{sampleNetworks[0].name}}</div>
+                    </div>
+                    <div *ngIf="sampleDropped" class="sample-network-list-item">
+                        <button class="icon close-dropped" (click)="closeSample()">
+                            <svg class="ibm-icon">
+                                <use xlink:href="#icon-close_24"></use>
+                            </svg>
+                        </button>
+                        <img *ngIf="chosenNetwork && chosenNetwork.networkImage" src="{{chosenNetwork.networkImage}}">
+                        <svg *ngIf="!chosenNetwork || !chosenNetwork.networkImage">
+                            <use xlink:href="#icon-default-network"></use>
+                        </svg>
+                        <div class="sample-network-name">{{chosenNetwork.name}}</div>
+                    </div>
+                    <file-importer *ngIf="!sampleDropped" class="sample-network-list-item file-importer"
+                                   (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)"
+                                   [expandInput]="expandInput"
+                                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'"
+                                   [maxFileSize]="maxFileSize"
+                                   [supportedFileTypes]="supportedFileTypes"></file-importer>
+                </div>
+
+                <h3>Samples on npm</h3>
+
+                <div class="sample-network-list">
+                    <div class="sample-network-list-item"
+                         [ngClass]="{'selected-network' : sampleNetwork.name === chosenNetwork.name}"
+                         *ngFor=" let sampleNetwork of sampleNetworks | slice:2; let networkIndex=index"
+                         (click)="selectNetwork(sampleNetwork)">
+                        <img *ngIf="sampleNetwork.networkImage" src="{{sampleNetwork.networkImage}}">
+                        <svg *ngIf="!sampleNetwork.networkImage">
+                            <use xlink:href="#icon-default-network"></use>
+                        </svg>
+                        <div class="sample-network-name">{{sampleNetwork.name}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div *ngIf="!npmInProgress" class="chosen-network">
+    <div *ngIf="!deployNetwork" class="replace-message">
+        The files in the <b>{{clientService.getBusinessNetworkName()}}</b> will be replace with files from:
+    </div>
+    <div class="chosen-network-info">
+        <div class="image">
+            <img class="animated-image" *ngIf="chosenNetwork && chosenNetwork.networkImageanimated"
+                 src="{{chosenNetwork.networkImageanimated}}">
+            <svg class="animated-image" *ngIf="!chosenNetwork || !chosenNetwork.networkImageanimated">
+                <use xlink:href="#icon-default-network-animated"></use>
+            </svg>
+        </div>
+        <div>
+            <section *ngIf="deployNetwork">
+                <h3>{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when
+                    entered in the basic information section.'}}</p>
+            </section>
+            <section *ngIf="deployNetwork">
+                <div class="title">
+                    connection profile
+                </div>
+                <h3>{{currentConnectionProfile}}</h3>
+            </section>
+            <section class="github-spinner" *ngIf="npmInProgress">
+                <div class="ibm-spinner-indeterminate medium loop">
+                    <div class="loader">
+                        <svg class="circular" viewBox="25 25 50 50">
+                            <circle class="circle-path" cx="50" cy="50" r="20"/>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+            <section *ngIf="!npmInProgress">
+                <div>
+                    <div class="title" *ngIf="deployNetwork">
+                        based on
+                    </div>
+                    <h3>{{chosenNetwork.name}}</h3>
+                    <p>{{chosenNetwork.description}}</p>
+                </div>
+
+                <div *ngIf="currentBusinessNetworkPromise | async as bn">
+                    <p class="network-info">
+                        <span>Contains:</span>
+                        {{bn.getModelManager().getParticipantDeclarations().length}} Participant Types,
+                        {{bn.getModelManager().getAssetDeclarations().length}} Asset Types, and
+                        {{bn.getModelManager().getTransactionDeclarations().length}} Transaction Types
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="deploy">
+        <button *ngIf="!deployNetwork" type="button" class="secondary" (click)="cancel()">Cancel</button>
+        <button [disabled]="deployNetwork && !networkName" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
+        </button>
+    </div>
+</div>

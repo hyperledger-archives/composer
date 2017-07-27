@@ -14,14 +14,16 @@ import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclManager, AclFile, QueryFile } from 'composer-common';
+import { ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
+import { BehaviorSubject } from 'rxjs/Rx';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
+import { DrawerService } from '../common/drawer/drawer.service';
 
 let should = chai.should();
 
@@ -60,6 +62,7 @@ describe('EditorComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockModal;
+    let mockDrawer;
     let mockModelFile;
     let mockScriptFile;
     let mockRuleFile;
@@ -71,6 +74,7 @@ describe('EditorComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockModal = sinon.createStubInstance(NgbModal);
+        mockDrawer = sinon.createStubInstance(DrawerService);
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
@@ -91,7 +95,8 @@ describe('EditorComponent', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: EditorService, useValue: editorService}]
+                {provide: EditorService, useValue: editorService},
+                {provide: DrawerService, useValue: mockDrawer}]
         });
 
         fixture = TestBed.createComponent(EditorComponent);
@@ -1013,12 +1018,18 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1033,12 +1044,18 @@ describe('EditorComponent', () => {
 
             component['files'] = [{readme: true}, {model: true}];
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1055,12 +1072,18 @@ describe('EditorComponent', () => {
 
             component['files'] = [{model: true}, {script: true}];
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1074,12 +1097,18 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject('some error')
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: false, error: 'some error'});
 
             tick();
 
@@ -1093,12 +1122,18 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject(1)
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: false});
 
             tick();
 

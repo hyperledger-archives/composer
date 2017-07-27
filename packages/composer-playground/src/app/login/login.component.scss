@@ -5,9 +5,13 @@ app-login {
     width: 100vw;
     background-color: $fourth-highlight;
 
+    section.header {
+        padding: $space-large $space-large $space-medium $space-large;
+    }
+
     section.main-view {
         overflow-y: auto;
-        height: calc(100vh - 63px - 70px);
+        height: calc(100vh - 63px - 95px - 55px);
         padding: $space-medium $space-large;
 
         div.connection-profile:first-child {
@@ -43,9 +47,9 @@ app-login {
         }
     }
 
-    section.edit-connection-profile {
-        padding: $space-large ;
-        height: calc(100vh - 63px);
+    section.sub-view {
+        padding: $space-large;
+        height: calc(100vh - 63px - 55px);
         overflow-y: auto;
 
         .header {
