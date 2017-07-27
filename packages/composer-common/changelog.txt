@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.10.2 {e07efe48c4f431525388c10979b4289b} 2017-07-27
+- Added IdCard.getRoles function
+
 Version 0.10.1 {d1fd512551ff5bb30b31f05f6817966e} 2017-07-24
 - Added InvalidQueryException, BaseFileException
 - Added IdCard to composer-common package
