@@ -23,6 +23,8 @@ export class LoginComponent implements OnInit {
 
     private connectionProfiles = [];
     private editingConectionProfile = null;
+    private showSubScreen: boolean = false;
+    private showDeployNetwork: boolean = false;
 
     constructor(private identityService: IdentityService,
                 private router: Router,
@@ -66,9 +68,9 @@ export class LoginComponent implements OnInit {
                                 profile: connectionProfile,
                                 default: key === '$default',
                                 identities: identityList
+                            });
                         });
                 });
-            });
 
                 this.connectionProfiles = newConnectionProfiles;
             });
@@ -92,12 +94,33 @@ export class LoginComponent implements OnInit {
     }
 
     editConnectionProfile(connectionProfile): void {
+        this.showSubScreen = true;
         this.editingConectionProfile = connectionProfile;
     }
 
     finishedEditingConnectionProfile(): Promise<void> {
+        this.showSubScreen = false;
         delete this.editingConectionProfile;
         return this.loadConnectionProfiles();
+    }
+
+    closeSubView(): void {
+        this.showSubScreen = false;
+        delete this.editingConectionProfile;
+        this.showDeployNetwork = false;
+    }
+
+    deployNetwork(connectionProfile) {
+        this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
+        // TODO this needs to be done dynmaically
+        this.identityService.setCurrentIdentity('admin');
+        this.showSubScreen = true;
+        this.showDeployNetwork = true;
+    }
+
+    finishedDeploying() {
+        this.showSubScreen = false;
+        this.showDeployNetwork = false;
     }
 
     removeIdentity(connectionProfile, userId): void {
@@ -136,10 +159,6 @@ export class LoginComponent implements OnInit {
                     this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
-            })
-            .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
             });
     }
 }

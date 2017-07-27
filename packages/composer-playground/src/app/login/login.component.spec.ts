@@ -78,11 +78,15 @@ class MockConnectionProfileComponent {
 }
 
 @Component({
-    selector: 'identity-card',
+    selector: 'import-business-network',
     template: ''
 })
-class MockIdentityCardComponent {
-    @Input() identity: any;
+class MockImportComponent {
+
+    @Input()
+    public deployNetwork;
+    @Output()
+    public finishedSampleImport: EventEmitter<any> = new EventEmitter<any>();
 }
 
 @Component({
@@ -94,240 +98,287 @@ class MockFooterComponent {
 }
 
 describe(`LoginComponent`, () => {
+    @Component({
+        selector: 'identity-card',
+        template: ''
+    })
+    class MockIdentityCardComponent {
+        @Input() identity: any;
+    }
 
-    let component: LoginComponent;
-    let fixture: ComponentFixture<LoginComponent>;
+    describe(`LoginComponent`, () => {
 
-    let mockAdminService;
-    let mockIdentityService;
-    let mockClientService;
-    let mockConnectionProfileService;
-    let mockInitializationService;
-    let routerStub;
-    let mockAlertService;
-    let mockWalletService;
-    let mockModal;
-    let mockDrawer;
+        let component: LoginComponent;
+        let fixture: ComponentFixture<LoginComponent>;
 
-    beforeEach(() => {
+        let mockAdminService;
+        let mockIdentityService;
+        let mockClientService;
+        let mockConnectionProfileService;
+        let mockInitializationService;
+        let routerStub;
+        let mockAlertService;
+        let mockWalletService;
+        let mockModal;
+        let mockDrawer;
 
-        mockIdentityService = sinon.createStubInstance(IdentityService);
-        mockClientService = sinon.createStubInstance(ClientService);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockAdminService = sinon.createStubInstance(AdminService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
-        mockAlertService = sinon.createStubInstance(AlertService);
-        mockWalletService = sinon.createStubInstance(WalletService);
-        mockDrawer = sinon.createStubInstance(DrawerService);
-        mockModal = sinon.createStubInstance(NgbModal);
+        beforeEach(() => {
 
-        routerStub = new RouterStub();
+            mockIdentityService = sinon.createStubInstance(IdentityService);
+            mockClientService = sinon.createStubInstance(ClientService);
+            mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+            mockAdminService = sinon.createStubInstance(AdminService);
+            mockInitializationService = sinon.createStubInstance(InitializationService);
+            mockAlertService = sinon.createStubInstance(AlertService);
+            mockWalletService = sinon.createStubInstance(WalletService);
+            mockDrawer = sinon.createStubInstance(DrawerService);
+            mockModal = sinon.createStubInstance(NgbModal);
 
-        mockAlertService.successStatus$ = {next: sinon.stub()};
-        mockAlertService.busyStatus$ = {next: sinon.stub()};
-        mockAlertService.errorStatus$ = {next: sinon.stub()};
+            routerStub = new RouterStub();
 
-        mockWalletService.removeFromWallet = sinon.stub().returns(Promise.resolve(true));
+            mockAlertService.successStatus$ = {next: sinon.stub()};
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
 
-        TestBed.configureTestingModule({
-            declarations: [
-                LoginComponent,
-                MockConnectionProfileComponent,
-                MockIdentityCardComponent,
-                MockFooterComponent
-            ],
-            providers: [
-                {provide: IdentityService, useValue: mockIdentityService},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: Router, useValue: routerStub},
-                {provide: AdminService, useValue: mockAdminService},
-                {provide: InitializationService, useValue: mockInitializationService},
-                {provide: AlertService, useValue: mockAlertService},
-                {provide: WalletService, useValue: mockWalletService},
-                {provide: DrawerService, useValue: mockDrawer},
-                {provide: NgbModal, useValue: mockModal}
-            ]
+            mockWalletService.removeFromWallet = sinon.stub().returns(Promise.resolve(true));
+
+            TestBed.configureTestingModule({
+                declarations: [
+                    LoginComponent,
+                    MockConnectionProfileComponent,
+                    MockIdentityCardComponent,
+                    MockImportComponent,
+                    MockFooterComponent
+                ],
+                providers: [
+                    {provide: IdentityService, useValue: mockIdentityService},
+                    {provide: ClientService, useValue: mockClientService},
+                    {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
+                    {provide: Router, useValue: routerStub},
+                    {provide: AdminService, useValue: mockAdminService},
+                    {provide: InitializationService, useValue: mockInitializationService},
+                    {provide: AlertService, useValue: mockAlertService},
+                    {provide: WalletService, useValue: mockWalletService},
+                    {provide: DrawerService, useValue: mockDrawer},
+                    {provide: NgbModal, useValue: mockModal}
+                ]
+            });
+
+            fixture = TestBed.createComponent(LoginComponent);
+
+            component = fixture.componentInstance;
         });
 
-        fixture = TestBed.createComponent(LoginComponent);
+        describe('ngOnInit', () => {
+            it('should create the component', () => {
+                component.should.be.ok;
+            });
 
-        component = fixture.componentInstance;
-    });
+            it('should load identities', fakeAsync(() => {
+                mockInitializationService.initialize.returns(Promise.resolve());
+                let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
+                component.ngOnInit();
 
-    describe('ngOnInit', () => {
-        it('should create the component', () => {
-            component.should.be.ok;
+                tick();
+
+                mockInitializationService.initialize.should.have.been.called;
+                loadConnectionProfilesStub.should.have.been.called;
+            }));
         });
 
-        it('should load identities', fakeAsync(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
-            let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
-            component.ngOnInit();
+        describe('loadConnectionProfiles', () => {
+            it('should load the connection profile', fakeAsync(() => {
+                mockConnectionProfileService.getAllProfiles.returns(Promise.resolve({myProfile: {name: 'myProfile'}}));
 
-            tick();
+                mockIdentityService.getIdentities.returns(Promise.resolve(['bob']));
 
-            mockInitializationService.initialize.should.have.been.called;
-            loadConnectionProfilesStub.should.have.been.called;
-        }));
-    });
+                component.loadConnectionProfiles();
 
-    describe('loadConnectionProfiles', () => {
-        it('should load the connection profile', fakeAsync(() => {
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve({myProfile: {name: 'myProfile'}}));
+                tick();
 
-            mockIdentityService.getIdentities.returns(Promise.resolve(['bob']));
+                mockConnectionProfileService.getAllProfiles.should.have.been.called;
 
-            component.loadConnectionProfiles();
+                mockIdentityService.getIdentities.should.have.been.calledWith('myProfile');
 
-            tick();
-
-            mockConnectionProfileService.getAllProfiles.should.have.been.called;
-
-            mockIdentityService.getIdentities.should.have.been.calledWith('myProfile');
-
-            component['connectionProfiles'].should.deep.equal([{
-                name: 'myProfile',
-                profile: {name: 'myProfile'},
-                default: false,
-                identities: [{
-                    userId: 'bob',
-                    businessNetwork: 'org-acme-biznet'
-                }]
-            }]);
-        }));
-    });
-
-    describe('changeIdentity', () => {
-        it('should change identity', fakeAsync(() => {
-            mockAdminService.list.returns(Promise.resolve(['myNetwork']));
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            component.changeIdentity('myProfile', 'bob');
-
-            tick();
-
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockAdminService.list.should.have.been.called;
-            mockClientService.ensureConnected.should.have.been.calledWith('myNetwork', true);
-
-            mockIdentityService.setLoggedIn.should.have.been.calledWith(true);
-            routerStub.navigate.should.have.been.calledWith(['editor']);
-        }));
-
-        it('should handle error', fakeAsync(() => {
-            mockAdminService.list.returns(Promise.reject('some error'));
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            component.changeIdentity('myProfile', 'bob');
-
-            tick();
-
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockAdminService.list.should.have.been.called;
-            mockClientService.ensureConnected.should.not.have.been.called;
-
-            mockIdentityService.setLoggedIn.should.not.have.been.called;
-            routerStub.navigate.should.not.have.been.called;
-
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
-    });
-
-    describe('editConnectionProfile', () => {
-        it('should edit the connection profile', () => {
-            component.should.be.ok;
-            component.editConnectionProfile('myProfile');
-
-            component['editingConectionProfile'].should.equal('myProfile');
+                component['connectionProfiles'].should.deep.equal([{
+                    name: 'myProfile',
+                    profile: {name: 'myProfile'},
+                    default: false,
+                    identities: [{
+                        userId: 'bob',
+                        businessNetwork: 'org-acme-biznet'
+                    }]
+                }]);
+            }));
         });
-    });
 
-    describe('finishedEditingConnectionProfile', () => {
-        it('should close editing connection profile screen', () => {
-            let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
-            component.finishedEditingConnectionProfile();
+        describe('changeIdentity', () => {
+            it('should change identity', fakeAsync(() => {
+                mockAdminService.list.returns(Promise.resolve(['myNetwork']));
+                mockClientService.ensureConnected.returns(Promise.resolve());
 
-            should.not.exist(component['editingConectionProfile']);
-            loadConnectionProfilesStub.should.have.been.called;
+                component.changeIdentity('myProfile', 'bob');
+
+                tick();
+
+                mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+                mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+                mockAdminService.list.should.have.been.called;
+                mockClientService.ensureConnected.should.have.been.calledWith('myNetwork', true);
+
+                mockIdentityService.setLoggedIn.should.have.been.calledWith(true);
+                routerStub.navigate.should.have.been.calledWith(['editor']);
+            }));
+
+            it('should handle error', fakeAsync(() => {
+                mockAdminService.list.returns(Promise.reject('some error'));
+                mockClientService.ensureConnected.returns(Promise.resolve());
+
+                component.changeIdentity('myProfile', 'bob');
+
+                tick();
+
+                mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+                mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+                mockAdminService.list.should.have.been.called;
+                mockClientService.ensureConnected.should.not.have.been.called;
+
+                mockIdentityService.setLoggedIn.should.not.have.been.called;
+                routerStub.navigate.should.not.have.been.called;
+
+                mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+            }));
         });
-    });
 
-    describe('removeIdentity', () => {
-        it('should open the delete-confirm modal', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(0)
+        describe('editConnectionProfile', () => {
+            it('should edit the connection profile', () => {
+                component.should.be.ok;
+                component.editConnectionProfile('myProfile');
+
+                component['editingConectionProfile'].should.equal('myProfile');
             });
+        });
 
-            component.removeIdentity('profile', 'name');
-            tick();
-            mockModal.open.should.have.been.called;
-        }));
+        describe('finishedEditingConnectionProfile', () => {
+            it('should close editing connection profile screen', () => {
+                let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
+                component.finishedEditingConnectionProfile();
 
-        it('should open delete-confirm modal and handle error', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject('some error')
+                should.not.exist(component['editingConectionProfile']);
+                loadConnectionProfilesStub.should.have.been.called;
             });
+        });
 
-            component.removeIdentity('profile', 'name');
-            tick();
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.called;
-        }));
+        describe('removeIdentity', () => {
+            it('should open the delete-confirm modal', fakeAsync(() => {
+                mockModal.open = sinon.stub().returns({
+                    componentInstance: {},
+                    result: Promise.resolve(0)
+                });
 
-        it('should open delete-confirm modal and handle cancel', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject(null)
+                component.removeIdentity('profile', 'name');
+                tick();
+                mockModal.open.should.have.been.called;
+            }));
+
+            it('should open delete-confirm modal and handle error', fakeAsync(() => {
+                mockModal.open = sinon.stub().returns({
+                    componentInstance: {},
+                    result: Promise.reject('some error')
+                });
+
+                component.removeIdentity('profile', 'name');
+                tick();
+                mockAlertService.busyStatus$.next.should.have.been.called;
+                mockAlertService.errorStatus$.next.should.have.been.called;
+            }));
+
+            it('should open delete-confirm modal and handle cancel', fakeAsync(() => {
+                mockModal.open = sinon.stub().returns({
+                    componentInstance: {},
+                    result: Promise.reject(null)
+                });
+
+                component.removeIdentity('profile', 'name');
+                tick();
+                mockAlertService.busyStatus$.next.should.not.have.been.called;
+                mockAlertService.errorStatus$.next.should.not.have.been.called;
+            }));
+
+            it('should refresh the connection profiles after successfully calling walletService.removeFromWallet()', fakeAsync(() => {
+                mockModal.open = sinon.stub().returns({
+                    componentInstance: {},
+                    result: Promise.resolve(true)
+                });
+
+                component.loadConnectionProfiles = sinon.stub();
+
+                component.removeIdentity('profile', 'name');
+                tick();
+
+                // check services called
+                component.loadConnectionProfiles.should.have.been.called;
+                mockAlertService.busyStatus$.next.should.have.been.called;
+                mockAlertService.successStatus$.next.should.have.been.called;
+
+                mockAlertService.errorStatus$.next.should.not.have.been.called;
+            }));
+
+            it('should handle errors when calling walletService.removeFromWallet()', fakeAsync(() => {
+                mockModal.open = sinon.stub().returns({
+                    componentInstance: {},
+                    result: Promise.resolve(true)
+                });
+
+                component.loadConnectionProfiles = sinon.stub();
+                mockWalletService.removeFromWallet = sinon.stub().returns(Promise.reject('some error'));
+
+                component.removeIdentity('profile', 'name');
+                tick();
+
+                // check services called
+                mockAlertService.busyStatus$.next.should.have.been.called;
+                mockAlertService.errorStatus$.next.should.have.been.called;
+
+                mockAlertService.successStatus$.next.should.not.have.been.called;
+                component.loadConnectionProfiles.should.not.have.been.called;
+            }));
+        });
+
+        describe('closeSubView', () => {
+            it('should close the subview', () => {
+                component['showSubScreen'] = true;
+                component['showDeployNetwork'] = true;
+                component['editingConnectionProfile'] = {profile: 'myProfile'};
+                component.closeSubView();
+
+                component['showSubScreen'].should.equal(false);
+                should.not.exist(component['editingConectionProfile']);
+                component['showDeployNetwork'].should.equal(false);
             });
+        });
 
-            component.removeIdentity('profile', 'name');
-            tick();
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        }));
+        describe('deployNetwork', () => {
+            it('should deploy a new business network', () => {
+                component.deployNetwork({name: 'bob'});
+                mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('bob');
 
-        it('should refresh the connection profiles after successfully calling walletService.removeFromWallet()', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
+                mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
+                component['showSubScreen'].should.equal(true);
+                component['showDeployNetwork'].should.equal(true);
             });
+        });
 
-            component.loadConnectionProfiles = sinon.stub();
+        describe('finishedDeploying', () => {
+            it('should finish deploying', () => {
+                component['showSubScreen'] = true;
 
-            component.removeIdentity('profile', 'name');
-            tick();
+                component['showDeployNetwork'] = true;
+                component.finishedDeploying();
 
-            // check services called
-            component.loadConnectionProfiles.should.have.been.called;
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        }));
-
-        it('should handle errors when calling walletService.removeFromWallet()', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
+                component['showSubScreen'].should.equal(false);
+                component['showDeployNetwork'].should.equal(false);
             });
-
-            component.loadConnectionProfiles = sinon.stub();
-            mockWalletService.removeFromWallet = sinon.stub().returns(Promise.reject('some error'));
-
-            component.removeIdentity('profile', 'name');
-            tick();
-
-            // check services called
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.called;
-
-            mockAlertService.successStatus$.next.should.not.have.been.called;
-            component.loadConnectionProfiles.should.not.have.been.called;
-        }));
+        });
     });
 });
