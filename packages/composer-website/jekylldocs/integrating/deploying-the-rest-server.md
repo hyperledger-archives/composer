@@ -3,7 +3,7 @@ layout: default
 title: Deploying the REST server for a business network
 category: start
 section: integrating
-index-order: 603
+index-order: 604
 sidebar: sidebars/accordion-toc0.md
 excerpt: By deploying a REST server for a business network, you can [**integrate existing systems and data with your Hyperledger Composer business network**](./deploying-the-rest-server.html), allowing you to create, update, or delete assets and participants, as well as get and submit transactions.
 ---
@@ -147,6 +147,32 @@ The REST server can be configured using environment variables, instead of supply
             "failureRedirect": "/"
           }
         }'
+
+10. `COMPOSER_TLS`
+
+    You can use the `COMPOSER_TLS` environment variable to specify if the REST server should enable HTTPS and TLS. Valid values are `true` and `false`.
+
+    For example:
+
+        COMPOSER_TLS=true
+
+    For more information, see [Securing the REST server using HTTPS and TLS](./securing-the-rest-server.html).
+
+11. `COMPOSER_TLS_CERTIFICATE`
+
+    You can use the `COMPOSER_TLS_CERTIFICATE` environment variable to specify the certificate file that the REST server should use when HTTPS and TLS are enabled.
+
+    For example:
+
+        COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
+
+12. `COMPOSER_TLS_KEY`
+
+    You can use the `COMPOSER_TLS_KEY` environment variable to specify the private key file that the REST server should use when HTTPS and TLS are enabled.
+
+    For example:
+
+        COMPOSER_TLS_KEY=/tmp/key.pem
 
 ## Packaging the REST server with additional Node.js modules
 
