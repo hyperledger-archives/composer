@@ -18,7 +18,7 @@ Before you follow these steps, you must have modeled a participant in a Business
 Network Definition and deployed it as a Business Network.
 
 The procedure below shows an example using the following model of a participant
-from the Getting Started walkthrough.
+from the Digital Property sample Business Network Definition: [digitalproperty-network](https://www.npmjs.com/package/digitalproperty-network)
 
 ```
 namespace net.biz.digitalPropertyNetwork
@@ -36,8 +36,12 @@ participant Person identified by personId {
   * JavaScript API
 
     ```javascript
-    let businessNetworkConnection = /* TODO: get a business network connection */
-    businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork')
+    const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+    let businessNetworkConnection = new BusinessNetworkConnection();
+    return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'maeid1', 'RJJmlOpvNVRV')
+        .then(() => {
+            return businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork');
+        })
         .then((participantRegistry) => {
             let factory = businessNetworkConnection.getFactory();
             let participant = factory.newResource('net.biz.digitalPropertyNetwork', 'Person', 'mae@biznet.org');
@@ -45,14 +49,17 @@ participant Person identified by personId {
             participant.lastName = 'Smith';
             return participantRegistry.add(participant);
         })
+        .then(() => {
+            return businessNetworkConnection.disconnect();
+        })
         .catch((error) => {
-            // TODO: handle errors.
+            console.error(error);
+            process.exit(1);
         });
-
     ```
 
   * Command line
 
     ```bash
-    composer participant add -n '@ibm/digitalproperty-network' -i admin -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
+    composer participant add -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
     ```
