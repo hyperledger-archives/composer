@@ -1,44 +1,49 @@
-<div class="import" fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
-     (fileDragDropFileRejected)="fileRejected($event)"
-     (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
-     [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
-  <div class="modal-header">
-    <h1>Import/Create a Connection Profile</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">
-      <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-close_new"></use>
-      </svg>
-    </button>
-  </div>
-  <section class="modal-body">
-    <span>Upload a Connection Profile from your computer</span>
-    <file-importer *ngIf="!currentFile" (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
-                   [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes" [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
-    <span>Or create a connection profile, select your Blockchain platform:</span>
-    <form class="file-types-list" #f="ngForm" *ngIf="!expandInput">
-      <div class="file-types-list-item">
-        <input type="radio" id="file-type-v06" name="file-type" [(ngModel)]="version" value="v06"
-               (change)="changeCurrentFileType()">
-        <label class="radio-label" for="file-type-v06">Hyperledger Fabric v0.6</label>
-        <div class="description">
-          v0.6 Connection Profile.
-        </div>
-      </div>
-      <div class="file-types-list-item">
-        <input type="radio" id="file-type-v1" name="file-type" [(ngModel)]="version" value="v1"
-               (change)="changeCurrentFileType()">
-        <label class="radio-label" for="file-type-v1">Hyperledger Fabric v1.0</label>
-        <div class="description">
-          v1.0 Connection Profile.
-        </div>
-      </div>
-    </form>
+<div class="add-connection">
+  <h1>Create ID Card</h1>
+  <section class="profiles">
+    <div class="description"><b>SELECT BLOCKCHAIN DEPLOYMENT</b></div>
+    <div>
+        <form #optionForm="ngForm">
+            <div class="create-route">
+                <p>Create ID for a Blockchain you already use with Composer:</p>
+                <div class="file-types-list">
+                    <div class="file-types-list-item" *ngFor="let profile of connectionProfiles; let i=index" >
+                            <input [checked]="connectionProfile && this.connectionProfile.name && this.connectionProfile.name.valueOf() === profile.name"
+                            type="radio" id="{{ i }}" name="file-type"
+                                (change)="setConnectionProfile(profile.name)"/>
+                            <label class="radio-label" for="{{ i }}"><h3>{{profile.name === '$default' ? 'Web Browser' : profile.name }}</h3></label>
+                            <div class="description"><p>{{ profile.description }}</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="create-route">
+                <p>Or Create ID for Blockchain you have not connected to before:</p>
+                <div class="file-types-list">
+                    <div class="file-types-list-item">
+                        <input type="radio" id="new-v1" name="file-type"
+                            (change)="setConnectionProfile('_$v1')">
+                        <label class="radio-label" for="new-v1"><h3>Hyperledger Fabric v1.0</h3></label>
+                        <div class="description"><p>Connect to a new v1.0 Blockchain</p></div>
+                    </div>
+                    <div class="file-types-list-item">
+                        <input type="radio" id="new-v06" name="file-type"
+                            (change)="setConnectionProfile('_$v06')">
+                        <label class="radio-label" for="new-v06"><h3>Hyperledger Fabric v0.6</h3></label>
+                        <div class="description"><p>Connect to a new v0.6 Blockchain</p></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+    <button type="button" class="secondary" (click)="dismiss();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="addConnectionProfile()" [disabled]="!version">
+    <button *ngIf = "newDefault" type="button" class="primary" (click)="initiateAddWithProfile()" [disabled]="!connectionProfile">
+      <span>Add</span>
+    </button>
+    <button *ngIf = "!newDefault" type="button" class="primary" (click)="initiateAddToProfile()" [disabled]="!connectionProfile">
       <span>Add</span>
     </button>
   </footer>

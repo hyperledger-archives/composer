@@ -1,10 +1,53 @@
 @import '../../../assets/styles/base/colors';
 @import '../../../assets/styles/base/variables';
+@import '../../connection-profile/add-connection-profile/add-connection-profile.component';
 
-add-identity-modal {
-  .add-identity {
-    p {
-      color: $secondary-text;
+.add-identity {
+
+  // Take main styling from add-connection-profile
+  @extend .add-connection;
+
+    .profiles {
+         .create-route {
+            margin-right: $space-xlarge;
+            margin-bottom: $space-mlarge;
+            border-bottom: $border-width-small solid $fourth-highlight;
+         }
+    }
+
+    .noCerts {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: $space-large;
+        margin-right: $space-xlarge;
+
+        .option {
+            display: flex;
+            flex-direction: row;
+            align-content: center;
+            margin-top: $space-medium;
+        }
+
+        p {
+              color:$primary-text;
+              line-height:19px;
+              margin-top: 0;
+              margin-bottom: 0;
+              font-weight: 300;
+          }
+    }
+
+    label {
+        display: flex;
+        align-self: center;
+        min-width: 10rem;
+    }
+
+    input[type='text'], input[type='password'] {
+        display: flex;
+        align-self: center;
+        color:$primary-text;
+        margin-bottom: 0;
     }
 
     footer {
@@ -15,4 +58,3 @@ add-identity-modal {
       width: 100%;
     }
   }
-}

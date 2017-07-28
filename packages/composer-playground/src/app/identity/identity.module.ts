@@ -15,9 +15,10 @@ import { FooterModule } from '../footer/footer.module';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule],
-    entryComponents: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent],
+    entryComponents: [IdentityIssuedComponent, IssueIdentityComponent],
     declarations: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
-    providers: []
+    providers: [],
+    exports: [AddIdentityComponent]
 })
 
 export class IdentityModule {
