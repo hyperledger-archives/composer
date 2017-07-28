@@ -53,7 +53,7 @@ describe('composer identity revoke CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            userId: 'dogeid1'
+            identityId: 'dogeid1'
         };
         return Revoke.handler(argv)
             .then((res) => {
@@ -70,7 +70,7 @@ describe('composer identity revoke CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            userId: 'dogeid1'
+            identityId: 'dogeid1'
         };
         return Revoke.handler(argv)
             .then((res) => {
@@ -86,7 +86,7 @@ describe('composer identity revoke CLI unit tests', () => {
         let argv = {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
-            userId: 'dogeid1'
+            identityId: 'dogeid1'
         };
         return Revoke.handler(argv)
             .then((res) => {
@@ -103,7 +103,7 @@ describe('composer identity revoke CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            userId: 'dogeid1'
+            identityId: 'dogeid1'
         };
         return Revoke.handler(argv)
             .should.be.rejectedWith(/such error/);

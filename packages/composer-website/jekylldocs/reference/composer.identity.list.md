@@ -1,32 +1,32 @@
 ---
 layout: default
-title: Hyperledger Composer Identity Revoke Command
+title: Hyperledger Composer Identity List Command
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Hyperledger Composer Identity Revoke Command
+excerpt: Hyperledger Composer Identity List Command
 ---
 
-# composer identity revoke
+# Composer Identity List
 
 ---
 
-The `composer identity revoke` command revokes an existing identity from a participant in a
-participant registry. See the task [Revoke an Identity from a Participant](../managing/identity-revoke.html)
+The `composer identity list` command lists all of the identities in a business network.
+See the task [Listing all identities in a business network](../managing/identity-list.html)
 for a walkthrough of using this command or the API.
 
 ## Syntax
 
 ```
-$ composer identity revoke
-composer identity revoke [options]
+$ composer identity list
+composer identity list [options]
 
 Options:
   --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
   --connectionProfileName, -p  The connection profile name  [string]
   --businessNetworkName, -n    The business network name  [string] [required]
   --enrollId, -i               The enrollment ID of the user  [string] [required]
   --enrollSecret, -s           The enrollment secret of the user  [string]
-  --userId, -u                 The user ID of the identity to revoke  [string] [required]
 ```
 
 ## Options
@@ -34,7 +34,7 @@ Options:
 `--connectionProfileName, -p`
 
 The connection profile name.  
-Example: `defaultProfile`
+Example: `hlfv1`
 
 `--businessNetworkName, -n`
 
@@ -53,8 +53,3 @@ Example: `maeid1`
 The enrollment secret of the identity that should be used to connect to deployed
 Business Network.  
 Example: `Xurw3yU9zI0l`
-
-`--identityId, -u`
-
-The unique identifier of the existing identity that should be revoked.  
-Example: `f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862`
