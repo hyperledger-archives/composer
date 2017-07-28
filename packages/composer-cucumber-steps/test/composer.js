@@ -171,4 +171,21 @@ describe('Cucumber', () => {
             .should.eventually.be.false;
     });
 
+    it('should handle all primitive types in tables for assets', function() {
+        const featureSource = `
+        Feature: test
+            Background:
+                Given I have deployed the business network archive basic-sample-network.bna
+            Scenario: test
+                When I have add the following asset of type org.acme.sample.SampleComplexAsset
+                    | assetId | booleanField | dateTimeField        | doubleField | integerField | longField |
+                    | 1       | true         | 1970-01-01T00:00:00Z | 3.14159     | 13           | 999999999 |
+                Then I should have the following assets of type org.acme.sample.SampleComplexAsset
+                    | assetId | booleanField | dateTimeField        | doubleField | integerField | longField |
+                    | 1       | true         | 1970-01-01T00:00:00Z | 3.14159     | 13           | 999999999 |
+        `;
+        return runCucumberTest(featureSource)
+            .should.eventually.be.true;
+    });
+
 });
