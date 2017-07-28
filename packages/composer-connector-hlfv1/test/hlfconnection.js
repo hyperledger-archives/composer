@@ -1722,6 +1722,7 @@ describe('HLFConnection', () => {
 
         it('should throw if businessNetworkIdentifier not specified', () => {
             (() => {
+                delete connection.businessNetworkIdentifier;
                 connection.upgrade(mockSecurityContext, null);
             }).should.throw(/businessNetworkIdentifier not specified/);
         });
@@ -1745,7 +1746,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
@@ -1763,7 +1764,7 @@ describe('HLFConnection', () => {
 
         it('should throw if runtime version check fails', () => {
             sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
@@ -1775,7 +1776,7 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -1796,7 +1797,7 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
 
@@ -1818,7 +1819,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 

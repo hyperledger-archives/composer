@@ -48,7 +48,7 @@ describe('composer upgrade runtime CLI unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Install handler() method tests', function () {
+    describe('Upgrade handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
@@ -62,9 +62,8 @@ describe('composer upgrade runtime CLI unit tests', function () {
             .then ((result) => {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, null);
+                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);
                 sinon.assert.calledOnce(mockAdminConnection.upgrade);
-                sinon.assert.calledWith(mockAdminConnection.upgrade, argv.businessNetworkName);
             });
         });
 
