@@ -121,14 +121,27 @@ describe('IdCard', function() {
             });
         });
 
-        it('should load all metadata', function() {
+        it('should load name', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
                 card.getName().should.equal('Conga');
+            });
+        });
+
+        it('should load description', function() {
+            return readIdCardAsync('valid').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
                 card.getDescription().should.equal('A valid ID card');
+            });
+        });
+
+        it('should load business network name', function() {
+            return readIdCardAsync('valid').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
                 card.getBusinessNetworkName().should.equal('org-acme-biznet');
-                should.not.exist(card.getEnrollmentCredentials());
             });
         });
 
@@ -136,7 +149,7 @@ describe('IdCard', function() {
             return readIdCardAsync('minimal').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                card.getBusinessNetworkName().should.be.empty;
+                card.getBusinessNetworkName().should.be.a('String').that.is.empty;
             });
         });
 
@@ -144,7 +157,7 @@ describe('IdCard', function() {
             return readIdCardAsync('minimal').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                card.getDescription().should.be.empty;
+                card.getDescription().should.be.a('String').that.is.empty;
             });
         });
 
@@ -152,7 +165,7 @@ describe('IdCard', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then((card) => {
-                card.getConnectionProfile().should.be.an('Object');
+                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1' });
             });
         });
 
@@ -166,6 +179,15 @@ describe('IdCard', function() {
             });
         });
 
+        it('should return empty credentials if none defined', function() {
+            return readIdCardAsync('minimal').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                const credentials = card.getCredentials();
+                Object.keys(credentials).should.be.empty;
+            });
+        });
+
         it('should load enrollment credentials', function() {
             return readIdCardAsync('valid-with-enrollment').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
@@ -173,6 +195,32 @@ describe('IdCard', function() {
                 const credentials = card.getEnrollmentCredentials();
                 credentials.id.should.equal('conga');
                 credentials.secret.should.equal('super-secret-passphrase');
+            });
+        });
+
+        it('should return no enrollment credentials if none defined', function() {
+            return readIdCardAsync('valid').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                should.not.exist(card.getEnrollmentCredentials());
+            });
+        });
+
+        it('should load roles', function() {
+            return readIdCardAsync('valid-with-roles').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                const roles = card.getRoles();
+                roles.should.have.members(['peerAdmin', 'channelAdmin', 'issuer']);
+            });
+        });
+
+        it('should return empty roles if none defined', function() {
+            return readIdCardAsync('valid').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then((card) => {
+                const roles = card.getRoles();
+                roles.should.be.empty;
             });
         });
 

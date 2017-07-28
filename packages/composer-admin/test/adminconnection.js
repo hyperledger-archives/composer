@@ -261,10 +261,10 @@ describe('AdminConnection', () => {
         it('should be able to upgrade a composer runtime', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.upgrade('org-acme-biznet')
+            return adminConnection.upgrade()
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.upgrade);
-                sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'org-acme-biznet');
+                sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext);
             });
         });
     });
