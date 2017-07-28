@@ -1,32 +1,49 @@
 <section class="add-identity">
-  <header class="modal-header">
-    <h1>Add Identity</h1>
-    <button class="icon modal-exit" (click)="activeModal.close()">
-      <svg class="ibm-icon" aria-hidden="true">
-       <use xlink:href="#icon-close_new"></use>
-      </svg>
-    </button>
-  </header>
-  <section class="modal-body">
-    <p>Add an existing ID to your wallet</p>
-
-    <form #addIdentityForm="ngForm" id="add-identity-form" (ngSubmit)="addIdentity()">
-      <div class="justified-input">
-        <label for="userID" class="required">User ID<abbr title="required">*</abbr></label>
-        <input required type="text" [(ngModel)]="userID" id="userID" name="userID" autocomplete="off">
-      </div>
-
-      <div class="justified-input">
-        <label for="userSecret" class="required">User Secret<abbr title="required">*</abbr></label>
-        <input required type="password" [(ngModel)]="userSecret" id="userSecret" name="userSecret" autocomplete="off">
-      </div>
-    </form>
+    <h1>Create ID Card</h1>
+  <section class="profiles">
+    <div class="description"><b>PROVIDE SECURITY CREDENTIALS</b></div>
+    <div class="holding-div">
+        <div class="create-route">
+            <p>You must provide one of two types of information to create an ID card:</p>
+            <div class="file-types-list">
+                <div class="file-types-list-item">
+                    <input type="radio" id="noCert" name="file-type" [checked]="true"
+                        (change)="useCertificates(false)">
+                    <label class="radio-label" for="noCert"><h3>ID and Secret</h3></label>
+                    <div class="description"><p>These can be created when accessing a business network.</p></div>
+                </div>
+                <div class="file-types-list-item">
+                    <input type="radio" id="useCert" name="file-type" [disabled]="true"
+                        (change)="useCertificates(true)">
+                    <label class="radio-label" for="useCert" style="color:grey"><h3>Certificates</h3></label>
+                    <div class="description" style="color:grey"><p>Required here are public and private certificate files.</p></div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!useCerts" class="noCerts">
+            <p>An ID and Secret must be created by someone who already has access to the Business Network you are connecting to.</p>
+            <form #addIdentityForm="ngForm" id="add-identity-form" (ngSubmit)="addIdentity()">
+                <div class="option">
+                    <label for="userId"><h3>User ID</h3></label>
+                    <input required type="text" [(ngModel)]="userId" id="userId" name="userId" autocomplete="off">
+                </div>
+                <div class="option">
+                    <label for="userSecret"><h3>User Secret</h3></label>
+                    <input required type="password" [(ngModel)]="userSecret" id="userSecret" name="userSecret" autocomplete="off">
+                </div>
+                <div class="option">
+                    <label for="busNetName"><h3>Name of Business Network</h3></label>
+                    <input required type="text" [(ngModel)]="busNetName" id="busNetName" name="busNetName" autocomplete="off">
+                </div>
+            </form>
+        </div>
+    </div>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.close();">
+    <button type="button" class="secondary" (click)="close();">
       <span>Cancel</span>
     </button>
-    <button type="submit" form="add-identity-form" class="primary" [disabled]="!addIdentityForm.form.valid || addInProgress">
+    <button type="submit" form="add-identity-form" class="primary" [disabled]="!validContents()">
       <div *ngIf="!addInProgress">
         <span>Add</span>
       </div>
@@ -40,3 +57,5 @@
     </button>
   </footer>
 </section>
+
+
