@@ -11,10 +11,10 @@ import { FileImporterModule } from '../common/file-importer/file-importer.module
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, ReactiveFormsModule, FileImporterModule],
-    entryComponents: [AddCertificateComponent, AddConnectionProfileComponent, ViewCertificateComponent],
+    entryComponents: [AddCertificateComponent, ViewCertificateComponent],
     declarations: [ConnectionProfileComponent, AddCertificateComponent, AddConnectionProfileComponent, ViewCertificateComponent],
     providers: [],
-    exports: [ConnectionProfileComponent]
+    exports: [ConnectionProfileComponent, AddConnectionProfileComponent]
 })
 
 export class ConnectionProfileModule {

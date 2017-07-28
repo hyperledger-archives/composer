@@ -22,9 +22,14 @@ import { ImportIdentityComponent } from './import-identity';
 export class LoginComponent implements OnInit {
 
     private connectionProfiles = [];
-    private editingConectionProfile = null;
-    private showSubScreen: boolean = false;
     private showDeployNetwork: boolean = false;
+    private editingConnectionProfile = null;
+    private targetProfileName: string = null;
+    private addIdCard: boolean = false;
+    private creatingIdCard: boolean = false;
+    private editingIdCard: boolean = false;
+    private creatingIdWithProfile: boolean = false;
+    private showSubScreen: boolean = false;
 
     constructor(private identityService: IdentityService,
                 private router: Router,
@@ -67,6 +72,7 @@ export class LoginComponent implements OnInit {
                                 name: key,
                                 profile: connectionProfile,
                                 default: key === '$default',
+                                description: 'Default connection profile',
                                 identities: identityList
                             });
                         });
@@ -95,19 +101,49 @@ export class LoginComponent implements OnInit {
 
     editConnectionProfile(connectionProfile): void {
         this.showSubScreen = true;
-        this.editingConectionProfile = connectionProfile;
+        this.editingConnectionProfile = connectionProfile;
     }
 
-    finishedEditingConnectionProfile(): Promise<void> {
-        this.showSubScreen = false;
-        delete this.editingConectionProfile;
-        return this.loadConnectionProfiles();
+    finishedEditingConnectionProfile(result): Promise<void> {
+        if (result.update === false || !this.creatingIdWithProfile) {
+            this.closeSubView();
+            return this.loadConnectionProfiles();
+        } else {
+            delete this.editingConnectionProfile;
+            this.addIdToExistingProfileName(result.connectionProfile.name);
+        }
     }
 
     closeSubView(): void {
         this.showSubScreen = false;
-        delete this.editingConectionProfile;
         this.showDeployNetwork = false;
+        this.creatingIdCard = false;
+        this.editingIdCard = false;
+        this.creatingIdWithProfile = false;
+        delete this.editingConnectionProfile;
+        delete this.targetProfileName;
+    }
+
+    createIdCard(): void {
+        this.showSubScreen = true;
+        this.creatingIdCard = true;
+    }
+
+    addIdToExistingProfileName(connectionProfileName): void {
+        this.targetProfileName = connectionProfileName;
+        this.creatingIdCard = false;
+        this.editingIdCard = true;
+    }
+
+    addIdToNewProfile(connectionProfile): void {
+        this.editingConnectionProfile = connectionProfile;
+        this.creatingIdCard = false;
+        this.creatingIdWithProfile = true;
+    }
+
+    completeCardAddition() {
+        this.closeSubView();
+        return this.loadConnectionProfiles();
     }
 
     deployNetwork(connectionProfile) {

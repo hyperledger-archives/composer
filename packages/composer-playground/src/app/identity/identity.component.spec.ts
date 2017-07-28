@@ -137,55 +137,6 @@ describe(`IdentityComponent`, () => {
         }));
     });
 
-    describe('addId', () => {
-        it('should add the id', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                result: Promise.resolve()
-            });
-
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            component.addId();
-
-            tick();
-
-            mockLoadAllIdentities.should.have.been.called;
-            mockModal.open.should.have.been.called;
-        }));
-
-        it('should handle an error', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                result: Promise.reject('some error')
-            });
-
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            component.addId();
-
-            tick();
-
-            mockAlertService.errorStatus$.next.should.have.been.called;
-            mockLoadAllIdentities.should.not.have.been.called;
-            mockModal.open.should.have.been.called;
-        }));
-
-        it('should handle escape being pressed', fakeAsync(() => {
-            mockModal.open = sinon.stub().returns({
-                result: Promise.reject(1)
-            });
-
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            component.addId();
-
-            tick();
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-            mockLoadAllIdentities.should.not.have.been.called;
-            mockModal.open.should.have.been.called;
-        }));
-    });
-
     describe('issueNewId', () => {
         beforeEach(() => {
             mockModal.open.reset();
