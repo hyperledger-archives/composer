@@ -1,41 +1,71 @@
 @import '../../../assets/styles/base/colors';
 @import '../../../assets/styles/base/variables';
 
-.import {
-  width: 660px;
-  height: 450px;
-
+.add-connection {
   display: flex;
   flex-direction: column;
+  background-color: $white;
+  margin-bottom: $space-large;
+  margin-top: $space-large;
+  border:$border-width-small solid $keyline-highlight;
+  border-radius: $radius-medium;
 
-  .file-types-list {
-    max-height: 200px;
-    margin-top: 16px;
+  h1 {
+      margin-top: $space-medium;
+      margin-bottom: $space-large;
+      margin-left: $space-medium;
+      font-size: 20px;
+      color: $primary-text;
+      letter-spacing:0;
+      text-align:left;
+  }
 
-    .file-types-list-item {
-      background-color: $third-highlight;
-      padding: $space-medium;
-      &:nth-child(even) {
-        background-color: $white;
-      }
+  .profiles {
+      display: flex;
+      flex-direction: row;
+      margin-left: $space-medium;
 
       .description {
-        font-style: italic;
-        padding-left: 2em;
+        margin-right: $space-xlarge;
+        margin-top: $space-small;
+        font-size: 0.7rem;
+        color:$tertiary-text;
       }
 
-      label.radio-label {
-        font-weight: bold;
+      .create-route {
+          margin-bottom: $space-large;
 
-        &::before {
-          top: 8px;
-        }
+          p {
+              color:$primary-text;
+              margin-top: 0;
+              margin-bottom: 0;
+              font-weight: 300;
+          }
 
-        &::after {
-          top: 13px;
+          .file-types-list {
+              display: flex;
+              flex-direction: row;
+              margin-top: $space-large;
+              margin-bottom: $space-mlarge;
+              flex-wrap: wrap;
+
+              .file-types-list-item {
+                    background-color: $white;
+                    padding: $space-medium;
+                    max-width: 25rem;
+                    min-width: 22rem;
+
+                .description {
+                    color:$primary-text;
+                    margin-left: $space-large;
+                }
+
+                label.radio-label {
+                    font-weight: 600;
+                }
+            }
         }
       }
-    }
   }
 
   section {
@@ -49,71 +79,8 @@
       color: $secondary-text;
     }
 
-    .chosen-file {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: $third-highlight;
-      padding: $space-medium;
-
-      .title {
-        font-weight: bold;
-      }
-
-      .file-info {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid $fifth-highlight;
-        padding-bottom: $space-medium;
-        align-items: center;
-
-        svg {
-          fill: $first-highlight;
-          width: 76px;
-          height: 76px;
-          margin-right: $space-medium;
-        }
-
-        .file-title {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-
-          span {
-            color: $primary-text;
-            font-style: italic;
-          }
-        }
-      }
-
-      .file-content {
-        margin-top: $space-medium;
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-
-        .network-part {
-          margin-bottom: $space-smedium;
-        }
-      }
-    }
-
-    .github-spinner {
-      height: 200px;
-      width: 465px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .circle-path {
-        stroke: $first-highlight;
-      }
-    }
-
     form {
-      max-height: 200px;
       overflow-y: auto;
-      margin-top: $space-medium;
     }
   }
 }

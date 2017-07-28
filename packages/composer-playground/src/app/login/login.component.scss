@@ -6,7 +6,17 @@ app-login {
     background-color: $fourth-highlight;
 
     section.header {
+        display: flex;
         padding: $space-large $space-large $space-medium $space-large;
+        align-items: center;
+
+        div.left-align {
+            flex: 1;
+        }
+
+        div.right-align {
+            margin-right: $space-medium;
+        }
     }
 
     section.main-view {
@@ -50,6 +60,24 @@ app-login {
     section.sub-view {
         padding: $space-large;
         height: calc(100vh - 63px - 55px);
+        overflow-y: auto;
+
+        .header {
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
+
+    section.edit-connection-profile {
+        padding: $space-large ;
+        height: calc(100vh - 63px);
         overflow-y: auto;
 
         .header {
