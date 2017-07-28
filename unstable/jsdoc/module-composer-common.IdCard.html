@@ -413,7 +413,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-128">line 128</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-146">line 146</a>
 			</li>
 		</ul>
 	</dd>
@@ -704,6 +704,7 @@
     
     <div class="description">
         <p>Credentials associated with this card, and which are used to connect to the associated business network.</p>
+<p><p><br>For PKI-based authentication, the credentials are expected to be of the form:<br><em>{ public: String, private: String }</em>.</p>
     </div>
     
 
@@ -750,7 +751,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-101">line 101</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-104">line 104</a>
 			</li>
 		</ul>
 	</dd>
@@ -779,7 +780,7 @@
     
             
 <div class="param-desc">
-    <p>credentials in the form <em>{ public: publicKey, private: privateKey }</em>, if they exist.</p>
+    <p>credentials.</p>
 </div>
 
 
@@ -928,6 +929,7 @@
     
     <div class="description">
         <p>Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to<br>enroll with a business network and obtain certificates.</p>
+<p><p><br>For an ID/secret enrollment scheme, the credentials are expected to be of the form:<br><em>{ id: String, secret: String }</em>.</p>
     </div>
     
 
@@ -974,7 +976,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-111">line 111</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-116">line 116</a>
 			</li>
 		</ul>
 	</dd>
@@ -1003,7 +1005,7 @@
     
             
 <div class="param-desc">
-    <p>enrollment credentials in the form <em>{ id: enrollmentId, secret: enrollmentSecret }</em>, if<br>they exist.</p>
+    <p>enrollment credentials, if they exist.</p>
 </div>
 
 
@@ -1128,6 +1130,119 @@
     <dd>
         
 <span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getRoles"><span class="type-signature"></span>getRoles()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Special roles for which this ID can be used, which can include:</p>
+<ul><br>  <li>peerAdmin</li><br>  <li>channelAdmin</li><br>  <li>issuer</li><br></ul>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-137">line 137</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>roles.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;String></span>
 
 
 
