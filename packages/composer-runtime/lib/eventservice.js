@@ -33,27 +33,40 @@ class EventService extends Service {
     constructor() {
         super();
         this.eventBuffer = [];
+        this.serializedEventBuffer = [];
     }
 
     /**
      * Add an event to the buffer
+     * @param {Object} serializedEvent The event to be emitted (in serialized form)
      * @param {Resource} event The event to be emitted
      * when complete, or rejected with an error.
      */
-    emit(event) {
+    emit(serializedEvent,event) {
         const method = 'emit';
         LOG.entry(method, event);
+        this.serializedEventBuffer.push(serializedEvent);
         this.eventBuffer.push(event);
-        LOG.debug(method, this.eventBuffer);
         LOG.exit(method);
+    }
+
+    /**
+     * Get an array of serialized emitted events
+     * @return {Object[]} - An array of emitted events
+     */
+    getEvents() {
+        const method = 'getEvents';
+        LOG.entry(method);
+        LOG.exit(method, this.serializedEventBuffer);
+        return this.serializedEventBuffer;
     }
 
     /**
      * Get an array of emitted events
      * @return {Resource[]} - An array of emitted events
      */
-    getEvents() {
-        const method = 'getEvents';
+    getEventResources(){
+        const method = 'getEventResources';
         LOG.entry(method);
         LOG.exit(method, this.eventBuffer);
         return this.eventBuffer;
@@ -69,6 +82,7 @@ class EventService extends Service {
         return super.transactionStart(readOnly)
             .then(() => {
                 this.eventBuffer = [];
+                this.serializedEventBuffer = [];
             });
     }
 

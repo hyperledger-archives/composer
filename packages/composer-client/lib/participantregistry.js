@@ -40,7 +40,7 @@ class ParticipantRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a list of {@link ParticipantRegistry}
      * instances representing the participant registries.
      */
-    static getAllParticipantRegistries(securityContext, modelManager, factory, serializer) {
+    static getAllParticipantRegistries(securityContext, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -52,7 +52,7 @@ class ParticipantRegistry extends Registry {
         return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
             .then((participantRegistries) => {
                 return participantRegistries.map((participantRegistry) => {
-                    return new ParticipantRegistry(participantRegistry.id, participantRegistry.name, securityContext, modelManager, factory, serializer);
+                    return new ParticipantRegistry(participantRegistry.id, participantRegistry.name, securityContext, modelManager, factory, serializer,bnc);
                 });
             });
     }
@@ -69,7 +69,7 @@ class ParticipantRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a {@link ParticipantRegistry}
      * instance representing the participant registry.
      */
-    static getParticipantRegistry(securityContext, id, modelManager, factory, serializer) {
+    static getParticipantRegistry(securityContext, id, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -82,7 +82,7 @@ class ParticipantRegistry extends Registry {
         }
         return Registry.getRegistry(securityContext, REGISTRY_TYPE, id)
             .then((registry) => {
-                return new ParticipantRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer);
+                return new ParticipantRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer,bnc);
             });
     }
 
@@ -97,7 +97,7 @@ class ParticipantRegistry extends Registry {
      * @param {Serializer} serializer The Serializer to use for this asset registry.
      * @return {Promise} A promise that will be resolved with a boolean indicating whether the asset registry exists
      */
-    static participantRegistryExists(securityContext, id, modelManager, factory, serializer) {
+    static participantRegistryExists(securityContext, id, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -124,7 +124,7 @@ class ParticipantRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a {@link ParticipantRegistry}
      * instance representing the new participant registry.
      */
-    static addParticipantRegistry(securityContext, id, name, modelManager, factory, serializer) {
+    static addParticipantRegistry(securityContext, id, name, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -139,7 +139,7 @@ class ParticipantRegistry extends Registry {
         }
         return Registry.addRegistry(securityContext, REGISTRY_TYPE, id, name)
             .then(() => {
-                return new ParticipantRegistry(id, name, securityContext, modelManager, factory, serializer);
+                return new ParticipantRegistry(id, name, securityContext, modelManager, factory, serializer,bnc);
             });
     }
 
@@ -157,8 +157,8 @@ class ParticipantRegistry extends Registry {
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
      */
-    constructor(id, name, securityContext, modelManager, factory, serializer) {
-        super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer);
+    constructor(id, name, securityContext, modelManager, factory, serializer,bnc) {
+        super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer,bnc);
     }
 
 }

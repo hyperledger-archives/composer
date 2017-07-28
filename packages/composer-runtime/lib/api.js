@@ -249,7 +249,7 @@ class Api {
             });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
-            eventService.emit(serializedEvent);
+            eventService.emit(serializedEvent,event);
             LOG.exit(method);
         };
 

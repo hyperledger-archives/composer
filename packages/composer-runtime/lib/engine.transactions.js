@@ -95,7 +95,6 @@ class EngineTransactions {
 
             })
             .then(() => {
-
                 // Check that a transaction processor function was executed.
                 if (totalCount === 0) {
                     const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
@@ -125,7 +124,7 @@ class EngineTransactions {
             })
             .then((result) => {
                 // Store the transaction in the transaction registry.
-                LOG.debug(method, 'Storing executed transaction in transaction registry');
+                LOG.debug(method, 'Storing historian record in the registry');
                 return historian.add(result);
 
             }).catch((error) => {
@@ -142,46 +141,53 @@ class EngineTransactions {
      * @private
      */
     createHistorianRecord(transaction,context) {
-
+        const method = 'createHistorianRecord';
+        LOG.entry(method,transaction,context);
         // For reference the historian record looks like this
         // asset HistorianRecord identified by transactionId {
         //     o String      transactionId
         //   --> Transaction transactionInvoked
         //   --> Participant participantInvoking
         //   --> Identity    identityUsed
-        //   --> Event[]     eventsEmitted
+        //   o Event[]     eventsEmitted
         //   o DateTime      tranactionTimestamp
         // }
 
         // create a record from the factory
-
         let factory = context.getFactory();
         let record = factory.newResource('org.hyperledger.composer.system', 'HistorianRecord', transaction.getIdentifier());
+
+        LOG.info(method,'created historian record');
+        // Get the current participant & create a relationship
         let participant = context.getParticipant();
         if (!participant){
             record.participantInvoking = null;
         } else {
             record.participantInvoking = factory.newRelationship('org.hyperledger.composer.system','Participant',participant.getIdentifier());
         }
+
+        // Get the transaction in question and also create a relationship
         record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
         record.transactionTimestamp = transaction.timestamp;
 
-
+        // Get the events that are generated - getting these as Resources
         let evtSvr = context.getEventService();
         if(!evtSvr){
             record.eventsEmitted = [];
         } else {
-            record.eventsEmitted = [];
-            //record.eventsEmitted = evtSvr.getEvents();
+            record.eventsEmitted = evtSvr.getEventResources();
         }
 
+        // Note that this is only call out to collect data that returns a promise.
+        // Get the current identity that is being used
         return context.getIdentityManager().getIdentity()
         .then( (result) => {
             record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
             return;
         }).catch((error) => {
-            LOG.error('createHistorianRecord',error);
+            LOG.error(method,error);
         }).then(()=>{
+            LOG.exit(method, record);
             return record;
         });
 

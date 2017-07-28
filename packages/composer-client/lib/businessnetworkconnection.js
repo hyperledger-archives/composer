@@ -114,7 +114,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAllAssetRegistries() {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -135,7 +135,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAssetRegistry(id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -158,7 +158,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     assetRegistryExists(id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -177,12 +177,12 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     addAssetRegistry(id, name) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
      * Get a list of all existing participant registries.
-     * @example
+     * @exampleserializedResources
      * // Get all participant registries
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
@@ -198,7 +198,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAllParticipantRegistries() {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -219,7 +219,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getParticipantRegistry(id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
      /**
@@ -242,7 +242,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     participantRegistryExists(id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**

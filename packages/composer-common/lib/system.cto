@@ -13,14 +13,18 @@
  */
 namespace org.hyperledger.composer.system
 
-/** Abstract system asset that all assets extend
+/**
+ * Abstract system asset that all assets extend
  */
 abstract asset Asset {  }
 
-/** Abstract system participant that all participants extend */
+/**
+ * Abstract system participant that all participants extend
+ */
 abstract participant Participant {   }
 
-/** Abstract transaction that all transactions, including system ones, extend
+/**
+ * Abstract transaction that all transactions, including system ones, extend
  *
  * @param {String} transactionId Identifier for this transaction
  * @param {DateTime} timestamp   Timestamp for this transaction
@@ -30,7 +34,8 @@ abstract transaction Transaction identified by transactionId {
   o DateTime timestamp
 }
 
-/** Abstract event that all events, including system ones, extend
+/**
+ * Abstract event that all events, including system ones, extend
  *
  * @param {String} eventId Identifier for this event
  * @param {DateTime} timestamp   Timestamp for this event
@@ -40,7 +45,9 @@ abstract event Event identified by eventId {
   o DateTime timestamp
 }
 
-/** Abstract Registry asset, that is used as the basis for all types of registries
+/**
+ * Abstract Registry asset, that is used as the basis for all types of registries
+
  * @param {String} registryId identity
  * @param {String} name Name of the regsitry
  * @param {String} type type of the regsitry
@@ -53,29 +60,32 @@ abstract asset Registry identified by registryId {
   o Boolean system
 }
 
-/** Abstract registry to act as a marker for the system registries
+/**
+ * Abstract registry to act as a marker for the system registries
  * Experimental feature
  */
 abstract asset SystemRegistry extends Registry { }
 
-/** AssetRegistry type
+/**
+ * AssetRegistry type
  */
-asset AssetRegistry extends Registry { }
+asset AssetRegistry extends SystemRegistry { }
 
-/** ParticipantRegistry type
+/**
+ * ParticipantRegistry type
  */
-asset ParticipantRegistry extends Registry { }
+asset ParticipantRegistry extends SystemRegistry { }
 
-/** TransactionRegistry type
- * @deprecated to be replaced by the HistorianRegistry
+/**
+ * TransactionRegistry type
  */
-asset TransactionRegistry extends Registry { }
+asset TransactionRegistry extends SystemRegistry { }
 
 
 /** Asset representing the business networkId
  * @param {String} networkId of the business networkId
  */
-asset Network identified by networkId {
+asset Network identified by networkId extends Asset {
   o String networkId
 }
 
@@ -91,16 +101,49 @@ asset Network identified by networkId {
  * @param {DateTime} transactionTimestamp Use the transaction's timestamp
  */
 asset HistorianRecord identified by transactionId {
-    o String      transactionId
-  --> Transaction transactionInvoked   
+  o String      transactionId
+  --> Transaction transactionInvoked
   --> Participant participantInvoking  optional
   --> Identity    identityUsed         optional
-  o Event[]     eventsEmitted        optional
+  o Event[]       eventsEmitted        optional
   o DateTime      transactionTimestamp
   // --> Delta[] deltas --- patience patience
 }
 
 asset HistorianRegistry extends SystemRegistry { }
+
+// -----------------------------------------------------------------------------
+// System transactions that act on Regisries of any type
+abstract transaction RegistryTransaction {
+  // --> Registry targetRegistry
+  o String registryType
+  o String registryId
+}
+
+asset ResourceId identified by id {
+  o String id
+}
+
+abstract transaction AssetTransaction extends RegistryTransaction {
+   o Asset[] resources
+}
+
+abstract transaction ParticipantTransaction extends RegistryTransaction {
+  o Participant[] resources
+}
+
+transaction AddAsset extends AssetTransaction { }
+transaction UpdateAsset extends AssetTransaction { }
+transaction RemoveAsset extends AssetTransaction {
+ o String[] resourceIds
+}
+
+transaction AddParticipant extends ParticipantTransaction { }
+transaction UpdateParticipant extends ParticipantTransaction { }
+transaction RemoveParticipant extends ParticipantTransaction {
+ o String[] resourceIds
+}
+
 
 // -----------------------------------------------------------------------------
 // Identity
@@ -130,9 +173,7 @@ transaction BindIdentity {
     o String certificate
 }
 
-transaction ActivateCurrentIdentity {
-
-}
+transaction ActivateCurrentIdentity { }
 
 transaction RevokeIdentity {
     --> Identity identity
