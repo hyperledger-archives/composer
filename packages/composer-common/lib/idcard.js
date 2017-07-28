@@ -96,7 +96,10 @@ class IdCard {
 
     /**
      * Credentials associated with this card, and which are used to connect to the associated business network.
-     * @return {Object} credentials in the form <em>{ public: publicKey, private: privateKey }</em>, if they exist.
+     * <p>
+     * For PKI-based authentication, the credentials are expected to be of the form:
+     * <em>{ public: String, private: String }</em>.
+     * @return {Object} credentials.
      */
     getCredentials() {
         return this.credentials;
@@ -105,8 +108,10 @@ class IdCard {
     /**
      * Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to
      * enroll with a business network and obtain certificates.
-     * @return {Object} enrollment credentials in the form <em>{ id: enrollmentId, secret: enrollmentSecret }</em>, if
-     * they exist.
+     * <p>
+     * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
+     * <em>{ id: String, secret: String }</em>.
+     * @return {Object} enrollment credentials, if they exist.
      */
     getEnrollmentCredentials() {
         let result = null;
@@ -118,6 +123,19 @@ class IdCard {
             result.secret = secret;
         }
         return result;
+    }
+
+    /**
+     * Special roles for which this ID can be used, which can include:
+     * <ul>
+     *   <li>peerAdmin</li>
+     *   <li>channelAdmin</li>
+     *   <li>issuer</li>
+     * </ul>
+     * @return {String[]} roles.
+     */
+    getRoles() {
+        return this.metadata.roles || [ ];
     }
 
     /**
