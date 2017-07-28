@@ -195,10 +195,6 @@ export class LoginComponent implements OnInit {
                     this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
-            })
-            .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
             });
     }
 }
