@@ -23,7 +23,7 @@ module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    userId: { alias: 'u', required: true, describe: 'The user ID of the identity to revoke', type: 'string' }
+    identityId: { alias: [ 'u', 'userId' ], required: true, describe: 'The unique identifier of the identity to revoke', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

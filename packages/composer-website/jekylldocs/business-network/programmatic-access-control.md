@@ -1,16 +1,18 @@
 ---
 layout: default
-title: Implementing participant-based access control
+title: Programmatic access control
 category: tasks
-section: managing
+section: business-network
 sidebar: sidebars/accordion-toc0.md
 excerpt: Transaction processor functions can be used to [**implement participant-based access control**](../managing/current-participant.html) by checking the participant type and identifier.
-index-order: 706
+index-order: 408
 ---
 
-# Implementing participant-based access control
+# Programmatic access control
 
-The current participant can be used to implement access control in a transaction processor function. You can use the type and the identifier of the current participant to permit or reject the execution of a transaction processor function.
+It is recommended that you use declarative access control to implement access control rules in your business network definition.
+However, you can implement programmatic access control in your transaction processors by retrieving and testing the current participant.
+You can run tests against the properties of the current participant to permit or reject the execution of a transaction processor function.
 
 ## Before you start
 
