@@ -1591,6 +1591,255 @@ return adminConnection.getProfile(&#x27;testprofile&#x27;)
             
 <hr>
 <dt>
+    <h4 class="name" id="importIdentity"><span class="type-signature"></span>importIdentity(connectionProfile, id, publicKey, privateKey)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Import an identity into a profiles' wallet. No connection needs to be established<br>for this method to succeed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>connectionProfile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the connection profile</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The id to associate with this identity</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The signer cert in PEM format</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>privateKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The private key in PEM format</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-527">line 527</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise which is resolved when the identity is imported</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Import an identity into a profiles&#x27; wallet
+var adminConnection = new AdminConnection();
+return adminConnection.importIdentity(&#x27;hlfv1&#x27;, &#x27;PeerAdmin&#x27;, publicKey, privateKey)
+.then(() =&gt; {
+    // Identity imported
+    console.log(&#x27;identity imported successfully&#x27;);
+})
+.catch(function(error){
+    // Add optional error handling here.
+});</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="install"><span class="type-signature"></span>install(businessNetworkIdentifier, installOptions)</h4>
     
     
@@ -1847,7 +2096,7 @@ return adminConnection.install(businessNetworkDefinition.getName())
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-498">line 498</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-501">line 501</a>
 			</li>
 		</ul>
 	</dd>
@@ -1976,7 +2225,7 @@ return adminConnection.list()
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-373">line 373</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-376">line 376</a>
 			</li>
 		</ul>
 	</dd>

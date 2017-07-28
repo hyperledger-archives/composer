@@ -113,6 +113,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +127,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -185,9 +187,13 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="participants-and-identities">Participants and Identities</h1>
+              <h1 id="participants-and-identities">Participants and identities</h1>
 
-<p>A <code>Participant</code> is an actor in a business network. A participant might be an individual or an organization. A participant can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
+<h2 id="concepts">Concepts</h2>
+
+<p>A <code>Participant</code> is an actor in a business network. A participant might be an individual
+an organization. A participant can create assets, and also exchange assets with
+other participants. A participant works with assets by submitting transactions.</p>
 
 <p>A participant has a set of <code>Identity</code> documents that can be validated to prove the
 identity of that participant. For example, an individual may have one or more of
@@ -201,49 +207,116 @@ the following identity documents that prove who they are:</p>
 <li>SSL certificate</li>
 </ul>
 
+<p>In Hyperledger Composer, participants are separated from the set of
+identity documents that they can use to interact with a business network.</p>
+
 <p>In order for a new participant to join a business network, a new instance of that
-participant must be created in the business network. An identity document must
-then be <code>Issued</code> to that participant. The new participant can then use that identity
-document to interact with the business network.</p>
+participant must be created in the business network. The participant instance
+stores all of the required information about that participant, but it does not give
+that participant access to interact with the business network.</p>
+
+<p>In order to grant the participant access to interact with the business network, an
+identity document must then be <code>Issued</code> to that participant. The new participant
+can then use that identity document to interact with the business network.</p>
+
+<p>A participant may have an existing identity document that they use to interact with
+other business networks or other external systems. These identity documents can
+be reused and <code>Bound</code> to that participant. The new participant can then use their
+existing identity document to interact with the business network.</p>
 
 <p>Identity documents usually expire after a set period of time. Identity documents may
 also be lost or stolen. If the identity document expires, or if it needs to be
 replaced, then it must be <code>Revoked</code> so it can no longer be used to interact with
 the business network.</p>
 
-<p>These actions are performed by an existing participant in the business network,
-for example a regulatory body, or a participant in the same organization who has
-been trusted to manage participants/identities in that organization.</p>
+<p>However, revoking an identity document does not remove the information about that
+participant and any assets that they own. Revoking the identity document simply
+removes the participants ability to interact with the business network using that
+identity document. Access to the business network can be restored by issuing the
+participant with a new identity document.</p>
+
+<p>These participant and identity management actions are performed by an existing
+participant in the business network, for example a regulatory body, or a participant
+in the same organization who has been trusted to manage participants/identities in
+that organization.</p>
+
+<h2 id="participants-and-identities-in-hyperledger-composer">Participants and identities in Hyperledger Composer</h2>
 
 <p>In Hyperledger Composer, the structure of a participant is modelled in a
 model file. This structure may include various information about the participant,
 for example the participants name, address, e-mail address, date of birth, etc.
-New instances of that modelled participant can then be created and stored in a
+New instances of that modelled participant can then be created and added to a
 participant registry.</p>
 
-<p>Hyperledger Composer uses Hyperledger Fabric enrollment certificates as
-identity documents. APIs and command line applications are provided to issue and
-revoke enrollment certificates to participants that are stored in a participant
-registry. When transactions are submitted using those enrollment certificates, the
-participant is identified and is made available for the transaction processor
-function to use.</p>
+<p>Hyperledger Composer requires the use Blockchain identities as the
+form of identity documents. For example, when deploying a business network to Hyperledger
+Fabric, enrolment certificates are used as the form of identity document. These enrolment
+certificates are used to cryptographically sign the transactions that are submitted to
+the deployed business network.</p>
+
+<p>A deployed business network maintains a set of mappings of identities to participants
+in the <code>Identity Registry</code>. When an identity is <code>Issued</code> or <code>Bound</code> to a participant, a new
+mapping is added to the identity registry. When that participant uses that identity to
+submit transactions to the deployed business network, the Composer runtime looks for a
+valid mapping for that identity in the identity registry. This lookup is done using
+the public key signature or fingerprint, essentially a hash of the certificate contents
+that is unique to that certificate and identity.</p>
+
+<p>Once a mapping is found in the identity registry, the participant for that identity is
+retrieved from that mapping. That participant becomes the <code>Current Participant</code>, the
+participant who submitted the transaction. All access control in Hyperledger Composer
+is based around the current participant. Access control rules that define which participants
+can perform which operations on which resources all operate on the current participant.</p>
+
+<p>When a participant uses an identity to submit a transaction to the deployed business
+network for the first time, that identity is <code>Activated</code>. This means that the entry in
+the identity registry is updated to record the fact that the identity was used for the
+first time. Additional information about the identity, such as the certificate, may also
+be recorded in the identity registry during activation if it was not available when the
+identity was issued or bound to the participant.</p>
+
+<p>If and when an identity is revoked, the entry in the identity registry for that identity
+is updated to change the status to <code>Revoked</code>. After an identity is revoked, if a participant
+tries to use that identity to submit a transaction to the deployed business network, that
+transaction will be rejected.</p>
+
+<h2 id="performing-identity-management-tasks-in-hyperledger-composer">Performing identity management tasks in Hyperledger Composer</h2>
+
+<p>The Hyperledger Composer Node.js client APIs, REST APIs, and command line
+interfaces can all be used to perform identity management operations. For example, the
+following identity management operations are available through all Hyperledger Composer
+interfaces:</p>
+
+<ul>
+<li>Adding a new participant to a participant registry</li>
+<li>Issuing a new identity to a participant</li>
+<li>Binding an existing identity to a participant</li>
+<li>Revoking an identity from a participant</li>
+<li>Listing all identities in a deployed business network</li>
+</ul>
+
+<p>For more information, see the related tasks and reference material at the bottom of this document.</p>
 
 <h2 id="related-concepts">Related Concepts</h2>
 
-<p><a href="../business-network/business-network-index.html">Business Network</a></p>
+<p><a href="../business-network/business-network-index.html">Business Network</a>  </p>
 
 <h2 id="related-tasks">Related Tasks</h2>
 
 <p><a href="../business-network/bnd-create.html">Create a Business Network Definition</a><br>
-<a href="participant-add.html">Add a Participant</a><br>
-<a href="identity-issue.html">Issue an Identity to a Participant</a><br>
-<a href="identity-revoke.html">Revoke an Identity from a Participant</a></p>
+<a href="participant-add.html">Adding participants</a><br>
+<a href="identity-issue.html">Issuing an new identity to a participant</a><br>
+<a href="identity-bind.html">Binding an existing identity to a participant</a><br>
+<a href="identity-list.html">Listing all identities in a business network</a><br>
+<a href="identity-revoke.html">Revoking an identity from a participant</a>  </p>
 
 <h2 id="related-reference">Related Reference</h2>
 
-<p><a href="../reference/composer.participant.add.html">Participant add command</a><br>
-<a href="../reference/composer.identity.issue.html">Identity issue command</a><br>
-<a href="../reference/composer.identity.revoke.html">Identity revoke command</a>  </p>
+<p><a href="../reference/composer.participant.add.html">composer participant add</a><br>
+<a href="../reference/composer.identity.issue.html">composer identity issue</a><br>
+<a href="../reference/composer.identity.bind.html">composer identity bind</a><br>
+<a href="../reference/composer.identity.revoke.html">composer identity revoke</a><br>
+<a href="../reference/composer.identity.list.html">composer identity list</a>  </p>
 
             
           </section>

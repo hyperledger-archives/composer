@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Installing the Playground locally | Hyperledger Composer</title>
+    <title>Binding an existing identity to a participant | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Installing the Playground locally</p>
+          <p>Binding an existing identity to a participant</p>
           </div>
 
           <nav class="context-nav">
@@ -187,142 +187,108 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="installing-and-running-hyperledger-composer-playground-locally">Installing and running Hyperledger Composer Playground locally</h1>
+              <h1 id="binding-an-existing-identity-to-a-participant">Binding an existing identity to a participant</h1>
 
-<p>This tutorial will take you through how to install and run the Hyperledger Composer Playground on your local machine. It also creates an instance of Hyperledger Fabric v1.0.</p>
+<p>An existing identity can be issued to a participant using either the API or the command line.
+Once the existing identity has been bound, the identity can then be used by the participant
+to interact with the business network in the context of that participant.</p>
 
-<p>Hyperledger Composer Playground can also be used in a &quot;browser only&quot; mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Hyperledger Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.</p>
+<p>When using Hyperledger Fabric, you can bind existing certificates that have been created
+by using the Hyperledger Fabric certificate authority (CA) or by using other tooling such
+as <code>cryptogen</code>. The existing certificates must be valid for use for submitting transactions
+on the Hyperledger Fabric network.</p>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<h2 id="before-you-start">Before you start</h2>
 
-<p>In order to install Hyperledger Composer Playground, you need the following software installed:</p>
+<p>Before you follow these steps, you must have added a participant to a participant
+registry. You must have an existing certificate in the PEM format to bind to the
+participant. The <strong>binder</strong> of the existing identity (whether using command line or
+using the Javascript APIs below) must have ACLs that permit them to bind the identity
+(to be associated with the participant) in Hyperledger Composer.</p>
 
-<ul>
-<li>Docker Engine 17.03 or greater</li>
-<li>Docker Compose 1.8 or greater</li>
-</ul>
+<p>The procedure below shows an example using the following model of a participant
+from the Digital Property sample Business Network Definition: <a href="https://www.npmjs.com/package/digitalproperty-network">digitalproperty-network</a></p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
 
-<p><em>Please note:</em> If you&#39;ve previously used Hyperledger Composer Playground locally or Hyperledger Fabric and wish to clear everything and start again, the following commands will delete any running containers and delete all downloaded images, (be careful if you&#39;re using other Docker images on your machine):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">docker ps -aq | xargs docker rm -f
-docker images -aq | xargs docker rmi -f
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
 </code></pre></div>
-<hr>
+<p>The example assumes that an instance, <code>net.biz.digitalPropertyNetwork#mae@biznet.org</code>,
+of that participant has been created and placed into a participant registry.</p>
 
-<h2 id="creating-the-containers-and-installing-playground-locally">Creating the containers and installing playground locally</h2>
+<h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Pick a directory that you want to install into, then run the following command to download and start a Hyperledger Fabric instance and Hyperledger Composer Playground:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
-</code></pre></div></li>
-<li><p>Access your local Hyperledger Composer Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>. <em>Please note</em>: Private browsing is not supported when running the Playground locally.</p></li>
-</ol>
-
-<h2 id="deploying-business-networks-to-hyperledger-fabric-v1-0">Deploying business networks to Hyperledger Fabric v1.0</h2>
-
-<p>In Hyperledger Fabric v1.0 peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
-
-<p>When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, <code>Admin</code> or <code>AdminPeer</code> are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
-
-<p>Due to many breaking API changes between Hyperledger Fabric v1.0 alpha 1 and Hyperledger Fabric v1.0, Hyperledger Composer only supports Hyperledger Fabric v1.0 and cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
-
-<h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
-
-<p>When deploying a business network to Hyperledger Fabric v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.</p>
-
-<hr>
-
-<!--
-<a name="installationoptions"></a>
-
-## Alternative installation options
-
-If you have an existing Hyperledger Fabric instance you want to use with Hyperledger Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
-
-There are two options for installing the Hyperledger Composer Playground.
-You can choose to install using npm (the Node.js package manager), or you can choose to install with Docker. We recommend that you:
-
-*   <a href="#installnpm">Install using npm</a> if you wish to run to Hyperledger Composer Playground on your local workstation.
-*   <a href="#installdocker">Install using Docker</a> if you wish to run Hyperledger Composer Playground on a server or cloud platform.
-
-**why, what does each do differently?**
-
-Note that the same set of features is available regardless of the installation method that you choose.
-
-## <a name="installnpm"></a>Installing with npm
-
-### Prerequisites
-
-In order to install Hyperledger Composer Playground with npm, you need the following software installed:
-
-*   Node.js v6.x (note that Node.js v7.x is unsupported)
-*   npm v3.x or greater
-
-### Installation
-
-You can install Hyperledger Composer Playground by running the following command in your terminal or command prompt:
-
-  ```
-  npm install -g composer-playground
-  ```
-
-You should see the following output in your terminal or command prompt:
-
-  ```
-  npm install -g composer-playground
-  ...
-  /usr/local/bin/composer-playground -> /usr/local/lib/node_modules/composer-playground/cli.js
-  /usr/local/lib/node_modules
-  └─┬ composer-playground@0.4.3
-  ...
-  ```
-
-Verify that no errors occurred. If any part of this process fails, then Hyperledger Composer Playground will fail to work correctly. You may see errors from a program called `node-gyp`. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.
-
-You can then start Hyperledger Composer Playground by running the following command in your terminal or command prompt:
-
-  ```
-  composer-playground
-  ```
-
-A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
-
----
-
-## <a name="installdocker"></a>Installing with Docker
-
-### Prerequisites
-
-In order to install Hyperledger Composer Playground with Docker, you need the following software installed:
-
-*   Docker Engine 1.12.3 or greater
-
-### Installation
-
-You can install Hyperledger Composer Playground by running the following Docker command in your terminal or command prompt:
-
-  ```
-  docker run -d -p 8080:8080 hyperledger/composer-playground
-  ```
-
-You should see the following output in your terminal or command prompt:
-
-  ```
-  $ docker run -d -p 8080:8080 hyperledger/composer-playground
-  afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
-  ```
-
-Verify that no errors occurred.
-
-You can then start Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
-
----
--->
-
-<h2 id="whats-next">What&#39;s next?</h2>
+<li>Connect to the business network and bind an existing identity to a participant
 
 <ul>
-<li>Take a tutorial on using Playground, and try <a href="../tutorials/playground-guide.html">our Playground tutorial</a>.</li>
+<li>JavaScript API</li>
+</ul></li>
+</ol>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+  <span class="kd">let</span> <span class="nx">certificate</span> <span class="o">=</span> <span class="err">`</span><span class="o">-----</span><span class="nx">BEGIN</span> <span class="nx">CERTIFICATE</span><span class="o">-----</span>
+    <span class="nx">MIIB8DCCAZegAwIBAgIURanHh55fqrUecvHNHtcMKiHJRkwwCgYIKoZIzj0EAwIw</span>
+    <span class="nx">czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh</span>
+    <span class="nx">biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT</span>
+    <span class="nx">E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzI3MTc0MzAwWhcNMTgwNzI3MTc0</span>
+    <span class="nx">MzAwWjAQMQ4wDAYDVQQDEwVhZG1pbjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA</span>
+    <span class="nx">BAANIGFIrXXr5</span><span class="o">+</span><span class="nx">h0NfUNJhx5YFQ4w6r182eZYRhc9KvYQhYo5D0ZbecfR9sGX2b6</span>
+    <span class="mi">0</span><span class="nx">aW</span><span class="o">+</span><span class="nx">C7bUaXc6DU3pJSD4fNijbDBqMA4GA1UdDwEB</span><span class="o">/</span><span class="nx">wQEAwIHgDAMBgNVHRMBAf8E</span>
+    <span class="nx">AjAAMB0GA1UdDgQWBBRwuAyWrGlzVQFqRf0OqoTNuoq7QDArBgNVHSMEJDAigCAZ</span>
+    <span class="nx">q2WruwSAfa0S5MCpqqZknnCGjjq9AhejItieR</span><span class="o">+</span><span class="nx">GmrjAKBggqhkjOPQQDAgNHADBE</span>
+    <span class="nx">AiBcj</span><span class="o">/</span><span class="nx">JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx</span>
+    <span class="nx">rkM5DH3e5ECM7T</span><span class="o">+</span><span class="nx">T1Ovr</span><span class="o">+</span><span class="mi">1</span><span class="nx">AK6bs</span><span class="o">=</span>
+    <span class="o">-----</span><span class="nx">END</span> <span class="nx">CERTIFICATE</span><span class="o">-----</span><span class="err">`</span>
+  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">bindIdentity</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person#mae@biznet.org'</span><span class="p">,</span> <span class="nx">certificate</span><span class="p">)</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+          <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+      <span class="p">});</span>
+</code></pre></div>
+<ul>
+<li>Command line</li>
 </ul>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity <span class="nb">bind</span> -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw -c /tmp/cert.pem -a <span class="s2">"resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
+</code></pre></div>
+<ol>
+<li>As the participant, test the connection to the business network
+
+<ul>
+<li>JavaScript API</li>
+</ul></li>
+</ol>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'maeid1'</span><span class="p">,</span> <span class="s1">'RJJmlOpvNVRV'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">participant</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">:</span> <span class="s1">'&lt;no participant found&gt;'</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+          <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+      <span class="p">});</span>
+</code></pre></div>
+<ul>
+<li>Command line</li>
+</ul>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i maeid1 -s RJJmlOpvNVRV
+</code></pre></div>
+<p>The participant ID will be printed to the console, and should match the participant
+  ID that was specified in the <code>composer identity bind</code> command.</p>
 
             
           </section>

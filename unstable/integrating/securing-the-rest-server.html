@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Implementing participant-based access control | Hyperledger Composer</title>
+    <title>Securing the REST server using HTTPS and TLS | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Implementing participant-based access control</p>
+          <p>Securing the REST server using HTTPS and TLS</p>
           </div>
 
           <nav class="context-nav">
@@ -113,6 +113,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +127,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -185,67 +187,41 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="implementing-participant-based-access-control">Implementing participant-based access control</h1>
+              <h1 id="securing-the-rest-server-using-https-and-tls">Securing the REST server using HTTPS and TLS</h1>
 
-<p>The current participant can be used to implement access control in a transaction processor function. You can use the type and the identifier of the current participant to permit or reject the execution of a transaction processor function.</p>
+<hr>
 
-<h2 id="before-you-start">Before you start</h2>
+<p>When deploying Hyperledger Composer REST server in a production environment, the REST server should be configured to be secured with HTTPS and TLS (Transport Layer Security). Once the REST server has been configured with HTTPS and TLS, all data transferred between the REST server and all of the REST clients is encrypted.</p>
 
-<p>Before you follow these steps, you must have modeled a participant in a Business
-Network Definition and deployed it as a Business Network. You must have created
-some instances of those participants, and issued those participants with identities.</p>
+<p>You must provide both a certificate and a private key pair to configure the REST server. The REST server includes a sample certificate and private key pair that can be used to easily get going, but this configuration is only recommended for ease of use during initial development. Do not use the sample certificate and private key pair in a production environment.</p>
 
-<p>The procedure below shows an example using the following participant models:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
+<h2 id="enabling-https-and-tls-by-using-the-sample-certificate-and-private-key-pair">Enabling HTTPS and TLS by using the sample certificate and private key pair</h2>
 
-participant Person identified by personId {
-  o String personId
-  o String firstName
-  o String lastName
-}
-
-participant PrivilegedPerson extends Person {
-
-}
+<p>You can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>-t</code> argument to the command line:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t
 </code></pre></div>
-<h2 id="procedure">Procedure</h2>
+<p>Alternatively, you can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>COMPOSER_TLS</code> environment variable:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
+composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+</code></pre></div>
+<p>When you have successfully enabled HTTPS and TLS, you will see that the output of the REST server specifies an <code>https://</code> URL instead of a <code>http://</code> URL:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: https://localhost:3000
+Browse your REST API at https://localhost:3000/explorer
+</code></pre></div>
+<p>This configuration is only recommended for ease of use during initial development. For a test, QA, or production deployment, you should provide your own certificate and private key to enable HTTPS and TLS.</p>
 
-<ol>
-<li>In your transaction processor function, verify the type of the current participant
-meets the requirements by using the <code>getCurrentParticipant</code> function:</li>
-</ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
-       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.PrivilegedPerson'</span><span class="p">)</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by a privileged person'</span><span class="p">);</span>
-       <span class="p">}</span>
-       <span class="c1">// Current participant must be a privileged person to get here.</span>
-   <span class="p">}</span>
+<h2 id="enabling-https-and-tls-by-providing-a-certificate-and-private-key-pair">Enabling HTTPS and TLS by providing a certificate and private key pair</h2>
+
+<p>You can enable HTTPS and TLS by providing your own certificate and private key pair. The certificate and private key pair must be provided as two separate files in the PEM format. The files must be available on the file system of the system running the REST server, and the REST server must have read access to those files.</p>
+
+<p>You can configure the THE REST server to use your certificate and private key pair files by using the &#39;-c&#39; (certificate file) and &#39;-k&#39; (private key file) arguments to the command line:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t -c /tmp/cert.pem -k /tmp/key.pem
 </code></pre></div>
-<ol>
-<li>In your transaction processor function, verify the participant ID of the current
-participant by using the <code>getCurrentParticipant</code> function:</li>
-</ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
-       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.Person#PERSON_1'</span><span class="p">)</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by person 1'</span><span class="p">);</span>
-       <span class="p">}</span>
-       <span class="c1">// Current participant must be person 1 to get here.</span>
-   <span class="p">}</span>
-</code></pre></div>
-<p>The participant ID of the current participant can be compared to a participant
-   that is linked to an asset (by a relationship) to verify that the current
-   participant has the authority to access or modify an asset:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
-       <span class="c1">// Get the owner of the asset in the transaction.</span>
-       <span class="kd">var</span> <span class="nx">assetOwner</span> <span class="o">=</span> <span class="nx">privilegedTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
-       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">())</span> <span class="p">{</span>
-           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by the owner of the asset'</span><span class="p">);</span>
-       <span class="p">}</span>
-       <span class="c1">// Current participant must be the owner of the asset to get here.</span>
-   <span class="p">}</span>
+<p>Alternatively, you can configure the THE REST server to use your certificate and private key pair files by using the <code>COMPOSER_TLS_CERTIFICATE</code> and <code>COMPOSER_TLS_KEY</code> environment variables:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
+export COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
+export COMPOSER_TLS_KEY=/tmp/key.pem
+composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
 </code></pre></div>
             
           </section>

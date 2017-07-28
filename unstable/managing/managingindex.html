@@ -113,6 +113,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +127,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -197,21 +199,21 @@ ga('send', 'pageview');
 
 <p><a href="../managing/participant-add.html"><strong>Participants must be added to a business network</strong></a> before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
 
-<h3 id="issuing-an-identity-to-a-participant">Issuing an identity to a participant</h3>
+<h3 id="issuing-a-new-identity-to-a-participant">Issuing a new identity to a participant</h3>
 
-<p><a href="../managing/identity-issue.html"><strong>An identity can be issued to a participant using either the API or the command line</strong></a>. Once an identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
 
-<h3 id="revoking-the-identity-of-a-participant">Revoking the identity of a participant</h3>
+<h3 id="binding-an-existing-identity-to-a-participant">Binding an existing identity to a participant</h3>
+
+<p><a href="../managing/identity-issue.html"><strong>An existing identity can be bound to a participant using either the API or the command line</strong></a>. Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+
+<h3 id="listing-all-identities-in-a-business-network">Listing all identities in a business network</h3>
+
+<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+
+<h3 id="revoking-an-identity-from-a-participant">Revoking an identity from a participant</h3>
 
 <p><a href="../managing/identity-revoke.html"><strong>An identity can be revoked from a participant using either the API or the command line</strong></a>. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.</p>
-
-<h3 id="enabling-playground-oauth-with-github">Enabling playground OAuth with GitHub</h3>
-
-<p>By <a href="../managing/github-oauth.html"><strong>enabling OAuth with GitHub</strong></a>, you avoid an error if the GitHub rate limit is hit.</p>
-
-<h3 id="implementing-participant-based-access-control">Implementing participant-based access control</h3>
-
-<p>Transaction processor functions can be used to <a href="../managing/current-participant.html"><strong>implement participant-based access control</strong></a> by checking the participant type and identifier.</p>
 
 <h3 id="updating-hyperledger-composer">Updating Hyperledger Composer</h3>
 

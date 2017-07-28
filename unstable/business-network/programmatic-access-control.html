@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Enabling playground OAuth with GitHub | Hyperledger Composer</title>
+    <title>Programmatic access control | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Enabling playground OAuth with GitHub</p>
+          <p>Programmatic access control</p>
           </div>
 
           <nav class="context-nav">
@@ -113,6 +113,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +127,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -185,27 +187,70 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="enabling-playground-oauth-with-github">Enabling Playground OAuth with GitHub</h1>
+              <h1 id="programmatic-access-control">Programmatic access control</h1>
 
-<p>To enable importing of samples into a local instance of Playground without receiving an error when the rate limit is hit follow these steps.</p>
+<p>It is recommended that you use declarative access control to implement access control rules in your business network definition.
+However, you can implement programmatic access control in your transaction processors by retrieving and testing the current participant.
+You can run tests against the properties of the current participant to permit or reject the execution of a transaction processor function.</p>
+
+<h2 id="before-you-start">Before you start</h2>
+
+<p>Before you follow these steps, you must have modeled a participant in a Business
+Network Definition and deployed it as a Business Network. You must have created
+some instances of those participants, and issued those participants with identities.</p>
+
+<p>The procedure below shows an example using the following participant models:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
+
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+
+participant PrivilegedPerson extends Person {
+
+}
+</code></pre></div>
+<h2 id="procedure">Procedure</h2>
 
 <ol>
-<li>Go to <a href="https://github.com/settings/developers">GitHub OAuth Applications</a>.</li>
-<li>Register a new application.
-
-<ul>
-<li>The <code>Authorization callback URL</code> should be set to <code>localhost:&lt;port&gt;/github</code>.</li>
-</ul></li>
-<li><p>On the command line navigate to the <code>composer-playground-ui</code> config directory.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd composer/packages/composer-playground-ui/config
-</code></pre></div></li>
-<li><p>Copy the file.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cp .env.sample .env
-</code></pre></div></li>
-<li><p>Open the <code>.env</code> file and set the <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> to the values that were given when you registered the application.</p></li>
-<li><p>(optional) The <code>port</code> which the <code>composer-playground-ui</code> can also be set by setting the <code>PORT</code> value in the <code>.env</code> file.</p></li>
+<li>In your transaction processor function, verify the type of the current participant
+meets the requirements by using the <code>getCurrentParticipant</code> function:</li>
 </ol>
-
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.PrivilegedPerson'</span><span class="p">)</span> <span class="p">{</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by a privileged person'</span><span class="p">);</span>
+       <span class="p">}</span>
+       <span class="c1">// Current participant must be a privileged person to get here.</span>
+   <span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>In your transaction processor function, verify the participant ID of the current
+participant by using the <code>getCurrentParticipant</code> function:</li>
+</ol>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'net.biz.digitalPropertyNetwork.Person#PERSON_1'</span><span class="p">)</span> <span class="p">{</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by person 1'</span><span class="p">);</span>
+       <span class="p">}</span>
+       <span class="c1">// Current participant must be person 1 to get here.</span>
+   <span class="p">}</span>
+</code></pre></div>
+<p>The participant ID of the current participant can be compared to a participant
+   that is linked to an asset (by a relationship) to verify that the current
+   participant has the authority to access or modify an asset:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">   <span class="kd">function</span> <span class="nx">onPrivilegedTransaction</span><span class="p">(</span><span class="nx">privilegedTransaction</span><span class="p">)</span> <span class="p">{</span>
+       <span class="c1">// Get the owner of the asset in the transaction.</span>
+       <span class="kd">var</span> <span class="nx">assetOwner</span> <span class="o">=</span> <span class="nx">privilegedTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
+       <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+       <span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">())</span> <span class="p">{</span>
+           <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Transaction can only be submitted by the owner of the asset'</span><span class="p">);</span>
+       <span class="p">}</span>
+       <span class="c1">// Current participant must be the owner of the asset to get here.</span>
+   <span class="p">}</span>
+</code></pre></div>
             
           </section>
         </div>
