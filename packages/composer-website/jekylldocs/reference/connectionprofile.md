@@ -53,7 +53,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "ca": {
                     "url:" "https://",
                     "name": "",
-                    "trustedRoots": "",
+                    "trustedRoots": [""],
                     "verify": true
             },
             "peers": [
@@ -107,6 +107,8 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         }
 
   - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0 is must be `hlfv1`.
+  - `ca` defines the url for of a {{site.data.conrefs.hlf_full}} Certificate Authority that you will connect to. If your Certificate Authority requires a name you must be the object notation and specify that name.
+  - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
   - `orderers` is an array of objects which describe the orderes to communicate with. Within `orderers`, you must define the `url` of each orderer. If you are connecting via TLS, all `url` properties in your connection profile must begin with `grpcs://` and must also contain the correct TLS certificate in the `cert` property.
   - `peers` is an array of objects describing the peers to communicate with. Each `peer` must have a defined `requestURL` and a defined `eventURL`. If you are connecting using TLS, each `peer` must also have the correct TLS certificate in the `cert` property.
 
@@ -120,3 +122,4 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   - `globalcert` defines the TLS certificate which is used for all peers and orderers if no `cert` property is specified. If a `cert` property is specified, it overrides the `globalcert` property only for the peer or orderer it is specified for.
   - `maxSendSize` is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
   - `maxRecvSize` is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
+  
