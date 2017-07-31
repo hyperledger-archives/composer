@@ -52,6 +52,7 @@
   </div>
 </section>
 <section class="main-view">
+  <div class="main-view-content">
   <div>
     <div *ngIf="editingPackage" class="business-network-details">
       <h1>Editing package.json</h1>
@@ -132,6 +133,7 @@
   </div>
 
   <div class="flex"><editor-file [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file></div>
+  </div>
 
   <app-footer></app-footer>
 

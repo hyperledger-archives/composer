@@ -45,8 +45,12 @@
 </section>
 
 <section class="main-view">
-    <div class="flex"><registry [registry]="chosenRegistry" [reload]="registryReload"></registry></div>
+    <div class="main-view-content">
+        <div class="flex">
+            <registry [registry]="chosenRegistry" [reload]="registryReload"></registry>
+        </div>
     <div>
+    </div>
         <app-footer></app-footer>
     </div>
 </section>

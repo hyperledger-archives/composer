@@ -16,8 +16,9 @@ app-editor {
       & > * {
         padding: $space-medium $space-large;
       }
-      margin-top: $space-large;
-
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
       span {
         color: $secondary-text;
       }
@@ -26,6 +27,7 @@ app-editor {
         padding: 0;
         max-height: 60vh;
         overflow-y: auto;
+        min-height: 90px;
         .error {
             color: $first-warning;
         }

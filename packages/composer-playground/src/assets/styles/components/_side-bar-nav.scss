@@ -7,7 +7,8 @@
     justify-content: space-between;
     z-index: 100;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
-
+    max-height: 100%;
+    overflow-y: auto;
     .side-bar-nav {
       li {
         padding: $space-medium $space-large;
@@ -40,6 +41,12 @@
   .main-view {
     background-color: $fourth-highlight;
     width: 100%;
-    padding: $space-large $space-large 0 $space-large;
+    position: relative;
+    padding: 0 0 $space-xlarge 0;
+    .main-view-content {
+      height: 100%;
+      padding: $space-large $space-large 0px $space-large;
+      overflow-y: auto;
+    }
   }
 }
