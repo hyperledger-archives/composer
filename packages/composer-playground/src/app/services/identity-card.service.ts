@@ -18,9 +18,9 @@ const defaultCardProperties = {
         name: 'admin',
         businessNetwork: 'basic-sample-network',
         enrollmentId: 'admin',
-        enrollmentSecret: 'adminpw'
+        enrollmentSecret: 'adminpw',
+        roles: ['PeerAdmin', 'ChannelAdmin'],
     },
-    roles: ['PeerAdmin', 'ChannelAdmin'],
     connectionProfile: {
         name: '$default',
         type: 'web'
@@ -70,16 +70,16 @@ export class IdentityCardService {
         }
     }
 
-    getIdentityCardsWithProfileAndRole(qualifiedProfileName: string, role: string): IdCard[] {
-        let cards: IdCard[] = [];
+    getIdentityCardRefsWithProfileAndRole(qualifiedProfileName: string, role: string): string[] {
+        let cardRefs: string[] = [];
         this.idCards.forEach((card, key) => {
             let connectionProfile = card.getConnectionProfile();
             if (qualifiedProfileName === this.getQualifiedProfileName(connectionProfile) && card.getRoles().includes(role)) {
-                cards.push(card);
+                cardRefs.push(key);
             }
         });
 
-        return cards;
+        return cardRefs;
     }
 
     loadIdentityCards(): Promise<number> {
@@ -197,7 +197,7 @@ export class IdentityCardService {
             })
             .then(() => {
                 // only delete if this is the last id card using the connection profile
-                if (this.getAllCardsForProfile(connectionProfileName).length === 1) {
+                if (this.getAllCardRefsForProfile(connectionProfileName).length === 1) {
                     return this.connectionProfileService.deleteProfile(connectionProfileName);
                 }
             })
@@ -271,7 +271,7 @@ export class IdentityCardService {
         return wantedCards;
     }
 
-    getAllCardsForProfile(qualifiedConnectionProfile: string): string[] {
+    getAllCardRefsForProfile(qualifiedConnectionProfile: string): string[] {
         let wantedCards: string[] = [];
         this.idCards.forEach((card, key) => {
             let qpn = this.getQualifiedProfileName(card.getConnectionProfile());

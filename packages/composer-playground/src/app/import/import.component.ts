@@ -1,14 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { BusinessNetworkDefinition } from 'composer-common';
-import { IdentityCardService } from '../services/identity-card.service';
 
 @Component({
     selector: 'import-business-network',
@@ -24,7 +22,6 @@ export class ImportComponent implements OnInit {
     private deployInProgress: boolean = false;
     private npmInProgress: boolean = true;
     private sampleNetworks = [];
-    private primaryNetworkNames = ['basic-sample-network', 'carauction-network'];
     private chosenNetwork = null;
     private expandInput: boolean = false;
     private sampleDropped: boolean = false;
@@ -33,9 +30,9 @@ export class ImportComponent implements OnInit {
     private supportedFileTypes: string[] = ['.bna'];
 
     private currentBusinessNetwork = null;
-    private currentConnectionProfile: string = null;
     private currentBusinessNetworkPromise: Promise<BusinessNetworkDefinition>;
     private networkName: string;
+    private networkNameValid: boolean = true;
     private networkDescription: string;
 
     private NAME = 'Empty Business Network';
@@ -45,23 +42,19 @@ export class ImportComponent implements OnInit {
     constructor(private clientService: ClientService,
                 public modalService: NgbModal,
                 private sampleBusinessNetworkService: SampleBusinessNetworkService,
-                private alertService: AlertService,
-                private adminService: AdminService,
-                private identityCardService: IdentityCardService) {
+                private alertService: AlertService) {
 
     }
 
     ngOnInit(): Promise<void> {
         this.currentBusinessNetwork = null;
-        this.currentConnectionProfile = this.identityCardService.getCurrentConnectionProfile().name;
-
-        return this.adminService.connectWithoutNetwork(false)
-            .then(() => {
-                this.onShow();
-            });
+        return this.onShow();
     }
 
     onShow(): Promise<void> {
+        if (!this.deployNetwork) {
+            this.networkName = this.clientService.getBusinessNetworkName();
+        }
         this.npmInProgress = true;
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
@@ -239,5 +232,11 @@ export class ImportComponent implements OnInit {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
+    }
+
+    private setNetworkName(name) {
+        this.networkName = name;
+        let pattern = /^[a-z0-9-]+$/;
+        this.networkNameValid = pattern.test(this.networkName);
     }
 }

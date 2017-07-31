@@ -46,7 +46,7 @@ export class ClientService {
 
     // horrible hack for tests
     createQueryFile(id, content) {
-      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
+        return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -76,6 +76,10 @@ export class ClientService {
 
     getBusinessNetworkName() {
         return this.getBusinessNetwork().getMetadata().getName();
+    }
+
+    getBusinessNetworkDescription() {
+        return this.getBusinessNetwork().getMetadata().getDescription();
     }
 
     getModelFile(id: string): ModelFile {
@@ -358,8 +362,8 @@ export class ClientService {
 
     filterModelFiles(files) {
         return files.filter((model) => {
-                return !model.isSystemModelFile();
-            });
+            return !model.isSystemModelFile();
+        });
     }
 
     private getSavedBusinessNetworkName(identity: string): string {

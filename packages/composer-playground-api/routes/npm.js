@@ -158,9 +158,8 @@ module.exports = (app) => {
                     name : metadata.name,
                     description : metadata.description,
                     version : metadata.version,
-                    //TODO update this after release
-                    networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/' + metadata.name + '/networkimage.svg',
-                    networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/' + metadata.name + '/networkimageanimated.svg',
+                    networkImage : metadata.networkImage,
+                    networkImageanimated:  metadata.networkImageanimated,
                     tarball : metadata.dist.tarball
                 });
             }

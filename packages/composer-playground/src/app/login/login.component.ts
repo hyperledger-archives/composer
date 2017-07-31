@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IdentityService } from '../services/identity.service';
-import { AdminService } from '../services/admin.service';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
-import { WalletService } from '../services/wallet.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
@@ -39,11 +36,8 @@ export class LoginComponent implements OnInit {
 
     constructor(private identityService: IdentityService,
                 private router: Router,
-                private adminService: AdminService,
-                private connectionProfileService: ConnectionProfileService,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
-                private walletService: WalletService,
                 private identityCardService: IdentityCardService,
                 private modalService: NgbModal,
                 private drawerService: DrawerService,
@@ -51,7 +45,7 @@ export class LoginComponent implements OnInit {
 
     }
 
-    ngOnInit() {
+    ngOnInit(): Promise<void> {
         return this.initializationService.initialize()
             .then(() => {
                 return this.loadIdentityCards();
@@ -145,21 +139,55 @@ export class LoginComponent implements OnInit {
         this.creatingIdWithProfile = true;
     }
 
-    completeCardAddition() {
+    completeCardAddition(): Promise<void> {
         this.closeSubView();
         return this.loadIdentityCards();
     }
 
-    deployNetwork(connectionProfile) {
-        // this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
-        // TODO this needs to be done dynmaically
+    canDeploy(connectionProfileRef): boolean {
+        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
+
+        if (!peerCardRef) {
+            return false;
+        }
+
+        let channelCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'ChannelAdmin')[0];
+
+        if (!channelCardRef) {
+            return false;
+        }
+
+        // check we have an admin card
+        let adminCard;
+        let idCardRefsForProfile = this.identityCardService.getAllCardRefsForProfile(connectionProfileRef);
+        idCardRefsForProfile.forEach((cardRef) => {
+            let card = this.identityCardService.getIdentityCard(cardRef);
+            if (card.getName().toLowerCase() === 'admin') {
+                adminCard = card;
+            }
+        });
+
+        if (!adminCard) {
+            return false;
+        }
+
+        return true;
+    }
+
+    deployNetwork(connectionProfileRef): void {
+        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
+
+        this.identityCardService.setCurrentIdentityCard(peerCardRef);
+
         this.showSubScreen = true;
         this.showDeployNetwork = true;
     }
 
-    finishedDeploying() {
+    finishedDeploying(): Promise<void> {
         this.showSubScreen = false;
         this.showDeployNetwork = false;
+
+        return this.loadIdentityCards();
     }
 
     removeIdentity(cardRef): void {
