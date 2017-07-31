@@ -20,8 +20,11 @@ const Util = require('composer-common').Util;
 const REGISTRY_TYPE = 'Historian';
 
 /**
- * The Historian is used to store a set of HistorianRecords on the blockchain.
- * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p>
+ * The Historian is used to store a set of HistorianRecords
+ * These records are defined in the org.hyperledger.composer.system model and allow
+ * applications to track changes as the result of submitted transactions over time.
+ *
+ *
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
  * @class

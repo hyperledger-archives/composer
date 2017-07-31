@@ -16,16 +16,6 @@
 
 const Resource = require('composer-common').Resource;
 const Util = require('composer-common').Util;
-// const ModelUtil = require('composer-common').ModelUtil;
-// //
-//
-// const TYPE_MAP = {
-//     'Asset': 'AssetRegistry',
-//     'Participant': 'ParticipantRegistry',
-//     'Transaction': 'TransactionRegistry',
-//     'Network': 'Network',
-//     'Historian':'HistorianRegistry'
-// };
 
 /**
  * Class representing an Abstract Registry.
@@ -193,7 +183,6 @@ class Registry {
         transaction.registryId = this.id;
         transaction.resources = resources;
         return this.bnc.submitTransaction(transaction);
-        // return Util.invokeChainCode(this.securityContext, 'addAllResourcesToRegistry', [this.registryType, this.id, JSON.stringify(serializedResources)]);
     }
 
     /**
@@ -209,8 +198,6 @@ class Registry {
             throw new Error('resource not specified');
         }
         return this.addAll([resource]);
-        // let serializedResource = this.serializer.toJSON(resource);
-        // return Util.invokeChainCode(this.securityContext, 'addResourceToRegistry', [this.registryType, this.id, JSON.stringify(serializedResource)]);
     }
 
     /**

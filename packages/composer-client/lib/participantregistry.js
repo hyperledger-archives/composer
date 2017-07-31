@@ -37,6 +37,7 @@ class ParticipantRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this participant registry.
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      * @return {Promise} A promise that will be resolved with a list of {@link ParticipantRegistry}
      * instances representing the participant registries.
      */
@@ -66,6 +67,7 @@ class ParticipantRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this participant registry.
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      * @return {Promise} A promise that will be resolved with a {@link ParticipantRegistry}
      * instance representing the participant registry.
      */
@@ -95,6 +97,7 @@ class ParticipantRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      * @return {Promise} A promise that will be resolved with a boolean indicating whether the asset registry exists
      */
     static participantRegistryExists(securityContext, id, modelManager, factory, serializer,bnc) {
@@ -121,6 +124,7 @@ class ParticipantRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this participant registry.
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      * @return {Promise} A promise that will be resolved with a {@link ParticipantRegistry}
      * instance representing the new participant registry.
      */
@@ -156,6 +160,7 @@ class ParticipantRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this participant registry.
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      */
     constructor(id, name, securityContext, modelManager, factory, serializer,bnc) {
         super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer,bnc);
