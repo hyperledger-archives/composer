@@ -96,6 +96,13 @@ class QueryManager {
     }
 
     /**
+     * Remove the Query
+     */
+    deleteQueryFile() {
+        delete this.queryFile;
+    }
+
+    /**
      * Get the named Query associated with this QueryManager
      * @param {string} name  - the name of the query
      * @return {Query} The Query or null if it does not exist

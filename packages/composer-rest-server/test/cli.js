@@ -14,12 +14,15 @@
 
 'use strict';
 
+const path = require('path');
 const Util = require('../lib/util');
 
 require('chai').should();
 const proxyquire =  require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
 
+const defaultTlsCertificate = path.resolve(__dirname, '..', 'cert.pem');
+const defaultTlsKey = path.resolve(__dirname, '..', 'key.pem');
 
 describe('composer-rest-server CLI unit tests', () => {
 
@@ -34,7 +37,8 @@ describe('composer-rest-server CLI unit tests', () => {
             secret: 'adminpw',
             namespaces: 'always',
             security: false,
-            websockets: true
+            websockets: true,
+            tls: false
         });
         sandbox.stub(process, 'exit');
         sandbox.spy(console, 'log');
@@ -90,7 +94,10 @@ describe('composer-rest-server CLI unit tests', () => {
                 participantId: 'admin',
                 participantPwd: 'adminpw',
                 security: false,
-                websockets: true
+                websockets: true,
+                tls: false,
+                tlscert: undefined,
+                tlskey: undefined
             };
             sinon.assert.calledWith(server, settings);
             sinon.assert.calledOnce(listen);
@@ -161,7 +168,10 @@ describe('composer-rest-server CLI unit tests', () => {
                 participantPwd: 'adminpw',
                 port: undefined,
                 security: false,
-                websockets: true
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
             };
             sinon.assert.calledWith(server, settings);
             sinon.assert.calledOnce(listen);

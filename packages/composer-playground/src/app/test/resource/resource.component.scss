@@ -39,8 +39,8 @@ resource-modal {
     }
 
     .CodeMirror, .CodeMirror-scroll {
-        min-height: 400px;
-        max-height: 400px;
+        min-height: 300px;
+        max-height: 300px;
         // needed to get rid of the duplicate scroll bars, not sure why this works????
         min-width: 630px;
         max-width: 650px;

@@ -56,6 +56,20 @@ class Context {
     }
 
     /**
+     * Get a compiled script bundle from the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @return {CompiledScriptBundle} The cached compiled script bundle, or null if
+     * there is no entry in the cache for the specified business network definition.
+     */
+    static getCachedCompiledScriptBundle(businessNetworkHash) {
+        const method = 'getCachedCompiledScriptBundle';
+        LOG.entry(method, businessNetworkHash);
+        const result = compiledScriptBundleCache.get(businessNetworkHash);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
      * Store a compiled script bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
@@ -68,6 +82,20 @@ class Context {
     }
 
     /**
+     * Get a compiled query bundle from the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @return {CompiledQueryBundle} The cached compiled query bundle, or null if
+     * there is no entry in the cache for the specified business network definition.
+     */
+    static getCachedCompiledQueryBundle(businessNetworkHash) {
+        const method = 'getCachedCompiledQueryBundle';
+        LOG.entry(method, businessNetworkHash);
+        const result = compiledQueryBundleCache.get(businessNetworkHash);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
      * Store a compiled query bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
@@ -77,6 +105,20 @@ class Context {
         LOG.entry(method, businessNetworkHash, compiledQueryBundle);
         compiledQueryBundleCache.set(businessNetworkHash, compiledQueryBundle);
         LOG.exit(method);
+    }
+
+    /**
+     * Get a compiled ACL bundle from the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @return {CompiledAclBundle} The cached compiled ACL bundle, or null if
+     * there is no entry in the cache for the specified business network definition.
+     */
+    static getCachedCompiledAclBundle(businessNetworkHash) {
+        const method = 'getCachedCompiledAclBundle';
+        LOG.entry(method, businessNetworkHash);
+        const result = compiledAclBundleCache.get(businessNetworkHash);
+        LOG.exit(method, result);
+        return result;
     }
 
     /**
@@ -197,7 +239,7 @@ class Context {
         const method = 'loadCompiledScriptBundle';
         LOG.entry(method);
         LOG.debug(method, 'Looking in cache for compiled script bundle', businessNetworkRecord.hash);
-        let compiledScriptBundle = compiledScriptBundleCache.get(businessNetworkRecord.hash);
+        let compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkRecord.hash);
         if (compiledScriptBundle) {
             LOG.debug(method, 'Compiled script bundle is in cache');
             return Promise.resolve(compiledScriptBundle);
@@ -227,7 +269,7 @@ class Context {
         const method = 'loadCompiledQueryBundle';
         LOG.entry(method);
         LOG.debug(method, 'Looking in cache for compiled query bundle', businessNetworkRecord.hash);
-        let compiledQueryBundle = compiledQueryBundleCache.get(businessNetworkRecord.hash);
+        let compiledQueryBundle = Context.getCachedCompiledQueryBundle(businessNetworkRecord.hash);
         if (compiledQueryBundle) {
             LOG.debug(method, 'Compiled query bundle is in cache');
             return Promise.resolve(compiledQueryBundle);
@@ -257,7 +299,7 @@ class Context {
         const method = 'loadCompiledAclBundle';
         LOG.entry(method);
         LOG.debug(method, 'Looking in cache for compiled ACL bundle', businessNetworkRecord.hash);
-        let compiledAclBundle = compiledAclBundleCache.get(businessNetworkRecord.hash);
+        let compiledAclBundle = Context.getCachedCompiledAclBundle(businessNetworkRecord.hash);
         if (compiledAclBundle) {
             LOG.debug(method, 'Compiled ACL bundle is in cache');
             return Promise.resolve(compiledAclBundle);

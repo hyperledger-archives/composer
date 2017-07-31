@@ -15,37 +15,44 @@
 'use strict';
 
 const JSZip = require('jszip');
-const path = require('path');
 
 const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
 
 /**
- * An ID card.
+ * An ID card. Encapsulates credentials and other information required to connect to a specific business network
+ * as a specific user.
+ * <p>
+ * Instances of this class should be created using {@link IdCard.fromArchive}.
  * @class
  * @memberof module:composer-common
  */
 class IdCard {
 
     /**
-     * Create the BusinessNetworkDefinition.
+     * Create the IdCard.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link IdCard.fromArchive}</strong>
      * @param {Object} metadata - metadata associated with the card.
-     * @param {Object} connection - connection properties associated with the card.
-     * @param {Map} credentials - map of credential filename String keys to credential data Buffer objects.
-     * @param {Map} tlscerts - map of TLS certificate filename String keys to TLS certificate data Buffer objects.
+     * @param {Object} connectionProfile - connection profile associated with the card.
+     * @param {Object} credentials - credentials used to connect to business network.
      * @private
      */
-    constructor(metadata, connection, credentials, tlscerts) {
+    constructor(metadata, connectionProfile, credentials) {
         const method = 'constructor';
         LOG.entry(method);
 
+        if (!(metadata && metadata.name)) {
+            throw Error('Required metadata field not found: name');
+        }
+        if (!(connectionProfile && connectionProfile.name)) {
+            throw Error('Required connection field not found: name');
+        }
+
         this.metadata = metadata;
-        this.connection = connection;
+        this.connectionProfile = connectionProfile;
         this.credentials = credentials;
-        this.tlscerts = tlscerts;
 
         LOG.exit(method);
     }
@@ -62,52 +69,73 @@ class IdCard {
 
     /**
      * Free text description of the card.
-     * @return {String} description, or {@link undefined} if none exists.
+     * @return {String} card description.
      */
     getDescription() {
-        return this.metadata.description;
+        return this.metadata.description || '';
     }
 
     /**
-     * Business network to which the ID card applies. Generally this will be present but may be omitted for system
-     * cards.
-     * @return {String} description, or {@link undefined} if none exists.
+     * Name of the business network to which the ID card applies. Generally this will be present but may be
+     * omitted for system cards.
+     * @return {String} business network name.
      */
-    getBusinessNetwork() {
-        return this.metadata.businessNetwork;
-    }
-
-    /**
-     * Image associated with the card.
-     * @return {Object} an object of the form <i>{ name: imageFileName, data: bufferOfImageData }</i>,
-     * or {@link undefined} if none exists.
-     */
-    getImage() {
-        return this.image;
+    getBusinessNetworkName() {
+        return this.metadata.businessNetwork || '';
     }
 
     /**
      * Connection profile for this card.
+     * <p>
+     * This is a mandatory field.
      * @return {Object} connection profile.
      */
-    getConnection() {
-        return this.connection;
+    getConnectionProfile() {
+        return this.connectionProfile;
     }
 
     /**
-     * Credentials associated with this card.
-     * @return {Map} Map of filename {@link String} keys to {@link Buffer} data.
+     * Credentials associated with this card, and which are used to connect to the associated business network.
+     * <p>
+     * For PKI-based authentication, the credentials are expected to be of the form:
+     * <em>{ public: String, private: String }</em>.
+     * @return {Object} credentials.
      */
     getCredentials() {
         return this.credentials;
     }
 
     /**
-     * TLS certificates used to connect to the business networks.
-     * @return {Map} Map of filename {@link String} keys to {@link Buffer} data.
+     * Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to
+     * enroll with a business network and obtain certificates.
+     * <p>
+     * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
+     * <em>{ id: String, secret: String }</em>.
+     * @return {Object} enrollment credentials, if they exist.
      */
-    getTlsCertificates() {
-        return this.tlscerts;
+    getEnrollmentCredentials() {
+        let result = null;
+        const id = this.metadata.enrollmentId;
+        const secret = this.metadata.enrollmentSecret;
+        if (id || secret) {
+            result = Object.create(null);
+            result.id = id;
+            result.secret = secret;
+        }
+        return result;
+    }
+
+    /**
+     * Special roles for which this ID can be used, which can include:
+     * <ul>
+     *   <li>peerAdmin</li>
+     *   <li>channelAdmin</li>
+     *   <li>issuer</li>
+     * </ul>
+     * @return {String[]} roles.
+     */
+    getRoles() {
+        return this.metadata.roles || [ ];
     }
 
     /**
@@ -123,10 +151,8 @@ class IdCard {
             let promise = Promise.resolve();
 
             let metadata;
-            let image;
             let connection;
-            const credentials = new Map();
-            const tlscerts = new Map();
+            let credentials = Object.create(null);
 
             LOG.debug(method, 'Loading connection.json');
             const connectionFile = zip.file('connection.json');
@@ -150,52 +176,28 @@ class IdCard {
                 return metadataFile.async('string');
             }).then((metadataContent) => {
                 metadata = JSON.parse(metadataContent);
-                if (!metadata.name) {
-                    throw Error('Required meta-data field not found: name');
-                }
-
-                if (metadata.image) {
-                    LOG.debug(method, 'Loading image ' + metadata.image);
-
-                    const imagePromise = zip.file(metadata.image);
-                    if (!imagePromise) {
-                        throw Error('Image file not found: ' + metadata.image);
-                    }
-
-                    return imagePromise.async('nodebuffer').then((imageContent) => {
-                        const shortFilename = path.basename(metadata.image);
-                        image = {
-                            name: shortFilename,
-                            data: imageContent
-                        };
-                    });
-                }
             });
 
-            const loadDirectoryToMap = function(directoryName, map) {
+            const loadDirectoryToObject = function(directoryName, obj) {
                 // Incude '/' following directory name
                 const fileIndex = directoryName.length + 1;
                 // Find all files that are direct children of specified directory
                 const files = zip.file(new RegExp(`^${directoryName}/[^/]+$`));
                 files && files.forEach((file) => {
                     promise = promise.then(() => {
-                        return file.async('nodebuffer');
+                        return file.async('string');
                     }).then((content) => {
                         const filename = file.name.slice(fileIndex);
-                        map.set(filename, content);
+                        obj[filename] = content;
                     });
                 });
             };
 
             LOG.debug(method, 'Loading credentials');
-            loadDirectoryToMap('credentials', credentials);
-
-            LOG.debug(method, 'Loading tlscerts');
-            loadDirectoryToMap('tlscerts', tlscerts);
+            loadDirectoryToObject('credentials', credentials);
 
             return promise.then(() => {
-                const idCard = new IdCard(metadata, connection, credentials, tlscerts);
-                idCard.image = image;
+                const idCard = new IdCard(metadata, connection, credentials);
                 LOG.exit(method, idCard.toString());
                 return idCard;
             });

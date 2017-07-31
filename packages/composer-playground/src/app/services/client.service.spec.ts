@@ -1013,6 +1013,23 @@ describe('ClientService', () => {
         })));
     });
 
+    describe('revokeIdentity', () => {
+        it('should call the revokeIdentity() function for the relevant BusinessNetworkConnection', fakeAsync(inject([ClientService], (service: ClientService) => {
+
+            // (1).should.equal(1);
+
+            let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
+                revokeIdentity: sinon.stub().returns(Promise.resolve())
+            });
+
+            service.revokeIdentity({fake : 'identity'});
+
+            tick();
+
+            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake : 'identity'});
+        })));
+    });
+
     describe('createNewBusinessNetwork', () => {
         it('should alert on failure', inject([ClientService], (service: ClientService) => {
             // Set up mocks

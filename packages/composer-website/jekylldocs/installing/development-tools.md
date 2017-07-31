@@ -29,6 +29,8 @@ Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
+**Please do not install Composer as a superuser, use 'sudo' or the 'root' user if on Linux (doing will can cause issues with the install). Composer should be installed as non-priviledged user**
+
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
@@ -37,7 +39,7 @@ curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 chmod u+x prereqs-ubuntu.sh
 ```
 
-Next run the script - as this uses sudo you will be prompted for your password.
+Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.
 
 ```
 ./prereqs-ubuntu.sh
@@ -46,7 +48,7 @@ Next run the script - as this uses sudo you will be prompted for your password.
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
 
-The development tools you'll need can all be installed with `npm install -g`.
+The development tools you'll need can all be installed (as a non-privileged user eg non-root) with `npm install -g`.
 
 1. To install `composer-cli` run the following command:
 
@@ -104,11 +106,11 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows:
 
         export FABRIC_VERSION=hlfv0.6
 
-    {{site.data.conrefs.hlf_full}} v1.0 is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
 
         export FABRIC_VERSION=hlfv1
 
