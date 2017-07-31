@@ -184,6 +184,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
+            it('should return a 404 if query a double type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByFaceAmount?faceAmount=10000')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
             it('should return all of the assets with an enum type variable', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByPaymentFrequencyPeriod?period=MONTH')
@@ -195,6 +202,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
+            it('should return a 404 if query an enum type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriod?period=QUARTER')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
             it('should return all of the assets with an integer type variable', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=7')
@@ -204,6 +218,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                             assetData[0],
                             assetData[1],
                         ]);
+                    });
+            });
+            it('should return a 404 if query an integer type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=6')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
                     });
             });
             it('should return a 404 if the query specified variable is an unsupported array type', () => {
