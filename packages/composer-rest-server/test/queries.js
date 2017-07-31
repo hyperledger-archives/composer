@@ -241,6 +241,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         err.response.should.have.status(404);
                     });
             });
+            it('should return a 404 if the specified query does not exist', () => {
+                return chai.request(app)
+                    .get('/api/queries/nonDefinedQuery?wombat=cuddly')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
         });
     });
 });
