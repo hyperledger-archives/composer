@@ -4,6 +4,7 @@ import { OperationsHelper } from '../utils/operations-helper';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
 import { Replace } from '../component/replace';
+import { ImportError } from '../component/import-error';
 import { AddFile } from '../component/add-file';
 import { EditorFile } from '../component/editor-file';
 import { ErrorAlert } from '../component/error-alert';
@@ -66,6 +67,9 @@ describe('Editor Define', (() => {
         // Select BNA
         Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
 
+        // Now press the "Import" button
+        Import.confirmImportWithWait();
+
         // Replace confirm should show, cancel it
         Replace.cancelReplace();
 
@@ -96,6 +100,9 @@ describe('Editor Define', (() => {
         // Select BNA
         Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
 
+        // Now press the "Import" button
+        Import.confirmImportWithWait();
+
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
 
@@ -119,9 +126,49 @@ describe('Editor Define', (() => {
         });
     }));
 
+
+    it('should enable broken BNA import via file selection', (() => {
+        // Select BNA
+        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/broken-sample-network.bna');
+
+        // This BNA is broken, let's confirm the import error modal
+        ImportError.confirmImportBroken();
+
+        // Now press the "Import" button
+        Import.confirmImportWithWait();
+
+        // Replace confirm should show, confirm it
+        Replace.confirmReplace();
+
+        // Check that the import has succeeded
+        // -import modal disappears
+        Import.waitToDisappear();
+        // -success message
+        OperationsHelper.processExpectedSuccess();
+        // -expected files in navigator
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+            expect(filelist).to.be.an('array').lengthOf(4);
+            filelist.forEach((file) => {
+                expect(file).to.be.oneOf(expectedFiles);
+            });
+        });
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+    }));
+
     it('should enable populated BNA import via file selection', (() => {
         // Select BNA
         Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+
+        // Now press the "Import" button
+        Import.confirmImportWithWait();
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -197,6 +244,7 @@ describe('Editor Define', (() => {
         // Reset network
         Editor.clickImportBND();
         Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+        Import.confirmImportWithWait();
         Replace.confirmReplace();
         Import.waitToDisappear();
         OperationsHelper.processExpectedSuccess();

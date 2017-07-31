@@ -386,8 +386,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
                 this.setCurrentFile(currentFile);
                 this.alertService.successStatus$.next({
-                    title: 'Deploy Successful',
-                    text: 'Business network imported deployed successfully',
+                    title: 'Import Successful',
+                    text: 'Business Network Imported successfully',
                     icon: '#icon-deploy_24'
                 });
             }

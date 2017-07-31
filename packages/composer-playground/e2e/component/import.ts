@@ -13,13 +13,6 @@ export class Import {
         let inputFileElement = element(by.id('file-importer_input'));
         return dragDropFile(inputFileElement, filePath);
     })
-    .then(() => {
-        let importElement = element(by.id('import_confirm'));
-        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), 10000)
-        .then(() => {
-            return importElement.click();
-        });
-    });
   }
 
   // Confirm import
@@ -31,12 +24,41 @@ export class Import {
     });
   }
 
+  static confirmImportWithWait() {
+    // Import modal should be present
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    .then(() => {
+        let importElement = element(by.id('import_confirm'));
+        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), 10000)
+        .then(() => {
+            return importElement.click();
+        });
+    });
+  }
+
   // Cancel import
   static cancelImport() {
       // Import modal should be present
       browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
       OperationsHelper.click(element(by.id('import_cancel')));
       browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
+  }
+
+  // Confirm import broken dialog
+  static confirmImportBroken() {
+    // Import modal should be present
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import-error'))), 10000)
+    .then(() => {
+        return OperationsHelper.click(element(by.id('import_anyway')));
+    });
+  }
+
+  // Cancel import broken
+  static cancelImportBroken() {
+      // Import Broken modal should be present
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import-error'))), 5000);
+      OperationsHelper.click(element(by.id('import_cancel')));
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import-error'))), 5000);
   }
 
   static waitToAppear() {

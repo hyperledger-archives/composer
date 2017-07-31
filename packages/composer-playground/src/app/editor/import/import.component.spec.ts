@@ -307,7 +307,7 @@ describe('ImportComponent', () => {
     });
 
     describe('deploy', () => {
-        it('should deploy a business network from github', fakeAsync(() => {
+        it('should import a business network from github', fakeAsync(() => {
 
             let deployNpmMock = sinon.stub(component, 'deployFromNpm').returns(Promise.resolve());
 
@@ -316,17 +316,17 @@ describe('ImportComponent', () => {
                 result: Promise.resolve(true)
             });
 
-            component.deploy();
+            component.import();
 
             tick();
 
             deployNpmMock.should.have.been.called;
 
-            component['deployInProgress'].should.equal(false);
+            component['importInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
         }));
 
-        it('should deploy a business network from business network', fakeAsync(() => {
+        it('should import a business network from business network', fakeAsync(() => {
 
             mockNgbModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -336,13 +336,13 @@ describe('ImportComponent', () => {
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
-            component.deploy();
+            component.import();
 
             tick();
 
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
 
-            component['deployInProgress'].should.equal(false);
+            component['importInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
         }));
 
@@ -356,12 +356,12 @@ describe('ImportComponent', () => {
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'API rate limit exceeded'}));
 
-            component.deploy();
+            component.import();
 
             tick();
 
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
-            component['deployInProgress'].should.equal(false);
+            component['importInProgress'].should.equal(false);
             component.modalService.open.should.have.been.called;
         }));
 
@@ -375,12 +375,12 @@ describe('ImportComponent', () => {
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'some error'}));
 
-            component.deploy();
+            component.import();
 
             tick();
 
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
-            component['deployInProgress'].should.equal(false);
+            component['importInProgress'].should.equal(false);
             component.modalService.open.should.have.been.called;
         }));
     });
