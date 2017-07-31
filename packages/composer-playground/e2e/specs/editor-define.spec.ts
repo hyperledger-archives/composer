@@ -699,10 +699,10 @@ describe('Editor Define', (() => {
         AddFile.retrieveAddFileRadioButtons()
         .then((radioList: any) => {
             expect(radioList).to.be.an('array').lengthOf(4);
-            expect(radioList[0]).to.deep.equal({enabled: true});
-            expect(radioList[1]).to.deep.equal({enabled: true});
-            expect(radioList[2]).to.deep.equal({enabled: false});
-            expect(radioList[3]).to.deep.equal({enabled: false});
+            expect(radioList).to.contain({name: 'file-type-cto', enabled: true});
+            expect(radioList).to.contain({name: 'file-type-js', enabled: true});
+            expect(radioList).to.contain({name: 'file-type-qry', enabled: false});
+            expect(radioList).to.contain({name: 'file-type-acl', enabled: false});
         });
 
         AddFile.clickCancelAdd();

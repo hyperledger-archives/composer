@@ -386,7 +386,6 @@ describe('AddFileComponent', () => {
         it('should create a new query file named queries.qry', async(() => {
             let dataBuffer = new Buffer('/**QUERY File**/ query things');
             let filename = 'queries.qry';
-            /*let mockQueryFile = sinon.createStubInstance(QueryFile);*/
             mockClientService.createQueryFile.returns(mockQueryFile);
 
             // Run method

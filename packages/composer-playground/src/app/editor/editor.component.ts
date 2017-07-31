@@ -300,6 +300,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
             confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processQueryFileAddition(query);
             }, (reason) => {
@@ -327,6 +328,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
             confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your README file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.clientService.setBusinessNetworkReadme(readme);
                 this.updateFiles();
@@ -350,6 +352,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
             confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your ACL file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processRuleFileAddition(rules);
             }, (reason) => {
