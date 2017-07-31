@@ -3,7 +3,7 @@
     <svg class="ibm-icon" aria-hidden="true">
       <use xlink:href="#icon-warn_32"></use>
     </svg>
-    <h1>Current definition will be replaced</h1>
+    <h1>Current {{resource}} will be replaced</h1>
     <button class="icon modal-exit" (click)="activeModal.close(false)">
       <svg class="ibm-icon" aria-hidden="true">
         <use xlink:href="#icon-close_new"></use>
@@ -18,6 +18,6 @@
   </section>
   <footer>
     <button id="replace_cancel" type="button" class="secondary" (click)="activeModal.dismiss()">Cancel</button>
-    <button id="replace_confirm" type="button" class="primary" (click)="activeModal.close(true)">Replace & Import</button>
+    <button id="replace_confirm" type="button" class="primary" (click)="activeModal.close(true)">Replace</button>
   </footer>
 </div>

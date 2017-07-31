@@ -1,6 +1,10 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions, ElementFinder } from 'protractor';
 
+import { Editor } from '../component/editor';
+import { Import } from '../component/import';
+import { Replace } from '../component/replace';
+
 export class OperationsHelper {
 
   // Perform a 'safe' click action on an element
@@ -47,4 +51,12 @@ export class OperationsHelper {
     browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 5000);
     browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 5000);
   };
+
+  static importBusinessNetworkArchive(fileName: string) {
+    Editor.clickImportBND();
+    Import.selectBusinessNetworkDefinitionFromFile(fileName);
+    Replace.confirmReplace();
+    Import.waitToDisappear();
+    this.processExpectedSuccess();
+  }
 }
