@@ -171,7 +171,7 @@ export class IdentityCardService {
         let cardRef: string = uuid.v4();
 
         this.identityCardStorageService.set(cardRef, card);
-        this.identityCardStorageService.set(this.dataRef(cardRef), { unused: true });
+        this.identityCardStorageService.set(this.dataRef(cardRef), {unused: true});
         this.idCards.set(cardRef, card);
 
         return Promise.resolve(cardRef);
@@ -187,18 +187,31 @@ export class IdentityCardService {
         let connectionProfile = card.getConnectionProfile();
         let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
-        this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
-        this.connectionProfileService.deleteProfile(connectionProfileName);
+        let wallet = this.walletService.getWallet(connectionProfileName);
 
-        this.identityCardStorageService.remove(cardRef);
-        this.identityCardStorageService.remove(this.dataRef(cardRef));
-        this.idCards.delete(cardRef);
-
-        return Promise.resolve();
+        return wallet.contains(enrollmentId)
+            .then((inWallet) => {
+                if (inWallet) {
+                    return this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
+                }
+            })
+            .then(() => {
+                // only delete if this is the last id card using the connection profile
+                if (this.getAllCardsForProfile(connectionProfileName).length === 1) {
+                    return this.connectionProfileService.deleteProfile(connectionProfileName);
+                }
+            })
+            .then(() => {
+                this.identityCardStorageService.remove(cardRef);
+                this.identityCardStorageService.remove(this.dataRef(cardRef));
+                this.idCards.delete(cardRef);
+            });
     }
 
     setCurrentIdentityCard(cardRef): Promise<IdCard> {
-        if (!this.idCards.has(cardRef)) {
+        if (!
+                this.idCards.has(cardRef)
+        ) {
             return Promise.reject(new Error('Identity card does not exist'));
         }
         let card: IdCard = this.idCards.get(cardRef);
@@ -232,23 +245,42 @@ export class IdentityCardService {
         } else {
             return prefix + '-' + connectionProfile.name;
         }
-    };
-
-    private dataRef(cardRef: string): string {
-        return cardRef + '-pd';
     }
 
-    private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
-        let wallet = this.walletService.getWallet(connectionProfileName);
+    getCardRefFromIdentity(identityName: string, businessNetworkName: string, qualifiedConnectionProfile: string): string {
+        let wantedCardRef: string;
+        this.idCards.forEach((card: IdCard, key: string) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getName()) {
+                wantedCardRef = key;
+            }
+        });
 
-        return wallet.contains(enrollmentId)
-            .then((contains) => {
-                if (contains) {
-                    return wallet.update(enrollmentId, enrollmentSecret);
-                } else {
-                    return wallet.add(enrollmentId, enrollmentSecret);
-                }
-            });
+        return wantedCardRef;
+    }
+
+    getAllCardsForBusinessNetwork(businessNetworkName: string, qualifiedConnectionProfile: string): Map<string, IdCard> {
+        let wantedCards: Map<string, IdCard> = new Map<string, IdCard>();
+        this.idCards.forEach((card: IdCard, key: string) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName) {
+                wantedCards.set(key, card);
+            }
+        });
+
+        return wantedCards;
+    }
+
+    getAllCardsForProfile(qualifiedConnectionProfile: string): string[] {
+        let wantedCards: string[] = [];
+        this.idCards.forEach((card, key) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile) {
+                wantedCards.push(key);
+            }
+        });
+
+        return wantedCards;
     }
 
     private activateIdentityCard(cardRef): Promise<string | void> {
@@ -274,5 +306,22 @@ export class IdentityCardService {
         }
 
         return Promise.resolve();
+    }
+
+    private dataRef(cardRef: string): string {
+        return cardRef + '-pd';
+    }
+
+    private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
+        let wallet = this.walletService.getWallet(connectionProfileName);
+
+        return wallet.contains(enrollmentId)
+            .then((contains) => {
+                if (contains) {
+                    return wallet.update(enrollmentId, enrollmentSecret);
+                } else {
+                    return wallet.add(enrollmentId, enrollmentSecret);
+                }
+            });
     }
 }

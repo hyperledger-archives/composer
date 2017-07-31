@@ -3,7 +3,6 @@ import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityCardService } from '../../services/identity-card.service';
-import { WalletService } from '../../services/wallet.service';
 
 @Component({
     selector: 'identity-issued-modal',
@@ -18,29 +17,20 @@ export class IdentityIssuedComponent {
     @Input() userSecret: string;
 
     constructor(private activeModal: NgbActiveModal,
-                private identityCardService: IdentityCardService,
-                private walletService: WalletService) {
+                private identityCardService: IdentityCardService) {
 
     }
 
-    addToWallet() {
-        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
-        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
-        let wallet = this.walletService.getWallet(connectionProfileRef);
+    addToWallet(): Promise<void> {
+        let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
+        let businessNetworkName = this.identityCardService.getCurrentIdentityCard().getBusinessNetworkName();
 
-        return wallet.contains(this.userID)
-        .then((inWallet) => {
-            if (inWallet) {
-                return wallet.update(this.userID, this.userSecret);
-            } else {
-                return wallet.add(this.userID, this.userSecret);
-            }
-        })
-        .then(() => {
-            this.activeModal.close();
-        })
-        .catch((error) => {
-            this.activeModal.dismiss(error);
-        });
+        return this.identityCardService.createIdentityCard(this.userID, businessNetworkName, this.userID, this.userSecret, connectionProfile)
+            .then(() => {
+                this.activeModal.close();
+            })
+            .catch((error) => {
+                this.activeModal.dismiss(error);
+            });
     }
 }

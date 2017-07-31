@@ -10,14 +10,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityComponent } from './identity.component';
 import { AlertService } from '../basic-modals/alert.service';
-import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
+import { IdentityCardService } from '../services/identity-card.service';
 import { BusinessNetworkConnection } from 'composer-client';
+import { IdCard } from 'composer-common';
 
 import * as chai from 'chai';
 
 import * as sinon from 'sinon';
-import { WalletService } from '../services/wallet.service';
 
 let should = chai.should();
 
@@ -38,16 +38,24 @@ describe(`IdentityComponent`, () => {
     let mockAlertService;
     let mockIdentityCardService;
     let mockClientService;
-    let mockWalletService;
     let mockBusinessNetworkConnection;
+    let mockCard;
+    let mockIDCards: Map<string, IdCard>;
 
     beforeEach(() => {
+
+        mockCard = sinon.createStubInstance(IdCard);
+        mockCard.getBusinessNetworkName.returns('myNetwork');
+        mockCard.getConnectionProfile.returns({name: 'myProfile'});
+        mockCard.getName.returns('myName');
+
+        mockIDCards = new Map<string, IdCard>();
+        mockIDCards.set('1234', mockCard);
 
         mockModal = sinon.createStubInstance(NgbModal);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockWalletService = sinon.createStubInstance(WalletService);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
 
         mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -73,9 +81,8 @@ describe(`IdentityComponent`, () => {
             providers: [
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: WalletService, useValue: mockWalletService}
+                {provide: IdentityCardService, useValue: mockIdentityCardService},
             ]
         });
 
@@ -89,38 +96,85 @@ describe(`IdentityComponent`, () => {
             component.should.be.ok;
         });
 
-        it('should load the component', () => {
-            let loadMock = sinon.stub(component, 'loadAllIdentities');
+        it('should load the component', fakeAsync(() => {
+            let loadMock = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
 
             component.ngOnInit();
 
+            tick();
+
             loadMock.should.have.been.called;
-        });
+        }));
     });
 
     describe('load all identities', () => {
         it('should load the identities', fakeAsync(() => {
-            mockIdentityCardService.getCurrentEnrollmentCredentials.returns({id: 'myId'});
+            mockClientService.getMetaData.returns({getName: sinon.stub().returns('myNetwork')});
+            let myIdentityMock = sinon.stub(component, 'loadMyIdentities');
+
+            mockIdentityCardService.getCurrentIdentityCard.returns({
+                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
+            });
+
+            mockIdentityCardService.getQualifiedProfileName.returns('qpn');
+            mockIdentityCardService.getCardRefFromIdentity.onFirstCall().returns('1234');
+            mockIdentityCardService.getCardRefFromIdentity.onSecondCall().returns('4321');
 
             component.loadAllIdentities();
 
             tick();
 
-            component['myIdentities'].should.deep.equal([]);
-            component['allIdentities'].should.deep.equal([{name: 'idOne'}, {name: 'idTwo'}]);
-            component['currentIdentity'].should.equal('myId');
+            component['businessNetworkName'].should.equal('myNetwork');
+            myIdentityMock.should.have.been.called;
+
+            mockIdentityCardService.getCurrentIdentityCard.should.have.been.called;
+            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name : 'myProfile'});
+            mockIdentityCardService.getCardRefFromIdentity.should.have.been.calledTwice;
+            mockIdentityCardService.getCardRefFromIdentity.firstCall.should.have.been.calledWith('idOne', 'myNetwork', 'qpn');
+            mockIdentityCardService.getCardRefFromIdentity.secondCall.should.have.been.calledWith('idTwo', 'myNetwork', 'qpn');
+            component['allIdentities'].should.deep.equal([{name: 'idOne', ref : '1234'}, {name: 'idTwo', ref: '4321'}]);
         }));
 
         it('should give an alert if there is an error', fakeAsync(() => {
+
             mockBusinessNetworkConnection.getIdentityRegistry.returns(Promise.reject('some error'));
+            let myIdentityMock = sinon.stub(component, 'loadMyIdentities');
 
             component.loadAllIdentities();
 
             tick();
 
-            should.not.exist(component['allIdentities']);
-            mockAlertService.errorStatus$.next.should.have.been.called;
+            myIdentityMock.should.have.been.called;
+            mockBusinessNetworkConnection.getIdentityRegistry.should.have.been.called;
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
+    });
+
+    describe('loadMyIdentities', () => {
+        it('should load identities for a business network', () => {
+            mockIdentityCardService.currentCard = '1234';
+
+            mockIdentityCardService.getCurrentIdentityCard.returns(mockCard);
+            mockIdentityCardService.getQualifiedProfileName.returns('web-profile');
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(mockIDCards);
+
+            component.loadMyIdentities();
+
+            component['currentIdentity'].should.equal('1234');
+            mockIdentityCardService.getCurrentIdentityCard.should.have.been.calledTwice;
+
+            mockCard.getBusinessNetworkName.should.have.been.called;
+            mockCard.getConnectionProfile.should.have.been.called;
+
+            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name: 'myProfile'});
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.should.have.been.calledWith('myNetwork', 'web-profile');
+            component['identityCards'].should.deep.equal(mockIDCards);
+
+            component['cardRefs'].should.deep.equal(['1234']);
+        });
     });
 
     describe('issueNewId', () => {
@@ -222,44 +276,73 @@ describe(`IdentityComponent`, () => {
 
     describe('setCurrentIdentity', () => {
         it('should set the current identity', fakeAsync(() => {
-            component.loadAllIdentities = sinon.stub();
+            let loadAllIdentities = sinon.stub(component, 'loadAllIdentities');
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
 
-            component.setCurrentIdentity('bob');
+            component.setCurrentIdentity('1234');
 
             tick();
 
-            component['currentIdentity'].should.equal('bob');
+            component['currentIdentity'].should.equal('1234');
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('1234');
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
+            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
+            loadAllIdentities.should.have.been.called;
+        }));
+
+        it('should do nothing if the new identity matches the current identity', fakeAsync(() => {
+            let loadAllIdentities = sinon.stub(component, 'loadAllIdentities');
+            component['currentIdentity'] = '1234';
+
+            component.setCurrentIdentity('1234');
+
+            tick();
+
+            component['currentIdentity'].should.equal('1234');
+            loadAllIdentities.should.not.have.been.called;
+            mockIdentityCardService.setCurrentIdentityCard.should.not.have.been.called;
+            mockClientService.ensureConnected.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should handle errors', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.reject('Testing'));
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            component.setCurrentIdentity('1234');
+
+            tick();
+
+            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
     });
 
     describe('removeIdentity', () => {
-        beforeEach(() => {
-            mockIdentityCardService.getCurrentConnectionProfile.returns({name: 'myProfile'});
-            mockIdentityCardService.getQualifiedProfileName.returns('xxx-myProfile');
-        });
-
         it('should open the delete-confirm modal', fakeAsync(() => {
+            component['identityCards'] = mockIDCards;
+            let loadMock = sinon.stub(component, 'loadAllIdentities');
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve()
             });
 
-            component.removeIdentity('fred');
+            component.removeIdentity('1234');
             tick();
 
             mockModal.open.should.have.been.called;
         }));
 
         it('should open the delete-confirm modal and handle error', fakeAsync(() => {
-
+            component['identityCards'] = mockIDCards;
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.reject('some error')
             });
 
-            component.removeIdentity('fred');
+            component.removeIdentity('1234');
             tick();
 
             mockAlertService.busyStatus$.next.should.have.been.called;
@@ -267,13 +350,13 @@ describe(`IdentityComponent`, () => {
         }));
 
         it('should open the delete-confirm modal and handle cancel', fakeAsync(() => {
-
+            component['identityCards'] = mockIDCards;
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.reject(null)
             });
 
-            component.removeIdentity('fred');
+            component.removeIdentity('1234');
             tick();
 
             mockAlertService.busyStatus$.next.should.not.have.been.called;
@@ -281,21 +364,22 @@ describe(`IdentityComponent`, () => {
         }));
 
         it('should remove the identity from the wallet', fakeAsync(() => {
+            component['identityCards'] = mockIDCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
             });
 
-            mockWalletService.removeFromWallet.returns(Promise.resolve());
-
             let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
 
-            component.removeIdentity('fred');
+            component.removeIdentity('1234');
 
             tick();
 
-            mockWalletService.removeFromWallet.should.have.been.calledWith('xxx-myProfile', 'fred');
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
             mockLoadAllIdentities.should.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;
@@ -303,22 +387,22 @@ describe(`IdentityComponent`, () => {
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 
-        it('should handle error when remvoing from wallet', fakeAsync(() => {
+        it('should handle error when removing from wallet', fakeAsync(() => {
+            component['identityCards'] = mockIDCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.reject('some error'));
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
             });
 
-            mockWalletService.removeFromWallet.returns(Promise.reject('some error'));
-
             let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
 
-            component.removeIdentity('fred');
+            component.removeIdentity('1234');
 
             tick();
 
-            mockWalletService.removeFromWallet.should.have.been.calledWith('xxx-myProfile', 'fred');
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
             mockLoadAllIdentities.should.not.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;
@@ -368,8 +452,10 @@ describe(`IdentityComponent`, () => {
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 
-        it('should revoke the identity from the client service and then remove the identity from the wallet', fakeAsync(() => {
-
+        it('should revoke the identity from the client service and then remove the identity from the wallet if in wallet', fakeAsync(() => {
+            component['cardRefs'] = ['1234'];
+            component['businessNetworkName'] = 'myNetwork';
+            component['myIdentities'] = ['fred'];
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
@@ -380,17 +466,41 @@ describe(`IdentityComponent`, () => {
             let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
             let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
 
-            component.revokeIdentity({name: 'fred'});
+            component.revokeIdentity({name: 'fred', ref: '1234'});
 
             tick();
 
             mockClientService.revokeIdentity.should.have.been.called;
-            mockRemoveIdentity.should.have.been.calledWith('fred');
+            mockRemoveIdentity.should.have.been.calledWith('1234');
             mockLoadAllIdentities.should.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.have.been.called;
+        }));
 
+        it('should revoke the identity from the client service not remove from wallet', fakeAsync(() => {
+            component['cardRefs'] = [];
+            component['businessNetworkName'] = 'myNetwork';
+            component['myIdentities'] = ['bob'];
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
+            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
+            mockClientService.revokeIdentity.returns(Promise.resolve());
+
+            component.revokeIdentity({name: 'fred', ref: '1234'});
+
+            tick();
+
+            mockClientService.revokeIdentity.should.have.been.called;
+            mockRemoveIdentity.should.not.have.been.called;
+            mockLoadAllIdentities.should.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
         }));
 
         it('should handle error', fakeAsync(() => {
