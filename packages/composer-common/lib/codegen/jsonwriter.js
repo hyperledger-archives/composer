@@ -112,7 +112,6 @@ class JSONWriter extends Writer {
      * @param {string} value - the value
      */
     writeKeyStringValue(key,value) {
-        this.writeComma();
         this.writeKey(key);
         this.writeStringValue(value);
         this.firstItem = false;

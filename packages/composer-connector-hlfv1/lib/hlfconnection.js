@@ -1032,12 +1032,12 @@ class HLFConnection extends Connection {
      * or rejected with an error.
      * @memberof HLFConnection
      */
-    upgrade(securityContext, businessNetworkIdentifier) {
+    upgrade(securityContext) {
         const method = 'upgrade';
-        LOG.entry(method, securityContext, businessNetworkIdentifier);
+        LOG.entry(method, securityContext);
 
-        if (!businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
+        if (!this.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified on connection');
         }
 
         let txId;
@@ -1056,7 +1056,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetworkIdentifier,
+                    chaincodeId: this.businessNetworkIdentifier,
                     txId: txId,
                     fcn: 'upgrade'
                 };
