@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
-import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AssetDeclaration, QueryFile } from 'composer-common';
+import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AclManager, AssetDeclaration, QueryFile, QueryManager } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from '../../common/file-importer';
@@ -69,9 +69,13 @@ describe('AddFileComponent', () => {
     let mockBusinessNetwork;
     let mockModelManager;
     let mockScriptManager;
+    let mockAclManager;
     let mockClientService;
     let mockSystemModelFile;
     let mockSystemAsset;
+    let mockAclFile;
+    let mockQueryManager;
+    let mockQueryFile;
 
     beforeEach(() => {
 
@@ -103,6 +107,7 @@ describe('AddFileComponent', () => {
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetwork.getModelManager.returns(mockModelManager);
         mockBusinessNetwork.getScriptManager.returns(mockScriptManager);
+        mockBusinessNetwork.getAclManager.returns(mockAclManager);
 
         mockSystemModelFile = sinon.createStubInstance(ModelFile);
         mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
@@ -112,6 +117,15 @@ describe('AddFileComponent', () => {
         mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
         mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
         mockModelManager.getSystemTypes.returns([mockSystemAsset]);
+
+        mockAclFile = sinon.createStubInstance(AclFile);
+        mockAclManager = sinon.createStubInstance(AclManager);
+        mockAclManager.getAclFile.returns(mockAclFile);
+
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockQueryManager = sinon.createStubInstance(QueryManager);
+        mockQueryManager.getQueryFile.returns(mockQueryFile);
+
     });
 
     afterEach(() => {
@@ -372,7 +386,7 @@ describe('AddFileComponent', () => {
         it('should create a new query file named queries.qry', async(() => {
             let dataBuffer = new Buffer('/**QUERY File**/ query things');
             let filename = 'queries.qry';
-            let mockQueryFile = sinon.createStubInstance(QueryFile);
+            /*let mockQueryFile = sinon.createStubInstance(QueryFile);*/
             mockClientService.createQueryFile.returns(mockQueryFile);
 
             // Run method
@@ -532,6 +546,44 @@ namespace org.acme.model`);
             // Assertions
             component.currentFileName.should.equal('models/org.acme.model2.cto');
         }));
+
+        it('should change current file to a query file upon calling createQueryFile', () => {
+
+            let dataBuffer = new Buffer(`/**
+ * New query file
+ */`);
+
+            let mockQuery = new QueryFile('queries.qry', mockQueryManager, dataBuffer.toString());
+            mockClientService.createAclFile.returns(mockQuery);
+            component.fileType = 'qry';
+
+            component.changeCurrentFileType();
+
+            component.currentFileName.should.equal('queries.qry');
+
+        });
+
+        it('should change current file to an acl file upon calling createAclFile', () => {
+
+            let dataBuffer = new Buffer(`/**
+ * New access control file
+ */
+ rule AllAccess {
+     description: "AllAccess - grant everything to everybody."
+     participant: "org.hyperledger.composer.system.Participant" 
+     operation: ALL
+     resource: "org.hyperledger.composer.system.**"
+     action: ALLOW
+ }`);
+
+            let mockAcl = new AclFile('permissions.acl', mockAclManager, dataBuffer.toString());
+            mockClientService.createAclFile.returns(mockAcl);
+            component.fileType = 'acl';
+
+            component.changeCurrentFileType();
+
+            component.currentFileName.should.equal('permissions.acl');
+        });
     });
 
     describe('#removeFile', () => {
@@ -603,4 +655,54 @@ namespace org.acme.model`);
             });
         });
     });
+
+    describe('#aclExists', () => {
+
+        it('should return true if an acl file is present', () => {
+            let fileArray = [];
+            fileArray.push({acl: true, id: 'acl file', displayID: 'acl0'});
+            fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
+            component['files'] = fileArray;
+
+            let result = component['aclExists']();
+            result.should.equal(true);
+
+        });
+
+        it('should return false if an acl file is not present', () => {
+            let fileArray = [];
+            fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
+            fileArray.push({script: true, id: 'script 0', displayID: 'script1'});
+            component['files'] = fileArray;
+
+            let result = component['aclExists']();
+            result.should.equal(false);
+        });
+
+    });
+
+    describe('#queryExists', () => {
+
+        it('should return true if a query file is present', () => {
+            let fileArray = [];
+            fileArray.push({query: true, id: 'query file', displayID: 'query0'});
+            fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
+            component['files'] = fileArray;
+
+            let result = component['queryExists']();
+            result.should.equal(true);
+        });
+
+        it('should return true if a query file is not present', () => {
+            let fileArray = [];
+            fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
+            fileArray.push({script: true, id: 'script 0', displayID: 'script1'});
+            component['files'] = fileArray;
+
+            let result = component['queryExists']();
+            result.should.equal(false);
+        });
+
+    });
+
 });

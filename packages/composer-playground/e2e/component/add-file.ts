@@ -59,6 +59,24 @@ export class AddFile {
     });
   }
 
+  // Select ACL file via Radio Button
+  static selectAddAclViaRadioOption() {
+    // AddFile modal should be present
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    .then(() => {
+        return OperationsHelper.click(element(by.css('[for="file-type-acl"]')));
+    });
+  }
+
+  // Select Query file via Radio Button
+  static selectAddQueryViaRadioOption() {
+    // AddFile modal should be present
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    .then(() => {
+        return OperationsHelper.click(element(by.css('[for="file-type-qry"]')));
+    });
+  }
+
   // Select BND from BNA file drop
   static selectFromFile(filePath: string) {
     // Import modal should be present
@@ -68,6 +86,12 @@ export class AddFile {
         dragDropFile(inputFileElement, filePath);
         return true;
     });
+  }
+
+  // Get all radio buttons
+  static retrieveAddFileRadioButtons() {
+    return OperationsHelper.retriveMatchingElementsByCSS('.file-types-list', '[type="radio"]')
+    .map((elm) => { return {enabled: elm.isEnabled()}; });
   }
 
 }

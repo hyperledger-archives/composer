@@ -64,7 +64,7 @@ describe('Editor Define', (() => {
 
     it('should enable cancel of BNA import', (() => {
         // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
+        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/empty-network.bna');
 
         // Replace confirm should show, cancel it
         Replace.cancelReplace();
@@ -94,7 +94,7 @@ describe('Editor Define', (() => {
 
     it('should enable empty BNA import via file selection', (() => {
         // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
+        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/empty-network.bna');
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -193,13 +193,9 @@ describe('Editor Define', (() => {
         });
     });
 
-    afterAll(() =>  {
+    afterEach(() =>  {
         // Reset network
-        Editor.clickImportBND();
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
-        Replace.confirmReplace();
-        Import.waitToDisappear();
-        OperationsHelper.processExpectedSuccess();
+        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/basic-sample-network.bna');
     });
 
     it('should bring up an AddFile modal that can be closed by cancel button', (() => {
@@ -489,6 +485,60 @@ describe('Editor Define', (() => {
         });
     }));
 
+    it('should enable the addition of an ACL file via radio button selection', (() => {
+        AddFile.clickCancelAdd();
+        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/empty-network.bna');
+
+        Editor.clickAddFile();
+        AddFile.waitToAppear();
+
+        Editor.retrieveNavigatorFileNames()
+        .then((names) => {
+            // Select radio option
+            AddFile.selectAddAclViaRadioOption();
+            // Add option becomes enabled
+            AddFile.clickConfirmAdd();
+            return names;
+        })
+        .then((startFiles) => {
+            // -active file
+            Editor.retrieveNavigatorActiveFile()
+            .then((list: any) => {
+                expect(list).to.be.an('array').lengthOf(1);
+                expect(list).to.include('Access Control\npermissions.acl');
+            });
+            // Check extracted against new template file that we should have in the list
+            Editor.retrieveNavigatorFileNames()
+            .then((filenames: any) => {
+                // We should have added one file
+                expect(filenames).to.be.an('array').lengthOf(startFiles.length + 1);
+                expect(filenames).to.include('Access Control\npermissions.acl');
+                // Previous files should still exist
+                startFiles.forEach((file) => {
+                    expect(file).to.be.oneOf(filenames);
+                });
+            });
+            // -deploy enabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
+            });
+            // deploy new item
+            Editor.clickDeployBND();
+            // -success message
+            OperationsHelper.processExpectedSuccess();
+            // -deploy disabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+            });
+        });
+    }));
+
     it('should enable the addition of a Readme file via file input event', (() => {
         Editor.retrieveNavigatorFileNames()
         .then((names) => {
@@ -515,6 +565,54 @@ describe('Editor Define', (() => {
             .then((filenames) => {
                 // No new file (names)
                 expect(filenames).to.be.an('array').lengthOf(startFiles.length);
+                // Previous files should still exist
+                startFiles.forEach((file) => {
+                    expect(file).to.be.oneOf(filenames);
+                });
+            });
+            // -deploy enabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
+            });
+            // deploy new item
+            Editor.clickDeployBND();
+            // -success message
+            OperationsHelper.processExpectedSuccess();
+            // -deploy disabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+            });
+        });
+    }));
+
+    it('should enable the addition of a Query file via radio button selection', (() => {
+        Editor.retrieveNavigatorFileNames()
+        .then((names) => {
+            // Select radio option
+            AddFile.selectAddQueryViaRadioOption();
+            // Add option becomes enabled
+            AddFile.clickConfirmAdd();
+            return names;
+        })
+        .then((startFiles) => {
+            // -active file
+            Editor.retrieveNavigatorActiveFile()
+            .then((list: any) => {
+                expect(list).to.be.an('array').lengthOf(1);
+                expect(list).to.include('Query File\nqueries.qry');
+            });
+            // Check extracted against new template file that we should have in the list
+            Editor.retrieveNavigatorFileNames()
+            .then((filenames: any) => {
+                // We should have added one file
+                expect(filenames).to.be.an('array').lengthOf(startFiles.length + 1);
+                expect(filenames).to.include('Query File\nqueries.qry');
                 // Previous files should still exist
                 startFiles.forEach((file) => {
                     expect(file).to.be.oneOf(filenames);
@@ -589,6 +687,26 @@ describe('Editor Define', (() => {
                 expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
             });
         });
+    }));
+
+    it('should prevent the addition of a query file and/or acl file if one exists already', (() => {
+        AddFile.clickCancelAdd();
+        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/importBNA.bna');
+
+        Editor.clickAddFile();
+        AddFile.waitToAppear();
+
+        AddFile.retrieveAddFileRadioButtons()
+        .then((radioList: any) => {
+            expect(radioList).to.be.an('array').lengthOf(4);
+            expect(radioList[0]).to.deep.equal({enabled: true});
+            expect(radioList[1]).to.deep.equal({enabled: true});
+            expect(radioList[2]).to.deep.equal({enabled: false});
+            expect(radioList[3]).to.deep.equal({enabled: false});
+        });
+
+        AddFile.clickCancelAdd();
+
     }));
 
     it('should prevent the addition of a file with an invalid file extension', (() => {
