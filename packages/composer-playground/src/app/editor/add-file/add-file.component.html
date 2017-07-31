@@ -12,7 +12,7 @@
   </div>
   <section class="modal-body">
     <span>Upload a file from your computer...</span>
-    <file-importer *ngIf="!currentFile" (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
+    <file-importer (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
                    [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes" [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
     <div class="chosen-file" *ngIf="expandInput && currentFile">
       <div class="file-info">
@@ -56,6 +56,22 @@
         <label class="radio-label" for="file-type-js">Script File (.js)</label>
         <div class="description">
           Define the logic of transaction executions using JavaScript.
+        </div>
+      </div>
+      <div class="file-types-list-item" [ngClass]="{'selection-disabled': queryExists()}">
+        <input [disabled]="queryExists()" type="radio" id="file-type-qry" name="file-type-qry" [(ngModel)]="fileType" value="qry"
+               (change)="changeCurrentFileType()">
+        <label class="radio-label" for="file-type-qry">Query File (.qry)</label>
+        <div class="description">
+          Define the queries in here (Note: you can only have 1 of these per .bna).
+        </div>
+      </div>
+      <div class="file-types-list-item" [ngClass]="{'selection-disabled': aclExists()}">
+        <input [disabled]="aclExists()" type="radio" id="file-type-acl" name="file-type-acl" [(ngModel)]="fileType" value="acl"
+               (change)="changeCurrentFileType()">
+        <label class="radio-label" for="file-type-acl">Access Control File (permissions.acl)</label>
+        <div class="description">
+          Define your access controls here (Note: you can only have 1 of these per .bna).
         </div>
       </div>
     </form>

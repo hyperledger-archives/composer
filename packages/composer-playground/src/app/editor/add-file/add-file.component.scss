@@ -4,14 +4,19 @@
 add-file-modal {
     .import {
         width: 700px;
-        height: 520px;
+        height: 100%;
 
         display: flex;
         flex-direction: column;
 
         .file-types-list {
-            max-height: 250px;
+            max-height: 100%;
+            padding-right: 0px;
             margin-top: 16px;
+
+            .selection-disabled {
+                opacity: 0.5;
+            }
 
             .file-types-list-item {
                 background-color: $third-highlight;
