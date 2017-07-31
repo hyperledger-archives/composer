@@ -50,7 +50,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
-                    periodMultiplier: 6
+                    periodMultiplier: 7
                 }
             }
         }, {
@@ -72,7 +72,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
-                    periodMultiplier: 6
+                    periodMultiplier: 7
                 }
             }
         }, {
@@ -197,7 +197,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             });
             it('should return all of the assets with an integer type variable', () => {
                 return chai.request(app)
-                    .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=6')
+                    .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=7')
                     .then((res) => {
                         res.should.be.json;
                         res.body.should.deep.equal([
