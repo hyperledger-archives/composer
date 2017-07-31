@@ -10,15 +10,7 @@ query findBondByPaymentFrequencyPeriodMultiplier {
     description: "Find all bonds with a payment frequecy period multiplier _$multiplier"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.periodMultiplier == _$multiplier)
 }
-query findBondByExchangeId {
-    description: "Find all bonds with a set of exchange ids _$exchangeId"
+query findBondByExchangeIdUnsupported {
+    description: "Find all bonds with a set of exchange id _$exchangeId is unsupported"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.exchangeId == _$exchangeId)
-}
-query findBondByIssuer {
-    description: "Find all bonds with an issuer _$issuer"
-    statement: SELECT org.acme.bond.BondAsset WHERE (bond.issuer == _$issuer)
-}
-query findBondByMaturity {
-    description: "Find all bonds with a maturity not greater than  _$maturity"
-    statement: SELECT org.acme.bond.BondAsset WHERE (bond.maturity <= _$maturity)
 }

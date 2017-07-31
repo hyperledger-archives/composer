@@ -38,8 +38,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOM',
                 exchangeId: [
-                    'LDN',
-                    'NYSE'
+                    'LDN'
                 ],
                 faceAmount: 1000,
                 instrumentId: [
@@ -61,7 +60,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOM',
                 exchangeId: [
-                    'LDN'
+                    'NYSE'
                 ],
                 faceAmount: 1000,
                 instrumentId: [
@@ -85,7 +84,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 500,
                 instrumentId: [
                     'CharlieCorp'
                 ],
@@ -99,7 +98,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 }
             }
         }, {
-            // $class: 'org.acme.bond.BondAsset',
+            $class: 'org.acme.bond.BondAsset',
             ISINCode: 'ISIN_4',
             bond: {
                 $class: 'org.acme.bond.Bond',
@@ -107,7 +106,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 500,
                 instrumentId: [
                     'DogeCorp'
                 ],
@@ -207,35 +206,11 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return all of the assets with an array of exchangeId variable', () => {
+            it('should return a 404 if the query specified variable is an unsupported array type', () => {
                 return chai.request(app)
-                    .get('/api/queries/findBondByExchangeId?exchangeId[]=LDN&exchangeId[]=NYSE')
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                            assetData[0]
-                        ]);
-                    });
-            });
-            it('should return all of the assets with a relationship variable', () => {
-                return chai.request(app)
-                    .get('/api/queries/findBondByIssuer?issuer=resource:org.acme.bond.Issuer#1')
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                            assetData[0]
-                        ]);
-                    });
-            });
-            it('should return all of the assets with a datetime variable', () => {
-                return chai.request(app)
-                    .get('/api/queries/findBondByMaturity?maturity=2017-02-27T21:03:52.000Z')
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                            assetData[0],
-                            assetData[1]
-                        ]);
+                    .get('/api/queries/findBondByExchangeIdUnsupported?exchangeId[]=LDN')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
                     });
             });
             it('should return a 404 if the specified asset does not exist', () => {
