@@ -253,3 +253,17 @@ Feature: Asset steps
             | assetId |
             | 1       |
         And I should get an error matching /the asset with ID .* exists/
+
+    Scenario: I should handle all primitive types in tables for assets
+        When I add the following asset of type org.acme.sample.SampleComplexAsset
+            | assetId | booleanField | dateTimeField        | doubleField | integerField | longField |
+            | abc     | true         | 1970-01-01T00:00:00Z | 3.14159     | 13           | 999999999 |
+        Then I should have the following assets of type org.acme.sample.SampleComplexAsset
+            | assetId | booleanField | dateTimeField        | doubleField | integerField | longField |
+            | abc     | true         | 1970-01-01T00:00:00Z | 3.14159     | 13           | 999999999 |
+
+    Scenario: I should get an error for non-primitive types in a table
+        When I add the following asset of type org.acme.sample.SampleComplexAsset
+            | assetId | booleanField | dateTimeField        | doubleField | integerField | longField | arrayField |
+            | abc     | true         | 1970-01-01T00:00:00Z | 3.14159     | 13           | 999999999 | banana     |
+        Then I should get an error matching /arrayField/

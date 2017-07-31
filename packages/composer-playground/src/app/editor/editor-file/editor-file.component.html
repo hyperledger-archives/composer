@@ -1,9 +1,11 @@
 <perfect-scrollbar class="readme" *ngIf="editorType === 'readme' && _previewReadmeActive" [innerHTML]="previewContent">
 </perfect-scrollbar>
 
-<codemirror id="editor-file_CodeMirror" debounce name="editorCodeMirror" *ngIf="editorType === 'code' || !_previewReadmeActive" [(ngModel)]="editorContent" 
+<div class="scrollbar-padding" *ngIf="editorType === 'code' || !_previewReadmeActive">
+  <codemirror id="editor-file_CodeMirror" debounce name="editorCodeMirror" [(ngModel)]="editorContent"
             [config]="(editorType === 'readme') ? mdCodeConfig : codeConfig" (debounceFunc)="onCodeChanged()" [delay]="700" width="100%" height="100%" ngDefaultControl>
-</codemirror>
+  </codemirror>
+</div>
 
 <div class="alert-area" role="alert" *ngIf="editorType !== 'readme' && currentError">
   <svg class="ibm-icon" aria-hidden="true">
