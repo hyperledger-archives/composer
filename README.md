@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/hyperledger/composer/master/packages/composer-website/jekylldocs/assets/img/Homepage_Illustration_2.png" alt="hyperledger-composer" style="width: 300px;">
+![Hyperledger Composer](https://raw.githubusercontent.com/hyperledger/composer/master/packages/composer-website/jekylldocs/assets/img/Homepage_Illustration_2.png)
 
 # Hyperledger Composer
 
