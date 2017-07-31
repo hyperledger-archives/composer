@@ -24,9 +24,15 @@ func NewComposerPool(max int) (result *ComposerPool) {
 	logger.Debug("Entering NewComposerPool", max)
 	defer func() { logger.Debug("Exiting NewComposerPool", result) }()
 
-	return &ComposerPool{
-		Pool: make(chan *Composer, max),
-	}
+    result = &ComposerPool{
+        Pool: make(chan *Composer, max),
+    }
+
+	// load into the pool the uninitialised Composer objects
+    for i := 0; i < cap(result.Pool); i++ {
+        result.Pool <- NewComposer()
+    }
+    return result
 }
 
 // Get returns an existing Composer object from the pool, or creates a new one
@@ -35,10 +41,9 @@ func (cp *ComposerPool) Get() (result *Composer) {
 	logger.Debug("Entering ComposerPool.Get")
 	defer func() { logger.Debug("Exiting ComposerPool.Get", result) }()
 
-	select {
-	case result = <-cp.Pool:
-	default:
-		result = NewComposer()
+	result = <-cp.Pool
+	if !result.IsInitialised() {
+		result.Initialise()
 	}
 	return result
 }
@@ -49,10 +54,6 @@ func (cp *ComposerPool) Put(composer *Composer) (result bool) {
 	logger.Debug("Entering ComposerPool.Put", composer)
 	defer func() { logger.Debug("Exiting ComposerPool.Put", result) }()
 
-	select {
-	case cp.Pool <- composer:
-		return true
-	default:
-		return false
-	}
+	cp.Pool <- composer
+	return true
 }

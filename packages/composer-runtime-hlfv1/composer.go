@@ -25,9 +25,10 @@ import (
 // Composer is the chaincode class. It is an implementation of the
 // Chaincode interface.
 type Composer struct {
-	VM        *duktape.Context
-	Container *Container
-	Engine    *Engine
+	Initialised	bool   
+	VM        	*duktape.Context
+	Container 	*Container
+	Engine    	*Engine
 }
 
 // NewComposer creates a new instance of the Composer chaincode class.
@@ -37,14 +38,26 @@ func NewComposer() (result *Composer) {
 
 	// Create the JavaScript engine.
 	result = &Composer{}
-	result.createJavaScript()
-
-	// Create the container and engine objects.
-	result.Container = NewContainer(result.VM, nil)
-	result.Engine = NewEngine(result.VM, result.Container)
-
+	result.Initialised = false
 	return result
 }
+
+// determine if this composer object has been initialised
+func (composer *Composer) IsInitialised() (result bool) {
+	return composer.Initialised
+}
+
+// initialise this composer object
+func (composer *Composer) Initialise() {
+	composer.createJavaScript()
+
+	// Create the container and engine objects.
+	composer.Container = NewContainer(composer.VM, nil)
+	composer.Engine = NewEngine(composer.VM, composer.Container)
+	composer.Initialised = true
+	
+}
+
 
 // createJavaScript creates a new JavaScript virtual machine with the JavaScript code loaded.
 func (composer *Composer) createJavaScript() {

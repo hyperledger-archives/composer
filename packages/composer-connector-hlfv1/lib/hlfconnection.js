@@ -330,11 +330,14 @@ class HLFConnection extends Connection {
             })
             .then(() => {
                 // Update the chaincode source to have the runtime version in it.
-                let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'version.go');
+                // Also provide a default poolSize of 8 if not specified in install options.
+                const poolSize = installOptions && installOptions.poolSize ? installOptions.poolSize * 1 : 8;
+                let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'constants.go');
                 let targetFileContents = `
                 package main
                 // The version for this chaincode.
                 const version = "${runtimePackageJSON.version}"
+                const PoolSize = ${poolSize}
                 `;
                 return this.fs.outputFile(targetFilePath, targetFileContents);
 
