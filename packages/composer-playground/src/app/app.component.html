@@ -37,14 +37,13 @@
                                 <span title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                <button id="content" class="dropdown-item action" [routerLink]="['identity']" *ngFor="let profile of connectionProfiles">
+                                <button id="content" class="dropdown-item action" [routerLink]="['identity']">
                                     <div class="flex-container flex" style="justify-content:space-between">
-                                        <div style="margin-right:10px">ID Repository</div>
-                                        <div style="flex:1; color:#8c9696; font-style: italic">{{ profile.name }}</div>
+                                        <div style="margin-right:10px">ID Registry</div>
                                     </div>
                                 </button>
                                 <button id="footer" class="dropdown-item action" (click)="logout()">
-                                    <div class="flex-container flex" style="justify-content:center">
+                                    <div class="flex-container flex">
                                         <div style="margin-right:20px"><svg class="ibm-icon" aria-hidden="true">
                                             <use xlink:href="#icon-chevron-left"></use>§
                                         </svg></div>
