@@ -137,6 +137,11 @@
             color: $secondary-text;
             min-width: 0;
             padding: 0 $space-smedium;
+
+            &:hover {
+                color: $white;
+                background-color: $second-highlight;
+            }
         }
 
         &.action {
