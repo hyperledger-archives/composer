@@ -19,6 +19,10 @@ const JSZip = require('jszip');
 const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
 
+const CONNECTION_FILENAME = 'connection.json';
+const METADATA_FILENAME = 'metadata.json';
+const CREDENTIALS_DIRNAME = 'credentials';
+
 /**
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
@@ -140,24 +144,26 @@ class IdCard {
 
     /**
      * Create an IdCard from a card archive.
-     * @param {Buffer} buffer - the Buffer to a zip archive
-     * @return {Promise} Promise to the instantiated IdCard
+     * <p>
+     * Valid types for <em>zipData</em> are any of the types supported by JSZip.
+     * @param {String|ArrayBuffer|Uint8Array|Buffer|Blob|Promise} zipData - card archive data.
+     * @return {Promise} Promise to the instantiated IdCard.
      */
-    static fromArchive(buffer) {
+    static fromArchive(zipData) {
         const method = 'fromArchive';
-        LOG.entry(method, buffer.length);
+        LOG.entry(method, zipData.length);
 
-        return JSZip.loadAsync(buffer).then((zip) => {
+        return JSZip.loadAsync(zipData).then((zip) => {
             let promise = Promise.resolve();
 
             let metadata;
             let connection;
             let credentials = Object.create(null);
 
-            LOG.debug(method, 'Loading connection.json');
-            const connectionFile = zip.file('connection.json');
+            LOG.debug(method, 'Loading ' + CONNECTION_FILENAME);
+            const connectionFile = zip.file(CONNECTION_FILENAME);
             if (!connectionFile) {
-                throw Error('Required file not found: connection.json');
+                throw Error('Required file not found: ' + CONNECTION_FILENAME);
             }
 
             promise = promise.then(() => {
@@ -166,10 +172,10 @@ class IdCard {
                 connection = JSON.parse(connectionContent);
             });
 
-            LOG.debug(method, 'Loading metadata.json');
-            const metadataFile = zip.file('metadata.json');
+            LOG.debug(method, 'Loading ' + METADATA_FILENAME);
+            const metadataFile = zip.file(METADATA_FILENAME);
             if (!metadataFile) {
-                throw Error('Required file not found: metadata.json');
+                throw Error('Required file not found: ' + METADATA_FILENAME);
             }
 
             promise = promise.then(() => {
@@ -193,8 +199,8 @@ class IdCard {
                 });
             };
 
-            LOG.debug(method, 'Loading credentials');
-            loadDirectoryToObject('credentials', credentials);
+            LOG.debug(method, 'Loading ' + CREDENTIALS_DIRNAME);
+            loadDirectoryToObject(CREDENTIALS_DIRNAME, credentials);
 
             return promise.then(() => {
                 const idCard = new IdCard(metadata, connection, credentials);
@@ -202,6 +208,39 @@ class IdCard {
                 return idCard;
             });
         });
+    }
+
+    /**
+     * Generate a card archive representing this ID card.
+     * <p>
+     * The default value for the <em>options.type</em> parameter is <em>arraybuffer</em>. See JSZip documentation
+     * for other valid values.
+     * @param {Object} [options] - JSZip generation options.
+     * @param {String} [options.type] - type of the resulting ZIP file data.
+     * @return {Promise} Promise of the generated ZIP file; by default an {@link ArrayBuffer}.
+     */
+    toArchive(options) {
+        const method = 'fromArchive';
+        LOG.entry(method, options);
+
+        const zipOptions = Object.assign({ type: 'arraybuffer' }, options);
+        const zip = new JSZip();
+
+        const connectionContents = JSON.stringify(this.connectionProfile);
+        zip.file(CONNECTION_FILENAME, connectionContents);
+
+        const metadataContents = JSON.stringify(this.metadata);
+        zip.file(METADATA_FILENAME, metadataContents);
+
+        Object.keys(this.credentials).forEach(credentialName => {
+            const filename = CREDENTIALS_DIRNAME + '/' + credentialName;
+            const credentialData = this.credentials[credentialName];
+            zip.file(filename, credentialData);
+        });
+
+        const result = zip.generateAsync(zipOptions);
+        LOG.exit(method, result);
+        return result;
     }
 
 }
