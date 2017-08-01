@@ -54,8 +54,8 @@ editor-file {
 
 .CodeMirror, .CodeMirror-scroll {
   // account for the padding introduced by the '.scrollbar-padding' class
-  min-height: calc(63vh - #{2*$space-medium});
-  max-height: calc(63vh - #{2*$space-medium});
+  min-height: calc(64vh - #{2*$space-medium});
+  max-height: calc(64vh - #{2*$space-medium});
 }
 
 .ps.ps--active-x>.ps__scrollbar-x-rail,
