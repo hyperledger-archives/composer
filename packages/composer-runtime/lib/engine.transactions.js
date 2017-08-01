@@ -127,8 +127,6 @@ class EngineTransactions {
                 LOG.debug(method, 'Storing historian record in the registry');
                 return historian.add(result);
 
-            }).catch((error) => {
-                LOG.debug(method, 'ERROR',error);
             });
 
     }
@@ -183,13 +181,19 @@ class EngineTransactions {
         return context.getIdentityManager().getIdentity()
         .then( (result) => {
             record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
-            return;
-        }).catch((error) => {
-            LOG.error(method,error);
+            LOG.exit(method, record);
+            return record;
+        }).catch(error => {
+            //TODO:  need to remove this when the admin is sorted out!
+            if(error.identityName){
+                LOG.debug(method, 'admin userid again');
+            } else {
+                throw error;
+            }
         }).then(()=>{
             LOG.exit(method, record);
             return record;
-        });
+        } );
 
     }
 

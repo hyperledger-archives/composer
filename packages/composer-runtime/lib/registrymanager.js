@@ -250,7 +250,6 @@ class RegistryManager extends EventEmitter {
      */
     add(type, id, name, force, system) {
         let collectionID = type + ':' + id;
-
         // form this up into a resource and check if we are able to create this.
         let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
         resource.name=name;

@@ -92,7 +92,6 @@ class Engine {
     init(context, fcn, args) {
         const method = 'init';
         LOG.entry(method, context, fcn, args);
-
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
@@ -116,20 +115,17 @@ class Engine {
         if (initOptions.logLevel && context.getParticipant() === null) {
             this.getContainer().getLoggingService().setLogLevel(initOptions.logLevel);
         }
-
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
-
                 // Start the transaction.
                 return context.transactionStart(false);
 
             })
             .then(() => {
-
                 // Load, validate, and hash the business network definition.
                 LOG.debug(method, 'Loading business network definition');
                 businessNetworkBase64 = args[0];
@@ -149,7 +145,6 @@ class Engine {
 
             })
             .then((businessNetworkDefinition_) => {
-
                 // Cache the business network.
                 businessNetworkDefinition = businessNetworkDefinition_;
                 LOG.debug(method, 'Loaded business network definition, storing in cache');
@@ -194,7 +189,6 @@ class Engine {
                 return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
-
                 // Ensure that the system registries collection exists.
                 LOG.debug(method, 'Ensuring that sysregistries collection exists');
                 return dataService.ensureCollection('$sysregistries')
@@ -234,7 +228,6 @@ class Engine {
 
             })
             .then(() => {
-
                 // Create the default transaction registry if it does not exist.
                 let registryManager = context.getRegistryManager();
                 return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');

@@ -38,26 +38,36 @@ describe('EventService', () => {
 
     describe('#emit', () => {
         it('should add the event to the data buffer', () => {
-            eventService.emit({});
+            eventService.emit({},{});
             eventService.eventBuffer[0].should.deep.equal({});
+            eventService.serializedEventBuffer[0].should.deep.equal({});
         });
     });
 
     describe('#getEvents', () => {
         it('should return the list of events that are to be comitted', () => {
             let event = {'$class': 'much.wow'};
-            eventService.eventBuffer = [ event ];
-
+            eventService.serializedEventBuffer = [ event ];
             eventService.getEvents().should.deep.equal([{'$class':'much.wow'}]);
+        });
+    });
+
+    describe('#getEventResources', () => {
+        it('should return the list of events that are to be comitted', () => {
+            let event = {'$class': 'much.serious.wow'};
+            eventService.eventBuffer = [ event ];
+            eventService.getEventResources().should.deep.equal([{'$class':'much.serious.wow'}]);
         });
     });
 
     describe('#transactionStart', () => {
         it ('should clear the list of events', () => {
+            eventService.serializedEventBuffer = [ 1, 2, 3 ];
             eventService.eventBuffer = [ 1, 2, 3 ];
             return eventService.transactionStart(true)
                 .then(() => {
                     eventService.eventBuffer.should.deep.equal([]);
+                    eventService.serializedEventBuffer.should.deep.equal([]);
                 });
         });
     });
