@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Queries Guide | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+          <div class="docs-current-page-grid">
+          <p>Queries Guide</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html">Introduction</a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html">Installing Hyperledger Composer</a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
+
+<ul>
+<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../reference/reference-index.html">Reference</a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../jsdoc/index.html">API Documentation</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+<li><a href="../reference/historian.html">Historian</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="queries-tutorial-using-the-composer-query-language-and-rest-apis">Queries Tutorial using the Composer Query language and REST APIs</h1>
+
+<p>In this tutorial, we will build on the &#39;Commodity Trading&#39; developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as an updating or removing assets using a transaction function that uses queries. Once you&#39;ve done the tutorial, feel free to try out your own queries !</p>
+
+<p>Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in <code>queries.qry</code> from the <code>trade-network</code> sample network to get going - they are described in the file itself. In the main &#39;Commodity Trading&#39; Developer tutorial, we cloned the Composer <code>sample-networks</code> git repository, and created a new network &#39;my-network&#39; from <code>basic-sample-network</code> in the samples directory - this tutorial uses that network to get going.</p>
+
+<p>It is recommended to do the Developer Tutorial first, where the business network <code>my-network</code> has been deployed. (Alternatively, you can  if you wish, do this tutorial from &#39;scratch&#39; - just build a new &#39;my-network&#39; VSCode project and create the files (below) as you go along  - just remember to use <code>composer network deploy</code> to deploy the BNA file later on in this tutorial).</p>
+
+<h2 id="re-open-your-commodities-trading-my-network-project">Re-open your Commodities Trading &#39;my-network&#39; project</h2>
+
+<p>In your project folder (in VSCode) open the folder <code>my-network</code> which is still the basis for our sample Trade project.</p>
+
+<p>Using VSCode, open the my-network folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
+</video>
+
+<h2 id="update-your-commodities-trade-model-file">Update your &#39;Commodities Trade&#39; Model File</h2>
+
+<p>Replace your <code>sample.cto</code> file contents, with the contents of the updated model shown below. This effectively enhances our Commodities Trade Network to add new transaction processor &#39;RemoveHighQuantityCommodities&#39; (that will use queries from <code>queries.qry</code> defined later) and events (used in our business transaction logic file <code>lib/logic.js</code> to notify of significant events).</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Commodity trading network
+ */
+namespace org.acme.mynetwork
+
+asset Commodity identified by tradingSymbol {
+    o String tradingSymbol
+    o String description
+    o String mainExchange
+    o Double quantity
+    --&gt; Trader owner
+}
+
+participant Trader identified by tradeId {
+    o String tradeId
+    o String firstName
+    o String lastName
+}
+
+transaction Trade {
+    --&gt; Commodity commodity
+    --&gt; Trader newOwner
+}
+
+event TradeNotification {
+    --&gt; Commodity commodity
+}
+
+transaction RemoveHighQuantityCommodities {
+}
+
+event RemoveNotification {
+    --&gt; Commodity commodity
+}
+</code></pre></div>
+<p>Save your changes to <code>models/sample.cto</code> </p>
+
+<h2 id="update-transaction-logic-to-use-queries-events">Update Transaction logic to use Queries &amp; Events</h2>
+
+<p>Now that the domain model has been updated, we can write the additional business logic that gets executed when a transaction is submitted for processing. In this tutorial we have added events and queries to the business logic below.</p>
+
+<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the current logic. </p>
+
+<p>Now select all the contents and delete it - replacing it with the entire code sample shown below:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Track the trade of a commodity from one trader to another
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @transaction
+ */
+function tradeCommodity(trade) {
+
+    // set the new owner of the commodity
+    trade.commodity.owner = trade.newOwner;
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
+        .then(function (assetRegistry) {
+
+            // emit a notification that a trade has occurred
+            var tradeNotification = getFactory().newEvent('org.acme.mynetwork', 'TradeNotification');
+            tradeNotification.commodity = trade.commodity;
+            emit(tradeNotification);
+
+            // persist the state of the commodity
+            return assetRegistry.update(trade.commodity);
+        });
+}
+
+/**
+ * Remove all high volume commodities
+ * @param {org.acme.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
+ * @transaction
+ */
+function removeHighQuantityCommodities(remove) {
+
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
+        .then(function (assetRegistry) {
+            return query('selectCommoditiesWithHighQuantity')
+                    .then(function (results) {
+
+                        var promises = [];
+
+                        for (var n = 0; n &lt; results.length; n++) {
+                            var trade = results[n];
+
+                            // emit a notification that a trade was removed
+                            var removeNotification = getFactory().newEvent('org.acme.mynetwork', 'RemoveNotification');
+                            removeNotification.commodity = trade;
+                            emit(removeNotification);
+
+                            // remove the commodity
+                            promises.push(assetRegistry.remove(trade));
+                        }
+
+                        // we have to return all the promises
+                        return Promise.all(promises);
+                    });
+        });
+}
+
+</code></pre></div>
+<p>The first function <code>tradeCommodity</code> will change the owner property on a commodity (with a new owner Participant) on an incoming Trade transaction and emit a Notification event to that effect. It then persists the modified Commodity back into the asset registry which is used to store Commodity instances.</p>
+
+<p>The second function will call a named query called &#39;selectCommoditiesWithHighQuantity&#39; (defined in <code>queries.qry</code>) which will return all Commodity asset records that have a quantity &gt; 60 ; emit an event ; and remove the Commodity from the AssetRegistry.</p>
+
+<p>Save your changes to <code>lib/sample.js</code></p>
+
+<h2 id="create-your-query-definition-file-for-your-business-network">Create your Query Definition File for your Business Network</h2>
+
+<p>The queries used by the Transaction Processor logic are defined in a file called <code>queries.qry</code>. Each query entry defines the resources and criteria against which the query is executed.</p>
+
+<p>In your project view, create a new file under <code>my-network</code> top level directory called <code>queries.qry</code> and paste the contents of these defined queries into the editor - there is a description provided for each query definition ; the parameters passed into the query (by the TP function) are distinguished by a leading <code>_$</code> below to signify the parameter supplied to the query at runtime.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/** Sample queries for Commodity Trading business network
+*/
+
+query selectCommodities {
+  description: "Select all commodities"
+  statement:
+      SELECT org.acme.mynetwork.Commodity
+}
+
+query selectCommoditiesByExchange {
+  description: "Select all commodities based on their main exchange"
+  statement:
+      SELECT org.acme.mynetwork.Commodity
+          WHERE (mainExchange==_$exchange)
+}
+
+query selectCommoditiesByOwner {
+  description: "Select all commodities based on their owner"
+  statement:
+      SELECT org.acme.mynetwork.Commodity
+          WHERE (owner == _$owner)
+}
+
+query selectCommoditiesWithHighQuantity {
+  description: "Select commodities based on quantity"
+  statement:
+      SELECT org.acme.mynetwork.Commodity
+          WHERE (quantity &gt; 60)
+}
+
+</code></pre></div>
+<h3 id="update-your-access-control-rules-acls">Update your Access Control Rules (ACLs)</h3>
+
+<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Replace the entire contents of <code>permissions.acl</code> with the rules below.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Access control rules for mynetwork
+ */
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.mynetwork.*"
+    action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+</code></pre></div>
+<p>Save your changes to <code>permissions.acl</code></p>
+
+<h3 id="re-generate-your-business-network-archive-bna">Re-generate your Business Network archive (BNA)</h3>
+
+<p>Due to the changes in our business network,  we need to re-generate the Business Network Archive (BNA) file for your newly updated business network definition. This new network will later be updated to the Composer runtime, and become the latest deployed network. From the previous tutorial, we have already done an <code>npm install</code> of our business network.</p>
+
+<p>Switch back to the terminal and from the <code>my-network</code> project directory,  type:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">
+composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
+
+(including the trailing '.' please note):
+
+Creating Business Network Archive
+
+Looking for package.json of Business Network Definition in /home/user/my-network
+
+Found:
+Description:My very first Hyperledger Composer Network
+Name:my-network
+Identifier:my-network@0.0.1
+
+Written Business Network Definition Archive file to ./dist/my-network.bna
+Command completed successfully.
+
+Command succeeded
+
+</code></pre></div>
+<p>The <code>composer archive create</code> command has updated the file called <code>my-network.bna</code> in the <code>dist</code> folder.</p>
+
+<h2 id="write-and-perform-unit-tests-to-include-queries">Write and Perform Unit Tests to include Queries</h2>
+
+<p>All code should have unit tests - even your business network logic!</p>
+
+<p>We are now going to add a simple unit test for the business network definition, testing the logic of our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of &#39;the blockchain&#39; in-memory in a Node.js process.</p>
+
+<p>From your project working directory (my-network), open the file <code>test/sample.js</code> and inspect the contents.</p>
+
+<p>The test code below will replace the namespace, types and logic of the unit test pertaining to <code>my-network</code> as shown below. For convenience, you can copy the entire script contents below and replace the current sample.js file contents entirely:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+const AdminConnection = require('composer-admin').AdminConnection;
+const BrowserFS = require('browserfs/dist/node/index');
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const path = require('path');
+
+require('chai').should();
+
+const bfs_fs = BrowserFS.BFSRequire('fs');
+const NS = 'org.acme.mynetwork';
+
+describe('Commodity Trading', () =&gt; {
+
+    // let adminConnection;
+    let businessNetworkConnection;
+
+    before(() =&gt; {
+        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
+        const adminConnection = new AdminConnection({ fs: bfs_fs });
+        return adminConnection.createProfile('defaultProfile', {
+            type: 'embedded'
+        })
+            .then(() =&gt; {
+                return adminConnection.connect('defaultProfile', 'admin', 'adminpw');
+            })
+            .then(() =&gt; {
+                return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
+            })
+            .then((businessNetworkDefinition) =&gt; {
+                return adminConnection.deploy(businessNetworkDefinition);
+            })
+            .then(() =&gt; {
+                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
+                return businessNetworkConnection.connect('defaultProfile', 'my-network', 'admin', 'adminpw');
+            });
+    });
+
+    describe('#tradeCommodity', () =&gt; {
+
+        it('should be able to trade a commodity', () =&gt; {
+            const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+
+            // create the traders
+            const dan = factory.newResource(NS, 'Trader', 'dan@email.com');
+            dan.firstName = 'Dan';
+            dan.lastName = 'Selman';
+
+            const simon = factory.newResource(NS, 'Trader', 'simon@email.com');
+            simon.firstName = 'Simon';
+            simon.lastName = 'Stone';
+
+            // create the commodity
+            const commodity = factory.newResource(NS, 'Commodity', 'EMA');
+            commodity.description = 'Corn';
+            commodity.mainExchange = 'Euronext';
+            commodity.quantity = 100;
+            commodity.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
+
+            // create the trade transaction
+            const trade = factory.newTransaction(NS, 'Trade');
+            trade.newOwner = factory.newRelationship(NS, 'Trader', simon.$identifier);
+            trade.commodity = factory.newRelationship(NS, 'Commodity', commodity.$identifier);
+
+            // the owner should of the commodity should be dan
+            commodity.owner.$identifier.should.equal(dan.$identifier);
+
+            // create the second commodity
+            const commodity2 = factory.newResource(NS, 'Commodity', 'XYZ');
+            commodity2.description = 'Soya';
+            commodity2.mainExchange = 'Chicago';
+            commodity2.quantity = 50;
+            commodity2.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
+
+            // register for events from the business network
+            businessNetworkConnection.on('event', (event) =&gt; {
+                console.log( 'Received event: ' + event.getFullyQualifiedIdentifier() + ' for commodity ' + event.commodity.getIdentifier() );
+            });
+
+            // Get the asset registry.
+            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
+                .then((assetRegistry) =&gt; {
+
+                    // add the commodities to the asset registry.
+                    return assetRegistry.addAll([commodity,commodity2])
+                        .then(() =&gt; {
+                            return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
+                        })
+                        .then((participantRegistry) =&gt; {
+                            // add the traders
+                            return participantRegistry.addAll([dan, simon]);
+                        })
+                        .then(() =&gt; {
+                            // submit the transaction
+                            return businessNetworkConnection.submitTransaction(trade);
+                        })
+                        .then(() =&gt; {
+                            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
+                        })
+                        .then((assetRegistry) =&gt; {
+                            // re-get the commodity
+                            return assetRegistry.get(commodity.$identifier);
+                        })
+                        .then((newCommodity) =&gt; {
+                            // the owner of the commodity should now be simon
+                            newCommodity.owner.$identifier.should.equal(simon.$identifier);
+                        })
+                        .then(() =&gt; {
+                            // use a query
+                            return businessNetworkConnection.query('selectCommoditiesByExchange', {exchange : 'Euronext'});
+                        })
+                        .then((results) =&gt; {
+                            // check results
+                            results.length.should.equal(1);
+                            results[0].getIdentifier().should.equal('EMA');
+                        })
+                        .then(() =&gt; {
+                            // use another query
+                            return businessNetworkConnection.query('selectCommoditiesByOwner', {owner : 'resource:' + simon.getFullyQualifiedIdentifier()});
+                        })
+                        .then((results) =&gt; {
+                            //  check results
+                            results.length.should.equal(1);
+                            results[0].getIdentifier().should.equal('EMA');
+                        })
+                        .then(() =&gt; {
+                            // submit the remove transaction
+                            const remove = factory.newTransaction(NS, 'RemoveHighQuantityCommodities');
+                            return businessNetworkConnection.submitTransaction(remove);
+                        })
+                        .then(() =&gt; {
+                            // use a query
+                            return businessNetworkConnection.query('selectCommodities');
+                        })
+                        .then((results) =&gt; {
+                            // check results, should only have 1 commodity left
+                            results.length.should.equal(1);
+                            results[0].getIdentifier().should.equal('XYZ');
+                        });
+                });
+        });
+    });
+});
+
+</code></pre></div>
+<p>Save your changes to <code>test/sample.js</code></p>
+
+<p>Check that the unit tests pass by switching back to the terminal and typing:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm test
+</code></pre></div>
+<p>You should see output similar to the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~user@ubuntu $ npm test
+
+&gt; my-network@0.0.1 pretest /home/user/my-network
+&gt; npm run lint
+
+
+&gt; my-network@0.0.1 lint /home/user/my-network
+&gt; eslint .
+
+
+&gt; my-network@0.0.1 postlint /home/user/my-network
+&gt; npm run licchk
+
+
+&gt; my-network@0.0.1 licchk /home/user/my-network
+&gt; license-check
+
+
+&gt; my-network@0.0.1 postlicchk /home/user/my-network
+&gt; npm run doc
+
+
+&gt; my-network@0.0.1 doc /home/user/my-network
+&gt; jsdoc --pedantic --recurse -c jsdoc.json
+my-network@0.0.1 doc /home/demo/my-network
+
+
+&gt; my-network@0.0.1 test /home/user/my-network
+&gt; mocha --recursive -t 4000
+
+
+
+Commodity Trading
+#tradeCommodity
+Received event: org.acme.mynetwork.TradeNotification#8452bb3a-ea1d-4433-bf17-a1268c94456f#0 for commodity EMA
+Received event: org.acme.mynetwork.RemoveNotification#81252aa3b-ea2c-3143-be2b-a1234c91266c#0 for commodity EMA
+✓ should be able to trade a commodity (62ms)
+
+
+1 passing (556ms)
+</code></pre></div>
+<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="http://composer-playground.mybluemix.net">http://composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your <code>my-network</code> folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current network definition in Playground.</p>
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/query/import_queries.mp4" type="video/mp4" />
+</video>
+
+<p>You can browse the structure of the updated Trade Commodity business network by pressing the link on the left, check out the contents of the model, script files, query files and access control.</p>
+
+<h2 id="deploy-the-updated-business-network-definition-to-the-runtime-fabric">Deploy the updated Business Network Definition to the runtime Fabric</h2>
+
+<p>We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file(suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. </p>
+
+<p>Switch to the terminal, change directory to the dist folder containing the <code>my-network.bna</code> file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd dist
+
+composer network update -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+
+</code></pre></div>
+<p>You should get output similar to below:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">
+Deploying business network from archive: my-network.bna
+Business network definition:
+    Identifier: my-network@0.0.1
+    Description: My very first Hyperledger Composer Network
+
+✔ Updating business network definition. This may take a few seconds...
+
+
+Command succeeded
+
+
+</code></pre></div>
+<p>You can test that it deployed OK:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -p hlfv1 -i admin -s adminpw
+</code></pre></div>
+<h2 id="re-generate-the-rest-apis-for-the-updated-business-network">Re-generate the REST APIs for the updated Business Network</h2>
+
+<p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network. </p>
+
+<p>Launch the Composer REST server by changing directory to the &#39;my-network&#39; folder as shown below:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ..
+composer-rest-server
+</code></pre></div>
+<p>Answer the questions posed at startup as shown. These allow the composer-rest-server to connect to Hyperledger Fabric and configure how the REST API is generated.</p>
+
+<p><img src="../assets/img/tutorials/query/rest-server-generate.png" alt="Generate / Discover REST APIs for new Business Network"></p>
+
+<h2 id="test-the-trading-rest-apis-and-create-some-data">Test the Trading REST APIs and create some data</h2>
+
+<p>If the composer-rest-server started successfully you should see these two lines are output:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
+</code></pre></div>
+<p>Open a web browser and navigate to <a href="http://localhost:3000/explorer" target="blank">http://<span></span>localhost:3000/explorer</a> . You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.</p>
+
+<p>We should be able to see that the REST Endpoint called &#39;Query&#39; has been added and, upon expanding, reveals the list of REST Query operations defined in the business network <code>my-network</code></p>
+
+<p><img src="../assets/img/tutorials/query/rest-explorer-discover.png" alt="Queries exposed as REST Endpoints"></p>
+
+<p>Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.</p>
+
+<p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn: </p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre></div>
+<p>then click &#39;Try it out&#39; to create the Participant. The &#39;Response Code&#39; (scroll down) should be 200 (SUCCESS)</p>
+
+<p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jack"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sock"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200.</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER3"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rainer"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Valens"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre></div>
+<p><img src="../assets/img/tutorials/query/add-trader.png" alt="Trader 1 example - Participant"></p>
+
+<p>Now scroll up to the top and click on &#39;Commodity&#39; object in the REST Explorer. Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EMA"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Corn"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EURONEXT"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>and</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CC"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cocoa"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ICE"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<h2 id="perform-queries-using-the-commodity-trading-rest-api-explorer">Perform Queries using the Commodity Trading REST API Explorer</h2>
+
+<p>Now that we have some Assets and Participants, we can test out some queries using the generated Query REST operations.</p>
+
+<h3 id="perform-simple-rest-query">Perform Simple REST Query</h3>
+
+<p>Now that we have &#39;data&#39;, we can try out some queries.</p>
+
+<p>The simplest REST query we can try out first is our named query &#39;selectCommodities&#39;. </p>
+
+<p>Expand the &#39;Queries&#39; (REST Endpoint) and you will see the named queries we defined in our model.</p>
+
+<p>These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side. </p>
+
+<p><img src="../assets/img/tutorials/query/commodity-rest-endpointhdr.png" alt="Commodities: REST Endpoint"></p>
+
+<p>Expand &#39;selectCommodities&#39; and click the &#39;Try it Out&#39; button. </p>
+
+<p><img src="../assets/img/tutorials/query/query-select-commodities.png" alt="Setup REST query: select all Commodities"></p>
+
+<p>It will return all existing Commodities - there should be at least 2 Commodities.</p>
+
+<p><img src="../assets/img/tutorials/query/query-commodity-results.png" alt="Query Results: All Commodities"></p>
+
+<h3 id="perform-filtered-rest-queries">Perform Filtered REST Queries</h3>
+
+<p>Let&#39;s select all Commodities by their main Exchange - for example &#39;EURONEXT&#39; main exchange.</p>
+
+<p>Expand query Endpoint &#39;selectCommoditiesByExchange&#39; and scroll to the &#39;Parameters&#39; section. Enter &#39;EURONEXT&#39; in the &#39;Exchange&#39; parameter, and click &#39;Try it Out&#39;.</p>
+
+<p><img src="../assets/img/tutorials/query/query-selectby-exchange.png" alt="Setup REST query by Exchange"></p>
+
+<p>The results reveal that only those Commodities with an Exchange of &#39;EURONEXT&#39; are shown in the response body</p>
+
+<p><img src="../assets/img/tutorials/query/queryresults-selectby-exchange.png" alt="Query Results: Commodities by exchange"></p>
+
+<h3 id="perform-transaction-update-using-results-from-named-query">Perform Transaction update using results from named Query</h3>
+
+<p>Finally, you will recall we had defined a simple query that filters Commodities with a Quantity greater than 60 in our query file. Queries are very powerful, when used in transaction functions, as using queries allows transaction logic to set up the set of assets or participants to perform updates on, or for creating remove actions for example. </p>
+
+<p><img src="../assets/img/tutorials/query/querydef-recall-high-qty-commodities.png" alt="Recollect Query definition"></p>
+
+<p>We use the query &#39;removeHighQuantityCommodities&#39; in the Transaction Processor logic written in the <code>lib/sample.js</code> script file. If you execute this /GET operation in the REST Explorer, you&#39;ll see it selects only those assets greater than 60 in quantity.</p>
+
+<p><img src="../assets/img/tutorials/query/functiondef-recall-high-qty-commodities.png" alt="Recollect Transaction logic using query"></p>
+
+<p>Now let&#39;s use the query to perform a removal of high quantity commodites.</p>
+
+<p>First check for yourself how many Commodities are present (use the &#39;Commodity&#39; /GET operation) and you should see at least two Commodities, one of which (Cocoa) has a quantity &gt; 60.</p>
+
+<p><img src="../assets/img/tutorials/query/commodity-rest-endpointhdr.png" alt="Commodity REST Endpoint">
+<img src="../assets/img/tutorials/query/txn-query-commodity-pre-rm.png" alt="Results prior to &#39;Removal transaction&#39; invocation"></p>
+
+<p>Let&#39;s check out the actual query, by clicking on the REST Endpoint <code>/selectCommoditiesWithHighQuantity</code> and click /GET then scroll down to &#39;Try it Out&#39; - there should be one Commodity that meets the criteria.</p>
+
+<p><img src="../assets/img/tutorials/query/query-selectby-comm-high-qty.png" alt="Query Commodities with High Quantities"></p>
+
+<p>OK. Now let&#39;s execute a REST transaction, that uses our &#39;High Quantity&#39; query definition to decide which Commodities to remove.</p>
+
+<p>Click on the RemoveHighQuantityCommodities REST Endpoint to reveal the /POST operation for same.</p>
+
+<p><img src="../assets/img/tutorials/query/txn-show-rm-comm-high-qty.png" alt="Show RemoveHighQuantityCommodities Endpoint"></p>
+
+<p>Click on POST, scroll down to the Parameter section and click &#39;Try it Out&#39; - note: you do <em>not</em> have to enter any data in the &#39;data&#39; section.</p>
+
+<p>Scroll down and you should see a transactionId which represents the &#39;remove&#39; invocation (itself a blockchain transaction) inside of the transaction processor function and which will update the world state - the Response Code should be 200</p>
+
+<p><img src="../assets/img/tutorials/query/txn-exec-rm-comm-high-qty.png" alt="Carry out &#39;High Quantity&#39; removal transaction"></p>
+
+<p>Finally, let&#39;s verify our Commodities status. Return to the &#39;Commodity&#39; REST Operations and once again perform a /GET operation....&#39;Try it Out&#39;.</p>
+
+<p>The results should show that the Commodity asset &#39;Cocoa&#39; has now gone, ie only those Commodity assets with a quantity &lt;= 60 still remain, ie asset &#39;Corn&#39; in our example. The named query fed the transaction update (to remove high quantity Commodities) and which was executed in business logic.</p>
+
+<p><img src="../assets/img/tutorials/query/txn-query-commodities-post-rm.png" alt="Final results of query-driven transaction function"></p>
+
+<h1 id="congratulations">Congratulations!</h1>
+
+<p>Well done, you&#39;ve now completed this tutorial and we hope you now have a much better idea of the power of queries in Composer. You can start creating/building your own queries (or modifying the existing queries and adding associated data to this business network - note: you would need to re-deploy any query changes) to try out!</p>
+
+<h2 id="related-links">Related Links</h2>
+
+<p><a href="developer-guide.html">Developer-Tutorial</a>
+<a href="../business-network/bnd-deploy.html">Deploying a business network</a>
+<a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

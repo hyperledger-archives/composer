@@ -102,6 +102,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -257,15 +258,14 @@ ga('send', 'pageview');
 <h3 id="granting-network-access-control">Granting network access control</h3>
 
 <p>Network access is granted using the system namespace. The system namespace is always <code>org.hyperledger.composer.system.Network</code> for network access, and <code>org.hyperledger.composer.system</code> for all access. The following access control rules gives the <strong>networkControl</strong> participant the authority to use all operations with network commands.</p>
-
-<p>rule networkControlPermission {
-  description:  &quot;networkControl can access network commands&quot;
-  participant: &quot;org.acme.vehicle.auction.networkControl&quot;
+<div class="highlight"><pre><code class="language-" data-lang="">rule networkControlPermission {
+  description:  "networkControl can access network commands"
+  participant: "org.acme.vehicle.auction.networkControl"
   operation: ALL
-  resource: &quot;org.hyperledger.composer.system.Network&quot;
-  action: ALLOW<br>
-}</p>
-
+  resource: "org.hyperledger.composer.system.Network"
+  action: ALLOW  
+}
+</code></pre></div>
 <p>The following access control rule will give all participants access to all operations and commands in the business network, including network access and business access.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">rule AllAccess {
   description: "AllAccess - grant everything to everybody"
