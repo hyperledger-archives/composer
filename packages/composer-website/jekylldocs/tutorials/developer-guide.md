@@ -10,7 +10,7 @@ excerpt: "The developer guide will walk you through the steps required to build 
 
 # Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
 
-*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.8 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
+*Note:* this tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
 
 This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
