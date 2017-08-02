@@ -12,7 +12,6 @@ import { ClientService } from '../../services/client.service';
 })
 export class AddFileComponent {
 
-    files = [];
     currentFile = null;
     currentFileName = null;
     fileType = '';
@@ -35,24 +34,6 @@ export class AddFileComponent {
     constructor(private alertService: AlertService,
                 private activeModal: NgbActiveModal,
                 private clientService: ClientService) {
-    }
-
-    queryExists() {
-        for (let i = 0; i < this.files.length; i++) {
-            if (this.files[i].query === true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    aclExists() {
-        for (let i = 0; i < this.files.length; i++) {
-            if (this.files[i].acl === true) {
-                return true;
-            }
-        }
-        return false;
     }
 
     removeFile() {
@@ -147,10 +128,10 @@ export class AddFileComponent {
     }
 
     createQuery(dataBuffer) {
-        this.fileType = 'qry';
-        let filename = 'queries.qry';
-        this.currentFile = this.clientService.createQueryFile(filename, dataBuffer.toString());
-        this.currentFileName = filename;
+      this.fileType = 'qry';
+      let filename = 'queries.qry';
+      this.currentFile = this.clientService.createQueryFile(filename, dataBuffer.toString());
+      this.currentFileName = filename;
     }
 
     fileRejected(reason: string) {
@@ -177,7 +158,7 @@ export class AddFileComponent {
             }
             this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
             this.currentFileName = scriptName;
-        } else if (this.fileType === 'cto') {
+        } else {
             let existingModels = this.clientService.getModelFiles();
             let increment = 0;
 
@@ -197,27 +178,6 @@ namespace ${newModelNamespace}`;
             let fileName = this.addModelPath + newModelNamespace + this.addModelFileExtension;
             this.currentFile = this.clientService.createModelFile(code, fileName);
             this.currentFileName = fileName;
-        } else if (this.fileType === 'qry') {
-            let code =
-                `/**
- * New query file
- */`;
-            this.currentFileName = 'queries.qry';
-            this.currentFile = this.clientService.createQueryFile(this.currentFileName, code);
-        } else {
-            let code =
-                `/**
- * New access control file
- */
- rule AllAccess {
-     description: "AllAccess - grant everything to everybody."
-     participant: "org.hyperledger.composer.system.Participant" 
-     operation: ALL
-     resource: "org.hyperledger.composer.system.**"
-     action: ALLOW
- }`;
-            this.currentFileName = 'permissions.acl';
-            this.currentFile = this.clientService.createAclFile(this.currentFileName, code);
         }
     }
 }

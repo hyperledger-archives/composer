@@ -29,7 +29,62 @@ chai.use(require('chai-as-promised'));
 
 process.setMaxListeners(Infinity);
 
-describe('Access control system tests', () => {
+describe('Historian', () => {
+
+    describe('CRUD Asset', () => {
+        it('should track updates for CREATE asset calls ', () => {});
+        it('should track updates for RETRIEVE asset calls ', () => {});
+        it('should track updates for UPDATE asset calls ', () => {});
+        it('should track updates for DELETE asset calls ', () => {});
+    } );
+
+    describe('CRUD Participant', () => {
+        it('should track updates for CREATE Participant calls ', () => {});
+        it('should track updates for RETRIEVE Participant calls ', () => {});
+        it('should track updates for UPDATE Participant calls ', () => {});
+        it('should track updates for DELETE Participant calls ', () => {});
+    } );
+
+    describe('CRUD Identity', () => {
+        it('should track updates for CREATE Identity calls ', () => {});
+        it('should track updates for RETRIEVE Identity calls ', () => {});
+        it('should track updates for UPDATE Identity calls ', () => {});
+        it('should track updates for DELETE Identity calls ', () => {});
+    } );
+
+    describe('CRUD Registry', () => {
+        it('should track updates for CREATE Registry calls ', () => {});
+        it('should track updates for RETRIEVE Registry calls ', () => {});
+        it('should track updates for UPDATE Registry calls ', () => {});
+        it('should track updates for DELETE Registry calls ', () => {});
+    } );
+
+    describe('CRUD Network', () => {
+        it('should track updates for CREATE Network calls ', () => {});
+        it('should track updates for RETRIEVE Network calls ', () => {});
+        it('should track updates for UPDATE Network calls ', () => {});
+        it('should track updates for DELETE Network calls ', () => {});
+    } );
+
+    describe('Transaction invocations' , () => {
+        it('Succesful transaction should have contents recorded',()=>{});
+        it('Unsuccesful transaction should not cause issues',()=>{});
+    });
+
+    describe('ACLs' , () => {
+        it('Retrict access to historian registry',()=>{});
+        it('Allow acces to historian regsitry, but not to transaction information',()=>{});
+        it('Allow acces to historian regsitry, but not to event information',()=>{});
+        it('Allow acces to historian regsitry, but not to participant or identity information',()=>{});
+    });
+
+    describe('Query', () => {
+        it('For a given asset track how it has changed over time',() => {});
+        it('For a given particpant track how what they have changed over time',() => {});
+        it('For a given identity track how what they have changed over time',() => {});
+        it('For a given regsitry track how what has affected over time',() => {});
+        it('For a given transaction track what it has been used for',() => {});
+    });
 
     let businessNetworkDefinition;
     let client, aliceClient, bobClient;
@@ -46,7 +101,7 @@ describe('Access control system tests', () => {
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest-accesscontrols@0.0.1', 'The network for the access controls system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-historian@0.0.1', 'The network for the historian system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
@@ -107,7 +162,6 @@ describe('Access control system tests', () => {
                 return assetRegistry.addAll([aliceCar, bobCar]);
             })
             .then(() => {
-
                 return aliceClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
             })
             .then((assetRegistry) => {

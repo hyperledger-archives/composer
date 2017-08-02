@@ -193,7 +193,7 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledAclBundle);
                     sinon.assert.calledWith(Context.cacheCompiledAclBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledOnce(mockRegistryManager.ensure);
+                    sinon.assert.calledTwice(mockRegistryManager.ensure);
                     sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
@@ -262,7 +262,7 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledOnce(mockRegistryManager.ensure);
+                    sinon.assert.calledTwice(mockRegistryManager.ensure);
                     sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);

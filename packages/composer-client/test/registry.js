@@ -20,6 +20,8 @@ const Registry = require('../lib/registry');
 const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
+const TransactionDeclartion = require('composer-common').TransactionDeclaration;
+const BusinessNetworkConnection = require('../lib/businessnetworkconnection.js');
 const Util = require('composer-common').Util;
 
 const chai = require('chai');
@@ -37,6 +39,9 @@ describe('Registry', () => {
     let mockFactory;
     let mockSerializer;
     let registry;
+    let mockBNC;
+    let mockTransaction;
+
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -44,10 +49,15 @@ describe('Registry', () => {
         mockModelManager = sinon.createStubInstance(ModelManager);
         mockFactory = sinon.createStubInstance(Factory);
         mockSerializer = sinon.createStubInstance(Serializer);
-        registry = new Registry('Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry', mockSecurityContext, mockModelManager, mockFactory, mockSerializer);
+        mockBNC = sinon.createStubInstance(BusinessNetworkConnection);
+        mockTransaction = sinon.createStubInstance(TransactionDeclartion);
+        mockFactory.newTransaction.returns(mockTransaction);
+
+        registry = new Registry('Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry', mockSecurityContext, mockModelManager, mockFactory, mockSerializer,mockBNC);
         sandbox.stub(Util, 'securityCheck');
         sandbox.stub(Util, 'invokeChainCode').resolves();
         sandbox.stub(Util, 'queryChainCode').resolves();
+        mockBNC.submitTransaction.resolves();
     });
 
     afterEach(() => {
@@ -319,30 +329,24 @@ describe('Registry', () => {
             }).should.throw(/resources not specified/);
         });
 
-        it('should invoke the chaincode', () => {
+        it('should invoke the addAll transaction', () => {
             let mockResource1 = sinon.createStubInstance(Resource);
             mockResource1.getIdentifier.returns('DOGE_1');
             let mockResource2 = sinon.createStubInstance(Resource);
             mockResource2.getIdentifier.returns('DOGE_2');
-            let data1 = { $class: 'org.acme.Doge1' };
-            mockSerializer.toJSON.withArgs(sinon.match.same(mockResource1)).returns(data1);
-            let data2 = { $class: 'org.acme.Doge2' };
-            mockSerializer.toJSON.withArgs(sinon.match.same(mockResource2)).returns(data2);
+
+            mockTransaction.resources = [mockResource1, mockResource2];
             return registry.addAll([mockResource1, mockResource2])
                 .then(() => {
-                    const data = [data1, data2];
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addAllResourcesToRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);
                 });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.add(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
@@ -360,22 +364,18 @@ describe('Registry', () => {
         it('should invoke the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
+
             return registry.add(mockResource)
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addResourceToRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);                });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockResource.getIdentifier.returns('DOGE_1');
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.add(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
@@ -395,25 +395,19 @@ describe('Registry', () => {
             mockResource1.getIdentifier.returns('DOGE_1');
             let mockResource2 = sinon.createStubInstance(Resource);
             mockResource2.getIdentifier.returns('DOGE_2');
-            let data1 = { $class: 'org.acme.Doge1' };
-            mockSerializer.toJSON.withArgs(sinon.match.same(mockResource1)).returns(data1);
-            let data2 = { $class: 'org.acme.Doge2' };
-            mockSerializer.toJSON.withArgs(sinon.match.same(mockResource2)).returns(data2);
+
+            mockTransaction.resources = [mockResource1, mockResource2];
             return registry.updateAll([mockResource1, mockResource2])
                 .then(() => {
-                    const data = [data1, data2];
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'updateAllResourcesInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);
                 });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.update(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
@@ -431,22 +425,19 @@ describe('Registry', () => {
         it('should invoke the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
+
+            mockTransaction.resources = [mockResource];
+
             return registry.update(mockResource)
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'updateResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);               });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.update(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
@@ -468,27 +459,21 @@ describe('Registry', () => {
             mockResource2.getIdentifier.returns('DOGE_2');
             return registry.removeAll([mockResource1, mockResource2])
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeAllResourcesFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', '["DOGE_1","DOGE_2"]']);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);                });
         });
 
         it('should invoke the chaincode with an identifier', () => {
             return registry.removeAll(['DOGE_1', 'DOGE_2'])
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeAllResourcesFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', '["DOGE_1","DOGE_2"]']);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);                 });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.update(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
@@ -508,27 +493,21 @@ describe('Registry', () => {
             mockResource.getIdentifier.returns('DOGE_1');
             return registry.remove(mockResource)
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);                  });
         });
 
         it('should invoke the chaincode with an identifier', () => {
             return registry.remove('DOGE_1')
                 .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
-                });
+                    sinon.assert.calledOnce(mockBNC.submitTransaction);
+                    sinon.assert.calledWith(mockBNC.submitTransaction,mockTransaction);                  });
         });
 
         it('should handle an error from the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
+            mockBNC.submitTransaction.rejects(new Error('such error'));
             return registry.update(mockResource)
                 .should.be.rejectedWith(/such error/);
         });

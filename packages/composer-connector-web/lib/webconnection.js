@@ -224,6 +224,9 @@ class WebConnection extends Connection {
         return businessNetwork.toArchive()
             .then((businessNetworkArchive) => {
                 const initArgs = {};
+
+                console.log('***********************************************************************');
+
                 return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
             })
             .then(() => {

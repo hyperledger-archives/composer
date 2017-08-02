@@ -7,7 +7,7 @@ import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, Resource } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -345,9 +345,8 @@ export class ClientService {
             });
     }
 
-    revokeIdentity(identity) {
-        // identity should be the full ValidatedResource object
-        return this.getBusinessNetworkConnection().revokeIdentity(identity);
+    revokeIdentity(userID: string) {
+        return this.getBusinessNetworkConnection().revokeIdentity(userID);
     }
 
     createNewBusinessNetwork(name, version, description, packageJson, readme) {

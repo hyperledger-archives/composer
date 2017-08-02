@@ -158,13 +158,14 @@ describe('ViewTransactionComponent', () => {
 
     describe('#ngOnInit', () => {
         it('should create arrays of Resources, JSON and strings', fakeAsync(() => {
+            component['transaction'] = mockTransaction;
+            component['events'] = [mockEvent1, mockEvent2];
             component.ngOnInit();
             tick();
             mockInitializationService.initialize.should.be.called;
             mockBusinessNetwork.getSerializer.should.be.called;
 
             mockSerializer.toJSON.should.be.calledWith(mockTransaction);
-            component.transaction.should.deep.equal({$class: 'mock.class', timestamp: 'now', transactionId: 'transaction'});
             component.transactionString.should.equal(JSON.stringify({$class: 'mock.class', timestamp: 'now', transactionId: 'transaction'}, null, ' '));
 
             component.events.should.deep.equal([mockEvent1, mockEvent2]);
@@ -178,6 +179,20 @@ describe('ViewTransactionComponent', () => {
                 JSON.stringify({$class: 'mock.event', timestamp: 'now', eventId: 'event1'}, null, ' '),
                 JSON.stringify({$class: 'mock.event', timestamp: 'now', eventId: 'event2'}, null, ' ')
             ]);
+        }));
+        it('should handle no events being passed to the modal', fakeAsync(() => {
+            component['transaction'] = mockTransaction;
+            component.ngOnInit();
+            tick();
+            mockInitializationService.initialize.should.be.called;
+            mockBusinessNetwork.getSerializer.should.be.called;
+
+            mockSerializer.toJSON.should.be.calledWith(mockTransaction);
+            component.transactionString.should.equal(JSON.stringify({$class: 'mock.class', timestamp: 'now', transactionId: 'transaction'}, null, ' '));
+
+            component.events.should.deep.equal([]);
+            component.eventObjects.should.deep.equal([]);
+            component.eventStrings.should.deep.equal([]);
         }));
     });
 

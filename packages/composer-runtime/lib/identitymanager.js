@@ -20,6 +20,7 @@ const TransactionHandler = require('./transactionhandler');
 
 const LOG = Logger.getLog('IdentityManager');
 
+
 /**
  * A class for managing and persisting identities.
  * @protected
@@ -56,6 +57,7 @@ class IdentityManager extends TransactionHandler {
             });
     }
 
+
     /**
      * Find the identity in the identity registry that maps to the certificate that
      * was used to sign and submit the current transaction.
@@ -65,13 +67,14 @@ class IdentityManager extends TransactionHandler {
     getIdentity() {
         const method = 'getIdentity';
         LOG.entry(method);
-        let identityRegistry, identifier;
+        let identityRegistry, identifier, identityName;
         return this.getIdentityRegistry()
             .then((identityRegistry_) => {
 
                 // Check to see if the identity exists.
                 identityRegistry = identityRegistry_;
                 identifier = this.identityService.getIdentifier();
+                identityName = this.identityService.getName();
                 return identityRegistry.exists(identifier);
 
             })
@@ -95,7 +98,8 @@ class IdentityManager extends TransactionHandler {
 
                 // If it still doesn't exist, throw!
                 if (!exists) {
-                    const error = new Error('The current identity has not been registered');
+                    const error = new Error('The current identity has not been registered:'+identityName);
+                    error.identityName=identityName;
                     LOG.error(method, error);
                     throw error;
                 }

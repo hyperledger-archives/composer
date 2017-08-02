@@ -137,11 +137,6 @@
             color: $secondary-text;
             min-width: 0;
             padding: 0 $space-smedium;
-
-            &:hover {
-                color: $white;
-                background-color: $second-highlight;
-            }
         }
 
         &.action {
@@ -236,6 +231,11 @@
                 text-decoration: none;
                 color: $first-highlight;
             }
+        }
+
+        &.disabled {
+            pointer-events: none;
+            opacity: 0.3;
         }
 
         & svg.standard-icon {

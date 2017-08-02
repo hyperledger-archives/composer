@@ -27,6 +27,8 @@
   background: #262A35;
   color: #FFFFFF;
   border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
 }
 
 .cm-s-default div.CodeMirror-selected { background: #393F4F; }

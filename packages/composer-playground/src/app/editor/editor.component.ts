@@ -132,7 +132,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.updatePackageInfo();
                 this.editingPackage = false;
             }
-            if (file.script || file.model || file.query) {
+            if (file.script || file.model) {
                 this.deletableFile = true;
             } else {
                 this.deletableFile = false;
@@ -298,9 +298,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     addQueryFile(query) {
         if (this.files.findIndex((file) => file.query === true) !== -1) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced with the new one that you are uploading.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
-            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processQueryFileAddition(query);
             }, (reason) => {
@@ -326,9 +325,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     addReadme(readme) {
         if (this.files[0].readme) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced with the new one that you are uploading.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your README file to disc.';
-            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.clientService.setBusinessNetworkReadme(readme);
                 this.updateFiles();
@@ -350,9 +348,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     addRuleFile(rules) {
         if (this.files.findIndex((file) => file.acl === true) !== -1) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced with the new one that you are uploading.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your ACL file to disc.';
-            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processRuleFileAddition(rules);
             }, (reason) => {
@@ -411,11 +408,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openAddFileModal() {
-
-        const confirmModalRef = this.modalService.open(AddFileComponent);
-        confirmModalRef.componentInstance.files = this.files;
-
-        confirmModalRef.result
+        this.modalService.open(AddFileComponent).result
             .then((result) => {
                 if (result !== 0) {
                     try {
@@ -586,9 +579,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     } else if (deleteFile.model) {
                         let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
                         modelManager.deleteModelFile(deleteFile.id);
-                    } else if (deleteFile.query) {
-                        let queryManager: QueryManager = this.clientService.getBusinessNetwork().getQueryManager();
-                        queryManager.deleteQueryFile();
                     } else {
                         throw new Error('Unable to process delete on selected file type');
                     }
