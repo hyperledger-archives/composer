@@ -34,7 +34,8 @@ const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',
     'TransactionRegistry',
-    'Network','HistorianRegistry'
+    'Network',
+    'HistorianRegistry'
 ];
 
 /**

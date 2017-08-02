@@ -759,9 +759,9 @@ class Context {
         return this.identityManager;
     }
 
-        /**
+    /**
      * Get the resource manager.
-     * @return {IdentityManager} The identity manager.
+     * @return {ResourceManager} The resource manager.
      */
     getResourceManager() {
         if (!this.resourceManager) {

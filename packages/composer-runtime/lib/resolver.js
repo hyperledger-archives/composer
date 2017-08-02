@@ -349,7 +349,6 @@ class Resolver {
             // Special case for this one!
             registryId = 'default';
         } else {
-            //LOG.debug(method, 'Unsupported class declaration type ' + classDeclaration.toString());
             throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
         }
         LOG.debug(method, 'Getting registry', registryId);

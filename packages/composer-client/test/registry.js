@@ -20,7 +20,7 @@ const Registry = require('../lib/registry');
 const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
-const TransactionDeclartion = require('composer-common').TransactionDeclaration;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const BusinessNetworkConnection = require('../lib/businessnetworkconnection.js');
 const Util = require('composer-common').Util;
 
@@ -50,7 +50,7 @@ describe('Registry', () => {
         mockFactory = sinon.createStubInstance(Factory);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockBNC = sinon.createStubInstance(BusinessNetworkConnection);
-        mockTransaction = sinon.createStubInstance(TransactionDeclartion);
+        mockTransaction = sinon.createStubInstance(TransactionDeclaration);
         mockFactory.newTransaction.returns(mockTransaction);
 
         registry = new Registry('Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry', mockSecurityContext, mockModelManager, mockFactory, mockSerializer,mockBNC);

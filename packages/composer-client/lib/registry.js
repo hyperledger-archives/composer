@@ -136,7 +136,7 @@ class Registry {
      * @param {Factory} factory The factory to use for this registry.
      * @param {Serializer} serializer The Serializer to use for this registry.
      * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
-     * TODO: Rationalize the bnc with the other objects
+     * TODO: Rationalize the bnc with the other objects - as the bnc contains these other arguments
      */
     constructor(registryType, id, name, securityContext, modelManager, factory, serializer,bnc) {
         if (!registryType) {
@@ -178,6 +178,8 @@ class Registry {
         }
         let txName = 'Add'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
+        // This code is retained as there was a suggesstion that the transaction should include
+        // a relationship to the registry not the type/id. Time ran out to get this implemented
         // transaction.targetRegistry = this.factory.newRelationship(ModelUtil.getNamespace(this.id),this.registryType, this.id);
         transaction.registryType = this.registryType;
         transaction.registryId = this.id;
@@ -214,15 +216,10 @@ class Registry {
         }
         let txName = 'Update'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
-        // transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',TYPE_MAP[this.registryType], this.id);
         transaction.resources = resources;
         transaction.registryType = this.registryType;
         transaction.registryId = this.id;
         return this.bnc.submitTransaction(transaction);
-        // let serializedResources = resources.map((resource) => {
-        //     return this.serializer.toJSON(resource);
-        // });
-        // return Util.invokeChainCode(this.securityContext, 'updateAllResourcesInRegistry', [this.registryType, this.id, JSON.stringify(serializedResources)]);
     }
 
     /**
@@ -246,7 +243,6 @@ class Registry {
      * @param {(Resource[]|string[])} resources The resources, or the unique identifiers of the resources.
      * @return {Promise} A promise that will be resolved when the resource is
      * added to the registry.
-     * TODO: need to change this
      */
     removeAll(resources) {
         Util.securityCheck(this.securityContext);
@@ -255,7 +251,6 @@ class Registry {
         }
         let txName = 'Remove'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
-        // transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',TYPE_MAP[this.registryType], this.id);
         transaction.resources = [];
         transaction.registryType = this.registryType;
         transaction.registryId = this.id;
@@ -268,7 +263,6 @@ class Registry {
             }
         });
         return this.bnc.submitTransaction(transaction);
-        // return Util.invokeChainCode(this.securityContext, 'removeAllResourcesFromRegistry', [this.registryType, this.id, JSON.stringify(data)]);
     }
 
     /**

@@ -254,7 +254,7 @@ class Engine {
                     });
             })
             .then(() => {
-                LOG.error(method,'can you see me?');
+                
                 LOG.exit(method);
             });
     }
