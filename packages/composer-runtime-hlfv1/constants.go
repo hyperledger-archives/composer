@@ -14,6 +14,8 @@
 
 package main
 
-// The version of this chaincode. It is replaced with the npm package version
-// during the deployment process.
+// The version of this chaincode and the default pool size. 
+// version is replaced with the npm package version, PoolSize is
+// also replaced with a default value during the deployment process.
 const version = "development"
+const PoolSize = 8

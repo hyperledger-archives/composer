@@ -19,9 +19,12 @@ import { TransactionService } from '../services/transaction.service';
 export class TestComponent implements OnInit, OnDestroy {
 
     hasTransactions = false;
-    private assetRegistries = [];
-    private participantRegistries = [];
-    private transactionRegistry = null;
+    private registries = {
+        assets: [],
+        participants : [],
+        // transactions: null,
+        historian : null
+    };
     private chosenRegistry = null;
     private registryReload = false;
     private eventsTriggered = [];
@@ -55,7 +58,7 @@ export class TestComponent implements OnInit, OnDestroy {
                     assetRegistry.displayName = displayName;
                 });
 
-                this.assetRegistries = assetRegistries.sort((a, b) => {
+                this.registries['assets'] = assetRegistries.sort((a, b) => {
                     return a.id.localeCompare(b.id);
                 });
 
@@ -68,22 +71,21 @@ export class TestComponent implements OnInit, OnDestroy {
                     participantRegistry.displayName = displayName;
                 });
 
-                this.participantRegistries = participantRegistries.sort((a, b) => {
+                this.registries['participants'] = participantRegistries.sort((a, b) => {
                     return a.id.localeCompare(b.id);
                 });
 
-                return this.clientService.getBusinessNetworkConnection().getTransactionRegistry();
+                return this.clientService.getBusinessNetworkConnection().getHistorian();
             })
-            .then((transactionRegistry) => {
-                this.transactionRegistry = transactionRegistry;
-
+            .then((historianRegistry) => {
+                this.registries['historian'] = historianRegistry;
                 // set the default registry selection
-                if (this.participantRegistries.length !== 0) {
-                    this.chosenRegistry = this.participantRegistries[0];
-                } else if (this.assetRegistries.length !== 0) {
-                    this.chosenRegistry = this.assetRegistries[0];
+                if (this.registries['participants'].length !== 0) {
+                    this.chosenRegistry = this.registries['participants'][0];
+                } else if (this.registries['assets'].length !== 0) {
+                    this.chosenRegistry = this.registries['assets'][0];
                 } else {
-                    this.chosenRegistry = this.transactionRegistry;
+                    this.chosenRegistry = this.registries['historian'];
                 }
             })
             .catch((error) => {
@@ -108,10 +110,10 @@ export class TestComponent implements OnInit, OnDestroy {
 
          modalRef.result.then((transaction) => {
             // refresh current resource list
-             if (this.chosenRegistry === this.transactionRegistry) {
+             if (this.chosenRegistry === this.registries['historian']) {
                 this.registryReload = !this.registryReload;
             } else {
-                this.chosenRegistry = this.transactionRegistry;
+                this.chosenRegistry = this.registries['historian'];
             }
 
              this.transactionService.reset(transaction, this.eventsTriggered);

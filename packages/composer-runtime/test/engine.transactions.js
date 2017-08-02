@@ -22,10 +22,15 @@ const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
+const ResourceManager = require('../lib/resourcemanager');
+const IdentityManager = require('../lib/identitymanager');
+const EventService = require('../lib/eventservice');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
+const Factory = require('composer-common').Factory;
+
 const TransactionHandler = require('../lib/transactionhandler');
 
 const chai = require('chai');
@@ -42,14 +47,19 @@ describe('EngineTransactions', () => {
     let mockContext;
     let engine;
     let mockRegistryManager;
+    let mockResourceManager;
     let mockSerializer;
     let mockResolver;
     let mockApi;
     let mockScriptManager;
     let mockCompiledScriptBundle;
-    let mockRegistry;
+    let mockRegistry,mockHistorian;
     let mockTransactionHandler1;
     let mockTransactionHandler2;
+    let mockFactory;
+    let mockIdentityManager;
+    let mockParticipant;
+    let mockEventService;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -64,7 +74,9 @@ describe('EngineTransactions', () => {
         mockContext.transactionEnd.resolves();
         engine = new Engine(mockContainer);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
+        mockResourceManager = sinon.createStubInstance(ResourceManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
+        mockContext.getResourceManager.returns(mockResourceManager);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockContext.getSerializer.returns(mockSerializer);
         mockResolver = sinon.createStubInstance(Resolver);
@@ -78,11 +90,28 @@ describe('EngineTransactions', () => {
         mockContext.getCompiledScriptBundle.returns(mockCompiledScriptBundle);
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+        mockHistorian = sinon.createStubInstance(Registry);
+        mockRegistryManager.get.withArgs('Historian', 'HistorianRegistry').resolves(mockHistorian);
+
         mockTransactionHandler1 = sinon.createStubInstance(TransactionHandler);
         mockTransactionHandler1.execute.resolves(0);
         mockTransactionHandler2 = sinon.createStubInstance(TransactionHandler);
         mockTransactionHandler2.execute.resolves(0);
         mockContext.getTransactionHandlers.returns([mockTransactionHandler1, mockTransactionHandler2]);
+        mockFactory = sinon.createStubInstance(Factory);
+        mockContext.getFactory.returns(mockFactory);
+        mockFactory.newResource.returns({});
+        mockFactory.newRelationship.returns({});
+
+        mockIdentityManager = sinon.createStubInstance(IdentityManager);
+        mockContext.getIdentityManager.returns(mockIdentityManager);
+
+        let mockIdentity = sinon.createStubInstance(Resource);
+        mockIdentity.getIdentifier.returns('1234');
+        mockIdentityManager.getIdentity.resolves(mockIdentity);
+        mockParticipant = sinon.createStubInstance(Resource);
+        mockEventService = sinon.createStubInstance(EventService);
+
     });
 
     describe('#submitTransaction', () => {
@@ -166,6 +195,66 @@ describe('EngineTransactions', () => {
                     sinon.assert.calledOnce(mockCompiledScriptBundle.execute);
                     mockCompiledScriptBundle.execute.args[0][0].should.equal(mockApi);
                     mockCompiledScriptBundle.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using a system handler (historian record other paths)', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns([]);
+
+
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('Historian no evenets', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns(null);
+
+
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using a system handler (historian record other paths #2)', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns([ {data:'really'}  ]);
+            mockSerializer.fromJSON.returns({data:'jsonified'});
+
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
                     sinon.assert.calledOnce(mockRegistry.add);
                     sinon.assert.calledWith(mockRegistry.add, mockTransaction);
                 });
