@@ -21,17 +21,21 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
+
+// TODO: Address the use of these two arrays - indicative of something not correct.
 const TYPE_MAP = {
     'Asset': 'AssetRegistry',
     'Participant': 'ParticipantRegistry',
     'Transaction': 'TransactionRegistry',
-    'Network': 'Network'
+    'Network': 'Network',
+    'Historian':'HistorianRegistry'
 };
 const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',
     'TransactionRegistry',
-    'Network'
+    'Network',
+    'HistorianRegistry'
 ];
 
 /**
@@ -247,7 +251,6 @@ class RegistryManager extends EventEmitter {
      */
     add(type, id, name, force, system) {
         let collectionID = type + ':' + id;
-
         // form this up into a resource and check if we are able to create this.
         let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
         resource.name=name;
@@ -278,6 +281,7 @@ class RegistryManager extends EventEmitter {
                 });
                 return result;
             });
+
     }
 
     /**

@@ -36,6 +36,7 @@ const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
+const ResourceManager = require('../lib/resourcemanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const ScriptCompiler = require('../lib/scriptcompiler');
@@ -925,6 +926,28 @@ describe('Context', () => {
 
     });
 
+    describe('#getResourceManager', () => {
+
+        it('should return a new resource manager', () => {
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            context.getResourceManager().should.be.an.instanceOf(ResourceManager);
+        });
+
+        it('should return an existing resource manager', () => {
+            let mockResourceManager = sinon.createStubInstance(ResourceManager);
+            context.resourceManager = mockResourceManager;
+            context.getResourceManager().should.equal(mockResourceManager);
+        });
+
+    });
+
     describe('#getParticipant', () => {
 
         it('should return the current participant', () => {
@@ -1123,9 +1146,12 @@ describe('Context', () => {
 
         it('should return the compiled query bundle', () => {
             let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            let mockResourceManager = sinon.createStubInstance(ResourceManager);
             context.identityManager = mockIdentityManager;
-            context.getTransactionHandlers().should.have.lengthOf(1);
-            context.getTransactionHandlers()[0].should.equal(mockIdentityManager);
+            context.resourceManager = mockResourceManager;
+            context.getTransactionHandlers().should.have.lengthOf(2);
+            context.getTransactionHandlers().should.include(mockIdentityManager);
+            context.getTransactionHandlers().should.include(mockResourceManager);
         });
 
     });
