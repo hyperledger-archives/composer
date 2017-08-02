@@ -10,9 +10,9 @@ excerpt: "This guide will walk you through the steps required to add and try out
 
 # Queries Tutorial using the Composer Query language and REST APIs
 
-In this tutorial, we will enhance our Developer 'Trading' tutorial example, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as an updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
+In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as an updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
 
-Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' Developer tutorial, we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in our development example - this tutorial uses this network to get going.
+Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' Developer tutorial, we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
 
 It is recommended to do the Developer Tutorial first, where the business network `my-network` has been deployed. (Alternatively, you can  if you wish, do this tutorial from 'scratch' - just build a new 'my-network' VSCode project and create the files (below) as you go along  - just remember to use `composer network deploy` to deploy the BNA file later on in this tutorial).
 
@@ -164,6 +164,8 @@ The queries used by the Transaction Processor logic are defined in a file called
 In your project view, create a new file under `my-network` top level directory called `queries.qry` and paste the contents of these defined queries into the editor - there is a description provided for each query definition ; the parameters passed into the query (by the TP function) are distinguished by a leading `_$` below to signify the parameter supplied to the query at runtime.
 
 ```
+/** Sample queries for Commodity Trading business network
+*/
 
 query selectCommodities {
   description: "Select all commodities"
@@ -196,7 +198,7 @@ query selectCommoditiesWithHighQuantity {
 
 ### Update your Access Control Rules (ACLs)
 
-The file `permissions.acl` defines the access control rules for the business network definition. Replace the entire contents of `permissions.acl` with the rule below.
+The file `permissions.acl` defines the access control rules for the business network definition. Replace the entire contents of `permissions.acl` with the rules below.
 
 ```
 /**
@@ -258,7 +260,7 @@ The `composer archive create` command has updated the file called `my-network.bn
 
 All code should have unit tests - even your business network logic!
 
-We are now going to add a simple unit test for the business network definition, testing the logic our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process.
+We are now going to add a simple unit test for the business network definition, testing the logic of our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process.
 
 
 From your project working directory (my-network), open the file `test/sample.js` and inspect the contents.
@@ -474,6 +476,8 @@ my-network@0.0.1 doc /home/demo/my-network
 
 Commodity Trading
 #tradeCommodity
+Received event: org.acme.mynetwork.TradeNotification#8452bb3a-ea1d-4433-bf17-a1268c94456f#0 for commodity EMA
+Received event: org.acme.mynetwork.RemoveNotification#81252aa3b-ea2c-3143-be2b-a1234c91266c#0 for commodity EMA
 ✓ should be able to trade a commodity (62ms)
 
 
@@ -493,7 +497,7 @@ You can browse the structure of the updated Trade Commodity business network by 
 
 We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file(suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. 
 
-Switch to the terminal, change directory to the dist folder containing the `my-network.bna` ile::
+Switch to the terminal, change directory to the dist folder containing the `my-network.bna` file:
 
 ```
 cd dist
@@ -555,7 +559,7 @@ We should be able to see that the REST Endpoint called 'Query' has been added an
 
 ![Queries exposed as REST Endpoints](../assets/img/tutorials/query/rest-explorer-discover.png)
 
-Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create two more Traders (Participants)and some more Commodities (Assets) using the REST APIs.
+Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.
 
 First, click on 'Trader' in the REST Explorer, then click on the 'POST' method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn: 
 
@@ -599,7 +603,7 @@ Once again, copy the JSON data below -  click 'Try it out' and check the code ag
 
 ![Trader 1 example - Participant](../assets/img/tutorials/query/add-trader.png)
 
-Now scroll up to the top and click on 'Commodity' object in the REST Explorer. Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 AND TRADER2:
+Now scroll up to the top and click on 'Commodity' object in the REST Explorer. Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:
 
 ```
 {
@@ -669,7 +673,7 @@ Finally, you will recall we had defined a simple query that filters Commodities 
 
 ![Recollect Query definition](../assets/img/tutorials/query/querydef-recall-high-qty-commodities.png)
 
-WE use the query 'removeHighQuantityCommodities' in the Transaction Processor logic written in the `lib/sample.js` script file. If you execute this /GET operation in the REST Explorer, you'll see it selects only those assets greater than 60 in quantity.
+We use the query 'removeHighQuantityCommodities' in the Transaction Processor logic written in the `lib/sample.js` script file. If you execute this /GET operation in the REST Explorer, you'll see it selects only those assets greater than 60 in quantity.
 
 ![Recollect Transaction logic using query](../assets/img/tutorials/query/functiondef-recall-high-qty-commodities.png)
 
