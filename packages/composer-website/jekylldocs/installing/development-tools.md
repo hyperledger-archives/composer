@@ -23,13 +23,13 @@ Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
-npm: 3.10.x
+npm: v3.x or v5.v
 git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
-**Please do not install Composer as a superuser, use 'sudo' or the 'root' user if on Linux (doing will can cause issues with the install). Composer should be installed as non-priviledged user**
+**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
