@@ -254,7 +254,6 @@ class Engine {
                     });
             })
             .then(() => {
-                
                 LOG.exit(method);
             });
     }
