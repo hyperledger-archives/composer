@@ -106,7 +106,7 @@ describe('RegistryManager', () => {
             sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.calledOnce(registryManager.ensure);
+                    sinon.assert.calledThrice(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.ParticipantRegistry', sinon.match.any, sinon.match.any);

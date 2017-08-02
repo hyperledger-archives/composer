@@ -24,6 +24,7 @@ const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
+const ResourceManager = require('./resourcemanager');
 const Resolver = require('./resolver');
 const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
@@ -370,12 +371,12 @@ class Context {
                 return participant;
             })
             .catch((error) => {
-
+                const name = this.getIdentityService().getName();
                 // Check for an admin user.
                 // TODO: this is temporary whilst we migrate to requiring all
                 // users to have identities that are mapped to participants.
                 if (!error.activationRequired) {
-                    const name = this.getIdentityService().getName();
+
                     if (name && name.match(/admin/i)) {
                         LOG.exit(method, null);
                         return null;
@@ -759,6 +760,17 @@ class Context {
     }
 
     /**
+     * Get the resource manager.
+     * @return {ResourceManager} The resource manager.
+     */
+    getResourceManager() {
+        if (!this.resourceManager) {
+            this.resourceManager = new ResourceManager(this);
+        }
+        return this.resourceManager;
+    }
+
+    /**
      * Get the current participant.
      * @return {Resource} the current participant.
      */
@@ -900,7 +912,7 @@ class Context {
      */
     getTransactionHandlers() {
         return [
-            this.getIdentityManager()
+            this.getIdentityManager(),this.getResourceManager()
         ];
     }
 

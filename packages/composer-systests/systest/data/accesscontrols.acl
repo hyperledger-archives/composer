@@ -76,3 +76,38 @@ rule R9 {
     resource: "org.hyperledger.composer.system.Registry"
     action: ALLOW
 }
+rule R10 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.UpdateAsset"
+    action: ALLOW
+}
+rule R10x1 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.UpdateParticipant"
+    action: ALLOW
+}
+rule R10x2{
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.RemoveAsset"
+    action: ALLOW
+}
+rule R10x3{
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.RemoveParticipant"
+    action: ALLOW
+}
+rule R11 {
+    description: "The owner of a vehicle can update the vehicle"
+    participant: "systest.accesscontrols.SampleParticipant"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    action: ALLOW
+}
