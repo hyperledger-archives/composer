@@ -162,6 +162,12 @@ describe('QueryCompiler', () => {
                 SELECT org.acme.sample.SampleAsset
                     WHERE (baa.moo.neigh.meow.woof == _$animalNoise)
         }
+        query Q15 {
+            description: "Simple Historian Query"
+            statement:
+                SELECT org.hyperledger.composer.system.HistorianRecord 
+                    FROM HistorianRegistry
+        }
         `);
         queryFile1.validate();
         queries = {};
@@ -189,7 +195,7 @@ describe('QueryCompiler', () => {
             const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
             compiledQueryBundle.compiledQueries.should.be.an('array');
-            compiledQueryBundle.compiledQueries.should.have.lengthOf(14);
+            compiledQueryBundle.compiledQueries.should.have.lengthOf(15);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
             compiledQueryBundle.compiledQueries.should.all.have.property('hash');
             compiledQueryBundle.compiledQueries.should.all.have.property('generator');
@@ -202,7 +208,7 @@ describe('QueryCompiler', () => {
         it('should visit all of the things', () => {
             const compiled = queryCompiler.visit(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(14);
+            compiled.should.have.lengthOf(15);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -221,7 +227,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query manager', () => {
             const compiled = queryCompiler.visitQueryManager(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(14);
+            compiled.should.have.lengthOf(15);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -241,7 +247,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query file', () => {
             const compiled = queryCompiler.visitQueryFile(queryFile1, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(14);
+            compiled.should.have.lengthOf(15);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -365,6 +371,19 @@ describe('QueryCompiler', () => {
                 }
             });
         });
+
+
+        it('should compile a select statement for the historian', () => {
+            const result = queryCompiler.visitSelect(selectsFromQueries.Q15, {});
+            result.should.deep.equal({
+                selector: {
+                    $registryType: 'Historian',
+                    $registryId: 'HistorianRegistry',
+                    $class: 'org.hyperledger.composer.system.HistorianRecord'
+                }
+            });
+        });
+
 
         it('should throw for a select statement for a concept', () => {
             selectsFromQueries.Q2.resource = 'org.acme.sample.SampleConcept';

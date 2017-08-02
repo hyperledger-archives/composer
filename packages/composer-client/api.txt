@@ -1,9 +1,9 @@
 class AssetRegistry extends Registry {
-   + Promise getAllAssetRegistries(SecurityContext,ModelManager,Factory,Serializer) 
-   + Promise getAssetRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
+   + Promise getAllAssetRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + Promise getAssetRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
    + Promise assetRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
-   + Promise addAssetRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
-   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
+   + Promise addAssetRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class BusinessNetworkConnection extends EventEmitter {
    + void constructor(Object,Object,boolean) 
@@ -17,6 +17,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise participantRegistryExists(string) 
    + Promise addParticipantRegistry(string,string) 
    + Promise getTransactionRegistry() 
+   + Promise getHistorian() 
    + Promise getIdentityRegistry() 
    + Promise connect(string,string,string,string,Object) 
    + Promise disconnect() 
@@ -28,15 +29,20 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise bindIdentity(string) 
    + Promise revokeIdentity() 
 }
+class Historian extends Registry {
+   + Promise getAllHistorians(SecurityContext,ModelManager,Factory,Serializer) 
+   + Promise getHistorian(SecurityContext,string,ModelManager,Factory,Serializer) 
+   + Promise addHistorian(SecurityContext,string,string,ModelManager,Factory,Serializer) 
+}
 class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 
 }
 class ParticipantRegistry extends Registry {
-   + Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer) 
-   + Promise getParticipantRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
-   + Promise participantRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
-   + Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
-   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
+   + Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + Promise getParticipantRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + Promise participantRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class Query {
 }
@@ -45,7 +51,7 @@ class Registry {
    + Promise getRegistry(SecurityContext,string,string) 
    + Promise existsRegistry(SecurityContext,string,string) 
    + Promise addRegistry(SecurityContext,string,string,string) 
-   + void constructor(string,string,string,SecurityContext,ModelManager,Factory,Serializer) 
+   + void constructor(string,string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
    + Promise addAll(Resource[]) 
    + Promise add(Resource) 
    + Promise updateAll(Resource[]) 

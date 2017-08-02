@@ -18,7 +18,8 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-common.js",
-    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000"
+    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000",
+    "regenmodel":"node ./scripts/systemmodelgen.js"
   },
   "repository": {
     "type": "git",

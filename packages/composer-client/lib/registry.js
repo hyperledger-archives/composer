@@ -16,7 +16,7 @@
 
 const Resource = require('composer-common').Resource;
 const Util = require('composer-common').Util;
-
+// const ModelUtil = require('composer-common').ModelUtil;
 /**
  * Class representing an Abstract Registry.
  * <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="height:100%;"/></a></p>
@@ -135,8 +135,10 @@ class Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this registry.
      * @param {Factory} factory The factory to use for this registry.
      * @param {Serializer} serializer The Serializer to use for this registry.
+     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
+     * TODO: Rationalize the bnc with the other objects - as the bnc contains these other arguments
      */
-    constructor(registryType, id, name, securityContext, modelManager, factory, serializer) {
+    constructor(registryType, id, name, securityContext, modelManager, factory, serializer,bnc) {
         if (!registryType) {
             throw new Error('registryType not specified');
         } else if (!id) {
@@ -159,6 +161,7 @@ class Registry {
         this.modelManager = modelManager;
         this.factory = factory;
         this.serializer = serializer;
+        this.bnc = bnc;
     }
 
     /**
@@ -173,10 +176,15 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
-        let serializedResources = resources.map((resource) => {
-            return this.serializer.toJSON(resource);
-        });
-        return Util.invokeChainCode(this.securityContext, 'addAllResourcesToRegistry', [this.registryType, this.id, JSON.stringify(serializedResources)]);
+        let txName = 'Add'+this.registryType;
+        const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
+        // This code is retained as there was a suggesstion that the transaction should include
+        // a relationship to the registry not the type/id. Time ran out to get this implemented
+        // transaction.targetRegistry = this.factory.newRelationship(ModelUtil.getNamespace(this.id),this.registryType, this.id);
+        transaction.registryType = this.registryType;
+        transaction.registryId = this.id;
+        transaction.resources = resources;
+        return this.bnc.submitTransaction(transaction);
     }
 
     /**
@@ -191,8 +199,7 @@ class Registry {
         if (!resource) {
             throw new Error('resource not specified');
         }
-        let serializedResource = this.serializer.toJSON(resource);
-        return Util.invokeChainCode(this.securityContext, 'addResourceToRegistry', [this.registryType, this.id, JSON.stringify(serializedResource)]);
+        return this.addAll([resource]);
     }
 
     /**
@@ -207,10 +214,12 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
-        let serializedResources = resources.map((resource) => {
-            return this.serializer.toJSON(resource);
-        });
-        return Util.invokeChainCode(this.securityContext, 'updateAllResourcesInRegistry', [this.registryType, this.id, JSON.stringify(serializedResources)]);
+        let txName = 'Update'+this.registryType;
+        const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
+        transaction.resources = resources;
+        transaction.registryType = this.registryType;
+        transaction.registryId = this.id;
+        return this.bnc.submitTransaction(transaction);
     }
 
     /**
@@ -225,8 +234,7 @@ class Registry {
         if (!resource) {
             throw new Error('resource not specified');
         }
-        let serializedResource = this.serializer.toJSON(resource);
-        return Util.invokeChainCode(this.securityContext, 'updateResourceInRegistry', [this.registryType, this.id, JSON.stringify(serializedResource)]);
+        return this.updateAll([resource]);
     }
 
     /**
@@ -241,14 +249,20 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
-        let data = resources.map((resource) => {
+        let txName = 'Remove'+this.registryType;
+        const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
+        transaction.resources = [];
+        transaction.registryType = this.registryType;
+        transaction.registryId = this.id;
+
+        transaction.resourceIds = resources.map((resource) => {
             if (resource instanceof Resource) {
                 return resource.getIdentifier();
             } else {
                 return resource;
             }
         });
-        return Util.invokeChainCode(this.securityContext, 'removeAllResourcesFromRegistry', [this.registryType, this.id, JSON.stringify(data)]);
+        return this.bnc.submitTransaction(transaction);
     }
 
     /**
@@ -263,13 +277,7 @@ class Registry {
         if (!resource) {
             throw new Error('resource not specified');
         }
-        let id;
-        if (resource instanceof Resource) {
-            id = resource.getIdentifier();
-        } else {
-            id = resource;
-        }
-        return Util.invokeChainCode(this.securityContext, 'removeResourceFromRegistry', [this.registryType, this.id, id]);
+        return this.removeAll([resource]);
     }
 
     /**
@@ -279,6 +287,7 @@ class Registry {
      * objects representing the resources.
      */
     getAll() {
+
         Util.securityCheck(this.securityContext);
         return Util.queryChainCode(this.securityContext, 'getAllResourcesInRegistry', [this.registryType, this.id])
             .then((buffer) => {
