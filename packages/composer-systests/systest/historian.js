@@ -101,7 +101,7 @@ describe('Historian', () => {
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest-accesscontrols@0.0.1', 'The network for the access controls system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-historian@0.0.1', 'The network for the historian system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
