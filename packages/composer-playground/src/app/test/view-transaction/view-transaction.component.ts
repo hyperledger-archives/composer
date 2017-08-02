@@ -59,10 +59,9 @@ export class ViewTransactionComponent implements OnInit, OnDestroy {
             .then(() => {
                 const serializer = this.clientService.getBusinessNetwork().getSerializer();
 
-                this.transaction = serializer.toJSON(this.transactionService.lastTransaction);
-                this.transactionString = JSON.stringify(this.transaction, null, ' ');
+                this.transactionString = JSON.stringify(serializer.toJSON(this.transaction), null, ' ');
 
-                this.events = this.transactionService.events;
+                this.events = this.events;
 
                 for (let i = 0; i < this.events.length; i++) {
                     this.eventObjects.push(serializer.toJSON(this.events[i]));
