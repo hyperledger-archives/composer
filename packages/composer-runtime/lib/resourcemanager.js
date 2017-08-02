@@ -72,16 +72,10 @@ class ResourceManager extends TransactionHandler {
     addResources(api, transaction) {
         const method = 'addResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
-        console.log(method);
         return this.registryManager
             .get(transaction.registryType, transaction.registryId)
             .then(registry => {
-                console.log(method,'adding to regsitry');
-                return registry.addAll(transaction.resources);
-            })
-            .then(() => {
-                console.log(method,'added to regsitry');
-                LOG.exit(method);
+                return registry.addAll(transaction.resources,{ convertResourcesToRelationships: true });
             });
     }
 
@@ -99,10 +93,7 @@ class ResourceManager extends TransactionHandler {
         return this.registryManager
             .get(transaction.registryType, transaction.registryId)
             .then(registry => {
-                return registry.updateAll(transaction.resources);
-            })
-            .then(() => {
-                LOG.exit(method);
+                return registry.updateAll(transaction.resources,{ convertResourcesToRelationships: true });
             });
     }
 
@@ -120,10 +111,7 @@ class ResourceManager extends TransactionHandler {
         return this.registryManager
             .get(transaction.registryType, transaction.registryId)
             .then(registry => {
-                return registry.removeAll(transaction.resourceIds);
-            })
-            .then(() => {
-                LOG.exit(method);
+                return registry.removeAll(transaction.resourceIds,{ convertResourcesToRelationships: true });
             });
     }
 }

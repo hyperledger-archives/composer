@@ -167,13 +167,20 @@ class EngineTransactions {
         // Get the transaction in question and also create a relationship
         record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
         record.transactionTimestamp = transaction.timestamp;
+        record.transactionType = transaction.getType();
 
         // Get the events that are generated - getting these as Resources
         let evtSvr = context.getEventService();
-        if(!evtSvr){
-            record.eventsEmitted = [];
-        } else {
-            record.eventsEmitted = evtSvr.getEventResources();
+        record.eventsEmitted = [];
+
+        if(evtSvr) {
+            let s = evtSvr.getEvents();
+            if (s) {
+                s.forEach((element) => {
+                    let r = context.getSerializer().fromJSON(element);
+                    record.eventsEmitted.push(r);
+                } );
+            }
         }
 
         // Note that this is only call out to collect data that returns a promise.

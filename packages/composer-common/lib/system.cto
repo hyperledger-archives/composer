@@ -102,6 +102,7 @@ asset Network identified by networkId extends Asset {
  */
 asset HistorianRecord identified by transactionId {
   o String      transactionId
+  o String      transactionType
   --> Transaction transactionInvoked
   --> Participant participantInvoking  optional
   --> Identity    identityUsed         optional

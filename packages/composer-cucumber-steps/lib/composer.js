@@ -186,7 +186,7 @@ class Composer {
         userSecret = userSecret || 'adminpw';
         const businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
         businessNetworkConnection.on('event', (event) => {
-            console.log(event);
+
             this.events.push(event);
         });
         return businessNetworkConnection.connect('defaultProfile', businessNetworkIdentifier, userID, userSecret)
@@ -594,7 +594,7 @@ class Composer {
                 } else if (property instanceof RelationshipDeclaration) {
 
                     resource[propertyName] = this.factory.newRelationship(property.getNamespace(), property.getType(), propertyValue);
-                    console.log(resource[propertyName]);
+
                 } else {
                     resource[propertyName] = this.convertValueToType(propertyValue, property.getType());
                 }

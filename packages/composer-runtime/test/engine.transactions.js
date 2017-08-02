@@ -205,10 +205,9 @@ describe('EngineTransactions', () => {
             mockParticipant.getIdentifier.returns('fred');
 
 
-
             mockContext.getParticipant.returns(mockParticipant);
             mockContext.getEventService.returns(mockEventService);
-            mockEventService.getEventResources.returns({});
+            mockEventService.getEvents.returns([]);
 
 
             return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
