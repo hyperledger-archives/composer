@@ -190,8 +190,9 @@ class EngineTransactions {
             record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
             LOG.exit(method, record);
             return record;
-        }).catch(error => {
+        }).catch(/* istanbul ignore next */error => {
             //TODO:  need to remove this when the admin is sorted out!
+            /* istanbul ignore next */
             if(error.identityName){
                 LOG.debug(method, 'admin userid again');
             } else {

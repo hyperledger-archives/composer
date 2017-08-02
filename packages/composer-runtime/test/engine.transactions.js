@@ -220,6 +220,46 @@ describe('EngineTransactions', () => {
                 });
         });
 
+        it('Historian no evenets', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns(null);
+
+
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using a system handler (historian record other paths #2)', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns([ {data:'really'}  ]);
+            mockSerializer.fromJSON.returns({data:'jsonified'});
+
+            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
     });
 
 });

@@ -280,6 +280,7 @@ class RegistryManager extends EventEmitter {
                 });
                 return result;
             });
+
     }
 
     /**

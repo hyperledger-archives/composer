@@ -261,7 +261,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     addParticipantRegistry(id, name) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
