@@ -19,22 +19,31 @@ export class OperationsHelper {
                         });
                 }
 
-  // Retrieve text
+  // Retrieve text from an element
   static retriveTextFromElement(elm: ElementFinder) {
       browser.wait(ExpectedConditions.presenceOf(elm), 10000);
       browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
       return browser.wait(() => {
         return elm.getText();
-            });
+      });
   }
 
-  // Retrieve text
-  static retriveMatchingElementsByCSS(type: string, subset: string) {
-      let elm = element(by.css(type));
-      browser.wait(ExpectedConditions.presenceOf(elm), 10000);
-      browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
-      return element(by.css(type)).all(by.css(subset));
+  // Retrieve an array of all matching elements
+  static retriveMatchingElementsByCSS(type: string, subset: string, minCount) {
+    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), 5000);
+    return element(by.css(type)).all(by.css(subset));
   }
+
+  // Custom ExpectedCondition to be used to ensure that ArrayFinder count is non-zero
+  static elementsPresent(elementArrayFinder, minCount) {
+    let hasCount = (() => {
+      return elementArrayFinder.count()
+      .then((count) => {
+        return count > minCount;
+      });
+    });
+    return ExpectedConditions.and(ExpectedConditions.presenceOf(elementArrayFinder), hasCount);
+  };
 
   // Navigate to Editor base page and move past welcome splash
   static navigatePastWelcome() {
@@ -52,11 +61,19 @@ export class OperationsHelper {
     browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 5000);
   };
 
-  static importBusinessNetworkArchive(fileName: string) {
+  static importBusinessNetworkArchiveFromFile(fileName: string) {
     Editor.clickImportBND();
     Import.selectBusinessNetworkDefinitionFromFile(fileName);
     Replace.confirmReplace();
     Import.waitToDisappear();
     this.processExpectedSuccess();
-    }
+  }
+
+  static importBusinessNetworkArchiveFromTile(option) {
+    Editor.clickImportBND();
+    Import.selectBusinessDefinitionTileOption(option);
+    Replace.confirmReplace();
+    Import.waitToDisappear();
+    this.processExpectedSuccess();
+  }
 }
