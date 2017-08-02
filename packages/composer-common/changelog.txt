@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.10.2 {04641978245bd4326e314f0afb758b67} 2017-07-27
+Version 0.10.2 {edbc48c6b166343dfb70223ebf2cd920} 2017-07-27
 - Added IdCard.getRoles function
 - Added IdCard.toArchive function
 
