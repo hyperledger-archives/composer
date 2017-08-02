@@ -54,7 +54,9 @@ class IdCard {
    + Object getConnectionProfile() 
    + Object getCredentials() 
    + Object getEnrollmentCredentials() 
-   + Promise fromArchive(Buffer) 
+   + String[] getRoles() 
+   + Promise fromArchive() 
+   + Promise toArchive(Object,String) 
 }
 class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
