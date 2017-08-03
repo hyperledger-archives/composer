@@ -1132,7 +1132,7 @@ describe('EditorComponent', () => {
                 passedFile.type.should.equal(testFile.type);
 
                 let passedFilename = mockSave.getCall(0).args[1];
-                passedFilename.type.should.equal(testFilename);
+                passedFilename.should.equal(testFilename);
                 done();
             });
         });
