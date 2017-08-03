@@ -30,7 +30,11 @@ export class ConnectionProfileService {
     }
 
     createProfile(name, connectionProfile): Promise<any> {
-        return this.getAdminConnection().createProfile(name, connectionProfile);
+        return this.getAdminConnection().getProfile(name)
+            .catch(() => {
+                // It doesn't exist, so create it.
+                return this.getAdminConnection().createProfile(name, connectionProfile);
+            });
     }
 
     getProfile(name): Promise<any> {

@@ -93,19 +93,40 @@ describe('ConnectionProfileService', () => {
     });
 
     describe('createProfile', () => {
-        it('should get result of createProfile from admin connection',
+        it('should get result of createProfile from admin connection if the profile does not exist',
+            fakeAsync(inject([ConnectionProfileService],
+                (connectionProfileService) => {
+                    connectionProfileService.should.be.ok;
+
+                    adminConnectionMock.getProfile.returns(Promise.reject('not exist'));
+                    let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
+
+                    const nameArg: string = 'NAME';
+                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
+                    connectionProfileService.createProfile(nameArg, connectionProfileArg);
+
+                    tick();
+
+                    mockGetAdminConnection.should.have.been.called;
+                    adminConnectionMock.getProfile.should.have.been.calledWith(nameArg);
+                    adminConnectionMock.createProfile.should.have.been.calledWith(nameArg, connectionProfileArg);
+                })));
+
+        it('should get result of getProfile from admin connection if the profile does exist',
             inject([ConnectionProfileService],
                 (connectionProfileService) => {
                     connectionProfileService.should.be.ok;
 
-                    const nameArg: string = 'NAME';
-                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
+                    adminConnectionMock.getProfile.returns(Promise.resolve());
                     let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
 
+                    const nameArg: string = 'NAME';
+                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
                     connectionProfileService.createProfile(nameArg, connectionProfileArg);
 
                     mockGetAdminConnection.should.have.been.called;
-                    adminConnectionMock.createProfile.should.have.been.calledWith(nameArg, connectionProfileArg);
+                    adminConnectionMock.getProfile.should.have.been.calledWith(nameArg);
+                    adminConnectionMock.createProfile.should.not.have.been.called;
                 }));
     });
 
