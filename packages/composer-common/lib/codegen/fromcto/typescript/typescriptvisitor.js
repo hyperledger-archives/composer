@@ -114,6 +114,42 @@ class TypescriptVisitor {
                 parameters.fileWriter.writeLine(0, 'import {' + systemType.getName() + '} from \'./org.hyperledger.composer.system\';');
             }
         }
+
+        
+        // Import property types that are imported from other cto files.
+        let properties = new Map();
+        modelFile.getAllDeclarations()
+        .filter(v => !v.isEnum())
+        .forEach(classDeclaration => {
+            classDeclaration.getProperties().forEach(property => {
+                if(!property.isPrimitive()){
+                    const fullyQualifiedTypeName = property.getFullyQualifiedTypeName();
+                    const lastIndexOfDot = fullyQualifiedTypeName.lastIndexOf(".");
+                    const propertyNamespace =  fullyQualifiedTypeName.substring(0, lastIndexOfDot);
+                    const propertyTypeName = fullyQualifiedTypeName.substring(lastIndexOfDot + 1);
+                    if(!properties.has(propertyNamespace)) {
+                        properties.set(propertyNamespace, new Set());
+                    }
+                    properties.get(propertyNamespace).add(propertyTypeName) 
+                }
+            }) 
+        });
+
+        const imports = modelFile.getImports().map(importString => {
+            const lastIndexOfDot = importString.lastIndexOf(".");
+            const namespace = importString.substring(0, lastIndexOfDot);
+            return namespace;
+        })
+        .filter(namespace => namespace != modelFile.getNamespace())
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .forEach(namespace => {
+            let propertyTypeNames = properties.get(namespace);
+            if(propertyTypeNames){
+                const csvPropertyTypeNames = Array.from(propertyTypeNames).join();
+                parameters.fileWriter.writeLine(0, `import { ${csvPropertyTypeNames} } from './${namespace}'`)            
+            }
+        });
+
         parameters.fileWriter.writeLine(0, '// export namespace ' + modelFile.getNamespace() + '{');
 
         modelFile.getAllDeclarations().forEach((decl) => {
