@@ -102,6 +102,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -113,6 +114,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +128,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -155,6 +158,7 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -198,12 +202,12 @@ ga('send', 'pageview');
 Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
-npm: 3.10.x
+npm: v3.x or v5.v
 git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 </code></pre></div>
-<p><strong>Please do not install Composer as a superuser, use &#39;sudo&#39; or the &#39;root&#39; user if on Linux (doing will can cause issues with the install). Composer should be installed as non-priviledged user</strong></p>
+<p><strong>Please do not install Composer as a superuser - or use &#39;sudo&#39; or the &#39;root&#39; user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.</strong></p>
 
 <p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
@@ -271,10 +275,13 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 
 tar xvzf fabric-dev-servers.tar.gz
 </code></pre></div></li>
-<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv0.6
-</code></pre></div>
-<p>Hyperledger Fabric To &#39;unset&#39; a v0.6 export, or to be explicit in using v1 Fabric, use this command</p>
+<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows: export FABRIC_VERSION=hlfv0.6</p>
+
+<blockquote>
+<p><strong>Please Note:</strong> Hyperledger Composer users should not use  v0.6.  It is deprecated, and everybody should now use v1.0.</p>
+</blockquote>
+
+<p>To &#39;unset&#39; a v0.6 export, or to be explicit in using v1 Fabric, use this command</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
 </code></pre></div></li>
 <li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.</p>

@@ -102,6 +102,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -113,6 +114,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +128,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -155,6 +158,7 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -189,9 +193,9 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer runtime install</code> command is used to install the Hyperledger Composer runtime on the Hyperledger Fabric endorsing peers of the blockchain network you are connecting to. This command must be run before the <code>composer network start</code> command.</p>
+<p>The <code>composer runtime install</code> command is used to install the Hyperledger Composer runtime on the Hyperledger Fabric peers of the blockchain network you are connecting to. This command must be run before the <code>composer network start</code> command.</p>
 
-<p><em>Please Note</em>: The <code>--businessNetworkName, -n</code> option <strong>must</strong> contain the same name as the business network name you intend to run on the Hyperledger Fabric endorsing peers. Only business networks with names matching the <code>--businessNetworkName, -n</code> option given in this command will successfully run.</p>
+<p><em>Please Note</em>: The <code>--businessNetworkName, -n</code> option <strong>must</strong> contain the same name as the business network name you intend to run on the Hyperledger Fabric peers. Only business networks with names matching the <code>--businessNetworkName, -n</code> option given in this command will successfully run.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n &lt;businessNetworkName&gt; -p &lt;connectionProfileName&gt; -i &lt;installId&gt; -s &lt;installSecret&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>

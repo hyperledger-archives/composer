@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Revoking the identity of a participant | Hyperledger Composer</title>
+    <title>Revoking an identity from a participant | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Revoking the identity of a participant</p>
+          <p>Revoking an identity from a participant</p>
           </div>
 
           <nav class="context-nav">
@@ -102,6 +102,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -113,6 +114,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -126,19 +128,20 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
-<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
 </ul></li>
 <li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
 
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking the identity of a participant</a></li>
-<li><a href="../managing/github-oauth.html">Enabling playground OAuth with GitHub</a></li>
-<li><a href="../managing/current-participant.html">Implementing participant-based access control</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
@@ -155,6 +158,7 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -185,23 +189,26 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="revoke-an-identity-of-a-participant">Revoke an Identity of a Participant</h1>
+              <h1 id="revoking-an-identity-from-a-participant">Revoking an identity from a participant</h1>
 
-<p>An identity can be revoked from a participant using either the API or the command line. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.</p>
+<p>An identity can be revoked from a participant using either the API or the command line.
+Once an identity has been revoked, the identity can no longer be used by the participant
+to interact with the business network in the context of that participant.</p>
 
-<p>Hyperledger Composer issues identities as Hyperledger Fabric enrollment
-certificates (ECerts). When an identity is revoked, the enrollment certificate is
-still valid, but it cannot be used to interact with the business network. This is
-due to a current limitation in Hyperledger Fabric that does not allow the IBM
-Blockchain Framework to revoke enrollment certificates completely.</p>
+<p>When using Hyperledger Fabric, Hyperledger Composer does not currently
+attempt to revoke the identity by using the Hyperledger Fabric certificate authority (CA)
+APIs. The identity can still be used to submit transactions to the underlying Blockchain
+network, but the transactions will be rejected by the deployed business network.</p>
 
 <h2 id="before-you-start">Before you start</h2>
 
 <p>Before you follow these steps, you must have added a participant to a participant
-registry, and issued an identity to that participant.</p>
+registry, and issued or bound an identity to that participant. You must also find
+the unique identifier for that identity in the identity registry. For more information
+on finding the unique identifiers for identities, look at <a href="./identity-list.html">Listing all identities in a business network</a>.</p>
 
 <p>The procedure below shows an example using the following model of a participant
-from the Getting Started walkthrough.</p>
+from the Digital Property sample Business Network Definition: <a href="https://www.npmjs.com/package/digitalproperty-network">digitalproperty-network</a></p>
 <div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
 
 participant Person identified by personId {
@@ -213,27 +220,36 @@ participant Person identified by personId {
 <p>The example assumes that an instance, <code>net.biz.digitalPropertyNetwork#mae@biznet.org</code>,
 of that participant has been created and placed into a participant registry.</p>
 
-<p>The example also assumes that an identity <code>maeid1</code> has been issued to that participant.</p>
+<p>The example also assumes that an identity <code>maeid1</code> has been issued to that participant,
+and the unique identifier for that identity is &#39;f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862&#39;.</p>
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Revoke an identity from the participant</p>
+<li><p>Connect to the business network and revoke an existing identity from a participant</p>
 
 <ul>
 <li>JavaScript API</li>
 </ul>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
-<span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">revokeIdentity</span><span class="p">(</span><span class="s1">'maeid1'</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+<span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-        <span class="c1">// Identity is no longer valid.</span>
+        <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">revokeIdentity</span><span class="p">(</span><span class="s1">'f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862'</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
     <span class="p">});</span>
 </code></pre></div></li>
 </ol>
 
 <ul>
 <li><p>Command line</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer identity revoke -n <span class="s1">'digitalproperty-network'</span> -i admin -s Xurw3yU9zI0l -u maeid1
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer identity revoke -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw -u f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862
 </code></pre></div></li>
 </ul>
 
