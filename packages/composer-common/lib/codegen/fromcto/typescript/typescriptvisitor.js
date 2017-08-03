@@ -27,7 +27,7 @@ const FunctionDeclaration = require('../../../introspect/functiondeclaration');
 const util = require('util');
 
 /**
- * Convert the contents of a ModelManager to Go Lang code.
+ * Convert the contents of a ModelManager to TypeScript code.
  * All generated code is placed into the 'main' package. Set a
  * fileWriter property (instance of FileWriter) on the parameters
  * object to control where the generated code is written to disk.
