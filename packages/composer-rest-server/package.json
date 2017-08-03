@@ -49,7 +49,7 @@
     "jade": "^1.11.0",
     "lodash": "^4.17.4",
     "loopback": "^3.4.0",
-    "loopback-boot": "^2.23.0",
+    "loopback-boot": "~2.25.0",
     "loopback-component-explorer": "^4.1.1",
     "loopback-component-passport": "^3.2.0",
     "loopback-connector-composer": "0.11.0",
