@@ -16,9 +16,11 @@ import * as sinon from 'sinon';
 
 import * as chai from 'chai';
 import { BusinessNetworkConnection } from 'composer-client';
-import { Introspector,
-         BusinessNetworkDefinition,
-         TransactionDeclaration } from 'composer-common';
+import {
+    Introspector,
+    BusinessNetworkDefinition,
+    TransactionDeclaration
+} from 'composer-common';
 
 let should = chai.should();
 
@@ -149,7 +151,7 @@ describe('TestComponent', () => {
         }));
 
         it('should load all the registries and hasTransactions should be false', fakeAsync(() => {
-            mockClientService.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
@@ -247,7 +249,7 @@ describe('TestComponent', () => {
         }));
 
         it('should handle error on initialization', fakeAsync(() => {
-            mockClientService.initialize.returns(Promise.reject('some error'));
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -260,7 +262,7 @@ describe('TestComponent', () => {
         }));
 
         it('should handle error on retrieving a registry', fakeAsync(() => {
-            mockClientService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.reject('some error'));
@@ -311,7 +313,13 @@ describe('TestComponent', () => {
             component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(false);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '2 events triggered', linkCallback: sinon.match.func});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: '2 events triggered',
+                linkCallback: sinon.match.func
+            });
         }));
 
         it('should submit a transaction with 1 event', fakeAsync(() => {
@@ -330,7 +338,13 @@ describe('TestComponent', () => {
             component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(false);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '1 event triggered', linkCallback: sinon.match.func});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: '1 event triggered',
+                linkCallback: sinon.match.func
+            });
         }));
 
         it('should update historian registry view', fakeAsync(() => {
@@ -347,7 +361,13 @@ describe('TestComponent', () => {
             component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(true);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: null, linkCallback: null});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: null,
+                linkCallback: null
+            });
         }));
 
     });

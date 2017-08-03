@@ -105,7 +105,7 @@ export class TestComponent implements OnInit, OnDestroy {
         const modalRef = this.modalService.open(TransactionComponent);
         modalRef.result.then((transaction) => {
             // refresh current resource list
-             if (this.chosenRegistry === this.registries['historian']) {
+            if (this.chosenRegistry === this.registries['historian']) {
                 this.registryReload = !this.registryReload;
             } else {
                 this.chosenRegistry = this.registries['historian'];
