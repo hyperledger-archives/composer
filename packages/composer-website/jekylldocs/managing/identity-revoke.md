@@ -1,30 +1,33 @@
 ---
 layout: default
-title: Revoking the identity of a participant
+title: Revoking an identity from a participant
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**An identity can be revoked from a participant using either the API or the command line**](../managing/identity-revoke.html). Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant."
-index-order: 704
+index-order: 706
 ---
 
-# Revoke an Identity of a Participant
+# Revoking an identity from a participant
 
-An identity can be revoked from a participant using either the API or the command line. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.
+An identity can be revoked from a participant using either the API or the command line.
+Once an identity has been revoked, the identity can no longer be used by the participant
+to interact with the business network in the context of that participant.
 
-{{site.data.conrefs.composer_full}} issues identities as Hyperledger Fabric enrollment
-certificates (ECerts). When an identity is revoked, the enrollment certificate is
-still valid, but it cannot be used to interact with the business network. This is
-due to a current limitation in Hyperledger Fabric that does not allow the IBM
-Blockchain Framework to revoke enrollment certificates completely.
+When using Hyperledger Fabric, {{site.data.conrefs.composer_full}} does not currently
+attempt to revoke the identity by using the Hyperledger Fabric certificate authority (CA)
+APIs. The identity can still be used to submit transactions to the underlying Blockchain
+network, but the transactions will be rejected by the deployed business network.
 
 ## Before you start
 
 Before you follow these steps, you must have added a participant to a participant
-registry, and issued an identity to that participant.
+registry, and issued or bound an identity to that participant. You must also find
+the unique identifier for that identity in the identity registry. For more information
+on finding the unique identifiers for identities, look at [Listing all identities in a business network](./identity-list.html).
 
 The procedure below shows an example using the following model of a participant
-from the Getting Started walkthrough.
+from the Digital Property sample Business Network Definition: [digitalproperty-network](https://www.npmjs.com/package/digitalproperty-network)
 
 ```
 namespace net.biz.digitalPropertyNetwork
@@ -39,23 +42,32 @@ participant Person identified by personId {
 The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet.org`,
 of that participant has been created and placed into a participant registry.
 
-The example also assumes that an identity `maeid1` has been issued to that participant.
+The example also assumes that an identity `maeid1` has been issued to that participant,
+and the unique identifier for that identity is 'f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862'.
 
 ## Procedure
 
-1. Revoke an identity from the participant
+1. Connect to the business network and revoke an existing identity from a participant
   * JavaScript API
 
     ```javascript
-    let businessNetworkConnection = /* TODO: get a business network connection */
-    businessNetworkConnection.revokeIdentity('maeid1')
+    const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+    let businessNetworkConnection = new BusinessNetworkConnection();
+    return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'admin', 'adminpw')
         .then(() => {
-            // Identity is no longer valid.
+            return businessNetworkConnection.revokeIdentity('f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862')
+        })
+        .then(() => {
+            return businessNetworkConnection.disconnect();
+        })
+        .catch((error) => {
+            console.error(error);
+            process.exit(1);
         });
     ```
 
   * Command line
 
     ```bash
-    composer identity revoke -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1
+    composer identity revoke -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862
     ```

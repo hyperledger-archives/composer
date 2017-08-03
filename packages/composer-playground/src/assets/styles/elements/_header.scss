@@ -215,12 +215,14 @@
           border-bottom: 3px solid transparent;
 
           &:hover {
+            box-shadow: inset 0px -3px 0px $white;
+            border-bottom: 0px;
             border-radius: 0px;
-            border-bottom: 3px solid $white;
           }
 
           &.active {
-            border-bottom: 3px solid $white;
+            box-shadow: inset 0px -3px 0px $white;
+            border-bottom: 0px;
             border-radius: 0px;
           }
         }

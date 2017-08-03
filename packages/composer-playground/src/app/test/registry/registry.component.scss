@@ -2,7 +2,9 @@
 @import '../../../assets/styles/base/variables';
 
 registry {
-
+  height: 100%;
+  display: block;
+  position: relative;
   $highlighted: #e4e4e4;
 
   .resource-header {
@@ -126,6 +128,61 @@ registry {
         position: absolute;
         left: 40%;
         bottom: 10px;
+      }
+    }
+
+    &.transaction-list {
+      height: calc(100% - 50px);
+      position: relative;
+      margin-top: 0px;
+      margin-left: -$space-large;
+      margin-right: -$space-large;
+      table {
+        display: block; // required to allow seperated tbody scrolling
+        height: 100%;
+        border-spacing: 0px;
+        thead, tbody {
+          display: block;
+        }
+        thead.tbody-scrolled {
+          position: relative;
+          z-index: 2;
+          box-shadow: 0px 5px 15px -5px #9e9e9e;
+        }
+        thead {
+          tr {
+            display: table;
+            width: 100%;
+          }
+        }
+        tbody {
+          height: calc(100% - 76px);
+          width: 100%;
+          position: absolute;
+          overflow-y: auto;
+          tr {
+            width: 100%;
+            display: table;
+            table-layout: fixed;
+            box-shadow: none;
+            margin-bottom: 0px;
+            &:nth-child(even) {
+              background-color: $third-highlight;
+            }
+          }
+        }
+        th:first-child,
+        td:first-child {
+          padding-left: $space-large;
+        }
+        th, td {
+          padding: 27px $space-medium;
+        }
+        a {
+          &:visited {
+            color: #3f55af;
+          }
+        }
       }
     }
 

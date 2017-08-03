@@ -8,7 +8,7 @@ import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, Resource } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -48,7 +48,7 @@ export class ClientService {
 
     // horrible hack for tests
     createQueryFile(id, content) {
-      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
+        return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -359,14 +359,15 @@ export class ClientService {
             });
     }
 
-    revokeIdentity(userID: string) {
-        return this.getBusinessNetworkConnection().revokeIdentity(userID);
+    revokeIdentity(identity) {
+        // identity should be the full ValidatedResource object
+        return this.getBusinessNetworkConnection().revokeIdentity(identity);
     }
 
     filterModelFiles(files) {
         return files.filter((model) => {
-                return !model.isSystemModelFile();
-            });
+            return !model.isSystemModelFile();
+        });
     }
 
     private getSavedBusinessNetworkName(identity: string): string {

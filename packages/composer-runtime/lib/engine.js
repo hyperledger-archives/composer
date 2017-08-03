@@ -74,8 +74,11 @@ class Engine {
                 }
             }
         };
+
+
         Logger.setFunctionalLogger(loggingProxy);
         Logger._envDebug = 'composer:*';
+
     }
 
     /**
@@ -89,7 +92,6 @@ class Engine {
     init(context, fcn, args) {
         const method = 'init';
         LOG.entry(method, context, fcn, args);
-
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
@@ -113,20 +115,17 @@ class Engine {
         if (initOptions.logLevel && context.getParticipant() === null) {
             this.getContainer().getLoggingService().setLogLevel(initOptions.logLevel);
         }
-
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
-
                 // Start the transaction.
                 return context.transactionStart(false);
 
             })
             .then(() => {
-
                 // Load, validate, and hash the business network definition.
                 LOG.debug(method, 'Loading business network definition');
                 businessNetworkBase64 = args[0];
@@ -146,26 +145,34 @@ class Engine {
 
             })
             .then((businessNetworkDefinition_) => {
-
                 // Cache the business network.
                 businessNetworkDefinition = businessNetworkDefinition_;
                 LOG.debug(method, 'Loaded business network definition, storing in cache');
                 Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
 
                 // Cache the compiled script bundle.
-                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
+                if (!compiledScriptBundle) {
+                    compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                    Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                }
 
                 // Cache the compiled query bundle.
-                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-                LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-                Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                compiledQueryBundle = Context.getCachedCompiledQueryBundle(businessNetworkHash);
+                if (!compiledQueryBundle) {
+                    compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                    LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
+                    Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                }
 
                 // Cache the compiled ACL bundle.
-                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                compiledAclBundle = Context.getCachedCompiledAclBundle(businessNetworkHash);
+                if (!compiledAclBundle) {
+                    compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                    Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                }
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
@@ -182,7 +189,6 @@ class Engine {
                 return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
-
                 // Ensure that the system registries collection exists.
                 LOG.debug(method, 'Ensuring that sysregistries collection exists');
                 return dataService.ensureCollection('$sysregistries')
@@ -215,13 +221,20 @@ class Engine {
 
             })
             .then(() => {
+                LOG.debug(method, 'Setting up historian');
+                // Create the default transaction registry if it does not exist.
+                let registryManager = context.getRegistryManager();
+                return registryManager.ensure('Historian', 'HistorianRegistry', 'Default Historian Registry');
 
+            })
+            .then(() => {
                 // Create the default transaction registry if it does not exist.
                 let registryManager = context.getRegistryManager();
                 return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');
 
             })
             .then(() => {
+                LOG.debug(method, 'Transaction Prepare');
                 return context.transactionPrepare()
                     .then(() => {
                         return context.transactionCommit();

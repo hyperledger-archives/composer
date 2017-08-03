@@ -14,7 +14,7 @@ import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { ModelFile, Script, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
 import { BehaviorSubject } from 'rxjs/Rx';
 
@@ -395,6 +395,12 @@ describe('EditorComponent', () => {
 
         it('should mark a file as deletable if a model type', () => {
             let file = {model: true, displayID: 'myFile'};
+            component.setCurrentFile(file);
+            component['deletableFile'].should.equal(true);
+        });
+
+        it('should mark a file as deletable if a query type', () => {
+            let file = {query: true, displayID: 'myFile'};
             component.setCurrentFile(file);
             component['deletableFile'].should.equal(true);
         });
@@ -1761,22 +1767,28 @@ describe('EditorComponent', () => {
                 deleteModelFile: sinon.stub()
             };
 
+            let queryManagerMock = {
+                deleteQueryFile: sinon.stub()
+            };
+
             mockClientService.getBusinessNetwork.returns({
                 getScriptManager: sinon.stub().returns(scriptManagerMock),
-                getModelManager: sinon.stub().returns(modelManagerMock)
+                getModelManager: sinon.stub().returns(modelManagerMock),
+                getQueryManager: sinon.stub().returns(queryManagerMock)
             });
 
             mockClientService.businessNetworkChanged$ = {
                 next: sinon.stub()
             };
 
-            // Create file array of length 5
+            // Create file array of length 6
             let fileArray = [];
             fileArray.push({acl: true, id: 'acl file', displayID: 'acl0'});
             fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
             fileArray.push({script: true, id: 'script 1', displayID: 'script1'});
             fileArray.push({model: true, id: 'model 1', displayID: 'model1'});
             fileArray.push({script: true, id: 'script 2', displayID: 'script2'});
+            fileArray.push({query: true, id: 'query file', displayID: 'query0'});
             component['files'] = fileArray;
         });
 
@@ -1846,7 +1858,7 @@ describe('EditorComponent', () => {
             component.openDeleteFileModal();
             tick();
 
-            // Check innitial file set
+            // Check initial file set
             mockSetIntialFile.should.have.been.called;
 
             // Check services called
@@ -1856,7 +1868,7 @@ describe('EditorComponent', () => {
             // check remaining files
             let currentFiles = component['files'];
             // should have only deleted one
-            currentFiles.length.should.equal(4);
+            currentFiles.length.should.equal(5);
             // should have deleted the correct one
             let index = currentFiles.findIndex((x) => {
                 x.displayID === 'script1';
@@ -1873,7 +1885,7 @@ describe('EditorComponent', () => {
             component.openDeleteFileModal();
             tick();
 
-            // Check innitial file set
+            // Check initial file set
             mockSetIntialFile.should.have.been.called;
 
             // Check services called
@@ -1883,10 +1895,36 @@ describe('EditorComponent', () => {
             // check remaining files
             let currentFiles = component['files'];
             // should have only deleted one
-            currentFiles.length.should.equal(4);
+            currentFiles.length.should.equal(5);
             // should have deleted the correct one
             let index = currentFiles.findIndex((x) => {
                 x.displayID === 'model1';
+            });
+            index.should.equal(-1);
+        }));
+
+        it('should delete the query file', fakeAsync(() => {
+
+            component['currentFile'] = component['files'][5];
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
+
+            component.openDeleteFileModal();
+            tick();
+
+            // Check initial file set
+            mockSetIntialFile.should.have.been.called;
+
+            // Check services called
+            mockClientService.businessNetworkChanged$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
+
+            // Check remaining files
+            let currentFiles = component['files'];
+            // Should have only deleted one
+            currentFiles.length.should.equal(5);
+            // Should have deleted the correct one
+            let index = currentFiles.findIndex((x) => {
+                x.displayID === 'query0';
             });
             index.should.equal(-1);
         }));
@@ -1906,7 +1944,7 @@ describe('EditorComponent', () => {
             // check no files removed
             let currentFiles = component['files'];
             // should have only deleted one
-            currentFiles.length.should.equal(5);
+            currentFiles.length.should.equal(6);
         }));
 
         it('should set viewed file to existing item in file list', fakeAsync(() => {
@@ -1935,7 +1973,7 @@ describe('EditorComponent', () => {
             // check we still deleted the file
             let currentFiles = component['files'];
             // should have only deleted one
-            currentFiles.length.should.equal(4);
+            currentFiles.length.should.equal(5);
             // should have deleted the correct one
             let index = currentFiles.findIndex((x) => {
                 x.displayID === 'model1';
