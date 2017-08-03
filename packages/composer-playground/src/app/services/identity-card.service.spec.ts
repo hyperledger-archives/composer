@@ -10,6 +10,8 @@ import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
 import { WalletService } from './wallet.service';
 
+const hash = require('object-hash');
+
 import * as sinon from 'sinon';
 let should = chai.should();
 
@@ -259,11 +261,12 @@ describe('IdentityCardService', () => {
 
     describe('#deleteIdentityCard', () => {
         it('should delete an identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let mockConnectionProfile = {
+                name: 'hlfv1'
+            };
             let mockIdCard = sinon.createStubInstance(IdCard);
             mockIdCard.getName.returns('bcc');
-            mockIdCard.getConnectionProfile.returns({
-                name: 'hlfv1'
-            });
+            mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
             mockIdCard.getEnrollmentCredentials.returns({
                 id: 'alice'
             });
@@ -275,9 +278,10 @@ describe('IdentityCardService', () => {
 
             tick();
 
+            let expectedProfileName = hash(mockConnectionProfile) + '-hlfv1';
             service['idCards'].size.should.equal(0);
-            mockWalletService.removeFromWallet.should.have.been.calledWith('test-hlfv1', 'alice');
-            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('test-hlfv1');
+            mockWalletService.removeFromWallet.should.have.been.calledWith(expectedProfileName, 'alice');
+            mockConnectionProfileService.deleteProfile.should.have.been.calledWith(expectedProfileName);
             mockIdentityCardStorageService.remove.should.have.been.calledWith('test');
             mockIdentityCardStorageService.remove.should.have.been.calledWith('test-pd');
         })));
@@ -301,6 +305,7 @@ describe('IdentityCardService', () => {
         let mockFileWallet;
         let mockIdCard1;
         let mockIdCard2;
+        let mockConnectionProfile2;
         let mockCardMap;
 
         beforeEach(() => {
@@ -314,11 +319,12 @@ describe('IdentityCardService', () => {
 
             mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getEnrollmentCredentials.returns({ id: 'admin'});
-            mockIdCard1.getConnectionProfile.returns({name: '$default'});
+            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
 
+            mockConnectionProfile2 = {name: 'hlfv1'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard2.getEnrollmentCredentials.returns({ id: 'admin'});
-            mockIdCard2.getConnectionProfile.returns({name: '$default'});
+            mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
 
             mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
@@ -335,7 +341,7 @@ describe('IdentityCardService', () => {
             mockConnectionProfileService.createProfile.should.not.have.been.called;
             mockWalletService.getWallet.should.not.have.been.called;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -350,12 +356,13 @@ describe('IdentityCardService', () => {
 
             tick();
 
+            let expectedProfileName = hash(mockConnectionProfile2) + '-hlfv1';
             mockConnectionProfileService.createProfile.should.not.have.been.called;
             mockWalletService.getWallet.should.not.have.been.called;
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith(expectedProfileName);
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -369,10 +376,10 @@ describe('IdentityCardService', () => {
 
             tick();
 
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
-            mockWalletService.getWallet.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
+            mockWalletService.getWallet.should.have.been.calledWith('web-$default');
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -387,10 +394,10 @@ describe('IdentityCardService', () => {
 
             tick();
 
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
-            mockWalletService.getWallet.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
+            mockWalletService.getWallet.should.have.been.calledWith('web-$default');
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-$default');
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -407,5 +414,79 @@ describe('IdentityCardService', () => {
 
             result.message.should.equal('Identity card does not exist');
         })));
+    });
+
+    describe('getIdentityCardsWithProfileAndRole', () => {
+        let mockIdCard1;
+        let mockIdCard2;
+        let mockIdCard3;
+        let mockConnectionProfile1;
+        let mockConnectionProfile2;
+        let mockConnectionProfile3;
+        let mockCardMap;
+
+        beforeEach(() => {
+            mockConnectionProfile1 = {name: 'myProfile'};
+            mockIdCard1 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getName.returns('card1');
+            mockIdCard1.getConnectionProfile.returns(mockConnectionProfile1);
+            mockIdCard1.getRoles.returns(['myRole']);
+
+            mockConnectionProfile2 = {name: 'myOtherProfile'};
+            mockIdCard2 = sinon.createStubInstance(IdCard);
+            mockIdCard2.getName.returns('card2');
+            mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
+            mockIdCard2.getRoles.returns(['myOtherRole']);
+
+            mockConnectionProfile3 = {name: 'myProfile'};
+            mockIdCard3 = sinon.createStubInstance(IdCard);
+            mockIdCard3.getName.returns('card3');
+            mockIdCard3.getConnectionProfile.returns(mockConnectionProfile3);
+            mockIdCard3.getRoles.returns(['myRole']);
+
+            mockCardMap = new Map<string, IdCard>();
+            mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
+            mockCardMap.set('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard2);
+            mockCardMap.set('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard3);
+        });
+
+        it('should get an identity card with matching profile and role', inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdCard3.getRoles.returns(['myOtherRole']);
+            service['idCards'] = mockCardMap;
+
+            let connectionProfileName = hash(mockConnectionProfile1) + '-myProfile';
+            let result = service.getIdentityCardsWithProfileAndRole(connectionProfileName, 'myRole');
+
+            result.length.should.equal(1);
+            result[0].getName().should.equal('card1');
+        }));
+
+        it('should get all identity cards with matching profile and role', inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdCard2.getRoles.returns(['myRole']);
+            service['idCards'] = mockCardMap;
+
+            let connectionProfileName = hash(mockConnectionProfile1) + '-myProfile';
+            let result = service.getIdentityCardsWithProfileAndRole(connectionProfileName, 'myRole');
+
+            result.length.should.equal(2);
+            result[0].getName().should.equal('card1');
+            result[1].getName().should.equal('card3');
+        }));
+
+        it('should not get an identity card if there were no matching connection profiles', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['idCards'] = mockCardMap;
+
+            let result = service.getIdentityCardsWithProfileAndRole('wotNoProfile', 'myRole');
+
+            result.should.be.empty;
+        }));
+
+        it('should not get an identity card if there were no matching roles', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['idCards'] = mockCardMap;
+
+            let result = service.getIdentityCardsWithProfileAndRole('myProfile', 'wotNoRole');
+
+            result.should.be.empty;
+        }));
     });
 });
