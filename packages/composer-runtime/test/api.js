@@ -183,16 +183,16 @@ describe('Api', () => {
         });
 
         it('should make an POST request using the HTTP service', () => {
-            return api.post('url', transaction)
+            return api.post('url', transaction, {options: true})
                 .should.eventually.have.property('foo')
                 .then(() => {
-                    sinon.assert.calledWith(spy, transaction, { convertResourcesToRelationships: true, permitResourcesForRelationships: true, validate: true });
+                    sinon.assert.calledWith(spy, transaction, { options: true, validate: true });
                     sinon.assert.calledOnce(mockHTTPService.post);
                     sinon.assert.calledWith(mockHTTPService.post, 'url', {
                         $class: 'org.doge.DogeTransaction',
                         timestamp: '1987-04-12T00:00:00.000Z',
                         transactionId: 'doge1'
-                    });
+                    } );
                 });
         });
     });

@@ -10,10 +10,17 @@ identity {
         display: flex;
         flex-direction: column;
 
+        .selected-border {
+            width: $border-width-large;
+            margin-right: $space-medium;
+        }
+
         .identity-title {
             display: flex;
             padding: $space-smedium;
-
+            padding-left: 0px;
+            padding-right: $space-medium;
+            margin-top: $space-medium;
             & > * {
                 font-weight: bold;
             }
@@ -23,14 +30,22 @@ identity {
             flex-basis: 48%;
         }
 
+        .cell-24 {
+            flex-basis: 24%;
+        }
+
         .identity {
             background-color: $white;
             box-shadow: 0 2px 5px -1px $fifth-highlight;
-            margin-bottom: $space-medium;
+            margin-bottom: $space-smedium;
             display: flex;
-            padding: 8px;
-            height:45px;
-            cursor: pointer;
+            padding: 0px;
+            padding-right: $space-medium;
+            height: 50px;
+            line-height: 50px;
+            cursor: default;
+            overflow: hidden;
+            border-radius: $border-width-medium;
 
             &:hover {
                 .actions {
@@ -38,8 +53,13 @@ identity {
                 }
             }
 
+            .selected-border--selected {
+                background-color: $second-highlight;
+            }
+
             .actions {
                 display: none;
+                text-align: right;
             }
         }
 

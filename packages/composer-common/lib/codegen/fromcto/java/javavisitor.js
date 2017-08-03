@@ -88,6 +88,33 @@ class JavaVisitor {
      * @private
      */
     visitModelManager(modelManager, parameters) {
+
+        parameters.fileWriter.openFile( 'org/hyperledger/composer/system/Resource.java');
+        parameters.fileWriter.writeLine(0, '// this code is generated and should not be modified');
+        parameters.fileWriter.writeLine(0, 'package org.hyperledger.composer.system;');
+        parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.*;');
+
+        parameters.fileWriter.writeLine(0, `
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "$class")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "$id")
+public abstract class Resource
+{
+    public abstract String getID();
+    private String $id;
+    
+    @JsonProperty("$id")
+    public String get$id() {
+        return $id; 
+    }
+    @JsonProperty("$id")
+    public void set$id(String i) {
+        $id = i; 
+    }
+
+}
+        `);
+        parameters.fileWriter.closeFile();
+
         modelManager.getModelFiles().forEach((modelFile) => {
             modelFile.accept(this,parameters);
         });
@@ -122,11 +149,7 @@ class JavaVisitor {
         parameters.fileWriter.writeLine(0, '// this code is generated and should not be modified');
         parameters.fileWriter.writeLine(0, 'package ' + clazz.getModelFile().getNamespace() + ';');
         parameters.fileWriter.writeLine(0, '');
-
-        if(!clazz.isSystemType()) {
-            parameters.fileWriter.writeLine(0, 'import org.hyperledger.composer.system.*;');
-            parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.*;');
-        }
+        parameters.fileWriter.writeLine(0, 'import org.hyperledger.composer.system.*;');
     }
 
     /**
@@ -177,6 +200,16 @@ class JavaVisitor {
 
         this.startClassFile(classDeclaration, parameters);
 
+        classDeclaration.getModelFile().getImports().forEach((imported) => {
+            parameters.fileWriter.writeLine(0, 'import ' + imported + ';' );
+        });
+
+        if(classDeclaration.isConcept()) {
+            parameters.fileWriter.writeLine(0, 'import com.fasterxml.jackson.annotation.JsonIgnoreProperties;');
+            parameters.fileWriter.writeLine(0, '');
+            parameters.fileWriter.writeLine(0, '@JsonIgnoreProperties({"$class"})');
+        }
+
         let isAbstract = '';
         if( classDeclaration.isAbstract() ) {
             isAbstract = 'abstract ';
@@ -186,14 +219,27 @@ class JavaVisitor {
         }
 
         let superType = '';
+
+        if(classDeclaration.isSystemCoreType()) {
+            superType = ' extends org.hyperledger.composer.system.Resource';
+        }
+
         if(classDeclaration.getSuperType()) {
             superType = ' extends ' + ModelUtil.getShortName(classDeclaration.getSuperType());
         }
 
         parameters.fileWriter.writeLine(0, 'public ' + isAbstract + 'class ' + classDeclaration.getName() + superType + ' {' );
 
-        // add the magic $class property
-        parameters.fileWriter.writeLine(1, 'public String $class;' );
+        // add the getID abstract type
+        if(classDeclaration.getIdentifierFieldName()) {
+            parameters.fileWriter.writeLine(1, `
+   // the accessor for the identifying field
+   public String getID() {
+      return ${classDeclaration.getIdentifierFieldName()};
+   }
+`
+            );
+        }
 
         classDeclaration.getOwnProperties().forEach((property) => {
             property.accept(this,parameters);

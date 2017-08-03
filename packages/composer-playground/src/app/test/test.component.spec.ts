@@ -16,9 +16,11 @@ import * as sinon from 'sinon';
 
 import * as chai from 'chai';
 import { BusinessNetworkConnection } from 'composer-client';
-import { Introspector,
-         BusinessNetworkDefinition,
-         TransactionDeclaration } from 'composer-common';
+import {
+    Introspector,
+    BusinessNetworkDefinition,
+    TransactionDeclaration
+} from 'composer-common';
 
 let should = chai.should();
 
@@ -110,12 +112,12 @@ describe('TestComponent', () => {
             component.should.be.ok;
         });
 
-        it('should load all the registries and hasTransactions should be true', fakeAsync(() => {
+        it('should load all the registries', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
-            mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             component.ngOnInit();
@@ -124,21 +126,21 @@ describe('TestComponent', () => {
             mockClientService.getBusinessNetworkConnection.should.have.been.called;
             mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
 
-            component['assetRegistries'].length.should.equal(2);
+            component['registries']['assets'].length.should.equal(2);
 
-            component['assetRegistries'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
-            component['assetRegistries'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+            component['registries']['assets'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
+            component['registries']['assets'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
 
             mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
 
-            component['participantRegistries'].length.should.equal(2);
+            component['registries']['participants'].length.should.equal(2);
 
-            component['participantRegistries'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
-            component['participantRegistries'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
+            component['registries']['participants'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+            component['registries']['participants'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
 
-            mockBusinessNetworkConnection.getTransactionRegistry.should.have.been.called;
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
 
-            component['transactionRegistry'].should.equal('transactionRegistry');
+            component['registries']['historian'].should.equal('historianRegistry');
 
             component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
 
@@ -153,7 +155,7 @@ describe('TestComponent', () => {
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
-            mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
             mockIntrospector.getClassDeclarations.returns([new MockModelClass()]);
 
@@ -164,21 +166,20 @@ describe('TestComponent', () => {
             mockClientService.getBusinessNetworkConnection.should.have.been.called;
             mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
 
-            component['assetRegistries'].length.should.equal(2);
-
-            component['assetRegistries'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
-            component['assetRegistries'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+            component['registries']['assets'].length.should.equal(2);
+            component['registries']['assets'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
+            component['registries']['assets'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
 
             mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
 
-            component['participantRegistries'].length.should.equal(2);
+            component['registries']['participants'].length.should.equal(2);
 
-            component['participantRegistries'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
-            component['participantRegistries'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
+            component['registries']['participants'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+            component['registries']['participants'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
 
-            mockBusinessNetworkConnection.getTransactionRegistry.should.have.been.called;
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
 
-            component['transactionRegistry'].should.equal('transactionRegistry');
+            component['registries']['historian'].should.equal('historianRegistry');
 
             component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
 
@@ -193,7 +194,7 @@ describe('TestComponent', () => {
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
-            mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             component.ngOnInit();
@@ -203,18 +204,18 @@ describe('TestComponent', () => {
             mockClientService.getBusinessNetworkConnection.should.have.been.called;
             mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
 
-            component['assetRegistries'].length.should.equal(2);
+            component['registries']['assets'].length.should.equal(2);
 
-            component['assetRegistries'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
-            component['assetRegistries'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+            component['registries']['assets'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
+            component['registries']['assets'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
 
             mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
 
-            component['participantRegistries'].length.should.equal(0);
+            component['registries']['participants'].length.should.equal(0);
 
-            mockBusinessNetworkConnection.getTransactionRegistry.should.have.been.called;
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
 
-            component['transactionRegistry'].should.equal('transactionRegistry');
+            component['registries']['historian'].should.equal('historianRegistry');
 
             component['chosenRegistry'].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
         }));
@@ -224,7 +225,7 @@ describe('TestComponent', () => {
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([]));
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
-            mockBusinessNetworkConnection.getTransactionRegistry.returns(Promise.resolve('transactionRegistry'));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             component.ngOnInit();
@@ -234,21 +235,22 @@ describe('TestComponent', () => {
             mockClientService.getBusinessNetworkConnection.should.have.been.called;
             mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
 
-            component['assetRegistries'].length.should.equal(0);
+            component['registries']['assets'].length.should.equal(0);
 
             mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
 
-            component['participantRegistries'].length.should.equal(0);
+            component['registries']['participants'].length.should.equal(0);
 
-            mockBusinessNetworkConnection.getTransactionRegistry.should.have.been.called;
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
 
-            component['transactionRegistry'].should.equal('transactionRegistry');
+            component['registries']['historian'].should.equal('historianRegistry');
 
-            component['chosenRegistry'].should.deep.equal('transactionRegistry');
+            component['chosenRegistry'].should.deep.equal('historianRegistry');
         }));
 
-        it('should handle error', fakeAsync(() => {
+        it('should handle error on initialization', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.reject('some error'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
             mockAlertService.errorStatus$ = {next: sinon.stub()};
 
@@ -257,6 +259,21 @@ describe('TestComponent', () => {
             tick();
 
             mockAlertService.errorStatus$.next.should.have.been.called;
+        }));
+
+        it('should handle error on retrieving a registry', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.reject('some error'));
+
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+
+            component.ngOnInit();
+
+            tick();
+
+            mockAlertService.errorStatus$.next.should.have.been.called.once;
         }));
     });
 
@@ -287,16 +304,22 @@ describe('TestComponent', () => {
             mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
             component['chosenRegistry'] = 'assetRegistry';
-            component['transactionRegistry'] = 'transactionRegistry';
+            component['registries']['historian'] = 'historianRegistry';
 
             component.submitTransaction();
 
             tick();
 
-            component['chosenRegistry'].should.equal('transactionRegistry');
+            component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(false);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '2 events triggered', linkCallback: sinon.match.func});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: '2 events triggered',
+                linkCallback: sinon.match.func
+            });
         }));
 
         it('should submit a transaction with 1 event', fakeAsync(() => {
@@ -306,33 +329,45 @@ describe('TestComponent', () => {
             mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
             component['chosenRegistry'] = 'assetRegistry';
-            component['transactionRegistry'] = 'transactionRegistry';
+            component['registries']['historian'] = 'historianRegistry';
 
             component.submitTransaction();
 
             tick();
 
-            component['chosenRegistry'].should.equal('transactionRegistry');
+            component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(false);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: '1 event triggered', linkCallback: sinon.match.func});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: '1 event triggered',
+                linkCallback: sinon.match.func
+            });
         }));
 
-        it('should update transaction registry view', fakeAsync(() => {
+        it('should update historian registry view', fakeAsync(() => {
             mockAlertService.successStatus$ = {next: sinon.stub()};
             mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
-            component['transactionRegistry'] = 'transactionRegistry';
-            component['chosenRegistry'] = 'transactionRegistry';
+            component['registries']['historian'] = 'historianRegistry';
+            component['chosenRegistry'] = 'historianRegistry';
 
             component.submitTransaction();
 
             tick();
 
-            component['chosenRegistry'].should.equal('transactionRegistry');
+            component['chosenRegistry'].should.equal('historianRegistry');
             component['registryReload'].should.equal(true);
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith({title: 'Submit Transaction Successful', text: '<p>Transaction ID <b>1</b> was submitted</p>', icon: '#icon-transaction', link: null, linkCallback: null});
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: null,
+                linkCallback: null
+            });
         }));
 
     });

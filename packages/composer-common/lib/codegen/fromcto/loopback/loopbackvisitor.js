@@ -25,7 +25,7 @@ const ModelManager = require('../../../modelmanager');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
 const debug = require('debug')('concerto:jsonschemavisitor');
-
+const util = require('util');
 /**
  * Convert a fully qualified type name, for example org.acme.MyAsset,
  * into a name that is safe for use as a LoopBack model name.
@@ -85,7 +85,7 @@ class LoopbackVisitor {
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
         } else {
-            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
+            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 1 }));
         }
     }
 
@@ -132,6 +132,9 @@ class LoopbackVisitor {
             .concat(modelFile.getTransactionDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
+            })
+            .filter((declaration) => {
+                return !declaration.isSystemType();
             })
             .forEach((declaration) => {
                 parameters.first = true;

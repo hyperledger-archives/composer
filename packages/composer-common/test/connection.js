@@ -131,6 +131,17 @@ describe('Connection', () => {
 
     });
 
+    describe('#upgrade', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.upgrade()
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
+    });
+
+
     describe('#ping', () => {
 
         it('should throw as abstract method', () => {
