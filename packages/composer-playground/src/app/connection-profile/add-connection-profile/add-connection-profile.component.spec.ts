@@ -230,13 +230,14 @@ describe('AddConnectionProfileComponent', () => {
     });
 
     describe('#initiateAddToProfile', () => {
-        it('should trigger profileToUse.emit with the connection profile name', () => {
-            component['connectionProfile'] = {name: 'bob'};
+        it('should trigger profileToUse.emit with the connection profile', () => {
+            let myProfile = {name: 'bob', penguins : ['pingu', 'poppy']};
+            component['connectionProfile'] = myProfile;
             let spy = sinon.spy(component.profileToUse, 'emit');
 
             component.initiateAddToProfile();
 
-            spy.should.have.been.calledWith('bob');
+            spy.should.have.been.calledWith(myProfile);
         });
     });
 

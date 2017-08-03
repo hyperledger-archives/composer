@@ -118,7 +118,7 @@ class MockAddConnectionProfileComponent {
 })
 class MockAddIdentityComponent {
     @Input()
-    public targetProfileName;
+    public targetProfile;
     @Output()
     public identityAdded: EventEmitter<any> = new EventEmitter<any>();
     @Output()
@@ -298,26 +298,26 @@ describe(`LoginComponent`, () => {
 
         it('should close editing connection profile screen if cancelling while adding ID with connection profile', () => {
             let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
-            let addIdToExistingProfileStub = sinon.stub(component, 'addIdToExistingProfile');
+            let addIdWithExistingProfileStub = sinon.stub(component, 'addIdWithExistingProfile');
             component['creatingIdWithProfile'] = true;
 
             component.finishedEditingConnectionProfile({update : false});
 
             should.not.exist(component['editingConectionProfile']);
             loadConnectionProfilesStub.should.have.been.called;
-            addIdToExistingProfileStub.should.not.have.been.called;
+            addIdWithExistingProfileStub.should.not.have.been.called;
         });
 
-        it('should pass connection profile to addIdToExistingProfile if successfull and addding ID with connection profile', () => {
+        it('should pass connection profile to addIdWithExistingProfile if successfull and addding ID with connection profile', () => {
             let loadConnectionProfilesStub = sinon.stub(component, 'loadConnectionProfiles');
-            let addIdToExistingProfileNameStub = sinon.stub(component, 'addIdToExistingProfileName');
+            let addIdWithExistingProfileStub = sinon.stub(component, 'addIdWithExistingProfile');
             component['creatingIdWithProfile'] = true;
 
             component.finishedEditingConnectionProfile({update : true, connectionProfile : { name: 'bob' }});
 
             should.not.exist(component['editingConectionProfile']);
             loadConnectionProfilesStub.should.not.have.been.called;
-            addIdToExistingProfileNameStub.should.have.been.calledWith('bob');
+            addIdWithExistingProfileStub.should.have.been.calledWith({ name: 'bob' });
         });
     });
 
@@ -329,21 +329,21 @@ describe(`LoginComponent`, () => {
         });
     });
 
-    describe('addIdToExistingProfileName', () => {
+    describe('addIdWithExistingProfile', () => {
         it('should set the target profile name and open the ID edit panel', () => {
-            component['addIdToExistingProfileName']('bob');
+            component['addIdWithExistingProfile']({ name: 'bob' });
 
-            component['targetProfileName'].should.be.equal('bob');
+            component['targetProfile'].should.be.deep.equal({ name: 'bob' });
             component['creatingIdCard'].should.be.false;
             component['editingIdCard'].should.be.true;
         });
     });
 
-    describe('addIdToNewProfile', () => {
+    describe('addIdWithNewProfile', () => {
         it('should set the connection profile to edit and set the creatingIdWithProfile boolean', () => {
             let myProfile = { wow: 'such profile', avarian: 'penguin' };
 
-            component['addIdToNewProfile'](myProfile);
+            component['addIdWithNewProfile'](myProfile);
 
             component['editingConnectionProfile'].should.be.deep.equal(myProfile);
             component['creatingIdCard'].should.be.false;

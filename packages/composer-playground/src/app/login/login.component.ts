@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     private connectionProfiles = [];
     private showDeployNetwork: boolean = false;
     private editingConnectionProfile = null;
-    private targetProfileName: string = null;
+    private targetProfile: string = null;
     private addIdCard: boolean = false;
     private creatingIdCard: boolean = false;
     private editingIdCard: boolean = false;
@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
             return this.loadConnectionProfiles();
         } else {
             delete this.editingConnectionProfile;
-            this.addIdToExistingProfileName(result.connectionProfile.name);
+            this.addIdWithExistingProfile(result.connectionProfile);
         }
     }
 
@@ -121,7 +121,7 @@ export class LoginComponent implements OnInit {
         this.editingIdCard = false;
         this.creatingIdWithProfile = false;
         delete this.editingConnectionProfile;
-        delete this.targetProfileName;
+        delete this.targetProfile;
     }
 
     createIdCard(): void {
@@ -129,13 +129,13 @@ export class LoginComponent implements OnInit {
         this.creatingIdCard = true;
     }
 
-    addIdToExistingProfileName(connectionProfileName): void {
-        this.targetProfileName = connectionProfileName;
+    addIdWithExistingProfile(connectionProfile): void {
+        this.targetProfile = connectionProfile;
         this.creatingIdCard = false;
         this.editingIdCard = true;
     }
 
-    addIdToNewProfile(connectionProfile): void {
+    addIdWithNewProfile(connectionProfile): void {
         this.editingConnectionProfile = connectionProfile;
         this.creatingIdCard = false;
         this.creatingIdWithProfile = true;
