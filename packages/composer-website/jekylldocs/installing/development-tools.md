@@ -29,7 +29,7 @@ Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
-**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user**
+**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
