@@ -70,7 +70,7 @@ The start of the `package.json` file should now look like this:
       "postlint": "npm run licchk",
       "licchk": "license-check",
       "postlicchk": "npm run doc",
-      "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+      "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
       "test-inner": "mocha --recursive && cucumber-js",
       "test-cover": "nyc npm run test-inner",
       "test": "mocha --recursive -t 4000"
