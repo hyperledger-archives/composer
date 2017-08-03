@@ -1114,7 +1114,8 @@ describe('EditorComponent', () => {
         it('should export file with correct name and type', (done) => {
 
             let mockSave = sinon.stub(fileSaver, 'saveAs');
-            let testFile = new File(['test'], 'my_business_name.bna', {type: 'application/octet-stream'});
+            let testFile = new Blob(['test'], {type: 'application/octet-stream'});
+            let testFilename: string = 'my_business_name.bna';
 
             mockClientService.getBusinessNetwork.returns({
                 toArchive: sinon.stub().returns(Promise.resolve('my_data'))
@@ -1128,16 +1129,18 @@ describe('EditorComponent', () => {
                 mockSave.should.have.been.called;
 
                 let passedFile = mockSave.getCall(0).args[0];
-                passedFile.name.should.equal(testFile.name);
                 passedFile.type.should.equal(testFile.type);
+
+                let passedFilename = mockSave.getCall(0).args[1];
+                passedFilename.type.should.equal(testFilename);
                 done();
             });
         });
 
         it('should export file with correct data', () => {
 
-            let mockFile = sinon.stub(window, 'File');
-            mockFile.returns(new File(['test'], 'my_business_name.json', {type: 'application/octet-stream'}));
+            let mockFile = sinon.stub(window, 'Blob');
+            mockFile.returns(new Blob(['test'], {type: 'application/octet-stream'}));
 
             mockClientService.getBusinessNetwork.returns({
                 toArchive: sinon.stub().returns(Promise.resolve('my_data'))
