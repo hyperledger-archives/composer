@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageService } from 'angular-2-local-storage';
 
 import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from '../services/identity.service';
+import { IdentityService } from './identity.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';
 import { WalletService } from './wallet.service';
 
@@ -11,7 +10,23 @@ import { IdCard, Logger } from 'composer-common';
 /* tslint:disable-next-line:no-var-requires */
 const uuid = require('uuid');
 
-const defaultCardProperties = JSON.parse('{"metadata":{"name":"admin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}');
+/* tslint:disable-next-line:no-var-requires */
+const hash = require('object-hash');
+
+const defaultCardProperties = {
+    metadata: {
+        name: 'admin',
+        businessNetwork: 'basic-sample-network',
+        enrollmentId: 'admin',
+        enrollmentSecret: 'adminpw'
+    },
+    roles: ['PeerAdmin', 'ChannelAdmin'],
+    connectionProfile: {
+        name: '$default',
+        type: 'web'
+    },
+    credentials: null
+};
 
 @Injectable()
 export class IdentityCardService {
@@ -39,6 +54,18 @@ export class IdentityCardService {
         return this.getIdentityCard(this.currentCard);
     }
 
+    getIdentityCardsWithProfileAndRole(qualifiedProfileName: string, role: string): IdCard[] {
+        let cards: IdCard[] = [];
+        this.idCards.forEach((card, key) => {
+            let connectionProfile = card.getConnectionProfile();
+            if (qualifiedProfileName === this.getQualifiedProfileName(connectionProfile) && card.getRoles().includes(role)) {
+                cards.push(card);
+            }
+        });
+
+        return cards;
+    }
+
     loadIdentityCards(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.idCards = this.identityCardStorageService
@@ -47,7 +74,7 @@ export class IdentityCardService {
                     // Only load IdCards, referenced by fixed length uuids,
                     // not associated playground data, which has a suffix
                     if (cardRef.length === 36) {
-                        let cardProperties: PropertyDescriptorMap = this.identityCardStorageService.get(cardRef);
+                        let cardProperties: any = this.identityCardStorageService.get(cardRef);
                         let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile, cardProperties.credentials);
 
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
@@ -132,7 +159,8 @@ export class IdentityCardService {
 
         let card = this.idCards.get(cardRef);
         let enrollmentId = card.getEnrollmentCredentials().id;
-        let connectionProfileName = this.getQualifiedProfileName(cardRef);
+        let connectionProfile = card.getConnectionProfile();
+        let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
         this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
         this.connectionProfileService.deleteProfile(connectionProfileName);
@@ -165,15 +193,22 @@ export class IdentityCardService {
         let enrollmentId = card.getEnrollmentCredentials().id;
 
         return this.activateIdentityCard(cardRef).then(() => {
-            this.connectionProfileService.setCurrentConnectionProfile(this.getQualifiedProfileName(cardRef));
+            let connectionProfile = card.getConnectionProfile();
+            this.connectionProfileService.setCurrentConnectionProfile(this.getQualifiedProfileName(connectionProfile));
             this.identityService.setCurrentIdentity(enrollmentId);
 
             return card;
         });
     }
 
-    private getQualifiedProfileName(cardRef: string): string {
-        return cardRef + '-' + this.idCards.get(cardRef).getConnectionProfile().name;
+    private getQualifiedProfileName(connectionProfile: any): string {
+        let prefix = hash(connectionProfile);
+
+        if ('web' === connectionProfile.type) {
+            return 'web-' + connectionProfile.name;
+        } else {
+            return prefix + '-' + connectionProfile.name;
+        }
     };
 
     private dataRef(cardRef: string): string {
@@ -183,7 +218,7 @@ export class IdentityCardService {
     private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
         let wallet = this.walletService.getWallet(connectionProfileName);
 
-        return wallet.contains(connectionProfileName)
+        return wallet.contains(enrollmentId)
             .then((contains) => {
                 if (contains) {
                     return wallet.update(enrollmentId, enrollmentSecret);
@@ -202,7 +237,7 @@ export class IdentityCardService {
 
             let card = this.idCards.get(cardRef);
             let connectionProfile = card.getConnectionProfile();
-            let connectionProfileName = this.getQualifiedProfileName(cardRef);
+            let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
             // Hmmm, suspicious... is the enrollement ID really the identity?!
             let enrollmentCredentials = card.getEnrollmentCredentials();
