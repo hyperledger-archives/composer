@@ -36,7 +36,14 @@ sudo apt-get update
 
 # Install Git
 echo "# Installing GitHub"
-sudo apt-get -y install git
+wget https://github.com/git/git/archive/v2.9.0.zip
+unzip v2.9.0.zip
+sudo apt-get install -y autoconf gcc zlib1g-dev tcl-dev libssl-devgettext
+make configure
+./configure --prefix=/usr/local
+make prefix=/usr/local
+/usr/local install
+rm v2.9.0.zip && rm -rf git-2.9.0/
 
 # Install nvm dependencies
 echo "# Installing nvm dependencies"
