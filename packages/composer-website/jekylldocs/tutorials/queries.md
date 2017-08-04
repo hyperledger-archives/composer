@@ -487,7 +487,7 @@ Received event: org.acme.mynetwork.RemoveNotification#81252aa3b-ea2c-3143-be2b-a
 Next, in a browser, navigate to the online Bluemix Composer Playground http://composer-playground.mybluemix.net and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your `my-network` folder and upload it, then press the "Deploy" button. Confirm to replace the current network definition in Playground.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="{{ site.baseurl }}/assets/img/tutorials/query/import_queries.mp4" type="video/mp4" />
+<source src="{{ site.baseurl }}/assets/img/tutorials/query/import_query.mp4" type="video/mp4" />
 </video>
 
 You can browse the structure of the updated Trade Commodity business network by pressing the link on the left, check out the contents of the model, script files, query files and access control.
