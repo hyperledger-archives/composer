@@ -217,6 +217,8 @@ class ModelManager {
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
 
+        validate = validate !== false; // default initializer
+
         try {
             // create the model files
             for (let n = 0; n < modelFiles.length; n++) {
