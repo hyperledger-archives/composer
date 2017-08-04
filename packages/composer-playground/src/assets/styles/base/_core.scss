@@ -40,6 +40,12 @@ body.composer {
     border: 0;
   }
 
+  .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .display-inline {
     display: inline-block;
     vertical-align: top;

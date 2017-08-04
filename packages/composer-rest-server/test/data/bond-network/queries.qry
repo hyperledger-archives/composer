@@ -2,3 +2,15 @@ query findBondByFaceAmount {
     description: "Find all bonds with a face amount greater than _$faceAmount"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.faceAmount > _$faceAmount)
 }
+query findBondByPaymentFrequencyPeriod {
+    description: "Find all bonds with a payment frequecy period _$period"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.period == _$period)
+}
+query findBondByPaymentFrequencyPeriodMultiplier {
+    description: "Find all bonds with a payment frequecy period multiplier _$multiplier"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.periodMultiplier == _$multiplier)
+}
+query findBondByExchangeIdUnsupported {
+    description: "Find all bonds with a set of exchange id _$exchangeId is unsupported"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.exchangeId == _$exchangeId)
+}
