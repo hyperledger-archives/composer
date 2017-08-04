@@ -1,57 +1,55 @@
 <section class="side-bar">
-  <div class="registries">
-    <span>Participants</span>
-    <section class="side-bar-nav">
-      <ul class="registry">
-        <li *ngFor="let participantRegistry of registries['participants']"
-            [class.active]="chosenRegistry && chosenRegistry.id === participantRegistry.id"
-            (click)="setChosenRegistry(participantRegistry)">
-          <h3>{{participantRegistry.displayName}}</h3>
-        </li>
-      </ul>
-    </section>
+    <div class="registries">
+        <span>Participants</span>
+        <section class="side-bar-nav">
+            <ul class="registry">
+                <li *ngFor="let participantRegistry of registries['participants']"
+                    [class.active]="chosenRegistry && chosenRegistry.id === participantRegistry.id"
+                    (click)="setChosenRegistry(participantRegistry)">
+                    <h3>{{participantRegistry.displayName}}</h3>
+                </li>
+            </ul>
+        </section>
 
-    <span>Assets</span>
-    <section class="side-bar-nav">
-      <ul class="registry">
-        <li *ngFor="let assetRegistry of registries['assets']"
-            [class.active]="chosenRegistry && chosenRegistry.id === assetRegistry.id"
-            (click)="setChosenRegistry(assetRegistry)">
-          <h3>{{assetRegistry.displayName}}</h3>
-        </li>
-      </ul>
-    </section>
+        <span>Assets</span>
+        <section class="side-bar-nav">
+            <ul class="registry">
+                <li *ngFor="let assetRegistry of registries['assets']"
+                    [class.active]="chosenRegistry && chosenRegistry.id === assetRegistry.id"
+                    (click)="setChosenRegistry(assetRegistry)">
+                    <h3>{{assetRegistry.displayName}}</h3>
+                </li>
+            </ul>
+        </section>
 
-    <span>Transactions</span>
-    <section class="side-bar-nav">
-      <ul class="registry">
-        <li
-            [class.active]="chosenRegistry && chosenRegistry === registries['historian']"
-            (click)="setChosenRegistry(registries['historian'])">
-          <h3>All Transactions</h3>
-        </li>
-      </ul>
-    </section>
-  </div>
-
-  <div class="side-button">
-    <div class="button-item">
-    <button [disabled]="!hasTransactions" type="button" class="primary" (click)="submitTransaction()">
-      <span>Submit Transaction</span>
-    </button>
+        <span>Transactions</span>
+        <section class="side-bar-nav">
+            <ul class="registry">
+                <li
+                    [class.active]="chosenRegistry && chosenRegistry === registries['historian']"
+                    (click)="setChosenRegistry(registries['historian'])">
+                    <h3>All Transactions</h3>
+                </li>
+            </ul>
+        </section>
     </div>
-  </div>
+
+    <div class="side-button">
+        <div class="button-item">
+            <button [disabled]="!hasTransactions" type="button" class="primary" (click)="submitTransaction()">
+                <span>Submit Transaction</span>
+            </button>
+        </div>
+    </div>
 
 </section>
 
 <section class="main-view">
     <div class="main-view-content">
-        <div class="flex">
-            <registry [registry]="chosenRegistry" [reload]="registryReload"></registry>
-        </div>
-    <div>
+        <registry [registry]="chosenRegistry" [reload]="registryReload"></registry>
     </div>
-        <app-footer></app-footer>
-    </div>
+
+    <app-footer></app-footer>
+
 </section>
 
