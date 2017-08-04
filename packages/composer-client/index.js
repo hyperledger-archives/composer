@@ -43,6 +43,7 @@ module.exports.AssetRegistry = require('./lib/assetregistry');
 module.exports.IdentityRegistry = require('./lib/identityregistry');
 module.exports.ParticipantRegisty = require('./lib/participantregistry');
 module.exports.TransactionRegistry = require('./lib/transactionregistry');
+module.exports.Historian = require('./lib/historian');
 
 /**
  * Expose key composer-common classes to simplify client application dependencies

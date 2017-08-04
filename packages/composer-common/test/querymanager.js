@@ -21,7 +21,7 @@ const ModelManager = require('../lib/modelmanager');
 const path = require('path');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
@@ -80,6 +80,18 @@ describe('QueryManager', () => {
             qm.getQueryFile().should.equal(queryFile);
             qm.getQueries().should.equal(dummyQueries);
         });
+    });
+
+    describe('#deleteQueryFile', () => {
+
+        it('should delete the query file', () => {
+            let qm = new QueryManager(modelManager);
+            qm.setQueryFile(queryFile);
+            qm.getQueryFile().should.equal(queryFile);
+            qm.deleteQueryFile();
+            should.not.exist(qm.getQueryFile());
+        });
+
     });
 
     describe('#getQuery', () => {

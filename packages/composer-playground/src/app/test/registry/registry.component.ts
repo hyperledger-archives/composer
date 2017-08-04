@@ -5,6 +5,7 @@ import { ClientService } from '../../services/client.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
 import { ConfirmComponent } from '../../basic-modals/confirm/confirm.component';
+import { ViewTransactionComponent } from '../view-transaction/view-transaction.component';
 
 @Component({
     selector: 'registry',
@@ -15,6 +16,8 @@ import { ConfirmComponent } from '../../basic-modals/confirm/confirm.component';
 })
 
 export class RegistryComponent {
+
+    tableScrolled = false;
 
     private _registry = null;
     private _reload = null;
@@ -51,9 +54,9 @@ export class RegistryComponent {
         this.overFlowedResources = {};
         this._registry.getAll()
             .then((resources) => {
-                if (this.isTransactionRegistry()) {
+                if (this.isHistorian()) {
                     this.resources = resources.sort((a, b) => {
-                        return b.timestamp - a.timestamp;
+                        return b.transactionTimestamp - a.transactionTimestamp;
                     });
                 } else {
                     this.resources = resources.sort((a, b) => {
@@ -126,7 +129,17 @@ export class RegistryComponent {
         });
     }
 
-    private isTransactionRegistry(): boolean {
-        return this.registryType === 'Transaction';
+    viewTransactionData(transaction: any) {
+        let transactionModalRef = this.modalService.open(ViewTransactionComponent);
+        transactionModalRef.componentInstance.transaction = transaction;
+        transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+    }
+
+    updateTableScroll(hasScroll) {
+        this.tableScrolled = hasScroll;
+    }
+
+    private isHistorian(): boolean {
+        return this.registryType === 'Historian';
     }
 }

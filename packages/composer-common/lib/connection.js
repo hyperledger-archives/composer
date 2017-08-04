@@ -142,11 +142,10 @@ class Connection extends EventEmitter {
      * Upgrade the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be upgraded with a new composer runtime.
      * @return {Promise} A promise that is resolved once the business network
      * runtime has been upgraded, or rejected with an error.
      */
-    upgrade(securityContext, businessNetworkIdentifier) {
+    upgrade(securityContext) {
         return Promise.reject(new Error('abstract function called'));
     }
 

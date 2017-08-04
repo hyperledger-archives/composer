@@ -1185,13 +1185,22 @@ describe('ClientService', () => {
         }));
     });
 
-    describe('#revokeIdentity', () => {
-        it('should revokeIdentity', inject([ClientService], (service: ClientService) => {
-            let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
-            service['revokeIdentity']('testID');
-            businessNetworkConMock.revokeIdentity.should.have.been.calledWith('testID');
-        }));
-     });
+    describe('revokeIdentity', () => {
+        it('should call the revokeIdentity() function for the relevant BusinessNetworkConnection', fakeAsync(inject([ClientService], (service: ClientService) => {
+
+            // (1).should.equal(1);
+
+            let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
+                revokeIdentity: sinon.stub().returns(Promise.resolve())
+            });
+
+            service.revokeIdentity({fake : 'identity'});
+
+            tick();
+
+            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake : 'identity'});
+        })));
+    });
 
     describe('#filterModelFiles', () => {
         it('should filter passed model files', inject([ClientService], (service: ClientService) => {

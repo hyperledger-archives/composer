@@ -43,7 +43,7 @@ function onSampleTransaction(sampleTransaction) {
 function handlePost(postTransaction) {
     var url = 'https://composer-node-red.mybluemix.net/compute';
 
-    return post( url, postTransaction)
+    return post( url, postTransaction, {permitResourcesForRelationships: true, deduplicateResources: true})
       .then(function (result) {
         // alert(JSON.stringify(result));
           postTransaction.asset.value = 'Count is ' + result.body.sum;
