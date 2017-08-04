@@ -108,36 +108,33 @@ class TypescriptVisitor {
         // so that they can be extended
         if( !modelFile.isSystemModelFile() ) {
             const systemTypes = modelFile.getModelManager().getSystemTypes();
-            systemTypes.forEach(systemType => 
+            systemTypes.forEach(systemType =>
                 parameters.fileWriter.writeLine(0, `import { ${systemType.getName()} } from './org.hyperledger.composer.system';`));
         }
 
-        
         // Import property types that are imported from other cto files.
         const dot = '.';
         const properties = new Map();
         modelFile.getAllDeclarations()
         .filter(v => !v.isEnum())
         .forEach(classDeclaration => classDeclaration.getProperties().forEach(property => {
-                if(!property.isPrimitive()){
-                    const fullyQualifiedTypeName = property.getFullyQualifiedTypeName();
-                    const lastIndexOfDot = fullyQualifiedTypeName.lastIndexOf(dot);
-                    const propertyNamespace =  fullyQualifiedTypeName.substring(0, lastIndexOfDot);
-                    const propertyTypeName = fullyQualifiedTypeName.substring(lastIndexOfDot + 1);
-                    if(!properties.has(propertyNamespace)) {
-                        properties.set(propertyNamespace, new Set());
-                    }
-                    properties.get(propertyNamespace).add(propertyTypeName);
+            if(!property.isPrimitive()){
+                const fullyQualifiedTypeName = property.getFullyQualifiedTypeName();
+                const lastIndexOfDot = fullyQualifiedTypeName.lastIndexOf(dot);
+                const propertyNamespace =  fullyQualifiedTypeName.substring(0, lastIndexOfDot);
+                const propertyTypeName = fullyQualifiedTypeName.substring(lastIndexOfDot + 1);
+                if(!properties.has(propertyNamespace)) {
+                    properties.set(propertyNamespace, new Set());
                 }
-            }) 
-        );
+                properties.get(propertyNamespace).add(propertyTypeName);
+            }
+        }));
 
-        const imports = modelFile.getImports().map(importString => {
+        modelFile.getImports().map(importString => {
             const lastIndexOfDot = importString.lastIndexOf(dot);
             const namespace = importString.substring(0, lastIndexOfDot);
             return namespace;
-        })
-        .filter(namespace => namespace != modelFile.getNamespace()) // Skip own namespace.
+        }).filter(namespace => namespace !== modelFile.getNamespace()) // Skip own namespace.
         .filter((v, i, a) => a.indexOf(v) === i) // Remove any duplicates from direct imports
         .forEach(namespace => {
             const propertyTypeNames = properties.get(namespace);
