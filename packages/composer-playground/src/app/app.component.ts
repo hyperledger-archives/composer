@@ -221,14 +221,6 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    onToggle(open) {
-        if (open) {
-            this.dropListActive = true;
-        } else {
-            this.dropListActive = false;
-        }
-    }
-
     private openWelcomeModal() {
         return this.checkVersion().then((success) => {
             if (success) {
