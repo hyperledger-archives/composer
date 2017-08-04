@@ -186,6 +186,7 @@ class Composer {
         userSecret = userSecret || 'adminpw';
         const businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
         businessNetworkConnection.on('event', (event) => {
+
             this.events.push(event);
         });
         return businessNetworkConnection.connect('defaultProfile', businessNetworkIdentifier, userID, userSecret)
@@ -586,17 +587,43 @@ class Composer {
                 resource = this.factory.newResource(namespace, name, identifier);
             }
             properties.forEach((property) => {
-                if (typeof row[property.getName()] === 'undefined') {
+                const propertyName = property.getName();
+                const propertyValue = row[propertyName];
+                if (typeof propertyValue === 'undefined') {
                     return;
                 } else if (property instanceof RelationshipDeclaration) {
-                    resource[property.getName()] = this.factory.newRelationship(property.getNamespace(), property.getType(), row[property.getName()]);
+
+                    resource[propertyName] = this.factory.newRelationship(property.getNamespace(), property.getType(), propertyValue);
+
                 } else {
-                    resource[property.getName()] = row[property.getName()];
+                    resource[propertyName] = this.convertValueToType(propertyValue, property.getType());
                 }
             });
             return resource;
         });
         return resources;
+    }
+
+    /**
+     * Convert a property value string into a specific type.
+     * @param {String} value - property value.
+     * @param {String} type - model type.
+     * @return {*} correctly typed value.
+     */
+    convertValueToType(value, type) {
+        switch(type) {
+        case 'Boolean':
+            return new Boolean(value).valueOf();
+        case 'DateTime':
+            return new Date(value);
+        case 'Double':
+            return Number.parseFloat(value);
+        case 'Integer':
+        case 'Long':
+            return Number.parseInt(value);
+        default:
+            return value;
+        }
     }
 
     /**

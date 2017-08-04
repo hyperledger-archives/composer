@@ -13,11 +13,13 @@
         padding: $space-medium $space-large;
         border-left: $space-small solid transparent;
         border-bottom: 1px solid $fourth-highlight;
+        cursor: pointer;
 
         &.active {
           background-color: $third-highlight;
           border-left: $space-small solid $first-highlight;
           background-color: $third-highlight;
+          cursor: default;
         }
 
         &:hover {

@@ -9,6 +9,16 @@ asset SampleAsset identified by assetId {
   o String value
 }
 
+asset SampleComplexAsset identified by assetId {
+  o String assetId
+  o Boolean booleanField
+  o DateTime dateTimeField
+  o Double doubleField
+  o Integer integerField
+  o Long longField
+  o String[] arrayField optional
+}
+
 participant SampleParticipant identified by participantId {
   o String participantId
   o String firstName

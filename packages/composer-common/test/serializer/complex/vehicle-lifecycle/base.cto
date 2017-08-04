@@ -1,0 +1,69 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+  * A library of standard reusable types
+  */
+namespace composer.base
+
+enum Gender {
+ o MALE
+ o FEMALE
+ o OTHER
+}
+
+participant Person identified by ssn {
+  o String ssn
+  o String title optional
+  o String firstName  optional
+  o String lastName  optional
+  o String[] middleNames  optional
+  o Gender gender optional
+  o String[] nationalities optional
+  o ContactDetails contactDetails optional
+  o BirthDetails birthDetails optional
+  o DeathDetails deathDetails optional
+}
+
+concept ContactDetails {
+  o String email  optional
+  o String mobilePhone  optional
+  o String homePhone optional
+  o Address address optional
+}
+
+concept BirthDetails {
+  o DateTime dateOfBirth optional
+  o String placeOfBirth optional
+}
+
+concept DeathDetails {
+  o DateTime dateOfDeath optional
+  o String placeOfDeath optional
+}
+
+/**
+ * A concept for a simple street address
+ */
+concept Address {
+  o String city optional
+  o String country optional
+  o String locality optional
+  o String region optional
+  o String street optional
+  o String street2 optional
+  o String street3 optional
+  o String postalCode optional
+  o String postOfficeBoxNumber optional
+}

@@ -1,107 +1,107 @@
 class BaseException extends Error {
-   + void constructor(string) 
+   + void constructor(string)
 }
 class BaseFileException extends BaseException {
-   + void constructor(string,string,string) 
-   + string getFileLocation() 
-   + string getShortMessage() 
+   + void constructor(string,string,string)
+   + string getFileLocation()
+   + string getShortMessage()
 }
 class BusinessNetworkDefinition {
-   + void constructor(String,String,object,String) 
-   + String getIdentifier() 
-   + BusinessNetworkMetadata getMetadata() 
-   + String getName() 
-   + String getVersion() 
-   + String getDescription() 
-   + Promise fromArchive(Buffer) 
-   + Buffer toArchive(Object) 
-   + Promise fromDirectory(String,Object,Object,boolean,boolean) 
-   + Introspector getIntrospector() 
-   + Factory getFactory() 
-   + Serializer getSerializer() 
+   + void constructor(String,String,object,String)
+   + String getIdentifier()
+   + BusinessNetworkMetadata getMetadata()
+   + String getName()
+   + String getVersion()
+   + String getDescription()
+   + Promise fromArchive(Buffer)
+   + Buffer toArchive(Object)
+   + Promise fromDirectory(String,Object,Object,boolean,boolean)
+   + Introspector getIntrospector()
+   + Factory getFactory()
+   + Serializer getSerializer()
 }
 class BusinessNetworkMetadata {
-   + void constructor(object,String) 
-   + String getREADME() 
-   + object getPackageJson() 
-   + string getName() 
-   + string getDescription() 
-   + string getVersion() 
-   + string getIdentifier() 
+   + void constructor(object,String)
+   + String getREADME()
+   + object getPackageJson()
+   + string getName()
+   + string getDescription()
+   + string getVersion()
+   + string getIdentifier()
 }
 class Factory {
-   + void constructor(ModelManager) 
+   + void constructor(ModelManager)
    + Resource newResource(string,string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string,boolean) 
-   + Resource newEvent(string,string,string,Object,string,boolean) 
+   + Resource newTransaction(string,string,string,Object,string,boolean)
+   + Resource newEvent(string,string,string,Object,string,boolean)
 }
 class FileWallet extends Wallet {
-   + string getHomeDirectory() 
-   + void constructor(Object,string,Object) 
-   + Promise list() 
-   + Promise contains(string) 
-   + Promise get(string) 
-   + Promise add(string,string) 
-   + Promise update(string,string) 
-   + Promise remove(string) 
+   + string getHomeDirectory()
+   + void constructor(Object,string,Object)
+   + Promise list()
+   + Promise contains(string)
+   + Promise get(string)
+   + Promise add(string,string)
+   + Promise update(string,string)
+   + Promise remove(string)
 }
 class IdCard {
-   + String getName() 
-   + String getDescription() 
-   + String getBusinessNetworkName() 
-   + Object getConnectionProfile() 
-   + Object getCredentials() 
-   + Object getEnrollmentCredentials() 
-   + String[] getRoles() 
-   + Promise fromArchive() 
-   + Promise toArchive(Object,String) 
+   + String getName()
+   + String getDescription()
+   + String getBusinessNetworkName()
+   + Object getConnectionProfile()
+   + Object getCredentials()
+   + Object getEnrollmentCredentials()
+   + String[] getRoles()
+   + Promise fromArchive()
+   + Promise toArchive(Object,String)
 }
 class IllegalModelException extends BaseFileException {
-   + void constructor(String,ModelFile,Object,String,String,String,String) 
-   + string getModelFile() 
+   + void constructor(String,ModelFile,Object,String,String,String,String)
+   + string getModelFile()
 }
 class Introspector {
-   + void constructor(ModelManager) 
-   + ClassDeclaration[] getClassDeclarations() 
+   + void constructor(ModelManager)
+   + ClassDeclaration[] getClassDeclarations()
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
 class ParseException extends BaseFileException {
-   + void constructor(string,string) 
+   + void constructor(string,string)
 }
 class ConsoleLogger {
-   + string format(string,string,undefined) 
-   + void log(string,string,string,undefined) 
+   + string format(string,string,undefined)
+   + void log(string,string,string,undefined)
 }
 class Concept extends Typed {
-   + boolean isConcept() 
+   + boolean isConcept()
 }
 class Identifiable extends Typed {
-   + string getIdentifier() 
-   + void setIdentifier(string) 
-   + string getFullyQualifiedIdentifier() 
-   + String toString() 
-   + boolean isRelationship() 
-   + boolean isResource() 
-   + String toURI() 
+   + string getIdentifier()
+   + void setIdentifier(string)
+   + string getFullyQualifiedIdentifier()
+   + String toString()
+   + boolean isRelationship()
+   + boolean isResource()
+   + String toURI()
 }
 class Relationship extends Identifiable {
-   + String toString() 
-   + boolean isRelationship() 
-   + Relationship fromURI(ModelManager,String,String,String) 
+   + String toString()
+   + boolean isRelationship()
+   + Relationship fromURI(ModelManager,String,String,String)
 }
 class Resource extends Identifiable {
-   + String toString() 
-   + boolean isResource() 
+   + String toString()
+   + boolean isResource()
 }
 class Typed {
-   + string getType() 
-   + string getFullyQualifiedType() 
-   + string getNamespace() 
-   + void setPropertyValue(string,string) 
-   + void addArrayValue(string,string) 
-   + boolean instanceOf(String) 
+   + string getType()
+   + string getFullyQualifiedType()
+   + string getNamespace()
+   + void setPropertyValue(string,string)
+   + void addArrayValue(string,string)
+   + boolean instanceOf(String)
 }
 class ValidatedConcept extends Concept {
    + void setPropertyValue(string,string) throws Error
@@ -114,36 +114,36 @@ class ValidatedResource extends Resource {
    + void validate() throws Error
 }
 class InvalidQueryException extends BaseFileException {
-   + void constructor(String,QueryFile,Object,String,String,String,String) 
-   + QueryFile getQueryFile() 
+   + void constructor(String,QueryFile,Object,String,String,String,String)
+   + QueryFile getQueryFile()
 }
 class SecurityContext {
-   + void constructor(Connection,string) 
-   + Connection getConnection() 
-   + string getUser() 
+   + void constructor(Connection,string)
+   + Connection getConnection()
+   + string getUser()
 }
 class SecurityException extends BaseException {
-   + void constructor(string) 
+   + void constructor(string)
 }
 class Serializer {
-   + void constructor(Factory,ModelManager) 
-   + Object toJSON(Resource,Object,boolean,boolean,boolean) throws Error
-   + Resource fromJSON(Object,Object,boolean) 
+   + void constructor(Factory,ModelManager)
+   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
+   + Resource fromJSON(Object,Object,boolean)
 }
 class ValidationException extends BaseException {
-   + void constructor(string) 
+   + void constructor(string)
 }
 class TypeNotFoundException extends BaseException {
-   + void constructor(String,String) 
-   + string getTypeName() 
+   + void constructor(String,String)
+   + string getTypeName()
 }
 class Wallet {
-   + Wallet getWallet() 
-   + void setWallet(Wallet) 
-   + Promise list() 
-   + Promise contains(string) 
-   + Promise get(string) 
-   + Promise add(string,string) 
-   + Promise update(string,string) 
-   + Promise remove(string) 
+   + Wallet getWallet()
+   + void setWallet(Wallet)
+   + Promise list()
+   + Promise contains(string)
+   + Promise get(string)
+   + Promise add(string,string)
+   + Promise update(string,string)
+   + Promise remove(string)
 }

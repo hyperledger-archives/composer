@@ -11,13 +11,14 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.10.2 {edbc48c6b166343dfb70223ebf2cd920} 2017-07-27
+Version 0.10.2 {04641978245bd4326e314f0afb758b67} 2017-07-27
 - Added IdCard.getRoles function
 - Added IdCard.toArchive function
 
-Version 0.10.1 {5d850eefdff10604eb0fdef2bd7aef5a} 2017-07-24
+Version 0.10.1 {d1fd512551ff5bb30b31f05f6817966e} 2017-07-24
 - Added InvalidQueryException, BaseFileException
 - Added IdCard to composer-common package
+- Added option to Serializer.toJSON to deduplicate resources
 
 Version 0.9.2 {60327250ee4f059647020f8aee5ed67b} 2017-07-06
 - Added includeOptionalFields option to Factory.newXXX functions

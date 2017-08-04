@@ -37,7 +37,7 @@ class Revoke {
         let enrollSecret;
         let connectionProfileName = Revoke.getDefaultProfileName(argv);
         let businessNetworkName;
-        let userId = argv.userId;
+        let identityId = argv.identityId;
 
         return (() => {
             if (!argv.enrollSecret) {
@@ -63,10 +63,10 @@ class Revoke {
             return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
         })
         .then(() => {
-            return businessNetworkConnection.revokeIdentity(userId);
+            return businessNetworkConnection.revokeIdentity(identityId);
         })
         .then((result) => {
-            console.log(`The identity '${userId}' was revoked and can no longer be used to connect to the business network.`);
+            console.log(`The identity '${identityId}' was revoked and can no longer be used to connect to the business network.`);
         });
     }
 

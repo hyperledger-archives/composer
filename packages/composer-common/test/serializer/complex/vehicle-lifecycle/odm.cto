@@ -1,0 +1,67 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * ODM specific classes
+ */
+namespace com.ibm.rules
+
+asset RuleAppCurrentVersion identified by ruleAppName 
+{
+  // ruleapp name should be of the form <ruleapp>/<ruleset>
+  o String ruleAppName
+  o String ruleapp_version
+  o String ruleset_version
+}
+
+asset RuleApp identified by ruleAppId 
+{
+  o String ruleAppId
+  // ruleapp name should be of the form <ruleapp>/<ruleset>
+  o String ruleAppName
+  o String ruleapp_version
+  o String ruleset_version
+  o String archive
+}
+
+asset Xom identified by xomId 
+{
+  o String xomId
+  o String xomName
+  o String xom_version
+  o String libraryName
+  o String library_version  
+  o String xom
+}
+
+
+transaction RuleAppUpdated 
+{
+  o String resDeployerURL
+  // ruleapp name should be of the form <ruleapp>/<ruleset>
+  o String ruleAppName
+  o String ruleapp_version
+  o String ruleset_version
+  o String archive
+  o String managedXomURI
+}
+
+transaction XomUpdated  
+{
+  o String resDeployerURL
+  o String xomName
+  o String libraryName
+  o String library_version
+  o String xom
+}

@@ -25,7 +25,7 @@ app-editor {
       .side-bar-nav {
         padding: 0;
         max-height: 60vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         .error {
             color: $first-warning;
         }
@@ -170,13 +170,8 @@ app-editor {
   }
 
   .CodeMirror {
-    font-family: Source Code Pro
-
+    font-family: Source Code Pro;
   }
-  .CodeMirror, .CodeMirror-scroll{
-      min-height:63vh;
-      max-height:63vh;
-    }
 
   .ps.ps--active-x>.ps__scrollbar-x-rail,
   .ps.ps--active-y>.ps__scrollbar-y-rail{
