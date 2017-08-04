@@ -109,7 +109,7 @@ class TypescriptVisitor {
         if( !modelFile.isSystemModelFile() ) {
             const systemTypes = modelFile.getModelManager().getSystemTypes();
             systemTypes.forEach(systemType =>
-                parameters.fileWriter.writeLine(0, `import { ${systemType.getName()} } from './org.hyperledger.composer.system';`));
+                parameters.fileWriter.writeLine(0, `import {${systemType.getName()}} from './org.hyperledger.composer.system';`));
         }
 
         // Import property types that are imported from other cto files.
@@ -140,7 +140,7 @@ class TypescriptVisitor {
             const propertyTypeNames = properties.get(namespace);
             if(propertyTypeNames){
                 const csvPropertyTypeNames = Array.from(propertyTypeNames).join();
-                parameters.fileWriter.writeLine(0, `import { ${csvPropertyTypeNames} } from './${namespace}'`);
+                parameters.fileWriter.writeLine(0, `import {${csvPropertyTypeNames}} from './${namespace}'`);
             }
         });
 
