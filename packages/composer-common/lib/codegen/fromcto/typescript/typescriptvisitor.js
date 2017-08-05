@@ -140,7 +140,7 @@ class TypescriptVisitor {
             const propertyTypeNames = properties.get(namespace);
             if(propertyTypeNames){
                 const csvPropertyTypeNames = Array.from(propertyTypeNames).join();
-                parameters.fileWriter.writeLine(0, `import {${csvPropertyTypeNames}} from './${namespace}'`);
+                parameters.fileWriter.writeLine(0, `import {${csvPropertyTypeNames}} from './${namespace}';`);
             }
         });
 
