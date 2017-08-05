@@ -1,0 +1,35 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "source": {
+        "include": [
+            "./lib"
+        ],
+        "includePattern": ".+\\.js(doc|x)?$"
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+      "logoFile": "",
+      "cleverLinks": false,
+      "monospaceLinks": false,
+      "dateFormat": "ddd MMM Do YYYY",
+      "outputSourceFiles": true,
+      "outputSourcePath": true,
+      "systemName": "Sample Network",
+      "footer": "",
+      "copyright": "Released under the Apache License v2.0",
+      "navType": "vertical",
+      "theme": "spacelab",
+      "linenums": true,
+      "collapseSymbols": false,
+      "inverseNav": true,
+      "protocol": "html://",
+      "methodHeadingReturns": false
+    },
+    "markdown": {
+      "parser": "gfm",
+      "hardwrap": true
+    }
+}
