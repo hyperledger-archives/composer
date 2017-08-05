@@ -219,5 +219,134 @@ import {Event} from './org.hyperledger.composer.system';
 
 });
 
+describe('hyperledger-composer:angular for CarAuction-Network-SplitNamespace running against a business network archive file', function () {
+
+    let tmpDir; // This is the directory which we will create our app into
+
+    before(function() {
+        return helpers.run(path.join(__dirname, '../generators/angular'))
+        .inTmpDir(function (dir) {
+            tmpDir = dir;
+        })
+        .withPrompts({
+            liveNetwork: false,
+            appName: 'CarAuction-Network-SplitNamespace',
+            appDescription: 'A CarAuction-Network-SplitNamespace application',
+            authorName: 'TestUser',
+            authorEmail: 'TestUser@TestApp.com',
+            fileName: __dirname+'/data/carAuctionSplitNamespace.bna'
+        })
+        .on('error', function (error) {
+            console.log('Error found:', error);
+        })
+        .on('ready', function (generator) {
+            console.log('About to start generating files..');
+            console.log('Creating temporary directory:',tmpDir);
+
+        }).on('end', function(){
+            console.log('Finished generating files');
+        });
+
+    });
+
+    it('creates typescript classes for Assets, Enums, and Transactions', function(){
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/org.acme.vehicle.auction.ts');
+        assert.fileContent(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/org.acme.vehicle.auction.ts',
+        `import {Asset} from './org.hyperledger.composer.system';
+import {Participant} from './org.hyperledger.composer.system';
+import {Transaction} from './org.hyperledger.composer.system';
+import {Event} from './org.hyperledger.composer.system';
+import {Member} from './org.acme.vehicle.auction.participant';
+// export namespace org.acme.vehicle.auction{
+   export class Vehicle extends Asset {
+      vin: string;
+      owner: Member;
+   }
+   export enum ListingState {
+      FOR_SALE,
+      RESERVE_NOT_MET,
+      SOLD,
+   }
+   export class VehicleListing extends Asset {
+      listingId: string;
+      reservePrice: number;
+      description: string;
+      state: ListingState;
+      offers: Offer[];
+      vehicle: Vehicle;
+   }
+   export class Offer extends Transaction {
+      bidPrice: number;
+      listing: VehicleListing;
+      member: Member;
+   }
+   export class CloseBidding extends Transaction {
+      listing: VehicleListing;
+   }
+// }`);
+    });
+    it('creates typescript classes for Participants', function(){
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/org.acme.vehicle.auction.participant.ts');
+        assert.fileContent(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/org.acme.vehicle.auction.participant.ts',
+        `import {Asset} from './org.hyperledger.composer.system';
+import {Participant} from './org.hyperledger.composer.system';
+import {Transaction} from './org.hyperledger.composer.system';
+import {Event} from './org.hyperledger.composer.system';
+// export namespace org.acme.vehicle.auction.participant{
+   export abstract class User extends Participant {
+      email: string;
+      firstName: string;
+      lastName: string;
+   }
+   export class Member extends User {
+      balance: number;
+   }
+   export class Auctioneer extends User {
+   }
+// }`);
+    });
+
+    it('creates VehicleListing component typescript', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/VehicleListing/VehicleListing.component.ts');
+    });
+
+    it('creates VehicleListing component test', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/VehicleListing/VehicleListing.component.spec.ts');
+    });
+
+    it('creates VehicleListing service', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/VehicleListing/VehicleListing.service.ts');
+    });
+
+    it('creates VehicleListing component html', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/VehicleListing/VehicleListing.component.html');
+    });
+
+    it('creates VehicleListing component css', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/VehicleListing/VehicleListing.component.css');
+    });
+
+    it('creates Vehicle component typescript', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/Vehicle/Vehicle.component.ts');
+    });
+
+    it('creates Vehicle component test', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/Vehicle/Vehicle.component.spec.ts');
+    });
+
+    it('creates Vehicle service', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/Vehicle/Vehicle.service.ts');
+    });
+
+    it('creates Vehicle component html', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/Vehicle/Vehicle.component.html');
+    });
+
+    it('creates Vehicle component css', function () {
+        assert.file(tmpDir+'/CarAuction-Network-SplitNamespace/src/app/Vehicle/Vehicle.component.css');
+    });
+
+});
+
 
 
