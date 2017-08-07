@@ -63,10 +63,16 @@ class QueryManager {
     /**
      * Set the QueryFile for this QueryManager
      * @param {QueryFile} queryFile  - the QueryFile to associate with this QueryManager
+     * @param {bool} [validate=true] - Determine whether the file should be validated
      * @private
      */
-    setQueryFile(queryFile) {
-        queryFile.validate();
+    setQueryFile(queryFile, validate) {
+        validate = validate !== false; // default initializer
+
+        if(validate) {
+            queryFile.validate();
+        }
+
         this.queryFile = queryFile;
     }
 

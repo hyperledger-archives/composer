@@ -27,6 +27,9 @@
               <span>{{currentParticipants.length}} Participants</span>
               <span>{{currentTransactions.length}} Transactions</span>
             </div>
+            <div *ngIf="isBroken" class="broken-archive">
+              <span>Archive has errors, deployment disabled.</span>
+            </div>
           </div>
         </div>
         <div>
@@ -100,9 +103,9 @@
     <button id="import_cancel" type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
-    <button id="import_confirm" type="button" class="primary" (click)="deploy()" [disabled]="!chosenNetwork && !currentBusinessNetwork">
-      <span *ngIf="!deployInProgress">Deploy</span>
-      <div *ngIf="deployInProgress" class="ibm-spinner-indeterminate small loop">
+    <button id="import_confirm" type="button" class="primary" (click)="import()" [disabled]="!chosenNetwork && !currentBusinessNetwork">
+      <span *ngIf="!importInProgress">Import</span>
+      <div *ngIf="importInProgress" class="ibm-spinner-indeterminate small loop">
         <div class="loader">
           <svg class="circular" viewBox="25 25 50 50">
             <circle class="circle-path" cx="50" cy="50" r="20"/>

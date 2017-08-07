@@ -64,6 +64,7 @@ export class OperationsHelper {
   static importBusinessNetworkArchive(fileName: string) {
     Editor.clickImportBND();
     Import.selectBusinessNetworkDefinitionFromFile(fileName);
+    Import.confirmImportWithWait(); 
     Replace.confirmReplace();
     Import.waitToDisappear();
     this.processExpectedSuccess();

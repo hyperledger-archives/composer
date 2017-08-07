@@ -54,6 +54,13 @@ import-modal {
               color: $primary-text;
               font-style: italic;
             }
+
+            .broken-archive {
+              span {
+                color: $first-warning;
+                font-weight: bold;
+              }
+            }
           }
         }
 

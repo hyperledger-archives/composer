@@ -303,8 +303,10 @@ export class ClientService {
             });
     }
 
-    public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
-        return BusinessNetworkDefinition.fromArchive(buffer);
+    public getBusinessNetworkFromArchive(buffer, validateFiles?: boolean): Promise<BusinessNetworkDefinition> {
+        validateFiles = typeof(validateFiles) === undefined ? true : validateFiles;
+
+        return BusinessNetworkDefinition.fromArchive(buffer, validateFiles);
     }
 
     deployInitialSample(): Promise<any> {

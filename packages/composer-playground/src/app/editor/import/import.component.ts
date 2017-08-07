@@ -6,6 +6,7 @@ import { ClientService } from '../../services/client.service';
 import { SampleBusinessNetworkService } from '../../services/samplebusinessnetwork.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ReplaceComponent } from '../../basic-modals/replace-confirm';
+import { ImportErrorComponent } from '../../basic-modals/import-error';
 
 import { BusinessNetworkDefinition } from 'composer-common';
 import { ErrorComponent } from '../../basic-modals/error';
@@ -20,12 +21,13 @@ const fabricComposerRepository = 'composer-sample-networks';
 })
 export class ImportComponent implements OnInit {
 
-    private deployInProgress: boolean = false;
+    private importInProgress: boolean = false;
     private gitHubInProgress: boolean = false;
     private sampleNetworks = [];
     private primaryNetworkNames = ['basic-sample-network'];
     private chosenNetwork = null;
     private expandInput: boolean = false;
+    private isBroken: boolean = false;
 
     private maxFileSize: number = 5242880;
     private supportedFileTypes: string[] = ['.bna'];
@@ -104,14 +106,14 @@ export class ImportComponent implements OnInit {
         this.currentBusinessNetwork = null;
     }
 
-    deploy() {
+    import() {
         const confirmModalRef = this.modalService.open(ReplaceComponent);
         confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
         confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
         confirmModalRef.componentInstance.resource = 'definition';
         confirmModalRef.result.then((result) => {
             if (result === true) {
-                this.deployInProgress = true;
+                this.importInProgress = true;
                 let deployPromise;
                 if (this.currentBusinessNetwork) {
                     deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
@@ -120,11 +122,11 @@ export class ImportComponent implements OnInit {
                 }
 
                 deployPromise.then(() => {
-                    this.deployInProgress = false;
+                    this.importInProgress = false;
                     this.activeModal.close();
                 })
-                    .catch((error) => {
-                        this.deployInProgress = false;
+                .catch((error) => {
+                        this.importInProgress = false;
                         this.alertService.busyStatus$.next(null);
                         this.alertService.errorStatus$.next(error);
                     });
@@ -133,7 +135,7 @@ export class ImportComponent implements OnInit {
             }
         })
             .catch((error) => {
-                this.deployInProgress = false;
+                this.importInProgress = false;
                 if (error && error !== 1) {
                     this.alertService.errorStatus$.next(error);
                 }
@@ -142,8 +144,7 @@ export class ImportComponent implements OnInit {
 
     deployFromNpm(): Promise<any> {
 
-        if (this.chosenNetwork === this.NAME
-        ) {
+        if (this.chosenNetwork === this.NAME) {
             let readme = 'This is the readme file for the Business Network Definition created in Playground';
             let packageJson = {
                 name: 'unnamed-network',
@@ -209,16 +210,38 @@ export class ImportComponent implements OnInit {
         let fileReader = new FileReader();
         fileReader.onload = () => {
             let dataBuffer = Buffer.from(fileReader.result);
-            this.clientService.getBusinessNetworkFromArchive(dataBuffer)
+            this.clientService.getBusinessNetworkFromArchive(dataBuffer, true)
                 .then((businessNetwork) => {
                     this.currentBusinessNetwork = businessNetwork;
                     // needed for if browse file
                     this.expandInput = true;
+
+                    this.isBroken = false;
                 })
-                .catch((error) => {
-                    let failMessage = 'Cannot import an invalid Business Network Definition. Found ' + error.toString();
-                    this.alertService.errorStatus$.next(failMessage);
-                    this.expandInput = false;
+                .catch((brokenArchiveError) => {
+                    // If the file has an issue (broken archive), we ask the user if they
+                    // want to import it anyway
+                    const importModalRef = this.modalService.open(ImportErrorComponent);
+                    importModalRef.componentInstance.errorMessage = brokenArchiveError.toString();
+
+                    importModalRef.result.then((result) => {
+                        if (result === true) {
+                            this.clientService.getBusinessNetworkFromArchive(dataBuffer, false)
+                                .then((businessNetwork) => {
+                                    this.currentBusinessNetwork = businessNetwork;
+                                    // needed for if browse file
+                                    this.expandInput = true;
+
+                                    this.isBroken = true;
+                                });
+                        }
+                    })
+                        .catch((error) => {
+                            this.expandInput = false;
+                            if (error && error !== 1) {
+                                this.alertService.errorStatus$.next(error);
+                            }
+                        });
                 });
         };
 

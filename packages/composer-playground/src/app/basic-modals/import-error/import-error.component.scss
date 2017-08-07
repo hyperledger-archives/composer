@@ -1,0 +1,19 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+.import-error {
+
+  .modal-header {
+    svg {
+      fill: $error-colour-1
+    }
+  }
+
+  .information {
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
+      margin-left: $space-large;
+  }
+
+}

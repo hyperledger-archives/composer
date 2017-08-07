@@ -1,0 +1,24 @@
+<div class="import-error" tabindex="-1">
+  <div class="modal-header">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-warn_32"></use>
+    </svg>
+    <h1>Import Failed</h1>
+    <button class="icon modal-exit" (click)="activeModal.close(false)">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </div>
+  <section class="modal-body">
+    <section class="information">
+        <p><b>An invalid Business Network Definition was found</b></p>
+        <p><code>{{errorMessage}}</code></p>
+        <p><b>Note:</b> You can still import this archive, but you will need to fix these errors before you can deploy.</p>
+    </section>
+  </section>
+  <footer>
+    <button id="import_cancel" type="button" class="secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button id="import_anyway" type="button" class="primary" (click)="activeModal.close(true)">Import</button>
+  </footer>
+</div>

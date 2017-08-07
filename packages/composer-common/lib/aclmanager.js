@@ -63,10 +63,15 @@ class AclManager {
     /**
      * Set the AclFile for this AclManager
      * @param {AclFile} aclFile  - the AclFile to associate with this AclManager
+     * @param {bool} [validate=true] - Determine whether the file should be validated
      * @private
      */
-    setAclFile(aclFile) {
-        aclFile.validate();
+    setAclFile(aclFile, validate) {
+        validate = validate !== false; // default initializer = true
+
+        if(validate) {
+            aclFile.validate();
+        }
         this.aclFile = aclFile;
     }
 

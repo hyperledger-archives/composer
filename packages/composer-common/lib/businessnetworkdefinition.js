@@ -144,9 +144,12 @@ class BusinessNetworkDefinition {
     /**
      * Create a BusinessNetworkDefinition from an archive.
      * @param {Buffer} Buffer  - the Buffer to a zip archive
+     * @param {bool} [ValidateFiles=false] - whether the files should be validated
      * @return {Promise} a Promise to the instantiated business network
      */
-    static fromArchive(Buffer) {
+    static fromArchive(Buffer, ValidateFiles) {
+        ValidateFiles = (typeof ValidateFiles === 'boolean') ? ValidateFiles : false;
+
         const method = 'fromArchive';
         LOG.entry(method, Buffer.length);
         return JSZip.loadAsync(Buffer).then(function(zip) {
@@ -241,7 +244,7 @@ class BusinessNetworkDefinition {
 
                 LOG.debug(method, 'Loaded all model, JavaScript, ACL files and Query files');
                 LOG.debug(method, 'Adding model files to model manager');
-                businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
+                businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames, ValidateFiles); // Adds all cto files to model manager
                 LOG.debug(method, 'Added model files to model manager');
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
                 LOG.debug(method, 'Adding JavaScript files to script manager');
@@ -252,12 +255,12 @@ class BusinessNetworkDefinition {
                 LOG.debug(method, 'Added JavaScript files to script manager');
                 LOG.debug(method, 'Adding ACL files to ACL manager');
                 permissionsFiles.forEach((permissionFile) => {
-                    businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
+                    businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile), ValidateFiles);
                 });
                 LOG.debug(method, 'Added ACL files to ACL manager');
                 LOG.debug(method, 'Adding Query files to query manager');
                 queriesFiles.forEach((queryFile) => {
-                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getModelManager(), queryFile));
+                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getModelManager(), queryFile), ValidateFiles);
                 });
                 LOG.debug(method, 'Added Query files to query manager');
 

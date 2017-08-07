@@ -114,12 +114,15 @@ class ModelManager {
      * used to add a set of files irrespective of dependencies.
      * @param {string} modelFile - The Composer file as a string
      * @param {string} fileName - an optional file name to associate with the model file
+     * @param {bool} [validate=true] - Determine whether the file should be validated
      * @throws {IllegalModelException}
      * @return {Object} The newly added model file (internal).
      */
-    addModelFile(modelFile, fileName) {
+    addModelFile(modelFile, fileName, validate) {
         const NAME = 'addModelFile';
         LOG.info(NAME,'addModelFile',modelFile,fileName);
+
+        validate = validate !== false; // default initializer
 
         let m = null;
 
@@ -135,7 +138,9 @@ class ModelManager {
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
-            m.validate();
+            if(validate) {
+                m.validate();
+            }
             this.modelFiles[m.getNamespace()] = m;
         } else {
             throw new Error('namespace already exists');
@@ -202,14 +207,17 @@ class ModelManager {
      * strings.
      * @param {string[]} fileNames - An optional array of file names to
      * associate with the model files
+     * @param {bool} [validate=true] - Determine whether the file should be validated
      * @returns {Object[]} The newly added model files (internal).
      */
-    addModelFiles(modelFiles, fileNames) {
+    addModelFiles(modelFiles, fileNames, validate) {
         const NAME = 'addModelFiles';
         LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
+
+        validate = validate !== false; // default initializer
 
         try {
             // create the model files
@@ -247,9 +255,11 @@ class ModelManager {
                 }
             }
 
-            // re-validate all the model files
-            for (let ns in this.modelFiles) {
-                this.modelFiles[ns].validate();
+            if(validate) {
+                // re-validate all the model files
+                for (let ns in this.modelFiles) {
+                    this.modelFiles[ns].validate();
+                }
             }
 
             // return the model files.
