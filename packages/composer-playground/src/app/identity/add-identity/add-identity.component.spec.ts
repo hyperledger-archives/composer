@@ -8,9 +8,10 @@ import * as sinon from 'sinon';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { Wallet } from 'composer-common';
 import { AddIdentityComponent } from './add-identity.component';
 import { ConnectionProfileService } from '../../services/connectionprofile.service';
-import { IdentityCardService } from '../../services/identity-card.service';
+import { WalletService } from '../../services/wallet.service';
 import { AlertService } from '../../basic-modals/alert.service';
 
 describe('AddIdentityComponent', () => {
@@ -20,13 +21,13 @@ describe('AddIdentityComponent', () => {
 
     let mockActiveModal;
     let mockConnectionProfileService;
-    let mockIdCardService;
+    let mockWalletService;
     let mockAlertService;
 
     beforeEach(() => {
         mockActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockIdCardService = sinon.createStubInstance(IdentityCardService);
+        mockWalletService = sinon.createStubInstance(WalletService);
         mockAlertService = sinon.createStubInstance(AlertService);
 
         mockAlertService.successStatus$ = {next: sinon.stub()};
@@ -38,8 +39,8 @@ describe('AddIdentityComponent', () => {
             declarations: [AddIdentityComponent],
             providers: [
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: AlertService, useValue: mockAlertService},
-                {provide: IdentityCardService, useValue: mockIdCardService}
+                {provide: WalletService, useValue: mockWalletService},
+                {provide: AlertService, useValue: mockAlertService}
             ]
         })
         .compileComponents();
@@ -58,24 +59,24 @@ describe('AddIdentityComponent', () => {
     });
 
     describe('#addIdentity', () => {
+        let mockWallet;
 
-        it('should add an identity to the service and inform success', fakeAsync(() => {
+        beforeEach(() => {
+            mockWallet = sinon.createStubInstance(Wallet);
+            mockWalletService.getWallet.returns(mockWallet);
+        });
 
-            component['userId'] = 'bob';
-            component['busNetName'] = 'bobNet';
-            component['userId'] = 'bobId';
-            component['userSecret'] = 'bobSecret';
-            component['targetProfile'] = 'bobProfile';
-
-            mockIdCardService.createIdentityCard.returns(Promise.resolve());
-
+        it('should add an identity to the wallet and inform success', fakeAsync(() => {
+            mockWallet.contains.returns(Promise.resolve(false));
+            mockWallet.add.returns(Promise.resolve());
             let spy = sinon.spy(component.identityAdded, 'emit');
 
             component.addIdentity();
 
             tick();
 
-            mockIdCardService.createIdentityCard.should.have.been.calledWith('bobId', 'bobNet', 'bobId', 'bobSecret', 'bobProfile');
+            mockWallet.update.should.not.have.been.called;
+            mockWallet.add.should.have.been.called.once;
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                                 title: 'ID Card Added',
                                 text: 'The ID card was successfully added to My Wallet.',
@@ -84,14 +85,35 @@ describe('AddIdentityComponent', () => {
             spy.should.have.been.calledWith({success: true});
         }));
 
-        it('should handle an error and inform the user', fakeAsync(() => {
-            mockIdCardService.createIdentityCard.returns(Promise.reject('test error'));
+        it('should update an identity in the wallet', fakeAsync(() => {
+            mockWallet.contains.returns(Promise.resolve(true));
+            mockWallet.update.returns(Promise.resolve());
             let spy = sinon.spy(component.identityAdded, 'emit');
 
             component.addIdentity();
 
             tick();
 
+            mockWallet.add.should.not.have.been.called;
+            mockWallet.update.should.have.been.called.once;
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                                title: 'ID Card Updated',
+                                text: 'The ID card was successfully updated within My Wallet.',
+                                icon: '#icon-role_24'
+                            });
+            spy.should.have.been.calledWith({success: true});
+        }));
+
+        it('should handle an error and inform the user', fakeAsync(() => {
+            mockWallet.contains.returns(Promise.reject('test error'));
+            let spy = sinon.spy(component.identityAdded, 'emit');
+
+            component.addIdentity();
+
+            tick();
+
+            mockWallet.add.should.not.have.been.called;
+            mockWallet.update.should.not.have.been.called;
             component['addInProgress'].should.be.false;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('test error');
             spy.should.have.been.calledWith({success: false});
