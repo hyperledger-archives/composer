@@ -107,6 +107,7 @@ describe('Access control system tests', () => {
                 return assetRegistry.addAll([aliceCar, bobCar]);
             })
             .then(() => {
+
                 return aliceClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
             })
             .then((assetRegistry) => {

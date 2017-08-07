@@ -40,10 +40,10 @@ class Upgrade {
         return (() => {
             spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, null);
+            return adminConnection.connect(argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);
         })()
         .then((result) => {
-            return adminConnection.upgrade(argv.businessNetworkName);
+            return adminConnection.upgrade();
         }).then((result) => {
             spinner.succeed();
             console.log();

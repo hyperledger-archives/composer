@@ -17,14 +17,16 @@ export class DeleteComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.fileName = this.deleteFile.displayID;
+        if (!this.fileName) {
+            this.fileName = this.deleteFile.displayID;
 
-        if (this.deleteFile.model) {
-            this.fileType = 'Model File';
-        } else if (this.deleteFile.script) {
-            this.fileType = 'Script File';
-        } else {
-            this.fileType = 'File';
+            if (this.deleteFile.model) {
+                this.fileType = 'Model File';
+            } else if (this.deleteFile.script) {
+                this.fileType = 'Script File';
+            } else {
+                this.fileType = 'File';
+            }
         }
     }
 }

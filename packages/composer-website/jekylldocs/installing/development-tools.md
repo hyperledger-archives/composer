@@ -23,13 +23,13 @@ Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
-npm: 3.10.x
+npm: v3.x or v5.v
 git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
-**Please do not install Composer as a superuser, use 'sudo' or the 'root' user if on Linux (doing will can cause issues with the install). Composer should be installed as non-priviledged user**
+**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
@@ -106,11 +106,11 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows:
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows: export FABRIC_VERSION=hlfv0.6
 
-        export FABRIC_VERSION=hlfv0.6
+    > **Please Note:** {{site.data.conrefs.composer_full}} users should not use {{site.data.conrefs.fabric_full}} v0.6.  It is deprecated, and everybody should now use v1.0.
 
-    {{site.data.conrefs.hlf_full}} To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
+    To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
 
         export FABRIC_VERSION=hlfv1
 
