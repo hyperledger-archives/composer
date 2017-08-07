@@ -156,7 +156,7 @@ export class AddConnectionProfileComponent implements OnInit {
     }
 
     initiateAddToProfile() {
-        this.profileToUse.emit(this.connectionProfile.name);
+        this.profileToUse.emit(this.connectionProfile);
     }
 
     initiateAddWithProfile() {

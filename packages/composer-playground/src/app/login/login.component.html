@@ -54,15 +54,15 @@
                             [connectionProfile]="editingConnectionProfile"></connection-profile>
     </div>
     <div *ngIf="creatingIdCard">
-        <add-connection-profile (profileToUse)="addIdToExistingProfileName($event)"
-                                (profileToEdit)="addIdToNewProfile($event)"
+        <add-connection-profile (profileToUse)="addIdWithExistingProfile($event)"
+                                (profileToEdit)="addIdWithNewProfile($event)"
                                 (cancelAdd) = "closeSubView()"
                                 [connectionProfiles]="connectionProfiles"></add-connection-profile>
     </div>
     <div *ngIf="editingIdCard">
         <add-identity (identityAdded)="completeCardAddition()"
                       (cancelAdd) = "closeSubView()"
-                      [targetProfileName]="targetProfileName"></add-identity>
+                      [targetProfile]="targetProfile"></add-identity>
     </div>
 </section>
 <app-footer></app-footer>
