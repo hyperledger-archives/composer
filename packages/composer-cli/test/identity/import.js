@@ -59,6 +59,7 @@ describe('composer identity import CLI unit tests', () => {
         mockAdminConnection.importIdentity.withArgs(PROFILE_NAME, USER_ID, 'acert', 'akey').resolves();
         return Import.handler(argv)
             .then(() => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.importIdentity);
                 sinon.assert.calledWith(mockAdminConnection.importIdentity, PROFILE_NAME, USER_ID, 'acert', 'akey');
             });
