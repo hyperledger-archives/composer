@@ -1,45 +1,51 @@
 .composer {
-  .side-bar {
-    max-width: 20rem;
-    min-width: 19rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    z-index: 100;
-    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+    .side-bar {
+        max-width: 20rem;
+        min-width: 19rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 100;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.10);
+        max-height: 100%;
+        overflow-y: auto;
+        .side-bar-nav {
+            li {
+                padding: $space-medium $space-large;
+                border-left: $space-small solid transparent;
+                border-bottom: 1px solid $fourth-highlight;
+                cursor: pointer;
 
-    .side-bar-nav {
-      li {
-        padding: $space-medium $space-large;
-        border-left: $space-small solid transparent;
-        border-bottom: 1px solid $fourth-highlight;
-        cursor: pointer;
+                &.active {
+                    background-color: $third-highlight;
+                    border-left: $space-small solid $first-highlight;
+                    background-color: $third-highlight;
+                    cursor: default;
+                }
 
-        &.active {
-          background-color: $third-highlight;
-          border-left: $space-small solid $first-highlight;
-          background-color: $third-highlight;
-          cursor: default;
+                &:hover {
+                    border-left: $space-small solid $second-highlight;
+                }
+
+                div {
+                    padding: $space-small 0 $space-small 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+            }
         }
-
-        &:hover {
-          border-left: $space-small solid $second-highlight;
-        }
-
-        div {
-          padding: $space-small 0 $space-small 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-      }
     }
-  }
 
-  .main-view {
-    background-color: $fourth-highlight;
-    width: 100%;
-    padding: $space-large $space-large 0 $space-large;
-  }
+    .main-view {
+        background-color: $fourth-highlight;
+        width: 100%;
+        position: relative;
+        padding: 0 0 $space-xlarge 0;
+        .main-view-content {
+            padding: $space-large $space-large 0px $space-large;
+            overflow-y: auto;
+        }
+    }
 }
