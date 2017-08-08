@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.11.2 {89c0bfa26eb7f00013ed5503fea2b2ee} 2017-08-08
+- added enroll method
+
 Version 0.10.2 {1e34bbbec048a9c65cd1464415658d45} 2017-07-27
 - moved upgrade in line with update
 

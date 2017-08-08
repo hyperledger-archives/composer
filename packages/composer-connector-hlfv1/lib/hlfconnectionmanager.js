@@ -17,8 +17,6 @@
 const Logger = require('composer-common').Logger;
 const util = require('util');
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -357,26 +355,37 @@ class HLFConnectionManager extends ConnectionManager {
         LOG.entry(method, enrollmentID);
 
         // Validate all the arguments.
-        if (!enrollmentID) {
+        if (!connectionProfile || typeof connectionProfile !== 'string') {
+            throw new Error('connectionProfile not specified or not a string');
+        } else if (!connectionOptions || typeof connectionOptions !== 'object') {
+            throw new Error('connectionOptions not specified or not an object');
+        } else if (!enrollmentID) {
             throw new Error('enrollmentID not specified');
         } else if (!enrollmentSecret) {
             throw new Error('enrollmentSecret not specified');
+        } else if (!connectionOptions.ca) {
+            throw new Error('No ca defined in connection profile');
         }
 
         // Submit the enrollment request to Fabric CA.
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, Client.newCryptoSuite());
-        const caName = connectionOptions.ca.name ? connectionOptions.ca.name : 'default';
+
+        // determine the name of the ca.
+        let caName = 'default';
+        if (typeof connectionOptions.ca === 'object' && connectionOptions.ca.name) {
+            caName = connectionOptions.ca.name;
+        }
         return caClient.enroll(options)
             .then((enrollment) => {
                 enrollment.caName = caName;
-                enrollment.key = enrollment.key.getBytes();
+                enrollment.key = enrollment.key.toBytes();
                 LOG.exit(method);
                 return enrollment;
             })
             .catch((error) => {
-                const newError = new Error('Error trying to enroll and store user. ' + error);
+                const newError = new Error('Error trying to enroll user and return certificates. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });

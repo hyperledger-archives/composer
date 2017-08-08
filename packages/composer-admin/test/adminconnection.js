@@ -490,4 +490,28 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#enrollIdentity', () => {
+        it('should be able to enroll an identity', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.enrollIdentity('testprofile', 'id', 'secret')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.enrollIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.enrollIdentity, 'testprofile', config, 'id', 'secret');
+                });
+        });
+
+        it('should throw an error if import fails', () => {
+            mockConnectionManager.enrollIdentity = sinon.stub();
+            mockConnectionManager.enrollIdentity.rejects(new Error('some error'));
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.enrollIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+                .should.be.rejectedWith(/some error/);
+        });
+
+
+    });
+
 });
