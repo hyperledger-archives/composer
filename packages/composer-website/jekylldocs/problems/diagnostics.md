@@ -27,7 +27,7 @@ The config module does write out a warning, if there are no configuration files 
 
 ## Composer Runtime - David
 
-- logLevel -> network deploy and loglevel designed for doing this shit.
+- loglevel -> network deploy and loglevel designed for doing this.
 - docker command to get logs out `docker logs <chaincode container>` <-- this gets more complex. chaincode names dev-<businessnetworkname><composerruntimeversion>
 
 - composer runtime < should loglevel be here. (mebs next week)
