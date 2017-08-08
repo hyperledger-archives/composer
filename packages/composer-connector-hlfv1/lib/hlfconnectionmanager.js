@@ -17,6 +17,8 @@
 const Logger = require('composer-common').Logger;
 const util = require('util');
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -341,18 +343,59 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
+     * enroll an identity from the ca server, but don't import the raw credentials into the
+     * wallet, just return them to the user.
+     *
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {any} enrollmentID The enrollment id
+     * @param {any} enrollmentSecret  The enrollment secret
+     * @returns {promise} resolves once the files have been written, rejected if a problem occurs
+     */
+    enrollIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
+        const method = 'enrollIdentity';
+        LOG.entry(method, enrollmentID);
+
+        // Validate all the arguments.
+        if (!enrollmentID) {
+            throw new Error('enrollmentID not specified');
+        } else if (!enrollmentSecret) {
+            throw new Error('enrollmentSecret not specified');
+        }
+
+        // Submit the enrollment request to Fabric CA.
+        LOG.debug(method, 'Submitting enrollment request');
+        let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
+        const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, Client.newCryptoSuite());
+        const caName = connectionOptions.ca.name ? connectionOptions.ca.name : 'default';
+        return caClient.enroll(options)
+            .then((enrollment) => {
+                enrollment.caName = caName;
+                enrollment.key = enrollment.key.getBytes();
+                LOG.exit(method);
+                return enrollment;
+            })
+            .catch((error) => {
+                const newError = new Error('Error trying to enroll and store user. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+
+    }
+
+    /**
      * Import an identity into a profile wallet or keystore
      *
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} publicCert the public signer certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, connectionProfile, connectionOptions, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, publicCert, privateKey);
 
         // validate arguments
         if (!connectionProfile || typeof connectionProfile !== 'string') {
@@ -361,8 +404,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('connectionOptions not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
-        } else if (!publicKey || typeof publicKey !== 'string') {
-            throw new Error('publicKey not specified or not a string');
+        } else if (!publicCert || typeof publicCert !== 'string') {
+            throw new Error('publicCert not specified or not a string');
         } else if (!privateKey || typeof privateKey !== 'string') {
             throw new Error('privateKey not specified or not a string');
         }
@@ -382,7 +425,7 @@ class HLFConnectionManager extends ConnectionManager {
                     mspid: mspID,
                     cryptoContent: {
                         privateKeyPEM: privateKey,
-                        signedCertPEM: publicKey
+                        signedCertPEM: publicCert
                     }
                 });
             })

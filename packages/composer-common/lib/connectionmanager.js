@@ -80,6 +80,20 @@ class ConnectionManager {
         return Promise.reject(new Error('abstract function called'));
     }
 
+    /**
+     * enroll an identity from the ca server, but don't import the raw credentials into the
+     * wallet, just return them to the user.
+     *
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {any} enrollmentID The enrollment id
+     * @param {any} enrollmentSecret  The enrollment secret
+     * @returns {promise} resolves once the files have been written, rejected if a problem occurs
+     */
+    enrollIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
 }
 
 module.exports = ConnectionManager;

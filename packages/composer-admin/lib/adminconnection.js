@@ -539,6 +539,47 @@ class AdminConnection {
             });
     }
 
+    /**
+     * Enroll an identity and return the enrollment information. No connection needs to be established
+     * for this method to succeed.
+    * @example
+     * // Enroll an identity and retrieve the crypto material for a fabric v1 system.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.enrollIdentity('hlfv1', 'admin', 'adminpw')
+     * .then((enrollment) => {
+     *     // Identity enrolled
+     *     console.log('public signing certificate:');
+     *     console.log(enrollment.certificate);
+     *     console.log('private key:');
+     *     console.log(enrollment.key.toBytes()); //TODO:
+     *     console.log('ca root certificate:');
+     *     console.log(enrollment.rootCertificate);
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {string} connectionProfile Name of the connection profile
+     * @param {string} enrollmentID The ID to enroll
+     * @param {string} enrollmentSecret The secret for the ID
+     * @returns {Promise} A promise which is resolved when the identity is imported
+     */
+    enrollIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
+        let savedConnectionManager;
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                savedConnectionManager = connectionManager;
+                return this.getProfile(connectionProfile);
+            })
+            .then((profileData) => {
+                return savedConnectionManager.enrollIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
+            })
+            .catch((error) => {
+                throw new Error('failed to enroll identity. ' + error.message);
+            });
+    }
+
+
 }
 
 module.exports = AdminConnection;
