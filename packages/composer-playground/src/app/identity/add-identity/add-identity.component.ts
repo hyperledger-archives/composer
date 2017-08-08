@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ConnectionProfileService } from '../../services/connectionprofile.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { WalletService } from '../../services/wallet.service';
-import { IdentityCardService } from '../../services/identity-card.service';
 
 @Component({
     selector: 'add-identity',
@@ -12,7 +11,7 @@ import { IdentityCardService } from '../../services/identity-card.service';
 
 export class AddIdentityComponent {
 
-    @Input() targetProfile: string;
+    @Input() targetProfileName: string;
     @Output() identityAdded = new EventEmitter<any>();
     @Output() cancelAdd = new EventEmitter<any>();
 
@@ -23,8 +22,8 @@ export class AddIdentityComponent {
     private useCerts: boolean = false;
 
     constructor(private connectionProfileService: ConnectionProfileService,
-                private alertService: AlertService,
-                private identityCardService: IdentityCardService) {
+                private walletService: WalletService,
+                private alertService: AlertService) {
 
     }
 
@@ -48,21 +47,44 @@ export class AddIdentityComponent {
 
     addIdentity() {
         this.addInProgress = true;
-        this.alertService.busyStatus$.next({
-                title: 'Adding ID card',
-                text: 'adding ID card ' + this.userId
-            });
-        return this.identityCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.targetProfile)
-        .then(() => {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.successStatus$.next({
-                    title: 'ID Card Added',
-                    text: 'The ID card was successfully added to My Wallet.',
-                    icon: '#icon-role_24'
-                });
-                this.addInProgress = false;
-                this.identityAdded.emit({success: true});
-            })
+        let wallet = this.walletService.getWallet(this.targetProfileName);
+        return wallet.contains(this.userId)
+        .then((contains) => {
+            if (contains) {
+                this.alertService.busyStatus$.next({
+                        title: 'Updating ID card',
+                        text: 'updating the ID card ' + this.userId
+                    });
+                return wallet.update(this.userId, this.userSecret)
+                .then(() => {
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.successStatus$.next({
+                            title: 'ID Card Updated',
+                            text: 'The ID card was successfully updated within My Wallet.',
+                            icon: '#icon-role_24'
+                        });
+                        this.addInProgress = false;
+                        this.identityAdded.emit({success: true});
+                    });
+
+            } else {
+                this.alertService.busyStatus$.next({
+                        title: 'Adding ID card',
+                        text: 'adding ID card ' + this.userId
+                    });
+                return wallet.add(this.userId, this.userSecret)
+                .then(() => {
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.successStatus$.next({
+                            title: 'ID Card Added',
+                            text: 'The ID card was successfully added to My Wallet.',
+                            icon: '#icon-role_24'
+                        });
+                        this.addInProgress = false;
+                        this.identityAdded.emit({success: true});
+                    });
+            }
+        })
         .catch((error) => {
             this.alertService.busyStatus$.next(null);
             this.alertService.errorStatus$.next(error);
