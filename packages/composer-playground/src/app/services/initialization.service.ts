@@ -6,6 +6,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 
 @Injectable()
 export class InitializationService {
@@ -20,6 +21,7 @@ export class InitializationService {
                 private connectionProfileService: ConnectionProfileService,
                 private walletService: WalletService,
                 private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
                 private http: Http) {
     }
 
@@ -32,21 +34,20 @@ export class InitializationService {
 
         this.initializingPromise = Promise.resolve()
             .then(() => {
+                return this.identityCardService.loadIdentityCards();
+            })
+            .then(() => {
                 return this.loadConfig();
             })
             .then((config) => {
                 this.config = config;
-                return this.createInitialProfiles();
+                // TODO pass in array of identity cards via config.json somehow
+                return this.identityCardService.addInitialIdentityCards();
             })
-            .then(() => {
-                return this.createInitialIdentities();
-            })
-            .then(() => {
+            .then((defaultCardRef) => {
                 // only need to check about initial sample if not logged in
-                if (!this.identityService.getLoggedIn()) {
-                    this.connectionProfileService.setCurrentConnectionProfile('$default');
-                    this.identityService.setCurrentIdentity('admin');
-                    return this.deployInitialSample();
+                if (!this.identityService.getLoggedIn() && defaultCardRef) {
+                    return this.deployInitialSample(defaultCardRef);
                 }
             })
             .then(() => {
@@ -69,55 +70,8 @@ export class InitializationService {
             .toPromise();
     }
 
-    createInitialProfiles() {
-        return this.connectionProfileService.createDefaultProfile()
-            .then(() => {
-                // Create all of the connection profiles specified in the configuration.
-                let connectionProfiles = {};
-                if (this.config && this.config.connectionProfiles) {
-                    connectionProfiles = this.config.connectionProfiles;
-                }
-                const connectionProfileNames = Object.keys(connectionProfiles).sort();
-                return connectionProfileNames.reduce((result, connectionProfileName) => {
-                    return result.then(() => {
-                        console.log('Checking for connection profile', connectionProfileName);
-                        return this.connectionProfileService.getProfile(connectionProfileName)
-                            .catch((error) => {
-                                console.log('Connection profile does not exist, creating');
-                                return this.connectionProfileService.createProfile(connectionProfileName, connectionProfiles[connectionProfileName]);
-                            });
-                    });
-                }, Promise.resolve());
-            });
-    }
-
-    createInitialIdentities() {
-        let credentials = {};
-        if (this.config && this.config.credentials) {
-            credentials = this.config.credentials;
-        }
-        const connectionProfileNames = Object.keys(credentials).sort();
-        return connectionProfileNames.reduce((result, connectionProfileName) => {
-            return result.then(() => {
-                console.log('Creating credentials for connection profile', connectionProfileName);
-                return this.walletService.getWallet(connectionProfileName);
-            })
-                .then((wallet) => {
-                    const connectionProfileCredentials = credentials[connectionProfileName];
-                    const credentialNames = Object.keys(connectionProfileCredentials).sort();
-                    return credentialNames.reduce((result2, credentialName) => {
-                        return wallet.get(credentialName)
-                            .catch((error) => {
-                                console.log('Adding credential', credentialName);
-                                return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
-                            });
-                    }, Promise.resolve());
-                });
-        }, Promise.resolve());
-    }
-
-    deployInitialSample() {
-        return this.clientService.deployInitialSample();
+    deployInitialSample(defaultCardRef) {
+        return this.identityCardService.setCurrentIdentityCard(defaultCardRef).then(() => this.clientService.deployInitialSample());
     }
 
     isWebOnly(): boolean {
