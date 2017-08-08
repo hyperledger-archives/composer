@@ -115,6 +115,30 @@ class ProxyConnectionManager extends ConnectionManager {
     }
 
     /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        const method = 'exportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        return this.ensureConnected()
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/connectionManagerExportIdentity', connectionProfileName, connectionOptions, id, (error, credentials) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+                        LOG.exit(method, credentials);
+                        resolve(credentials);
+                    });
+                });
+            });
+    }
+
+    /**
      * Establish a connection to the business network.
      * @param {string} connectionProfile The name of the connection profile
      * @param {string} businessNetworkIdentifier The identifier of the business network
@@ -140,7 +164,7 @@ class ProxyConnectionManager extends ConnectionManager {
                                 connection.emit('events', events);
                             }
                         });
-                        LOG.exit(method);
+                        LOG.exit(method, connection);
                         resolve(connection);
                     });
                 });

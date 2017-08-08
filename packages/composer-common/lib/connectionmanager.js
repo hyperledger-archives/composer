@@ -172,6 +172,44 @@ class ConnectionManager {
         throw new Error('abstract function called');
     }
 
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName Name of the connection profile.
+     * @param {Object} connectionOptions connection options loaded from the profile.
+     * @param {String} id Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     * @abstract
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        return new Promise((resolve, reject) => {
+            this._exportIdentity(connectionProfileName, connectionOptions, id, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * @callback exportIdentityCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {Object} credentials Credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     */
+
+   /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @param {exportIdentityCallback} callback The callback function to call when complete.
+     * @abstract
+     */
+    _exportIdentity(connectionProfileName, connectionOptions, id, callback) {
+        throw new Error('abstract function called');
+    }
+
 }
 
 module.exports = ConnectionManager;

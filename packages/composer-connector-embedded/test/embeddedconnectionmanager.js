@@ -28,6 +28,14 @@ const sinon = require('sinon');
 
 
 describe('EmbeddedConnectionManager', () => {
+    const testCertificate =
+        '----- BEGIN CERTIFICATE -----\n' +
+        'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==\n' +
+        '----- END CERTIFICATE -----\n';
+    const testPrivateKey =
+        '-----BEGIN PRIVATE KEY-----\n' +
+        Buffer.from('FAKE_PRIVATE_KEY').toString('base64') + '\n' +
+        '-----END PRIVATE KEY-----\n';
 
     let mockConnectionProfileManager;
     let connectionManager;
@@ -53,12 +61,6 @@ describe('EmbeddedConnectionManager', () => {
 
     describe('#importIdentity', () => {
 
-        const certificate = [
-            '----- BEGIN CERTIFICATE -----',
-            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
-            '----- END CERTIFICATE -----'
-        ].join('\n').concat('\n');
-
         let mockIdentitiesDataCollection;
 
         beforeEach(() => {
@@ -69,20 +71,57 @@ describe('EmbeddedConnectionManager', () => {
         it('should store a new identity', () => {
             sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
-            return connectionManager.importIdentity('devFabric1', { connect: 'options' }, 'doge', certificate)
+            return connectionManager.importIdentity('devFabric1', { connect: 'options' }, 'doge', testCertificate, testPrivateKey)
                .then(() => {
                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                       certificate,
+                       certificate: testCertificate,
                        identifier: 'eecfb51e8e51ed6b98566b14ed4c022a6b9dba3d757bbdb67ea2e37cd8e50a48',
                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
                        name: 'doge',
                        secret: 'f892c30a',
+                       privateKey: testPrivateKey,
                        imported: true
                    });
                });
         });
 
+    });
+
+    describe('#exportIdentity', function() {
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(connectionManager.dataService, 'ensureCollection').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('retrieve stored credentials', function() {
+            const identity = {
+                name: 'ID',
+                certificate: testCertificate,
+                privateKey: testPrivateKey
+            };
+            mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
+            return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
+                .should.become({
+                    publicKey: testCertificate,
+                    privateKey: testPrivateKey
+                });
+        });
+
+        it('generate dummy private key if none present', function() {
+            const identity = {
+                name: 'ID',
+                certificate: testCertificate,
+            };
+            mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
+            return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
+                .then((credentials) => {
+                    credentials.should.have.all.keys('publicKey', 'privateKey');
+                    credentials.privateKey.should.be.a('String').that.is.not.empty;
+                });
+        });
     });
 
     describe('#connect', () => {
