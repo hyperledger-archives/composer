@@ -3,8 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { LocalStorageService } from 'angular-2-local-storage';
 
 import { AdminService } from './admin.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
@@ -25,8 +24,7 @@ export class ClientService {
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
 
     constructor(private adminService: AdminService,
-                private connectionProfileService: ConnectionProfileService,
-                private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
                 private alertService: AlertService,
                 private localStorageService: LocalStorageService) {
     }
@@ -223,33 +221,31 @@ export class ClientService {
             return this.connectingPromise;
         }
 
-        let businessNetworkName: string;
-        let userId;
-        this.connectingPromise = this.identityService.getUserID()
-            .then((userID) => {
-                userId = userID;
-                if (!name) {
-                    try {
-                        businessNetworkName = this.getBusinessNetworkName();
-                    } catch (error) {
-                        console.log('business network name not set yet so using from local storage');
-                    } finally {
-                        if (!businessNetworkName) {
-                            businessNetworkName = this.getSavedBusinessNetworkName(userId);
-                        }
-                    }
-                } else {
-                    businessNetworkName = name;
-                }
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
 
-                let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-                this.alertService.busyStatus$.next({
-                    title: 'Establishing connection',
-                    text: 'Using the connection profile ' + connectionProfile
-                });
-                console.log('Connecting to connection profile', connectionProfile);
-                return this.adminService.connect(businessNetworkName, force);
-            })
+        this.alertService.busyStatus$.next({
+            title: 'Establishing connection',
+            text: 'Using the connection profile ' + connectionProfile.name
+        });
+
+        let businessNetworkName: string;
+        let userId = this.identityCardService.getCurrentEnrollmentCredentials().id;
+
+        if (!name) {
+            try {
+                businessNetworkName = this.getBusinessNetworkName();
+            } catch (error) {
+                console.log('business network name not set yet so using from local storage');
+            } finally {
+                if (!businessNetworkName) {
+                    businessNetworkName = this.getSavedBusinessNetworkName(userId);
+                }
+            }
+        } else {
+            businessNetworkName = name;
+        }
+
+        this.connectingPromise = this.adminService.connect(businessNetworkName, force)
             .then(() => {
                 return this.refresh(businessNetworkName);
             })
@@ -276,22 +272,18 @@ export class ClientService {
 
     refresh(businessNetworkName): Promise<any> {
         this.currentBusinessNetwork = null;
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
-            text: 'refreshing the connection to ' + connectionProfile
+            text: 'refreshing the connection to ' + connectionProfile.name
         });
-        let userID;
+
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.identityService.getUserID();
-            })
-            .then((userId) => {
-                userID = userId;
-                return this.identityService.getUserSecret();
-            })
-            .then((userSecret) => {
-                return this.getBusinessNetworkConnection().connect(connectionProfile, businessNetworkName, userID, userSecret);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, enrollmentCredentials.id, enrollmentCredentials.secret);
             });
     }
 
@@ -332,7 +324,10 @@ export class ClientService {
                 return this.getBusinessNetworkConnection().disconnect();
             })
             .then(() => {
-                return this.getBusinessNetworkConnection().connect('$default', businessNetwork.getName(), 'admin', 'adminpw');
+                let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+                let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetwork.getName(), enrollmentCredentials.id, enrollmentCredentials.secret);
             })
             .then(() => {
                 return this.reset();
@@ -344,19 +339,16 @@ export class ClientService {
     }
 
     issueIdentity(userID, participantFQI, options): Promise<string> {
-        let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
 
-        return this.connectionProfileService.getProfile(connectionProfileName)
-            .then((connectionProfile) => {
-                ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
-                    if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
-                        // Smells like Bluemix with their non-default affiliations.
-                        options.affiliation = 'group1';
-                    }
-                });
+        ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
+            if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
+                // Smells like Bluemix with their non-default affiliations.
+                options.affiliation = 'group1';
+            }
+        });
 
-                return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
-            });
+        return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
     }
 
     revokeIdentity(identity) {

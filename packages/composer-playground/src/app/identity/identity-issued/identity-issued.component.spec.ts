@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityIssuedComponent } from './identity-issued.component';
-import { ConnectionProfileService } from '../../services/connectionprofile.service';
+import { IdentityCardService } from '../../services/identity-card.service';
 import { WalletService } from '../../services/wallet.service';
 
 describe('IdentityIssuedComponent', () => {
@@ -18,7 +18,9 @@ describe('IdentityIssuedComponent', () => {
   let fixture: ComponentFixture<IdentityIssuedComponent>;
 
   let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-  let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+  let mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+  mockIdentityCardService.getCurrentConnectionProfile.returns({name: 'myProfile'});
+  mockIdentityCardService.getQualifiedProfileName.returns('xxx-myProfile');
   let mockWalletService = sinon.createStubInstance(WalletService);
 
   beforeEach(() => {
@@ -26,7 +28,7 @@ describe('IdentityIssuedComponent', () => {
       declarations: [ IdentityIssuedComponent ],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: ConnectionProfileService, useValue: mockConnectionProfileService },
+        { provide: IdentityCardService, useValue: mockIdentityCardService },
         { provide: WalletService, useValue: mockWalletService }
       ]
     })
@@ -42,7 +44,6 @@ describe('IdentityIssuedComponent', () => {
 
   describe('addToWallet', () => {
     it('should add to wallet', fakeAsync(() => {
-      mockConnectionProfileService.getCurrentConnectionProfile.returns('myProfile');
       let walletStub = {contains : sinon.stub().returns(Promise.resolve(false)), add : sinon.stub().returns(Promise.resolve())};
       mockWalletService.getWallet.returns(walletStub);
 
@@ -53,14 +54,13 @@ describe('IdentityIssuedComponent', () => {
 
       tick();
 
-      mockWalletService.getWallet.should.have.been.calledWith('myProfile');
+      mockWalletService.getWallet.should.have.been.calledWith('xxx-myProfile');
       walletStub.contains.should.have.been.calledWith('myId');
       walletStub.add.should.have.been.calledWith('myId', 'mySecret');
       mockActiveModal.close.should.have.been.called;
     }));
 
     it('should update wallet if exists', fakeAsync(() => {
-      mockConnectionProfileService.getCurrentConnectionProfile.returns('myProfile');
       let walletStub = {contains : sinon.stub().returns(Promise.resolve(true)), update : sinon.stub().returns(Promise.resolve())};
       mockWalletService.getWallet.returns(walletStub);
 
@@ -71,14 +71,13 @@ describe('IdentityIssuedComponent', () => {
 
       tick();
 
-      mockWalletService.getWallet.should.have.been.calledWith('myProfile');
+      mockWalletService.getWallet.should.have.been.calledWith('xxx-myProfile');
       walletStub.contains.should.have.been.calledWith('myId');
       walletStub.update.should.have.been.calledWith('myId', 'mySecret');
       mockActiveModal.close.should.have.been.called;
     }));
 
     it('should handle error', fakeAsync(() => {
-      mockConnectionProfileService.getCurrentConnectionProfile.returns('myProfile');
       let walletStub = {contains : sinon.stub().returns(Promise.reject('some error')), add : sinon.stub().returns(Promise.resolve())};
       mockWalletService.getWallet.returns(walletStub);
 
@@ -89,7 +88,7 @@ describe('IdentityIssuedComponent', () => {
 
       tick();
 
-      mockWalletService.getWallet.should.have.been.calledWith('myProfile');
+      mockWalletService.getWallet.should.have.been.calledWith('xxx-myProfile');
       walletStub.contains.should.have.been.calledWith('myId');
       walletStub.add.should.not.have.been.called;
       mockActiveModal.dismiss.should.have.been.called;

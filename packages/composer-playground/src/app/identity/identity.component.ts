@@ -7,9 +7,8 @@ import { AddIdentityComponent } from './add-identity';
 import { IssueIdentityComponent } from './issue-identity';
 import { IdentityIssuedComponent } from './identity-issued';
 import { AlertService } from '../basic-modals/alert.service';
-import { IdentityService } from '../services/identity.service';
+import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { WalletService } from '../services/wallet.service';
 
 @Component({
@@ -21,16 +20,15 @@ import { WalletService } from '../services/wallet.service';
 })
 export class IdentityComponent implements OnInit {
 
-    myIdentities: string[];
+    myIdentities: string[] = [];
     allIdentities: Object[]; // array of all IDs
     currentIdentity: string = null;
     private deployedPackageName;
 
     constructor(private modalService: NgbModal,
                 private alertService: AlertService,
-                private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
                 private clientService: ClientService,
-                private connectionProfileService: ConnectionProfileService,
                 private walletService: WalletService) {
 
     }
@@ -51,21 +49,19 @@ export class IdentityComponent implements OnInit {
                 return registry.getAll();
             }).then((ids) => {
                 this.allIdentities = ids;
+            }).catch((error) => {
+                this.alertService.errorStatus$.next(error);
             });
     }
 
     loadMyIdentities() {
-        return this.identityService.getCurrentIdentities()
-            .then((currentIdentities) => {
-                this.myIdentities = currentIdentities;
-                return this.identityService.getCurrentIdentity();
-            })
-            .then((currentIdentity) => {
-                this.currentIdentity = currentIdentity;
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(error);
-            });
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+
+        if (enrollmentCredentials) {
+            this.currentIdentity = enrollmentCredentials.id;
+        }
+
+        return Promise.resolve();
     }
 
     issueNewId() {
@@ -90,23 +86,9 @@ export class IdentityComponent implements OnInit {
     }
 
     setCurrentIdentity(newIdentity: string) {
-        if (this.currentIdentity === newIdentity) {
-            return Promise.resolve();
-        }
-
-        this.identityService.setCurrentIdentity(newIdentity);
         this.currentIdentity = newIdentity;
 
-        this.alertService.busyStatus$.next({title: 'Reconnecting...', text: 'Using identity ' + this.currentIdentity});
-        return this.clientService.ensureConnected(null, true)
-            .then(() => {
-                this.alertService.busyStatus$.next(null);
-                return this.loadAllIdentities();
-            })
-            .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
-            });
+        return Promise.resolve();
     }
 
     removeIdentity(userID: string) {
@@ -120,7 +102,8 @@ export class IdentityComponent implements OnInit {
         confirmModalRef.componentInstance.deleteMessage = 'Take care when removing IDs: you usually cannot re-add them. Make sure you leave at least one ID that can be used to issue new IDs.';
         confirmModalRef.componentInstance.confirmButtonText = 'Remove';
 
-        let profileName = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let profileName = this.identityCardService.getQualifiedProfileName(connectionProfile);
 
         confirmModalRef.result
             .then((result) => {

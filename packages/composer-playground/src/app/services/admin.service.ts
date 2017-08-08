@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileManager, Logger, BusinessNetworkDefinition } from 'composer-common';
@@ -16,8 +15,7 @@ export class AdminService {
 
     private initialDeploy: boolean = false;
 
-    constructor(private connectionProfileService: ConnectionProfileService,
-                private identityService: IdentityService,
+    constructor(private identityCardService: IdentityCardService,
                 private alertService: AlertService) {
         Logger.setFunctionalLogger({
             // tslint:disable-next-line:no-empty
@@ -52,23 +50,17 @@ export class AdminService {
 
         console.log('Establishing admin connection ...');
 
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Connecting to Business Network ' + businessNetworkName,
-            text: 'using connection profile ' + connectionProfile
+            text: 'using connection profile ' + connectionProfile.name
         });
 
-        let userID;
-        this.connectingPromise = this.identityService.getUserID()
-            .then((userId) => {
-                userID = userId;
-                return this.identityService.getUserSecret();
-            })
-            .then((userSecret) => {
-                console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfile, userID);
-                return this.getAdminConnection().connect(connectionProfile, userID, userSecret, businessNetworkName);
-            })
+        console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfileRef, enrollmentCredentials.id);
+        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, businessNetworkName)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -92,23 +84,17 @@ export class AdminService {
 
         console.log('Establishing admin connection ...');
 
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Connecting without a business network',
-            text: 'using connection profile ' + connectionProfile
+            text: 'using connection profile ' + connectionProfile.name
         });
 
-        let userID;
-        this.connectingPromise = this.identityService.getUserID()
-            .then((userId) => {
-                userID = userId;
-                return this.identityService.getUserSecret();
-            })
-            .then((userSecret) => {
-                console.log('Connecting with connection profile %s with id %s', connectionProfile, userID);
-                return this.getAdminConnection().connect(connectionProfile, userID, userSecret);
-            })
+        console.log('Connecting with connection profile %s with id %s', connectionProfileRef, enrollmentCredentials.id);
+        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -130,9 +116,10 @@ export class AdminService {
             text: 'checking if ' + name + ' exists'
         });
 
-        let userSecret;
-        let connectionProfile;
-        let userId;
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+
         return this.list()
             .then((businessNetworks) => {
                 // check if business network already exists
@@ -149,16 +136,8 @@ export class AdminService {
                     title: 'Creating Business Network',
                     text: 'creating business network ' + name
                 });
-                connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-                return this.identityService.getUserID();
-            })
-            .then((userID) => {
-                userId = userID;
-                return this.identityService.getUserSecret();
-            })
-            .then((secret) => {
-                userSecret = secret;
-                return this.getAdminConnection().connect(connectionProfile, userId, userSecret);
+
+                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret);
             })
             .then(() => {
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
@@ -166,7 +145,7 @@ export class AdminService {
             })
             .then(() => {
                 this.initialDeploy = true;
-                return this.getAdminConnection().disconnect();
+                return this.disconnect();
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
@@ -174,8 +153,8 @@ export class AdminService {
                     text: 'using connection profile, connectionProfile'
                 });
 
-                console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfile, userId);
-                return this.getAdminConnection().connect(connectionProfile, userId, userSecret, name);
+                console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, enrollmentCredentials.id);
+                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, name);
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
@@ -191,30 +170,28 @@ export class AdminService {
     }
 
     public  list(): Promise<string[]> {
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        let userId;
-        let userSecret;
-        return this.identityService.getUserID()
-            .then((userID) => {
-                userId = userID;
-                return this.identityService.getUserSecret();
-            })
-            .then((secret) => {
-                userSecret = secret;
-                return this.getAdminConnection().connect(connectionProfile, userId, userSecret);
-            })
+        let result;
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+
+        return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret)
             .then(() => {
                 return this.getAdminConnection().list();
             })
             .then((businessNetworks) => {
-                this.disconnect();
-                return businessNetworks;
+                result = businessNetworks;
+                return this.disconnect();
+            })
+            .then(() => {
+                return result;
             });
     }
 
-    public disconnect(): void {
-        this.isConnected = false;
-        this.getAdminConnection().disconnect();
+    public disconnect(): Promise<any> {
+        return this.getAdminConnection().disconnect().then(() => {
+            this.isConnected = false;
+        });
     }
 
     public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {

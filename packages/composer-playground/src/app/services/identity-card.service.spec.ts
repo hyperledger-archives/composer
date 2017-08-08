@@ -32,9 +32,9 @@ describe('IdentityCardService', () => {
 
         TestBed.configureTestingModule({
             providers: [IdentityCardService,
-                {provide: IdentityCardStorageService, useValue: mockIdentityCardStorageService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: IdentityService, useValue: mockIdentityService},
+                {provide: IdentityCardStorageService, useValue: mockIdentityCardStorageService},
                 {provide: WalletService, useValue: mockWalletService}
             ]
         });
@@ -70,6 +70,42 @@ describe('IdentityCardService', () => {
 
         it('should not get an identity card if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             should.not.exist(service.getCurrentIdentityCard());
+        })));
+    });
+
+    describe('#getCurrentConnectionProfile', () => {
+        it('should get the connection profile of the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({name: '$default'});
+            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
+            getCurrentIdentityCardStub.returns(mockIdCard);
+
+            service.getCurrentConnectionProfile().name.should.equal('$default');
+        })));
+
+        it('should not get a connection profile if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
+            getCurrentIdentityCardStub.returns(undefined);
+
+            should.not.exist(service.getCurrentConnectionProfile());
+        })));
+    });
+
+    describe('#getCurrentEnrollmentCredentials', () => {
+        it('should get the enrollment credentials of the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getEnrollmentCredentials.returns({id: 'alice'});
+            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
+            getCurrentIdentityCardStub.returns(mockIdCard);
+
+            service.getCurrentEnrollmentCredentials().id.should.equal('alice');
+        })));
+
+        it('should not get enrollment credentials if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
+            getCurrentIdentityCardStub.returns(undefined);
+
+            should.not.exist(service.getCurrentEnrollmentCredentials());
         })));
     });
 
@@ -120,7 +156,8 @@ describe('IdentityCardService', () => {
             tick();
         })));
 
-        it('should set the current card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        it('should set the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
 
             service.loadIdentityCards();
@@ -128,6 +165,18 @@ describe('IdentityCardService', () => {
             tick();
 
             service['currentCard'].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            mockIdentityService.setCurrentIdentity.should.not.have.been.called;
+        })));
+
+        it('should set the current identity card and current identity', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
+
+            service.loadIdentityCards();
+
+            tick();
+
+            service['currentCard'].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
     });
 
@@ -175,9 +224,9 @@ describe('IdentityCardService', () => {
             let initialCards = [mockIdCard1, mockIdCard2];
             let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
 
-            let cardRef: string;
-            service.addInitialIdentityCards(initialCards).then((cardsCreated) => {
-                cardRef = cardsCreated;
+            let cardRef;
+            service.addInitialIdentityCards(initialCards).then((defaultCardRef) => {
+                cardRef = defaultCardRef;
             });
 
             tick();
@@ -206,17 +255,17 @@ describe('IdentityCardService', () => {
             let mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('test', mockIdCard);
             service['idCards'] = mockCardMap;
+            let addCardSpy = sinon.spy(service, 'addIdentityCard');
 
-            let result;
+            let cardRef;
             service.addInitialIdentityCards().then((defaultCardRef) => {
-                throw Error('Initial cards added without error');
-            }, (reason) => {
-                result = reason;
+                cardRef = defaultCardRef;
             });
 
             tick();
 
-            result.message.should.equal('Initial cards loaded already');
+            should.not.exist(cardRef);
+            addCardSpy.should.not.have.been.called;
             service['idCards'].size.should.equal(1);
         })));
     });
@@ -341,7 +390,6 @@ describe('IdentityCardService', () => {
             mockConnectionProfileService.createProfile.should.not.have.been.called;
             mockWalletService.getWallet.should.not.have.been.called;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -362,7 +410,6 @@ describe('IdentityCardService', () => {
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith(expectedProfileName);
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -379,7 +426,6 @@ describe('IdentityCardService', () => {
             mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
             mockWalletService.getWallet.should.have.been.calledWith('web-$default');
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -397,7 +443,6 @@ describe('IdentityCardService', () => {
             mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
             mockWalletService.getWallet.should.have.been.calledWith('web-$default');
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', { current: true });
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('web-$default');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
         })));
 
@@ -487,6 +532,29 @@ describe('IdentityCardService', () => {
             let result = service.getIdentityCardsWithProfileAndRole('myProfile', 'wotNoRole');
 
             result.should.be.empty;
+        }));
+    });
+
+    describe('getQualifiedProfileName', () => {
+        it('should get a qualified profile name for a web connection profile', inject([IdentityCardService], (service: IdentityCardService) => {
+            let connectionProfile = {
+                name: '$default',
+                type: 'web'
+            };
+
+            let qualifiedName = service.getQualifiedProfileName(connectionProfile);
+
+            qualifiedName.should.equal('web-$default');
+        }));
+
+        it('should get a qualified profile name for other connection profiles', inject([IdentityCardService], (service: IdentityCardService) => {
+            let connectionProfile = {
+                name: 'hlfv1'
+            };
+
+            let qualifiedName = service.getQualifiedProfileName(connectionProfile);
+
+            qualifiedName.should.equal(hash(connectionProfile) + '-hlfv1');
         }));
     });
 });

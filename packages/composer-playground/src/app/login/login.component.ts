@@ -8,9 +8,12 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { WalletService } from '../services/wallet.service';
+import { IdentityCardService } from '../services/identity-card.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
+
+import { IdCard } from 'composer-common';
 
 @Component({
     selector: 'app-login',
@@ -21,7 +24,10 @@ import { ImportIdentityComponent } from './import-identity';
 })
 export class LoginComponent implements OnInit {
 
-    private connectionProfiles = [];
+    private connectionProfileRefs: string[];
+    private connectionProfileNames: Map<string, string>;
+    private idCardRefs: Map<string, string[]>;
+    private idCards: Map<string, IdCard>;
     private showDeployNetwork: boolean = false;
     private editingConnectionProfile = null;
     private targetProfileName: string = null;
@@ -38,6 +44,7 @@ export class LoginComponent implements OnInit {
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private walletService: WalletService,
+                private identityCardService: IdentityCardService,
                 private modalService: NgbModal,
                 private drawerService: DrawerService,
                 private alertService: AlertService) {
@@ -47,47 +54,45 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         return this.initializationService.initialize()
             .then(() => {
-                return this.loadConnectionProfiles();
+                return this.loadIdentityCards();
             });
     }
 
-    loadConnectionProfiles(): Promise<void> {
-        return this.connectionProfileService.getAllProfiles()
-            .then((profiles) => {
-                let newConnectionProfiles = [];
-                let keys = Object.keys(profiles).sort();
-                keys.forEach((key) => {
-                    return this.identityService.getIdentities(key)
-                        .then((identities) => {
-                            let identityList = [];
-                            identities.forEach((identity) => {
-                                identityList.push({
-                                    userId: identity,
-                                    businessNetwork: 'org-acme-biznet'
-                                });
-                            });
+    loadIdentityCards(): Promise<void> {
+        return this.identityCardService.getIdentityCards().then((cards) => {
+            this.idCards = cards;
+            this.connectionProfileNames = new Map<string, string>();
 
-                            let connectionProfile = profiles[key];
-                            newConnectionProfiles.push({
-                                name: key,
-                                profile: connectionProfile,
-                                default: key === '$default',
-                                description: 'Default connection profile',
-                                identities: identityList
-                            });
-                        });
-                });
+            let newCardRefs = Array.from(cards.keys())
+                .map((cardRef) => {
+                    let connectionProfile = cards.get(cardRef).getConnectionProfile();
+                    let connectionProfileRef: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                    if (!this.connectionProfileNames.has(connectionProfileRef)) {
+                        this.connectionProfileNames.set(connectionProfileRef, connectionProfile.name);
+                    }
 
-                this.connectionProfiles = newConnectionProfiles;
-            });
+                    return [connectionProfileRef, cardRef];
+                })
+                .reduce((prev, cur) => {
+                    let curCardRefs: string[] = prev.get(cur[0]) || [];
+                    let cardRef: string = <string> cur[1];
+                    return prev.set(cur[0], [...curCardRefs, cardRef]);
+                }, new Map<string, string[]>());
+
+            this.idCardRefs = newCardRefs;
+            this.connectionProfileRefs = Array.from(this.connectionProfileNames.keys());
+        }).catch((error) => {
+            this.alertService.errorStatus$.next(error);
+        });
     }
 
-    changeIdentity(connectionProfile, userId): Promise<boolean | void> {
-        this.connectionProfileService.setCurrentConnectionProfile(connectionProfile);
-        this.identityService.setCurrentIdentity(userId);
-        return this.adminService.list()
-            .then((businessNetworks) => {
-                return this.clientService.ensureConnected(businessNetworks[0], true);
+    changeIdentity(cardRef: string): Promise<boolean | void> {
+        let card = this.idCards.get(cardRef);
+        let businessNetworkName = card.getBusinessNetworkName();
+
+        return this.identityCardService.setCurrentIdentityCard(cardRef)
+            .then(() => {
+                return this.clientService.ensureConnected(businessNetworkName, true);
             })
             .then(() => {
                 this.identityService.setLoggedIn(true);
@@ -96,7 +101,6 @@ export class LoginComponent implements OnInit {
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
             });
-
     }
 
     editConnectionProfile(connectionProfile): void {
@@ -107,7 +111,7 @@ export class LoginComponent implements OnInit {
     finishedEditingConnectionProfile(result): Promise<void> {
         if (result.update === false || !this.creatingIdWithProfile) {
             this.closeSubView();
-            return this.loadConnectionProfiles();
+            return this.loadIdentityCards();
         } else {
             delete this.editingConnectionProfile;
             this.addIdToExistingProfileName(result.connectionProfile.name);
@@ -143,13 +147,12 @@ export class LoginComponent implements OnInit {
 
     completeCardAddition() {
         this.closeSubView();
-        return this.loadConnectionProfiles();
+        return this.loadIdentityCards();
     }
 
     deployNetwork(connectionProfile) {
-        this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
+        // this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
         // TODO this needs to be done dynmaically
-        this.identityService.setCurrentIdentity('admin');
         this.showSubScreen = true;
         this.showDeployNetwork = true;
     }
@@ -159,7 +162,8 @@ export class LoginComponent implements OnInit {
         this.showDeployNetwork = false;
     }
 
-    removeIdentity(connectionProfile, userId): void {
+    removeIdentity(cardRef): void {
+        let userId: string = this.idCards.get(cardRef).getName();
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
         confirmModalRef.componentInstance.fileName = userId;
@@ -175,15 +179,17 @@ export class LoginComponent implements OnInit {
                         title: 'Removing ID card',
                         text: 'removing the ID card ' + userId
                     });
-                    this.walletService.removeFromWallet(connectionProfile, userId)
+
+                    this.identityCardService.deleteIdentityCard(cardRef)
                         .then(() => {
-                            this.loadConnectionProfiles();
                             this.alertService.busyStatus$.next(null);
                             this.alertService.successStatus$.next({
                                 title: 'ID Card Removed',
                                 text: 'The ID card was successfully removed from My Wallet.',
                                 icon: '#icon-trash_32'
                             });
+
+                            return this.loadIdentityCards();
                         })
                         .catch((error) => {
                             this.alertService.busyStatus$.next(null);

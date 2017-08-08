@@ -54,6 +54,22 @@ export class IdentityCardService {
         return this.getIdentityCard(this.currentCard);
     }
 
+    getCurrentConnectionProfile(): any {
+        let card = this.getCurrentIdentityCard();
+
+        if (card) {
+            return card.getConnectionProfile();
+        }
+    }
+
+    getCurrentEnrollmentCredentials(): any {
+        let card = this.getCurrentIdentityCard();
+
+        if (card) {
+            return card.getEnrollmentCredentials();
+        }
+    }
+
     getIdentityCardsWithProfileAndRole(qualifiedProfileName: string, role: string): IdCard[] {
         let cards: IdCard[] = [];
         this.idCards.forEach((card, key) => {
@@ -91,6 +107,15 @@ export class IdentityCardService {
                     return prev;
                 }, new Map<string, IdCard>());
 
+            if (this.currentCard) {
+                let card: IdCard = this.getCurrentIdentityCard();
+                let enrollmentCredentials = card.getEnrollmentCredentials();
+
+                if (enrollmentCredentials && enrollmentCredentials.id) {
+                    this.identityService.setCurrentIdentity(enrollmentCredentials.id);
+                }
+            }
+
             resolve(this.idCards.size);
         });
     }
@@ -105,9 +130,9 @@ export class IdentityCardService {
         });
     }
 
-    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string> {
+    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string | void> {
         if (this.idCards.size > 0) {
-            return Promise.reject(new Error('Initial cards loaded already'));
+            return Promise.resolve();
         }
 
         initialCards = initialCards || [];
@@ -194,15 +219,13 @@ export class IdentityCardService {
         let enrollmentId = card.getEnrollmentCredentials().id;
 
         return this.activateIdentityCard(cardRef).then(() => {
-            let connectionProfile = card.getConnectionProfile();
-            this.connectionProfileService.setCurrentConnectionProfile(this.getQualifiedProfileName(connectionProfile));
             this.identityService.setCurrentIdentity(enrollmentId);
 
             return card;
         });
     }
 
-    private getQualifiedProfileName(connectionProfile: any): string {
+    getQualifiedProfileName(connectionProfile: any): string {
         let prefix = hash(connectionProfile);
 
         if ('web' === connectionProfile.type) {

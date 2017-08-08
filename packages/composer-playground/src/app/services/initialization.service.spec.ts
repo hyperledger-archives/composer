@@ -21,6 +21,7 @@ import { FileWallet } from 'composer-common';
 
 import * as sinon from 'sinon';
 import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 
 describe('InitializationService', () => {
 
@@ -29,6 +30,7 @@ describe('InitializationService', () => {
     let mockConnectionProfileService;
     let mockWalletService;
     let mockIdentityService;
+    let mockIdentityCardService;
 
     beforeEach(() => {
 
@@ -37,6 +39,7 @@ describe('InitializationService', () => {
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockWalletService = sinon.createStubInstance(WalletService);
         mockIdentityService = sinon.createStubInstance(IdentityService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
         TestBed.configureTestingModule({
             imports: [HttpModule],
@@ -46,6 +49,7 @@ describe('InitializationService', () => {
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: IdentityService, useValue: mockIdentityService},
+                {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: WalletService, useValue: mockWalletService},
                 {provide: XHRBackend, useClass: MockBackend}
             ]
@@ -77,24 +81,20 @@ describe('InitializationService', () => {
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
 
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
-
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-
             mockAlertService.busyStatus$ = {next: sinon.stub()};
 
             mockIdentityService.getLoggedIn.returns(false);
+
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve('cardRef'));
 
             service.initialize();
 
             tick();
             stubLoadConfig.should.be.called;
 
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.called;
+            mockIdentityCardService.loadIdentityCards.should.have.been.called;
+            mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
             mockCreateSample.should.be.called;
         })));
 
@@ -105,30 +105,28 @@ describe('InitializationService', () => {
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
 
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
-
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-
             mockAlertService.busyStatus$ = {next: sinon.stub()};
 
             mockIdentityService.getLoggedIn.returns(true);
+
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve('cardRef'));
 
             service.initialize();
 
             tick();
             stubLoadConfig.should.be.called;
 
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
+            mockIdentityCardService.loadIdentityCards.should.have.been.called;
+            mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
             mockCreateSample.should.not.have.been.called;
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
 
             let loadConfigStub = sinon.stub(service, 'loadConfig').throws();
+
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
             mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -159,92 +157,6 @@ describe('InitializationService', () => {
         })));
     });
 
-    describe('createInitialProfiles', () => {
-        it('should get initial profile', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.getProfile.returns(Promise.resolve());
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {
-                connectionProfiles: [{
-                    profile1: {
-                        name: 'profile1',
-                        type: 'hlf'
-                    }
-                }, {profile2: {name: 'profile2', type: 'hlf'}}]
-            };
-            service.createInitialProfiles();
-            tick();
-            mockConnectionProfileService.getProfile.should.be.called;
-        })));
-
-        it('should create initial profile if it doesnt exist', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.getProfile.returns(Promise.reject(''));
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {connectionProfiles: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            service.createInitialProfiles();
-
-            tick();
-
-            mockConnectionProfileService.getProfile.should.be.called;
-            mockConnectionProfileService.createProfile.should.be.calledWith('0', {
-                'profile1': {
-                    name: 'profile1',
-                    type: 'hlf'
-                }
-            });
-        })));
-
-        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {};
-            service.createInitialProfiles();
-
-            tick();
-
-            mockConnectionProfileService.getProfile.should.not.have.been.called;
-            mockConnectionProfileService.createProfile.should.not.have.been.called;
-        })));
-    });
-
-    describe('createInitialIdentities', () => {
-
-        it('should get initial identities', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {credentials: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            const fileWalletStub = sinon.createStubInstance(FileWallet);
-            fileWalletStub.get.returns(Promise.resolve());
-            fileWalletStub.add.returns(Promise.resolve());
-            mockWalletService.getWallet.returns(fileWalletStub);
-            service.createInitialIdentities();
-
-            tick();
-
-            fileWalletStub.get.should.be.called;
-        })));
-
-        it('should create initial identities if it doesnt exist', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {credentials: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            const fileWalletStub = sinon.createStubInstance(FileWallet);
-            fileWalletStub.get.returns(Promise.reject('Error'));
-            fileWalletStub.add.returns(Promise.resolve());
-            mockWalletService.getWallet.returns(fileWalletStub);
-            service.createInitialIdentities();
-
-            tick();
-
-            fileWalletStub.get.should.be.called;
-            fileWalletStub.add.should.be.calledWith('profile1', {name: 'profile1', type: 'hlf'});
-        })));
-
-        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {};
-
-            service.createInitialIdentities();
-
-            tick();
-
-            mockWalletService.getWallet.should.not.have.been.called;
-        })));
-    });
-
     describe('isWebOnly', () => {
         it('should return false if web only', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             let result = service.isWebOnly();
@@ -262,7 +174,9 @@ describe('InitializationService', () => {
 
     describe('deployInitialSample', () => {
         it('should deploy the initial sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service.deployInitialSample();
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+
+            service.deployInitialSample('xxxx');
 
             tick();
 
