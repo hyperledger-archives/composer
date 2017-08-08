@@ -17,5 +17,5 @@ class AdminConnection {
    + Promise getLogLevel() 
    + Promise list() 
    + Promise importIdentity(string,string,string,string) 
-   + Promise enrollIdentity(string,string,string) 
+   + Promise requestIdentity(string,string,string) 
 }

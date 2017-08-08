@@ -490,24 +490,24 @@ describe('AdminConnection', () => {
 
     });
 
-    describe('#enrollIdentity', () => {
-        it('should be able to enroll an identity', () => {
+    describe('#requestIdentity', () => {
+        it('should be able to request an identity', () => {
             mockConnectionManager.importIdentity = sinon.stub();
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.enrollIdentity('testprofile', 'id', 'secret')
+            return adminConnection.requestIdentity('testprofile', 'id', 'secret')
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionManager.enrollIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.enrollIdentity, 'testprofile', config, 'id', 'secret');
+                    sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, 'testprofile', config, 'id', 'secret');
                 });
         });
 
         it('should throw an error if import fails', () => {
-            mockConnectionManager.enrollIdentity = sinon.stub();
-            mockConnectionManager.enrollIdentity.rejects(new Error('some error'));
+            mockConnectionManager.requestIdentity = sinon.stub();
+            mockConnectionManager.requestIdentity.rejects(new Error('some error'));
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.enrollIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            return adminConnection.requestIdentity('testprofile', 'anid', 'acerttosign', 'akey')
                 .should.be.rejectedWith(/some error/);
         });
 

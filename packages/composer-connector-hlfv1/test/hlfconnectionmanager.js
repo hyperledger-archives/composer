@@ -1056,7 +1056,7 @@ describe('HLFConnectionManager', () => {
 
     });
 
-    describe('#enrollIdentity', () => {
+    describe('#requestIdentity', () => {
         let profile, mockCAClient, mockCryptoSuite;
         beforeEach(() => {
             mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
@@ -1087,8 +1087,8 @@ describe('HLFConnectionManager', () => {
             };
         });
 
-        it('should successfully enroll an identity', () => {
-            return connectionManager.enrollIdentity('connprof1', profile, 'id', 'secret')
+        it('should successfully request an identity', () => {
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .then((result) => {
                     result.should.deep.equal({certificate: 'a', key: 'c', rootCertificate: 'b', caName: 'default'});
                     sinon.assert.calledOnce(Client.newCryptoSuite);
@@ -1097,9 +1097,9 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should successfully enroll an identity with a named ca server', () => {
+        it('should successfully request an identity with a named ca server', () => {
             profile.ca = {'url': 'http://localhost:7054', 'name': 'aName'};
-            return connectionManager.enrollIdentity('connprof1', profile, 'id', 'secret')
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .then((result) => {
                     result.should.deep.equal({certificate: 'a', key: 'c', rootCertificate: 'b', caName: 'aName'});
                     sinon.assert.calledOnce(Client.newCryptoSuite);
@@ -1111,57 +1111,57 @@ describe('HLFConnectionManager', () => {
 
         it('should throw if connectionProfile not specified', () => {
             (() => {
-                connectionManager.enrollIdentity();
+                connectionManager.requestIdentity();
             }).should.throw(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionProfile not a string', () => {
             (() => {
-                connectionManager.enrollIdentity([]);
+                connectionManager.requestIdentity([]);
             }).should.throw(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionOptions not specified', () => {
             (() => {
-                connectionManager.enrollIdentity('connprof1');
+                connectionManager.requestIdentity('connprof1');
             }).should.throw(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if connectionOptions not an object', () => {
             (() => {
-                connectionManager.enrollIdentity('connprof1', 'hlfabric1');
+                connectionManager.requestIdentity('connprof1', 'hlfabric1');
             }).should.throw(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if enrollmentid not specified', () => {
             (() => {
-                connectionManager.enrollIdentity('connprof1', profile);
+                connectionManager.requestIdentity('connprof1', profile);
             }).should.throw(/enrollmentID not specified/);
         });
 
         it('should throw if enrollmentid not specified', () => {
             (() => {
-                connectionManager.enrollIdentity('connprof1', profile, 'id');
+                connectionManager.requestIdentity('connprof1', profile, 'id');
             }).should.throw(/enrollmentSecret not specified/);
         });
 
         it('should throw if ca is not specified', () => {
             delete profile.ca;
             (() => {
-                connectionManager.enrollIdentity('connprof1', profile, 'id', 'secret');
+                connectionManager.requestIdentity('connprof1', profile, 'id', 'secret');
             }).should.throw(/No ca defined/);
         });
 
         it('should handle an error on enroll', () => {
             mockCAClient.enroll.rejects('Error','wow such fail');
-            return connectionManager.enrollIdentity('connprof1', profile, 'id', 'secret')
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .should.be.rejectedWith(/wow such fail/);
         });
 
         /*
         it('should handle an error creating a new cryptosuite', () => {
             Client.newCryptoSuite.throws(new Error('another fail'));
-            return connectionManager.enrollIdentity('connprof1', profile, 'id', 'secret')
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .should.be.rejectedWith(/another fail/);
         });
         */

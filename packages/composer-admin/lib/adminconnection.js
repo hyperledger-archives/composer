@@ -540,20 +540,20 @@ class AdminConnection {
     }
 
     /**
-     * Enroll an identity and return the enrollment information. No connection needs to be established
+     * Request the certificates for an identity. No connection needs to be established
      * for this method to succeed.
     * @example
-     * // Enroll an identity and retrieve the crypto material for a fabric v1 system.
+     * // Request the cryptographic material for am identity of a hlf v1 environment.
      * var adminConnection = new AdminConnection();
-     * return adminConnection.enrollIdentity('hlfv1', 'admin', 'adminpw')
-     * .then((enrollment) => {
-     *     // Identity enrolled
+     * return adminConnection.requestIdentity('hlfv1', 'admin', 'adminpw')
+     * .then((response) => {
+     *     // Identity returned
      *     console.log('public signing certificate:');
-     *     console.log(enrollment.certificate);
+     *     console.log(response.certificate);
      *     console.log('private key:');
-     *     console.log(enrollment.key.toBytes()); //TODO:
+     *     console.log(response.key);
      *     console.log('ca root certificate:');
-     *     console.log(enrollment.rootCertificate);
+     *     console.log(response.rootCertificate);
      * })
      * .catch(function(error){
      *     // Add optional error handling here.
@@ -564,7 +564,7 @@ class AdminConnection {
      * @param {string} enrollmentSecret The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
      */
-    enrollIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
+    requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
         let savedConnectionManager;
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
@@ -572,10 +572,10 @@ class AdminConnection {
                 return this.getProfile(connectionProfile);
             })
             .then((profileData) => {
-                return savedConnectionManager.enrollIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
+                return savedConnectionManager.requestIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
             })
             .catch((error) => {
-                throw new Error('failed to enroll identity. ' + error.message);
+                throw new Error('failed to request identity. ' + error.message);
             });
     }
 

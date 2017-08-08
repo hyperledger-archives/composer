@@ -69,11 +69,11 @@ describe('ConnectionManager', () => {
 
     });
 
-    describe('#enrollIdentity', () => {
+    describe('#requestIdentity', () => {
 
         it('should throw as abstract', () => {
             let cm = new ConnectionManager(mockConnectionProfileManager);
-            return cm.enrollIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
+            return cm.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
                 .should.be.rejectedWith(/abstract function called/);
         });
 

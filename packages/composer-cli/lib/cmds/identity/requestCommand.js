@@ -14,15 +14,15 @@
 
 'use strict';
 
-const Enroll = require ('./lib/enroll.js');
+const Enroll = require ('./lib/request.js');
 
-module.exports.command = 'enroll [options]';
-module.exports.describe = 'Enroll an identity to download the certificate and key';
+module.exports.command = 'request [options]';
+module.exports.describe = 'Request an identity\'s certificate and key';
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    path: { alias: 'd', required: false, describe: 'path where to store stuff', type: 'string' }
+    path: { alias: 'd', required: false, describe: 'path where to store the certificates and key', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

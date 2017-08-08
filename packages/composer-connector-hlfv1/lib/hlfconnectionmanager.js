@@ -341,8 +341,7 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * enroll an identity from the ca server, but don't import the raw credentials into the
-     * wallet, just return them to the user.
+     * Request an identity's certificates.
      *
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
@@ -350,8 +349,8 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {any} enrollmentSecret  The enrollment secret
      * @returns {promise} resolves once the files have been written, rejected if a problem occurs
      */
-    enrollIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
-        const method = 'enrollIdentity';
+    requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
+        const method = 'requestIdentity';
         LOG.entry(method, enrollmentID);
 
         // Validate all the arguments.
