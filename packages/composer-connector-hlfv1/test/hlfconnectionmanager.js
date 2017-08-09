@@ -998,16 +998,16 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/id not specified or not a string/);
         });
 
-        it('should throw if publicKey not specified', () => {
+        it('should throw if publicCert not specified', () => {
             (() => {
                 connectionManager.importIdentity('connprof1', profile, 'anid');
-            }).should.throw(/publicKey not specified or not a string/);
+            }).should.throw(/publicCert not specified or not a string/);
         });
 
-        it('should throw if publicKey not a string', () => {
+        it('should throw if publicCert not a string', () => {
             (() => {
                 connectionManager.importIdentity('connprof1', profile, 'anid', []);
-            }).should.throw(/publicKey not specified or not a string/);
+            }).should.throw(/publicCert not specified or not a string/);
         });
 
         it('should throw if key not specified', () => {
@@ -1054,6 +1054,109 @@ describe('HLFConnectionManager', () => {
                 .should.be.rejectedWith(/wow such fail/);
         });
 
+    });
+
+    describe('#requestIdentity', () => {
+        let profile, mockCAClient, mockCryptoSuite;
+        beforeEach(() => {
+            mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+            mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
+            mockCAClient.enroll.resolves({
+                certificate: 'a',
+                key: {toBytes: function() {return 'c';}},
+                rootCertificate: 'b'
+            });
+            sandbox.stub(HLFConnectionManager, 'createCAClient').withArgs(sinon.match.string).returns(mockCAClient);
+
+            profile = {
+                orderers: [
+                    'grpc://localhost:7050'
+                ],
+                peers: [
+                    {
+                        requestURL: 'grpc://localhost:7051',
+                        eventURL: 'grpc://localhost:7053'
+                    }
+                ],
+                ca: 'http://localhost:7054',
+                keyValStore: '/tmp/hlfabric1',
+                channel: 'testchainid',
+                timeout: 123,
+                mspID: 'MSP1Org'
+            };
+        });
+
+        it('should successfully request an identity', () => {
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
+                .then((result) => {
+                    result.should.deep.equal({certificate: 'a', key: 'c', rootCertificate: 'b', caName: 'default'});
+                    sinon.assert.calledOnce(Client.newCryptoSuite);
+                    sinon.assert.calledOnce(mockCAClient.enroll);
+                    sinon.assert.calledWith(mockCAClient.enroll,{ enrollmentID: 'id', enrollmentSecret: 'secret' });
+                });
+        });
+
+        it('should successfully request an identity with a named ca server', () => {
+            profile.ca = {'url': 'http://localhost:7054', 'name': 'aName'};
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
+                .then((result) => {
+                    result.should.deep.equal({certificate: 'a', key: 'c', rootCertificate: 'b', caName: 'aName'});
+                    sinon.assert.calledOnce(Client.newCryptoSuite);
+                    sinon.assert.calledOnce(mockCAClient.enroll);
+                    sinon.assert.calledWith(mockCAClient.enroll,{ enrollmentID: 'id', enrollmentSecret: 'secret' });
+                });
+        });
+
+
+        it('should throw if connectionProfile not specified', () => {
+            (() => {
+                connectionManager.requestIdentity();
+            }).should.throw(/connectionProfile not specified or not a string/);
+        });
+
+        it('should throw if connectionProfile not a string', () => {
+            (() => {
+                connectionManager.requestIdentity([]);
+            }).should.throw(/connectionProfile not specified or not a string/);
+        });
+
+        it('should throw if connectionOptions not specified', () => {
+            (() => {
+                connectionManager.requestIdentity('connprof1');
+            }).should.throw(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if connectionOptions not an object', () => {
+            (() => {
+                connectionManager.requestIdentity('connprof1', 'hlfabric1');
+            }).should.throw(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if enrollmentid not specified', () => {
+            (() => {
+                connectionManager.requestIdentity('connprof1', profile);
+            }).should.throw(/enrollmentID not specified/);
+        });
+
+        it('should throw if enrollmentid not specified', () => {
+            (() => {
+                connectionManager.requestIdentity('connprof1', profile, 'id');
+            }).should.throw(/enrollmentSecret not specified/);
+        });
+
+        it('should throw if ca is not specified', () => {
+            delete profile.ca;
+            (() => {
+                connectionManager.requestIdentity('connprof1', profile, 'id', 'secret');
+            }).should.throw(/No ca defined/);
+        });
+
+        it('should handle an error on enroll', () => {
+            mockCAClient.enroll.rejects('Error','wow such fail');
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
+                .should.be.rejectedWith(/wow such fail/);
+        });
     });
 
 });
