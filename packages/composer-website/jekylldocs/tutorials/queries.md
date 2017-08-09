@@ -10,11 +10,11 @@ excerpt: "This guide will walk you through the steps required to add and try out
 
 # Queries Tutorial using the Composer Query language and REST APIs
 
-In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as an updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
+In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
 
 Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' Developer tutorial, we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
 
-It is recommended to do the Developer Tutorial first, where the business network `my-network` has been deployed. (Alternatively, you can  if you wish, do this tutorial from 'scratch' - just build a new 'my-network' VSCode project and create the files (below) as you go along  - just remember to use `composer network deploy` to deploy the BNA file later on in this tutorial).
+It is recommended to do the Developer Tutorial first, where the business network `my-network` has been deployed. (Alternatively, you can  if you wish, do this tutorial from 'scratch' - just build a new 'my-network' VSCode project (just like the Developer tutorial did) and edit your package.json accordingly / create the files (below) as you go along  - in this instance, remember to use `composer network deploy` (as a new network) to deploy the BNA file later on in this tutorial).
 
 ## Re-open your Commodities Trading 'my-network' project
 
@@ -235,7 +235,11 @@ Switch back to the terminal and from the `my-network` project directory,  type:
 
 composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
-(including the trailing '.' please note):
+```
+
+(including the trailing '.' please note) - check that it creates this ok :
+
+```
 
 Creating Business Network Archive
 
@@ -251,9 +255,10 @@ Command completed successfully.
 
 Command succeeded
 
-```
 
 The `composer archive create` command has updated the file called `my-network.bna` in the `dist` folder.
+
+```
 
 
 ## Write and Perform Unit Tests to include Queries
