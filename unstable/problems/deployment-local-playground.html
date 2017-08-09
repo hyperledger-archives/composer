@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Integrating with Node-RED | Hyperledger Composer</title>
+    <title>Error using the local Playground | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Integrating with Node-RED</p>
+          <p>Error using the local Playground</p>
           </div>
 
           <nav class="context-nav">
@@ -193,22 +193,24 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="integrating-with-node-red">Integrating with Node-RED</h1>
+              <h1 id="errors-deploying-a-business-network-to-a-local-fabric-using-the-hyperledger-composer-playground">Errors deploying a business network to a local fabric using the Hyperledger Composer Playground</h1>
 
-<p><a href="http://nodered.org">Node-RED</a> is a lightweight Open Source integration technology, written in JavaScript. It uses a graphical flow to integrate different <em>nodes</em>, where nodes can receive data, transform data and output data.</p>
+<p>When deploying a business network to an instance of Hyperledger Fabric by using a locally installed Hyperledger Composer Playground, you may encounter the following error:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
+</code></pre></div>
+<p>Once this error has occurred, you must delete your local browser storage to restore normal function. <em>Please note</em>: Deleting local browser storage will delete your connection profile and identities in your wallet.</p>
 
-<p>Node-RED is commonly used to rapidly prototype Internet of Things style applications, or to wire existing Internet services together.
-You can use the Hyperledger Composer Node-RED contribution to:</p>
+<h2 id="what-causes-the-error">What causes the error</h2>
 
-<ul>
-<li>Submit transactions</li>
-<li>Read and update assets and participants</li>
-<li>Subscribe to events</li>
-<li>Delete assets and participants</li>
-</ul>
+<p>The error occurs if both the identity you are using to deploy the business network does not have network-level access control, and the instance of Hyperledger Fabric does not have a deployed business network with the name <code>org-acme-biznet</code>.</p>
 
-<p>The Hyperledger Composer Node-RED nodes are distributed as a standalone npm package, published here:
-- <a href="https://www.npmjs.com/package/node-red-contrib-hyperledger-composer">https://www.npmjs.com/package/node-red-contrib-hyperledger-composer</a></p>
+<h2 id="fixes-for-the-error">Fixes for the error</h2>
+
+<p>If you attempt to deploy a network using an identity which does not have network-level access control, and the instance of Hyperledger Fabric does not have a business network called <code>org-acme-biznet</code> deployed, you must delete your local browser storage. This will delete the connection profile and the identities.</p>
+
+<h2 id="how-to-avoid-the-error">How to avoid the error</h2>
+
+<p>When using the a local instance of the Hyperledger Composer Playground to deploy a business network to a local Hyperledger Fabric instance, you must use an identity which has <a href="./acl_language.html">network-level access control</a>. If an identity without network-level access control is used, there must be a business network with the name <code>org-acme-biznet</code> deployed to the instance of Hyperledger Fabric being used.</p>
 
             
           </section>

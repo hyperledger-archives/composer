@@ -144,7 +144,11 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
+
+<ul>
+<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
+</ul></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -230,6 +234,13 @@ docker images -aq | xargs docker rmi -f
 <h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
 
 <p>When deploying a business network to Hyperledger Fabric v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.</p>
+
+<h3 id="errors-deploying-a-business-network-to-a-local-fabric-using-the-hyperledger-composer-playground">Errors deploying a business network to a local fabric using the Hyperledger Composer Playground</h3>
+
+<p>When deploying a business network to an instance of Hyperledger Fabric by using a locally installed Hyperledger Composer Playground, you may encounter the following error:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
+</code></pre></div>
+<p>Once this error has occurred, you must delete your local browser storage to restore normal function. <em>Please note</em>: Deleting local browser storage will delete your connection profile and identities in your wallet.</p>
 
 <hr>
 

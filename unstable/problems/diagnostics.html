@@ -144,7 +144,11 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
+
+<ul>
+<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
+</ul></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -194,31 +198,6 @@ ga('send', 'pageview');
 <p>Composer uses the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
 
 <p>The config module does write out a warning, if there are no configuration files set. Eg. <code>WARNING: No configurations found in configuration directory</code>. This can be suppressed with an environment variable if you are happy with the defaults and don&#39;t wish to use config in your application. See more information <a href="https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning">here</a>.</p>
-
-<!--
-## User Applications - Dan
-## Business Networks - Liam/Matthew
-## CLI - David
-
-- `DEBUG=composer:* composer network deploy` <-- debugs the command. dumps soem debug info to console. tracefile written to logs directory of CurrentWorkingDir. sort by date and look for recent.
-
-## Rest Server - Simon
-## Playground - Caroline
-
-
-## Composer Runtime - David
-
-- logLevel -> network deploy and loglevel designed for doing this shit.
-- docker command to get logs out `docker logs <chaincode container>` <-- this gets more complex. chaincode names dev-<businessnetworkname><composerruntimeversion>
-
-- composer runtime < should loglevel be here. (mebs next week)
-- advice: set loglevel to debug on deploy because if deploy breaks you want the logs.
-
-
-## Hyperledger Fabric v1.0 - David
-
-
--->
 
 <h1 id="diagnosing-problems">Diagnosing Problems</h1>
 
