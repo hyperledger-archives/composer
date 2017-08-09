@@ -51,7 +51,7 @@ export class TestComponent implements OnInit, OnDestroy {
             });
 
             return this.clientService.reset()
-            .then(() => { 
+            .then(() => {
                 return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries();
             })
             .then((assetRegistries) => {
