@@ -20,7 +20,7 @@ Once this error has occurred, you must delete your local browser storage to rest
 
 ## What causes the error
 
-The error occurs if both the identity you are using to deploy the business network does not have network-level access control, and the connection profile is not associated with a business network with the name `org-acme-biznet`.
+The error occurs if both the identity you are using to deploy the business network does not have network-level access control, and the instance of {{site.data.conrefs.hlf_full}} does not have a deployed business network with the name `org-acme-biznet`.
 
 ## Fixes for the error
 
