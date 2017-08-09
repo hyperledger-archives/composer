@@ -1,0 +1,72 @@
+function noComment() {
+
+}
+
+/*
+ * Here is a comment
+ */
+function aComment() {
+
+}
+
+function noComment2() {
+
+}
+
+function noComment3() {
+
+}
+
+
+
+
+
+//
+// @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+// @transaction
+function decoratedSingleComment(trade) {
+
+}
+
+function nocomment4() {
+
+}
+
+function nocomment5() {
+
+}
+
+/**
+  * Track the trade of a commodity from one trader to another
+  * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+  * @transaction
+  */
+function decoratedComment1(trade) {
+
+}
+/**
+  * Track the trade of a commodity from one trader to another
+  * @param {org.acme.mynetwork.Trade2} trade - the trade to be processed
+  * @transaction
+  */
+function decoratedComment2(trade) {
+
+}
+function nocomment6() {
+
+}
+
+function nocomment7() {
+
+}
+/**
+  * Track the trade of a commodity from one trader to another
+  * @param {org.acme.mynetwork.Trade3} trade - the trade to be processed
+  * @transaction
+  */
+function decoratedComment3(trade) {
+
+}
+
+
+
