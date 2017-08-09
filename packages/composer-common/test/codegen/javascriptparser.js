@@ -25,29 +25,23 @@ describe('JavascriptParser', () => {
     describe('#constructor', () => {
         it('should use a default ECMAScript version of 7', () => {
             const contents = `
-                class cls {
-
-                }
-                const theCls = new cls();
-                let theCls = new cls();
+                let num = 3 ** 2;
+                num **= 2;
+                [ 81 ].includes(num);
             `;
 
             const parser = new JavascriptParser(contents);
-            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [] }]);
+            parser.should.exist;
         });
 
         it('should accept a non-default ECMAScript version of 5', () => {
             const contents = `
-                class cls {
-
-                }
-                const theCls = new cls();
-                let theCls = new cls();
+                class cls { }
             `;
 
             (() => {
                 new JavascriptParser(contents, false, 5);
-            }).should.throw(/The keyword.*is reserved/);
+            }).should.throw(/The keyword .*class.* is reserved/);
         });
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.10.2",
+  "version": "0.11.2",
   "description": "Hyperledger Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
@@ -19,7 +19,7 @@
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-common.js",
     "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000",
-    "regenmodel":"node ./scripts/systemmodelgen.js"
+    "regenmodel": "node ./scripts/systemmodelgen.js"
   },
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "sinon": "^2.3.8"
   },
   "dependencies": {
-    "acorn": "^4.0.3",
+    "acorn": "^5.1.1",
     "browserfs": "^1.1.0",
     "commander": "^2.9.0",
     "comment-parser": "^0.4.0",

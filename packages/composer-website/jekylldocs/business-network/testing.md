@@ -14,7 +14,7 @@ excerpt: How to test business networks
 
 After you have deployed a business network definition it is often useful to run an interative "smoke test" to ensure that the deployment was successful. The `composer` CLI exposes several commands for running such smoke tests.
 
-At the othe end of the spectrum you can write full-blown system tests using Docker Compose and Mocha/Chai, that start a runtime, deploy your business network definition and then programmatically creates assets, submits transactions and inspect the state of asset registries.
+At the other end of the spectrum you can write full-blown system tests using Docker Compose and Mocha/Chai, that start a runtime, deploy your business network definition and then programmatically creates assets, submits transactions and inspect the state of asset registries.
 
 In between fall unit tests. Unit tests focus on ensuring that the correct changes to the world-state take place when a transaction is processed.
 
@@ -32,7 +32,7 @@ The command line can be used to inspect the state of the runtime and to submit t
 
 The business logic in transaction processor functions should have unit tests, ideally with 100% code coverage. This will ensure that you do not have typos or logic errors in the business logic.
 
-You can use standard JavaScript testing libraries, such as Mocha, Chai, Sinon and Istambul to unit test the logic in your transaction processor functions.
+You can use standard JavaScript testing libraries, such as Mocha, Chai, Sinon and Istanbul to unit test the logic in your transaction processor functions.
 
 The `embedded` runtime is very useful for unit testing, as it allows you to quickly test business logic in a simulated Node.js blockchain environment, without having to stand-up a {{site.data.conrefs.hlf_full}}.
 
