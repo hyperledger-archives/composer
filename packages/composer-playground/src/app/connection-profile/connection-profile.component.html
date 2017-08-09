@@ -25,7 +25,8 @@
   </div>
 </section>
 <section class="main-view">
-    <div class="flex">
+    <div class="main-view-content">
+        <div class="flex">
         <div class="playground-profile-warning" *ngIf="warningVisible">
             <div class="profile-warning-content">
             <div>
@@ -53,6 +54,7 @@
         <div class="current-profile">
             <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
         </div>
+    </div>
     </div>
     <app-footer></app-footer>
 </section>

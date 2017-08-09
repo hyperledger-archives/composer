@@ -294,7 +294,7 @@ describe('Editor Define', (() => {
             });
 
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Script File\nlib/script.js');
@@ -330,7 +330,7 @@ describe('Editor Define', (() => {
                 expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
             });
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Script File\nlib/importScript.js');
@@ -349,7 +349,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Model File\nmodels/org.acme.model.cto');
@@ -397,7 +397,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Model File\nmodels/importModel.cto');
@@ -444,7 +444,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Access Control\npermissions.acl');
@@ -502,7 +502,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Access Control\npermissions.acl');
@@ -551,7 +551,7 @@ describe('Editor Define', (() => {
         .then((startFiles) => {
             // Check for new contents (we only have one readme file)
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('About\nREADME.md');
@@ -602,7 +602,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Query File\nqueries.qry');
@@ -648,7 +648,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Query File\nqueries.qry');

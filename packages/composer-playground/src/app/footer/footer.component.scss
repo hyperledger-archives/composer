@@ -2,9 +2,13 @@
 @import '../../assets/styles/base/_variables.scss';
 
 app-footer {
-    position: relative;
-    display: flex;
+    position: absolute;
+    display: block;
     width: 100%;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding: 0px $space-large;
 
     .footer-main{
         position: relative;

@@ -14,17 +14,17 @@
 
 'use strict';
 
-const Import = require ('./lib/import.js');
+const Enroll = require ('./lib/request.js');
 
-module.exports.command = 'import [options]';
-module.exports.describe = 'Import an identity to wallet defined by the connection profile';
+module.exports.command = 'request [options]';
+module.exports.describe = 'Request an identity\'s certificate and key';
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    userId: { alias: 'u', required: true, describe: 'The user ID for the new identity', type: 'string' },
-    publicKeyFile: { alias: 'c', required: true, describe: 'File containing the public key', type: 'string' },
-    privateKeyFile: { alias: 'k', required: true, describe: 'File containing the private key', type: 'string' }
+    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    path: { alias: 'd', required: false, describe: 'path where to store the certificates and key', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Import.handler(argv);
+    return argv.thePromise = Enroll.handler(argv);
 };
