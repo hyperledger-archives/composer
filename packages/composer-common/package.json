@@ -52,7 +52,7 @@
     "sinon": "^2.3.8"
   },
   "dependencies": {
-    "acorn": "^5.1.1",
+    "acorn": "^4.0.3",
     "browserfs": "^1.1.0",
     "commander": "^2.9.0",
     "comment-parser": "^0.4.0",
