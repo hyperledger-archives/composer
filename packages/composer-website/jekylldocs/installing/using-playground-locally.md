@@ -59,7 +59,7 @@ When deploying a business network to an instance of {{site.data.conrefs.hlf_full
 Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
 ```
 
-Once this error has occurred, you must delete your local browser storage to restore normal function. *Please note*: Deleting local browser storage will delete your connection profile and local identities.
+Once this error has occurred, you must delete your local browser storage to restore normal function. *Please note*: Deleting local browser storage will delete your connection profile and identities in your wallet.
 
 ---
 <!--
