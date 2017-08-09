@@ -166,6 +166,19 @@ class ConnectionManager {
         return Promise.reject(new Error('abstract function called'));
     }
 
+    /**
+     * Request an identity's certificates.
+     *
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {any} enrollmentID The enrollment id
+     * @param {any} enrollmentSecret  The enrollment secret
+     * @returns {promise} resolves with the identity certificates, rejected if a problem occurs
+     */
+    requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
 }
 
 module.exports = ConnectionManager;
