@@ -1,7 +1,7 @@
 /**
  * Sample business network definition.
  */
-namespace org.acme.sample
+namespace <%= namespace%>
 
 asset SampleAsset identified by assetId {
   o String assetId

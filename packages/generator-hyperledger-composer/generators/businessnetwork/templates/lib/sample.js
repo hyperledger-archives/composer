@@ -14,7 +14,7 @@
 
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {<%= namespace%>.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 function sampleTransaction(tx) {
@@ -26,7 +26,7 @@ function sampleTransaction(tx) {
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
+    return getAssetRegistry(<%= namespace%>.'SampleAsset')
         .then(function (assetRegistry) {
 
             // Update the asset in the asset registry.
@@ -36,7 +36,7 @@ function sampleTransaction(tx) {
         .then(function () {
 
             // Emit an event for the modified asset.
-            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
+            var event = getFactory().newEvent(<%= namespace%>, 'SampleEvent');
             event.asset = tx.asset;
             event.oldValue = oldValue;
             event.newValue = tx.newValue;

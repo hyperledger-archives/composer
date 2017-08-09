@@ -89,13 +89,13 @@ describe('Sample', () => {
                 factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
                 // Create the participants.
-                const alice = factory.newResource('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const alice = factory.newResource(<%= namespace%>, 'SampleParticipant', 'alice@email.com');
                 alice.firstName = 'Alice';
                 alice.lastName = 'A';
-                const bob = factory.newResource('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const bob = factory.newResource(<%= namespace%>, 'SampleParticipant', 'bob@email.com');
                 bob.firstName = 'Bob';
                 bob.lastName = 'B';
-                return businessNetworkConnection.getParticipantRegistry('org.acme.sample.SampleParticipant')
+                return businessNetworkConnection.getParticipantRegistry(<%= namespace%>'.SampleParticipant')
                     .then((participantRegistry) => {
                         participantRegistry.addAll([alice, bob]);
                     });
@@ -104,13 +104,13 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the assets.
-                const asset1 = factory.newResource('org.acme.sample', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const asset1 = factory.newResource(<%= namespace%>, 'SampleAsset', '1');
+                asset1.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'alice@email.com');
                 asset1.value = '10';
-                const asset2 = factory.newResource('org.acme.sample', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const asset2 = factory.newResource(<%= namespace%>, 'SampleAsset', '2');
+                asset2.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'bob@email.com');
                 asset2.value = '20';
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         assetRegistry.addAll([asset1, asset2]);
                     });
@@ -118,10 +118,10 @@ describe('Sample', () => {
             .then(() => {
 
                 // Issue the identities.
-                return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#alice@email.com', 'alice1')
+                return businessNetworkConnection.issueIdentity(<%= namespace%>'.SampleParticipant#alice@email.com', 'alice1')
                     .then((identity) => {
                         aliceIdentity = identity;
-                        return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#bob@email.com', 'bob1');
+                        return businessNetworkConnection.issueIdentity(<%= namespace%>'.SampleParticipant#bob@email.com', 'bob1');
                     })
                     .then((identity) => {
                         bobIdentity = identity;
@@ -155,7 +155,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the assets.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.getAll();
 
@@ -167,10 +167,10 @@ describe('Sample', () => {
                 // Validate the assets.
                 assets.should.have.lengthOf(2);
                 const asset1 = assets[0];
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#alice@email.com');
                 asset1.value.should.equal('10');
                 const asset2 = assets[1];
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#bob@email.com');
                 asset2.value.should.equal('20');
 
             });
@@ -184,7 +184,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the assets.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.getAll();
 
@@ -196,10 +196,10 @@ describe('Sample', () => {
                 // Validate the assets.
                 assets.should.have.lengthOf(2);
                 const asset1 = assets[0];
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#alice@email.com');
                 asset1.value.should.equal('10');
                 const asset2 = assets[1];
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#bob@email.com');
                 asset2.value.should.equal('20');
 
             });
@@ -213,12 +213,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset3 = factory.newResource('org.acme.sample', 'SampleAsset', '3');
-                asset3.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const asset3 = factory.newResource(<%= namespace%>, 'SampleAsset', '3');
+                asset3.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'alice@email.com');
                 asset3.value = '30';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset3)
                             .then(() => {
@@ -230,7 +230,7 @@ describe('Sample', () => {
             .then((asset3) => {
 
                 // Validate the asset.
-                asset3.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#alice@email.com');
+                asset3.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#alice@email.com');
                 asset3.value.should.equal('30');
 
             });
@@ -244,12 +244,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset3 = factory.newResource('org.acme.sample', 'SampleAsset', '3');
-                asset3.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const asset3 = factory.newResource(<%= namespace%>, 'SampleAsset', '3');
+                asset3.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'bob@email.com');
                 asset3.value = '30';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset3);
                     });
@@ -266,12 +266,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset4 = factory.newResource('org.acme.sample', 'SampleAsset', '4');
-                asset4.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const asset4 = factory.newResource(<%= namespace%>, 'SampleAsset', '4');
+                asset4.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'bob@email.com');
                 asset4.value = '40';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset4)
                             .then(() => {
@@ -283,7 +283,7 @@ describe('Sample', () => {
             .then((asset4) => {
 
                 // Validate the asset.
-                asset4.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#bob@email.com');
+                asset4.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#bob@email.com');
                 asset4.value.should.equal('40');
 
             });
@@ -297,12 +297,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset4 = factory.newResource('org.acme.sample', 'SampleAsset', '4');
-                asset4.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const asset4 = factory.newResource(<%= namespace%>, 'SampleAsset', '4');
+                asset4.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'alice@email.com');
                 asset4.value = '40';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset4);
                     });
@@ -319,12 +319,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset1 = factory.newResource('org.acme.sample', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const asset1 = factory.newResource(<%= namespace%>, 'SampleAsset', '1');
+                asset1.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'alice@email.com');
                 asset1.value = '50';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset1)
                             .then(() => {
@@ -336,7 +336,7 @@ describe('Sample', () => {
             .then((asset1) => {
 
                 // Validate the asset.
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#alice@email.com');
                 asset1.value.should.equal('50');
 
             });
@@ -350,12 +350,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset2 = factory.newResource('org.acme.sample', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const asset2 = factory.newResource(<%= namespace%>, 'SampleAsset', '2');
+                asset2.owner = factory.newRelationship(<%= namespace%>, 'SampleParticipant', 'bob@email.com');
                 asset2.value = '50';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset2);
                     });
@@ -372,12 +372,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset2 = factory.newResource('org.acme.sample', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'bob@email.com');
+                const asset2 = factory.newResource('<%= namespace%>', 'SampleAsset', '2');
+                asset2.owner = factory.newRelationship('<%= namespace%>', 'SampleParticipant', 'bob@email.com');
                 asset2.value = '60';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset2)
                             .then(() => {
@@ -389,7 +389,7 @@ describe('Sample', () => {
             .then((asset2) => {
 
                 // Validate the asset.
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal('<%= namespace%>.SampleParticipant#bob@email.com');
                 asset2.value.should.equal('60');
 
             });
@@ -403,12 +403,12 @@ describe('Sample', () => {
             .then(() => {
 
                 // Create the asset.
-                const asset1 = factory.newResource('org.acme.sample', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+                const asset1 = factory.newResource('<%= namespace%>', 'SampleAsset', '1');
+                asset1.owner = factory.newRelationship('<%= namespace%>', 'SampleParticipant', 'alice@email.com');
                 asset1.value = '60';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset1);
                     });
@@ -425,7 +425,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('1')
                             .then(() => {
@@ -445,7 +445,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('2');
                     });
@@ -462,7 +462,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('2')
                             .then(() => {
@@ -482,7 +482,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('1');
                     });
@@ -499,8 +499,8 @@ describe('Sample', () => {
             .then(() => {
 
                 // Submit the transaction.
-                const transaction = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('org.acme.sample', 'SampleAsset', '1');
+                const transaction = factory.newTransaction('<%= namespace%>', 'SampleTransaction');
+                transaction.asset = factory.newRelationship('<%= namespace%>', 'SampleAsset', '1');
                 transaction.newValue = '50';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -508,7 +508,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('<%= namespace%>.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.get('1');
                     });
@@ -517,7 +517,7 @@ describe('Sample', () => {
             .then((asset1) => {
 
                 // Validate the asset.
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal('<%= namespace%>.SampleParticipant#alice@email.com');
                 asset1.value.should.equal('50');
 
                 // Validate the events.
@@ -525,7 +525,7 @@ describe('Sample', () => {
                 const event = events[0];
                 event.eventId.should.be.a('string');
                 event.timestamp.should.be.an.instanceOf(Date);
-                event.asset.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleAsset#1');
+                event.asset.getFullyQualifiedIdentifier().should.equal('<%= namespace%>.SampleAsset#1');
                 event.oldValue.should.equal('10');
                 event.newValue.should.equal('50');
 
@@ -540,8 +540,8 @@ describe('Sample', () => {
             .then(() => {
 
                 // Submit the transaction.
-                const transaction = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('org.acme.sample', 'SampleAsset', '2');
+                const transaction = factory.newTransaction(<%= namespace%>, 'SampleTransaction');
+                transaction.asset = factory.newRelationship(<%= namespace%>, 'SampleAsset', '2');
                 transaction.newValue = '50';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -557,8 +557,8 @@ describe('Sample', () => {
             .then(() => {
 
                 // Submit the transaction.
-                const transaction = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('org.acme.sample', 'SampleAsset', '2');
+                const transaction = factory.newTransaction(<%= namespace%>, 'SampleTransaction');
+                transaction.asset = factory.newRelationship(<%= namespace%>, 'SampleAsset', '2');
                 transaction.newValue = '60';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -566,7 +566,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the asset.
-                return businessNetworkConnection.getAssetRegistry('org.acme.sample.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry(<%= namespace%>'.SampleAsset')
                     .then((assetRegistry) => {
                         return assetRegistry.get('2');
                     });
@@ -575,7 +575,7 @@ describe('Sample', () => {
             .then((asset2) => {
 
                 // Validate the asset.
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleParticipant#bob@email.com');
                 asset2.value.should.equal('60');
 
                 // Validate the events.
@@ -583,7 +583,7 @@ describe('Sample', () => {
                 const event = events[0];
                 event.eventId.should.be.a('string');
                 event.timestamp.should.be.an.instanceOf(Date);
-                event.asset.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleAsset#2');
+                event.asset.getFullyQualifiedIdentifier().should.equal(<%= namespace%>'.SampleAsset#2');
                 event.oldValue.should.equal('20');
                 event.newValue.should.equal('60');
 
@@ -598,8 +598,8 @@ describe('Sample', () => {
             .then(() => {
 
                 // Submit the transaction.
-                const transaction = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('org.acme.sample', 'SampleAsset', '1');
+                const transaction = factory.newTransaction(<%= namespace%>, 'SampleTransaction');
+                transaction.asset = factory.newRelationship(<%= namespace%>, 'SampleAsset', '1');
                 transaction.newValue = '60';
                 return businessNetworkConnection.submitTransaction(transaction);
 
