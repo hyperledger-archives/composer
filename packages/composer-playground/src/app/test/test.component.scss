@@ -2,48 +2,51 @@
 @import '../../assets/styles/base/_variables.scss';
 
 app-test {
-  display: flex;
-  width: 100%;
-
-  .side-bar {
-
-    .registries {
-      & > * {
-        padding: $space-smedium $space-large;
-      }
-      margin-top: $space-large;
-
-      span {
-        color: $secondary-text;
-        display: inline-block;
-      }
-
-      .side-bar-nav {
-        padding: 0;
-      }
-
-      ul.registry {
-        cursor: pointer;
-      }
-
-    }
-
-    .side-button {
-      flex : 1;
-      margin: 0 auto;
-      margin-left: $space-large;
-
-      .button-item {
-        padding-top: 5rem;
-        text-align: center;
-      }
-    }
-
-  }
-
-  .main-view {
-    overflow-y: auto;
     display: flex;
-    flex-direction: column;
-  }
+    width: 100%;
+
+    .side-bar {
+
+        .registries {
+            & > * {
+                padding: $space-smedium $space-large;
+            }
+            margin-top: $space-large;
+
+            span {
+                color: $secondary-text;
+                display: inline-block;
+            }
+
+            .side-bar-nav {
+                padding: 0;
+            }
+
+            ul.registry {
+                cursor: pointer;
+            }
+
+        }
+
+        .side-button {
+            flex: 1;
+            margin: 0 auto;
+            margin-left: $space-large;
+
+            .button-item {
+                padding-top: 5rem;
+                text-align: center;
+            }
+        }
+
+    }
+
+    .main-view {
+        display: flex;
+        flex-direction: column;
+
+        .main-view-content {
+            height: calc(100vh - 63px - 76px - 32px);
+        }
+    }
 }

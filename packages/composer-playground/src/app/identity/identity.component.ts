@@ -36,8 +36,9 @@ export class IdentityComponent implements OnInit {
     }
 
     ngOnInit(): Promise<any> {
-        this.deployedPackageName = this.clientService.getMetaData().getName();
-        return this.loadAllIdentities();
+        return this.loadAllIdentities().then(() => {
+            this.deployedPackageName = this.clientService.getMetaData().getName();
+        });
     }
 
     loadAllIdentities() {
@@ -186,7 +187,14 @@ export class IdentityComponent implements OnInit {
 
                     return this.clientService.revokeIdentity(identity)
                         .then(() => {
-                            return this.removeIdentity(identity.name);
+                            // only try and remove it if its in the wallet
+                            let walletIdentity = this.myIdentities.find((myIdentity) => {
+                                return identity.name === myIdentity;
+                            });
+
+                            if (walletIdentity) {
+                                return this.removeIdentity(identity.name);
+                            }
                         })
                         .then(() => {
                             return this.loadAllIdentities();
