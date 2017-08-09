@@ -54,11 +54,8 @@ You should now have a folder called `my-network` (as the basis for our project) 
 
 ### Update your package.json file
 
-The metadata (name, version, description) for the business network definition is stored in the `package.json` file. Edit the file to change the name to `my-network` and modify the `prepublish` script to change the name of the business network archive. (Note: Add a timeout to the "test" command line and remove the 'deploy' line after 'test' - as we will not be publishing this network to the `npm` package manager).
+The metadata (name, version, description etc) for the business network definition is stored in the `package.json` file. Edit this file to change the name to `my-network`, the description to `My Commodity Trading network` and modify the `prepublish` script to change the name of the business network archive to `my-network.bna` at the end. 
 
-Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
-
-Open the `package.json` file for editing and update the 'name', 'description', and 'prepublish' entries only - the start of the `package.json` file should now look like this below (essentially, changing to 'my-network' and changing the description field):
 
 ```json
 "name": "my-network",
