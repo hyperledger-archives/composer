@@ -38,7 +38,7 @@ Network access is required to use the READ operation for registries and networks
 
 Network access is required to use the READ operation for registries and networks.
 
-**composer network logLevel**
+**composer network loglevel**
 
 Network access is required to use the UPDATE operation for networks.
 
