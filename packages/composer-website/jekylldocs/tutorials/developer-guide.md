@@ -58,27 +58,26 @@ The metadata (name, version, description) for the business network definition is
 
 Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
 
-The start of the `package.json` file should now look like this:
+Open the `package.json` file for editing and update the 'name', 'description', and 'prepublish' entries only - the start of the `package.json` file should now look like this below (essentially, changing to 'my-network' and changing the description field):
 
 ```json
-{
-  "name": "my-network",
-  "version": "0.0.1",
-  "description": "My very first Hyperledger Composer Network",
+"name": "my-network",
+  "version": "0.1.6",
+  "description": "My Commodity Trading network",
+  "networkImage": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg",
+  "networkImageanimated": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg",
   "scripts": {
-      "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
-      "pretest": "npm run lint",
-      "lint": "eslint .",
-      "postlint": "npm run licchk",
-      "licchk": "license-check",
-      "postlicchk": "npm run doc",
-      "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
-      "test-inner": "mocha --recursive && cucumber-js",
-      "test-cover": "nyc npm run test-inner",
-      "test": "mocha --recursive -t 4000"
-    },
-...
-}
+    "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "postlint": "npm run licchk",
+    "licchk": "license-check",
+    "postlicchk": "npm run doc",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
+    "test-inner": "mocha -t 0 --recursive && cucumber-js",
+    "test-cover": "nyc npm run test-inner",
+    "test": "npm run test-inner"
+  },
 ```
 
 Save your changes to `package.json`
@@ -88,7 +87,7 @@ Save your changes to `package.json`
 Open the `README.md` file and update the markdown with a short decription of the business network.
 
 ```
-# My very first Hyperledger Composer Network
+# My Commodity Trading network
 ```
 
 Save your changes to `README.md`
@@ -210,7 +209,7 @@ Creating Business Network Archive
 Looking for package.json of Business Network Definition in /home/user/my-network
 
 Found:
-Description:My very first Hyperledger Composer Network
+Description: My Commodity Trading network
 Name:my-network
 Identifier:my-network@0.0.1
 
@@ -361,33 +360,36 @@ You should see output similar to the following:
 ```
 ~user@ubuntu $ npm test
 
-> my-network@0.0.1 pretest /home/user/my-network
+> my-network@0.1.6 pretest /home/ibm/my-network
 > npm run lint
 
 
-> my-network@0.0.1 lint /home/user/my-network
+> my-network@0.1.6 lint /home/ibm/my-network
 > eslint .
 
 
-> my-network@0.0.1 postlint /home/user/my-network
+> my-network@0.1.6 postlint /home/ibm/my-network
 > npm run licchk
 
 
-> my-network@0.0.1 licchk /home/user/my-network
+> my-network@0.1.6 licchk /home/ibm/my-network
 > license-check
 
 
-> my-network@0.0.1 postlicchk /home/user/my-network
+> my-network@0.1.6 postlicchk /home/ibm/my-network
 > npm run doc
 
 
-> my-network@0.0.1 doc /home/user/my-network
-> jsdoc --pedantic --recurse -c jsdoc.conf
+> my-network@0.1.6 doc /home/ibm/my-network
+> jsdoc --pedantic --recurse -c jsdoc.json
 
 
-> my-network@0.0.1 test /home/user/my-network
-> mocha --recursive -t 4000
+> my-network@0.1.6 test /home/ibm/my-network
+> npm run test-inner
 
+
+> my-network@0.1.6 test-inner /home/ibm/my-network
+> mocha -t 0 --recursive && cucumber-js
 
 
 Commodity Trading
@@ -396,7 +398,16 @@ Commodity Trading
 
 
 1 passing (556ms)
+
+
+Feature: Sample
+
 ```
+
+And the cucumber tests defined in the file `features/sample.feature` will produce the following output:
+
+![Cucumber test output](../assets/img/tutorials/developer/cucumber-output.jpg)
+
 
 ## Import into Playground and Test
 
@@ -497,7 +508,7 @@ user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s
 Deploying business network from archive: my-network.bna
 Business network definition:
 	Identifier: my-network@0.1.3
-	Description: The Hello World of Hyperledger Composer samples
+	Description: My Commodity Trading network
 
 ✔ Deploying business network definition. This may take a minute...
 
