@@ -198,7 +198,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network update</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a &lt;business-network-archive&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a &lt;business-network-archive&gt;  -p &lt;connectionProfileName&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
 <p>The business network definition must have been previously deployed to the Fabric. The business network definition
 is replaced within the same chaincode container.</p>
@@ -212,13 +212,14 @@ is replaced within the same chaincode container.</p>
   --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a digitalPropertyNetwork.zip -i WebAppAdmin -s DJY27pEnl16d
-Deploying business network from archive digitalPropertyNetwork.zip
+<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s RandomString
+Deploying business network from archive: digitalPropertyNetwork.bna
 Business network definition:
     Identifier: digitalproperty-network@0.0.1
     Description: Digital Property Network
 Updating business network definition. This may take a few seconds...
-Command completed successfully.
+
+Command succeeded
 </code></pre></div>
             
           </section>
