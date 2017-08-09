@@ -93,13 +93,17 @@ describe(`IdentityComponent`, () => {
             component.should.be.ok;
         });
 
-        it('should load the component', () => {
-            let loadMock = sinon.stub(component, 'loadAllIdentities');
+        it('should load the component', fakeAsync(() => {
+            mockClientService.getMetaData.returns({getName: sinon.stub().returns('myNetwork')});
+            let loadMock = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
 
             component.ngOnInit();
 
+            tick();
+
             loadMock.should.have.been.called;
-        });
+            component['deployedPackageName'].should.equal('myNetwork');
+        }));
     });
 
     describe('load all identities', () => {
@@ -457,8 +461,9 @@ describe(`IdentityComponent`, () => {
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 
-        it('should revoke the identity from the client service and then remove the identity from the wallet', fakeAsync(() => {
+        it('should revoke the identity from the client service and then remove the identity from the wallet if in wallet', fakeAsync(() => {
 
+            component['myIdentities'] = ['fred'];
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
@@ -479,7 +484,31 @@ describe(`IdentityComponent`, () => {
 
             mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.have.been.called;
+        }));
 
+        it('should revoke the identity from the client service not remove from wallet', fakeAsync(() => {
+
+            component['myIdentities'] = ['bob'];
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            mockClientService.revokeIdentity.returns(Promise.resolve());
+
+            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
+            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
+
+            component.revokeIdentity({name: 'fred'});
+
+            tick();
+
+            mockClientService.revokeIdentity.should.have.been.called;
+            mockRemoveIdentity.should.not.have.been.called;
+            mockLoadAllIdentities.should.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
         }));
 
         it('should handle error', fakeAsync(() => {
