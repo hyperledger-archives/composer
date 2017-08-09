@@ -51,8 +51,7 @@ class List {
         let spinner;
 
         return (() => {
-            spinner = ora('List business network '+businessNetworkName).start();
-            // console.log ('List business network '+businessNetworkName);
+            spinner = ora('List business network '+businessNetworkName);
 
             if (!argv.enrollSecret) {
                 return cmdUtil.prompt({
@@ -70,6 +69,7 @@ class List {
             }
         })()
         .then (() => {
+            spinner.start();
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();

@@ -40,7 +40,7 @@ class List {
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
 
-        const spinner = ora('List all identities in the business network '+businessNetworkName).start();
+        const spinner = ora('List all identities in the business network '+businessNetworkName);
         return (() => {
 
             if (!argv.enrollSecret) {
@@ -59,6 +59,7 @@ class List {
             }
         })()
         .then(() => {
+            spinner.start();
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
