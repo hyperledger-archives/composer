@@ -37,21 +37,21 @@ asset HistorianRecord identified by transactionId {
  * `Event[] eventsEmitted` The events that where emitted by this transactionId
  * `DateTime transactionTimestamp` Use the transaction's timestamp
 
-It's important to note that the Transaction, Participant and Identity are relationships. Applications that wish to obtain these will must resolve this relationship.
+It's important to note that the Transaction, Participant and Identity are relationships. Applications that wish to obtain these attributes must resolve this relationship.
 
 ## Tracking Transactions
 
-The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition several operations that the {{site.data.conrefs.composer_full}} runtime makes are classed as transactions so will add `HistorianRecords`. These 'system transactions' are defined in the Composer system model. The following will add historian records.
+The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition, several operations that the {{site.data.conrefs.composer_full}} runtime makes are classed as transactions. These 'system transactions' are defined in the {{site.data.conrefs.composer_full}} system model. The following will add historian records.
 
  * Add, Remove and Update of Assets
  * Add, Remove and Update of Participants
  * Issue, Bind, Activate and Revoke of Identities
 
-Note that the retrieval of assets, participants is not tracked.
+Note that the retrieval of assets and participants is not tracked.
 
 ## Querying the Historian
 
-The established APIs for querying and working with resources and relationship are applicable here. The Historian is a registry containing assets (HistorianRecords) so can be queried.
+The established APIs for querying and working with resources and relationship are applicable. The historian is a registry containing assets (HistorianRecords) so can be queried.
 
 For example to get all the Historian records a typical promise chain would be as follows.
 
@@ -66,7 +66,7 @@ For example to get all the Historian records a typical promise chain would be as
     })
 ```
 
-As this is a 'getAll' call it will potentially return a vast about of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query ability to select records where the transaction timestamp is past a certain point. The returned records can be processed in exactly the same way.
+As this is a 'getAll' call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in exactly the same way.
 
 ```
   let now = new Date();
@@ -78,7 +78,7 @@ As this is a 'getAll' call it will potentially return a vast about of data. Ther
   return businessNetworkConnection.query(q1,{justnow:now});
 ```
 
-More advanced queries can be used; for example as the Add, Update, and Remove asset are system transactions these can be selected as follows.
+More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.
 
 ```
   // build the special query for historian records
