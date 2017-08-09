@@ -9,9 +9,9 @@ excerpt: The Hyperledger Composer Historian provides a registry retain informati
 
 # {{site.data.conrefs.composer_full}} Historian
 
->**Warning**: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracking in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.
+>**Warning**: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.
 
-The historian is a registry that is populated with `HistorianRecords` when a transaction is submitted. Historian records show the changes to assets within a business network, and the participants and identities involved in submitting those transactions. Historian records can also be queried to extract specific records or data.
+The historian is a registry populated with `HistorianRecords`. When a transaction is submitted, the `HistorianRecords` show the changes to assets within a business network, and the participants and identities involved in submitting those transactions. Historian records can also be queried to extract specific records or data.
 
 ## Historian Record
 
