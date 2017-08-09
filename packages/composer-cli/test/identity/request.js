@@ -101,7 +101,7 @@ describe('composer identity request CLI unit tests', () => {
     });
 
 
-    it('should fail gracefully if importIdentity fails', () => {
+    it('should fail gracefully if requestIdentity fails', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             enrollId: USER_ID,

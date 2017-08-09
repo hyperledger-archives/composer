@@ -1157,15 +1157,6 @@ describe('HLFConnectionManager', () => {
             return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .should.be.rejectedWith(/wow such fail/);
         });
-
-        /*
-        it('should handle an error creating a new cryptosuite', () => {
-            Client.newCryptoSuite.throws(new Error('another fail'));
-            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
-                .should.be.rejectedWith(/another fail/);
-        });
-        */
-
     });
 
 });
