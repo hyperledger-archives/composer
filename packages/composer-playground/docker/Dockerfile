@@ -12,6 +12,10 @@ RUN apk add --no-cache make gcc g++ python git libc6-compat && \
     npm cache clean && \
     apk del make gcc g++ python git
 
+# Remove yarn
+RUN rm -r /opt/yarn && \
+    rm /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 # Create the composer user ID.
 RUN adduser -S composer
 
