@@ -50,7 +50,10 @@ export class TestComponent implements OnInit, OnDestroy {
                 }
             });
 
-            return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()
+            return this.clientService.reset()
+            .then(() => {
+                return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries();
+            })
             .then((assetRegistries) => {
                 assetRegistries.forEach((assetRegistry) => {
                     let index = assetRegistry.id.lastIndexOf('.');
