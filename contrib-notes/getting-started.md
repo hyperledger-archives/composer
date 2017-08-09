@@ -70,7 +70,7 @@ Hyperledger Composer has a number of prerequisites - for its runtime, code hygie
 
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
-    $ npm install -g lerna@2.0.0-rc.5
+    $ npm install -g lerna@2.0.0
 
 You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
 
