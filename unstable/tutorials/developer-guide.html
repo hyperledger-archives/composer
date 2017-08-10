@@ -344,6 +344,15 @@ rule Default <span class="o">{</span>
     resource: <span class="s2">"org.acme.mynetwork.*"</span>
     action: ALLOW
 <span class="o">}</span>
+
+rule SystemACL <span class="o">{</span>
+  description:  <span class="s2">"System ACL to permit all access"</span>
+  participant: <span class="s2">"org.hyperledger.composer.system.Participant"</span>
+  operation: ALL
+  resource: <span class="s2">"org.hyperledger.composer.system.**"</span>
+  action: ALLOW
+<span class="o">}</span>
+
 </code></pre></div>
 <p>Save your changes to <code>permissions.acl</code></p>
 
@@ -384,7 +393,7 @@ Command succeeded
 
 <p>From your project working directory (my-network), open the file <code>test/sample.js</code> and inspect the contents.</p>
 
-<p>The test code below will replace the namespace, types and logic of the unit test pertaining to &#39;my-network&#39; as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:</p>
+<p>The test code below will replace the namespace, types and logic of the unit test pertaining to &#39;my-network&#39; as shown below. For convenience, you can copy the entire script contents below and replace the current <code>sample.js</code> file contents entirely:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -658,7 +667,7 @@ Feature: Sample
 </code></pre></div>
 <p>And the cucumber tests defined in the file <code>features/sample.feature</code> will produce the following output:</p>
 
-<p><img src="../assets/img/tutorials/developer/cucumber-output.jpg" alt="Cucumber test output"></p>
+<p><img src="../assets/img/tutorials/developer/cucumber-output.png" alt="Cucumber test output"></p>
 
 <h2 id="import-into-playground-and-test">Import into Playground and Test</h2>
 
