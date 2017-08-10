@@ -13,7 +13,7 @@ excerpt: Composer Network List CLI
 The `composer network list` utility is used to connect to a business network and retrieve metadata and asset information.
 
 ```
-composer network list -n <business-network-id> -i <enrollment-id> -s <enrollment-secret>
+composer network list -n <business-network-id>  -p <connectionProfileName> -i <enrollment-id> -s <enrollment-secret>
 ```
 
 ### Options
@@ -31,7 +31,7 @@ composer network list -n <business-network-id> -i <enrollment-id> -s <enrollment
 ## Example Output
 
 ```
-composer network list -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+composer network list -n digitalproperty-network -p hlfv1 -i admin -s adminpw
 List business network digitalproperty-network
 name:        digitalproperty-network
 identifier:  digitalproperty-network@0.0.1

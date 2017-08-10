@@ -15,10 +15,17 @@
 'use strict';
 
 const JavascriptParser = require('./../../lib/codegen/javascriptparser');
+const fs = require('fs');
+const path = require('path');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
+
+const readTestExample = function(exampleName) {
+    const exampleFile = path.resolve(__dirname, '../data/commentparsing/', exampleName);
+    return fs.readFileSync(exampleFile).toString();
+};
 
 describe('JavascriptParser', () => {
 
@@ -111,7 +118,62 @@ describe('JavascriptParser', () => {
         });
     });
 
-    describe('#findCommentBefore', () => {});
+    describe('#findCommentBefore', () => {
+        it('should handle the basic of examples', () => {
+            const code = readTestExample('BasicExample.js.txt');
+            const parser = new JavascriptParser(code);
+            parser.getFunctions().length.should.equal(1);
+            const func = parser.getFunctions()[0];
+            func.decorators.should.deep.equal(['param', 'transaction']);
+            func.parameterTypes.length.should.equal(1);
+            func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
+            func.name.should.equal('tradeCommodity');
+        });
+
+        it('should handle the uncommented function following commented function', () => {
+            const code = readTestExample('UncommentedFollowingCommented.js.txt');
+            const parser = new JavascriptParser(code);
+            parser.getFunctions().length.should.equal(2);
+            const func = parser.getFunctions()[0];
+            func.decorators.should.deep.equal(['param', 'transaction']);
+            func.name.should.equal('tradeCommodity');
+            func.parameterTypes.length.should.equal(1);
+            func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
+            const func2 = parser.getFunctions()[1];
+            func2.decorators.length.should.equal(0);
+            func2.parameterTypes.length.should.equal(0);
+        });
+
+        it('should handle the class methods', () => {
+            const code = readTestExample('ClassExample.js.txt');
+            const parser = new JavascriptParser(code, false, 7);
+            const clazz = parser.getClasses();
+            clazz.length.should.equal(1);
+            const methods = clazz[0].methods;
+            methods.length.should.equal(3);
+            methods[0].decorators.length.should.equal(0);
+            methods[1].decorators.should.deep.equal(['param', 'transaction']);
+            methods[2].decorators.length.should.equal(0);
+        });
+
+        it('should handle the a complex example', () => {
+            const code = readTestExample('ComplexExample.js.txt');
+            const parser = new JavascriptParser(code);
+            const funcs = parser.getFunctions();
+            funcs.length.should.equal(12);
+            const noDecorators = [0, 1, 2, 3, 5, 6, 9, 10];
+            const allDecorators = [7, 8, 11];
+            noDecorators.forEach((value) => {
+                funcs[value].decorators.length.should.equal(0);
+            });
+            allDecorators.forEach((value) => {
+                funcs[value].decorators.length.should.equal(2);
+                funcs[value].decorators.should.deep.equal(['param', 'transaction']);
+            });
+            funcs[4].decorators.length.should.equal(1);
+            funcs[4].decorators[0].should.equal('transaction');
+        });
+    });
 
     describe('#getDecorators', () => {
         it('should return all decorators in the comment', () => {

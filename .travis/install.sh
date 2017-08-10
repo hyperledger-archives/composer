@@ -23,4 +23,4 @@ fi
 
 # Use lerna bootstrap and not npm install; it's a lot faster in Travis.
 cd ${DIR}
-lerna bootstrap 2>&1 | tee
+lerna bootstrap 2>&1
