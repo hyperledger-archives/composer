@@ -179,6 +179,15 @@ rule Default {
     resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
 ```
 
 Save your changes to `permissions.acl`
@@ -225,7 +234,7 @@ We are now going to add a simple unit test for the business network definition. 
 
 From your project working directory (my-network), open the file `test/sample.js` and inspect the contents.
 
-The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:
+The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current `sample.js` file contents entirely:
 
 ```javascript
 /*
@@ -511,7 +520,7 @@ Feature: Sample
 
 And the cucumber tests defined in the file `features/sample.feature` will produce the following output:
 
-![Cucumber test output](../assets/img/tutorials/developer/cucumber-output.jpg)
+![Cucumber test output](../assets/img/tutorials/developer/cucumber-output.png)
 
 
 ## Import into Playground and Test
