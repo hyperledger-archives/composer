@@ -144,7 +144,11 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
+
+<ul>
+<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
+</ul></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -194,7 +198,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network list</code> utility is used to connect to a business network and retrieve metadata and asset information.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n &lt;business-network-id&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n &lt;business-network-id&gt;  -p &lt;connectionProfileName&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">  --help                       Show help  [boolean]
@@ -207,7 +211,7 @@ ga('send', 'pageview');
   --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n digitalproperty-network -p hlfv1 -i admin -s adminpw
 List business network digitalproperty-network
 name:        digitalproperty-network
 identifier:  digitalproperty-network@0.0.1

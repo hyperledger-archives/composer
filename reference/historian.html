@@ -144,7 +144,11 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
+
+<ul>
+<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
+</ul></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -192,15 +196,14 @@ ga('send', 'pageview');
               <h1 id="hyperledger-composer-historian">Hyperledger Composer Historian</h1>
 
 <blockquote>
-<p><strong>Warning</strong>: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that 
-are not a covered by this current implementation. Details are being tracking in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.</p>
+<p><strong>Warning</strong>: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.</p>
 </blockquote>
 
-<p>The Historian is a registry that is populated with <code>HistorianRecords</code> when a transaction is submitted. This allows history to be queried and maintained of changes to the assets in a business network, and which participants and identities are invovled</p>
+<p>The historian is a registry populated with <code>HistorianRecords</code>. When a transaction is submitted, the <code>HistorianRecords</code> show the changes to assets within a business network, and the participants and identities involved in submitting those transactions. Historian records can also be queried to extract specific records or data.</p>
 
 <h2 id="historian-record">Historian Record</h2>
 
-<p>The <code>HistorianRecord</code> is defined in the Composer System model. The definition of this is using the asset modelling language. </p>
+<p>A <code>HistorianRecord</code> is an asset defined in the Hyperledger Composer system namespace. <code>HistorianRecord</code>s are defined as follows.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">asset HistorianRecord identified by transactionId {
   o String      transactionId
   o String      transactionType
@@ -221,11 +224,11 @@ are not a covered by this current implementation. Details are being tracking in 
 <li><code>DateTime transactionTimestamp</code> Use the transaction&#39;s timestamp</li>
 </ul>
 
-<p>Important points to note are tha the Transaction, Participant and Identity are relationships. Applications that wish to obtain these will then need to resolve this relationship themself. At this point ACLs might prevent you from accessing these. </p>
+<p>It&#39;s important to note that the Transaction, Participant and Identity are relationships. Applications that wish to obtain these attributes must resolve this relationship.</p>
 
-<h2 id="transactions-that-are-tracked">Transactions that are tracked</h2>
+<h2 id="tracking-transactions">Tracking Transactions</h2>
 
-<p>For all succesful transactions, the Historian registry is updated - note only succesful.  All transactions defined on a Business Network are tracked. In addition several operations that the Composer runtime makes are classed as transactions so will add HistorianRecords. These &#39;system transactions&#39; are defined in the Composer system model.</p>
+<p>The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition, several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add historian records.</p>
 
 <ul>
 <li>Add, Remove and Update of Assets</li>
@@ -233,14 +236,13 @@ are not a covered by this current implementation. Details are being tracking in 
 <li>Issue, Bind, Activate and Revoke of Identities</li>
 </ul>
 
-<p>Note that the retrieval of assets, participants is not tracked, not is any unsuccesful attempt at any operation.</p>
+<p>Note that the retrieval of assets and participants is not tracked.</p>
 
 <h2 id="querying-the-historian">Querying the Historian</h2>
 
-<p>The established APIs for querying and working with resources and relationship are applicable here. The Historian is a registry containing assets (HistorianRecords)
-so can be queried quite easily.</p>
+<p>The established APIs for querying and working with resources and relationship are applicable. The historian is a registry containing assets (HistorianRecords) so can be queried.</p>
 
-<p>For example to get all the Historian records a typicalpromise chain would be as follows. The formating of the output is entirely at the discretion of the user. </p>
+<p>For example to get all the Historian records a typical promise chain would be as follows.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    .then(() =&gt; {       
         return businessNetworkConnection.getHistorian();
     }).then((historian) =&gt; {
@@ -250,9 +252,7 @@ so can be queried quite easily.</p>
        console.log(prettyoutput(historianRecords));
     })
 </code></pre></div>
-<p>As this is a &#39;getAll&#39; call it will potentially return a vast about of data. Therefore the query capability is vital in being able to select a subset of records.
-A typical example would be to select records based on a time. This uses the query ability to select records where the transaction timestamp is past a certain point.
-The returned records can be processed in exactly the same way.</p>
+<p>As this is a &#39;getAll&#39; call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in exactly the same way.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
@@ -261,10 +261,10 @@ The returned records can be processed in exactly the same way.</p>
 
   return businessNetworkConnection.query(q1,{justnow:now});
 </code></pre></div>
-<p>More advanced queries can be used; for example as the Add, Update, and Remove asset are system transactions these can be selected as follows.</p>
+<p>More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
-      `SELECT org.hyperledger.composer.system.HistorianRecord FROM HistorianRegistry 
+      `SELECT org.hyperledger.composer.system.HistorianRecord FROM HistorianRegistry
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 
