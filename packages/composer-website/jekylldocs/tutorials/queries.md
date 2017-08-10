@@ -605,7 +605,7 @@ Feature: Sample
 
 And the cucumber tests defined in the file `features/sample.feature` will produce the following output:
 
-![Cucumber test output](../assets/img/tutorials/developer/cucumber-output.jpg)
+![Cucumber test output](../assets/img/tutorials/query/cucumber-output.png)
 
 Next, in a browser, navigate to the online Bluemix Composer Playground http://composer-playground.mybluemix.net and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your `my-network` folder and upload it, then press the "Deploy" button. Confirm to replace the current network definition in Playground.
 
