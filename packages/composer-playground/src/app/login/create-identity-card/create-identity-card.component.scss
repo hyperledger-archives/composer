@@ -1,7 +1,7 @@
 @import '../../../assets/styles/base/colors';
 @import '../../../assets/styles/base/variables';
 
-.add-connection {
+.create-card {
   display: flex;
   flex-direction: column;
   background-color: $white;
@@ -30,6 +30,11 @@
         margin-top: $space-small;
         font-size: 0.7rem;
         color:$tertiary-text;
+        min-width: 182px;
+
+        &.upper {
+            text-transform: uppercase;
+        }
       }
 
       .create-route {
