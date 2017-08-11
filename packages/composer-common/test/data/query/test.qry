@@ -1,0 +1,145 @@
+query Q1 {
+    description: "Select all drivers"
+    statement: SELECT org.acme.Driver
+} query Q2 { // test missing whitespace
+    description: "Select all regulators"
+    statement: SELECT org.acme.Regulator FROM mycustomer.Registry
+}
+
+query Q3 {
+    description: "Select all transactions"
+    statement: SELECT org.acme.MyTransaction
+}
+
+// single line comment
+query Q4 {
+    description: "Select all Drivers called Dan" // inline comment
+    statement: SELECT org.acme.Driver WHERE (firstName=='Dan')
+}
+
+/**
+ * Multiline comment
+ */ 
+query Q5 {
+    description: "Select all Drivers called Dan Selman" // inline comment
+    statement: SELECT org.acme.Driver WHERE (firstName=='Dan' AND lastName=='Selman')
+}
+
+query Q6 {
+    description: "Select all Drivers called Dan Selman with parens"
+    statement: SELECT org.acme.Driver WHERE (firstName=='Dan' AND lastName=='Selman')
+}
+
+query Q7 {
+    description: "Select all Drivers called Dan Selman with parens limit"
+    statement: SELECT org.acme.Driver WHERE (firstName=='Dan' AND lastName=='Selman') LIMIT 5
+}
+
+query Q8 {
+    description: "Select all Drivers called Dan Selman with parens skip"
+    statement: SELECT org.acme.Driver WHERE (firstName=='Dan' AND lastName=='Selman') SKIP 5
+}
+
+// all on a single line
+query Q9 {description: "Skip" statement: SELECT org.acme.Driver SKIP 5}
+query Q10 {description: "Limit" statement: SELECT org.acme.Driver LIMIT 5}
+
+
+query Q11 {
+    description: "Select all drivers aged 44" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age==44)
+}
+
+query Q12 {
+    description: "Select all drivers aged less than 44" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age<44)
+}
+
+query Q13 {
+    description: "Select all drivers aged less than or equal to 44" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age <= 44)
+}
+
+query Q14 {
+    description: "Select all drivers aged older than 44" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age >44)
+}
+
+query Q15 {
+    description: "Select all drivers aged older than or equal to 44" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age>= 44)
+}
+
+query Q16 {
+    description: "Select all drivers aged older than or equal to PARAM" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age>= _$ageParam)
+}
+
+query Q17 {
+    description: "Select all drivers aged older than PARAM" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (_$ageParam < age)
+}
+
+query Q18 {
+    description: "Select all drivers aged older than PARAM" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (_$ageParam < age)
+                ORDER BY [lastName ASC, firstName DESC]
+                    LIMIT _$limitParam
+                        SKIP _$skipParam
+
+}
+
+query Q19 {
+    description: "Select all drivers aged younger than 50 ordered by lastname, firstname" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age < 50)
+                ORDER BY [lastName ASC, firstName DESC]
+}
+
+query Q20{
+    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age < 50 AND firstName != 'Dan')
+                ORDER BY [lastName ASC, firstName DESC]
+}
+
+query Q21{
+    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE (age < 50 AND firstName != 'Dan')
+                ORDER BY [lastName ASC, firstName DESC]
+}
+
+query Q22{
+    description: "Select non Dan drivers or drivers aged younger than 50 ordered by lastname, firstname" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE ((age < 50 OR firstName != 'Dan') AND (lastName!='Selman'))
+                ORDER BY [lastName ASC, firstName DESC]
+}
+
+query Q23{
+    description: "Select by address property" 
+    statement: 
+        SELECT org.acme.Driver 
+            WHERE ((age < 50 OR firstName != 'Dan') AND (address.city.postcode!='London'))
+}

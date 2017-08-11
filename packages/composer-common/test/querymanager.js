@@ -27,8 +27,8 @@ const sinon = require('sinon');
 
 describe('QueryManager', () => {
 
-    const testQuery = fs.readFileSync(path.resolve(__dirname, 'query', 'test.qry'), 'utf8');
-    const testModel = fs.readFileSync(path.resolve(__dirname, 'query', 'model.cto'), 'utf8');
+    const testQuery = fs.readFileSync(path.resolve(__dirname, 'data/query', 'test.qry'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, 'data/query', 'model.cto'), 'utf8');
 
     let modelManager;
     let queryFile;
