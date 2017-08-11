@@ -83,6 +83,7 @@ describe('composer network download CLI unit tests', function () {
 
             return DownloadCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 // sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 // sinon.assert.calledOnce(BusinessNetworkDefinition.getIdentifier);
                 // sinon.assert.calledOnce(BusinessNetworkDefinition.getDescription);

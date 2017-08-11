@@ -57,6 +57,7 @@ describe('composer identity revoke CLI unit tests', () => {
         };
         return Revoke.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
@@ -74,6 +75,7 @@ describe('composer identity revoke CLI unit tests', () => {
         };
         return Revoke.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
@@ -90,6 +92,7 @@ describe('composer identity revoke CLI unit tests', () => {
         };
         return Revoke.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
