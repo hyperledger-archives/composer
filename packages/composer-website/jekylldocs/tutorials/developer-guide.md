@@ -71,9 +71,9 @@ The metadata (name, version, description etc) for the business network definitio
     "licchk": "license-check",
     "postlicchk": "npm run doc",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
-    "test-inner": "mocha -t 0 --recursive && cucumber-js",
+    "test-inner": "mocha --recursive && cucumber-js",
     "test-cover": "nyc npm run test-inner",
-    "test": "npm run test-inner"
+    "test": "mocha --recursive -t 4000"
   },
 ...
 }
