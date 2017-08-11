@@ -27,9 +27,9 @@ const sinon = require('sinon');
 
 describe('AclFile', () => {
 
-    const testAcl = fs.readFileSync(path.resolve(__dirname, './test.acl'), 'utf8');
-    const invalidAcl = fs.readFileSync(path.resolve(__dirname, './invalid.acl'), 'utf8');
-    const testModel = fs.readFileSync(path.resolve(__dirname, './model.cto'), 'utf8');
+    const testAcl = fs.readFileSync(path.resolve(__dirname, '../data/acl/test.acl'), 'utf8');
+    const invalidAcl = fs.readFileSync(path.resolve(__dirname, '../data/acl/invalid.acl'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, '../data/acl/model.cto'), 'utf8');
 
     let modelManager;
     let sandbox;
