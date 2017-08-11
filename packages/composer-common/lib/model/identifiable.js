@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Identifier = require('./identifier');
 const Typed = require('./typed');
 
 /**
@@ -103,7 +104,8 @@ class Identifiable extends Typed{
      * @return {String} the URI for the identifiable
      */
     toURI() {
-        const result = 'resource:' + this.getFullyQualifiedType() + '#' + encodeURI(this.getIdentifier());
+        const identifier = new Identifier('resource', this.getNamespace(), this.getType(), this.getIdentifier());
+        const result = identifier.toUri();
         //console.log( '***** URI for ' + this.toString() + ' is ' + result );
         return result;
     }
