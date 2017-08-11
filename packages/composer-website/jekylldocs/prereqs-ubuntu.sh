@@ -32,12 +32,11 @@ fi
 
 # Update package lists
 echo "# Updating package lists"
+sudo apt-add-repository -y ppa:git-core/ppa
 sudo apt-get update
 
 # Install Git
 echo "# Installing Git"
-sudo apt-add-repository ppa:git-core/ppa
-sudo apt-get update
 sudo apt-get install -y git
 
 # Install nvm dependencies
