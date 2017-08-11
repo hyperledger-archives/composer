@@ -17,13 +17,10 @@
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-// const homedir = require('homedir');
 const fs = require('fs');
-// const Download = require('../../lib/cmds/network/lib/download.js');
 const DownloadCmd = require('../../lib/cmds/network/downloadCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -32,16 +29,9 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-// let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
-//
-// //const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-//
 let mockBusinessNetworkDefinition;
-// const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// let businessNetworkConnection = new BusinessNetworkConnection();
 let mockBusinessNetworkConnection;
 
 describe('composer network download CLI unit tests', function () {
@@ -59,9 +49,7 @@ describe('composer network download CLI unit tests', function () {
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
 
         mockBusinessNetworkDefinition.toArchive.resolves('bytearray');
-        // sandbox.stub(Download.businessNetworkConnection,mockBusinessNetworkConnection);
         sandbox.stub(fs,'writeFileSync' );
-        // sandbox.stub(businessNetworkConnection, 'connect').returns(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
     });
@@ -84,9 +72,6 @@ describe('composer network download CLI unit tests', function () {
             return DownloadCmd.handler(argv)
             .then ((result) => {
                 argv.thePromise.should.be.a('promise');
-                // sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
-                // sinon.assert.calledOnce(BusinessNetworkDefinition.getIdentifier);
-                // sinon.assert.calledOnce(BusinessNetworkDefinition.getDescription);
                 sinon.assert.calledOnce(fs.writeFileSync);
             });
         });
