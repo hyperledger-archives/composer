@@ -35,15 +35,10 @@ echo "# Updating package lists"
 sudo apt-get update
 
 # Install Git
-echo "# Installing GitHub"
-wget https://github.com/git/git/archive/v2.9.0.zip
-unzip v2.9.0.zip
-sudo apt-get install -y autoconf gcc zlib1g-dev tcl-dev libssl-devgettext
-make configure
-./configure --prefix=/usr/local
-make prefix=/usr/local
-/usr/local install
-rm v2.9.0.zip && rm -rf git-2.9.0/
+echo "# Installing Git"
+sudo apt-add-repository ppa:git-core/ppa
+sudo apt-get update
+sudo apt-get install -y git
 
 # Install nvm dependencies
 echo "# Installing nvm dependencies"
