@@ -14,30 +14,7 @@ Composer uses the Winston logging module by default - and will use the Config mo
 
 The config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
 
-<!--
-## User Applications - Dan
-## Business Networks - Liam/Matthew
-## CLI - David
 
-- `DEBUG=composer:* composer network deploy` <-- debugs the command. dumps soem debug info to console. tracefile written to logs directory of CurrentWorkingDir. sort by date and look for recent.
-
-## Rest Server - Simon
-## Playground - Caroline
-
-
-## Composer Runtime - David
-
-- logLevel -> network deploy and loglevel designed for doing this shit.
-- docker command to get logs out `docker logs <chaincode container>` <-- this gets more complex. chaincode names dev-<businessnetworkname><composerruntimeversion>
-
-- composer runtime < should loglevel be here. (mebs next week)
-- advice: set loglevel to debug on deploy because if deploy breaks you want the logs.
-
-
-## {{site.data.conrefs.hlf_full}} v1.0 - David
-
-
--->
 # Diagnosing Problems
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?

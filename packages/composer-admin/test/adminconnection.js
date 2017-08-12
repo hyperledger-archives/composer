@@ -490,4 +490,28 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#requestIdentity', () => {
+        it('should be able to request an identity', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.requestIdentity('testprofile', 'id', 'secret')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, 'testprofile', config, 'id', 'secret');
+                });
+        });
+
+        it('should throw an error if import fails', () => {
+            mockConnectionManager.requestIdentity = sinon.stub();
+            mockConnectionManager.requestIdentity.rejects(new Error('some error'));
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.requestIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+                .should.be.rejectedWith(/some error/);
+        });
+
+
+    });
+
 });

@@ -27,7 +27,7 @@ const sinon = require('sinon');
 
 describe('AclManager', () => {
 
-    const testAcl = fs.readFileSync(path.resolve(__dirname, 'acl', 'test.acl'), 'utf8');
+    const testAcl = fs.readFileSync(path.resolve(__dirname, 'data/acl', 'test.acl'), 'utf8');
 
     let modelManager;
     let aclFile;

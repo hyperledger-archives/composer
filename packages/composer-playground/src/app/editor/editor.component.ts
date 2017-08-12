@@ -104,11 +104,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     updatePackageInfo() {
-        this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
-        this.deployedPackageVersion = this.clientService.getMetaData().getVersion(); // Set Version
-        this.deployedPackageDescription = this.clientService.getMetaData().getDescription(); // Set Description
-        this.inputPackageName = this.clientService.getMetaData().getName();
-        this.inputPackageVersion = this.clientService.getMetaData().getVersion();
+        let metaData = this.clientService.getMetaData();
+        this.deployedPackageName = metaData.getName(); // Set Name
+        this.deployedPackageVersion = metaData.getVersion(); // Set Version
+        this.deployedPackageDescription = metaData.getDescription(); // Set Description
+        this.inputPackageName = metaData.getName();
+        this.inputPackageVersion = metaData.getVersion();
     }
 
     setInitialFile() {
@@ -403,10 +404,9 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     exportBNA() {
         return this.clientService.getBusinessNetwork().toArchive().then((exportedData) => {
-            let file = new File([exportedData],
-                this.clientService.getBusinessNetworkName() + '.bna',
+            let file = new Blob([exportedData],
                 {type: 'application/octet-stream'});
-            saveAs(file);
+            saveAs(file, this.clientService.getBusinessNetworkName() + '.bna');
         });
     }
 
