@@ -393,7 +393,20 @@ class Logger {
             // and pass the restul fo the data to the logger indicated along with the
             // array of the data that might have been passed on the DBEUG variable.
             let loggerToUse = localConfig.logger;
-            let myLogger = require(loggerToUse);
+            let myLogger;
+            try {
+                myLogger = require(loggerToUse);
+            } catch (e) {
+                // Print the error to the console and just use the null logger instead.
+                console.error(`Could not load logger module ${loggerToUse}`, e);
+                myLogger = {
+                    getLogger: () => {
+                        return {
+                            log: () => { }
+                        };
+                    }
+                };
+            }
 
             // primary used to determine what has been abled to allow the logger to
             // go into a default mode.. NOT MEANT TO BE USED FOR FILTERTING.
