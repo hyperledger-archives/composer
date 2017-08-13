@@ -118,10 +118,32 @@ describe('ConnectionManager', () => {
 
     describe('#requestIdentity', () => {
 
+        it('should call _connect and handle no error', () => {
+            sinon.stub(connectionManager, '_requestIdentity').yields(null, { caName: 'ca1', key: 'suchkey' });
+            return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
+                    .then((result) => {
+                        result.should.deep.equal({ caName: 'ca1', key: 'suchkey' });
+                        sinon.assert.calledWith(connectionManager._requestIdentity, 'profile', { connect: 'options' }, 'bob1', 'secret');
+                    });
+        });
+
+        it('should call _connect and handle an error', () => {
+            sinon.stub(connectionManager, '_requestIdentity').yields(new Error('error'));
+            return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
+                    .should.be.rejectedWith(/error/)
+                    .then(() => {
+                        sinon.assert.calledWith(connectionManager._requestIdentity, 'profile', { connect: 'options' }, 'bob1', 'secret');
+                    });
+        });
+
+    });
+
+    describe('#_requestIdentity', () => {
+
         it('should throw as abstract', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            return cm.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
-                .should.be.rejectedWith(/abstract function called/);
+            (() => {
+                connectionManager._requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret');
+            }).should.throw(/abstract function called/);
         });
 
     });

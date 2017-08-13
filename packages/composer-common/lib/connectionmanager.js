@@ -134,7 +134,7 @@ class ConnectionManager {
 
     /**
      * Request an identity's certificates.
-     *
+     * @abstract
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {any} enrollmentID The enrollment id
@@ -142,7 +142,34 @@ class ConnectionManager {
      * @returns {promise} resolves with the identity certificates, rejected if a problem occurs
      */
     requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
-        return Promise.reject(new Error('abstract function called'));
+        return new Promise((resolve, reject) => {
+            this._requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * @callback requestIdentityCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {Object} identity The identity.
+     */
+
+    /**
+     * Request an identity's certificates.
+     * @abstract
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {any} enrollmentID The enrollment id
+     * @param {any} enrollmentSecret  The enrollment secret
+     * @param {requestIdentityCallback} callback The callback function to call when complete.
+     */
+    _requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret, callback) {
+        throw new Error('abstract function called');
     }
 
 }
