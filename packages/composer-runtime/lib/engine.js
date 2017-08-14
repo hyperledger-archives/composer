@@ -224,7 +224,7 @@ class Engine {
                 LOG.debug(method, 'Setting up historian');
                 // Create the default transaction registry if it does not exist.
                 let registryManager = context.getRegistryManager();
-                return registryManager.ensure('Historian', 'HistorianRegistry', 'Default Historian Registry');
+                return registryManager.ensure('Historian', 'HistorianRegistry', 'Historian');
 
             })
             .then(() => {

@@ -41,7 +41,7 @@ function toSelectAst(selectExpression) {
 
 describe('Select', () => {
 
-    const testModel = fs.readFileSync(path.resolve(__dirname, './model.cto'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, '../data/query/model.cto'), 'utf8');
 
     let modelManager;
     let sandbox;

@@ -1,0 +1,21 @@
+namespace org.acme
+
+asset Car identified by id {
+  o String id
+  -->Driver owner
+}
+
+participant Driver identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+participant Regulator identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+transaction MyTransaction  {
+}
