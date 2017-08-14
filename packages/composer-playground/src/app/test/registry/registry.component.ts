@@ -50,9 +50,9 @@ export class RegistryComponent {
                 private modalService: NgbModal) {
     }
 
-    loadResources() {
+    loadResources(): Promise<void> {
         this.overFlowedResources = {};
-        this._registry.getAll()
+        return this._registry.getAll()
             .then((resources) => {
                 if (this.isHistorian()) {
                     this.resources = resources.sort((a, b) => {
@@ -130,9 +130,15 @@ export class RegistryComponent {
     }
 
     viewTransactionData(transaction: any) {
-        let transactionModalRef = this.modalService.open(ViewTransactionComponent);
-        transactionModalRef.componentInstance.transaction = transaction;
-        transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+        return this.clientService.resolveTransactionRelationship(transaction).then((resolvedTransction) => {
+            let transactionModalRef = this.modalService.open(ViewTransactionComponent);
+            transactionModalRef.componentInstance.transaction = resolvedTransction;
+            transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+
+            transactionModalRef.result.catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
+        });
     }
 
     updateTableScroll(hasScroll) {

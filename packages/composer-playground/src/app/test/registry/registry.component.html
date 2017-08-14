@@ -60,10 +60,10 @@
             <td class="width-30 truncate-text">{{ resource.getIdentifier() }}</td>
             <td class="width-10 truncate-text">{{ resource.transactionTimestamp | date:'HH:mm:ss' }}</td>
             <td class="width-20 truncate-text">{{ resource.participantInvoking ?
-                resource.participantInvoking.$identifier : '&lt;system&gt;' }}
+                resource.participantInvoking.$identifier : 'none' }}
             </td>
             <td class="width-20 truncate-text">{{ resource.transactionType || 'TBC' }}</td>
-            <td class="width-10 truncate-text"><a href="#" (click)="viewTransactionData(resource)">view data</a></td>
+            <td class="width-10 truncate-text"><a href="#" (click)="viewTransactionData(resource)">view record</a></td>
         </tr>
         </tbody>
     </table>

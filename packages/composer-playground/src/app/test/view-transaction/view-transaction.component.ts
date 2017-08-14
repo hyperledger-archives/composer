@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { TransactionService } from '../../services/transaction.service';
 import { InitializationService } from '../../services/initialization.service';
 
 import 'codemirror/mode/javascript/javascript';
@@ -19,12 +18,15 @@ import 'codemirror/addon/scroll/simplescrollbars';
     styleUrls: ['./view-transaction.component.scss'.toString()]
 })
 
-export class ViewTransactionComponent implements OnInit, OnDestroy {
+export class ViewTransactionComponent implements OnInit {
 
-    transaction = {};
+    @Input()
+    transaction;
     transactionString = '';
 
+    @Input()
     events = [];
+
     eventObjects = [];
     eventStrings = [];
     selectedEvent = {index: -1, event: null};
@@ -50,33 +52,29 @@ export class ViewTransactionComponent implements OnInit, OnDestroy {
 
     constructor(private clientService: ClientService,
                 private initializationService: InitializationService,
-                private transactionService: TransactionService,
-                public activeModal: NgbActiveModal) {
+                private activeModal: NgbActiveModal) {
     }
 
-    ngOnInit() {
+    ngOnInit(): Promise<void> {
         return this.initializationService.initialize()
             .then(() => {
                 const serializer = this.clientService.getBusinessNetwork().getSerializer();
 
-                this.transactionString = JSON.stringify(serializer.toJSON(this.transaction), null, ' ');
-
-                this.events = this.events;
+                let transactionObject = serializer.toJSON(this.transaction);
+                this.transactionString = JSON.stringify(transactionObject, null, ' ');
 
                 for (let i = 0; i < this.events.length; i++) {
                     this.eventObjects.push(serializer.toJSON(this.events[i]));
                     this.eventStrings.push(JSON.stringify(this.eventObjects[i], null, ' '));
                 }
+            })
+            .catch((error) => {
+                this.activeModal.dismiss(error);
             });
     }
 
-    ngOnDestroy() {
-        // Make sure the transaction service is reset
-        this.transactionService.reset(null, null);
-    }
-
     selectEvent(ev, i) {
-        this.selectedEvent = { event: ev, index: i };
+        this.selectedEvent = {event: ev, index: i};
 
         if (!this.displayEvents.hasOwnProperty(i)) {
             this.displayEvents[i] = this.selectedEvent;

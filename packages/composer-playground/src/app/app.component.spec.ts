@@ -22,7 +22,6 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { WalletService } from './services/wallet.service';
 import { AboutService } from './services/about.service';
-import { TransactionService } from './services/transaction.service';
 
 import { FileWallet } from 'composer-common';
 
@@ -37,6 +36,7 @@ class MockAlertService {
     public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
     public busyStatus$: Subject<any> = new BehaviorSubject<any>(null);
     public successStatus$: Subject<any> = new BehaviorSubject<any>(null);
+    public transactionEvent$: Subject<object> = new BehaviorSubject<object>(null);
 }
 
 class RouterStub {
@@ -148,7 +148,6 @@ describe('AppComponent', () => {
     let mockAlertService: MockAlertService;
     let mockModal;
     let mockAdminService;
-    let mockTransactionService;
     let mockConnectionProfileService;
     let mockBusinessNetworkConnection;
     let mockWalletService;
@@ -177,8 +176,6 @@ describe('AppComponent', () => {
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
-        mockTransactionService = sinon.createStubInstance(TransactionService);
-        mockTransactionService.event$ = new BehaviorSubject<string>(null);
 
         mockAlertService = new MockAlertService();
 
@@ -205,12 +202,11 @@ describe('AppComponent', () => {
                 {provide: WalletService, useValue: mockWalletService},
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
-                {provide: AboutService, useValue: mockAboutService},
-                {provide: TransactionService, useValue: mockTransactionService}
+                {provide: AboutService, useValue: mockAboutService}
             ]
         })
 
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(async(() => {
@@ -224,17 +220,17 @@ describe('AppComponent', () => {
 
         // find DebugElements with an attached RouterLinkStubDirective
         linkDes = fixture.debugElement
-        .queryAll(By.directive(MockRouterLinkDirective));
+            .queryAll(By.directive(MockRouterLinkDirective));
 
         // get the attached link directive instances using the DebugElement injectors
         links = linkDes
-        .map((de) => de.injector.get(MockRouterLinkDirective) as MockRouterLinkDirective);
+            .map((de) => de.injector.get(MockRouterLinkDirective) as MockRouterLinkDirective);
     }
 
     describe('ngOnInit', () => {
         let mockOnBusy;
         let mockOnError;
-        let mockOnEvent;
+        let mockOnTransactionEvent;
         let mockUpdateConnectionData;
         let mockQueryParamUpdated;
         let busyStatusSubscribeSpy;
@@ -244,12 +240,12 @@ describe('AppComponent', () => {
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockOnEvent = sinon.stub(component, 'onEvent');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockUpdateConnectionData = sinon.stub(component, 'updateConnectionData');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
-            eventSubscribeSpy = sinon.spy(mockTransactionService.event$, 'subscribe');
+            eventSubscribeSpy = sinon.spy(mockAlertService.transactionEvent$, 'subscribe');
         }));
 
         it('should create', () => {
@@ -266,6 +262,16 @@ describe('AppComponent', () => {
             tick();
 
             mockOnBusy.should.have.been.calledWith('message');
+        }));
+
+        it('should call the transactionEvent function', fakeAsync(() => {
+            updateComponent();
+
+            mockAlertService.transactionEvent$.next({message: 'message'});
+
+            tick();
+
+            mockOnTransactionEvent.should.have.been.calledWith({message: 'message'});
         }));
 
         it('should call the error function', fakeAsync(() => {
@@ -345,6 +351,7 @@ describe('AppComponent', () => {
     describe('RouterLink', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamUpdated;
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
@@ -352,6 +359,7 @@ describe('AppComponent', () => {
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
@@ -445,6 +453,7 @@ describe('AppComponent', () => {
         let mockWallet;
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let errorStatusSpy;
 
         beforeEach(async(() => {
@@ -453,6 +462,7 @@ describe('AppComponent', () => {
 
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
         }));
 
@@ -606,11 +616,13 @@ describe('AppComponent', () => {
     describe('updateConnectionData', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
         }));
 
@@ -637,11 +649,13 @@ describe('AppComponent', () => {
     describe('onBusyStatus', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransaction;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransaction = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}, close: sinon.stub()});
         }));
@@ -734,14 +748,93 @@ describe('AppComponent', () => {
         });
     });
 
+    describe('onTransactionEvent', () => {
+        let mockOnBusy;
+        let mockOnError;
+        let mockOnTransaction;
+        let mockQueryParamsUpdated;
+        let componentInstance = {
+            transaction: {},
+            events: []
+        };
+
+        beforeEach(async(() => {
+            mockOnBusy = sinon.stub(component, 'onBusyStatus');
+            mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransaction = sinon.stub(component, 'onTransactionEvent');
+            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
+
+            mockModal.open = sinon.stub().returns({
+                result: Promise.resolve(),
+                componentInstance: componentInstance
+            });
+        }));
+
+        it('should deal with transaction event', fakeAsync(() => {
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnTransaction.restore();
+
+            component.onTransactionEvent({transaction: {$class: 'myTransaction'}, events: [{event: 'myEvent'}]});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal([{event: 'myEvent'}]);
+        }));
+
+        it('should not show if no message', fakeAsync(() => {
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnTransaction.restore();
+
+            component.onTransactionEvent(null);
+
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            let errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
+
+            mockModal.open = sinon.stub().returns({
+                result: Promise.reject('some error'),
+                componentInstance: componentInstance
+            });
+
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnTransaction.restore();
+
+            component.onTransactionEvent({transaction: {$class: 'myTransaction'}, events: [{event: 'myEvent'}]});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+
+            errorStatusSpy.should.have.been.called; // With('some error');
+        }));
+    });
+
     describe('onErrorStatus', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransaction;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransaction = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
@@ -760,7 +853,7 @@ describe('AppComponent', () => {
 
         });
 
-        it('shouldnot show if no message', () => {
+        it('should not show if no message', () => {
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -776,11 +869,13 @@ describe('AppComponent', () => {
     describe('openWelcomeModal', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
@@ -822,11 +917,13 @@ describe('AppComponent', () => {
     describe('openVersionModal', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
             mockModal.open.returns({componentInstance: {}});
 
@@ -846,11 +943,13 @@ describe('AppComponent', () => {
     describe('openVersionModal', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
         }));
@@ -919,11 +1018,13 @@ describe('AppComponent', () => {
     describe('setPlaygroundDetails', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
         }));
@@ -947,11 +1048,13 @@ describe('AppComponent', () => {
     describe('getPlaygroundDetails', () => {
         let mockOnBusy;
         let mockOnError;
+        let mockOnTransactionEvent;
         let mockQueryParamsUpdated;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
         }));
