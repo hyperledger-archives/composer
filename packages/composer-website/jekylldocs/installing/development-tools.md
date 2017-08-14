@@ -29,7 +29,7 @@ Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
-**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.**
+**Please do not install {{site.data.conrefs.composer_full}} as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues installation errors). {{site.data.conrefs.composer_full}} should be installed as non-privileged user.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
@@ -44,6 +44,9 @@ Next run the script - as this briefly uses sudo during its execution, you will b
 ```
 ./prereqs-ubuntu.sh
 ```
+
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} in a virtual machine, we recommend you allocate the VM 4Gb of memory.
+
 ---
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
@@ -63,7 +66,7 @@ The development tools you'll need can all be installed (as a non-privileged user
 3. To install `composer-rest-server` run the following command:
 
         npm install -g composer-rest-server
-    The `composer-rest-server` uses the Hyperledger Composer LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
+    The `composer-rest-server` uses the {{site.data.conrefs.composer_full}} LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
 
 4. To install `Yeoman` run the following command:
 
@@ -114,9 +117,9 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv1
 
-3. If this is the first time, you'll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.
+3. If this is the first time, you'll need to download the fabric first. If you have already downloaded then first start the fabric, and create a {{site.data.conrefs.composer_full}} profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the {{site.data.conrefs.hlf_full}} and the {{site.data.conrefs.composer_full}} profile.
 
-    All the scripts will be in the directory `~/fabric-tools`  A typical sequence for Hyperledger Composer use would be
+    All the scripts will be in the directory `~/fabric-tools`  A typical sequence for {{site.data.conrefs.composer_full}} use would be
 
         cd ~/fabric-tools
         ./downloadFabric.sh
@@ -161,7 +164,7 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create Composer Profile**
+**Create {{site.data.conrefs.composer_full}} Profile**
 
 Issue from the `fabric-tools` directory
 ```
