@@ -24,7 +24,7 @@ Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
 npm: v3.x or v5.v
-git: 2.9.x
+git: 2.9.x or higher
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
