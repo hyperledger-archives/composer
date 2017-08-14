@@ -1,6 +1,10 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions, ElementFinder } from 'protractor';
 
+import { Editor } from '../component/editor';
+import { Import } from '../component/import';
+import { Replace } from '../component/replace';
+
 export class OperationsHelper {
 
   // Perform a 'safe' click action on an element
@@ -15,7 +19,7 @@ export class OperationsHelper {
     });
   }
 
-  // Retrieve text
+  // Retrieve text from an element
   static retriveTextFromElement(elm: ElementFinder) {
       browser.wait(ExpectedConditions.presenceOf(elm), 10000);
       browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
@@ -24,13 +28,22 @@ export class OperationsHelper {
     });
   }
 
-  // Retrieve text
+  // Retrieve an array of matching elements
   static retriveMatchingElementsByCSS(type: string, subset: string) {
-      let elm = element(by.css(type));
-      browser.wait(ExpectedConditions.presenceOf(elm), 10000);
-      browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
+      browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset))), 5000);
       return element(by.css(type)).all(by.css(subset));
   }
+
+  // Custom ExpectedCondition to be used to ensure that ArrayFinder count is non-zero
+  static elementsPresent(elementArrayFinder) {
+      let hasCount = (() => {
+          return elementArrayFinder.count()
+          .then((count) => {
+              return count > 0;
+          });
+      });
+      return ExpectedConditions.and(ExpectedConditions.presenceOf(elementArrayFinder), hasCount);
+  };
 
   // Navigate to Editor base page and move past welcome splash
   static navigatePastWelcome() {
@@ -47,4 +60,12 @@ export class OperationsHelper {
     browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 5000);
     browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 5000);
   };
+
+  static importBusinessNetworkArchive(fileName: string) {
+    Editor.clickImportBND();
+    Import.selectBusinessNetworkDefinitionFromFile(fileName);
+    Replace.confirmReplace();
+    Import.waitToDisappear();
+    this.processExpectedSuccess();
+  }
 }

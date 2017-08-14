@@ -66,5 +66,14 @@ describe('DeleteComponent', () => {
             component['fileName'].should.equal('test_name');
             component['fileType'].should.equal('File');
         }));
+
+        it('should not initialise file name if provided', fakeAsync( () => {
+            component['fileName'] = 'test_name';
+            component.ngOnInit();
+
+            tick();
+
+            component['fileName'].should.equal('test_name');
+        }));
     });
 });

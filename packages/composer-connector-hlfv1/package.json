@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-hlfv1",
-  "version": "0.10.2",
+  "version": "0.11.3",
   "description": "The Hyperledger Fabric v1.x Client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.10.2",
-    "composer-runtime-hlfv1": "0.10.2",
+    "composer-common": "0.11.3",
+    "composer-runtime-hlfv1": "0.11.3",
     "fabric-ca-client": "^1.0.0",
     "fabric-client": "^1.0.0",
     "fs-extra": "^1.0.0",

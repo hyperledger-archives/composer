@@ -1,37 +1,69 @@
 <section class="main-view">
-    <div class="flex">
-        <div class="flex-container">
-            <h1 class="flex">My Wallet</h1>
+    <div class="main-view-content">
+        <div class="flex">
+            <div class="flex-container">
+                <h1 class="flex">My Wallet</h1>
 
-            <button type="button" class="secondary" (click)="addId()">
-                <span>+ Add to Wallet</span>
-            </button>
+                <button type="button" class="secondary" (click)="addId()">
+                    <span>+ Add to Wallet</span>
+                </button>
 
-            <button type="button" class="primary" (click)="issueNewId()">
-                <span>+ Issue New Identity</span>
-            </button>
+                <button type="button" class="secondary" (click)="issueNewId()">
+                    <span>+ Issue New ID</span>
+                </button>
+            </div>
+
+            <div class="identity-title">
+                <div class="selected-border"></div>
+                <div class="id">ID Name</div>
+                <div class="status">Status</div>
+            </div>
+            <div class="identity" *ngFor="let id of myIdentities" (dblclick)="setCurrentIdentity(id)">
+                <div class="selected-border" [ngClass]="{'selected-border--selected': id === currentIdentity}"></div>
+                <div class="id">
+                    {{id}}
+                </div>
+                <div class="flex" *ngIf="id===currentIdentity">
+                    In Use
+                </div>
+                <div class="flex" *ngIf="id!==currentIdentity">
+                    <i>In my wallet</i>
+                </div>
+                <div class="actions" *ngIf="id!==currentIdentity">
+                    <button class="clear" (click)="setCurrentIdentity(id)">Use now</button>
+                    <button class="clear" (click)="removeIdentity(id); $event.stopPropagation()">Remove</button>
+                </div>
+            </div>
         </div>
+        <div class="flex">
+            <div class="flex-container">
+                <h1 class="flex">All IDs for {{ deployedPackageName }}</h1>
+            </div>
 
-        <div class="identity-title">
-            <div class="id">ID Name</div>
-            <div class="status">Status</div>
-        </div>
-        <div class="identity" *ngFor="let id of identities" (click)="setCurrentIdentity(id)">
-            <div class="id">
-                {{id}}
+            <div class="identity-title">
+                <div class="selected-border"></div>
+                <div class="id cell-24">ID Name</div>
+                <div class="issued-to cell-24">Issued to</div>
+                <div class="status cell-24">Status</div>
+                <div class="actions cell-24"></div>
             </div>
-            <div class="flex" *ngIf="id===currentIdentity">
-                In use
-                <svg class="standard-icon" aria-hidden="true">
-                    <use xlink:href="#icon-selected_16"></use>
-                </svg>
-            </div>
-            <div class="flex" *ngIf="id!==currentIdentity">
-                <i>In my wallet</i>
-            </div>
-            <div class="actions" *ngIf="id!==currentIdentity">
-                <button class="clear" (click)="setCurrentIdentity(id)">Use now</button>
-                <button class="clear" (click)="removeIdentity(id); $event.stopPropagation()">Remove</button>
+            <div class="identity" *ngFor="let id of allIdentities">
+                <div class="selected-border"
+                     [ngClass]="{'selected-border--selected': id.name === currentIdentity}"></div>
+                <div class="id cell-24">
+                    {{ id.name }}
+                </div>
+                <div class="issued-to cell-24">
+                    {{ id.participant.$identifier }}
+                </div>
+                <div class="status cell-24">
+                    {{ id.state }}
+                </div>
+                <div class="cell-24">
+                    <div class="actions" *ngIf="id.name!==currentIdentity&&id.state!=='REVOKED'">
+                        <button class="clear" (click)="revokeIdentity(id)">Revoke</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

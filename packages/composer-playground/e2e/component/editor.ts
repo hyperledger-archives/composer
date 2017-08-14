@@ -35,7 +35,7 @@ export class Editor {
       return OperationsHelper.retriveMatchingElementsByCSS('.side-bar-nav', '.flex-container')
       .map((elm) => { browser.executeScript(scrollMe, elm);
                       browser.wait(ExpectedConditions.visibilityOf(elm), 5000);
-                      return elm.getText(); });
+                      return OperationsHelper.retriveTextFromElement(elm); });
   }
 
   // Retrieve Editor Side Navigation File Action buttons (Add/Deploy)
@@ -61,7 +61,7 @@ export class Editor {
   }
 
   // Retrieve current 'active' file from navigator
-  static retrieveNavigatorActiveFile() {
+  static retrieveNavigatorActiveFiles() {
     return OperationsHelper.retriveMatchingElementsByCSS('.files', '.active')
     .map((elm) => { browser.executeScript(scrollMe, elm);
                     browser.wait(ExpectedConditions.visibilityOf(elm), 5000);
