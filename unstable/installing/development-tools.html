@@ -197,6 +197,8 @@ ga('send', 'pageview');
 
 <p>Follow the instructions below to get the required Hyperledger Composer development tools and stand up a Hyperledger Fabric.</p>
 
+<p>There are two version of Hyperledger Fabric: v0.6 and v1.0. The default is for v1.0 and we suggest this is the one you use.</p>
+
 <h2 id="before-you-begin">Before you begin</h2>
 
 <p>The following are prerequisites for installing the required development tools:</p>
@@ -205,7 +207,7 @@ Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
 npm: v3.x or v5.v
-git: 2.9.x or higher
+git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 </code></pre></div>
@@ -277,7 +279,11 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 
 tar xvzf fabric-dev-servers.tar.gz
 </code></pre></div></li>
-<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. </p>
+<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows: export FABRIC_VERSION=hlfv0.6</p>
+
+<blockquote>
+<p><strong>Please Note:</strong> Hyperledger Composer users should not use  v0.6.  It is deprecated, and everybody should now use v1.0.</p>
+</blockquote>
 
 <p>To &#39;unset&#39; a v0.6 export, or to be explicit in using v1 Fabric, use this command</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
@@ -296,6 +302,8 @@ tar xvzf fabric-dev-servers.tar.gz
 ./teardownFabric.sh
 </code></pre></div></li>
 </ol>
+
+<p><em>If you want to swap between v0.6 and v1.0, ensure you first issue a <code>teardownFabric.sh</code> command on your original version.</em></p>
 
 <blockquote>
 <p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.</p>

@@ -211,79 +211,85 @@ ga('send', 'pageview');
 <li><p>Navigate into the new profile folder.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd MyProfile
 </code></pre></div></li>
-<li><p>Create a new file called <code>connection.json</code> that contains the following information for Hyperledger Fabric v1.0. 
-    }</p></li>
-</ol>
-
-<p>Create a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">    </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
-            </span><span class="p">},</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
-            </span><span class="p">}</span><span class="w">
-        </span><span class="p">],</span><span class="w">
-        </span><span class="nt">"ca"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"url:"</span><span class="w"> </span><span class="nt">"https://"</span><span class="err">,</span><span class="w">
-                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"trustedRoots"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">""</span><span class="p">],</span><span class="w">
-                </span><span class="nt">"verify"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="nt">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
-            </span><span class="p">},</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
-            </span><span class="p">}</span><span class="w">
-        </span><span class="p">],</span><span class="w">
-        </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/YOUR_HOME_DIR/.composer-credentials"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"composerchannel"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"mspID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Org1MSP"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"timeout"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"globalcert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"maxSendSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"maxRecvSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-
-</span><span class="err">If</span><span class="w"> </span><span class="err">you</span><span class="w"> </span><span class="err">are</span><span class="w"> </span><span class="err">connecting</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">Hyperledger</span><span class="w"> </span><span class="err">Fabric</span><span class="w"> </span><span class="err">v</span><span class="mf">1.0</span><span class="w"> </span><span class="err">and</span><span class="w"> </span><span class="err">are</span><span class="w"> </span><span class="err">not</span><span class="w"> </span><span class="err">using</span><span class="w"> </span><span class="err">TLS</span><span class="w"> </span><span class="err">or</span><span class="w"> </span><span class="err">if</span><span class="w"> </span><span class="err">you</span><span class="w"> </span><span class="err">don't</span><span class="w"> </span><span class="err">need</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">trustedRoots</span><span class="w"> </span><span class="err">and</span><span class="w"> </span><span class="err">verify</span><span class="w"> </span><span class="err">options</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">Certificate</span><span class="w"> </span><span class="err">Authority</span><span class="w"> </span><span class="err">definition</span><span class="w"> </span><span class="err">you</span><span class="w"> </span><span class="err">can</span><span class="w"> </span><span class="err">use</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">following</span><span class="w"> </span><span class="err">simplified</span><span class="w"> </span><span class="err">connection</span><span class="w"> </span><span class="err">profile:</span><span class="w">
-
-</span><span class="err">_Please</span><span class="w"> </span><span class="err">note:</span><span class="w"> </span><span class="err">The</span><span class="w"> </span><span class="err">simplified</span><span class="w"> </span><span class="err">version</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">connection</span><span class="w"> </span><span class="err">profile</span><span class="w"> </span><span class="err">will</span><span class="w"> </span><span class="err">only</span><span class="w"> </span><span class="err">work</span><span class="w"> </span><span class="err">if</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">relevant</span><span class="w"> </span><span class="err">certificate</span><span class="w"> </span><span class="err">authority</span><span class="w"> </span><span class="err">has</span><span class="w"> </span><span class="err">no</span><span class="w"> </span><span class="err">name</span><span class="w"> </span><span class="err">defined.</span><span class="w"> </span><span class="err">If</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">certificate</span><span class="w"> </span><span class="err">authority</span><span class="w"> </span><span class="err">has</span><span class="w"> </span><span class="err">a</span><span class="w"> </span><span class="err">defined</span><span class="w"> </span><span class="err">name,</span><span class="w"> </span><span class="err">it</span><span class="w"> </span><span class="err">must</span><span class="w"> </span><span class="err">be</span><span class="w"> </span><span class="err">specified._</span><span class="w">
-
-    </span><span class="p">{</span><span class="w">
+<li><p>Create a new file called <code>connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;hlf|web&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="s2">"/home/&lt;your-username&gt;/.composer-credentials"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"membershipServicesURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-membership-services-url&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"peerURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-peer-url&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"eventHubURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-event-hub-url&gt;</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="s2">"grpc://localhost:7050"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="nt">"ca"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:7054"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
         </span><span class="p">{</span><span class="w">
-            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7051"</span><span class="p">,</span><span class="w">
-            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7053"</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
         </span><span class="p">},</span><span class="w">
         </span><span class="p">{</span><span class="w">
-            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7056"</span><span class="p">,</span><span class="w">
-            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7058"</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
         </span><span class="p">}</span><span class="w">
     </span><span class="p">],</span><span class="w">
-    </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/home/.composer-credentials"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"ca"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url:"</span><span class="w"> </span><span class="nt">"https://"</span><span class="err">,</span><span class="w">
+            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"trustedRoots"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">""</span><span class="p">],</span><span class="w">
+            </span><span class="nt">"verify"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nt">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/YOUR_HOME_DIR/.composer-credentials"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"composerchannel"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"mspID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Org1MSP"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"timeout"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span><span class="w">
     </span><span class="nt">"globalcert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
     </span><span class="nt">"maxSendSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
     </span><span class="nt">"maxRecvSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="w">
-    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre></div>
+<p>If you are connecting to Hyperledger Fabric v1.0 and are not using TLS or if you don&#39;t need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:</p>
+
+<p><em>Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified.</em></p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"grpc://localhost:7050"</span><span class="w">
+</span><span class="p">],</span><span class="w">
+</span><span class="nt">"ca"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:7054"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7051"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7053"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7056"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpc://localhost:7058"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">],</span><span class="w">
+</span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/home/.composer-credentials"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"composerchannel"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"mspID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Org1MSP"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"timeout"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span><span class="w">
+</span><span class="nt">"globalcert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+</span><span class="nt">"maxSendSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+</span><span class="nt">"maxRecvSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></li>
+</ol>
+
 <ul>
 <li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0 is must be <code>hlfv1</code>.</li>
 <li><code>ca</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of <code>ca</code> as shown in the first Hyperledger Fabric v1.0 example above.</li>
