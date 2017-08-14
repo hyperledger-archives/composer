@@ -16,7 +16,7 @@ Queries are used to return data about the blockchain world-state; for example, y
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with the {{site.data.conrefs.hlf_full}} v0.6 runtime.
+Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with any earlier {{site.data.conrefs.hlf_full}} versions.
 
 ## Types of Queries
 

@@ -20,7 +20,7 @@ Everyday applications can consume the data from business networks, providing end
 
 You can use {{site.data.conrefs.composer_full}} to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.
 
-![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Composer-Diagram.svg)
+![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Hyperledger_Composer_Diagram.svg)
 
 ---
 

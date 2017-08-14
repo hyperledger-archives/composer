@@ -12,8 +12,6 @@ excerpt: "The developer guide will walk you through the steps required to build 
 
 *Note:* this tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment.
 
-> **Please Note:** {{site.data.conrefs.composer_full}} users should not use {{site.data.conrefs.fabric_full}} v0.6.  It is deprecated, and everybody should now use v1.0.
-
 This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
 ## Install {{site.data.conrefs.composer_full}}
@@ -54,27 +52,31 @@ You should now have a folder called `my-network` (as the basis for our project) 
 
 ### Update your package.json file
 
-The metadata (name, version, description etc) for the business network definition is stored in the `package.json` file. Edit this file to change the name to `my-network`, the description to `My Commodity Trading network` and modify the `prepublish` script to change the name of the business network archive to `my-network.bna` at the end. 
+The metadata (name, version, description) for the business network definition is stored in the `package.json` file. Edit the file to change the name to `my-network` and modify the `prepublish` script to change the name of the business network archive. (Note: Add a timeout to the "test" command line and remove the 'deploy' line after 'test' - as we will not be publishing this network to the `npm` package manager).
 
+Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
+
+The start of the `package.json` file should now look like this:
 
 ```json
-"name": "my-network",
-  "version": "0.1.6",
-  "description": "My Commodity Trading network",
-  "networkImage": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg",
-  "networkImageanimated": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg",
+{
+  "name": "my-network",
+  "version": "0.0.1",
+  "description": "My very first Hyperledger Composer Network",
   "scripts": {
-    "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
-    "pretest": "npm run lint",
-    "lint": "eslint .",
-    "postlint": "npm run licchk",
-    "licchk": "license-check",
-    "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
-    "test-inner": "mocha -t 0 --recursive && cucumber-js",
-    "test-cover": "nyc npm run test-inner",
-    "test": "npm run test-inner"
-  },
+      "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
+      "pretest": "npm run lint",
+      "lint": "eslint .",
+      "postlint": "npm run licchk",
+      "licchk": "license-check",
+      "postlicchk": "npm run doc",
+      "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+      "test-inner": "mocha --recursive && cucumber-js",
+      "test-cover": "nyc npm run test-inner",
+      "test": "mocha --recursive -t 4000"
+    },
+...
+}
 ```
 
 Save your changes to `package.json`
@@ -84,7 +86,7 @@ Save your changes to `package.json`
 Open the `README.md` file and update the markdown with a short decription of the business network.
 
 ```
-# My Commodity Trading network
+# My very first Hyperledger Composer Network
 ```
 
 Save your changes to `README.md`
@@ -179,15 +181,6 @@ rule Default {
     resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
-
-rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
-}
-
 ```
 
 Save your changes to `permissions.acl`
@@ -215,7 +208,7 @@ Creating Business Network Archive
 Looking for package.json of Business Network Definition in /home/user/my-network
 
 Found:
-Description: My Commodity Trading network
+Description:My very first Hyperledger Composer Network
 Name:my-network
 Identifier:my-network@0.0.1
 
@@ -234,7 +227,7 @@ We are now going to add a simple unit test for the business network definition. 
 
 From your project working directory (my-network), open the file `test/sample.js` and inspect the contents.
 
-The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current `sample.js` file contents entirely:
+The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:
 
 ```javascript
 /*
@@ -355,114 +348,6 @@ describe('Commodity Trading', () => {
 
 Save your changes to `sample.js`
 
-Next, open the file `features/sample.feature` in your project folder and replace the entire contents with this Cucumber test definition file:
-
-```
-#
-# Licensed under the Apache License, Version 2   (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2  
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-Feature: Sample
-    Background:
-        Given I have deployed the business network definition ..
-        And I have added the following participants of type org.acme.mynetwork.Trader
-            | tradeId         | firstName | lastName |
-            | alice@email.com | Alice     | A        |
-            | bob@email.com   | Bob       | B        |
-        And I have added the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-        And I have issued the participant org.acme.mynetwork.Trader#alice@email.com with the identity alice1
-        And I have issued the participant org.acme.mynetwork.Trader#bob@email.com with the identity bob1
-    Scenario: Alice can read all of the assets
-        When I use the identity alice1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Bob can read all of the assets
-        When I use the identity alice1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Alice can add assets that she owns
-        When I use the identity alice1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-    Scenario: Bob can add assets that he owns
-        When I use the identity bob1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-    Scenario: Alice can update her assets
-        When I use the identity alice1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-    Scenario: Bob can update his assets
-        When I use the identity bob1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-    Scenario: Alice can remove her assets
-        When I use the identity alice1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-    Scenario: Bob can remove his assets
-        When I use the identity bob1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-    Scenario: Alice can submit a transaction for her assets
-        When I use the identity alice1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner      |
-            | 1         | bob@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | bob@email.com |
-    Scenario: Bob can submit a transaction for his assets
-        When I use the identity bob1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner        |
-            | 2         | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity   | owner           |
-            | 2             | Two         | Paris        | 2          | alice@email.com   |
-
-```
-
 Check that the unit tests pass by switching back to the terminal and typing:
 
 ```
@@ -474,36 +359,33 @@ You should see output similar to the following:
 ```
 ~user@ubuntu $ npm test
 
-> my-network@0.1.6 pretest /home/ibm/my-network
+> my-network@0.0.1 pretest /home/user/my-network
 > npm run lint
 
 
-> my-network@0.1.6 lint /home/ibm/my-network
+> my-network@0.0.1 lint /home/user/my-network
 > eslint .
 
 
-> my-network@0.1.6 postlint /home/ibm/my-network
+> my-network@0.0.1 postlint /home/user/my-network
 > npm run licchk
 
 
-> my-network@0.1.6 licchk /home/ibm/my-network
+> my-network@0.0.1 licchk /home/user/my-network
 > license-check
 
 
-> my-network@0.1.6 postlicchk /home/ibm/my-network
+> my-network@0.0.1 postlicchk /home/user/my-network
 > npm run doc
 
 
-> my-network@0.1.6 doc /home/ibm/my-network
-> jsdoc --pedantic --recurse -c jsdoc.json
+> my-network@0.0.1 doc /home/user/my-network
+> jsdoc --pedantic --recurse -c jsdoc.conf
 
 
-> my-network@0.1.6 test /home/ibm/my-network
-> npm run test-inner
+> my-network@0.0.1 test /home/user/my-network
+> mocha --recursive -t 4000
 
-
-> my-network@0.1.6 test-inner /home/ibm/my-network
-> mocha -t 0 --recursive && cucumber-js
 
 
 Commodity Trading
@@ -512,16 +394,7 @@ Commodity Trading
 
 
 1 passing (556ms)
-
-
-Feature: Sample
-
 ```
-
-And the cucumber tests defined in the file `features/sample.feature` will produce the following output:
-
-![Cucumber test output](../assets/img/tutorials/developer/cucumber-output.png)
-
 
 ## Import into Playground and Test
 
@@ -622,7 +495,7 @@ user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s
 Deploying business network from archive: my-network.bna
 Business network definition:
 	Identifier: my-network@0.1.3
-	Description: My Commodity Trading network
+	Description: The Hello World of Hyperledger Composer samples
 
 ✔ Deploying business network definition. This may take a minute...
 

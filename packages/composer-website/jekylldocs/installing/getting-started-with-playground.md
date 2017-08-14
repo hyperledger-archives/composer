@@ -25,7 +25,7 @@ Before beginning, you will need:
 
 ## Access the online Playground
 
-The Online Playground can be accessed here: <a href="https://composer-playground.mybluemix.net" target="blank">composer-playground.mybluemix.net</a>
+The Online Playground can be accessed here: [composer-playground.mybluemix.net](https://composer-playground.mybluemix.net)
 
 ## Start with a Playground Tutorial
 
