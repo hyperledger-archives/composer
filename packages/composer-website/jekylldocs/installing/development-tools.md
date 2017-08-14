@@ -24,7 +24,7 @@ Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
 npm: v3.x or v5.v
-git: 2.9.x or higher
+git: 2.9.x
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
@@ -106,11 +106,11 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows: export FABRIC_VERSION=hlfv0.6
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. 
 
     > **Please Note:** {{site.data.conrefs.composer_full}} users should not use {{site.data.conrefs.fabric_full}} v0.6.  It is deprecated, and everybody should now use v1.0.
 
-    To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
+    To be explicit in using v1 Fabric, use this command
 
         export FABRIC_VERSION=hlfv1
 
@@ -129,7 +129,6 @@ docker rmi $(docker images dev-* -q)
         ./stopFabric.sh
         ./teardownFabric.sh
 
-*If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
 
 > Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
 
