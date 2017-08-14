@@ -25,7 +25,7 @@ const Typed = require('./typed');
  * @class
  * @memberof module:composer-common
  */
-class Identifiable extends Typed{
+class Identifiable extends Typed {
     /**
      * Create an instance.
      * <p>
@@ -105,7 +105,7 @@ class Identifiable extends Typed{
      */
     toURI() {
         const identifier = new Identifier('resource', this.getNamespace(), this.getType(), this.getIdentifier());
-        const result = identifier.toUri();
+        const result = identifier.toURI();
         //console.log( '***** URI for ' + this.toString() + ' is ' + result );
         return result;
     }

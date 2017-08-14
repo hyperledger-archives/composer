@@ -49,7 +49,7 @@ class Identifier {
      * @param {String} [defaultType] - Type to use if the URI does not specify one.
      * @return {Identifier} - An identifier.
      */
-    static fromUri(uri, defaultNamespace, defaultType) {
+    static fromURI(uri, defaultNamespace, defaultType) {
         // Format: "protocol:qualifiedType#identifier", where "protocol:" and "qualifiedType#" are optional.
         // This pattern should never fail to match.
         const pattern = /^(?:([^:#]+):)?(?:([^#]+)#)?(.*)$/;
@@ -73,7 +73,7 @@ class Identifier {
      * URI representation of this identifier.
      * @return {String} - A URI.
      */
-    toUri() {
+    toURI() {
         const encodedId = encodeURI(this.id);
         const qualifiedType = ModelUtils.getFullyQualifiedName(this.namespace, this.type);
         return `${this.protocol}:${qualifiedType}#${encodedId}`;

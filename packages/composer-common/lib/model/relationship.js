@@ -74,7 +74,7 @@ class Relationship extends Identifiable {
      * @return {Relationship} the relationship
      */
     static fromURI(modelManager, uriAsString, defaultNamespace, defaultType) {
-        const identifier = Identifier.fromUri(uriAsString, defaultNamespace, defaultType);
+        const identifier = Identifier.fromURI(uriAsString, defaultNamespace, defaultType);
 
         let modelFile = modelManager.getModelFile(identifier.namespace);
         if (!modelFile) {
