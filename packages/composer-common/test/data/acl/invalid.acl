@@ -1,0 +1,41 @@
+rule R1 {
+    description: "Fred can DELETE the car ABC123"
+    participant: "org.acme.Driver#Fred"
+    operation: DELETE
+    resource: "this is invalid"
+    action: ALLOW
+}
+
+rule R2 {
+    description: "regulator with ID Bill can not update a Car if they own it"
+    participant(r): "org.acme.Regulator#Bill"
+    operation: UPDATE
+    resource(c): "org.acme.Car"
+    condition: (c.owner == r)
+    action: DENY
+}
+
+rule R3 {
+    description: "Driver can change the ownership of a car that they own"
+    participant(d): "org.acme.Driver"
+    operation: UPDATE
+    resource(o): "org.acme.Car.owner"
+    condition: (o == d)
+    action: ALLOW
+}
+
+rule R4 {
+    description: "regulators can perform all operations on Cars"
+    participant: "org.acme.Regulator"
+    operation: ALL
+    resource: "org.acme.Car"
+    action: ALLOW
+}
+
+rule R5 {
+    description: "Everyone can read all resources in the org.acme namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.acme"
+    action: ALLOW
+}

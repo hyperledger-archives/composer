@@ -26,9 +26,9 @@ const sinon = require('sinon');
 
 describe('QueryFile', () => {
 
-    const testQuery = fs.readFileSync(path.resolve(__dirname, './test.qry'), 'utf8');
-    const invalidQuery = fs.readFileSync(path.resolve(__dirname, './invalid.qry'), 'utf8');
-    const testModel = fs.readFileSync(path.resolve(__dirname, './model.cto'), 'utf8');
+    const testQuery = fs.readFileSync(path.resolve(__dirname, '../data/query/test.qry'), 'utf8');
+    const invalidQuery = fs.readFileSync(path.resolve(__dirname, '../data/query/invalid.qry'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, '../data/query/model.cto'), 'utf8');
 
     let modelManager;
     let sandbox;
