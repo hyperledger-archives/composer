@@ -18,7 +18,7 @@ If some of the tools are already installed or to do the installation step-by-ste
 
 
 ```bash
-$ curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 $ chmod u+x prereqs-ubuntu.sh
 ```
 
