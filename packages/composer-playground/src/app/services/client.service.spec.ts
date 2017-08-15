@@ -1022,11 +1022,11 @@ describe('ClientService', () => {
                 revokeIdentity: sinon.stub().returns(Promise.resolve())
             });
 
-            service.revokeIdentity({fake : 'identity'});
+            service.revokeIdentity({fake: 'identity'});
 
             tick();
 
-            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake : 'identity'});
+            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake: 'identity'});
         })));
     });
 
@@ -1115,6 +1115,7 @@ describe('ClientService', () => {
         }));
 
     });
+
     describe('createQueryFile', () => {
         let mockBusinessNetwork;
 
@@ -1129,6 +1130,37 @@ describe('ClientService', () => {
             mockBusinessNetwork.getModelManager.should.have.been.called;
         })));
 
+    });
+
+    describe('resolveTransactionRelationship', () => {
+        let mockRegistry;
+
+        beforeEach(() => {
+            mockRegistry = {
+                get: sinon.stub().returns({$class: 'myTransaction'})
+            };
+
+            businessNetworkConMock.getTransactionRegistry.returns(Promise.resolve(mockRegistry));
+        });
+
+        it('should resolve the transaction relationship', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let getBusinessNetworkConStub = sinon.stub(service, 'getBusinessNetworkConnection');
+
+            let transaction = {
+                getIdentifier: sinon.stub().returns('1234')
+            };
+
+            getBusinessNetworkConStub.returns(businessNetworkConMock);
+
+            service.resolveTransactionRelationship(transaction).then((result) => {
+                result.should.deep.equal({$class: 'myTransaction'});
+            });
+
+            tick();
+
+            getBusinessNetworkConStub.should.have.been.called;
+            businessNetworkConMock.getTransactionRegistry.should.have.been.called;
+        })));
     });
 
 });
