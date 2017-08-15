@@ -209,7 +209,7 @@ git: 2.9.x or higher
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 </code></pre></div>
-<p><strong>Please do not install Composer as a superuser - or use &#39;sudo&#39; or the &#39;root&#39; user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.</strong></p>
+<p><strong>Please do not install Hyperledger Composer as a superuser - or use &#39;sudo&#39; or the &#39;root&#39; user, if on Linux (doing will cause issues installation errors). Hyperledger Composer should be installed as non-privileged user.</strong></p>
 
 <p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
@@ -219,6 +219,8 @@ chmod u+x prereqs-ubuntu.sh
 <p>Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">./prereqs-ubuntu.sh
 </code></pre></div>
+<p>To run Hyperledger Composer and Hyperledger Fabric, we recommend you have at least 4Gb of memory.</p>
+
 <hr>
 
 <h2 id="step-1-installing-hyperledger-composer-development-tools">Step 1: Installing Hyperledger Composer development tools</h2>
@@ -277,12 +279,12 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 
 tar xvzf fabric-dev-servers.tar.gz
 </code></pre></div></li>
-<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default. </p>
+<li><p>Choose which version of Fabric to use.  Hyperledger Fabric v1.0 is highly recommended and the default.</p>
 
 <p>To &#39;unset&#39; a v0.6 export, or to be explicit in using v1 Fabric, use this command</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
 </code></pre></div></li>
-<li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.</p>
+<li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Hyperledger Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Hyperledger Fabric and the Hyperledger Composer profile.</p>
 
 <p>All the scripts will be in the directory <code>~/fabric-tools</code>  A typical sequence for Hyperledger Composer use would be</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
@@ -328,7 +330,7 @@ tar xvzf fabric-dev-servers.tar.gz
 ./stopFabric.sh
 </code></p>
 
-<p><strong>Create Composer Profile</strong></p>
+<p><strong>Create Hyperledger Composer Profile</strong></p>
 
 <p>Issue from the <code>fabric-tools</code> directory
 <code>
