@@ -342,12 +342,16 @@ describe(`RegistryComponent`, () => {
 
     describe('viewTransactionData', () => {
         it('should open the modal', fakeAsync(() => {
+            mockClientService.resolveTransactionRelationship.returns(Promise.resolve({$class: 'myTransaction'}));
+
+            let componentInstance = {
+                transaction: {},
+                events: []
+            };
+
             mockNgbModal.open = sinon.stub().returns({
-                componentInstance: {
-                    transaction: {},
-                    events: []
-                },
-                result: Promise.resolve('some error')
+                componentInstance: componentInstance,
+                result: Promise.resolve()
             });
 
             let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};
@@ -356,8 +360,35 @@ describe(`RegistryComponent`, () => {
             tick();
 
             mockNgbModal.open.should.have.been.called;
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal(['event 1']);
         }));
-        });
+
+        it('should handle error', fakeAsync(() => {
+            mockClientService.resolveTransactionRelationship.returns(Promise.resolve({$class: 'myTransaction'}));
+
+            let componentInstance = {
+                transaction: {},
+                events: []
+            };
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: componentInstance,
+                result: Promise.reject('some error')
+            });
+
+            let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};
+            component.viewTransactionData(mockTransaction);
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal(['event 1']);
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+    });
 
     describe('updateTableScroll', () => {
         it('should assign a value to the tableScrolled variable', () => {
