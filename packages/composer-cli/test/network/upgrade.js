@@ -60,6 +60,7 @@ describe('composer upgrade runtime CLI unit tests', function () {
 
             return InstallCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);

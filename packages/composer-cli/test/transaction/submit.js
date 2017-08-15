@@ -82,6 +82,7 @@ describe('composer transaction submit CLI unit tests', () => {
 
             return Submit.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);
@@ -103,6 +104,7 @@ describe('composer transaction submit CLI unit tests', () => {
 
             return Submit.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'defaultProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);

@@ -66,6 +66,7 @@ describe('composer identity bind CLI unit tests', () => {
         };
         return Bind.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
@@ -84,6 +85,7 @@ describe('composer identity bind CLI unit tests', () => {
         };
         return Bind.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
@@ -101,6 +103,7 @@ describe('composer identity bind CLI unit tests', () => {
         };
         return Bind.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
