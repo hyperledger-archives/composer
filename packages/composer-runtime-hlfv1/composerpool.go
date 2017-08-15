@@ -18,10 +18,10 @@ import "sync"
 
 // ComposerPool holds a pool of Composer objects.
 type ComposerPool struct {
-	Pool chan *Composer
-	PoolMutex *sync.Mutex
+	Pool      chan *Composer
+	PoolMutex *sync.RWMutex
 	PoolCount int
-	PoolMax int
+	PoolMax   int
 }
 
 // NewComposerPool creates a new pool of Composer objects.
@@ -29,13 +29,13 @@ func NewComposerPool(max int) (result *ComposerPool) {
 	logger.Debug("Entering NewComposerPool", max)
 	defer func() { logger.Debug("Exiting NewComposerPool", result) }()
 
-    result = &ComposerPool{
-        Pool: make(chan *Composer, max),
+	result = &ComposerPool{
+		Pool:      make(chan *Composer, max),
 		PoolCount: 0,
-		PoolMax: max,
-		PoolMutex: &sync.Mutex{},
-    }
-    return result
+		PoolMax:   max,
+		PoolMutex: &sync.RWMutex{},
+	}
+	return result
 }
 
 // Get returns an existing Composer object from the pool, or creates a new one
@@ -45,19 +45,28 @@ func (cp *ComposerPool) Get() (result *Composer) {
 	defer func() { logger.Debug("Exiting ComposerPool.Get", result) }()
 
 	// lock the pool and check to see how many Composer objects
-	// have been created if the channel buffer is currently empty
-	cp.PoolMutex.Lock()
-
-	if len(cp.Pool) == 0 && cp.PoolCount < cp.PoolMax {
-		cp.Pool <- NewComposer()
-		cp.PoolCount++
+	// have been created - create a new one if we haven't hit the max yet
+	cp.PoolMutex.RLock()
+	if cp.PoolCount < cp.PoolMax {
+		cp.PoolMutex.RUnlock()
+		cp.PoolMutex.Lock()
+		defer cp.PoolMutex.Unlock()
+		if cp.PoolCount < cp.PoolMax {
+			result := NewComposer()
+			result.Index = cp.PoolCount
+			logger.Debug("Creating a new Composer object for pool", result.Index)
+			cp.PoolCount++
+			return result
+		}
+	} else {
+		cp.PoolMutex.RUnlock()
 	}
-	cp.PoolMutex.Unlock()
 
 	// we will get the newly created one, or wait for one. Potentially
 	// we could have had one put back during this time which we could
 	// have used if a new one was created, but never mind.
 	result = <-cp.Pool
+	logger.Debug("Got Composer object from pool", result.Index)
 	return result
 }
 
@@ -67,8 +76,7 @@ func (cp *ComposerPool) Put(composer *Composer) (result bool) {
 	logger.Debug("Entering ComposerPool.Put", composer)
 	defer func() { logger.Debug("Exiting ComposerPool.Put", result) }()
 
-	cp.PoolMutex.Lock()
+	logger.Debug("Putting Composer object into pool", composer.Index)
 	cp.Pool <- composer
-	cp.PoolMutex.Unlock()
 	return true
 }
