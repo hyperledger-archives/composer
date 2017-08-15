@@ -107,6 +107,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 // sinon.assert.calledOnce(mockGoLang.visit);
@@ -124,6 +125,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};
@@ -139,6 +141,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};
@@ -154,6 +157,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};

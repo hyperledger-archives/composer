@@ -56,6 +56,7 @@ describe('composer network logLevel CLI unit tests', () => {
 
         return LogLevel.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, PROFILE_NAME, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.getLogLevel);
@@ -73,6 +74,7 @@ describe('composer network logLevel CLI unit tests', () => {
 
         return LogLevel.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, PROFILE_NAME, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.setLogLevel);

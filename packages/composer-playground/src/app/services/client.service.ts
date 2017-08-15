@@ -7,7 +7,7 @@ import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, Resource } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, TransactionDeclaration } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -46,7 +46,7 @@ export class ClientService {
 
     // horrible hack for tests
     createQueryFile(id, content) {
-      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
+        return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -386,7 +386,19 @@ export class ClientService {
 
     filterModelFiles(files) {
         return files.filter((model) => {
-                return !model.isSystemModelFile();
+            return !model.isSystemModelFile();
+        });
+    }
+
+    resolveTransactionRelationship(relationship): Promise<TransactionDeclaration> {
+        let identifier = relationship.getIdentifier();
+
+        return this.getBusinessNetworkConnection().getTransactionRegistry()
+            .then((transactionRegistry) => {
+                return transactionRegistry.get(identifier);
+            })
+            .then((resolvedTransaction) => {
+                return resolvedTransaction;
             });
     }
 }

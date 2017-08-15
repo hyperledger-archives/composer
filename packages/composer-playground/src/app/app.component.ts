@@ -16,7 +16,6 @@ import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
-import { TransactionService } from './services/transaction.service';
 import { ViewTransactionComponent } from './test/view-transaction';
 
 /* tslint:disable-next-line:no-var-requires */
@@ -62,9 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 private alertService: AlertService,
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
-                private aboutService: AboutService,
-                private transactionService: TransactionService) {
-
+                private aboutService: AboutService) {
     }
 
     ngOnInit() {
@@ -78,8 +75,8 @@ export class AppComponent implements OnInit, OnDestroy {
             this.route.queryParams.subscribe((queryParams) => {
                 this.queryParamsUpdated(queryParams);
             }),
-            this.transactionService.event$.subscribe((eventStatus) => {
-                this.onEvent(eventStatus);
+            this.alertService.transactionEvent$.subscribe((eventStatus) => {
+                this.onTransactionEvent(eventStatus);
             }),
             this.router.events.filter((e) => e instanceof NavigationEnd).subscribe((e) => {
                 if (e['url'] === '/') {
@@ -117,82 +114,82 @@ export class AppComponent implements OnInit, OnDestroy {
             // Add the credentials to the wallet.
             let wallet = this.walletService.getWallet(connectionProfileName);
             return wallet.contains(userID)
-            .then((exists) => {
-                if (exists) {
-                    return wallet.update(userID, userSecret);
-                } else {
-                    return wallet.add(userID, userSecret);
-                }
-            })
-            .then(() => {
-                return this.identityService.setIdentity(connectionProfileName, userID);
-            })
-            .then(() => {
-                return this.router.navigate(['/editor'])
-                .then((result) => {
-                    if (result) {
-                        window.location.reload();
+                .then((exists) => {
+                    if (exists) {
+                        return wallet.update(userID, userSecret);
                     } else {
-                        throw new Error('Failed to navigate to main page');
+                        return wallet.add(userID, userSecret);
                     }
+                })
+                .then(() => {
+                    return this.identityService.setIdentity(connectionProfileName, userID);
+                })
+                .then(() => {
+                    return this.router.navigate(['/editor'])
+                        .then((result) => {
+                            if (result) {
+                                window.location.reload();
+                            } else {
+                                throw new Error('Failed to navigate to main page');
+                            }
+                        });
+                })
+                .catch((error) => {
+                    this.alertService.errorStatus$.next(error);
                 });
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(error);
-            });
         }
 
         // We load the connection profiles now, so we can immediately populate the menu.
         this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         return this.updateConnectionData()
-        .then(() => {
-            return this.initializationService.initialize();
-        })
-        .then(() => {
-            return this.clientService.getBusinessNetworkConnection().ping();
-        })
-        .then((ping) => {
-            this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
-            this.participantFQI = ping.participant || this.participantFQI;
-            // We then load the connection profiles again, as the connect calls may have
-            // created versions of the default connection profiles.
-            return this.updateConnectionData();
-        })
-        .then(() => {
-            return this.identityService.getCurrentIdentity();
-        })
-        .then((currentIdentity) => {
-            this.currentIdentity = currentIdentity;
-            return this.initializationService.isWebOnly();
-        })
-        .then((webOnly) => {
-            if (webOnly) {
-                this.usingLocally = false;
-            } else {
-                this.usingLocally = true;
-            }
-        });
+            .then(() => {
+                return this.initializationService.initialize();
+            })
+            .then(() => {
+                return this.clientService.getBusinessNetworkConnection().ping();
+            })
+            .then((ping) => {
+                this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
+                this.participantFQI = ping.participant || this.participantFQI;
+                // We then load the connection profiles again, as the connect calls may have
+                // created versions of the default connection profiles.
+                return this.updateConnectionData();
+            })
+            .then(() => {
+                return this.identityService.getCurrentIdentity();
+            })
+            .then((currentIdentity) => {
+                this.currentIdentity = currentIdentity;
+                return this.initializationService.isWebOnly();
+            })
+            .then((webOnly) => {
+                if (webOnly) {
+                    this.usingLocally = false;
+                } else {
+                    this.usingLocally = true;
+                }
+            });
     }
 
     updateConnectionData(): Promise<any> {
         let newConnectionProfiles = [];
         return this.adminService.getAdminConnection().getAllProfiles()
-        .then((connectionProfiles) => {
-            let keys = Object.keys(connectionProfiles).sort();
-            keys.forEach((key) => {
-                let connectionProfile = connectionProfiles[key];
-                newConnectionProfiles.push({
-                    name: key,
-                    profile: connectionProfile,
-                    default: key === '$default'
+            .then((connectionProfiles) => {
+                let keys = Object.keys(connectionProfiles).sort();
+                keys.forEach((key) => {
+                    let connectionProfile = connectionProfiles[key];
+                    newConnectionProfiles.push({
+                        name: key,
+                        profile: connectionProfile,
+                        default: key === '$default'
+                    });
                 });
+                this.connectionProfiles = newConnectionProfiles;
+                return this.identityService.getCurrentIdentities();
+            })
+            .then((identities) => {
+                this.identities = identities;
             });
-            this.connectionProfiles = newConnectionProfiles;
-            return this.identityService.getCurrentIdentities();
-        })
-        .then((identities) => {
-            this.identities = identities;
-        });
     }
 
     onBusyStatus(busyStatus) {
@@ -220,11 +217,15 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    onEvent(eventStatus) {
+    onTransactionEvent(eventStatus) {
         if (eventStatus) {
             let transactionModalRef = this.modalService.open(ViewTransactionComponent);
-            transactionModalRef.componentInstance.transaction = this.transactionService.lastTransaction;
-            transactionModalRef.componentInstance.events = this.transactionService.events;
+            transactionModalRef.componentInstance.transaction = eventStatus.transaction;
+            transactionModalRef.componentInstance.events = eventStatus.events;
+
+            transactionModalRef.result.catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
         }
     }
 
