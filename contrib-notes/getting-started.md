@@ -83,7 +83,7 @@ For example, inorder to run Playground UI locally you can run:
 
     $ npm start
 
-on composer-playground-api and composer-playground packages in turn and visit:
+on composer-playground-api and composer-playground packages in turn followed by visiting:
 
     localhost:3000 
     
