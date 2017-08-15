@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53.41 40.72" style="">
+    <defs>
+        <style>
+            .cls-1{fill:#f1f3f7;}.cls-2{fill:none;stroke:#3f55af;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}
+        </style>
+    </defs>
+    <title>Basic Sample Image Animated</title>
+    <g id="Layer_2" data-name="Layer 2">
+        <g id="Layer_1-2" data-name="Layer 1">
+            <path class="cls-1 rtjGQaKO_0" d="M21.43,10.58L28.53,10.08"></path>
+            <path class="cls-1 rtjGQaKO_1" d="M21.75,15.1L34.01,14.24"></path>
+            <path class="cls-1 rtjGQaKO_2" d="M22.07,19.62L34.33,18.75"></path>
+            <path class="cls-1 rtjGQaKO_3" d="M22.39,24.14L34.65,23.27"></path>
+            <path class="cls-1 rtjGQaKO_4" d="M36.83,8.2L32.31,8.52L31.99,4L36.83,8.2Z"></path>
+            <path class="cls-1 rtjGQaKO_5"
+                  d="M35.38,6.94L31.99,4L31.99,4L31.99,4L17.79,5L19.57,30.17L38.28,28.85L36.83,8.2L35.38,6.94Z"></path>
+            <path class="cls-1 rtjGQaKO_6" d="M40.37,14.79L45.98,19.17"></path>
+            <path class="cls-1 rtjGQaKO_7" d="M37.58,18.36L47.28,25.92"></path>
+            <path class="cls-1 rtjGQaKO_8" d="M34.8,21.93L44.49,29.49"></path>
+            <path class="cls-1 rtjGQaKO_9" d="M32.01,25.5L41.71,33.06"></path>
+            <path class="cls-1 rtjGQaKO_10" d="M53.41,23.32L49.84,20.53L52.62,16.96L53.41,23.32Z"></path>
+            <path class="cls-1 rtjGQaKO_11"
+                  d="M53.17,21.41L52.62,16.96L52.62,16.96L52.62,16.96L41.4,8.21L25.88,28.11L40.68,39.65L53.41,23.32L53.17,21.41Z"></path>
+            <path class="cls-1 rtjGQaKO_12" d="M9.26,21.6L15.81,18.8"></path>
+            <path class="cls-1 rtjGQaKO_13" d="M11.04,25.76L22.35,20.93"></path>
+            <path class="cls-1 rtjGQaKO_14" d="M12.83,29.93L24.13,25.09"></path>
+            <path class="cls-1 rtjGQaKO_15" d="M14.61,34.09L25.91,29.26"></path>
+            <path class="cls-1 rtjGQaKO_16" d="M23.03,14.3L18.87,16.08L17.09,11.92L23.03,14.3Z"></path>
+            <path class="cls-1 rtjGQaKO_17"
+                  d="M21.25,13.59L17.09,11.92L17.09,11.92L17.09,11.92L4,17.52L13.92,40.72L31.17,33.34L23.03,14.3L21.25,13.59Z"></path>
+            <path class="cls-2 rtjGQaKO_18" d="M18.43,7.58L25.53,7.08"></path>
+            <path class="cls-2 rtjGQaKO_19" d="M22.98,11.8L30.01,11.31"></path>
+            <path class="cls-2 rtjGQaKO_20" d="M25.01,16.2L26.38,16.1"></path>
+            <path class="cls-2 rtjGQaKO_21" d="M33.83,5.2L29.31,5.52L28.99,1L33.83,5.2Z"></path>
+            <path class="cls-2 rtjGQaKO_22"
+                  d="M33.93,6.67L33.83,5.2L32.38,3.94L28.99,1L28.99,1L28.99,1L14.79,2L15.13,6.79"></path>
+            <path class="cls-2 rtjGQaKO_23" d="M37.37,11.79L42.98,16.17"></path>
+            <path class="cls-2 rtjGQaKO_24" d="M34.58,15.36L44.28,22.92"></path>
+            <path class="cls-2 rtjGQaKO_25" d="M40.22,25.5L41.49,26.49"></path>
+            <path class="cls-2 rtjGQaKO_26" d="M31.8,18.93L38.16,23.9"></path>
+            <path class="cls-2 rtjGQaKO_27" d="M29.01,22.5L35.45,27.53"></path>
+            <path class="cls-2 rtjGQaKO_28" d="M50.41,20.32L46.84,17.53L49.62,13.96L50.41,20.32Z"></path>
+            <path class="cls-2 rtjGQaKO_29"
+                  d="M45.26,26.93L50.41,20.32L50.17,18.41L49.62,13.96L49.62,13.96L49.62,13.96L38.4,5.21L26.61,20.32"></path>
+            <path class="cls-2 rtjGQaKO_30" d="M42.43,30.55L43.44,29.26"></path>
+            <path class="cls-2 rtjGQaKO_31" d="M30.55,31.09L37.68,36.65L40.64,32.85"></path>
+            <path class="cls-2 rtjGQaKO_32" d="M6.26,18.6L12.81,15.8"></path>
+            <path class="cls-2 rtjGQaKO_33" d="M8.04,22.76L19.35,17.93"></path>
+            <path class="cls-2 rtjGQaKO_34" d="M9.83,26.93L21.13,22.09"></path>
+            <path class="cls-2 rtjGQaKO_35" d="M17.09,28.75L18.94,27.96"></path>
+            <path class="cls-2 rtjGQaKO_36" d="M11.61,31.09L14.83,29.71"></path>
+            <path class="cls-2 rtjGQaKO_37" d="M20.03,11.3L15.87,13.08L14.09,8.92L20.03,11.3Z"></path>
+            <path class="cls-2 rtjGQaKO_38"
+                  d="M23.57,32.31L28.17,30.34L20.03,11.3L18.25,10.59L14.09,8.92L14.09,8.92L14.09,8.92L1,14.52L10.92,37.72L21.13,33.35"></path>
+        </g>
+    </g>
+    <style>.rtjGQaKO_0{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms ease-in-out 0ms
+        forwards;}.rtjGQaKO_1{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms ease-in-out
+        35ms forwards;}.rtjGQaKO_2{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 70ms forwards;}.rtjGQaKO_3{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw
+        2666ms ease-in-out 105ms forwards;}.rtjGQaKO_4{stroke-dasharray:16
+        18;stroke-dashoffset:17;animation:rtjGQaKO_draw 2666ms ease-in-out 140ms
+        forwards;}.rtjGQaKO_5{stroke-dasharray:86 88;stroke-dashoffset:87;animation:rtjGQaKO_draw 2666ms ease-in-out
+        175ms forwards;}.rtjGQaKO_6{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms ease-in-out
+        210ms forwards;}.rtjGQaKO_7{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 245ms forwards;}.rtjGQaKO_8{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw
+        2666ms ease-in-out 280ms forwards;}.rtjGQaKO_9{stroke-dasharray:13
+        15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms ease-in-out 315ms
+        forwards;}.rtjGQaKO_10{stroke-dasharray:16 18;stroke-dashoffset:17;animation:rtjGQaKO_draw 2666ms ease-in-out
+        350ms forwards;}.rtjGQaKO_11{stroke-dasharray:86 88;stroke-dashoffset:87;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 385ms forwards;}.rtjGQaKO_12{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw
+        2666ms ease-in-out 421ms forwards;}.rtjGQaKO_13{stroke-dasharray:13
+        15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms ease-in-out 456ms
+        forwards;}.rtjGQaKO_14{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms ease-in-out
+        491ms forwards;}.rtjGQaKO_15{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 526ms forwards;}.rtjGQaKO_16{stroke-dasharray:16 18;stroke-dashoffset:17;animation:rtjGQaKO_draw
+        2666ms ease-in-out 561ms forwards;}.rtjGQaKO_17{stroke-dasharray:86
+        88;stroke-dashoffset:87;animation:rtjGQaKO_draw 2666ms ease-in-out 596ms
+        forwards;}.rtjGQaKO_18{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms ease-in-out
+        631ms forwards;}.rtjGQaKO_19{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 666ms forwards;}.rtjGQaKO_20{stroke-dasharray:2 4;stroke-dashoffset:3;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 701ms forwards;}.rtjGQaKO_21{stroke-dasharray:16 18;stroke-dashoffset:17;animation:rtjGQaKO_draw
+        2666ms ease-in-out 736ms forwards;}.rtjGQaKO_22{stroke-dasharray:27
+        29;stroke-dashoffset:28;animation:rtjGQaKO_draw 2666ms ease-in-out 771ms
+        forwards;}.rtjGQaKO_23{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms ease-in-out
+        807ms forwards;}.rtjGQaKO_24{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 842ms forwards;}.rtjGQaKO_25{stroke-dasharray:2 4;stroke-dashoffset:3;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 877ms forwards;}.rtjGQaKO_26{stroke-dasharray:9 11;stroke-dashoffset:10;animation:rtjGQaKO_draw
+        2666ms ease-in-out 912ms forwards;}.rtjGQaKO_27{stroke-dasharray:9
+        11;stroke-dashoffset:10;animation:rtjGQaKO_draw 2666ms ease-in-out 947ms
+        forwards;}.rtjGQaKO_28{stroke-dasharray:16 18;stroke-dashoffset:17;animation:rtjGQaKO_draw 2666ms ease-in-out
+        982ms forwards;}.rtjGQaKO_29{stroke-dasharray:49 51;stroke-dashoffset:50;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 1017ms forwards;}.rtjGQaKO_30{stroke-dasharray:2 4;stroke-dashoffset:3;animation:rtjGQaKO_draw
+        2666ms ease-in-out 1052ms forwards;}.rtjGQaKO_31{stroke-dasharray:14
+        16;stroke-dashoffset:15;animation:rtjGQaKO_draw 2666ms ease-in-out 1087ms
+        forwards;}.rtjGQaKO_32{stroke-dasharray:8 10;stroke-dashoffset:9;animation:rtjGQaKO_draw 2666ms ease-in-out
+        1122ms forwards;}.rtjGQaKO_33{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 1157ms forwards;}.rtjGQaKO_34{stroke-dasharray:13 15;stroke-dashoffset:14;animation:rtjGQaKO_draw
+        2666ms ease-in-out 1192ms forwards;}.rtjGQaKO_35{stroke-dasharray:3
+        5;stroke-dashoffset:4;animation:rtjGQaKO_draw 2666ms ease-in-out 1228ms
+        forwards;}.rtjGQaKO_36{stroke-dasharray:4 6;stroke-dashoffset:5;animation:rtjGQaKO_draw 2666ms ease-in-out
+        1263ms forwards;}.rtjGQaKO_37{stroke-dasharray:16 18;stroke-dashoffset:17;animation:rtjGQaKO_draw 2666ms
+        ease-in-out 1298ms forwards;}.rtjGQaKO_38{stroke-dasharray:83 85;stroke-dashoffset:84;animation:rtjGQaKO_draw
+        2666ms ease-in-out 1333ms forwards;}@keyframes rtjGQaKO_draw{100%{stroke-dashoffset:0;}}@keyframes
+        rtjGQaKO_fade{0%{stroke-opacity:1;}95.1219512195122%{stroke-opacity:1;}100%{stroke-opacity:0;}}
+    </style>
+</svg>

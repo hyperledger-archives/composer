@@ -53,7 +53,7 @@ module.exports = yeoman.Base.extend({
             },
             {
                 type: 'input',
-                name: 'namespace',
+                name: 'sample',
                 message: 'Namespace:',
                 default: 'org.acme.biznet',
                 store: true,
@@ -65,7 +65,7 @@ module.exports = yeoman.Base.extend({
             .then((answers) => {
                 this.appname = answers.appname;
                 this.appemail = answers.appemail;
-                this.namespace = answers.namespace;
+                this.sample = answers.sample;
                 this.appdescription = answers.appdescription;
                 this.appauthor = answers.appauthor;
                 this.applicense = answers.applicense;
@@ -79,7 +79,7 @@ module.exports = yeoman.Base.extend({
     writing: function() {
         let model = this._generateTemplateModel();
         this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
-        this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
+        this.fs.copyTpl(this.templatePath('models/sample.cto'), this.destinationPath('models/'+this.sample+'.cto'), model);
         this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
         if (!this.ismodel) {
             this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
@@ -91,7 +91,7 @@ module.exports = yeoman.Base.extend({
         return {
             appname: this.appname,
             appemail: this.appemail,
-            namespace: this.namespace,
+            sample: this.sample,
             appdescription: this.appdescription,
             appauthor: this.appauthor,
             applicense: this.applicense
