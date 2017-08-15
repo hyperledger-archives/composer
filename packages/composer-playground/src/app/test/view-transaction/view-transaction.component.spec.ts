@@ -3,19 +3,16 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By, BrowserModule } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { Component, Input } from '@angular/core';
-import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { ViewTransactionComponent } from './view-transaction.component';
-import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
 import { InitializationService } from '../../services/initialization.service';
-import { TransactionService } from '../../services/transaction.service';
 
 import {
-    TransactionDeclaration,
     BusinessNetworkDefinition,
     Serializer,
     Factory,
@@ -24,10 +21,11 @@ import {
     Introspector
 } from 'composer-common';
 
-import { BusinessNetworkConnection, AssetRegistry, TransactionRegistry } from 'composer-client';
+import { BusinessNetworkConnection } from 'composer-client';
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+
 let should = chai.should();
 
 @Component({
@@ -41,11 +39,9 @@ class MockCodeMirrorComponent {
 describe('ViewTransactionComponent', () => {
     let component: ViewTransactionComponent;
     let fixture: ComponentFixture<ViewTransactionComponent>;
-    let element: HTMLElement;
     let mockNgbActiveModal;
     let mockClientService;
     let mockInitializationService;
-    let mockTransactionService;
     let mockTransaction;
     let mockBusinessNetwork;
     let mockBusinessNetworkConnection;
@@ -80,7 +76,6 @@ describe('ViewTransactionComponent', () => {
         });
         mockNgbActiveModal.close = sandbox.stub();
         mockInitializationService.initialize.returns(Promise.resolve());
-        mockTransactionService = sinon.createStubInstance(TransactionService);
 
         TestBed.configureTestingModule({
             imports: [
@@ -94,11 +89,10 @@ describe('ViewTransactionComponent', () => {
             providers: [
                 {provide: ClientService, useValue: mockClientService},
                 {provide: InitializationService, useValue: mockInitializationService},
-                {provide: TransactionService, useValue: mockTransactionService},
                 {provide: NgbActiveModal, useValue: mockNgbActiveModal}
             ]
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
@@ -112,11 +106,6 @@ describe('ViewTransactionComponent', () => {
 
         mockTransaction = sinon.createStubInstance(Resource);
         mockTransaction.getIdentifier.returns('transaction');
-
-        mockTransactionService.events = [
-            mockEvent1,
-            mockEvent2
-        ];
 
         mockSerializer.toJSON.onFirstCall().returns({
             $class: 'mock.class',
@@ -135,8 +124,6 @@ describe('ViewTransactionComponent', () => {
             timestamp: 'now',
             eventId: 'event2'
         });
-
-        mockTransactionService.lastTransaction = mockTransaction;
     });
 
     afterEach(() => {
@@ -166,7 +153,11 @@ describe('ViewTransactionComponent', () => {
             mockBusinessNetwork.getSerializer.should.be.called;
 
             mockSerializer.toJSON.should.be.calledWith(mockTransaction);
-            component.transactionString.should.equal(JSON.stringify({$class: 'mock.class', timestamp: 'now', transactionId: 'transaction'}, null, ' '));
+            component.transactionString.should.equal(JSON.stringify({
+                $class: 'mock.class',
+                timestamp: 'now',
+                transactionId: 'transaction'
+            }, null, ' '));
 
             component.events.should.deep.equal([mockEvent1, mockEvent2]);
             mockSerializer.toJSON.should.be.calledWith(mockEvent1);
@@ -188,19 +179,16 @@ describe('ViewTransactionComponent', () => {
             mockBusinessNetwork.getSerializer.should.be.called;
 
             mockSerializer.toJSON.should.be.calledWith(mockTransaction);
-            component.transactionString.should.equal(JSON.stringify({$class: 'mock.class', timestamp: 'now', transactionId: 'transaction'}, null, ' '));
+            component.transactionString.should.equal(JSON.stringify({
+                $class: 'mock.class',
+                timestamp: 'now',
+                transactionId: 'transaction'
+            }, null, ' '));
 
             component.events.should.deep.equal([]);
             component.eventObjects.should.deep.equal([]);
             component.eventStrings.should.deep.equal([]);
         }));
-    });
-
-    describe('#ngOnDestroy', () => {
-        it('should reset the service', () => {
-            mockTransactionService.reset.calledOnce;
-            mockTransactionService.reset.calledWith(null, null);
-        });
     });
 
     describe('#selectEvent', () => {
@@ -236,7 +224,7 @@ describe('ViewTransactionComponent', () => {
 
     describe('#showEvent', () => {
         it('should return true', () => {
-            component.displayEvents = { 0: 'event' };
+            component.displayEvents = {0: 'event'};
             component.showEvent(0).should.be.true;
         });
         it('should return false', () => {
