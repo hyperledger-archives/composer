@@ -28,7 +28,7 @@ docker ps -aq | xargs docker rm -f
 docker images -aq | xargs docker rmi -f
 ```
 
-To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} in a virtual machine, we recommend you allocate the VM 4Gb of memory.
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
 
 ---
 

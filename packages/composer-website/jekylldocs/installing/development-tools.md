@@ -44,7 +44,7 @@ Next run the script - as this briefly uses sudo during its execution, you will b
 ./prereqs-ubuntu.sh
 ```
 
-To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} in a virtual machine, we recommend you allocate the VM 4Gb of memory.
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
 
 ---
 
@@ -108,7 +108,7 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. 
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default.
 
     To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
 
