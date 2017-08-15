@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { IdCard } from 'composer-common';
@@ -27,6 +27,7 @@ describe(`IdentityCardComponent`, () => {
         mockIdCard.getName.returns('pedantic-owl');
         mockIdCard.getBusinessNetworkName.returns('conga-network');
         mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
+        mockIdCard.getRoles.returns([]);
 
         TestBed.configureTestingModule({
             declarations: [IdentityCardComponent]
