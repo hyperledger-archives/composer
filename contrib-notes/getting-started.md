@@ -79,6 +79,16 @@ You must bootstrap the repository so that all of the dependencies are installed 
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
 
+For eg. If you are working on composer-playground package , you can run:
+
+    $ npm start
+
+on the same and visit:
+
+    localhost:3000 
+    
+to verify the changes made to the package .
+
 Alternatively, you can execute npm commands across all of the packages at once using
 Lerna:
 
