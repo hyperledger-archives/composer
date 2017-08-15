@@ -64,6 +64,12 @@ class JavaScriptParser {
         for (let n = 0; n < ast.body.length; n++) {
             let statement = ast.body[n];
 
+            // record the end of the previous node.
+            let previousEnd = -1;
+            if (n !== 0) {
+                previousEnd = ast.body[n-1].end;
+            }
+
             if (statement.type === 'VariableDeclaration') {
                 let variableDeclarations = statement.declarations;
 
@@ -81,8 +87,7 @@ class JavaScriptParser {
                 }
             }
             else if (statement.type === 'FunctionDeclaration') {
-                //console.log(JSON.stringify(statement));
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -92,7 +97,6 @@ class JavaScriptParser {
                 let example = '';
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
-                    //console.log('Found comment: ' + comment );
                     returnType = JavaScriptParser.getReturnType(comment);
                     visibility = JavaScriptParser.getVisibility(comment);
                     parameterTypes = JavaScriptParser.getMethodArguments(comment);
@@ -116,11 +120,10 @@ class JavaScriptParser {
                         functionText : JavaScriptParser.getText(statement.start, statement.end, fileContents),
                         example: example
                     };
-                    //console.log('Function: ' + JSON.stringify(func));
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
                 let privateClass = false;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
@@ -128,16 +131,21 @@ class JavaScriptParser {
                 }
 
                 if(privateClass === false || includePrivates) {
-
                     const clazz = { name: statement.id.name};
                     clazz.methods = [];
 
                     for(let n=0; n < statement.body.body.length; n++) {
                         let thing = statement.body.body[n];
+                        // previousEnd is the end of the node before the ClassDeclaration
+                        let previousThingEnd = previousEnd;
+                        if (n !== 0) {
+                            // record the end of the previous thing inside the ClassDeclaration
+                            let previousThing = statement.body.body[n-1];
+                            previousThingEnd = previousThing.end;
+                        }
 
                         if (thing.type === 'MethodDefinition') {
-
-                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, comments);
+                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments);
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
@@ -233,25 +241,26 @@ class JavaScriptParser {
      *
      * @param {integer} rangeStart - the start of the range
      * @param {integer} rangeEnd - the end of the range
+     * @param {integer} stopPoint - the point to stop searching for previous comments
      * @param {string[]} comments - the end of the range
      * @return {integer} the comment index or -1 if there are no comments
      * @private
      */
-    static findCommentBefore(rangeStart, rangeEnd, comments) {
+    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments) {
         let foundIndex = -1;
         let distance = -1;
 
         for(let n=0; n < comments.length; n++) {
             let comment = comments[n];
             let endComment = comment.end;
-            if(rangeStart > endComment ) {
+            if(rangeStart > endComment && comment.start > stopPoint) {
+
                 if(distance === -1 || rangeStart - endComment < distance) {
                     distance = rangeStart - endComment;
                     foundIndex = n;
                 }
             }
         }
-
         return foundIndex;
     }
 
@@ -283,7 +292,6 @@ class JavaScriptParser {
         const PRIVATE = 'private';
         let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
         const tags = parsedComment.tags;
-
         if (tags.length > 0) {
             return '-';
         }

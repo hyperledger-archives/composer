@@ -12,7 +12,6 @@ index-order: 203
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0. The default is for v1.0 and we suggest this is the one you use.
 
 ## Before you begin
 
@@ -23,11 +22,13 @@ Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 Docker Engine: Version 17.03 or higher
 Docker-Compose: Version 1.8 or higher
 Node: 6.x (note version 7 is not supported)
-npm: 3.10.x
-git: 2.9.x
+npm: v3.x or v5.v
+git: 2.9.x or higher
 Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
+
+**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
@@ -37,7 +38,7 @@ curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 chmod u+x prereqs-ubuntu.sh
 ```
 
-Next run the script - as this uses sudo you will be prompted for your password.
+Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.
 
 ```
 ./prereqs-ubuntu.sh
@@ -46,7 +47,7 @@ Next run the script - as this uses sudo you will be prompted for your password.
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
 
-The development tools you'll need can all be installed with `npm install -g`.
+The development tools you'll need can all be installed (as a non-privileged user eg non-root) with `npm install -g`.
 
 1. To install `composer-cli` run the following command:
 
@@ -104,11 +105,9 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. 
 
-        export FABRIC_VERSION=hlfv0.6
-
-    {{site.data.conrefs.hlf_full}} v1.0 is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
 
         export FABRIC_VERSION=hlfv1
 
@@ -127,7 +126,6 @@ docker rmi $(docker images dev-* -q)
         ./stopFabric.sh
         ./teardownFabric.sh
 
-*If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
 
 > Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
 

@@ -16,8 +16,9 @@ app-editor {
       & > * {
         padding: $space-medium $space-large;
       }
-      margin-top: $space-large;
-
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
       span {
         color: $secondary-text;
       }
@@ -25,7 +26,8 @@ app-editor {
       .side-bar-nav {
         padding: 0;
         max-height: 60vh;
-        overflow-y: scroll;
+        overflow-y: auto;
+        min-height: 90px;
         .error {
             color: $first-warning;
         }
@@ -150,13 +152,8 @@ app-editor {
   }
 
   .CodeMirror {
-    font-family: Source Code Pro
-
+    font-family: Source Code Pro;
   }
-  .CodeMirror, .CodeMirror-scroll{
-      min-height:63vh;
-      max-height:63vh;
-    }
 
   .ps.ps--active-x>.ps__scrollbar-x-rail,
   .ps.ps--active-y>.ps__scrollbar-y-rail{

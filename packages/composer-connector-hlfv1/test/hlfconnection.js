@@ -353,7 +353,7 @@ describe('HLFConnection', () => {
     describe('#install', () => {
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
         const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
-        const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
+        const constantsFilePath = path.resolve(targetDirectoryPath, 'constants.go');
 
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
@@ -390,7 +390,7 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/some error 3/);
         });
 
-        it('should install the runtime', () => {
+        it('should install the runtime with the default pool size', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
             sandbox.stub(connection.fs, 'copy').resolves();
             sandbox.stub(connection.fs, 'outputFile').resolves();
@@ -414,7 +414,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = 8/));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodePath: 'composer',
@@ -425,6 +426,44 @@ describe('HLFConnection', () => {
                     });
                 });
         });
+
+        it('should install the runtime with the specified pool size', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
+            sandbox.stub(connection.fs, 'copy').resolves();
+            sandbox.stub(connection.fs, 'outputFile').resolves();
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns();
+            return connection.install(mockSecurityContext, 'org-acme-biznet', {poolSize:3})
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = 3/));
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+                });
+        });
+
 
         it('should throw error if peer rejects installation', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
@@ -1020,7 +1059,7 @@ describe('HLFConnection', () => {
 
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
         const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
-        const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
+        const constantsFilePath = path.resolve(targetDirectoryPath, 'constants.go');
 
         beforeEach(() => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
@@ -1130,7 +1169,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1190,7 +1230,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1250,7 +1291,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1370,7 +1412,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1423,7 +1466,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1479,7 +1523,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -1546,7 +1591,8 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodePath: 'composer',
@@ -1722,6 +1768,7 @@ describe('HLFConnection', () => {
 
         it('should throw if businessNetworkIdentifier not specified', () => {
             (() => {
+                delete connection.businessNetworkIdentifier;
                 connection.upgrade(mockSecurityContext, null);
             }).should.throw(/businessNetworkIdentifier not specified/);
         });
@@ -1745,7 +1792,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
@@ -1763,7 +1810,7 @@ describe('HLFConnection', () => {
 
         it('should throw if runtime version check fails', () => {
             sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
@@ -1775,7 +1822,7 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -1796,7 +1843,7 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
 
@@ -1818,7 +1865,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.upgrade(mockSecurityContext, 'org-acme-biznet')
+            return connection.upgrade(mockSecurityContext)
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 

@@ -17,6 +17,10 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const path = require('path');
 const server = require('../../server/server');
 const WebSocket = require('ws');
 
@@ -26,6 +30,11 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
+
+const keyFile = path.resolve(__dirname, 'key.pem');
+const keyContents = fs.readFileSync(keyFile, 'utf8');
+const certFile = path.resolve(__dirname, 'cert.pem');
+const certContents = fs.readFileSync(certFile, 'utf8');
 
 describe('server', () => {
 
@@ -99,6 +108,34 @@ describe('server', () => {
         composerConfig.businessNetworkIdentifier = 'org.acme.doesnotexist';
         return server(composerConfig)
             .should.be.rejectedWith();
+    });
+
+    it('should create an HTTP server if TLS not enabled', () => {
+        const spy = sinon.spy(http, 'createServer');
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                sinon.assert.calledOnce(spy);
+                sinon.assert.calledWith(spy, result.app);
+            });
+    });
+
+    it('should create an HTTPS server if TLS is enabled', () => {
+        const spy = sinon.spy(https, 'createServer');
+        composerConfig.tls = true;
+        composerConfig.tlscert = certFile;
+        composerConfig.tlskey = keyFile;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                sinon.assert.calledOnce(spy);
+                const options = spy.args[0][0];
+                options.cert.should.equal(certContents);
+                options.key.should.equal(keyContents);
+                sinon.assert.calledWith(spy, options, result.app);
+            });
     });
 
     it('should set the port if explicitly specified', () => {

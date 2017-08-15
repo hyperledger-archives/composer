@@ -12,16 +12,18 @@
             <div class="navcontent">
                 <ul class="links navleft">
                     <li><button class="action" [ngClass]="{'active': !isEvent}" (click)="showTransaction()">Transaction</button></li>
-                    <li><button class="action" [ngClass]="{'active': isEvent}" (click)="showEvents()">Events ({{events.length}})</button></li>
+                    <li><button class="action" [ngClass]="{'active': isEvent, 'disabled': !events.length}" (click)="showEvents()">Events ({{events.length}})</button></li>
                 </ul>
             </div>
         </nav>
     </div>
     <section class="resource-container">
-        <section class="resource-component" [ngClass]="{'events': isEvent}"> 
-            <codemirror *ngIf="!isEvent" name="codeMirror" [(ngModel)]="transactionString" [config]="codeConfig"
+        <section class="resource-component" [ngClass]="{'events': isEvent}">
+            <div class="scrollbar-padding" *ngIf="!isEvent">
+                <codemirror name="codeMirror" [(ngModel)]="transactionString" [config]="codeConfig"
                         width="100%" height="100%" ngDefaultControl>
             </codemirror>
+            </div>
 
             <div class="resource-list" *ngIf="isEvent">
                 <div class="resource-dropdown" *ngFor="let event of events; let i = index">
@@ -31,11 +33,13 @@
                         </div>
                     </button>
                     <div class="resource-content" *ngIf="showEvent(i)">
+                        <div class="scrollbar-padding">
                         <codemirror name="codeMirror" [(ngModel)]="eventStrings[i]" [config]="codeConfig"
                             width="100%" height="100%" ngDefaultControl>
                         </codemirror>
                     </div>
                 </div>
+            </div>
             </div>
         </section>
     </section>

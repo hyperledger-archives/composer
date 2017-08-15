@@ -50,12 +50,13 @@ class FileWallet extends Wallet {
 class IdCard {
    + String getName() 
    + String getDescription() 
-   + String getBusinessNetwork() 
-   + Object getImage() 
-   + Object getConnection() 
-   + Map getCredentials() 
-   + Map getTlsCertificates() 
-   + Promise fromArchive(Buffer) 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + Object getEnrollmentCredentials() 
+   + String[] getRoles() 
+   + Promise fromArchive() 
+   + Promise toArchive(Object,String) 
 }
 class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
@@ -126,7 +127,7 @@ class SecurityException extends BaseException {
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
-   + Object toJSON(Resource,Object,boolean,boolean,boolean) throws Error
+   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean) 
 }
 class ValidationException extends BaseException {

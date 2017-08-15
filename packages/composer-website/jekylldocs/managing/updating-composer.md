@@ -5,7 +5,7 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: To [update Hyperledger Composer](./updating-composer.html) to a new version, the Hyperledger Composer components must be uninstalled and reinstalled using npm.
-index-order: 707
+index-order: 708
 ---
 
 # Updating {{site.data.conrefs.composer_full}}
@@ -18,13 +18,13 @@ After deploying {{site.data.conrefs.composer_full}} you may wish to upgrade to a
 
         npm uninstall -g composer-cli
         npm uninstall -g composer-rest-server
-        npm uninstall -g generator-fabric-composer
+        npm uninstall -g generator-hyperledger-composer
 
 2. Install the latest version of the {{site.data.conrefs.composer_full}} components by using the following commands:
 
         npm install -g composer-cli
         npm install -g composer-rest-server
-        npm install -g generator-fabric-composer
+        npm install -g generator-hyperledger-composer
 
 
 ## What next?
