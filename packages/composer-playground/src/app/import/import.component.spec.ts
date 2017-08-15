@@ -403,13 +403,13 @@ describe('ImportComponent', () => {
             component['networkName'] = 'myName';
             component['networkDescription'] = 'myDescription';
 
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network : 'myNetwork'});
+            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
 
             component.deployEmptyNetwork();
 
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
-            component['currentBusinessNetwork'].should.deep.equal({network : 'myNetwork'});
+            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
         }));
     });
 
@@ -427,7 +427,7 @@ describe('ImportComponent', () => {
         it('should select the empty network', () => {
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
-            component.selectNetwork({name : 'Empty Business Network'});
+            component.selectNetwork({name: 'Empty Business Network'});
 
             empty.should.have.been.called;
         });
@@ -475,6 +475,36 @@ describe('ImportComponent', () => {
             component.cancel();
 
             emitSpy.should.have.been.calledWith({deployed: false});
+        });
+    });
+
+    describe('setNetworkName', () => {
+        it('should set the network name', () => {
+            component['setNetworkName']('bob');
+
+            component['networkName'].should.equal('bob');
+            component['networkNameValid'].should.equal(true);
+        });
+
+        it('should allow numbers and letters and -', () => {
+            component['setNetworkName']('bob-123');
+
+            component['networkName'].should.equal('bob-123');
+            component['networkNameValid'].should.equal(true);
+        });
+
+        it('show not allow capitals', () => {
+            component['setNetworkName']('BOB-123');
+
+            component['networkName'].should.equal('BOB-123');
+            component['networkNameValid'].should.equal(false);
+        });
+
+        it('should not allow non alphanumeric characters', () => {
+            component['setNetworkName']('bob?');
+
+            component['networkName'].should.equal('bob?');
+            component['networkNameValid'].should.equal(false);
         });
     });
 });

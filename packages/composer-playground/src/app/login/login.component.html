@@ -13,8 +13,8 @@
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
         <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}
             <div class="connection-profile-buttons">
-                <button id="deployButton" type="button" class="action circular">
-                    <svg class="ibm-icon vertical-top" aria-hidden="true">
+                <button id="deployButton" type="button" class="action circular" [disabled]="!canDeploy(connectionProfileRef)" (click)="deployNetwork(connectionProfileRef)">
+                    <svg class="ibm-icon vertical-top">
                         <use xlink:href="#icon-deploy_24"></use>
                     </svg>
                 </button>
@@ -48,12 +48,12 @@
     <div *ngIf="creatingIdCard">
         <add-connection-profile (profileToUse)="addIdToExistingProfileName($event)"
                                 (profileToEdit)="addIdToNewProfile($event)"
-                                (cancelAdd) = "closeSubView()"
+                                (cancelAdd)="closeSubView()"
                                 [connectionProfiles]="connectionProfiles"></add-connection-profile>
     </div>
     <div *ngIf="editingIdCard">
         <add-identity (identityAdded)="completeCardAddition()"
-                      (cancelAdd) = "closeSubView()"
+                      (cancelAdd)="closeSubView()"
                       [targetProfileName]="targetProfileName"></add-identity>
     </div>
 </section>

@@ -7,7 +7,6 @@
 /* tslint:disable:member-ordering*/
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Input, Component, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { IdentityService } from '../services/identity.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
@@ -200,7 +199,7 @@ describe(`LoginComponent`, () => {
 
         fixture = TestBed.createComponent(LoginComponent);
         component = fixture.componentInstance;
-        });
+    });
 
     describe('ngOnInit', () => {
         it('should create the component', () => {
@@ -336,7 +335,7 @@ describe(`LoginComponent`, () => {
         it('should close editing connection profile screen if not adding ID with connection profile', () => {
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
 
-            component.finishedEditingConnectionProfile({update : true});
+            component.finishedEditingConnectionProfile({update: true});
 
             should.not.exist(component['editingConectionProfile']);
             loadIdentityCardsStub.should.have.been.called;
@@ -347,7 +346,7 @@ describe(`LoginComponent`, () => {
             let addIdToExistingProfileStub = sinon.stub(component, 'addIdToExistingProfile');
             component['creatingIdWithProfile'] = true;
 
-            component.finishedEditingConnectionProfile({update : false});
+            component.finishedEditingConnectionProfile({update: false});
 
             should.not.exist(component['editingConectionProfile']);
             loadIdentityCardsStub.should.have.been.called;
@@ -359,7 +358,7 @@ describe(`LoginComponent`, () => {
             let addIdToExistingProfileNameStub = sinon.stub(component, 'addIdToExistingProfileName');
             component['creatingIdWithProfile'] = true;
 
-            component.finishedEditingConnectionProfile({update : true, connectionProfile : { name: 'bob' }});
+            component.finishedEditingConnectionProfile({update: true, connectionProfile: {name: 'bob'}});
 
             should.not.exist(component['editingConectionProfile']);
             loadIdentityCardsStub.should.not.have.been.called;
@@ -387,7 +386,7 @@ describe(`LoginComponent`, () => {
 
     describe('addIdToNewProfile', () => {
         it('should set the connection profile to edit and set the creatingIdWithProfile boolean', () => {
-            let myProfile = { wow: 'such profile', avarian: 'penguin' };
+            let myProfile = {wow: 'such profile', avarian: 'penguin'};
 
             component['addIdToNewProfile'](myProfile);
 
@@ -524,7 +523,11 @@ describe(`LoginComponent`, () => {
 
     describe('deployNetwork', () => {
         it('should deploy a new business network', () => {
-            component.deployNetwork({name: 'bob'});
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
+            component.deployNetwork('1234');
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234');
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
 
             component['showSubScreen'].should.equal(true);
             component['showDeployNetwork'].should.equal(true);
@@ -535,11 +538,91 @@ describe(`LoginComponent`, () => {
         it('should finish deploying', () => {
             component['showSubScreen'] = true;
 
+            let loadStub = sinon.stub(component, 'loadIdentityCards');
+
             component['showDeployNetwork'] = true;
             component.finishedDeploying();
 
             component['showSubScreen'].should.equal(false);
             component['showDeployNetwork'].should.equal(false);
+
+            loadStub.should.have.been.called;
+        });
+    });
+
+    describe('canDeploy', () => {
+        it('should show deploy button if got all correct cards', () => {
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
+            mockIdentityCardService.getAllCardRefsForProfile.returns(['another-cardRef', 'web-cardRef']);
+            mockIdentityCardService.getIdentityCard.onFirstCall().returns({getName: sinon.stub().returns('bob')});
+            mockIdentityCardService.getIdentityCard.onSecondCall().returns({getName: sinon.stub().returns('admin')});
+
+            let result = component.canDeploy('1234');
+
+            result.should.equal(true);
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+
+            mockIdentityCardService.getAllCardRefsForProfile.should.have.been.calledWith('1234');
+
+            mockIdentityCardService.getIdentityCard.should.have.been.calledTwice;
+            mockIdentityCardService.getIdentityCard.firstCall.should.have.been.calledWith('another-cardRef');
+            mockIdentityCardService.getIdentityCard.secondCall.should.have.been.calledWith('web-cardRef');
+        });
+
+        it('should not show deploy button if no PeerAdmin Role', () => {
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns([]);
+
+            let result = component.canDeploy('1234');
+
+            result.should.equal(false);
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledOnce;
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'PeerAdmin');
+
+            mockIdentityCardService.getAllCardRefsForProfile.should.not.have.been.called;
+
+            mockIdentityCardService.getIdentityCard.should.not.have.been.calledTwice;
+        });
+
+        it('should not show deploy button if not got ChannelAdmin role', () => {
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.onFirstCall().returns(['web-cardRef']);
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.onSecondCall().returns([]);
+
+            let result = component.canDeploy('1234');
+
+            result.should.equal(false);
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+
+            mockIdentityCardService.getAllCardRefsForProfile.should.not.have.been.called;
+
+            mockIdentityCardService.getIdentityCard.should.not.have.been.called;
+        });
+
+        it('should show deploy button if got all correct cards', () => {
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
+            mockIdentityCardService.getAllCardRefsForProfile.returns(['another-cardRef', 'web-cardRef']);
+            mockIdentityCardService.getIdentityCard.onFirstCall().returns({getName: sinon.stub().returns('bob')});
+            mockIdentityCardService.getIdentityCard.onSecondCall().returns({getName: sinon.stub().returns('fred')});
+
+            let result = component.canDeploy('1234');
+
+            result.should.equal(false);
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+
+            mockIdentityCardService.getAllCardRefsForProfile.should.have.been.calledWith('1234');
+
+            mockIdentityCardService.getIdentityCard.should.have.been.calledTwice;
+            mockIdentityCardService.getIdentityCard.firstCall.should.have.been.calledWith('another-cardRef');
+            mockIdentityCardService.getIdentityCard.secondCall.should.have.been.calledWith('web-cardRef');
         });
     });
 });

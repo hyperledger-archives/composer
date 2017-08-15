@@ -406,17 +406,38 @@ describe('AdminService', () => {
 
     describe('deploy', () => {
         it('should deploy a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
-            let connectedMock = sinon.stub(service, 'connect').returns(Promise.resolve());
+            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
             businessNetworkDefMock.getName.returns('myNetwork');
-
-            service['adminConnection'] = adminConnectionMock;
 
             service.deploy(businessNetworkDefMock);
 
             tick();
 
-            connectedMock.should.have.been.calledWith('myNetwork');
             adminConnectionMock.deploy.should.have.been.calledWith(businessNetworkDefMock);
+        })));
+    });
+
+    describe('install', () => {
+        it('should install a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            service.install('myNetwork');
+
+            tick();
+
+            adminConnectionMock.install.should.have.been.calledWith('myNetwork');
+        })));
+    });
+
+    describe('start', () => {
+        it('should start a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            service.start(businessNetworkDefMock);
+
+            tick();
+
+            adminConnectionMock.start.should.have.been.calledWith(businessNetworkDefMock);
         })));
     });
 

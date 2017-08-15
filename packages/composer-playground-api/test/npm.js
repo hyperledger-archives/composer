@@ -96,6 +96,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'bob',
                 description : 'bob package',
                 version : '1.0',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -107,6 +109,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'bob',
                 description : 'bob package',
                 version : '1.0',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -150,6 +154,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 },
                 name : 'cat',
                 description : 'cat package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'
@@ -166,6 +172,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 },
                 name : 'ant',
                 description : 'ant package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'
@@ -182,6 +190,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 },
                 name : 'bat',
                 description : 'bat package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'

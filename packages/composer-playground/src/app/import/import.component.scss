@@ -32,6 +32,10 @@ import-business-network {
 
                 .information {
                     padding: $space-medium $space-large;
+
+                    input.ng-invalid {
+                        border-bottom: 2px solid $error-colour-1;
+                    }
                 }
             }
 

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
 import { AlertService } from './basic-modals/alert.service';
 import { IdentityService } from './services/identity.service';
@@ -39,9 +38,6 @@ const LZString = require('lz-string');
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-    private connectionProfiles: any = [];
-    private identities: any = [];
-    private currentIdentity: any = null;
     private subs: any = null;
 
     private usingLocally = false;
@@ -49,15 +45,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private showWelcome = true;
     private dropListActive = false;
 
-    private composerRuntimeVersion = '<none>';
-    private participantFQI = '<none>';
     private composerBanner = ['Hyperledger', 'Composer Playground'];
 
     private busyModalRef = null;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
-                private adminService: AdminService,
                 private clientService: ClientService,
                 private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
@@ -122,20 +115,20 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
             this.showHeaderLinks = true;
             this.clientService.ensureConnected()
-            .then(() => {
-                let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-                let connectionProfile = card.getConnectionProfile();
-                let profileName =  'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
-                let busNetName = this.clientService.getBusinessNetworkName();
-                this.composerBanner = [profileName, busNetName];
-            });
+                .then(() => {
+                    let card: IdCard = this.identityCardService.getCurrentIdentityCard();
+                    let connectionProfile = card.getConnectionProfile();
+                    let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
+                    let busNetName = this.clientService.getBusinessNetworkName();
+                    this.composerBanner = [profileName, busNetName];
+                });
         }
 
         return welcomePromise;
     }
 
     queryParamsUpdated(queryParams: Object): Promise<any> {
-        // We load the connection profiles now, so we can immediately populate the menu.
+        // Initialise playground
         return this.initializationService.initialize()
             .then(() => {
                 return this.initializationService.isWebOnly();
