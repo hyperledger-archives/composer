@@ -775,6 +775,20 @@ describe('ClientService', () => {
         }));
     });
 
+    describe('getBusinessNetworkDescription', () => {
+        it('should get the description', inject([ClientService], (service: ClientService) => {
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            businessNetworkDefMock.getMetadata.returns({
+                getDescription: sinon.stub().returns('my description')
+            });
+
+            let result = service.getBusinessNetworkDescription();
+
+            result.should.equal('my description');
+        }));
+    });
+
     describe('ensureConnected', () => {
         beforeEach(() => {
             identityCardServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});

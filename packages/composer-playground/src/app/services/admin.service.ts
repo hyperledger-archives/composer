@@ -195,14 +195,19 @@ export class AdminService {
     }
 
     public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.connect(businessNetworkDefinition.getName()).then(() => {
-            return this.getAdminConnection().deploy(businessNetworkDefinition);
-        });
-
+        return this.getAdminConnection().deploy(businessNetworkDefinition);
     }
 
     public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
         return this.getAdminConnection().update(businessNetworkDefinition);
+    }
+
+    public install(businessNetworkDefinitionName: string): Promise<void> {
+        return this.getAdminConnection().install(businessNetworkDefinitionName);
+    }
+
+    public start(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        return this.getAdminConnection().start(businessNetworkDefinition);
     }
 
     generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {

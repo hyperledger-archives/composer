@@ -314,7 +314,7 @@ describe('IdentityCardService', () => {
             mockWalletService.removeFromWallet.returns(Promise.resolve());
             mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
 
-            let allCardsForProfile = sinon.stub(service, 'getAllCardsForProfile').returns(['1234']);
+            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
 
             let mockConnectionProfile = {
                 name: 'hlfv1'
@@ -349,7 +349,7 @@ describe('IdentityCardService', () => {
             mockWalletService.removeFromWallet.returns(Promise.resolve());
             mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
 
-            let allCardsForProfile = sinon.stub(service, 'getAllCardsForProfile').returns(['1234']);
+            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
 
             let mockConnectionProfile = {
                 name: 'hlfv1'
@@ -384,7 +384,7 @@ describe('IdentityCardService', () => {
             mockWalletService.removeFromWallet.returns(Promise.resolve());
             mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
 
-            let allCardsForProfile = sinon.stub(service, 'getAllCardsForProfile').returns(2);
+            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(2);
 
             let mockConnectionProfile = {
                 name: 'hlfv1'
@@ -541,7 +541,7 @@ describe('IdentityCardService', () => {
         })));
     });
 
-    describe('getIdentityCardsWithProfileAndRole', () => {
+    describe('getIdentityCardRefsWithProfileAndRole', () => {
         let mockIdCard1;
         let mockIdCard2;
         let mockIdCard3;
@@ -580,10 +580,10 @@ describe('IdentityCardService', () => {
             service['idCards'] = mockCardMap;
 
             let connectionProfileName = hash(mockConnectionProfile1) + '-myProfile';
-            let result = service.getIdentityCardsWithProfileAndRole(connectionProfileName, 'myRole');
+            let result = service.getIdentityCardRefsWithProfileAndRole(connectionProfileName, 'myRole');
 
             result.length.should.equal(1);
-            result[0].getName().should.equal('card1');
+            result[0].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
         }));
 
         it('should get all identity cards with matching profile and role', inject([IdentityCardService], (service: IdentityCardService) => {
@@ -591,17 +591,17 @@ describe('IdentityCardService', () => {
             service['idCards'] = mockCardMap;
 
             let connectionProfileName = hash(mockConnectionProfile1) + '-myProfile';
-            let result = service.getIdentityCardsWithProfileAndRole(connectionProfileName, 'myRole');
+            let result = service.getIdentityCardRefsWithProfileAndRole(connectionProfileName, 'myRole');
 
             result.length.should.equal(2);
-            result[0].getName().should.equal('card1');
-            result[1].getName().should.equal('card3');
+            result[0].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            result[1].should.equal('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
         }));
 
         it('should not get an identity card if there were no matching connection profiles', inject([IdentityCardService], (service: IdentityCardService) => {
             service['idCards'] = mockCardMap;
 
-            let result = service.getIdentityCardsWithProfileAndRole('wotNoProfile', 'myRole');
+            let result = service.getIdentityCardRefsWithProfileAndRole('wotNoProfile', 'myRole');
 
             result.should.be.empty;
         }));
@@ -609,7 +609,7 @@ describe('IdentityCardService', () => {
         it('should not get an identity card if there were no matching roles', inject([IdentityCardService], (service: IdentityCardService) => {
             service['idCards'] = mockCardMap;
 
-            let result = service.getIdentityCardsWithProfileAndRole('myProfile', 'wotNoRole');
+            let result = service.getIdentityCardRefsWithProfileAndRole('myProfile', 'wotNoRole');
 
             result.should.be.empty;
         }));
@@ -740,7 +740,7 @@ describe('IdentityCardService', () => {
         }));
     });
 
-    describe('getAllCardsForProfile', () => {
+    describe('getAllCardRefsForProfile', () => {
         let mockIdCard1;
         let mockIdCard2;
         let mockConnectionProfile1;
@@ -767,7 +767,7 @@ describe('IdentityCardService', () => {
         it('should get all the cards for a profile', inject([IdentityCardService], (service: IdentityCardService) => {
             service['idCards'] = mockCardMap;
             let qpn = service.getQualifiedProfileName(mockConnectionProfile1);
-            let result = service.getAllCardsForProfile(qpn);
+            let result = service.getAllCardRefsForProfile(qpn);
 
             result.should.deep.equal(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']);
         }));

@@ -78,6 +78,10 @@ export class ClientService {
         return this.getBusinessNetwork().getMetadata().getName();
     }
 
+    getBusinessNetworkDescription() {
+        return this.getBusinessNetwork().getMetadata().getDescription();
+    }
+
     getModelFile(id: string): ModelFile {
         return this.getBusinessNetwork().getModelManager().getModelFile(id);
     }

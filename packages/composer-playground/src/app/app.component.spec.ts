@@ -507,6 +507,41 @@ describe('AppComponent', () => {
             mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
         }));
+
+        it('should initialise playground and set use locally to true', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            mockInitializationService.isWebOnly.returns(Promise.resolve(false));
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            tick();
+
+            // update now got info back about if local or not
+            updateComponent();
+
+            mockInitializationService.initialize.should.have.been.called;
+
+            component['usingLocally'].should.equal(true);
+        }));
+
+        it('should initialise playground and set use locally to false', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            mockInitializationService.isWebOnly.returns(Promise.resolve(true));
+
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            tick();
+
+            // update now got info back about if local or not
+            updateComponent();
+
+            mockInitializationService.initialize.should.have.been.called;
+
+            component['usingLocally'].should.equal(false);
+        }));
     });
 
     describe('onBusyStatus', () => {

@@ -5,7 +5,7 @@
         <div class="information">
             <div>
                 <label for="import-businessNetworkName">Give your new Business Network a name:</label>
-                <input type="text" id="import-businessNetworkName" [(ngModel)]="networkName"
+                <input type="text" id="import-businessNetworkName" [ngModel]="networkName" (ngModelChange)="setNetworkName($event)" pattern="[a-z0-9-]+"
                        placeholder="eg commodity-trading">
             </div>
             <div>
@@ -22,12 +22,8 @@
              [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
         <h3 class="title" *ngIf="deployNetwork">2. Model Network Starter Template</h3>
         <div>
-            <h3 class="sub-title">Choose a Business Network Definition to {{deployNetwork ? 'start with:' : 'replace
-                your current
-                one:'}}</h3>
-
+            <h3 class="sub-title">Choose a Business Network Definition to {{deployNetwork ? 'start with:' : 'replace your current one:'}}</h3>
             <p>Choose a sample to play with, start a new project, or import your previous work</p>
-
             <div class="github-spinner" *ngIf="npmInProgress">
                 <div class="ibm-spinner-indeterminate medium loop">
                     <div class="loader">
@@ -92,21 +88,19 @@
 </div>
 <div *ngIf="!npmInProgress" class="chosen-network">
     <div *ngIf="!deployNetwork" class="replace-message">
-        The files in the <b>{{clientService.getBusinessNetworkName()}}</b> will be replace with files from:
+        The files in the <b>{{networkName}}</b> will be replaced with files from:
     </div>
     <div class="chosen-network-info">
         <div class="image">
             <img class="animated-image" *ngIf="chosenNetwork && chosenNetwork.networkImageanimated"
-                 src="{{chosenNetwork.networkImageanimated}}">
-            <svg class="animated-image" *ngIf="!chosenNetwork || !chosenNetwork.networkImageanimated">
-                <use xlink:href="#icon-default-network-animated"></use>
-            </svg>
+                 src="{{chosenNetwork.networkImageanimated}}" />
+            <img class="animated-image" *ngIf="!chosenNetwork || !chosenNetwork.networkImageanimated"
+                 src="../../assets/svg/other/default-network-animated.svg" />
         </div>
         <div>
             <section *ngIf="deployNetwork">
                 <h3>{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when
-                    entered in the basic information section.'}}</p>
+                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when entered in the basic information section.'}}</p>
             </section>
             <section *ngIf="deployNetwork">
                 <div class="title">
@@ -146,7 +140,7 @@
 
     <div class="deploy">
         <button *ngIf="!deployNetwork" type="button" class="secondary" (click)="cancel()">Cancel</button>
-        <button [disabled]="deployNetwork && !networkName" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
+        <button [disabled]="deployNetwork && (!networkName || !networkNameValid)" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
         </button>
     </div>
 </div>
