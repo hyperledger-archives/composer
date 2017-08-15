@@ -5,10 +5,8 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Directive, Input, Component } from '@angular/core';
 import { TestComponent } from './test.component';
-import { FooterComponent } from '../footer/footer.component';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
-import { TransactionService } from '../services/transaction.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from 'composer-common';
@@ -49,7 +47,6 @@ describe('TestComponent', () => {
     let mockClientService;
     let mockInitializationService;
     let mockAlertService;
-    let mockTransactionService;
     let mockModal;
     let mockIntrospector;
     let mockBusinessNetwork;
@@ -78,7 +75,6 @@ describe('TestComponent', () => {
 
         mockClientService.getBusinessNetwork.returns(mockBusinessNetwork);
         mockBusinessNetwork.getIntrospector.returns(mockIntrospector);
-        mockTransactionService = sinon.createStubInstance(TransactionService);
         mockBusinessNetworkConnection.listenerCount.returns(0);
         mockBusinessNetworkConnection.on = sinon.stub();
         mockBusinessNetworkConnection.removeAllListeners = sinon.stub();
@@ -90,8 +86,7 @@ describe('TestComponent', () => {
                 {provide: NgbModal, useValue: mockModal},
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: TransactionService, useValue: mockTransactionService}
+                {provide: ClientService, useValue: mockClientService}
             ],
         });
 
