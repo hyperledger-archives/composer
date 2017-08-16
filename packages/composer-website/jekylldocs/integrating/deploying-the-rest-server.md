@@ -291,3 +291,76 @@ The examples are based on the business network that is deployed to Hyperledger F
             myorg/my-composer-rest-server
 
 You should now be able to access the persistent and secured REST server using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
+
+
+## Run the REST server in a Docker Container - with no security (eg. for Development/Testing)
+
+These steps will run the REST server in a Docker Container with no security, and therefore no need for persistence of identities.  Activity on the REST server will be in the context of the Admin user used to start the REST server.  Running the REST server in this way is generally good for experimentation and learning, but is not likely to be appropriate for production use.
+
+1. Pull the Docker Image for the REST Server:
+
+        docker pull hyperledger/composer-rest-server 
+
+2. Create a new file named `envvars.txt`, with the following contents:
+(The values used below will typically work with a Test Fabric created from examples in this documentation, but the value of the `COMPOSER_BUSINESS_NETWORK` will need to be set correctly.)
+
+        COMPOSER_CONNECTION_PROFILE=hlfv1
+        COMPOSER_BUSINESS_NETWORK=<my-network>
+        COMPOSER_ENROLLMENT_ID=admin
+        COMPOSER_ENROLLMENT_SECRET=adminpw
+        COMPOSER_NAMESPACES=never
+        COMPOSER_SECURITY=false
+        COMPOSER_CONFIG='{
+          "connectionProfiles": {
+            "hlfv1": {
+              "name": "hlfv1",
+              "description": "Hyperledger Fabric v1.0",
+              "type": "hlfv1",
+              "keyValStore": "/home/composer/.composer-credentials",
+              "timeout": 300,
+              "orderers": [
+                {
+                  "url": "grpc://orderer.example.com:7050"
+                }
+              ],
+              "channel": "composerchannel",
+              "mspID": "Org1MSP",
+              "ca": {
+                "url": "http://ca.org1.example.com:7054",
+                "name": "ca.org1.example.com"
+              },
+              "peers": [
+                {
+                  "requestURL": "grpc://peer0.org1.example.com:7051",
+                  "eventURL": "grpc://peer0.org1.example.com:7053"
+                }
+              ]
+            }
+          }
+        }'
+
+3. Load the environment variables:
+
+        source envvars.txt
+
+4. Start the Docker container:
+
+        docker run \
+            -d \
+            -e COMPOSER_CONNECTION_PROFILE=${COMPOSER_CONNECTION_PROFILE} \
+            -e COMPOSER_BUSINESS_NETWORK=${COMPOSER_BUSINESS_NETWORK} \
+            -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
+            -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
+            -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+            -e COMPOSER_SECURITY=${COMPOSER_SECURITY} \
+            -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
+            -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+            -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+            --name resttest \
+            --network composer_default \
+            -p 3000:3000 \
+            hyperledger/composer-rest-server
+
+You should now be able to access the persistent and secured REST server using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
+
+For the REST Server to work in this insecure mode, be sure that the environment variables ``COMPOSER_DATASOURCES`` and ``COMPOSER_PROVIDERS`` are not set to any value.  Also note the importance of the part of the docker run command ``--network composer_default`` which enables the REST Server to 'find' the various Fabric Servers.
