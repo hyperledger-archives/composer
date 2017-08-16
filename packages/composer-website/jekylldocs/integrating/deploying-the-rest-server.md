@@ -293,7 +293,7 @@ The examples are based on the business network that is deployed to Hyperledger F
 You should now be able to access the persistent and secured REST server using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
 
 
-## Run the REST server in a Docker Container - with no security (eg. for Development/Testing)
+## Run the REST server in a Docker Container - with no security (eg. Dev/Test)
 
 These steps will run the REST server in a Docker Container with no security, and therefore no need for persistence of identities.  Activity on the REST server will be in the context of the Admin user used to start the REST server.  Running the REST server in this way is generally good for experimentation and learning, but is not likely to be appropriate for production use.
 
