@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const fs = require('fs');
 
 /**
@@ -36,7 +35,7 @@ class Bind {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Bind.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let participantId = argv.participantId;
         let publicKeyFile = argv.publicKeyFile;
@@ -77,15 +76,6 @@ class Bind {
             console.log(`An identity was bound to the participant '${participantId}'`);
             console.log('The participant can now connect to the business network using the identity');
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

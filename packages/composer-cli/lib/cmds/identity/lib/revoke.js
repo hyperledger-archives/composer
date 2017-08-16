@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
@@ -35,7 +34,7 @@ class Revoke {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Revoke.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let identityId = argv.identityId;
 
@@ -68,15 +67,6 @@ class Revoke {
         .then((result) => {
             console.log(`The identity '${identityId}' was revoked and can no longer be used to connect to the business network.`);
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }
