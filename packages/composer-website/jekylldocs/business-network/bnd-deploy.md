@@ -32,7 +32,10 @@ Due to many breaking API changes between {{site.data.conrefs.hlf_full}} alpha 1 
 
 ### Deploying business networks using Playground locally
 
+>_all of this goes_
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
+
+
 
 ### Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
 
