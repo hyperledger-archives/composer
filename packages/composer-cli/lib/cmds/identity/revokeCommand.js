@@ -27,13 +27,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-
-    argv.thePromise =  Revoke.handler(argv)
-    .then(() => {
-        return;
-    })
-    .catch((error) => {
-        throw error;
-    });
-    return argv.thePromise;
+    return argv.thePromise = Revoke.handler(argv);
 };
