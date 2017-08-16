@@ -11,9 +11,11 @@
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
-        <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}
+        <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' :
+            this.connectionProfileNames.get(connectionProfileRef) }}
             <div class="connection-profile-buttons">
-                <button id="deployButton" type="button" class="action circular" [disabled]="!canDeploy(connectionProfileRef)" (click)="deployNetwork(connectionProfileRef)">
+                <button id="deployButton" type="button" class="action circular"
+                        [disabled]="!canDeploy(connectionProfileRef)" (click)="deployNetwork(connectionProfileRef)">
                     <svg class="ibm-icon vertical-top">
                         <use xlink:href="#icon-deploy_24"></use>
                     </svg>
@@ -21,7 +23,8 @@
             </div>
         </h2>
         <div class="identities">
-            <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)" [identity]="idCards.get(cardRef)"
+            <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
+                           [identity]="idCards.get(cardRef)"
                            (onConnect)="changeIdentity(cardRef)"
                            (onDelete)="removeIdentity(cardRef)">
             </identity-card>

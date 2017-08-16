@@ -63,9 +63,12 @@
 
         .user-details {
             padding-top: $space-large;
+            text-align: center;
+            font-size: 0.9em;
 
-            p {
+            .user-name {
                 font-weight: 600;
+                margin: $space-medium 0 $space-smedium 0;
             }
 
             .image-placeholder {
@@ -83,8 +86,27 @@
                 .initials {
                     color: $second-highlight;
                     font-weight: 600;
-                    font-size: xx-large;
+                    font-size: large;
                     text-transform: uppercase;
+                }
+            }
+
+            .role-icon {
+                background-color: $second-highlight;
+                border: 3px solid $white;
+                border-radius: 50%;
+                width: 25px;
+                height: 25px;
+                position: absolute;
+                bottom: 4px;
+                right: -4px;
+
+                svg {
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    top: 5px;
+                    left: 5px;
                 }
             }
         }
