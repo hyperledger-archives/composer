@@ -62,11 +62,29 @@ describe('LoopBackWallet', () => {
                 WalletIdentityModel.create([
                     {
                         walletId: wallet.id,
-                        enrollmentID: 'testuser',
+                        enrollmentID: 'testuser0',
+                        enrollmentSecret: 'suchs3cret',
+                        data: {
+                            testA: 'i like biscuits',
+                            testB: 'everybody likes biscuits'
+                        }
+                    },
+                    {
+                        walletId: wallet.id,
+                        enrollmentID: 'testuser1',
                         enrollmentSecret: 'testpass',
                         data: {
                             test1: 'hello this is a cert',
                             test2: 'hello this is another cert'
+                        }
+                    },
+                    {
+                        walletId: wallet.id,
+                        enrollmentID: 'testuser2',
+                        enrollmentSecret: 'manypass',
+                        data: {
+                            testA1: 'i drive a blue car',
+                            testB2: 'you drive a green car'
                         }
                     }
                 ], (err) => {
@@ -78,14 +96,14 @@ describe('LoopBackWallet', () => {
             });
         })
         .then(() => {
-            lbWallet = new LoopBackWallet(app, wallet, 'testuser');
+            lbWallet = new LoopBackWallet(app, wallet, 'testuser1');
         });
     });
 
     describe('#list', () => {
 
         it('should return an empty array when no keys exist', () => {
-            return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } })
+            return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } })
                 .then((identity) => {
                     identity.data = {};
                     return identity.save();
@@ -136,7 +154,7 @@ describe('LoopBackWallet', () => {
         it('should set the value for a key', () => {
             return lbWallet.add('testA', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
                 })
                 .then((identity) => {
                     identity.data.testA.should.equal('hello this is a test set cert');
@@ -150,7 +168,7 @@ describe('LoopBackWallet', () => {
         it('should update the value for a key', () => {
             return lbWallet.update('test2', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
                 })
                 .then((identity) => {
                     identity.data.test2.should.equal('hello this is a test set cert');
@@ -164,7 +182,7 @@ describe('LoopBackWallet', () => {
         it('should remove the key', () => {
             return lbWallet.remove('test2')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
                 })
                 .then((identity) => {
                     should.equal(identity.data.test2, undefined);

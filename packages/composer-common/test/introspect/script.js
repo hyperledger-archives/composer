@@ -50,6 +50,13 @@ describe('Script', () => {
             }).should.throw(/The keyword.*is reserved/);
         });
 
+        it('should include script name on parse error', function() {
+            const scriptName = 'BAD_SCRIPT';
+            (() => {
+                new Script(modelManager, scriptName, 'JS', 'function syntaxError() {');
+            }).should.throw(new RegExp(scriptName));
+        });
+
     });
 
     describe('#getIdentifier', () => {

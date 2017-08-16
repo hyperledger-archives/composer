@@ -27,6 +27,9 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
 docker ps -aq | xargs docker rm -f
 docker images -aq | xargs docker rmi -f
 ```
+
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+
 ---
 
 

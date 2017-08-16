@@ -28,6 +28,7 @@ type Composer struct {
 	VM        *duktape.Context
 	Container *Container
 	Engine    *Engine
+	Index     int
 }
 
 // NewComposer creates a new instance of the Composer chaincode class.
