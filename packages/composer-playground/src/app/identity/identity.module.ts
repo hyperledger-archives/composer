@@ -13,8 +13,10 @@ import { IssueIdentityComponent } from './issue-identity/issue-identity.componen
 import { IdentityComponent } from './identity.component';
 import { FooterModule } from '../footer/footer.module';
 
+import { DrawerModule } from '../common/drawer';
+
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule],
+    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule, DrawerModule],
     entryComponents: [IdentityIssuedComponent, IssueIdentityComponent],
     declarations: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
     providers: [],

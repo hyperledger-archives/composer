@@ -550,6 +550,41 @@ describe(`LoginComponent`, () => {
         });
     });
 
+    describe('importIdentity', () => {
+        beforeEach(() => {
+            mockDrawer.open.returns({
+                result: Promise.resolve()
+            });
+        });
+
+        it('should import an identity card', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.resolve());
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdentityCardService.getIdentityCard.returns(mockIdCard);
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+
+            component.importIdentity();
+
+            tick();
+
+            mockAlertService.successStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            loadIdentityCardsStub.should.have.been.called;
+        }));
+
+        it('should handle errors', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.reject('some error'));
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+
+            component.importIdentity();
+
+            tick();
+
+            loadIdentityCardsStub.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+    });
+
     describe('canDeploy', () => {
         it('should show deploy button if got all correct cards', () => {
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
