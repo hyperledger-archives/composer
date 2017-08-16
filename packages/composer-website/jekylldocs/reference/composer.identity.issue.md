@@ -66,7 +66,7 @@ Example: `lennyid1`
 `--participantId, -a`
 
 The fully qualified identifier of the participant that the identity should be issued to.  
-Example: `resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org`
+Example: `net.biz.digitalPropertyNetwork.Person#lenny@biznet.org`
 
 `--issuer, -x`
 
