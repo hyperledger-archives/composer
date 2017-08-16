@@ -26,11 +26,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = List.handler(argv)
-        .then(() => {
-            return;
-        })
-        .catch((error) => {
-            throw error;
-        });
+    return argv.thePromise = List.handler(argv);
 };

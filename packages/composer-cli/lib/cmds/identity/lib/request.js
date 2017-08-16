@@ -38,17 +38,11 @@ class Request {
         let actualLocation = argv.path ? path.resolve(argv.path) : path.join(os.homedir(), '/.identityCredentials');
         return adminConnection.requestIdentity(argv.connectionProfileName, argv.enrollId, argv.enrollSecret)
             .then((result) => {
-                result;
-                try {
-                    mkdirp.sync(actualLocation);
-                    fs.writeFileSync(path.join(actualLocation, argv.enrollId + '-pub.pem'), result.certificate);
-                    fs.writeFileSync(path.join(actualLocation, argv.enrollId + '-priv.pem'), result.key);
-                    fs.writeFileSync(path.join(actualLocation, result.caName + '-root.pem'), result.rootCertificate);
-                    console.log(`'${argv.enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
-                }
-                catch(err) {
-                    throw err;
-                }
+                mkdirp.sync(actualLocation);
+                fs.writeFileSync(path.join(actualLocation, argv.enrollId + '-pub.pem'), result.certificate);
+                fs.writeFileSync(path.join(actualLocation, argv.enrollId + '-priv.pem'), result.key);
+                fs.writeFileSync(path.join(actualLocation, result.caName + '-root.pem'), result.rootCertificate);
+                console.log(`'${argv.enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
             });
     }
 }

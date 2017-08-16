@@ -29,14 +29,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    argv.thePromise =  Deploy.handler(argv)
-    .then(() => {
-        return;
-    })
-    .catch((error) => {
-        throw error;
-
-    });
-
-    return argv.thePromise;
+    return argv.thePromise = Deploy.handler(argv);
 };

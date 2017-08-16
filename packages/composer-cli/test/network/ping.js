@@ -23,7 +23,6 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const sinon = require('sinon');
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
@@ -50,6 +49,7 @@ describe('composer network ping CLI unit tests', () => {
 
     it('should test the connection to the business network using the default profile', () => {
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET
@@ -58,7 +58,7 @@ describe('composer network ping CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
             });
@@ -84,6 +84,7 @@ describe('composer network ping CLI unit tests', () => {
     it('should prompt for the enrollment secret if not specified', () => {
         sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID
         };
@@ -91,7 +92,7 @@ describe('composer network ping CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
             });
@@ -103,6 +104,7 @@ describe('composer network ping CLI unit tests', () => {
             participant: 'org.doge.Doge#DOGE_1'
         });
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET
@@ -111,7 +113,7 @@ describe('composer network ping CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
             });
@@ -120,6 +122,7 @@ describe('composer network ping CLI unit tests', () => {
     it('should error when the connection cannot be tested', () => {
         mockBusinessNetworkConnection.ping.rejects(new Error('such error'));
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET
@@ -128,7 +131,7 @@ describe('composer network ping CLI unit tests', () => {
             .catch((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
             });

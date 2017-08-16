@@ -31,13 +31,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-
-    argv.thePromise =  Issue.handler(argv)
-    .then(() => {
-        return;
-    })
-    .catch((error) => {
-        throw error;
-    });
-    return argv.thePromise;
+    return argv.thePromise = Issue.handler(argv);
 };

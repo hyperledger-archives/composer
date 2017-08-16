@@ -26,7 +26,6 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
@@ -50,6 +49,7 @@ describe('composer identity revoke CLI unit tests', () => {
 
     it('should revoke an existing identity using the default profile', () => {
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
@@ -59,7 +59,7 @@ describe('composer identity revoke CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
             });
@@ -86,6 +86,7 @@ describe('composer identity revoke CLI unit tests', () => {
     it('should prompt for the enrollment secret if not specified', () => {
         sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             identityId: 'dogeid1'
@@ -94,7 +95,7 @@ describe('composer identity revoke CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
             });
