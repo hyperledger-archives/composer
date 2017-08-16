@@ -94,9 +94,6 @@ describe('Transaction (query specific) system tests', () => {
     }
 
     before(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         const modelFiles = [
             { fileName: 'models/transactions.queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.queries.cto'), 'utf8') }
         ];
@@ -148,9 +145,6 @@ describe('Transaction (query specific) system tests', () => {
     });
 
     beforeEach(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return client.getAssetRegistry('systest.transactions.queries.SampleAsset')
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);

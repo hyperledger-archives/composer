@@ -19,7 +19,6 @@ const Admin = require('composer-admin');
 const Undeploy = require('../../lib/cmds/network/undeployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -58,7 +57,7 @@ describe('composer undeploy network CLI unit tests', function () {
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'defaultProfile'};
+                       ,connectionProfileName: 'someOtherProfile'};
             let connectionProfileName = argv.connectionProfileName;
 
             return Undeploy.handler(argv)

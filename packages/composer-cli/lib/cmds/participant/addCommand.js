@@ -19,7 +19,7 @@ const Add = require ('./lib/add.js');
 module.exports.command = 'add [options]';
 module.exports.describe = 'Add a new participant to a participant registry';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
@@ -27,13 +27,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-
-    argv.thePromise =  Add.handler(argv)
-    .then(() => {
-        return;
-    })
-    .catch((error) => {
-        throw error;
-    });
-    return argv.thePromise;
+    return argv.thePromise = Add.handler(argv);
 };

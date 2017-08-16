@@ -46,7 +46,6 @@
   "dependencies": {
     "composer-common": "0.11.3",
     "composer-connector-embedded": "0.11.3",
-    "composer-connector-hlf": "0.11.3",
     "composer-connector-hlfv1": "0.11.3",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.3",
