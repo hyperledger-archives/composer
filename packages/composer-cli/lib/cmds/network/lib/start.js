@@ -16,13 +16,11 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-
-const ora = require('ora');
-const chalk = require('chalk');
 const LogLevel = require('../../network/lib/loglevel');
-
+const ora = require('ora');
 
 /**
  * <p>

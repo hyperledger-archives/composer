@@ -14,12 +14,11 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const mkdirp = require('mkdirp');
-
 const cmdUtil = require('../../utils/cmdutils');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const os = require('os');
+const path = require('path');
 
 /**
  * <p>

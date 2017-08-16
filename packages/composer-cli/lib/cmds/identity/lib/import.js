@@ -14,9 +14,8 @@
 
 'use strict';
 
-const fs = require('fs');
-
 const cmdUtil = require('../../utils/cmdutils');
+const fs = require('fs');
 
 /**
  * <p>
