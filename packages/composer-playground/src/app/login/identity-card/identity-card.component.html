@@ -10,8 +10,14 @@
     <section class="user-details">
         <div class="image-placeholder">
             <span class="initials">{{getInitials()}}</span>
+            <div class="role-icon" *ngIf="identity.getRoles().length > 0">
+                <svg class="ibm-icon vertical-top">
+                    <use xlink:href="#icon-tool"></use>
+                </svg>
+            </div>
         </div>
-        <p>{{identity.getName()}}</p>
+        <div class="user-name">{{identity.getName()}}</div>
+        <span *ngFor="let role of identity.getRoles(); let roleIndex=index">{{role}}{{roleIndex===identity.getRoles().length -1 ? '': ', '}}</span>
     </section>
     <section *ngIf="!preview" class="actions">
         <button type="button" class="action circular delete"
@@ -31,12 +37,12 @@
         <h3>Connection Profile</h3>
         <p>{{identity.getConnectionProfile().name}}</p>
     </section>
-    <section class="business-network-details">
+    <section class="business-network-details" *ngIf="identity.getBusinessNetworkName()">
         <h3>Business Network</h3>
         <p>{{identity.getBusinessNetworkName()}}</p>
     </section>
     <footer>
-        <button *ngIf="!preview" type="button" class="action connect"
+        <button *ngIf="!preview && identity.getBusinessNetworkName()" type="button" class="action connect"
                 (click)="connect()">
             <span>Connect now</span>
             <svg class="ibm-icon" aria-hidden="true">
