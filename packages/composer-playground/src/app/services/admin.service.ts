@@ -60,7 +60,16 @@ export class AdminService {
         });
 
         console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfileRef, enrollmentCredentials.id);
-        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, businessNetworkName)
+
+        this.connectingPromise = this.identityCardService.activateCurrentIdentityCard()
+            .then((cardRef) => {
+                if (cardRef) {
+                    return this.importCertificates();
+                }
+            })
+            .then(() => {
+                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, businessNetworkName);
+            })
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -94,7 +103,15 @@ export class AdminService {
         });
 
         console.log('Connecting with connection profile %s with id %s', connectionProfileRef, enrollmentCredentials.id);
-        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret)
+        this.connectingPromise = this.identityCardService.activateCurrentIdentityCard()
+            .then((cardRef) => {
+                if (cardRef) {
+                    return this.importCertificates();
+                }
+            })
+            .then(() => {
+                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret);
+            })
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -169,7 +186,7 @@ export class AdminService {
             });
     }
 
-    public  list(): Promise<string[]> {
+    public list(): Promise<string[]> {
         let result;
         let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
@@ -208,6 +225,27 @@ export class AdminService {
 
     public start(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
         return this.getAdminConnection().start(businessNetworkDefinition);
+    }
+
+    importCertificates(): Promise<void> {
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
+        let connectionProfile = currentCard.getConnectionProfile();
+        let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let id = currentCard.getEnrollmentCredentials().id;
+        let credentials = currentCard.getCredentials();
+
+        // if no certificate do nothing
+        if ((!credentials || !credentials.public || !credentials.private)) {
+            let enrollmentCredientials = currentCard.getEnrollmentCredentials();
+            if (!enrollmentCredientials || !enrollmentCredientials.secret) {
+                return Promise.reject(new Error('No certificates or user secret was specified. An identity card must contain either public and private certificates or an enrollment secret'));
+            } else {
+                // don't need to do import identity as no certificates but have secret so all is ok
+                return Promise.resolve();
+            }
+        }
+
+        return this.getAdminConnection().importIdentity(qpn, id, credentials.public, credentials.private);
     }
 
     generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {
