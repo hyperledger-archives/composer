@@ -192,7 +192,16 @@ export class AdminService {
         let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
         let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
 
-        return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret)
+        console.log('Connecting with connection profile %s with id %s', connectionProfileRef, enrollmentCredentials.id);
+        return this.identityCardService.activateCurrentIdentityCard()
+            .then((cardRef) => {
+                if (cardRef) {
+                    return this.importCertificates();
+                }
+            })
+            .then(() => {
+                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret);
+            })
             .then(() => {
                 return this.getAdminConnection().list();
             })
