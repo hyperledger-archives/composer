@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Hyperledger Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
