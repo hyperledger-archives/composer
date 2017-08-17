@@ -76,6 +76,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -90,6 +91,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -103,6 +105,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -116,6 +119,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -130,6 +134,7 @@ describe('composer archive create unit tests', function () {
             try{
                 return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);

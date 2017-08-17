@@ -74,6 +74,7 @@ describe('composer archive list unit tests', function () {
 
             return List.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.getName);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.getIdentifier);

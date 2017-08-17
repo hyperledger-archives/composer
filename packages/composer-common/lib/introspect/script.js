@@ -14,8 +14,11 @@
 
 'use strict';
 
-const JavaScriptParser = require('../codegen/javascriptparser');
 const FunctionDeclaration = require('../introspect/functiondeclaration');
+const JavaScriptParser = require('../codegen/javascriptparser');
+
+const Logger = require('../log/logger');
+const LOG = Logger.getLog('Script');
 
 /**
  * <p>
@@ -45,7 +48,15 @@ class Script {
             throw new Error('Empty script contents');
         }
 
-        const parser = new JavaScriptParser(this.contents, false, 5);
+        let parser;
+        try {
+            parser = new JavaScriptParser(this.contents, false, 5);
+        } catch (cause) {
+            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message);
+            error.cause = cause;
+            LOG.error('constructor', error.message, contents);
+            throw error;
+        }
 
         const functions = parser.getFunctions();
 
