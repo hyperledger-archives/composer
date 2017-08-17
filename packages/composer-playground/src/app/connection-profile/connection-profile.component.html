@@ -280,11 +280,14 @@
                                         <div *ngIf="v1FormErrors.peers.eventURL" class="error-message">
                                             {{ v1FormErrors.peers.eventURL }}
                                         </div>
+
                                         <input hidden type="text" formControlName="cert">
                                     </div>
+
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <div class="profile-buttons">
                         <button type="button" class="secondary" (click)="addPeer()">+ Add another</button>
@@ -293,6 +296,8 @@
                         </button>
                     </div>
                 </div>
+
+
                 <div class="profile-row">
                     <div class="profile-property">
                         Key Value Store Directory Path*

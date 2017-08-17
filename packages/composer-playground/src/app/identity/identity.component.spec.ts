@@ -503,31 +503,6 @@ describe(`IdentityComponent`, () => {
             mockAlertService.successStatus$.next.should.have.been.called;
         }));
 
-        it('should revoke the identity from the client service not remove from wallet', fakeAsync(() => {
-
-            component['myIdentities'] = ['bob'];
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
-            });
-
-            mockClientService.revokeIdentity.returns(Promise.resolve());
-
-            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
-
-            component.revokeIdentity({name: 'fred'});
-
-            tick();
-
-            mockClientService.revokeIdentity.should.have.been.called;
-            mockRemoveIdentity.should.not.have.been.called;
-            mockLoadAllIdentities.should.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
-
         it('should handle error', fakeAsync(() => {
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},

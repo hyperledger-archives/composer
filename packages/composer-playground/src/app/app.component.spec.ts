@@ -825,6 +825,32 @@ describe('AppComponent', () => {
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
+            mockModal.open.returns({componentInstance: {}});
+
+        }));
+
+        it('should open version modal', () => {
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            component['openVersionModal']();
+
+            mockModal.open.should.have.been.called;
+        });
+    });
+
+    describe('checkVersion', () => {
+        let mockOnBusy;
+        let mockOnError;
+        let mockOnTransactionEvent;
+        let mockQueryParamsUpdated;
+
+        beforeEach(async(() => {
+            mockOnBusy = sinon.stub(component, 'onBusyStatus');
+            mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
+            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
 
         }));
 

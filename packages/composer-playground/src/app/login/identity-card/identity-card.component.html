@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="user-name">{{identity.getName()}}</div>
-        <span *ngFor="let role of identity.getRoles(); let roleIndex=index">{{role}}{{roleIndex===identity.getRoles().length -1 ? '': ', '}}</span>
+        <span *ngFor="let role of identity.getRoles() last as lastRole">{{role}}{{lastRole ? '': ', '}}</span>
     </section>
     <section *ngIf="!preview" class="actions">
         <button type="button" class="action circular delete"

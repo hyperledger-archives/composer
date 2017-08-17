@@ -98,6 +98,7 @@ export class ImportComponent implements OnInit {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
             confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
+            confirmModalRef.componentInstance.resource = 'definition';
             replacePromise = confirmModalRef.result;
         }
 

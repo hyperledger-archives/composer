@@ -1226,22 +1226,6 @@ describe('ClientService', () => {
         })));
     });
 
-    describe('createNewBusinessNetwork', () => {
-        it('should alert on failure', inject([ClientService], (service: ClientService) => {
-            // Set up mocks
-            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
-
-            // Call function
-            service.createNewBusinessNetwork(null, null, null, null, null);
-
-            // Check expected
-            alertMock.busyStatus$.next.should.have.been.calledWith(null);
-            alertMock.errorStatus$.next.should.have.been.called;
-        }));
-    });
-
     describe('#filterModelFiles', () => {
         it('should filter passed model files', inject([ClientService], (service: ClientService) => {
 
