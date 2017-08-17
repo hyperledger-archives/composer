@@ -131,29 +131,25 @@ export class IdentityCardService {
         return Promise.resolve(this.idCards);
     }
 
-    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string | void> {
+    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string[] | void> {
         if (this.idCards.size > 0) {
             return Promise.resolve();
         }
 
         initialCards = initialCards || [];
 
-        let defaultCardRef: string;
         let defaultCardObject = new IdCard(defaultCardProperties.metadata, defaultCardProperties.connectionProfile);
         defaultCardObject.setCredentials(defaultCardProperties.credentials);
         initialCards.unshift(defaultCardObject);
 
         let addCardPromises: Promise<any>[] = initialCards.map((card, index) => {
             return this.addIdentityCard(card).then((cardRef: string) => {
-                if (index === 0) {
-                    defaultCardRef = cardRef;
-                }
                 return cardRef;
             });
         });
 
         return Promise.all(addCardPromises).then((cardRefs: string[]) => {
-            return defaultCardRef;
+            return cardRefs;
         });
     }
 

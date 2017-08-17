@@ -141,12 +141,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
     onBusyStatus(busyStatus) {
         let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-        if (card) {
+        if (card && busyStatus) {
             let connectionProfileType = card.getConnectionProfile().type;
-            if ('web' === connectionProfileType) {
+            if ('web' === connectionProfileType && !busyStatus.force) {
                 // Don't show the modal for the web runtime, as it's too fast to care.
                 return;
             }
+        } else if (!card && (!busyStatus || !busyStatus.force)) {
+            // if no card then only show if forced
+            return;
         }
 
         if (!this.busyModalRef && busyStatus) {

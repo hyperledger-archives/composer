@@ -302,11 +302,6 @@ export class ClientService {
     }
 
     deployInitialSample(): Promise<any> {
-        this.alertService.busyStatus$.next({
-            title: 'Deploying Business Network',
-            text: 'deploying sample business network'
-        });
-
         let businessNetwork: BusinessNetworkDefinition;
         return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
             .then((sampleBusinessNetworkDefinition) => {
@@ -319,9 +314,25 @@ export class ClientService {
                         }
                     });
             })
-            .then(() => {
-                if (this.adminService.isInitialDeploy()) {
+            .then((created) => {
+                if (created) {
+                    this.alertService.busyStatus$.next({
+                        title: 'Deploying Business Network',
+                        text: 'deploying sample business network',
+                        force: true
+                    });
                     return this.adminService.update(businessNetwork);
+                }
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Creating identity card',
+                    text: 'creating identity card admin',
+                    force: true
+                });
+                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+                if (connectionProfile.type !== 'web') {
+                    return this.identityCardService.createIdentityCard('admin', businessNetwork.getName(), 'admin', 'adminpw', connectionProfile);
                 }
             })
             .then(() => {
