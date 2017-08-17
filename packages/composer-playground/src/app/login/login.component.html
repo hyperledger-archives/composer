@@ -26,6 +26,7 @@
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
                            (onConnect)="changeIdentity(cardRef)"
+                           (onExport)="exportIdentity(cardRef)"
                            (onDelete)="removeIdentity(cardRef)">
             </identity-card>
         </div>
