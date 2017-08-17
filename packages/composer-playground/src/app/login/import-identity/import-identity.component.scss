@@ -2,19 +2,15 @@
 @import '../../../assets/styles/base/variables';
 
 import-identity {
-  file-importer.expandFile {
-    padding: 0;
-  }
+    .import-card, .current-card {
+        padding: 0 $space-large 0 $space-large;
+    }
 
-  .import-card, .current-card {
-    padding: 0 $space-large 0 $space-large;
-  }
+    .current-card {
+        background-color: $fourth-highlight;
+        padding: $space-large;
 
-  .current-card {
-    background-color: $fourth-highlight;
-    padding: $space-large;
-
-    display: flex;
-    justify-content: space-around;
-  }
+        display: flex;
+        justify-content: space-around;
+    }
 }

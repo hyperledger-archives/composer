@@ -563,6 +563,8 @@ describe('AdminService', () => {
         it('should list the business networks', fakeAsync(inject([AdminService], (service: AdminService) => {
             let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
+            identityCardMock.activateCurrentIdentityCard.returns(Promise.resolve());
+
             adminConnectionMock.connect.returns(Promise.resolve());
             adminConnectionMock.list.returns(Promise.resolve(['myNetwork']));
 
@@ -576,6 +578,37 @@ describe('AdminService', () => {
 
             identityCardMock.getCurrentConnectionProfile.should.have.been.called;
             identityCardMock.getCurrentEnrollmentCredentials.should.have.been.called;
+
+            identityCardMock.activateCurrentIdentityCard.should.have.been.called;
+
+            adminConnectionMock.connect.should.have.been.calledWith('xxx-myProfile', 'myId', 'mySecret');
+            adminConnectionMock.list.should.have.been.called;
+
+            disconnectStub.should.have.been.called;
+        })));
+
+        it('should list the business networks and import certificates', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            identityCardMock.activateCurrentIdentityCard.returns(Promise.resolve('cardRef'));
+            let importStub = sinon.stub(service, 'importCertificates').returns(Promise.resolve());
+
+            adminConnectionMock.connect.returns(Promise.resolve());
+            adminConnectionMock.list.returns(Promise.resolve(['myNetwork']));
+
+            let disconnectStub = sinon.stub(service, 'disconnect');
+
+            service.list().then((networks) => {
+                networks.should.deep.equal(['myNetwork']);
+            });
+
+            tick();
+
+            identityCardMock.getCurrentConnectionProfile.should.have.been.called;
+            identityCardMock.getCurrentEnrollmentCredentials.should.have.been.called;
+
+            identityCardMock.activateCurrentIdentityCard.should.have.been.called;
+            importStub.should.have.been.called;
 
             adminConnectionMock.connect.should.have.been.calledWith('xxx-myProfile', 'myId', 'mySecret');
             adminConnectionMock.list.should.have.been.called;

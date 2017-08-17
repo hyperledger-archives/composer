@@ -5,7 +5,7 @@
   <header class="drawer-header">
     <h1>Import ID Card</h1>
     <p>Drop a Composer ID (.card file) here to add it to My Wallet:</p>
-    
+
     <button class="icon modal-exit" (click)="activeDrawer.dismiss();">
       <svg class="ibm-icon" aria-hidden="true">
        <use xlink:href="#icon-close_new"></use>
@@ -17,7 +17,7 @@
       <file-importer (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
                      [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-Card_Upload'" [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes"></file-importer>
     </div>
-    
+
     <div class="current-card" *ngIf="identityCard">
       <identity-card [identity]="identityCard" [preview]="true"
                      (onDismiss)="removeFile()">

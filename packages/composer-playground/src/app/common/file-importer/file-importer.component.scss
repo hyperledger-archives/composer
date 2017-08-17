@@ -14,9 +14,9 @@ file-importer {
     overflow: hidden;
     position: relative;
     padding: $space-medium;
-    display: flex;
     justify-content: center;
     align-items: center;
+    height: 57px;
 
     svg {
         margin-right: $space-smedium;
@@ -48,10 +48,10 @@ file-importer {
 
     &.expandFile {
         flex: 1;
+        height: 200px;
         padding: $space-medium;
 
         border: 1px dashed $first-highlight;
-        flex: 1;
 
         svg {
             width: 131px;
@@ -66,7 +66,6 @@ file-importer {
             color: $secondary-text;
         }
     }
-
 }
 
 
