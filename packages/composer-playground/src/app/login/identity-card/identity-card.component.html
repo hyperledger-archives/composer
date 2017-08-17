@@ -26,7 +26,7 @@
                 <use xlink:href="#icon-trash_32"></use>
             </svg>
         </button>
-        <button type="button" class="action circular export"
+        <button *ngIf="'web' !== identity.getConnectionProfile().type" type="button" class="action circular export"
                 (click)="export()">
             <svg class="ibm-icon vertical-top" aria-hidden="true">
                 <use xlink:href="#icon-download_32"></use>

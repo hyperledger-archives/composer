@@ -82,7 +82,7 @@ export class IdentityCardService {
         return cardRefs;
     }
 
-    loadIdentityCards(): Promise<number> {
+    loadIdentityCards(webOnly: boolean): Promise<number> {
         this.currentCard = null;
 
         return new Promise((resolve, reject) => {
@@ -93,9 +93,13 @@ export class IdentityCardService {
                     // not associated playground data, which has a suffix
                     if (cardRef.length === 36) {
                         let cardProperties: any = this.identityCardStorageService.get(cardRef);
+
+                        if (webOnly && cardProperties.connectionProfile.type !== 'web') {
+                            return;
+                        }
+
                         let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
                         cardObject.setCredentials(cardProperties.credentials);
-
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
                         if (data && data.current) {
                             this.currentCard = cardRef;
@@ -124,13 +128,7 @@ export class IdentityCardService {
     }
 
     getIdentityCards(): Promise<Map<string, IdCard>> {
-        if (this.idCards.size > 0) {
-            return Promise.resolve(this.idCards);
-        }
-
-        return this.loadIdentityCards().then(() => {
-            return this.idCards;
-        });
+        return Promise.resolve(this.idCards);
     }
 
     addInitialIdentityCards(initialCards?: IdCard[]): Promise<string | void> {
