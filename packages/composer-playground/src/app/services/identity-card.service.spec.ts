@@ -121,6 +121,7 @@ describe('IdentityCardService', () => {
 
         it('should load cards from local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let result: number;
+            service['currentCard'] = 'someCardRef';
             service.loadIdentityCards().then((cardsLoaded) => {
                 result = cardsLoaded;
             });
@@ -129,6 +130,7 @@ describe('IdentityCardService', () => {
 
             result.should.equal(3);
             service['idCards'].size.should.equal(3);
+            should.not.exist(service['currentCard']);
         })));
 
         it('should not load anything if there are no cards in local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {

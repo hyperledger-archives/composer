@@ -83,6 +83,8 @@ export class IdentityCardService {
     }
 
     loadIdentityCards(): Promise<number> {
+        this.currentCard = null;
+
         return new Promise((resolve, reject) => {
             this.idCards = this.identityCardStorageService
                 .keys()
