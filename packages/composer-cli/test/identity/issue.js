@@ -102,6 +102,7 @@ describe('composer identity issue CLI unit tests', () => {
         };
         return Issue.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
@@ -130,6 +131,7 @@ describe('composer identity issue CLI unit tests', () => {
 
         return Issue.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
@@ -148,6 +150,7 @@ describe('composer identity issue CLI unit tests', () => {
         };
         return Issue.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
@@ -171,6 +174,7 @@ describe('composer identity issue CLI unit tests', () => {
         };
         return Issue.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);

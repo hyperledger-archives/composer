@@ -2,16 +2,11 @@
 import { ComponentFixture, TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { SuccessComponent } from './success.component';
 import { AlertService } from '../alert.service';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 let should = chai.should();
-
-class MockTransactionService {
-    public event$: Subject<string> = new BehaviorSubject<string>(null);
-}
 
 describe('SuccessComponent', () => {
     let component: SuccessComponent;

@@ -112,6 +112,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -154,6 +155,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -197,6 +199,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -239,6 +242,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -278,6 +282,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -315,8 +320,9 @@ describe('composer deploy network CLI unit tests', function () {
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
             Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -355,8 +361,9 @@ describe('composer deploy network CLI unit tests', function () {
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
             Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -375,7 +382,7 @@ describe('composer deploy network CLI unit tests', function () {
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,loglevel: 'BAD'
                        ,archiveFile: 'testArchiveFile.zip'};
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
                 .should.be.rejectedWith(/or not one of/);
 
         });

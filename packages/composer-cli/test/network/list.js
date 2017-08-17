@@ -88,6 +88,7 @@ describe('composer network download CLI unit tests', function () {
 
             List.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
             });
 

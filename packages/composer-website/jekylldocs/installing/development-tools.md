@@ -12,7 +12,6 @@ index-order: 203
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0. The default is for v1.0 and we suggest this is the one you use.
 
 ## Before you begin
 
@@ -29,7 +28,7 @@ Python: 2.7.x
 A code editor of your choice, we recommend VSCode.
 ```
 
-**Please do not install Composer as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues with the install). Composer should be installed as non-privileged user.**
+**Please do not install {{site.data.conrefs.composer_full}} as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues installation errors). {{site.data.conrefs.composer_full}} should be installed as non-privileged user.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
@@ -44,6 +43,9 @@ Next run the script - as this briefly uses sudo during its execution, you will b
 ```
 ./prereqs-ubuntu.sh
 ```
+
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+
 ---
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
@@ -63,7 +65,7 @@ The development tools you'll need can all be installed (as a non-privileged user
 3. To install `composer-rest-server` run the following command:
 
         npm install -g composer-rest-server
-    The `composer-rest-server` uses the Hyperledger Composer LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
+    The `composer-rest-server` uses the {{site.data.conrefs.composer_full}} LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
 
 4. To install `Yeoman` run the following command:
 
@@ -106,17 +108,15 @@ docker rmi $(docker images dev-* -q)
 
         tar xvzf fabric-dev-servers.tar.gz
 
-2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default. If for some reason v0.6 needs to be installed, you can set it explicitly as follows: export FABRIC_VERSION=hlfv0.6
-
-    > **Please Note:** {{site.data.conrefs.composer_full}} users should not use {{site.data.conrefs.fabric_full}} v0.6.  It is deprecated, and everybody should now use v1.0.
+2. Choose which version of Fabric to use.  {{site.data.conrefs.hlf_full}} v1.0 is highly recommended and the default.
 
     To 'unset' a v0.6 export, or to be explicit in using v1 Fabric, use this command
 
         export FABRIC_VERSION=hlfv1
 
-3. If this is the first time, you'll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.
+3. If this is the first time, you'll need to download the fabric first. If you have already downloaded then first start the fabric, and create a {{site.data.conrefs.composer_full}} profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the {{site.data.conrefs.hlf_full}} and the {{site.data.conrefs.composer_full}} profile.
 
-    All the scripts will be in the directory `~/fabric-tools`  A typical sequence for Hyperledger Composer use would be
+    All the scripts will be in the directory `~/fabric-tools`  A typical sequence for {{site.data.conrefs.composer_full}} use would be
 
         cd ~/fabric-tools
         ./downloadFabric.sh
@@ -129,7 +129,6 @@ docker rmi $(docker images dev-* -q)
         ./stopFabric.sh
         ./teardownFabric.sh
 
-*If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
 
 > Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
 
@@ -161,7 +160,7 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create Composer Profile**
+**Create {{site.data.conrefs.composer_full}} Profile**
 
 Issue from the `fabric-tools` directory
 ```
