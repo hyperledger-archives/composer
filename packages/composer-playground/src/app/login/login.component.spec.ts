@@ -17,6 +17,8 @@ import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import * as fileSaver from 'file-saver';
+
 import { IdCard } from 'composer-common';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { AdminService } from '../services/admin.service';
@@ -581,6 +583,46 @@ describe(`LoginComponent`, () => {
             tick();
 
             loadIdentityCardsStub.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+    });
+
+    describe('exportIdentity', () => {
+        let sandbox = sinon.sandbox.create();
+        let mockIdCard;
+        let mockIdCards: Map<string, IdCard>;
+        let saveAsStub;
+
+        beforeEach(() => {
+            saveAsStub = sandbox.stub(fileSaver, 'saveAs');
+            mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getName.returns('myCard');
+            mockIdCards = new Map<string, IdCard>();
+            mockIdCards.set('myCardRef', mockIdCard);
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should export an identity card', fakeAsync(() => {
+            mockIdCard.toArchive.returns(Promise.resolve('card data'));
+            component['idCards'] = mockIdCards;
+
+            component.exportIdentity('myCardRef');
+            tick();
+
+            let expectedFile = new Blob(['card data'], {type: 'application/octet-stream'});
+            saveAsStub.should.have.been.calledWith(expectedFile, 'myCard.card');
+        }));
+
+        it('should handle errors', fakeAsync(() => {
+            mockIdCard.toArchive.returns(Promise.reject('some error'));
+            component['idCards'] = mockIdCards;
+
+            component.exportIdentity('myCardRef');
+            tick();
+
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
     });
