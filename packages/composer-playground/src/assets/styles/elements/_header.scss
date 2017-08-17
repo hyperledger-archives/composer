@@ -57,6 +57,25 @@
         border-color: transparent transparent black transparent;
       }
 
+      .navmain {
+        display: flex;
+        justify-content: space-between;
+        flex: 1;
+
+        &.rightonly {
+          justify-content: flex-end;
+        }
+
+        .navleft {
+          margin-left: 2rem;
+        }
+
+        .navright {
+          justify-content: flex-end;
+          margin-right: 2rem;
+        }
+      }
+
       .drop-select{
             display: flex;
             align-items: center;
@@ -225,16 +244,6 @@
             border-bottom: 0px;
             border-radius: 0px;
           }
-        }
-
-        &.navleft {
-          flex: 1;
-          margin-left: 2rem;
-        }
-
-        &.navright {
-          justify-content: flex-end;
-          margin-right: 2rem;
         }
       }
     }
