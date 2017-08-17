@@ -28,4 +28,4 @@ If you attempt to deploy a network using an identity which does not have network
 
 ## How to avoid the error
 
-When using the a local instance of the {{site.data.conrefs.composer_full}} Playground to deploy a business network to a local {{site.data.conrefs.hlf_full}} instance, you must use an identity which has [network-level access control](./acl_language.html). If an identity without network-level access control is used, there must be a business network with the name `org-acme-biznet` deployed to the instance of {{site.data.conrefs.hlf_full}} being used.
+When using the a local instance of the {{site.data.conrefs.composer_full}} Playground to deploy a business network to a local {{site.data.conrefs.hlf_full}} instance, you must use an identity which has [network-level access control](../reference/acl_language.html). If an identity without network-level access control is used, there must be a business network with the name `org-acme-biznet` deployed to the instance of {{site.data.conrefs.hlf_full}} being used.

@@ -46,7 +46,7 @@ List the contents of a deployed Business Network: [composer network list](./comp
 
 `composer network loglevel`
 
-Return or update the log level for the composer runtime: [`composer network loglevel`](./composer.network.loglevel.html)
+Return or update the log level for the composer runtime: [`composer network loglevel`](./composer.network.logLevel.html)
 
 `composer network ping`
 
