@@ -12,6 +12,8 @@ import { ImportIdentityComponent } from './import-identity';
 
 import { IdCard } from 'composer-common';
 
+import { saveAs } from 'file-saver';
+
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -201,6 +203,18 @@ export class LoginComponent implements OnInit {
                 });
         }).then(() => {
             return this.loadIdentityCards();
+        }).catch((reason) => {
+            this.alertService.errorStatus$.next(reason);
+        });
+    }
+
+    exportIdentity(cardRef): Promise<any> {
+        let card = this.idCards.get(cardRef);
+
+        return card.toArchive().then((exportedData) => {
+            let file = new Blob([exportedData],
+                {type: 'application/octet-stream'});
+            saveAs(file, card.getName() + '.card');
         }).catch((reason) => {
             this.alertService.errorStatus$.next(reason);
         });
