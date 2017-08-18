@@ -13,7 +13,7 @@ excerpt: Composer Network Deploy CLI
 The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 runtime.
 
 ```
-composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
+composer network deploy -a <business-network-archive> -p <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
 ```
 
 ### Options
@@ -32,8 +32,9 @@ composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enr
 ## Example Output
 
 ```
-composer network deploy -a digitalPropertyNetwork.zip -i WebAppAdmin -s DJY27pEnl16d
-Deploying business network from archive digitalPropertyNetwork.zip
+composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString
+
+Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:
 	Identifier: digitalproperty-network@0.0.1
 	Description: Digital Property Network
