@@ -191,6 +191,7 @@
     "setimmediate": "^1.0.5",
     "sinon": "^2.3.8",
     "sinon-chai": "2.10.0",
+    "sleep": "^5.1.1",
     "source-map-loader": "^0.1.5",
     "spa-http-server": "^0.9.0",
     "string-replace-loader": "^1.0.5",

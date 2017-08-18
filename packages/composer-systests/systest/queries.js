@@ -110,9 +110,6 @@ describe('Query system tests', () => {
     }
 
     before(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         const modelFiles = [
             { fileName: 'models/queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.cto'), 'utf8') }
         ];
@@ -167,9 +164,6 @@ describe('Query system tests', () => {
     });
 
     beforeEach(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return client.getAssetRegistry('systest.queries.SampleAsset')
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
