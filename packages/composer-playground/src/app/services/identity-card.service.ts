@@ -48,7 +48,8 @@ export class IdentityCardService {
                     // not associated playground data, which has a suffix
                     if (cardRef.length === 36) {
                         let cardProperties: PropertyDescriptorMap = this.identityCardStorageService.get(cardRef);
-                        let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile, cardProperties.credentials);
+                        let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
+                        cardObject.setCredentials(cardProperties.credentials);
 
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
                         if (data && data.current) {
@@ -86,7 +87,8 @@ export class IdentityCardService {
         initialCards = initialCards || [];
 
         let defaultCardRef: string;
-        let defaultCardObject = new IdCard(defaultCardProperties.metadata, defaultCardProperties.connectionProfile, defaultCardProperties.credentials);
+        let defaultCardObject = new IdCard(defaultCardProperties.metadata, defaultCardProperties.connectionProfile);
+        defaultCardObject.setCredentials(defaultCardProperties.credentials);
         initialCards.unshift(defaultCardObject);
 
         let addCardPromises: Promise<any>[] = initialCards.map((card, index) => {
@@ -111,7 +113,7 @@ export class IdentityCardService {
             enrollmentSecret: enrollmentSecret
         };
 
-        let card: IdCard = new IdCard(metadata, connectionProfile, null);
+        let card: IdCard = new IdCard(metadata, connectionProfile);
         return this.addIdentityCard(card);
     }
 
