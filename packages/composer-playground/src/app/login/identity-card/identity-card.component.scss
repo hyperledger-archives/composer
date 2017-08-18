@@ -120,8 +120,8 @@
                 border-color: transparent;
             }
 
-            button:first-child {
-                margin-right: $space-large;
+            button {
+                margin: 0 $space-medium 0 $space-medium;
             }
 
             svg {

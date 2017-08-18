@@ -1,10 +1,10 @@
 <section *ngIf="!showSubScreen" class="header">
     <h1 class="left-align">My Wallet</h1>
     <div class="right-align" *ngIf="!showSubScreen">
-        <button type="button" class="secondary" (click)="importIdentity()">
+        <button *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import ID Card</span>
         </button>
-        <button type="button" class="secondary" (click)="createIdCard()">
+        <button *ngIf="usingLocally" type="button" class="secondary" (click)="createIdCard()">
             <span>Create ID Card</span>
         </button>
     </div>

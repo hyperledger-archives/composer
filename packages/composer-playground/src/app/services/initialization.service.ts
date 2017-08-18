@@ -34,13 +34,13 @@ export class InitializationService {
 
         this.initializingPromise = Promise.resolve()
             .then(() => {
-                return this.identityCardService.loadIdentityCards();
-            })
-            .then(() => {
                 return this.loadConfig();
             })
             .then((config) => {
                 this.config = config;
+                return this.identityCardService.loadIdentityCards(this.isWebOnly());
+            })
+            .then(() => {
                 // TODO pass in array of identity cards via config.json somehow
                 return this.identityCardService.addInitialIdentityCards();
             })
