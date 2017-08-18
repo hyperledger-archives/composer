@@ -97,9 +97,7 @@ describe('Identity system tests', () => {
     it('should bind an identity and make it available for a ping request', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        } else if (TestUtil.isHyperledgerFabricV1()) {
+        if (TestUtil.isHyperledgerFabricV1()) {
             const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
             const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
@@ -194,9 +192,7 @@ describe('Identity system tests', () => {
     it('should bind an identity and make the participant available for transaction processor functions', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        } else if (TestUtil.isHyperledgerFabricV1()) {
+        if (TestUtil.isHyperledgerFabricV1()) {
             const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/signcerts/User2@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
             const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/keystore/key.pem');

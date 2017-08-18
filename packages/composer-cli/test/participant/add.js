@@ -33,7 +33,6 @@ chai.use(require('chai-as-promised'));
 
 const NAMESPACE = 'net.biz.TestNetwork';
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
@@ -71,6 +70,7 @@ describe('composer participant add CLI unit tests', () => {
 
     it('should add a new participant using the default profile', () => {
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
@@ -80,7 +80,7 @@ describe('composer participant add CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
 
@@ -109,6 +109,7 @@ describe('composer participant add CLI unit tests', () => {
     it('should prompt for the enrollment secret if not specified', () => {
         sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
@@ -117,7 +118,7 @@ describe('composer participant add CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
 
