@@ -93,7 +93,8 @@ export class IdentityCardService {
                     // not associated playground data, which has a suffix
                     if (cardRef.length === 36) {
                         let cardProperties: any = this.identityCardStorageService.get(cardRef);
-                        let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile, cardProperties.credentials);
+                        let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
+                        cardObject.setCredentials(cardProperties.credentials);
 
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
                         if (data && data.current) {
