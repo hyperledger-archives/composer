@@ -43,7 +43,6 @@
   },
   "dependencies": {
     "composer-common": "0.11.4",
-    "composer-connector-hlf": "0.11.4",
     "composer-connector-hlfv1": "0.11.4",
     "uuid": "^3.0.1"
   },

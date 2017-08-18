@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
@@ -35,7 +34,7 @@ class Issue {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Issue.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let newUserId = argv.newUserId;
         let participantId = argv.participantId;
@@ -75,15 +74,6 @@ class Issue {
             console.log(`  userID = ${result.userID}`);
             console.log(`  userSecret = ${result.userSecret}`);
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

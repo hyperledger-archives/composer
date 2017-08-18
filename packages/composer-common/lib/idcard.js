@@ -40,10 +40,9 @@ class IdCard {
      * retrieve instances from {@link IdCard.fromArchive}</strong>
      * @param {Object} metadata - metadata associated with the card.
      * @param {Object} connectionProfile - connection profile associated with the card.
-     * @param {Object} credentials - credentials used to connect to business network.
      * @private
      */
-    constructor(metadata, connectionProfile, credentials) {
+    constructor(metadata, connectionProfile) {
         const method = 'constructor';
         LOG.entry(method);
 
@@ -56,7 +55,7 @@ class IdCard {
 
         this.metadata = metadata;
         this.connectionProfile = connectionProfile;
-        this.credentials = credentials;
+        this.credentials = { };
 
         LOG.exit(method);
     }
@@ -110,19 +109,35 @@ class IdCard {
     }
 
     /**
+     * Credentials to associate with this card.
+     * <p>
+     * For PKI-based authentication, the credentials are expected to be of the form:
+     * <em>{ public: String, private: String }</em>.
+     * @param {Object} credentials credentials.
+     */
+    setCredentials(credentials) {
+        const method = 'setCredentials';
+        LOG.entry(method, credentials);
+
+        this.credentials = credentials || { };
+
+        LOG.exit(method);
+    }
+
+    /**
      * Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to
      * enroll with a business network and obtain certificates.
      * <p>
      * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
      * <em>{ id: String, secret: String }</em>.
-     * @return {Object} enrollment credentials, if they exist.
+     * @return {Object} enrollment credentials, or {@link null} if none exist.
      */
     getEnrollmentCredentials() {
         let result = null;
         const id = this.metadata.enrollmentId;
         const secret = this.metadata.enrollmentSecret;
         if (id || secret) {
-            result = Object.create(null);
+            result = { };
             result.id = id;
             result.secret = secret;
         }
@@ -158,7 +173,7 @@ class IdCard {
 
             let metadata;
             let connection;
-            let credentials = Object.create(null);
+            let credentials = { };
 
             LOG.debug(method, 'Loading ' + CONNECTION_FILENAME);
             const connectionFile = zip.file(CONNECTION_FILENAME);
@@ -203,7 +218,8 @@ class IdCard {
             loadDirectoryToObject(CREDENTIALS_DIRNAME, credentials);
 
             return promise.then(() => {
-                const idCard = new IdCard(metadata, connection, credentials);
+                const idCard = new IdCard(metadata, connection);
+                idCard.setCredentials(credentials);
                 LOG.exit(method, idCard.toString());
                 return idCard;
             });

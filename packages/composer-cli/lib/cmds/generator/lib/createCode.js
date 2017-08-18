@@ -16,16 +16,14 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-
-const fs = require('fs');
-
 const CodeGen = require('composer-common').CodeGen;
+const FileWriter = CodeGen.FileWriter;
+const fs = require('fs');
 const GoLangVisitor = CodeGen.GoLangVisitor;
+const JavaVisitor = CodeGen.JavaVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
-const JavaVisitor = CodeGen.JavaVisitor;
-const FileWriter = CodeGen.FileWriter;
 /**
  * Composer Create Archive command
  *

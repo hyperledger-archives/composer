@@ -45,8 +45,6 @@
   },
   "dependencies": {
     "composer-common": "0.11.4",
-    "composer-connector-embedded": "0.11.4",
-    "composer-connector-hlf": "0.11.4",
     "composer-connector-hlfv1": "0.11.4",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.3",
@@ -55,6 +53,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "composer-connector-embedded": "0.11.4",
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",

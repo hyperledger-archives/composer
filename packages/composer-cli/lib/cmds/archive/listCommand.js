@@ -25,13 +25,5 @@ module.exports.builder = function (yargs){
 
 
 module.exports.handler = (argv) => {
-
-    argv.thePromise =  List.handler(argv)
-    .then(() => {
-        return 0;
-    })
-    .catch((error) => {
-        throw error;
-    });
-    return argv.thePromise;
+    return argv.thePromise = List.handler(argv);
 };

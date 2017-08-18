@@ -197,9 +197,6 @@ describe('Access control system tests', () => {
     });
 
     it('should be able to enforce read access permissions on an asset registry via client query', function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return Promise.resolve()
             .then(() => {
                 const query = aliceClient.buildQuery('SELECT systest.accesscontrols.SampleAsset');
@@ -276,9 +273,6 @@ describe('Access control system tests', () => {
     });
 
     it('should be able to enforce read access permissions on a participant registry via client query', function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return Promise.resolve()
             .then(() => {
                 const query = aliceClient.buildQuery('SELECT systest.accesscontrols.SampleParticipant');
