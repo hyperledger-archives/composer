@@ -46,7 +46,7 @@ export class IdentityCardComponent {
         this.onExport.emit(this.identity.getName());
     }
 
-    getInitials<String>() {
+    getInitials(): string {
         let result;
         let userId = this.identity.getName();
         let regexp = /^(\S)\S*\s*(\S?)/i;

@@ -183,11 +183,11 @@ describe(`LoginComponent`, () => {
         component = fixture.componentInstance;
     });
 
-    describe('ngOnInit', () => {
-        it('should create the component', () => {
-            component.should.be.ok;
-        });
+    it('should create the component', () => {
+        component.should.be.ok;
+    });
 
+    describe('ngOnInit', () => {
         it('should load identity cards', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
@@ -197,6 +197,18 @@ describe(`LoginComponent`, () => {
 
             mockInitializationService.initialize.should.have.been.called;
             loadIdentityCardsStub.should.have.been.called;
+        }));
+
+        it('should check if playground is hosted or being used locally', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            mockInitializationService.isWebOnly.returns(true);
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+            component.ngOnInit();
+
+            tick();
+
+            mockInitializationService.isWebOnly.should.have.been.called;
+            component['usingLocally'].should.be.false;
         }));
     });
 

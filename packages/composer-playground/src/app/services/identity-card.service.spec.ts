@@ -116,13 +116,13 @@ describe('IdentityCardService', () => {
             mockIdentityCardStorageService.keys.returns(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd']);
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"Mr Penguin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
-            mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"Eric","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"Eric","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"conga"},"credentials":null}'));
         });
 
         it('should load cards from local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let result: number;
             service['currentCard'] = 'someCardRef';
-            service.loadIdentityCards().then((cardsLoaded) => {
+            service.loadIdentityCards(false).then((cardsLoaded) => {
                 result = cardsLoaded;
             });
 
@@ -133,11 +133,28 @@ describe('IdentityCardService', () => {
             should.not.exist(service['currentCard']);
         })));
 
+        it('should only load cards with web connection profiles from local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let result: number;
+            service['currentCard'] = 'someCardRef';
+            service.loadIdentityCards(true).then((cardsLoaded) => {
+                result = cardsLoaded;
+            });
+
+            tick();
+
+            result.should.equal(2);
+            service['idCards'].size.should.equal(2);
+            should.exist(service['idCards'].get('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'));
+            should.exist(service['idCards'].get('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'));
+            should.not.exist(service['idCards'].get('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'));
+            should.not.exist(service['currentCard']);
+        })));
+
         it('should not load anything if there are no cards in local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             mockIdentityCardStorageService.keys.returns([]);
 
             let result: number;
-            service.loadIdentityCards().then((cardsLoaded) => {
+            service.loadIdentityCards(false).then((cardsLoaded) => {
                 result = cardsLoaded;
             });
 
@@ -151,7 +168,7 @@ describe('IdentityCardService', () => {
             mockIdentityCardStorageService.keys.returns(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']);
             mockIdentityCardStorageService.get.withArgs('lalalalalalalala');
 
-            service.loadIdentityCards().then((cardsLoaded) => {
+            service.loadIdentityCards(false).then((cardsLoaded) => {
                 throw Error('Card loaded without error');
             }).catch((reason) => {
                 reason.should.be.an.instanceof(Error);
@@ -164,7 +181,7 @@ describe('IdentityCardService', () => {
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
 
-            service.loadIdentityCards();
+            service.loadIdentityCards(false);
 
             tick();
 
@@ -175,7 +192,7 @@ describe('IdentityCardService', () => {
         it('should set the current identity card and current identity', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
 
-            service.loadIdentityCards();
+            service.loadIdentityCards(false);
 
             tick();
 
@@ -203,21 +220,6 @@ describe('IdentityCardService', () => {
             result.size.should.equal(1);
             result.get('test').getName().should.equal('penguin');
             loadIdentityCardsSpy.should.not.have.been.called;
-        })));
-
-        it('should attempt to load identity cards if there are none', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let loadIdentityCardsSpy = sinon.spy(service, 'loadIdentityCards');
-            mockIdentityCardStorageService.keys.returns([]);
-
-            let result;
-            service.getIdentityCards().then((idCards) => {
-                result = idCards;
-            });
-
-            tick();
-
-            result.size.should.equal(0);
-            loadIdentityCardsSpy.should.have.been.called;
         })));
     });
 
