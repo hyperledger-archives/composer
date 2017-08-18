@@ -3,6 +3,7 @@ import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
+import { Identity } from '../component/identity';
 import { Replace } from '../component/replace';
 import { AddFile } from '../component/add-file';
 import { EditorFile } from '../component/editor-file';
@@ -15,16 +16,27 @@ import * as JSZip from 'jszip';
 
 let expect = chai.expect;
 
+
+
 describe('Editor Define', (() => {
+
+  let tileItems: Array<string> = null;
 
   // Navigate to Editor base page and move past welcome splash
   beforeAll(() =>  {
+    // Initialise known tile orderings
+    this.tileItems = ['basic-sample-network', 'empty-business-network', 'file-import'];
+
+    // Important angular configuration and intial step passage to reach editor
     browser.waitForAngularEnabled(false);
     OperationsHelper.navigatePastWelcome();
+    Identity.connectViaNamedCard('admin');
   });
 
   afterAll(() =>  {
     browser.waitForAngularEnabled(true);
+    browser.executeScript('window.sessionStorage.clear();');
+    browser.executeScript('window.localStorage.clear();');
   });
 
   describe('On initialise', (() => {
@@ -55,104 +67,9 @@ describe('Editor Define', (() => {
     }));
   }));
 
-  describe('Import BND button', (() => {
-
-    // Press the 'Import' button
-    beforeEach(() =>  {
-        Editor.clickImportBND();
-    });
-
-    it('should enable cancel of BNA import', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/empty-network.bna');
-
-        // Replace confirm should show, cancel it
-        Replace.cancelReplace();
-
-        // Cancel import modal
-        Import.cancelImport();
-
-        // -expected files in navigator (unchanged)
-        let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
-        Editor.retrieveNavigatorFileNames()
-        .then((filelist: any) => {
-            expect(filelist).to.be.an('array').lengthOf(4);
-            filelist.forEach((file) => {
-                expect(file).to.be.oneOf(expectedFiles);
-            });
-        });
-
-        // -deploy not enabled
-        Editor.retrieveNavigatorFileActionButtons()
-        .then((buttonlist: any) => {
-            expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
-        });
-
-    }));
-
-    it('should enable empty BNA import via file selection', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/empty-network.bna');
-
-        // Replace confirm should show, confirm it
-        Replace.confirmReplace();
-
-        // Check that the import has succeeded
-        // -import modal disappears
-        Import.waitToDisappear();
-        // -success message
-        OperationsHelper.processExpectedSuccess();
-        // -expected files in navigator (Just a readme)
-        Editor.retrieveNavigatorFileNames()
-        .then((filelist: any) => {
-            expect(filelist).to.be.an('array').lengthOf(1);
-            expect(filelist).to.deep.equal(['About\nREADME.md']);
-        });
-        // -deploy not enabled
-        Editor.retrieveNavigatorFileActionButtons()
-        .then((buttonlist: any) => {
-            expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
-        });
-    }));
-
-    it('should enable populated BNA import via file selection', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
-
-        // Replace confirm should show, confirm it
-        Replace.confirmReplace();
-
-        // Check that the import has succeeded
-        // -import modal disappears
-        Import.waitToDisappear();
-        // -success message
-        OperationsHelper.processExpectedSuccess();
-        // -expected files in navigator (Just a readme)
-        Editor.retrieveNavigatorFileNames()
-        .then((filelist: any) => {
-            let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
-            expect(filelist).to.be.an('array').lengthOf(4);
-            filelist.forEach((file) => {
-                expect(file).to.be.oneOf(expectedFiles);
-            });
-        });
-        // -deploy not enabled
-        Editor.retrieveNavigatorFileActionButtons()
-        .then((buttonlist: any) => {
-            expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
-        });
-    }));
-  }));
-
   describe('Export BND button', (() => {
 
-    it('should export BNA named as the package name', (() => {
+    xit('should export BNA named as the package name', (() => {
 
         Editor.retrieveDeployedPackageName()
         .then((packageName) => {
@@ -183,6 +100,122 @@ describe('Editor Define', (() => {
     }));
   }));
 
+  describe('Import BND button', (() => {
+
+    // Press the 'Import' button
+    beforeEach(() =>  {
+        Editor.clickImportBND();
+    });
+
+    it('should enable to close/cancel import slide out', (() => {
+        Import.cancelImport();
+
+        // -expected files in navigator (unchanged)
+        let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            expect(filelist).to.be.an('array').lengthOf(4);
+            filelist.forEach((file) => {
+                expect(file).to.be.oneOf(expectedFiles);
+            });
+        });
+
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+
+    }));
+
+    it('should enable to cancel import import at replacement warning', (() => {
+        // Select default item
+        Import.confirmImport();
+
+        // Cancel on replace warning
+        Replace.cancelReplace();
+
+        // -expected files in navigator (unchanged)
+        let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            expect(filelist).to.be.an('array').lengthOf(4);
+            filelist.forEach((file) => {
+                expect(file).to.be.oneOf(expectedFiles);
+            });
+        });
+
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+
+    }));
+
+
+    it('should enable empty BNA import via tile selection', (() => {
+        // Select Empty BNA
+        Import.selectBusinessDefinitionTileOption(this.tileItems.findIndex((tile) => tile === 'empty-business-network'));
+
+        // Replace confirm should show, confirm it
+        Replace.confirmReplace();
+
+        // Check that the import has succeeded
+        // -import modal disappears
+        Import.waitToDisappear();
+        // -success message
+        OperationsHelper.processExpectedSuccess();
+        // -expected files in navigator (Just a readme)
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            expect(filelist).to.be.an('array').lengthOf(1);
+            expect(filelist).to.deep.equal(['About\nREADME.md']);
+        });
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+    }));
+
+    it('should enable populated BNA import via file selection', (() => {
+         // Select Basic Sample Network BNA
+        Import.selectBusinessDefinitionTileOption(this.tileItems.findIndex((tile) => tile === 'basic-sample-network'));
+
+        // Replace confirm should show, confirm it
+        Replace.confirmReplace();
+
+        // Check that the import has succeeded
+        // -import modal disappears
+        Import.waitToDisappear();
+        // -success message
+        OperationsHelper.processExpectedSuccess();
+        // -expected files in navigator (Just a readme)
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+            expect(filelist).to.be.an('array').lengthOf(4);
+            filelist.forEach((file) => {
+                expect(file).to.be.oneOf(expectedFiles);
+            });
+        });
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+    }));
+  }));
+
   describe('Add File button', (() => {
 
     // Press the 'AddFile' button
@@ -194,8 +227,8 @@ describe('Editor Define', (() => {
     });
 
     afterEach(() =>  {
-        // Reset network
-        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/basic-sample-network.bna');
+        // Reset network to basic sample network
+        OperationsHelper.importBusinessNetworkArchiveFromTile(this.tileItems.findIndex((tile) => tile === 'basic-sample-network'));
     });
 
     it('should bring up an AddFile modal that can be closed by cancel button', (() => {
@@ -487,7 +520,7 @@ describe('Editor Define', (() => {
 
     it('should enable the addition of an ACL file via radio button selection', (() => {
         AddFile.clickCancelAdd();
-        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/empty-network.bna');
+        OperationsHelper.importBusinessNetworkArchiveFromTile(this.tileItems.findIndex((tile) => tile === 'empty-business-network'));
 
         Editor.clickAddFile();
         AddFile.waitToAppear();
@@ -690,12 +723,15 @@ describe('Editor Define', (() => {
     }));
 
     it('should prevent the addition of a query file and/or acl file if one exists already', (() => {
-        AddFile.clickCancelAdd();
-        OperationsHelper.importBusinessNetworkArchive('./e2e/data/bna/importBNA.bna');
+        // Add a query file
+        AddFile.selectFromFile('./e2e/data/files/importQuery.qry');
+        AddFile.clickConfirmAdd();
 
+        // Click add file
         Editor.clickAddFile();
         AddFile.waitToAppear();
 
+        // Inspect radio button status
         AddFile.retrieveAddFileRadioButtons()
         .then((radioList: any) => {
             expect(radioList).to.be.an('array').lengthOf(4);

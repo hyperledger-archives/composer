@@ -211,32 +211,6 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * Install the Hyperledger Composer runtime.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {Object} installOptions connector specific installation options
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been installed, or rejected with an error.
-     */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
-     * Start a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
-     * @param {Object} startOptions connector specific installation options
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been installed, or rejected with an error.
-     */
-    start(securityContext, businessNetworkDefinition, startOptions) {
-        return Promise.reject(new Error('abstract function called'));
-    }
-
-    /**
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
@@ -342,18 +316,6 @@ class Connection extends EventEmitter {
      */
     _upgrade(securityContext, callback) {
         throw new Error('abstract function called');
-    }
-
-    /**
-     * Upgrade the Hyperledger Composer runtime.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be upgraded with a new composer runtime.
-     * @return {Promise} A promise that is resolved once the business network
-     * runtime has been upgraded, or rejected with an error.
-     */
-    upgrade(securityContext, businessNetworkIdentifier) {
-        return Promise.reject(new Error('abstract function called'));
     }
 
     /**

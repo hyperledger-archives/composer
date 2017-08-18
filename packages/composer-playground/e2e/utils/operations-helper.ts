@@ -16,8 +16,8 @@ export class OperationsHelper {
         return elm.click()
         .then(() => true)
         .catch(() => false);
-    });
-  }
+                        });
+                }
 
   // Retrieve text from an element
   static retriveTextFromElement(elm: ElementFinder) {
@@ -25,24 +25,24 @@ export class OperationsHelper {
       browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
       return browser.wait(() => {
         return elm.getText();
-    });
+      });
   }
 
-  // Retrieve an array of matching elements
-  static retriveMatchingElementsByCSS(type: string, subset: string) {
-      browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset))), 5000);
-      return element(by.css(type)).all(by.css(subset));
+  // Retrieve an array of all matching elements
+  static retriveMatchingElementsByCSS(type: string, subset: string, minCount) {
+    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), 5000);
+    return element(by.css(type)).all(by.css(subset));
   }
 
   // Custom ExpectedCondition to be used to ensure that ArrayFinder count is non-zero
-  static elementsPresent(elementArrayFinder) {
-      let hasCount = (() => {
-          return elementArrayFinder.count()
-          .then((count) => {
-              return count > 0;
-          });
+  static elementsPresent(elementArrayFinder, minCount) {
+    let hasCount = (() => {
+      return elementArrayFinder.count()
+      .then((count) => {
+        return count > minCount;
       });
-      return ExpectedConditions.and(ExpectedConditions.presenceOf(elementArrayFinder), hasCount);
+    });
+    return ExpectedConditions.and(ExpectedConditions.presenceOf(elementArrayFinder), hasCount);
   };
 
   // Navigate to Editor base page and move past welcome splash
@@ -61,9 +61,17 @@ export class OperationsHelper {
     browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 5000);
   };
 
-  static importBusinessNetworkArchive(fileName: string) {
+  static importBusinessNetworkArchiveFromFile(fileName: string) {
     Editor.clickImportBND();
     Import.selectBusinessNetworkDefinitionFromFile(fileName);
+    Replace.confirmReplace();
+    Import.waitToDisappear();
+    this.processExpectedSuccess();
+  }
+
+  static importBusinessNetworkArchiveFromTile(option) {
+    Editor.clickImportBND();
+    Import.selectBusinessDefinitionTileOption(option);
     Replace.confirmReplace();
     Import.waitToDisappear();
     this.processExpectedSuccess();
