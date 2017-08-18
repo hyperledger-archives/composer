@@ -158,10 +158,11 @@ module.exports = (app) => {
                     name : metadata.name,
                     description : metadata.description,
                     version : metadata.version,
+                    networkImage : metadata.networkImage,
+                    networkImageanimated:  metadata.networkImageanimated,
                     tarball : metadata.dist.tarball
                 });
             }
-
         });
 
         LOG.exit(method, options);

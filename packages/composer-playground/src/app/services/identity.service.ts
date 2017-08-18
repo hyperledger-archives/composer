@@ -3,7 +3,7 @@ import { LocalStorageService } from 'angular-2-local-storage';
 import { BehaviorSubject, Observable } from 'rxjs/Rx';
 
 import { Logger } from 'composer-common';
-import { ConnectionProfileService } from './connectionprofile.service';
+import { IdentityCardService } from './identity-card.service';
 import { WalletService } from './wallet.service';
 
 @Injectable()
@@ -15,7 +15,6 @@ export class IdentityService {
     public readonly currentIdentity: Observable<string> = this._currentIdentity.asObservable();
 
     constructor(private localStorageService: LocalStorageService,
-                private connectionProfileService: ConnectionProfileService,
                 private walletService: WalletService) {
 
         Logger.setFunctionalLogger({
@@ -23,15 +22,6 @@ export class IdentityService {
             log: () => {
             }
         });
-
-        this.getCurrentIdentity().then((identity) => {
-            this._currentIdentity.next(identity);
-        });
-    }
-
-    getCurrentIdentities(): Promise<string[]> {
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.getIdentities(connectionProfile);
     }
 
     getIdentities(connectionProfile: string): Promise<string[]> {
@@ -42,55 +32,17 @@ export class IdentityService {
         });
     }
 
-    getCurrentIdentity(): Promise<string> {
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.getIdentity(connectionProfile)
-        .then((identity) => {
-            this._currentIdentity.next(identity);
-            return this._currentIdentity.getValue();
-        });
-    }
-
-    getIdentity(connectionProfile: string): Promise<string> {
-        let key = `currentIdentity:${connectionProfile}`;
-        let result = this.localStorageService.get<string>(key);
-        return this.getIdentities(connectionProfile)
-        .then((identities) => {
-            if (identities.indexOf(result) > -1) {
-                return result;
-            } else if (identities.length > 0) {
-                result = identities[0];
-                this.setIdentity(connectionProfile, result);
-                return result;
-            } else {
-                return null;
-            }
-        });
-    }
-
     setCurrentIdentity(identity: string) {
         this._currentIdentity.next(identity);
-
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.setIdentity(connectionProfile, identity);
     }
 
-    setIdentity(connectionProfile: string, identity: string) {
-        let key = `currentIdentity:${connectionProfile}`;
-        this.localStorageService.set(key, identity);
+    setLoggedIn(loggedIn: boolean) {
+        let key = `loggedIn`;
+        this.localStorageService.set(key, loggedIn);
     }
 
-    getUserID(): Promise<string> {
-        return this.getCurrentIdentity();
+    getLoggedIn() {
+        let key = `loggedIn`;
+        return this.localStorageService.get<string>(key);
     }
-
-    getUserSecret(): Promise<string> {
-        return this.getCurrentIdentity()
-        .then((identity) => {
-            let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-            let wallet = this.walletService.getWallet(connectionProfile);
-            return wallet.get(identity);
-        });
-    }
-
 }
