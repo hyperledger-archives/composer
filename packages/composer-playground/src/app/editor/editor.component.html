@@ -30,7 +30,7 @@
         </div>
         <div>
             <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
-                Deploy
+                Update
             </button>
         </div>
     </div>
@@ -85,6 +85,24 @@
                     <button id="deleteFileButton" type="button" class="action" (click)="openDeleteFileModal()">
                         <svg class="ibm-icon vertical-top" aria-hidden="true">
                             <use xlink:href="#icon-trash_32"></use>
+                        </svg>
+                    </button>
+                </div>
+
+                <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_preview">
+                    <button id="editFileButton" type="button" class="action" [class.active]="previewReadme"
+                            (click)="setReadmePreview(true)">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-view_24"></use>
+                        </svg>
+                    </button>
+                </div>
+
+                <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_edit">
+                    <button id="editFileButton" type="button" class="action" [class.active]="!previewReadme"
+                            (click)="setReadmePreview(false)">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-code_24"></use>
                         </svg>
                     </button>
                 </div>

@@ -630,9 +630,6 @@ describe(`LoginComponent`, () => {
     describe('canDeploy', () => {
         it('should show deploy button if got all correct cards', () => {
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
-            mockIdentityCardService.getAllCardRefsForProfile.returns(['another-cardRef', 'web-cardRef']);
-            mockIdentityCardService.getIdentityCard.onFirstCall().returns({getName: sinon.stub().returns('bob')});
-            mockIdentityCardService.getIdentityCard.onSecondCall().returns({getName: sinon.stub().returns('admin')});
 
             let result = component.canDeploy('1234');
 
@@ -641,12 +638,6 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
-
-            mockIdentityCardService.getAllCardRefsForProfile.should.have.been.calledWith('1234');
-
-            mockIdentityCardService.getIdentityCard.should.have.been.calledTwice;
-            mockIdentityCardService.getIdentityCard.firstCall.should.have.been.calledWith('another-cardRef');
-            mockIdentityCardService.getIdentityCard.secondCall.should.have.been.calledWith('web-cardRef');
         });
 
         it('should not show deploy button if no PeerAdmin Role', () => {
@@ -658,10 +649,6 @@ describe(`LoginComponent`, () => {
 
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledOnce;
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'PeerAdmin');
-
-            mockIdentityCardService.getAllCardRefsForProfile.should.not.have.been.called;
-
-            mockIdentityCardService.getIdentityCard.should.not.have.been.calledTwice;
         });
 
         it('should not show deploy button if not got ChannelAdmin role', () => {
@@ -675,31 +662,6 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
-
-            mockIdentityCardService.getAllCardRefsForProfile.should.not.have.been.called;
-
-            mockIdentityCardService.getIdentityCard.should.not.have.been.called;
-        });
-
-        it('should show deploy button if got all correct cards', () => {
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
-            mockIdentityCardService.getAllCardRefsForProfile.returns(['another-cardRef', 'web-cardRef']);
-            mockIdentityCardService.getIdentityCard.onFirstCall().returns({getName: sinon.stub().returns('bob')});
-            mockIdentityCardService.getIdentityCard.onSecondCall().returns({getName: sinon.stub().returns('fred')});
-
-            let result = component.canDeploy('1234');
-
-            result.should.equal(false);
-
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
-
-            mockIdentityCardService.getAllCardRefsForProfile.should.have.been.calledWith('1234');
-
-            mockIdentityCardService.getIdentityCard.should.have.been.calledTwice;
-            mockIdentityCardService.getIdentityCard.firstCall.should.have.been.calledWith('another-cardRef');
-            mockIdentityCardService.getIdentityCard.secondCall.should.have.been.calledWith('web-cardRef');
         });
     });
 });

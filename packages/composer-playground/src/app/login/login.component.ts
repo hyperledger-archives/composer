@@ -159,20 +159,6 @@ export class LoginComponent implements OnInit {
             return false;
         }
 
-        // check we have an admin card
-        let adminCard;
-        let idCardRefsForProfile = this.identityCardService.getAllCardRefsForProfile(connectionProfileRef);
-        idCardRefsForProfile.forEach((cardRef) => {
-            let card = this.identityCardService.getIdentityCard(cardRef);
-            if (card.getName().toLowerCase() === 'admin') {
-                adminCard = card;
-            }
-        });
-
-        if (!adminCard) {
-            return false;
-        }
-
         return true;
     }
 
