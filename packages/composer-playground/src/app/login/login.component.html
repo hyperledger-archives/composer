@@ -45,20 +45,11 @@
         <import-business-network class="deploy" [deployNetwork]="true"
                                  (finishedSampleImport)="finishedDeploying()"></import-business-network>
     </div>
-    <div *ngIf="editingConnectionProfile">
-        <connection-profile (profileUpdated)="finishedEditingConnectionProfile($event)"
-                            [connectionProfile]="editingConnectionProfile"></connection-profile>
-    </div>
     <div *ngIf="creatingIdCard">
-        <add-connection-profile (profileToUse)="addIdToExistingProfileName($event)"
-                                (profileToEdit)="addIdToNewProfile($event)"
-                                (cancelAdd)="closeSubView()"
-                                [connectionProfiles]="connectionProfiles"></add-connection-profile>
-    </div>
-    <div *ngIf="editingIdCard">
-        <add-identity (identityAdded)="completeCardAddition()"
-                      (cancelAdd)="closeSubView()"
-                      [targetProfileName]="targetProfileName"></add-identity>
+        <create-identity-card [connectionProfileRefs]="connectionProfileRefs"
+                              [connectionProfileNames]="connectionProfileNames"
+                              [connectionProfiles]="connectionProfiles"
+                              (finishedCardCreation)="finishedCardCreation($event)"></create-identity-card>
     </div>
 </section>
 <app-footer></app-footer>

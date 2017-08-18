@@ -3,13 +3,7 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
-import {
-
-    ReactiveFormsModule,
-    FormArray,
-    Validators,
-    FormBuilder
-} from '@angular/forms';
+import { ReactiveFormsModule, FormArray, Validators, FormBuilder } from '@angular/forms';
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
@@ -66,42 +60,6 @@ describe('ConnectionProfileComponent', () => {
             }).should.throw('Invalid connection profile type');
         });
 
-        it('should close all expanded sections for a v0.6 profile', () => {
-            let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component['expandedSection'] = ['Basic Configuration', 'Security Settings', 'Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].length.should.equal(0);
-        });
-
-        it('should open all collapsed sections for a v0.6 profile', () => {
-            let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component['expandedSection'] = [];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].length.should.equal(3);
-        });
-
-        it('should close a single section for a v0.6 profile', () => {
-            let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component['expandedSection'] = ['Basic Configuration', 'Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].should.deep.equal(['Advanced']);
-        });
-
-        it('should open a single section for a v0.6 profile', () => {
-            let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component['expandedSection'] = ['Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].should.deep.equal(['Advanced', 'Basic Configuration']);
-        });
-
         it('should close all expanded sections for a v1 profile', () => {
             let sectionToExpand = 'All';
             component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
@@ -140,13 +98,6 @@ describe('ConnectionProfileComponent', () => {
     });
 
     describe('startEditing', () => {
-        it('should be able to edit a v0.6 form', () => {
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
-            component.startEditing();
-            mockOnValueChanged.should.have.been.called;
-        });
-
         it('should be able to edit a v1 form', () => {
             component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
             let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
@@ -344,31 +295,6 @@ describe('ConnectionProfileComponent', () => {
             }).should.throw('Invalid connection profile type');
         });
 
-        it('should validate v06 profile if no form is defined', () => {
-            let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component.onValueChanged();
-            onValueChangedSpy.should.be.called;
-        });
-
-        it('should validate v06 profile if a form is defined', () => {
-            let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlf'}};
-            component['v06Form'] = component['fb'].group({
-                name: ['v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peerURL: ['grpc://localhost:7051', [Validators.required]],
-                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: ['INVALID_VALUE', [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
-            });
-
-            component.onValueChanged();
-            component['v06FormErrors'].deployWaitTime.should.equal('The Deploy Wait Time (seconds) must be an integer. ');
-            onValueChangedSpy.should.be.called;
-        });
-
         it('should validate v1 profile if no form is defined', () => {
             let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
             component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
@@ -405,49 +331,6 @@ describe('ConnectionProfileComponent', () => {
     });
 
     describe('onSubmit', () => {
-        it('should submit v06 profile form', fakeAsync(() => {
-            let profileOne = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'new v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            let profileTwo = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
-
-            component['connectionProfileData'] = {name: 'v06 Profile', profile: {type: 'hlf'}};
-
-            component['v06Form'] = component['fb'].group({
-                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peerURL: ['grpc://localhost:7051', [Validators.required]],
-                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
-            });
-
-            component.onSubmit(null);
-            tick();
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('new v06 Profile', profileOne);
-            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v06 Profile');
-        }));
 
         it('should submit v1 profile form', fakeAsync(() => {
             let profileOne = {
@@ -562,101 +445,6 @@ describe('ConnectionProfileComponent', () => {
             tick();
         }));
 
-        it('should submit v06 profile form with enter key', fakeAsync(() => {
-            let profileOne = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'new v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            let profileTwo = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
-
-            component['connectionProfileData'] = {name: 'v06 Profile', profile: {type: 'hlf'}};
-
-            component['v06Form'] = component['fb'].group({
-                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peerURL: ['grpc://localhost:7051', [Validators.required]],
-                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
-            });
-
-            let event = {
-                keyCode: 13
-            };
-
-            component.onSubmit(event);
-            tick();
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('new v06 Profile', profileOne);
-            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v06 Profile');
-        }));
-
-        it('should not submit v06 profile form with any other key', fakeAsync(() => {
-            let profileOne = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'new v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            let profileTwo = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
-
-            component['connectionProfileData'] = {name: 'v06 Profile', profile: {type: 'hlf'}};
-
-            component['v06Form'] = component['fb'].group({
-                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peerURL: ['grpc://localhost:7051', [Validators.required]],
-                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
-            });
-
-            let event = {
-                keyCode: 15
-            };
-
-            component.onSubmit(event);
-            tick();
-            mockConnectionProfileService.createProfile.should.not.have.been.called;
-            mockConnectionProfileService.deleteProfile.should.not.have.been.called;
-        }));
     });
 
     describe('openAddCertificateModal', () => {

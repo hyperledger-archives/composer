@@ -5,149 +5,141 @@ connection-profile {
 
     $highlighted: #e4e4e4;
 
-    .profile-header {
+    button {
+        line-height: 30px;
+        font-size: 0.8rem;
+        margin-left: 2px;
+     }
+
+     footer {
+         display: flex;
+
+         .info {
+             color: $secondary-text;
+             font-style: italic;
+         }
+
+         &.with-info {
+             justify-content: space-between !important;
+         }
+     }
+
+    .profile-section{
         display: flex;
-        color: $primary-text;
-        flex-direction: column;
 
-        p {
-            padding-bottom: $space-smedium;
-        }
-
-        .profile-header-details {
-            flex: 1;
+        .description {
             display: flex;
-            align-items: baseline;
-
-            .profile-title {
-                flex: 1;
-            }
-            .profile-actions {
-                flex-shrink: 1;
-            }
-        }
-
-    }
-
-    .profile-data-container {
-        background-color: $white;
-        border-radius: 3px;
-        padding: $space-smedium;
-        display: flex;
-        flex-flow: column;
-        margin-bottom: $space-medium;
-    }
-
-    .data-section {
-        max-height: 0px;
-        font-size: 14px;
-        @include transition(all);
-        overflow: hidden;
-
-        &.expanded {
-            @include transition(all);
-            max-height: 3000px; // Need this to get transition to work
-            overflow: hidden;
-            padding-bottom: 0px;
-        }
-    }
-
-    .profile-data-header {
-        flex: 1;
-        display: flex;
-        flex-flow: column;
-        padding: 0 $space-medium;
-
-        .section-details {
-            display: flex;
-            flex-direction: row;
-            flex: 1;
-            border-bottom: solid 1px #D0DADA;
-            margin-bottom: $space-medium;
-            align-items: center;
-
-            .section-name {
-                flex: 1;
-                padding: $space-medium 0 $space-medium;
-                cursor: pointer;
-                font-family: $font-stack;
-                font-weight: 600;
-                font-size: 14px;
-                color: #5068c2;
-                letter-spacing: 0;
-                text-align: left;
-            }
-            .section-expand {
-                button {
-                    line-height: 30px;
-                    font-size: 0.8rem;
-                }
-            }
-        }
-
-    }
-    .profile-row {
-        flex: 2;
-        display: flex;
-        flex-flow: row;
-        color: $primary-text;
-        font-size: 14px;
-        padding-bottom: $space-medium;
-
-        .profile-property {
-            align-self: flex-start;
             flex-basis: 20%;
-            padding-right: $space-large;
-            font-size: 14px;
-            font-weight: 600;
+            color:$tertiary-text;
+
+            &.upper {
+                text-transform: uppercase;
+            }
         }
 
-        .profile-value {
-            flex-basis: 50%;
-            display: flex;
-            flex-direction: column;
-            .nested-group {
+        .profile-content {
+            display:flex;
+            flex-grow: 1;
+            flex-direction:column;
+            margin-right:15rem;
+
+            .profile-row {
                 display: flex;
-                flex-direction: column;
-            }
-            .nested-section {
-                border-left: 4px solid $first-highlight;
-                padding-left: $space-smedium;
-                display: flex;
-                flex-direction: column;
-                margin-bottom: $space-medium;
-                .nested-row {
-                    flex: 1;
+                flex-grow: 1;
+                flex-direction: row;
+                color: $primary-text;
+                font-size: 14px;
+                padding-bottom: $space-medium;
+
+                .profile-property {
                     display: flex;
-                    align-items: center;
-                    padding-bottom: $space-medium;
-                    .nested-property {
-                        flex-basis: 20%;
-                        padding: 0 $space-smedium $space-small 0;
-                        font-weight: 600;
-                    }
-                    .nested-value {
-                        flex: 1;
-                        display: flex;
-                        flex-direction: column;
+                    align-self: flex-start;
+                    min-width: 7rem;
+                    flex-basis: 20%;
+                    padding-right: $space-large;
+                    font-size: 14px;
+                    font-weight: 600;
+                }
 
+                .profile-value {
+                    display: flex;
+                    flex-grow: 1;
+                    flex-direction: column;
+
+                    .nested-group {
+                        display: flex;
+                        flex-grow: 1;
+                        flex-direction: column;
+                        margin-right:1rem;
+
+                        .nested-group-row {
+                            display: flex;
+                            flex-grow: 1;
+                            flex-direction: row;
+                            color: $primary-text;
+                            font-size: 14px;
+                            padding-bottom: $space-medium;
+
+                            .nested-group-value {
+                                display: flex;
+                                flex-grow: 1;
+                                flex-direction: column;
+                            }
+                        }
+                    }
+
+                    .nested-section {
+                        border-left: 4px solid $first-highlight;
+                        padding-left: $space-smedium;
+                        display: flex;
+                        flex-grow: 1;
+                        flex-direction: column;
+                        margin-bottom: $space-medium;
+
+                        .nested-row {
+                            display: flex;
+                            flex-grow: 1;
+                            align-items: center;
+                            padding-bottom: $space-medium;
+
+                            .nested-property {
+                                min-width: 7rem;
+                                font-style: italic;
+                                padding: 0 $space-smedium $space-small 0;
+                                font-weight: 600;
+                            }
+
+                            .nested-value-row {
+                                display: flex;
+                                flex-grow: 1;
+                                flex-direction: row;
+                            }
+
+                            .nested-value {
+                                    display: flex;
+                                    flex-grow: 1;
+                                    flex-direction: column;
+                                }
+                        }
+
+                        .nested-row:last-child {
+                            padding-bottom: 0;
+                        }
                     }
                 }
-                .nested-row:last-child {
-                    padding-bottom: 0;
+
+                .profile-buttons {
+                    align-self: flex-end;
+                    padding-bottom: $space-medium;
                 }
             }
-
         }
 
-        .profile-buttons {
-            align-self: flex-end;
-            padding-bottom: $space-medium;
+        &.delimited {
+            margin-bottom: $space-large;
+            padding-bottom: $space-large;
+            border-bottom: 1px solid $fourth-highlight;
         }
-
-    }
-    .profile-row:last-child {
-        margin-bottom: 0;
     }
 
     .chevron {
@@ -178,7 +170,6 @@ connection-profile {
                 label {
                     flex-basis: 20%;
                 }
-
             }
 
             .actions {
@@ -196,10 +187,12 @@ connection-profile {
     .orderer-group {
         display: flex;
         flex-direction: column;
+
         .orderer-content {
             flex: 1;
             display: flex;
             flex-direction: column;
+
             .orderer-entry {
                 flex: 1;
             }
@@ -211,6 +204,7 @@ connection-profile {
         padding-right: 10px;
         padding-left: 10px;
         min-width: 0;
+
         &:hover {
             background-color: $white;
             border-color: $second-highlight;
