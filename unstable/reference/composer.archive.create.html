@@ -197,22 +197,37 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer archive create</code> utility is used to create a business network archive from the contents of a root directory.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -a &lt;business-network-archive&gt;
+<p>The <code>composer archive create</code> utility is used to create a business network archive from the contents of a directory.</p>
+
+<p>To create an archive from source flles (ie business network definition project files) present in the current &#39;working&#39; directory:
+```
+composer archive create -a <business-network-archive></p>
+<div class="highlight"><pre><code class="language-" data-lang="">or
+
+to specify paths (to the source business network definition and specify a destination directory for the archive file (.bna file):
+
 </code></pre></div>
-<h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">--help             Show help  [boolean]
+<p>composer archive create --sourceType dir --sourceName <dirpath> -a digitalproperty-network.bna</p>
+<div class="highlight"><pre><code class="language-" data-lang="">
+### Options
+</code></pre></div>
+<p>--help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
   --archiveFile, -a  Business network archive file name. Default is based on the Identifier of the BusinessNetwork  [string]
   --inputDir, -d     Location to create the archive from e.g. NPM module directory
-  --moduleName, -m   Name of the npm module to use
+  --moduleName, -m   Name of the npm module to use</p>
 
-Only one of either inputDir or moduleName must be specified.
-</code></pre></div>
+<p>Only one of either inputDir or moduleName must be specified.
+```</p>
+
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -d .
+<div class="highlight"><pre><code class="language-" data-lang="">$ pwd
+/Users/dselman/dev/temp
+
+composer archive create --sourceType dir --sourceName . -a dist/digitalproperty-network.bna
+
 Creating Business Network Archive
-Looking for package.json of Business Network Definition in /Users/dselman/dev/temp
+Looking for package.json of Business Network Definition in /Users/dselman/dev/temp/dist
 
 Description:Digital Property Network
 Name:digitalproperty-network

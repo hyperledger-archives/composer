@@ -198,7 +198,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network deploy</code> utility is used to deploy a business network archive from local disk to a Hyperledger Fabric v1.0 runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a &lt;business-network-archive&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a &lt;business-network-archive&gt; -p &lt;connection-profile-name&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">--help                       Show help  [boolean]
@@ -212,8 +212,9 @@ ga('send', 'pageview');
 --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.zip -i WebAppAdmin -s DJY27pEnl16d
-Deploying business network from archive digitalPropertyNetwork.zip
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString
+
+Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:
     Identifier: digitalproperty-network@0.0.1
     Description: Digital Property Network
