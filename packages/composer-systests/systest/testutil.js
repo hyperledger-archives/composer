@@ -81,14 +81,6 @@ class TestUtil {
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
-    static isHyperledgerFabricV06() {
-        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf$');
-    }
-
-    /**
-     * Check to see if running in Hyperledger Fabric mode.
-     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
-     */
     static isHyperledgerFabricV1() {
         return process.env.SYSTEST && process.env.SYSTEST.match('^hlfv1.*');
     }
@@ -224,28 +216,6 @@ class TestUtil {
                     return adminConnection.createProfile('composer-systests', {
                         type: 'embedded'
                     });
-
-                // Create all necessary configuration for Hyperledger Fabric v0.6.
-                } else if (TestUtil.isHyperledgerFabricV06()) {
-                    const keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
-                    mkdirp.sync(keyValStore);
-                    const connectionProfile = {
-                        type: 'hlf',
-                        keyValStore: keyValStore,
-                        membershipServicesURL: 'grpc://localhost:7054',
-                        peerURL: 'grpc://localhost:7051',
-                        eventHubURL: 'grpc://localhost:7053'
-                    };
-                    if (process.env.COMPOSER_DEPLOY_WAIT_SECS) {
-                        connectionProfile.deployWaitTime = parseInt(process.env.COMPOSER_DEPLOY_WAIT_SECS);
-                        console.log('COMPOSER_DEPLOY_WAIT_SECS set, using: ', connectionProfile.deployWaitTime);
-                    }
-                    if (process.env.COMPOSER_INVOKE_WAIT_SECS) {
-                        connectionProfile.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
-                        console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', connectionProfile.invokeWaitTime);
-                    }
-                    console.log('Calling AdminConnection.createProfile() ...');
-                    return adminConnection.createProfile('composer-systests', connectionProfile);
 
                 // Create all necessary configuration for Hyperledger Fabric v1.0.
                 } else if (TestUtil.isHyperledgerFabricV1()) {

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Enroll = require ('./lib/request.js');
+const Request = require ('./lib/request.js');
 
 module.exports.command = 'request [options]';
 module.exports.describe = 'Request an identity\'s certificate and key';
@@ -26,5 +26,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Enroll.handler(argv);
+    return argv.thePromise = Request.handler(argv);
 };

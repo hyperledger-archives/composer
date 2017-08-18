@@ -20,7 +20,7 @@ module.exports.command = 'list [options]';
 module.exports.describe = 'List the contents of a business network';
 module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },
+    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
     registry: {alias: 'r', optional: true, describe: 'List specific registry', type: 'string' },
     asset: {alias: 'a', optional: true, describe: 'List specific asset', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
@@ -28,14 +28,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-
-    argv.thePromise =  List.handler(argv)
-  .then(() => {
-      return;
-  })
-  .catch((error) => {
-      throw error;
-  });
-
-    return argv.thePromise;
+    return argv.thePromise = List.handler(argv);
 };

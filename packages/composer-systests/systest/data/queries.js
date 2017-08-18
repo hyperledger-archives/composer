@@ -12,8 +12,16 @@
  * limitations under the License.
  */
 
-package main
+'use strict';
 
-// The version of this chaincode. It is replaced with the npm package version
-// during the deployment process.
-const version = "development"
+/*eslint-disable no-unused-vars*/
+/*eslint-disable no-undef*/
+
+/**
+ * Sample transaction processor function.
+ * @param {systest.queries.SampleTransaction} tx Sample transaction.
+ * @transaction
+ */
+function sampleTransaction(tx) {
+
+}

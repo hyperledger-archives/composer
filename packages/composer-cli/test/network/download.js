@@ -65,7 +65,7 @@ describe('composer network download CLI unit tests', function () {
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'defaultProfile'};
+                       ,connectionProfileName: 'someOtherProfile'};
 
 
 
