@@ -139,8 +139,8 @@
     </div>
 
     <div class="deploy">
-        <button *ngIf="!deployNetwork" type="button" class="secondary" (click)="cancel()">Cancel</button>
-        <button [disabled]="deployNetwork && (!networkName || !networkNameValid)" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
+        <button id="import_cancel" *ngIf="!deployNetwork" type="button" class="secondary" (click)="cancel()">Cancel</button>
+        <button id="import_confirm" [disabled]="deployNetwork && (!networkName || !networkNameValid)" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
         </button>
     </div>
 </div>
