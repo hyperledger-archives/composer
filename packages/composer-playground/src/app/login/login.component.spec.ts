@@ -7,28 +7,27 @@
 /* tslint:disable:member-ordering*/
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Input, Component, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { BehaviorSubject } from 'rxjs/Rx';
+
 import { IdentityService } from '../services/identity.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
-import { BehaviorSubject } from 'rxjs/Rx';
-
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
-
-import * as chai from 'chai';
-import * as sinon from 'sinon';
-
-import * as fileSaver from 'file-saver';
-
-import { IdCard } from 'composer-common';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
-import { LoginComponent } from './login.component';
 import { AlertService } from '../basic-modals/alert.service';
-import { WalletService } from '../services/wallet.service';
-import { DrawerService } from '../common/drawer';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DrawerService } from '../common/drawer';
+import { IdCard } from 'composer-common';
+import { LoginComponent } from './login.component';
+
+import * as fileSaver from 'file-saver';
+import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 let should = chai.should();
 
@@ -101,39 +100,26 @@ class MockFooterComponent {
 }
 
 @Component({
-    selector: 'add-connection-profile',
-    template: ''
-})
-class MockAddConnectionProfileComponent {
-    @Input()
-    public connectionProfiles;
-    @Output()
-    public profileToUse: EventEmitter<any> = new EventEmitter<any>();
-    @Output()
-    public profileToEdit: EventEmitter<any> = new EventEmitter<any>();
-    @Output()
-    public cancelAdd: EventEmitter<any> = new EventEmitter<any>();
-}
-
-@Component({
-    selector: 'add-identity',
-    template: ''
-})
-class MockAddIdentityComponent {
-    @Input()
-    public targetProfileName;
-    @Output()
-    public identityAdded: EventEmitter<any> = new EventEmitter<any>();
-    @Output()
-    public cancelAdd: EventEmitter<any> = new EventEmitter<any>();
-}
-
-@Component({
     selector: 'identity-card',
     template: ''
 })
 class MockIdentityCardComponent {
     @Input() identity: any;
+}
+
+@Component({
+    selector: 'create-identity-card',
+    template: ''
+})
+class MockCreateIdentityCardComponent {
+    @Input()
+    public connectionProfileRefs;
+    @Input()
+    public connectionProfileNames;
+    @Input()
+    public connectionProfiles;
+    @Output()
+    public finishedCardCreation: EventEmitter<any> = new EventEmitter<any>();
 }
 
 describe(`LoginComponent`, () => {
@@ -149,7 +135,6 @@ describe(`LoginComponent`, () => {
     let mockInitializationService;
     let routerStub;
     let mockAlertService;
-    let mockWalletService;
     let mockModal;
     let mockDrawer;
 
@@ -162,7 +147,6 @@ describe(`LoginComponent`, () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
-        mockWalletService = sinon.createStubInstance(WalletService);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
 
@@ -172,17 +156,14 @@ describe(`LoginComponent`, () => {
         mockAlertService.busyStatus$ = {next: sinon.stub()};
         mockAlertService.errorStatus$ = {next: sinon.stub()};
 
-        mockWalletService.removeFromWallet = sinon.stub().returns(Promise.resolve(true));
-
         TestBed.configureTestingModule({
             declarations: [
                 LoginComponent,
                 MockConnectionProfileComponent,
+                MockCreateIdentityCardComponent,
                 MockIdentityCardComponent,
                 MockFooterComponent,
-                MockAddConnectionProfileComponent,
                 MockImportComponent,
-                MockAddIdentityComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
@@ -193,7 +174,6 @@ describe(`LoginComponent`, () => {
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: WalletService, useValue: mockWalletService},
                 {provide: DrawerService, useValue: mockDrawer},
                 {provide: NgbModal, useValue: mockModal}
             ]
@@ -333,83 +313,49 @@ describe(`LoginComponent`, () => {
         });
     });
 
-    describe('finishedEditingConnectionProfile', () => {
-        it('should close editing connection profile screen if not adding ID with connection profile', () => {
-            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+    describe('closeSubView', () => {
+        it('should close the subview', () => {
+            component['showSubScreen'] = true;
+            component['showDeployNetwork'] = true;
+            component['editingConnectionProfile'] = {profile: 'myProfile'};
+            component.closeSubView();
 
-            component.finishedEditingConnectionProfile({update: true});
-
+            component['showSubScreen'].should.equal(false);
             should.not.exist(component['editingConectionProfile']);
-            loadIdentityCardsStub.should.have.been.called;
-        });
-
-        it('should close editing connection profile screen if cancelling while adding ID with connection profile', () => {
-            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
-            let addIdToExistingProfileStub = sinon.stub(component, 'addIdToExistingProfile');
-            component['creatingIdWithProfile'] = true;
-
-            component.finishedEditingConnectionProfile({update: false});
-
-            should.not.exist(component['editingConectionProfile']);
-            loadIdentityCardsStub.should.have.been.called;
-            addIdToExistingProfileStub.should.not.have.been.called;
-        });
-
-        it('should pass connection profile to addIdToExistingProfile if successfull and addding ID with connection profile', () => {
-            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
-            let addIdToExistingProfileNameStub = sinon.stub(component, 'addIdToExistingProfileName');
-            component['creatingIdWithProfile'] = true;
-
-            component.finishedEditingConnectionProfile({update: true, connectionProfile: {name: 'bob'}});
-
-            should.not.exist(component['editingConectionProfile']);
-            loadIdentityCardsStub.should.not.have.been.called;
-            addIdToExistingProfileNameStub.should.have.been.calledWith('bob');
+            component['showDeployNetwork'].should.equal(false);
         });
     });
 
     describe('createIdCard', () => {
         it('should open the ID card screen', () => {
+            component['showSubScreen'] = false;
+            component['creatingIdCard'] = false;
+
             component['createIdCard']();
             component['showSubScreen'].should.be.true;
             component['creatingIdCard'].should.be.true;
         });
     });
 
-    describe('addIdToExistingProfileName', () => {
-        it('should set the target profile name and open the ID edit panel', () => {
-            component['addIdToExistingProfileName']('bob');
-
-            component['targetProfileName'].should.be.equal('bob');
-            component['creatingIdCard'].should.be.false;
-            component['editingIdCard'].should.be.true;
-        });
-    });
-
-    describe('addIdToNewProfile', () => {
-        it('should set the connection profile to edit and set the creatingIdWithProfile boolean', () => {
-            let myProfile = {wow: 'such profile', avarian: 'penguin'};
-
-            component['addIdToNewProfile'](myProfile);
-
-            component['editingConnectionProfile'].should.be.deep.equal(myProfile);
-            component['creatingIdCard'].should.be.false;
-            component['creatingIdWithProfile'].should.be.true;
-        });
-    });
-
-    describe('completeCardAddition', () => {
-        it('should close the subscreen and refresh identity cards', () => {
+    describe('finishedCardCreation', () => {
+        it('should close the subscreen and refresh identity cards on success', () => {
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
             let closeSubViewStub = sinon.stub(component, 'closeSubView');
 
-            component['completeCardAddition']();
+            component['finishedCardCreation'](true);
 
-            component['editingIdCard'].should.be.false;
-            component['showSubScreen'].should.be.false;
-            should.not.exist(component['editingConectionProfile']);
-            loadIdentityCardsStub.should.have.been.called;
             closeSubViewStub.should.have.been.called;
+            loadIdentityCardsStub.should.have.been.called;
+        });
+
+        it('should call closeSubView() on failure', () => {
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+            let closeSubViewStub = sinon.stub(component, 'closeSubView');
+
+            component['finishedCardCreation'](false);
+
+            closeSubViewStub.should.have.been.called;
+            loadIdentityCardsStub.should.not.have.been.called;
         });
     });
 
@@ -508,19 +454,6 @@ describe(`LoginComponent`, () => {
             mockAlertService.successStatus$.next.should.not.have.been.called;
             loadIdentityCardsStub.should.not.have.been.called;
         }));
-    });
-
-    describe('closeSubView', () => {
-        it('should close the subview', () => {
-            component['showSubScreen'] = true;
-            component['showDeployNetwork'] = true;
-            component['editingConnectionProfile'] = {profile: 'myProfile'};
-            component.closeSubView();
-
-            component['showSubScreen'].should.equal(false);
-            should.not.exist(component['editingConectionProfile']);
-            component['showDeployNetwork'].should.equal(false);
-        });
     });
 
     describe('deployNetwork', () => {

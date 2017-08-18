@@ -416,9 +416,9 @@ export class EditorComponent implements OnInit, OnDestroy {
                     });
                 }
             } else {
-                  if (result.error) {
-                      this.alertService.errorStatus$.next(result.error);
-                  }
+                if (result.error) {
+                    this.alertService.errorStatus$.next(result.error);
+                }
             }
         });
     }

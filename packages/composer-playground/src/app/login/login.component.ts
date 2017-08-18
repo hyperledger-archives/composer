@@ -25,15 +25,12 @@ export class LoginComponent implements OnInit {
 
     private connectionProfileRefs: string[];
     private connectionProfileNames: Map<string, string>;
+    private connectionProfiles: Map<string, string>;
     private idCardRefs: Map<string, string[]>;
     private idCards: Map<string, IdCard>;
     private showDeployNetwork: boolean = false;
     private editingConnectionProfile = null;
-    private targetProfileName: string = null;
-    private addIdCard: boolean = false;
     private creatingIdCard: boolean = false;
-    private editingIdCard: boolean = false;
-    private creatingIdWithProfile: boolean = false;
     private showSubScreen: boolean = false;
 
     constructor(private identityService: IdentityService,
@@ -58,6 +55,7 @@ export class LoginComponent implements OnInit {
         return this.identityCardService.getIdentityCards().then((cards) => {
             this.idCards = cards;
             this.connectionProfileNames = new Map<string, string>();
+            this.connectionProfiles = new Map<string, string>();
 
             let newCardRefs = Array.from(cards.keys())
                 .map((cardRef) => {
@@ -65,6 +63,7 @@ export class LoginComponent implements OnInit {
                     let connectionProfileRef: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
                     if (!this.connectionProfileNames.has(connectionProfileRef)) {
                         this.connectionProfileNames.set(connectionProfileRef, connectionProfile.name);
+                        this.connectionProfiles.set(connectionProfileRef, connectionProfile);
                     }
 
                     return [connectionProfileRef, cardRef];
@@ -104,24 +103,11 @@ export class LoginComponent implements OnInit {
         this.editingConnectionProfile = connectionProfile;
     }
 
-    finishedEditingConnectionProfile(result): Promise<void> {
-        if (result.update === false || !this.creatingIdWithProfile) {
-            this.closeSubView();
-            return this.loadIdentityCards();
-        } else {
-            delete this.editingConnectionProfile;
-            this.addIdToExistingProfileName(result.connectionProfile.name);
-        }
-    }
-
     closeSubView(): void {
         this.showSubScreen = false;
         this.showDeployNetwork = false;
         this.creatingIdCard = false;
-        this.editingIdCard = false;
-        this.creatingIdWithProfile = false;
         delete this.editingConnectionProfile;
-        delete this.targetProfileName;
     }
 
     createIdCard(): void {
@@ -129,21 +115,13 @@ export class LoginComponent implements OnInit {
         this.creatingIdCard = true;
     }
 
-    addIdToExistingProfileName(connectionProfileName): void {
-        this.targetProfileName = connectionProfileName;
-        this.creatingIdCard = false;
-        this.editingIdCard = true;
-    }
-
-    addIdToNewProfile(connectionProfile): void {
-        this.editingConnectionProfile = connectionProfile;
-        this.creatingIdCard = false;
-        this.creatingIdWithProfile = true;
-    }
-
-    completeCardAddition(): Promise<void> {
-        this.closeSubView();
-        return this.loadIdentityCards();
+    finishedCardCreation(event) {
+        if (event) {
+            this.closeSubView();
+            return this.loadIdentityCards();
+        } else {
+            this.closeSubView();
+        }
     }
 
     canDeploy(connectionProfileRef): boolean {

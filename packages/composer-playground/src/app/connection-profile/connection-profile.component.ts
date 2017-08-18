@@ -22,15 +22,6 @@ import { AlertService } from '../basic-modals/alert.service';
 
 })
 export class ConnectionProfileComponent {
-    public v06FormErrors = {
-        name: '',
-        peerURL: '',
-        membershipServicesURL: '',
-        eventHubURL: '',
-        keyValStore: '',
-        deployWaitTime: '',
-        invokeWaitTime: ''
-    };
 
     public v1FormErrors = {
         name: '',
@@ -41,31 +32,6 @@ export class ConnectionProfileComponent {
         ca: {},
         keyValStore: '',
         timeout: ''
-    };
-
-    public v06ValidationMessages = {
-        name: {
-            required: 'A connection profile name is required.',
-            pattern: 'A new connection profile cannot use the default name.'
-        },
-        peerURL: {
-            required: 'A Peer URL is required.',
-        },
-        membershipServicesURL: {
-            required: 'A Membership Services URL is required.',
-        },
-        eventHubURL: {
-            required: 'An Event Hub URL is required.',
-        },
-        keyValStore: {
-            required: 'A Key Value Store Directory Path is required.',
-        },
-        deployWaitTime: {
-            pattern: 'The Deploy Wait Time (seconds) must be an integer.'
-        },
-        invokeWaitTime: {
-            pattern: 'The Invoke Wait Time (seconds) must be an integer.'
-        }
     };
 
     public v1ValidationMessages = {
@@ -119,7 +85,6 @@ export class ConnectionProfileComponent {
     private connectionProfileData = null;
     private expandedSection = ['Basic Configuration'];
 
-    private v06Form: FormGroup;
     private v1Form: FormGroup;
 
     constructor(private fb: FormBuilder,
@@ -130,24 +95,7 @@ export class ConnectionProfileComponent {
 
     expandSection(sectionToExpand) {
 
-        if (this.connectionProfileData.profile.type === 'hlf') {
-            if (sectionToExpand === 'All') {
-                if (this.expandedSection.length === 3) {
-                    this.expandedSection = [];
-                } else {
-                    this.expandedSection = ['Basic Configuration', 'Security Settings', 'Advanced'];
-                }
-            } else {
-                let index = this.expandedSection.indexOf(sectionToExpand);
-                if (index > -1) {
-                    this.expandedSection = this.expandedSection.filter((item) => {
-                        return item !== sectionToExpand;
-                    });
-                } else {
-                    this.expandedSection.push(sectionToExpand);
-                }
-            }
-        } else if (this.connectionProfileData.profile.type === 'hlfv1') {
+        if (this.connectionProfileData.profile.type === 'hlfv1') {
             if (sectionToExpand === 'All') {
                 if (this.expandedSection.length === 2) {
                     this.expandedSection = [];
@@ -170,50 +118,7 @@ export class ConnectionProfileComponent {
     }
 
     startEditing() {
-        if (this.connectionProfileData.profile.type === 'hlf') {
-            this.v06Form = this.fb.group({
-
-                name: [
-                    this.connectionProfileData ? this.connectionProfileData.name : '',
-                    [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]
-                ],
-                description: [this.connectionProfileData ? this.connectionProfileData.profile.description : ''],
-                type: [this.connectionProfileData ? this.connectionProfileData.type : 'hlf'],
-                peerURL: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.peerURL : 'grpc://localhost:7051',
-                    [Validators.required]
-                ],
-                membershipServicesURL: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
-                    [Validators.required]
-                ],
-                eventHubURL: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
-                    [Validators.required]
-                ],
-                keyValStore: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
-                    [Validators.required]
-                ],
-                // Is required and must be a number
-                deployWaitTime: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
-                    [Validators.pattern('[0-9]+')]
-                ],
-                // Is required and must be a number
-                invokeWaitTime: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
-                    [Validators.pattern('[0-9]+')]
-                ],
-                certificate: [this.connectionProfileData ? this.connectionProfileData.profile.certificate : ''],
-                certificatePath: [this.connectionProfileData ? this.connectionProfileData.profile.certificatePath : '']
-            });
-
-            this.v06Form.valueChanges.subscribe((data) => this.onValueChanged(data));
-
-            this.onValueChanged(); // (re)set validation messages now
-
-        } else if (this.connectionProfileData.profile.type === 'hlfv1') {
+        if (this.connectionProfileData.profile.type === 'hlfv1') {
 
             this.v1Form = this.fb.group({
                 name: [
@@ -368,17 +273,10 @@ export class ConnectionProfileComponent {
         let form;
         let formErrors;
         let validationMessages;
-        if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
+        if (!(this.connectionProfileData.profile.type === 'hlfv1')) {
             throw new Error('Invalid connection profile type');
         } else {
-            if (this.connectionProfileData.profile.type === 'hlf') {
-                if (!this.v06Form) {
-                    return;
-                }
-                form = this.v06Form;
-                formErrors = this.v06FormErrors;
-                validationMessages = this.v06ValidationMessages;
-            } else {
+            if (this.connectionProfileData.profile.type === 'hlfv1') {
                 if (!this.v1Form) {
                     return;
                 }
@@ -431,11 +329,8 @@ export class ConnectionProfileComponent {
         if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
             throw new Error('Unknown profile type');
         } else {
-            if (this.connectionProfileData.profile.type === 'hlf') {
-                connectionProfile = this.v06Form.value;
-            } else {
-                connectionProfile = this.v1Form.value;
-            }
+            connectionProfile = this.v1Form.value;
+
             // Need to set this as user doesn't input profile type
             connectionProfile.type = this.connectionProfileData.profile.type;
             this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {

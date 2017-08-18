@@ -2246,4 +2246,10 @@ describe('EditorComponent', () => {
         });
     });
 
+    describe('setReadmePreview', () => {
+        it('should set the read me', () => {
+            component.setReadmePreview(true);
+            component['previewReadme'].should.equal(true);
+        });
+    });
 });

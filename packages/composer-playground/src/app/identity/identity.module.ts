@@ -7,7 +7,6 @@ import { IdentityRoutingModule } from './identity-routing.module';
 import { ConnectionProfileComponent } from './connection-profile.component';
 
 import { FileImporterModule } from '../common/file-importer/file-importer.module';
-import { AddIdentityComponent } from './add-identity/add-identity.component';
 import { IdentityIssuedComponent } from './identity-issued/identity-issued.component';
 import { IssueIdentityComponent } from './issue-identity/issue-identity.component';
 import { IdentityComponent } from './identity.component';
@@ -18,9 +17,9 @@ import { DrawerModule } from '../common/drawer';
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule, DrawerModule],
     entryComponents: [IdentityIssuedComponent, IssueIdentityComponent],
-    declarations: [AddIdentityComponent, IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
+    declarations: [IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
     providers: [],
-    exports: [AddIdentityComponent]
+    exports: []
 })
 
 export class IdentityModule {

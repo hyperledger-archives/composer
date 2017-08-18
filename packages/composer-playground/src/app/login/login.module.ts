@@ -8,6 +8,8 @@ import { LoginComponent } from './login.component';
 import { LoginRoutingModule } from './login-routing.module';
 import { IdentityCardComponent } from './identity-card';
 import { ImportIdentityComponent } from './import-identity/import-identity.component';
+import { CreateIdentityCardComponent } from './create-identity-card';
+import { EditCardCredentialsComponent } from './edit-card-credentials';
 import { DrawerModule } from '../common/drawer';
 import { FileImporterModule } from '../common/file-importer/file-importer.module';
 import { ConnectionProfileModule } from '../connection-profile/connection-profile.module';
@@ -17,8 +19,8 @@ import { IdentityModule } from '../identity/identity.module';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule, FooterModule, FileImporterModule, DrawerModule, ImportModule, IdentityModule],
-    entryComponents: [IdentityCardComponent, ImportIdentityComponent],
-    declarations: [LoginComponent, IdentityCardComponent, ImportIdentityComponent]
+    entryComponents: [IdentityCardComponent, ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent],
+    declarations: [LoginComponent, IdentityCardComponent, ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent]
 })
 
 export class LoginModule {
