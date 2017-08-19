@@ -59,10 +59,9 @@ For example to get all the Historian records a typical promise chain would be as
     .then(() => {       
         return businessNetworkConnection.getHistorian();
     }).then((historian) => {
-
         return historian.getAll();
     }).then((historianRecords) => {        
-       console.log(prettyoutput(historianRecords));
+        console.log(prettyoutput(historianRecords));
     })
 ```
 
@@ -72,8 +71,8 @@ As this is a 'getAll' call it will potentially return high volume of data. There
   let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
-  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord' +
-                                                'FROM HistorianRegistry WHERE (transactionTimestamp > _$justnow)');   
+  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
+                                                'WHERE (transactionTimestamp > _$justnow)');   
 
   return businessNetworkConnection.query(q1,{justnow:now});
 ```
@@ -83,7 +82,7 @@ More advanced queries can be used; for example, the following query selects and 
 ```
   // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
-      `SELECT org.hyperledger.composer.system.HistorianRecord FROM HistorianRegistry
+      `SELECT org.hyperledger.composer.system.HistorianRecord
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 
