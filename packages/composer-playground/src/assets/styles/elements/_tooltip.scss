@@ -1,0 +1,32 @@
+.composer {
+
+    .tooltiptext {
+        visibility: hidden;
+        max-width: 400px;
+        opacity: 0.8;
+        background-color: $black;
+        color: $white;
+        text-align: center;
+        padding: 12px 12px;
+        border-radius: 6px;
+        position: absolute;
+        left: 5rem;
+        top : 3rem;
+        z-index: 9999;
+        width:100%;
+        font-size: small;
+        line-height: 20px;
+      }
+
+    .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%;
+        left: 10%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent $black transparent;
+    }
+
+}

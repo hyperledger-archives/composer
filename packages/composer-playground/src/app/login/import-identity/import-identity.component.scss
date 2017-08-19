@@ -1,0 +1,16 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+import-identity {
+    .import-card, .current-card {
+        padding: 0 $space-large 0 $space-large;
+    }
+
+    .current-card {
+        background-color: $fourth-highlight;
+        padding: $space-large;
+
+        display: flex;
+        justify-content: space-around;
+    }
+}

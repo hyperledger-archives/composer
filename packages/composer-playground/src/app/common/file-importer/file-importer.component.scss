@@ -2,33 +2,9 @@
 @import '../../../assets/styles/base/_variables.scss';
 
 file-importer {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  &.expandFile {
-    flex: 1;
-    padding: $space-medium;
-
-    .fileUpload {
-      border: 1px dashed $first-highlight;
-      flex: 1;
-
-      svg {
-        width: 131px;
-        height: 150px;
-        margin-right: 0;
-      }
-
-      .centre-text {
-        text-align: center;
-      }
-      .max-file-size {
-        color: $secondary-text;
-      }
-    }
-  }
-
-  .fileUpload {
     border: 1px solid $fourth-highlight;
     border-radius: 0.25em;
     margin-bottom: 1em;
@@ -38,38 +14,58 @@ file-importer {
     overflow: hidden;
     position: relative;
     padding: $space-medium;
-    display: flex;
     justify-content: center;
     align-items: center;
+    height: 57px;
 
     svg {
-      margin-right: $space-smedium;
-      width: 16px;
-      height: 16px;
+        margin-right: $space-smedium;
+        width: 16px;
+        height: 16px;
     }
 
     .underline {
-      text-decoration: underline;
+        text-decoration: underline;
     }
 
     @include transition(all);
 
     input[type=file] {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      opacity: 0;
-      cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        opacity: 0;
+        cursor: pointer;
     }
 
     &:hover,
     &:focus {
-      border: 1px dashed $first-highlight;
+        border: 1px dashed $first-highlight;
     }
-  }
+
+    &.expandFile {
+        flex: 1;
+        height: 200px;
+        padding: $space-medium;
+
+        border: 1px dashed $first-highlight;
+
+        svg {
+            width: 131px;
+            height: 150px;
+            margin-right: 0;
+        }
+
+        .centre-text {
+            text-align: center;
+        }
+        .max-file-size {
+            color: $secondary-text;
+        }
+    }
 }
 
 
