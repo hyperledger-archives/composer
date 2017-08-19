@@ -61,25 +61,19 @@ abstract asset Registry identified by registryId {
 }
 
 /**
- * Abstract registry to act as a marker for the system registries
- * Experimental feature
- */
-abstract asset SystemRegistry extends Registry { }
-
-/**
  * AssetRegistry type
  */
-asset AssetRegistry extends SystemRegistry { }
+asset AssetRegistry extends Registry { }
 
 /**
  * ParticipantRegistry type
  */
-asset ParticipantRegistry extends SystemRegistry { }
+asset ParticipantRegistry extends Registry { }
 
 /**
  * TransactionRegistry type
  */
-asset TransactionRegistry extends SystemRegistry { }
+asset TransactionRegistry extends Registry { }
 
 
 /** Asset representing the business networkId
@@ -90,7 +84,7 @@ asset Network identified by networkId extends Asset {
 }
 
 // -----------------------------------------------------------------------------
-// HistorianRegistry
+// Historian
 
 /** Asset to represent each historian registry entry
  * @param {String} transactionId Using the transaction id as the uuid
@@ -108,21 +102,13 @@ asset HistorianRecord identified by transactionId {
   --> Identity    identityUsed         optional
   o Event[]       eventsEmitted        optional
   o DateTime      transactionTimestamp
-  // --> Delta[] deltas --- patience patience
 }
-
-asset HistorianRegistry extends SystemRegistry { }
 
 // -----------------------------------------------------------------------------
-// System transactions that act on Regisries of any type
+// System transactions that act on Registries of any type
 abstract transaction RegistryTransaction {
-  // --> Registry targetRegistry
   o String registryType
   o String registryId
-}
-
-asset ResourceId identified by id {
-  o String id
 }
 
 abstract transaction AssetTransaction extends RegistryTransaction {
