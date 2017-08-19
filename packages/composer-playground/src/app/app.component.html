@@ -5,8 +5,8 @@
                 <p><b>{{ composerBanner[0] }}</b> {{ composerBanner[1] }}</p>
                 <div class="tooltiptext">{{ composerBanner[0] }} {{ composerBanner[1] }}</div>
             </div>
-            <div *ngIf="showHeaderLinks" class="flex-container flex">
-                <ul class="links navleft">
+            <div class="navmain" [ngClass]="{'rightonly' : !showHeaderLinks && !usingLocally }">
+                <ul *ngIf="showHeaderLinks" class="links navleft">
                     <li>
                         <button id='app_definebutton' class="action" [routerLink]="['editor']"
                                 [routerLinkActive]="['active']">Define
@@ -18,14 +18,9 @@
                         </button>
                     </li>
                 </ul>
-                <ul class="links navright" *ngIf="!usingLocally">
-                    <li class="withseparator">
-                        <button class="action" [routerLink]="['identity']" [routerLinkActive]="['active']">
-                            <span class="currentid" title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
-                        </button>
-                    </li>
+                <ul *ngIf="!showHeaderLinks && !usingLocally" class="links navright">
                     <li>
-                        <a href="https://hyperledger.github.io/composer/installing/using-playground-locally.html"
+                        <a href="https://hyperledger.github.io/composer/installing/installing-index.html"
                            target="_blank">
                             <svg class="nav-icon" aria-hidden="true">
                                 <use xlink:href="#icon-simple_docker"></use>
@@ -34,7 +29,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="drop-select" *ngIf="usingLocally" [routerLinkActive]="['active']" [ngClass]="{'dropListActive' : dropListActive}">
+                <div *ngIf="showHeaderLinks" class="drop-select navright" [routerLinkActive]="['active']" [ngClass]="{'dropListActive' : dropListActive}">
                     <div class="drop-select-item flex-container flex">
                         <div ngbDropdown class="d-inline-block" (openChange)="onToggle($event)">
                             <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>

@@ -23,6 +23,7 @@ import { saveAs } from 'file-saver';
 })
 export class LoginComponent implements OnInit {
 
+    private usingLocally: boolean = false;
     private connectionProfileRefs: string[];
     private connectionProfileNames: Map<string, string>;
     private connectionProfiles: Map<string, string>;
@@ -47,6 +48,8 @@ export class LoginComponent implements OnInit {
     ngOnInit(): Promise<void> {
         return this.initializationService.initialize()
             .then(() => {
+                this.usingLocally = !this.initializationService.isWebOnly();
+
                 return this.loadIdentityCards();
             });
     }
