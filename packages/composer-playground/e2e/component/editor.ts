@@ -28,7 +28,11 @@ export class Editor {
     return OperationsHelper.click(element(by.id('editor_import')));
   }
 
-  // RETRIEVE ACTIONS
+  // Wait for editor files to load
+  static waitForProjectFilesToLoad() {
+    return OperationsHelper.retriveMatchingElementsByCSS('.side-bar-nav', '.flex-container', 0);
+  }
+
   // Retrieve Editor Side Navigation FileNames
   static retrieveNavigatorFileNames() {
       // Due to scroll bar, need to scroll element into view in order to inspect text
@@ -54,9 +58,9 @@ export class Editor {
       return OperationsHelper.retriveMatchingElementsByCSS('.side-bar-nav', '.flex-container', 0);
   }
 
-  // Retrieve Editor Deployed Package Name, visible only when readme is selected
+  // Retrieve Editor Deployed Package Name from navlogo section
   static retrieveDeployedPackageName() {
-      return OperationsHelper.retriveTextFromElement(element(by.id('editor_deployedPackageName')));
+      return OperationsHelper.retriveTextFromElement(element(by.id('network-name')));
   }
 
   // Retrieve current 'active' file from navigator

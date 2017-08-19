@@ -69,36 +69,37 @@ describe('Editor Define', (() => {
 
   describe('Export BND button', (() => {
 
-    xit('should export BNA named as the package name', (() => {
+      it('should export BNA named as the package name', (() => {
+          Editor.waitForProjectFilesToLoad();
 
-        Editor.retrieveDeployedPackageName()
-        .then((packageName) => {
-            let filename = './e2e/downloads/' + packageName + '.bna';
-            if (fs.existsSync(filename)) {
-                // Make sure the browser doesn't have to rename the download.
-                fs.unlinkSync(filename);
-            }
-            return filename;
-        })
-        .then((filename) => {
-             Editor.clickExportBND();
-             return waitForFileToExist(filename)
-             .then(() => { return retrieveZipContentList(filename); });
-        })
-        .then((contents) => {
-            // -should have known contents
-            let expectedContents = [ 'package.json',
-                                        'README.md',
-                                        'permissions.acl',
-                                        'models/',
-                                        'models/sample.cto',
-                                        'lib/',
-                                        'lib/sample.js' ];
-            expect(contents).to.be.an('array').lengthOf(7);
-            expect(contents).to.deep.equal(expectedContents);
-        });
+          Editor.retrieveDeployedPackageName()
+          .then((packageName) => {
+              let filename = './e2e/downloads/' + packageName + '.bna';
+              if (fs.existsSync(filename)) {
+                  // Make sure the browser doesn't have to rename the download.
+                  fs.unlinkSync(filename);
+              }
+              return filename;
+          })
+          .then((filename) => {
+               Editor.clickExportBND();
+               return waitForFileToExist(filename)
+               .then(() => { return retrieveZipContentList(filename); });
+          })
+          .then((contents) => {
+              // -should have known contents
+              let expectedContents = [ 'package.json',
+                                          'README.md',
+                                          'permissions.acl',
+                                          'models/',
+                                          'models/sample.cto',
+                                          'lib/',
+                                          'lib/sample.js' ];
+              expect(contents).to.be.an('array').lengthOf(7);
+              expect(contents).to.deep.equal(expectedContents);
+          });
+      }));
     }));
-  }));
 
   describe('Import BND button', (() => {
 
