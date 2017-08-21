@@ -106,9 +106,8 @@ describe('SwitchIdentityComponent', () => {
 
             tick();
 
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -139,9 +138,8 @@ describe('SwitchIdentityComponent', () => {
             mockWallet.contains.should.have.been.calledWith('bob');
             mockWallet.update.should.have.been.calledWith('bob', 'mySecret');
 
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -172,9 +170,8 @@ describe('SwitchIdentityComponent', () => {
             mockWallet.contains.should.have.been.calledWith('bob');
             mockWallet.add.should.have.been.calledWith('bob', 'mySecret');
 
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -193,7 +190,7 @@ describe('SwitchIdentityComponent', () => {
 
             tick();
 
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.dismiss.should.have.been.called;

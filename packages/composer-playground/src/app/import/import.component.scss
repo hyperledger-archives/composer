@@ -1,0 +1,253 @@
+@import '../../assets/styles/base/colors';
+@import '../../assets/styles/base/variables';
+
+import-business-network {
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+
+    &.deploy {
+        flex-direction: row;
+        height: inherit;
+        overflow-y: inherit;
+
+        div.choose-network {
+            margin-right: $space-large;
+
+            section {
+                & > div {
+                    flex-basis: 70%;
+                    padding: $space-large;
+                }
+
+                h3.title {
+                    padding: $space-large;
+                }
+
+                h3.sub-title {
+                    padding: 0 $space-large;
+                }
+
+                .information {
+                    padding: $space-medium $space-large;
+
+                    input.ng-invalid {
+                        border-bottom: 2px solid $error-colour-1;
+                    }
+                }
+            }
+
+            .sample-network-list-container {
+                background-color: $white;
+                padding: 0 $space-large;
+            }
+        }
+
+        div.chosen-network {
+            .image {
+                margin: 0 auto;
+                width: 50%;
+                padding-top: $space-large;
+            }
+
+            div.chosen-network-info {
+                box-shadow: 3px 6px 15px 0 rgba(0, 0, 0, 0.20);
+                width: 275px;
+                display: block;
+                padding: 0;
+                border-bottom: none;
+            }
+
+            div.deploy {
+                width: 50%;
+                margin: 0 auto;
+                display: block;
+            }
+        }
+    }
+
+    div.choose-network {
+        background-color: $white;
+        margin-right: 0;
+        flex: 1;
+
+        h2 {
+            padding: $space-large $space-large 0;
+        }
+
+        section {
+            display: flex;
+            border-bottom: 1px solid $fourth-highlight;
+
+            h3.title {
+                flex-basis: 30%;
+                text-transform: uppercase;
+                color: $second-highlight;
+            }
+
+            h3.sub-title {
+                padding: $space-medium $space-large;
+            }
+
+            p {
+                padding: 0 $space-large;
+            }
+
+            & > div {
+                flex-basis: initial;
+            }
+
+            .information {
+
+                & > * {
+                    display: flex;
+                    align-items: baseline;
+
+                    & > * {
+                        flex-basis: 50%;
+                    }
+
+                    & > *:last-child {
+                        width: inherit;
+                    }
+                }
+
+                // description property
+                & > *:last-child {
+                    margin-top: $space-medium;
+
+                    & > * {
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                }
+            }
+
+            .sample-network-list-container {
+
+                background-color: $fourth-highlight;
+                padding: $space-large;
+
+                .sample-network-list {
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin: $space-medium 0;
+
+                    file-importer.sample-network-list-item {
+                        &:hover {
+                            border: 1px dashed $second-highlight;
+                        }
+                    }
+
+                    .sample-network-list-item {
+                        background-color: $white;
+                        border: 1px solid $fourth-highlight;
+                        padding: $space-smedium;
+                        text-align: center;
+                        margin-right: $space-smedium;
+                        margin-bottom: $space-smedium;
+                        width: 150px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-end;
+                        position: relative;
+
+                        &.file-importer {
+                            height: 227px;
+
+                            svg.ibm-icon {
+                                width: 100px;
+                                height: 100px;
+                                margin-bottom: $space-large;
+                            }
+                        }
+
+                        &.selected-network {
+                            border-color: $second-highlight;
+                        }
+
+                        &:hover {
+                            border-color: $second-highlight;
+                        }
+
+                        &.drag {
+                            border: 1px dashed $second-highlight;
+                        }
+
+                        .sample-network-name {
+                            margin-top: $space-medium;
+                            flex-basis: 20%;
+                        }
+
+                        button.close-dropped {
+                            position: absolute;
+                            top: -18px;
+                            right: -9px;
+
+                            svg {
+                                fill: $first-highlight;
+                                width: $space-medium;
+                                height: $space-medium;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    div.chosen-network {
+        .replace-message {
+            padding: $space-large;
+        }
+
+        div.chosen-network-info {
+            display: flex;
+            background-color: $white;
+            margin-bottom: $space-large;
+            padding: $space-large $space-large 0 $space-large;
+            border-bottom: 1px solid $fourth-highlight;
+
+            .animated-image {
+                width: 125px;
+                height: 125px;
+            }
+
+            section {
+                &:first-child {
+                    padding-top: $space-large
+                }
+
+                &:last-child {
+                    padding-bottom: $space-large;
+                }
+
+                padding: $space-medium $space-large;
+                text-align: center;
+
+                .title {
+                    color: $secondary-text;
+                    text-transform: uppercase;
+                }
+
+                .network-info {
+                    color: $secondary-text;
+
+                    span {
+                        display: inline-block;
+                    }
+                }
+
+            }
+        }
+
+        div.deploy {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: $space-large;
+            margin-right: $space-large;
+        }
+    }
+}

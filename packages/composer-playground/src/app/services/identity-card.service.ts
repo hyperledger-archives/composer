@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageService } from 'angular-2-local-storage';
 
 import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from '../services/identity.service';
+import { IdentityService } from './identity.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';
 import { WalletService } from './wallet.service';
 
@@ -11,7 +10,23 @@ import { IdCard, Logger } from 'composer-common';
 /* tslint:disable-next-line:no-var-requires */
 const uuid = require('uuid');
 
-const defaultCardProperties = JSON.parse('{"metadata":{"name":"admin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}');
+/* tslint:disable-next-line:no-var-requires */
+const hash = require('object-hash');
+
+const defaultCardProperties = {
+    metadata: {
+        name: 'admin',
+        businessNetwork: 'basic-sample-network',
+        enrollmentId: 'admin',
+        enrollmentSecret: 'adminpw',
+        roles: ['PeerAdmin', 'ChannelAdmin'],
+    },
+    connectionProfile: {
+        name: '$default',
+        type: 'web'
+    },
+    credentials: null
+};
 
 @Injectable()
 export class IdentityCardService {
@@ -39,7 +54,37 @@ export class IdentityCardService {
         return this.getIdentityCard(this.currentCard);
     }
 
-    loadIdentityCards(): Promise<number> {
+    getCurrentConnectionProfile(): any {
+        let card = this.getCurrentIdentityCard();
+
+        if (card) {
+            return card.getConnectionProfile();
+        }
+    }
+
+    getCurrentEnrollmentCredentials(): any {
+        let card = this.getCurrentIdentityCard();
+
+        if (card) {
+            return card.getEnrollmentCredentials();
+        }
+    }
+
+    getIdentityCardRefsWithProfileAndRole(qualifiedProfileName: string, role: string): string[] {
+        let cardRefs: string[] = [];
+        this.idCards.forEach((card, key) => {
+            let connectionProfile = card.getConnectionProfile();
+            if (qualifiedProfileName === this.getQualifiedProfileName(connectionProfile) && card.getRoles().includes(role)) {
+                cardRefs.push(key);
+            }
+        });
+
+        return cardRefs;
+    }
+
+    loadIdentityCards(webOnly: boolean): Promise<number> {
+        this.currentCard = null;
+
         return new Promise((resolve, reject) => {
             this.idCards = this.identityCardStorageService
                 .keys()
@@ -47,10 +92,14 @@ export class IdentityCardService {
                     // Only load IdCards, referenced by fixed length uuids,
                     // not associated playground data, which has a suffix
                     if (cardRef.length === 36) {
-                        let cardProperties: PropertyDescriptorMap = this.identityCardStorageService.get(cardRef);
+                        let cardProperties: any = this.identityCardStorageService.get(cardRef);
+
+                        if (webOnly && cardProperties.connectionProfile.type !== 'web') {
+                            return;
+                        }
+
                         let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
                         cardObject.setCredentials(cardProperties.credentials);
-
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
                         if (data && data.current) {
                             this.currentCard = cardRef;
@@ -65,23 +114,26 @@ export class IdentityCardService {
                     return prev;
                 }, new Map<string, IdCard>());
 
+            if (this.currentCard) {
+                let card: IdCard = this.getCurrentIdentityCard();
+                let enrollmentCredentials = card.getEnrollmentCredentials();
+
+                if (enrollmentCredentials && enrollmentCredentials.id) {
+                    this.identityService.setCurrentIdentity(enrollmentCredentials.id);
+                }
+            }
+
             resolve(this.idCards.size);
         });
     }
 
     getIdentityCards(): Promise<Map<string, IdCard>> {
-        if (this.idCards.size > 0) {
-            return Promise.resolve(this.idCards);
-        }
-
-        return this.loadIdentityCards().then(() => {
-            return this.idCards;
-        });
+        return Promise.resolve(this.idCards);
     }
 
-    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string> {
+    addInitialIdentityCards(initialCards?: IdCard[]): Promise<string | void> {
         if (this.idCards.size > 0) {
-            return Promise.reject(new Error('Initial cards loaded already'));
+            return Promise.resolve();
         }
 
         initialCards = initialCards || [];
@@ -121,7 +173,7 @@ export class IdentityCardService {
         let cardRef: string = uuid.v4();
 
         this.identityCardStorageService.set(cardRef, card);
-        this.identityCardStorageService.set(this.dataRef(cardRef), { unused: true });
+        this.identityCardStorageService.set(this.dataRef(cardRef), {unused: true});
         this.idCards.set(cardRef, card);
 
         return Promise.resolve(cardRef);
@@ -133,78 +185,128 @@ export class IdentityCardService {
         }
 
         let card = this.idCards.get(cardRef);
-        let enrollmentId = card.getEnrollmentCredentials().id;
-        let connectionProfileName = this.getQualifiedProfileName(cardRef);
+        let cardCredientials = card.getEnrollmentCredentials();
 
-        this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
-        this.connectionProfileService.deleteProfile(connectionProfileName);
-
-        this.identityCardStorageService.remove(cardRef);
-        this.identityCardStorageService.remove(this.dataRef(cardRef));
-        this.idCards.delete(cardRef);
-
-        return Promise.resolve();
-    }
-
-    setCurrentIdentityCard(cardRef): Promise<IdCard> {
-        if (!this.idCards.has(cardRef)) {
-            return Promise.reject(new Error('Identity card does not exist'));
+        // needed as the wallet blows up without an enrollment id
+        let enrollmentId = '';
+        if (cardCredientials) {
+            enrollmentId = cardCredientials.id;
         }
-        let card: IdCard = this.idCards.get(cardRef);
+        let connectionProfile = card.getConnectionProfile();
+        let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
-        let oldData: any = this.identityCardStorageService.get(this.dataRef(this.currentCard));
-        if (oldData) {
-            delete oldData['current'];
-            this.identityCardStorageService.set(this.dataRef(this.currentCard), oldData);
-        }
-
-        this.currentCard = cardRef;
-        let newData: any = this.identityCardStorageService.get(this.dataRef(cardRef)) || {};
-        newData.current = true;
-        this.identityCardStorageService.set(this.dataRef(cardRef), newData);
-
-        // Hmmm, suspicious... is the enrollement ID really the identity?!
-        let enrollmentId = card.getEnrollmentCredentials().id;
-
-        return this.activateIdentityCard(cardRef).then(() => {
-            this.connectionProfileService.setCurrentConnectionProfile(this.getQualifiedProfileName(cardRef));
-            this.identityService.setCurrentIdentity(enrollmentId);
-
-            return card;
-        });
-    }
-
-    private getQualifiedProfileName(cardRef: string): string {
-        return cardRef + '-' + this.idCards.get(cardRef).getConnectionProfile().name;
-    };
-
-    private dataRef(cardRef: string): string {
-        return cardRef + '-pd';
-    }
-
-    private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
         let wallet = this.walletService.getWallet(connectionProfileName);
 
-        return wallet.contains(connectionProfileName)
-            .then((contains) => {
-                if (contains) {
-                    return wallet.update(enrollmentId, enrollmentSecret);
-                } else {
-                    return wallet.add(enrollmentId, enrollmentSecret);
+        return wallet.contains(enrollmentId)
+            .then((inWallet) => {
+                if (inWallet) {
+                    return this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
                 }
+            })
+            .then(() => {
+                // only delete if this is the last id card using the connection profile
+                if (this.getAllCardRefsForProfile(connectionProfileName).length === 1) {
+                    return this.connectionProfileService.deleteProfile(connectionProfileName);
+                }
+            })
+            .then(() => {
+                this.identityCardStorageService.remove(cardRef);
+                this.identityCardStorageService.remove(this.dataRef(cardRef));
+                this.idCards.delete(cardRef);
             });
     }
 
-    private activateIdentityCard(cardRef): Promise<string | void> {
-        let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
+    setCurrentIdentityCard(cardRef): Promise<IdCard> {
+        return Promise.resolve()
+            .then(() => {
+                if (!
+                        this.idCards.has(cardRef)
+                ) {
+                    return Promise.reject(new Error('Identity card does not exist'));
+                }
+                let card: IdCard = this.idCards.get(cardRef);
+
+                let oldData: any = this.identityCardStorageService.get(this.dataRef(this.currentCard));
+                if (oldData) {
+                    delete oldData['current'];
+                    this.identityCardStorageService.set(this.dataRef(this.currentCard), oldData);
+                }
+
+                this.currentCard = cardRef;
+                let newData: any = this.identityCardStorageService.get(this.dataRef(cardRef)) || {};
+                newData.current = true;
+                this.identityCardStorageService.set(this.dataRef(cardRef), newData);
+
+                // Hmmm, suspicious... is the enrollement ID really the identity?!
+                let enrollmentCredentials = card.getEnrollmentCredentials();
+                if (!enrollmentCredentials) {
+                    return Promise.reject(new Error('Identity card does not contain an enrollment id'));
+                }
+
+                let enrollmentId = enrollmentCredentials.id;
+
+                this.identityService.setCurrentIdentity(enrollmentId);
+
+                return Promise.resolve(card);
+            });
+    }
+
+    getQualifiedProfileName(connectionProfile: any): string {
+        let prefix = hash(connectionProfile);
+
+        if ('web' === connectionProfile.type) {
+            return 'web-' + connectionProfile.name;
+        } else {
+            return prefix + '-' + connectionProfile.name;
+        }
+    }
+
+    getCardRefFromIdentity(identityName: string, businessNetworkName: string, qualifiedConnectionProfile: string): string {
+        let wantedCardRef: string;
+        this.idCards.forEach((card: IdCard, key: string) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getName()) {
+                wantedCardRef = key;
+            }
+        });
+
+        return wantedCardRef;
+    }
+
+    getAllCardsForBusinessNetwork(businessNetworkName: string, qualifiedConnectionProfile: string): Map<string, IdCard> {
+        let wantedCards: Map<string, IdCard> = new Map<string, IdCard>();
+        this.idCards.forEach((card: IdCard, key: string) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName) {
+                wantedCards.set(key, card);
+            }
+        });
+
+        return wantedCards;
+    }
+
+    getAllCardRefsForProfile(qualifiedConnectionProfile: string): string[] {
+        let wantedCards: string[] = [];
+        this.idCards.forEach((card, key) => {
+            let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
+            if (qpn === qualifiedConnectionProfile) {
+                wantedCards.push(key);
+            }
+        });
+
+        return wantedCards;
+    }
+
+    activateCurrentIdentityCard(): Promise<string | void> {
+        let data: any = this.identityCardStorageService.get(this.dataRef(this.currentCard));
 
         if (data && data.unused) {
             delete data['unused'];
-            this.identityCardStorageService.set(this.dataRef(cardRef), data);
+            this.identityCardStorageService.set(this.dataRef(this.currentCard), data);
 
-            let card = this.idCards.get(cardRef);
+            let card = this.idCards.get(this.currentCard);
             let connectionProfile = card.getConnectionProfile();
-            let connectionProfileName = this.getQualifiedProfileName(cardRef);
+            let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
             // Hmmm, suspicious... is the enrollement ID really the identity?!
             let enrollmentCredentials = card.getEnrollmentCredentials();
@@ -213,10 +315,32 @@ export class IdentityCardService {
             return this.connectionProfileService.createProfile(connectionProfileName, connectionProfile).then(() => {
                 return this.setIdentity(connectionProfileName, enrollmentCredentials.id, enrollmentCredentials.secret);
             }).then(() => {
-                return cardRef;
+                return this.currentCard;
             });
         }
 
         return Promise.resolve();
+    }
+
+    private dataRef(cardRef: string): string {
+        return cardRef + '-pd';
+    }
+
+    private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
+        let wallet = this.walletService.getWallet(connectionProfileName);
+
+        // needed as secret isn't required but the wallet blows up if the secret is undefined
+        if (!enrollmentSecret) {
+            enrollmentSecret = '';
+        }
+
+        return wallet.contains(enrollmentId)
+            .then((contains) => {
+                if (contains) {
+                    return wallet.update(enrollmentId, enrollmentSecret);
+                } else {
+                    return wallet.add(enrollmentId, enrollmentSecret);
+                }
+            });
     }
 }
