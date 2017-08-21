@@ -211,7 +211,7 @@ namespace ${newModelNamespace}`;
  */
  rule AllAccess {
      description: "AllAccess - grant everything to everybody."
-     participant: "org.hyperledger.composer.system.Participant" 
+     participant: "org.hyperledger.composer.system.Participant"
      operation: ALL
      resource: "org.hyperledger.composer.system.**"
      action: ALLOW
