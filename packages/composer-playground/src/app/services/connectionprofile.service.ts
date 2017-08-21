@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { WalletService } from './wallet.service';
 import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 import { AdminConnection } from 'composer-admin';
@@ -13,8 +12,7 @@ export class ConnectionProfileService {
     private currentCertificate: string;
     private currentHostname: string;
 
-    constructor(private walletService: WalletService,
-                private connectionProfileStoreService: ConnectionProfileStoreService) {
+    constructor(private connectionProfileStoreService: ConnectionProfileStoreService) {
     }
 
     createProfile(name, connectionProfile): Promise<any> {
