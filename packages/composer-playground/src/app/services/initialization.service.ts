@@ -3,10 +3,9 @@ import { Http, Response } from '@angular/http';
 
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
+import { IdCard } from 'composer-common';
 
 @Injectable()
 export class InitializationService {
@@ -18,8 +17,6 @@ export class InitializationService {
 
     constructor(private clientService: ClientService,
                 private alertService: AlertService,
-                private connectionProfileService: ConnectionProfileService,
-                private walletService: WalletService,
                 private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private http: Http) {
@@ -37,20 +34,37 @@ export class InitializationService {
                 return this.loadConfig();
             })
             .then((config) => {
+                let force = !this.identityService.getLoggedIn();
+                this.alertService.busyStatus$.next({
+                    title: 'Initializing Playground',
+                    force: force
+                });
                 this.config = config;
                 return this.identityCardService.loadIdentityCards(this.isWebOnly());
             })
             .then(() => {
-                // TODO pass in array of identity cards via config.json somehow
-                return this.identityCardService.addInitialIdentityCards();
+                let idCards: IdCard[] = [];
+                if (this.config && this.config.cards) {
+                    this.config.cards.forEach((card) => {
+                        let newIdCard = new IdCard(card.metadata, card.connectionProfile);
+                        newIdCard.setCredentials(card.credentials);
+                        idCards.push(newIdCard);
+                    });
+                }
+                return this.identityCardService.addInitialIdentityCards(idCards);
             })
-            .then((defaultCardRef) => {
+            .then((cardRefs: string[]) => {
                 // only need to check about initial sample if not logged in
-                if (!this.identityService.getLoggedIn() && defaultCardRef) {
-                    return this.deployInitialSample(defaultCardRef);
+                if (!this.identityService.getLoggedIn() && cardRefs && cardRefs.length > 0) {
+                    return cardRefs.reduce((promise, cardRef) => {
+                        return promise.then(() => {
+                            return this.deployInitialSample(cardRef);
+                        });
+                    }, Promise.resolve());
                 }
             })
             .then(() => {
+                this.alertService.busyStatus$.next(null);
                 this.initialized = true;
                 this.initializingPromise = null;
             })
@@ -64,14 +78,27 @@ export class InitializationService {
     }
 
     loadConfig(): Promise<any> {
+        let url = 'http://localhost:15699';
+        if (ENV && ENV !== 'development') {
+            url = window.location.origin;
+        }
         // Load the config data.
-        return this.http.get('/config.json')
+        return this.http.get(url + '/config.json')
             .map((res: Response) => res.json())
-            .toPromise();
+            .toPromise()
+            .catch((error) => {
+                // don't need to worry about 404 just means COMPOSER_CONFIG env var not set
+                if (error && error.status !== 404) {
+                    throw error;
+                }
+            });
     }
 
     deployInitialSample(defaultCardRef) {
-        return this.identityCardService.setCurrentIdentityCard(defaultCardRef).then(() => this.clientService.deployInitialSample());
+        return this.identityCardService.setCurrentIdentityCard(defaultCardRef)
+            .then(() => {
+                return this.clientService.deployInitialSample();
+            });
     }
 
     isWebOnly(): boolean {
