@@ -85,7 +85,13 @@ export class InitializationService {
         // Load the config data.
         return this.http.get(url + '/config.json')
             .map((res: Response) => res.json())
-            .toPromise();
+            .toPromise()
+            .catch((error) => {
+                // don't need to worry about 404 just means COMPOSER_CONFIG env var not set
+                if (error && error.status !== 404) {
+                    throw error;
+                }
+            });
     }
 
     deployInitialSample(defaultCardRef) {
