@@ -12,7 +12,7 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.11.4 {24d2234e4b8ccafd57c303c90792ec31} 2017-08-18
+Version 0.12.0 {24d2234e4b8ccafd57c303c90792ec31} 2017-08-18
 - Clean up the historian API
 
 Version 0.10.2 {f73a45b584fadd644734a91fe4cbbadc} 2017-07-31
