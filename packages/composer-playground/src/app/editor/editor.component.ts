@@ -138,7 +138,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     setCurrentFile(file) {
         this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
-        let always = (this.currentFile === null || file.readme || file.acl);
+        let always = (this.currentFile === null || file.readme || file.acl || file.query);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
             if (this.editingPackage) {
