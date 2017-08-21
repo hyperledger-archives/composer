@@ -35,7 +35,8 @@
             </div>
             <div *ngIf="!npmInProgress" class="sample-network-list-container">
                 <div class="sample-network-list"
-                     [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}">
+                     [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}"
+                     id="base-samples">
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
                          (click)="selectNetwork(sampleNetworks[1])">
@@ -70,7 +71,7 @@
 
                 <h3>Samples on npm</h3>
 
-                <div class="sample-network-list">
+                <div class="sample-network-list" id="npm-samples">
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetwork.name === chosenNetwork.name}"
                          *ngFor=" let sampleNetwork of sampleNetworks | slice:2; let networkIndex=index"

@@ -385,22 +385,28 @@ describe('AdminService', () => {
             adminConnectionMock.disconnect.returns(Promise.resolve());
             adminConnectionMock.deploy.returns(Promise.resolve());
 
+            identityCardMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+
             let stubGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
 
-            service.createNewBusinessNetwork('myNetwork', 'myDescription');
+            service.createNewBusinessNetwork('myNetwork', 'myDescription').then((result: boolean) => {
+                result.should.equal(true);
+            });
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Checking Business Network',
+                text: 'checking if myNetwork exists',
+                force: true
+            });
 
             tick();
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
-                title: 'Checking Business Network',
-                text: 'checking if myNetwork exists'
-            });
-
             stubList.should.have.been.called;
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
                 title: 'Creating Business Network',
-                text: 'creating business network myNetwork'
+                text: 'creating business network myNetwork',
+                force: true
             });
 
             identityCardMock.getCurrentConnectionProfile.should.have.been.called;
@@ -414,14 +420,13 @@ describe('AdminService', () => {
 
             adminConnectionMock.disconnect.should.have.been.called;
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
-                title: 'Connecting to Business Network myNetwork',
-                text: 'using connection profile, connectionProfile'
-            });
-
             adminConnectionMock.connect.should.have.been.calledWith('xxx-myProfile', 'myId', 'mySecret', 'myNetwork');
 
-            alertMock.busyStatus$.next.should.have.been.calledWith(null);
+            alertMock.busyStatus$.next.thirdCall.should.have.been.calledWith({
+                title: 'Connecting to Business Network myNetwork',
+                text: 'using connection profile myProfile',
+                force: true
+            });
         })));
 
         it('should not create if name already exists', fakeAsync(inject([AdminService], (service: AdminService) => {
@@ -447,7 +452,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Checking Business Network',
-                text: 'checking if myNetwork exists'
+                text: 'checking if myNetwork exists',
+                force: true
             });
 
             stubList.should.have.been.called;
@@ -480,7 +486,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Checking Business Network',
-                text: 'checking if myNetwork exists'
+                text: 'checking if myNetwork exists',
+                force: true
             });
 
             stubList.should.have.been.called;
@@ -547,16 +554,6 @@ describe('AdminService', () => {
 
             adminConnectionMock.update.should.have.been.calledWith(businessNetworkDefMock);
         })));
-    });
-
-    describe('isInitialDeploy', () => {
-        it('should set initial deploy to false after call', inject([AdminService], (service: AdminService) => {
-            service['initialDeploy'] = true;
-
-            let result = service.isInitialDeploy();
-
-            service['initialDeploy'].should.equal(false);
-        }));
     });
 
     describe('list', () => {

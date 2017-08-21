@@ -13,8 +13,6 @@ export class AdminService {
     private isConnected: boolean = false;
     private connectingPromise: Promise<any> = null;
 
-    private initialDeploy: boolean = false;
-
     constructor(private identityCardService: IdentityCardService,
                 private alertService: AlertService) {
         Logger.setFunctionalLogger({
@@ -127,10 +125,11 @@ export class AdminService {
 
     }
 
-    public createNewBusinessNetwork(name: string, description: string): Promise<void> {
+    public createNewBusinessNetwork(name: string, description: string): Promise<boolean | void> {
         this.alertService.busyStatus$.next({
             title: 'Checking Business Network',
-            text: 'checking if ' + name + ' exists'
+            text: 'checking if ' + name + ' exists',
+            force: true
         });
 
         let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
@@ -144,14 +143,14 @@ export class AdminService {
                     return businessNetwork === name;
                 });
                 if (deployed) {
-                    this.initialDeploy = false;
                     this.alertService.busyStatus$.next(null);
                     throw Error('businessNetwork with name ' + name + ' already exists');
                 }
 
                 this.alertService.busyStatus$.next({
                     title: 'Creating Business Network',
-                    text: 'creating business network ' + name
+                    text: 'creating business network ' + name,
+                    force: true
                 });
 
                 return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret);
@@ -161,20 +160,20 @@ export class AdminService {
                 return this.getAdminConnection().deploy(businessNetworkDefinition);
             })
             .then(() => {
-                this.initialDeploy = true;
                 return this.disconnect();
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
                     title: 'Connecting to Business Network ' + name,
-                    text: 'using connection profile, connectionProfile'
+                    text: 'using connection profile ' + connectionProfile.name,
+                    force: true
                 });
 
                 console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, enrollmentCredentials.id);
                 return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, name);
             })
             .then(() => {
-                this.alertService.busyStatus$.next(null);
+                return true;
             })
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
@@ -260,11 +259,5 @@ export class AdminService {
     generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {
         let businessNetworkDefinition = new BusinessNetworkDefinition(name + '@0.0.1', description);
         return businessNetworkDefinition;
-    }
-
-    isInitialDeploy(): boolean {
-        let result = this.initialDeploy;
-        this.initialDeploy = false;
-        return result;
     }
 }
