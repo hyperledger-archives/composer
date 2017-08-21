@@ -22,9 +22,15 @@ We wish to validate three core aspects:
  - [User guides](./guide-validation.md)
  - [Runtime](./runtime-validation.md)
  - [Playground](./playground-validation.md)
+ - [CLI](./cli-validation.md)
 
 Each link above will provide a guide for validation purposes. It should be possible to follow the guides without reaching an error case. Upon completion of the above valiadtion guides, and in the presence of a clean build, we can progress to the release phase.
 
 ## The Release
 
 Once validation has passed, and the consensus is to cut a release, the [release process](./release-process.md) may be followed.
+
+If a major version bump is being performed, it will be necessary to update:
+ - composer-sample-applications
+ - composer-sample-networks
+For the runtime level change, and cut a release of the items listed above.
