@@ -79,7 +79,7 @@ asset TransactionRegistry extends Registry { }
 /** Asset representing the business networkId
  * @param {String} networkId of the business networkId
  */
-asset Network identified by networkId extends Asset {
+asset Network identified by networkId {
   o String networkId
 }
 
@@ -141,7 +141,7 @@ enum IdentityState {
     o REVOKED
 }
 
-asset Identity identified by identityId extends Asset {
+asset Identity identified by identityId {
     o String identityId
     o String name
     o String issuer
