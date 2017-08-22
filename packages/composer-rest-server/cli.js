@@ -23,7 +23,6 @@ const figlet = require('figlet');
 const path = require('path');
 const server = require('./server/server');
 const Util = require('./lib/util');
-const _ = require('lodash');
 
 const defaultTlsCertificate = path.resolve(__dirname, 'cert.pem');
 const defaultTlsKey = path.resolve(__dirname, 'key.pem');
@@ -44,11 +43,7 @@ const yargs = require('yargs')
     .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
     .alias('v', 'version')
     .version(() => {
-        return getInfo('composer-rest-server')+
-          getInfo('composer-admin')+getInfo('composer-client')+
-          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
-          getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
-          getInfo('composer-connector-hlfv1');
+        return getVersion();
     })
     .help('h')
     .alias('h', 'help')
@@ -163,18 +158,14 @@ module.exports = promise.then((composer) => {
 
 /**
  * [getInfo description]
- * @param  {[type]} moduleName [description]
  * @return {[type]}            [description]
  */
-function getInfo(moduleName) {
-
+function getVersion(){
     try{
-        let pjson = ((moduleName=== 'composer-rest-server') ? require('./package.json') : require(moduleName).version);
-        return _.padEnd(pjson.name,30) + ' v'+pjson.version+'\n';
+        return 'v' +require('./package.json').version+'\n';
     }
     catch (error){
       // oh well - we'll just return a blank string
         return '';
     }
-
 }

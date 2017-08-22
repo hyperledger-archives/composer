@@ -19,7 +19,6 @@
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs');
-let _ = require('lodash');
 
 
 const chalk = require('chalk');
@@ -35,11 +34,7 @@ let results = yargs
     .epilogue('For more information on Hyperledger Composer: https://hyperledger.github.io/composer/')
     .alias('v', 'version')
     .version(function() {
-        return getInfo('composer-cli')+
-          getInfo('composer-admin')+getInfo('composer-client')+
-          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
-          getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
-          getInfo('composer-connector-hlfv1');
+        return getVersion();
     })
     .describe('v', 'show version information')
     .command(
@@ -71,20 +66,17 @@ if (typeof(results.thePromise) !== 'undefined'){
     process.exit(0);
 }
 
+
 /**
  * [getInfo description]
- * @param  {[type]} moduleName [description]
  * @return {[type]}            [description]
  */
-function getInfo(moduleName){
-
+function getVersion(){
     try{
-        let pjson = ((moduleName=== 'composer-cli') ? require('./package.json') : require(moduleName).version);
-        return _.padEnd(pjson.name,30) + ' v'+pjson.version+'\n';
+        return 'v' +require('./package.json').version+'\n';
     }
     catch (error){
       // oh well - we'll just return a blank string
         return '';
     }
-
 }
