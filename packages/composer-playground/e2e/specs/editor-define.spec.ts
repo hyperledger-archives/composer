@@ -16,17 +16,14 @@ import * as JSZip from 'jszip';
 
 let expect = chai.expect;
 
-
-
 describe('Editor Define', (() => {
 
-  let tileItems: Array<string> = null;
+  let baseTiles: Array<string> = null;
+  let npmTiles: Array<string> = null;
+  let sampleOptions;
 
   // Navigate to Editor base page and move past welcome splash
   beforeAll(() =>  {
-    // Initialise known tile orderings
-    this.tileItems = ['basic-sample-network', 'empty-business-network', 'file-import'];
-
     // Important angular configuration and intial step passage to reach editor
     browser.waitForAngularEnabled(false);
     OperationsHelper.navigatePastWelcome();
@@ -106,6 +103,8 @@ describe('Editor Define', (() => {
     // Press the 'Import' button
     beforeEach(() =>  {
         Editor.clickImportBND();
+        Import.waitToLoadBaseOptions();
+        Import.waitToLoadNpmOptions();
     });
 
     it('should enable to close/cancel import slide out', (() => {
@@ -158,10 +157,9 @@ describe('Editor Define', (() => {
 
     }));
 
-
     it('should enable empty BNA import via tile selection', (() => {
         // Select Empty BNA
-        Import.selectBusinessDefinitionTileOption(this.tileItems.findIndex((tile) => tile === 'empty-business-network'));
+        Import.selectBaseImportOption('empty-business-network');
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -188,7 +186,7 @@ describe('Editor Define', (() => {
 
     it('should enable populated BNA import via file selection', (() => {
          // Select Basic Sample Network BNA
-        Import.selectBusinessDefinitionTileOption(this.tileItems.findIndex((tile) => tile === 'basic-sample-network'));
+        Import.selectBaseImportOption('basic-sample-network');
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -198,7 +196,7 @@ describe('Editor Define', (() => {
         Import.waitToDisappear();
         // -success message
         OperationsHelper.processExpectedSuccess();
-        // -expected files in navigator (Just a readme)
+        // -expected files in navigator
         Editor.retrieveNavigatorFileNames()
         .then((filelist: any) => {
             let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
@@ -215,6 +213,106 @@ describe('Editor Define', (() => {
             expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
         });
     }));
+
+    it('should enable import of npm hosted animaltracking-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('animaltracking-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted bond-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('bond-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted carauction-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('carauction-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted digitalproperty-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('digitalproperty-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted marbles-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('marbles-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted perishable-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('perishable-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted pii-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('pii-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted trade-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('trade-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted vehicle-lifecycle-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('vehicle-lifecycle-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
   }));
 
   describe('Add File button', (() => {
@@ -229,7 +327,7 @@ describe('Editor Define', (() => {
 
     afterEach(() =>  {
         // Reset network to basic sample network
-        OperationsHelper.importBusinessNetworkArchiveFromTile(this.tileItems.findIndex((tile) => tile === 'basic-sample-network'));
+        OperationsHelper.importBusinessNetworkArchiveFromTile('basic-sample-network', true);
     });
 
     it('should bring up an AddFile modal that can be closed by cancel button', (() => {
@@ -521,7 +619,7 @@ describe('Editor Define', (() => {
 
     it('should enable the addition of an ACL file via radio button selection', (() => {
         AddFile.clickCancelAdd();
-        OperationsHelper.importBusinessNetworkArchiveFromTile(this.tileItems.findIndex((tile) => tile === 'empty-business-network'));
+        OperationsHelper.importBusinessNetworkArchiveFromTile('empty-business-network', true);
 
         Editor.clickAddFile();
         AddFile.waitToAppear();

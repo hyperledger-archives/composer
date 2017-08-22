@@ -21,7 +21,7 @@ Here is the preferred workflow involved in making a pull request to the Composer
 
 A first step is ensuring that you have a local development environment configured.
 
-- You must fork the `hyperledger/composer` repository to your own github organization. This is most eaisly achieved using the [github web-ui](https://help.github.com/articles/fork-a-repo/).
+- You must fork the `hyperledger/composer` repository to your own github organization. This is most easily achieved using the [github web-ui](https://help.github.com/articles/fork-a-repo/).
 - Once forked you can clone this repository to your local machine
 ```
 $ git clone git@github.com:MyGitName/composer.git

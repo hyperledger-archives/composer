@@ -17,14 +17,10 @@
 const Registry = require('./registry');
 const Util = require('composer-common').Util;
 
-const REGISTRY_TYPE = 'Historian';
+const REGISTRY_TYPE = 'Asset';
 
 /**
- * The Historian is used to store a set of HistorianRecords
- * These records are defined in the org.hyperledger.composer.system model and allow
- * applications to track changes as the result of submitted transactions over time.
- *
- *
+ * The historian records the history of all business events on the blockchain.
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
  * @class
@@ -33,16 +29,16 @@ const REGISTRY_TYPE = 'Historian';
 class Historian extends Registry {
 
     /**
-     * Get a list of all existing transaction registries.
+     * Get an existing historian.
      *
      * @param {SecurityContext} securityContext The user's security context.
-     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
-     * @param {Factory} factory The factory to use for this transaction registry.
-     * @param {Serializer} serializer The Serializer to use for this transaction registry.
-     * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
-     * instances representing the transaction registries.
+     * @param {ModelManager} modelManager The ModelManager to use for this historian.
+     * @param {Factory} factory The factory to use for this historian.
+     * @param {Serializer} serializer The Serializer to use for this historian.
+     * @return {Promise} A promise that will be resolved with a {@link IdentityRegistry}
+     * instance representing the historian.
      */
-    static getAllHistorians(securityContext, modelManager, factory, serializer) {
+    static getHistorian(securityContext, modelManager, factory, serializer) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -51,75 +47,15 @@ class Historian extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
-            .then((transactionRegistries) => {
-                return transactionRegistries.map((transactionRegistry) => {
-                    return new Historian(transactionRegistry.id, transactionRegistry.name, securityContext, modelManager, factory, serializer);
-                });
-            });
-    }
-
-    /**
-     * Get an existing transaction registry.
-     *
-     * @param {SecurityContext} securityContext The user's security context.
-     * @param {string} id The unique identifier of the transaction registry.
-     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
-     * @param {Factory} factory The factory to use for this transaction registry.
-     * @param {Serializer} serializer The Serializer to use for this transaction registry.
-     * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
-     * instance representing the transaction registry.
-     */
-    static getHistorian(securityContext, id, modelManager, factory, serializer) {
-        Util.securityCheck(securityContext);
-        if (!id) {
-            throw new Error('id not specified');
-        } else if (!modelManager) {
-            throw new Error('modelManager not specified');
-        } else if (!factory) {
-            throw new Error('factory not specified');
-        } else if (!serializer) {
-            throw new Error('serializer not specified');
-        }
-        return Registry.getRegistry(securityContext, REGISTRY_TYPE, id)
+        return Registry.getRegistry(securityContext, REGISTRY_TYPE, 'org.hyperledger.composer.system.HistorianRecord')
             .then((registry) => {
-                return new Historian(registry.id, registry.name, securityContext, modelManager, factory, serializer);
+                // Hardcoded name for display purposes.
+                return new Historian(registry.id, 'Historian', securityContext, modelManager, factory, serializer);
             });
     }
 
     /**
-     * Add a new transaction registry.
-     *
-     * @param {SecurityContext} securityContext The user's security context.
-     * @param {string} id The unique identifier of the transaction registry.
-     * @param {string} name The name of the transaction registry.
-     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
-     * @param {Factory} factory The factory to use for this transaction registry.
-     * @param {Serializer} serializer The Serializer to use for this transaction registry.
-     * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
-     * instance representing the new transaction registry.
-     */
-    static addHistorian(securityContext, id, name, modelManager, factory, serializer) {
-        Util.securityCheck(securityContext);
-        if (!id) {
-            throw new Error('id not specified');
-        } else if (!name) {
-            throw new Error('name not specified');
-        } else if (!modelManager) {
-            throw new Error('modelManager not specified');
-        } else if (!factory) {
-            throw new Error('factory not specified');
-        } else if (!serializer) {
-            throw new Error('serializer not specified');
-        }
-        return Registry.addRegistry(securityContext, REGISTRY_TYPE, id, name)
-            .then(() => {
-                return new Historian(id, name, securityContext, modelManager, factory, serializer);
-            });
-    }
-
-    /**
-     * Create an transaction registry.
+     * Create a historian.
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link BusinessNetworkConnection}</strong>
      * </p>
@@ -137,70 +73,70 @@ class Historian extends Registry {
     }
 
     /**
-     * Unsupported operation; you cannot add a transaction to a transaction
-     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     * Unsupported operation; you cannot add a historian record to the historian.
+     * This method will always throw an exception when called.
      *
      * @param {Resource} resource The resource to be added to the registry.
      * @param {string} data The data for the resource.
      * @private
      */
     add(resource) {
-        throw new Error('cannot add transactions to the Historian');
+        throw new Error('cannot add historian records to the historian');
     }
 
     /**
-     * Unsupported operation; you cannot add a transaction to a transaction
-     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     * Unsupported operation; you cannot add a historian record to the historian.
+     * This method will always throw an exception when called.
      *
      * @param {Resource[]} resources The resources to be added to the registry.
      * @private
      */
     addAll(resources) {
-        throw new Error('cannot add transactions to the Historian');
+        throw new Error('cannot add historian records to the historian');
     }
 
     /**
-     * Unsupported operation; you cannot update a transaction in a transaction
-     * registry. This method will always throw an exception when called.
+     * Unsupported operation; you cannot update a historian record in the historian.
+     * This method will always throw an exception when called.
      *
      * @param {Resource} resource The resource to be updated in the registry.
      * @private
      */
     update(resource) {
-        throw new Error('cannot update transactions in the Historian');
+        throw new Error('cannot update historian records in the historian');
     }
 
     /**
-     * Unsupported operation; you cannot update a transaction in a transaction
-     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     * Unsupported operation; you cannot update a historian record in the historian.
+     * This method will always throw an exception when called.
      *
      * @param {Resource[]} resources The resources to be updated in the asset registry.
      * @private
      */
     updateAll(resources) {
-        throw new Error('cannot update transactions in the Historian');
+        throw new Error('cannot update historian records in the historian');
     }
 
     /**
-     * Unsupported operation; you cannot remove a transaction from a transaction
-     * registry. This method will always throw an exception when called.
+     * Unsupported operation; you cannot remove a historian record from the historian.
+     * This method will always throw an exception when called.
      *
      * @param {(Resource|string)} resource The resource, or the unique identifier of the resource.
      * @private
      */
     remove(resource) {
-        throw new Error('cannot remove transactions from the Historian');
+        throw new Error('cannot remove historian records from the historian');
     }
 
     /**
-     * Unsupported operation; you cannot remove a transaction from a transaction
-     * registry. This method will always throw an exception when called.
+     * Unsupported operation; you cannot remove a historian record from the historian.
+     * This method will always throw an exception when called.
      *
      * @param {(Resource[]|string[])} resources The resources, or the unique identifiers of the resources.
      * @private
      */
     removeAll(resources) {
-        throw new Error('cannot remove transactions from the Historian');
+        throw new Error('cannot remove historian records from the historian');
     }
 
 }

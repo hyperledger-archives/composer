@@ -97,7 +97,8 @@ describe(`RegistryComponent`, () => {
         mockAssetRegistry.registryType = 'Asset';
 
         mockHistorian = sinon.createStubInstance(Historian);
-        mockHistorian.registryType = 'Historian';
+        mockHistorian.registryType = 'Asset';
+        mockHistorian.id = 'org.hyperledger.composer.system.HistorianRecord';
     });
 
     afterEach(() => {
@@ -131,11 +132,11 @@ describe(`RegistryComponent`, () => {
 
         it('should call loadResources when registry is set', () => {
             sandbox.stub(component, 'loadResources');
-            mockAssetRegistry.registryType = 'Historian';
+            mockAssetRegistry.id = 'org.hyperledger.composer.system.HistorianRecord';
             component.registry = mockAssetRegistry;
             component.loadResources.should.be.called;
             component['_registry'].should.equal(mockAssetRegistry);
-            component['registryType'].should.equal('Historian');
+            component['registryId'].should.equal('org.hyperledger.composer.system.HistorianRecord');
         });
 
         it('should not call loadResources if null registry is given', () => {
@@ -162,7 +163,7 @@ describe(`RegistryComponent`, () => {
         it('should sort a list of assets by identifier', fakeAsync(() => {
             mockAssetRegistry.getAll.returns(Promise.resolve(assetRegistryContents));
             component['_registry'] = mockAssetRegistry;
-            component['registryType'] = mockAssetRegistry.registryType;
+            component['registryId'] = mockAssetRegistry.id;
             component.loadResources();
             tick();
             component['resources'][0].getIdentifier().should.equal('1');
@@ -173,7 +174,7 @@ describe(`RegistryComponent`, () => {
         it('should sort a list of historian resources by timestamp', fakeAsync(() => {
             mockHistorian.getAll.returns(Promise.resolve(historianContents));
             component['_registry'] = mockHistorian;
-            component['registryType'] = mockHistorian.registryType;
+            component['registryId'] = mockHistorian.id;
             component.loadResources();
             tick();
             component['resources'][0].transactionTimestamp.should.equal('3');
@@ -402,13 +403,13 @@ describe(`RegistryComponent`, () => {
 
     describe('#isHistorian', () => {
         it('should return true if registry type is historian', () => {
-            component['registryType'] = 'Historian';
+            component['registryId'] = 'org.hyperledger.composer.system.HistorianRecord';
 
             component['isHistorian']().should.be.true;
         });
 
         it('should return false if registry type is not historian', () => {
-            component['registryType'] = 'NotHistorian';
+            component['registryId'] = 'org.hyperledger.composer.system.Identity';
 
             component['isHistorian']().should.be.false;
         });
