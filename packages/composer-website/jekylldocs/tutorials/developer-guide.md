@@ -12,11 +12,11 @@ excerpt: "The developer guide will walk you through the steps required to build 
 
 *Note:* this tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment.
 
-This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
+This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a few hours and probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and in doing so, generating/running a sample Angular 2 based application (the tutorial is around a simple Commodity Trading use case) that interacts with a blockchain network. The idea is you can easily create your own use case, once you've completed this end-to-end tutorial - furthermore, you can use the same blockchain environment to do so.
 
 ## Install {{site.data.conrefs.composer_full}}
 
-First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
+First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) where it also describes the pre-requisites required ; as well as installing {{site.data.conrefs.composer_full}}, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman application generator and some pre-requisite Angular 2 packages.
 
 ## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
@@ -204,25 +204,16 @@ npm install
 You should see the following output:
 
 ```bash
-> my-network@0.0.1 prepublish /home/user/my-network
-> mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
-
-Creating Business Network Archive
-
-Looking for package.json of Business Network Definition in /home/user/my-network
-
-Found:
-Description: My Commodity Trading network
-Name:my-network
-Identifier:my-network@0.0.1
-
-Written Business Network Definition Archive file to ./dist/my-network.bna
-Command completed successfully.
-
-Command succeeded
+  │ │ └─┬ strip-ansi@4.0.0 
+  │ │   └── ansi-regex@3.0.0 
+  │ ├── which-module@2.0.0 
+  │ ├── y18n@3.2.1 
+  │ └── yargs-parser@7.0.0 
+  └─┬ yargs-parser@5.0.0 
+    └── camelcase@3.0.0 
+$ 
 ```
-The `composer archive create` command has created a file called `my-network.bna` in the `dist` folder.
 
 ## Write Unit Tests
 
@@ -523,11 +514,35 @@ And the cucumber tests defined in the file `features/sample.feature` will produc
 
 ## Import into Playground and Test
 
-Change directory to your toplevel project folder (my-network). Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing '.' please note):
+Change directory to your toplevel project folder (my-network). Generate the BNA file using the following command:
 
 ```
+mkdir dist
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 ```
+
+Note: the command `npm run prepublish` achieves the same thing (ie a command defined in our `package.json` file), but we wanted to show you the command sequence at this point in the tutorial and for your own projects, in time.
+
+The output of the archive command will look similar to this: 
+
+```bash
+
+Creating Business Network Archive
+
+Looking for package.json of Business Network Definition in /home/user/my-network
+
+Found:
+Description: My Commodity Trading network
+Name:my-network
+Identifier:my-network@0.0.1
+
+Written Business Network Definition Archive file to ./dist/my-network.bna
+Command completed successfully.
+
+Command succeeded
+```
+
+The `composer archive create` command has created a file called `my-network.bna` in the `dist` folder.
 
 Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
 
@@ -610,7 +625,7 @@ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 ```
 
 
-_Note: You'll notice that the flag '-p' specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric._
+_Note: The flag '-p' specifies the type of connection profile to use to connect to the runtime {{site.data.conrefs.hlf_full}} ._
 
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
