@@ -105,7 +105,7 @@ describe('ConnectorServer', () => {
 
         it('should register handlers for all exposed functions', () => {
             const functions = mockSocket.on.args.map((args) => { return args[0]; });
-            functions.should.deep.equal([
+            functions.sort().should.deep.equal([
                 '/api/connectionCreateIdentity',
                 '/api/connectionDeploy',
                 '/api/connectionDisconnect',
@@ -119,8 +119,9 @@ describe('ConnectorServer', () => {
                 '/api/connectionQueryChainCode',
                 '/api/connectionStart',
                 '/api/connectionUndeploy',
-                '/api/connectionUpdate'
-            ]);
+                '/api/connectionUpdate',
+                '/api/connectionManagerExportIdentity'
+            ].sort());
             mockSocket.on.args.forEach((args) => {
                 args[1].should.be.a('function');
             });
@@ -169,6 +170,33 @@ describe('ConnectorServer', () => {
                 });
         });
 
+    });
+
+    describe('#connectionManagerExportIdentity', function() {
+        it('should export an identity', function() {
+            const id = 'bob1';
+            const expected = { key: 'value' };
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.exportIdentity.withArgs(connectionProfile, connectionOptions, id).resolves(expected);
+            const callback = sinon.stub();
+            return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, id, callback)
+                .then(() => {
+                    sinon.assert.calledOnce(callback);
+                    sinon.assert.calledWith(callback, null, expected);
+                });
+        });
+
+        it('should handle errors exporting an identity', function() {
+            const expected = new Error('export error');
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.exportIdentity.rejects(expected);
+            const callback = sinon.stub();
+            return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, 'bob1', callback)
+                .then(() => {
+                    sinon.assert.calledOnce(callback);
+                    sinon.assert.calledWith(callback, ConnectorServer.serializerr(expected));
+                });
+        });
     });
 
     describe('#connectionManagerConnect', () => {

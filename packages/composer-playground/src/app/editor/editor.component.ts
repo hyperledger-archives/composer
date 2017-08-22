@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from '../import/import.component';
+import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
@@ -390,10 +390,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        const importModalRef = this.drawerService.open(ImportComponent);
-        // only want to update here not deploy
-        importModalRef.componentInstance.deployNetwork = false;
-
+        const importModalRef = this.drawerService.open(UpdateComponent);
         importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
 
             importModalRef.close();
