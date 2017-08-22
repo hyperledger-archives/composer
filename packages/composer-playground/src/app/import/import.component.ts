@@ -236,7 +236,11 @@ export class ImportComponent implements OnInit {
 
     private setNetworkName(name) {
         this.networkName = name;
-        let pattern = /^[a-z0-9-]+$/;
-        this.networkNameValid = pattern.test(this.networkName);
+        if (!name) {
+            this.networkNameValid = true;
+        } else {
+            let pattern = /^[a-z0-9-]+$/;
+            this.networkNameValid = pattern.test(this.networkName);
+        }
     }
 }

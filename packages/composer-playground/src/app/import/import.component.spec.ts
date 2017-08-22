@@ -506,5 +506,12 @@ describe('ImportComponent', () => {
             component['networkName'].should.equal('bob?');
             component['networkNameValid'].should.equal(false);
         });
+
+        it('should permit no input', () => {
+            component['setNetworkName']('');
+
+            component['networkName'].should.equal('');
+            component['networkNameValid'].should.equal(true);
+        });
     });
 });
