@@ -281,12 +281,6 @@ class QueryCompiler {
             throw new Error('The query compiler does not support resources of this type');
         }
 
-        if (resource === 'org.hyperledger.composer.system.HistorianRecord'){
-            // TODO: Well this is a work around isn't it?
-            // Maybe need to do a check on the type if system.. then...
-            query.selector.$registryType = 'Historian';
-        }
-
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {

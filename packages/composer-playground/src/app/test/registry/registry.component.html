@@ -9,7 +9,7 @@
     </div>
 </div>
 <div *ngIf="_registry" class="resource-list" [ngClass]="{'transaction-list' : isHistorian()}">
-    <div *ngIf="_registry.registryType!=='Historian'">
+    <div *ngIf="!isHistorian()">
         <div class="title" [ngClass]="{'resource-empty' : !resources || resources.length === 0}">
             <div class="id">ID</div>
             <div class="data">Data</div>
@@ -23,14 +23,14 @@
                 <pre #resourcedata
                      [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && overFlowedResources[resource.getIdentifier()], 'tiny-gradient' : resource.getIdentifier() === expandedResource || !overFlowedResources[resource.getIdentifier()]}"
                      class="data">{{serialize(resource)}}</pre>
-                <div *ngIf="!isHistorian()" class="resource-icon">
+                <div lass="resource-icon">
                     <button type="button" class="icon" (click)="editResource(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-edit_32"></use>
                         </svg>
                     </button>
                 </div>
-                <div *ngIf="!isHistorian()" class="resource-icon">
+                <div class="resource-icon">
                     <button type="button" class="icon" (click)="openDeleteResourceModal(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-trash_32"></use>
