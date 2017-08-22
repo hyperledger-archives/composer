@@ -97,6 +97,32 @@ class ConnectorServer {
     }
 
     /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} Promise that resolves to credentials.
+     */
+    connectionManagerExportIdentity(connectionProfileName, connectionOptions, id, callback) {
+        const method = 'connectionManagerExportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        return this.connectionProfileManager.getConnectionManager(connectionProfileName)
+            .then((connectionManager) => {
+                return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
+            })
+            .then((credentials) => {
+                callback(null, credentials);
+                LOG.exit(method, credentials);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
      * Handle a request from the client to connect to a business network.
      * @param {string} connectionProfile The connection profile name.
      * @param {string} businessNetworkIdentifier The business network identifier.

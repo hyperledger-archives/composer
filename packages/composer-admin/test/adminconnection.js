@@ -33,7 +33,7 @@ chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('AdminConnection', () => {
-
+    const testProfileName = 'TEST_PROFILE';
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
@@ -81,10 +81,10 @@ describe('AdminConnection', () => {
         adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
-        sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
-        sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
+        sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs(testProfileName, sinon.match.any).resolves();
+        sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs(testProfileName).resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
-        sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
+        sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs(testProfileName).resolves();
         delete process.env.COMPOSER_CONFIG;
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
@@ -131,7 +131,7 @@ describe('AdminConnection', () => {
     describe('#connect', () => {
 
         it('should connect, login and ping if business network specified', () => {
-            return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
+            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.login);
                     sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
@@ -141,7 +141,7 @@ describe('AdminConnection', () => {
         });
 
         it('should connect and login if business network not specified', () => {
-            return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.login);
                     sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
@@ -153,14 +153,14 @@ describe('AdminConnection', () => {
 
     describe('#createProfile', () => {
         it('should return a resolved promise', () => {
-            return adminConnection.createProfile('testprofile', config)
+            return adminConnection.createProfile(testProfileName, config)
                 .should.be.fulfilled;
         });
     });
 
     describe('#deleteProfile', () => {
         it('should return a resolved promise', () => {
-            return adminConnection.deleteProfile('testprofile', config)
+            return adminConnection.deleteProfile(testProfileName, config)
                 .should.be.fulfilled;
         });
     });
@@ -168,7 +168,7 @@ describe('AdminConnection', () => {
     describe('#getProfile', () => {
 
         it('should return the specified profile', () => {
-            return adminConnection.getProfile('testprofile')
+            return adminConnection.getProfile(testProfileName)
                 .should.eventually.be.deep.equal(config);
         });
 
@@ -471,10 +471,10 @@ describe('AdminConnection', () => {
             mockConnectionManager.importIdentity = sinon.stub();
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            return adminConnection.importIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity, 'testprofile', config, 'anid', 'acerttosign', 'akey');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, testProfileName, config, 'anid', 'acerttosign', 'akey');
                 });
         });
 
@@ -483,7 +483,7 @@ describe('AdminConnection', () => {
             mockConnectionManager.importIdentity.rejects(new Error('no identity imported'));
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            return adminConnection.importIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
                 .should.be.rejectedWith(/no identity imported/);
         });
 
@@ -495,10 +495,10 @@ describe('AdminConnection', () => {
             mockConnectionManager.importIdentity = sinon.stub();
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.requestIdentity('testprofile', 'id', 'secret')
+            return adminConnection.requestIdentity(testProfileName, 'id', 'secret')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, 'testprofile', config, 'id', 'secret');
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'id', 'secret');
                 });
         });
 
@@ -507,11 +507,36 @@ describe('AdminConnection', () => {
             mockConnectionManager.requestIdentity.rejects(new Error('some error'));
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.requestIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            return adminConnection.requestIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
                 .should.be.rejectedWith(/some error/);
         });
 
 
+    });
+
+    describe('#exportIdentity', function() {
+        const id = 'Eric';
+
+        it('should export credentials for an identity', () => {
+            mockConnectionManager.exportIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.exportIdentity(testProfileName, id)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.exportIdentity, testProfileName, config, id);
+                });
+        });
+
+        it('should throw an error if export fails', () => {
+            const errorText = 'ERROR_TEXT';
+            mockConnectionManager.exportIdentity = sinon.stub();
+            mockConnectionManager.exportIdentity.rejects(new Error(errorText));
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.exportIdentity(testProfileName, id)
+                .should.be.rejectedWith(new RegExp(errorText));
+        });
     });
 
 });
