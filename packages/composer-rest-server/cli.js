@@ -64,13 +64,6 @@ const interactive = process.argv.slice(2).length === 0 && // No command line arg
                     });
 let promise;
 if (interactive) {
-    // Gather some args interactively
-    clear();
-    console.log(
-        chalk.yellow(
-            figlet.textSync('Hyperledger-Composer', { horizontalLayout: 'full' })
-        )
-    );
     // Get details of the server that we want to run
     promise = Util.getConnectionSettings()
         .then((answers) => {
