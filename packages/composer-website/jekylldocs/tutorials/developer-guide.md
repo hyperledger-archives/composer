@@ -201,7 +201,7 @@ cd my-network
 npm install
 ```
 
-You should see the following output:
+You should see the following output similar to the following (versions/modules change below):
 
 ```bash
 
