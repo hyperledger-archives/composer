@@ -80,13 +80,11 @@ class MockConnectionProfileComponent {
 }
 
 @Component({
-    selector: 'import-business-network',
+    selector: 'deploy-business-network',
     template: ''
 })
-class MockImportComponent {
+class MockDeployComponent {
 
-    @Input()
-    public deployNetwork;
     @Output()
     public finishedSampleImport: EventEmitter<any> = new EventEmitter<any>();
 }
@@ -163,7 +161,7 @@ describe(`LoginComponent`, () => {
                 MockCreateIdentityCardComponent,
                 MockIdentityCardComponent,
                 MockFooterComponent,
-                MockImportComponent,
+                MockDeployComponent,
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
