@@ -19,6 +19,7 @@ const ParticipantDeclaration = require('../../../introspect/participantdeclarati
 const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
+const EventDeclaration = require('../../../introspect/eventdeclaration');
 const Field = require('../../../introspect/field');
 const ModelFile = require('../../../introspect/modelfile');
 const ModelManager = require('../../../modelmanager');
@@ -26,6 +27,7 @@ const RelationshipDeclaration = require('../../../introspect/relationshipdeclara
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
 const debug = require('debug')('concerto:jsonschemavisitor');
 const util = require('util');
+
 /**
  * Convert a fully qualified type name, for example org.acme.MyAsset,
  * into a name that is safe for use as a LoopBack model name.
@@ -76,6 +78,8 @@ class LoopbackVisitor {
             return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof TransactionDeclaration) {
             return this.visitTransactionDeclaration(thing, parameters);
+        } else if (thing instanceof EventDeclaration) {
+            return this.visitEventDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
@@ -132,9 +136,6 @@ class LoopbackVisitor {
             .concat(modelFile.getTransactionDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
-            })
-            .filter((declaration) => {
-                return !declaration.isSystemType();
             })
             .forEach((declaration) => {
                 parameters.first = true;
@@ -273,6 +274,7 @@ class LoopbackVisitor {
         return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
 
     }
+
     /**
      * Visitor design pattern
      * @param {TransactionDeclaration} transactionDeclaration - the object being visited
@@ -314,6 +316,18 @@ class LoopbackVisitor {
         // Apply all the common schema elements.
         return this.visitClassDeclarationCommon(transactionDeclaration, parameters, jsonSchema);
 
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {EventDeclaration} eventDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitEventDeclaration(eventDeclaration, parameters) {
+        debug('entering visitEventDeclaration', eventDeclaration.getName());
+        return null;
     }
 
     /**

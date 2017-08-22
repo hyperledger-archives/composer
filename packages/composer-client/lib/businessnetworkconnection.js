@@ -22,6 +22,8 @@ const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfil
 const EventEmitter = require('events');
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Historian = require('./historian');
+const IdentityRegistry = require('./identityregistry');
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
 const Query = require('./query');
@@ -29,8 +31,6 @@ const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
-const Historian = require('./historian');
-const IdentityRegistry = require('./identityregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 
@@ -182,7 +182,7 @@ class BusinessNetworkConnection extends EventEmitter {
 
     /**
      * Get a list of all existing participant registries.
-     * @exampleserializedResources
+     * @example
      * // Get all participant registries
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
@@ -274,7 +274,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     return businessNetworkDefinition.getTransactionRegistry();
      * })
      * .then(function(transactionRegistry){
-     *     // Retrieved Transaction Registry
+     *     // Retrieved transaction registry.
      * });
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
@@ -292,28 +292,28 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Get the Historian.
+     * Get the historian
      * @example
-     * // Get the Historian
+     * // Get the historian
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
      *     return businessNetworkDefinition.getHistorian();
      * })
      * .then(function(historian){
-     *     // Retrieved Historian
+     *     // Retrieved historian
      * });
      * @return {Promise} - A promise that will be resolved to the {@link Historian}
      */
     getHistorian() {
         Util.securityCheck(this.securityContext);
         return Historian
-            .getAllHistorians(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
-            .then((results) => {
-                if (results.length >= 1) {
-                    return results[0];
+            .getHistorian(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
+            .then((historian) => {
+                if (historian) {
+                    return historian;
                 } else {
-                    throw new Error('Failed to find the default transaction registry');
+                    throw new Error('Failed to find the historian');
                 }
             });
     }
@@ -321,14 +321,14 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Get the identity registry.
      * @example
-     * // Get the transaction registry
+     * // Get the identity registry
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
      *     return businessNetworkDefinition.getIdentityRegistry();
      * })
      * .then(function(identityRegistry){
-     *     // Retrieved Identity Registry
+     *     // Retrieved identity registry
      * });
      * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
      */
@@ -340,7 +340,7 @@ class BusinessNetworkConnection extends EventEmitter {
                 if (identityRegistry) {
                     return identityRegistry;
                 } else {
-                    throw new Error('Failed to find the default identity registry');
+                    throw new Error('Failed to find the identity registry');
                 }
             });
     }
@@ -633,7 +633,7 @@ class BusinessNetworkConnection extends EventEmitter {
             transactionId: uuid.v4(),
             timestamp: new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['HistorianRegistry', JSON.stringify(json)])
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);
             });
