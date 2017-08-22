@@ -5,7 +5,6 @@
 
 import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileStore } from 'composer-common';
 import { ConnectionProfileStoreService } from './connectionprofilestore.service';
@@ -13,13 +12,11 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('ConnectionProfileService', () => {
-    let mockWalletService;
     let adminConnectionMock;
     let connectionProfileStoreMock;
     let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
-        mockWalletService = sinon.createStubInstance(WalletService);
         adminConnectionMock = sinon.createStubInstance(AdminConnection);
 
         connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
@@ -28,7 +25,6 @@ describe('ConnectionProfileService', () => {
 
         TestBed.configureTestingModule({
             providers: [ConnectionProfileService,
-                {provide: WalletService, useValue: mockWalletService},
                 {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
     });
