@@ -30,9 +30,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise revokeIdentity()
 }
 class Historian extends Registry {
-   + Promise getAllHistorians(SecurityContext,ModelManager,Factory,Serializer)
-   + Promise getHistorian(SecurityContext,string,ModelManager,Factory,Serializer)
-   + Promise addHistorian(SecurityContext,string,string,ModelManager,Factory,Serializer)
+   + Promise getHistorian(SecurityContext,ModelManager,Factory,Serializer)
 }
 class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer)
