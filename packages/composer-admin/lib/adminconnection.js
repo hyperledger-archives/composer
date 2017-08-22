@@ -45,23 +45,34 @@ class AdminConnection {
     /**
      * Create an instance of the AdminConnection class.
      * @param {Object} [options] - an optional set of options to configure the instance.
+     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
      * @param {Object} [options.fs] - specify an fs implementation to use.
      */
     constructor(options) {
+        const method = 'constructor';
+        LOG.entry(method, options);
         options = options || {};
-        const fsConnectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        let connectionProfileStore;
+        if (options.connectionProfileStore) {
+            LOG.debug(method, 'Using connection profile store from options');
+            connectionProfileStore = options.connectionProfileStore;
+        } else {
+            LOG.debug(method, 'Creating new file system connection profile store');
+            connectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        }
         if (process.env.COMPOSER_CONFIG) {
+            LOG.debug(method, 'Enabling environment connection profile store');
             const envConnectionProfileStore = new EnvConnectionProfileStore();
-            this.connectionProfileStore = new ComboConnectionProfileStore(
-                fsConnectionProfileStore,
+            connectionProfileStore = new ComboConnectionProfileStore(
+                connectionProfileStore,
                 envConnectionProfileStore
             );
-        } else {
-            this.connectionProfileStore = fsConnectionProfileStore;
         }
+        this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
         this.securityContext = null;
+        LOG.exit(method);
     }
 
     /**

@@ -5,6 +5,7 @@ import { LocalStorageService } from 'angular-2-local-storage';
 import { AdminService } from './admin.service';
 import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, TransactionDeclaration } from 'composer-common';
@@ -26,7 +27,8 @@ export class ClientService {
     constructor(private adminService: AdminService,
                 private identityCardService: IdentityCardService,
                 private alertService: AlertService,
-                private localStorageService: LocalStorageService) {
+                private localStorageService: LocalStorageService,
+                private connectionProfileStoreService: ConnectionProfileStoreService) {
     }
 
     // horrible hack for tests
@@ -54,14 +56,11 @@ export class ClientService {
         return new BusinessNetworkDefinition(identifier, description, packageJson, readme);
     }
 
-    // horrible hack for tests
-    createBusinessNetworkConnection() {
-        return new BusinessNetworkConnection();
-    }
-
     getBusinessNetworkConnection(): BusinessNetworkConnection {
         if (!this.businessNetworkConnection) {
-            this.businessNetworkConnection = this.createBusinessNetworkConnection();
+            this.businessNetworkConnection = new BusinessNetworkConnection({
+                connectionProfileStore: this.connectionProfileStoreService.getConnectionProfileStore()
+            });
         }
         return this.businessNetworkConnection;
     }
