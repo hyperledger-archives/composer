@@ -175,7 +175,7 @@ describe('ProxyConnectionManager', () => {
 
         it('should send exportIdentity call to connector server', function() {
             const expected = {
-                publicKey: 'PUBLIC_CERTIFICATE',
+                certificate: 'CERTIFICATE',
                 privateKey: 'PRIVATE_KEY'
             };
             mockSocket.emit.withArgs('/api/connectionManagerExportIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func).yields(null, expected);

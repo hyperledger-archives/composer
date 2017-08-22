@@ -157,17 +157,17 @@ class ConnectorServer {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, callback) {
+    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
-        LOG.entry(method, connectionProfile, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, id, certificate, privateKey);
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
-                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey);
+                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
             })
             .then(() => {
                 callback(null);

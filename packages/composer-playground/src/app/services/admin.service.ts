@@ -250,7 +250,7 @@ export class AdminService {
         let credentials = currentCard.getCredentials();
 
         // if no certificate do nothing
-        if ((!credentials || !credentials.public || !credentials.private)) {
+        if ((!credentials || !credentials.certificate || !credentials.privateKey)) {
             let enrollmentCredientials = currentCard.getEnrollmentCredentials();
             if (!enrollmentCredientials || !enrollmentCredientials.secret) {
                 return Promise.reject(new Error('No certificates or user secret was specified. An identity card must contain either public and private certificates or an enrollment secret'));
@@ -260,7 +260,7 @@ export class AdminService {
             }
         }
 
-        return this.getAdminConnection().importIdentity(qpn, id, credentials.public, credentials.private);
+        return this.getAdminConnection().importIdentity(qpn, id, credentials.certificate, credentials.privateKey);
     }
 
     generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {

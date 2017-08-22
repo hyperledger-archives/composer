@@ -520,7 +520,7 @@ class AdminConnection {
     * @example
      * // Import an identity into a profiles' wallet
      * var adminConnection = new AdminConnection();
-     * return adminConnection.importIdentity('hlfv1', 'PeerAdmin', publicKey, privateKey)
+     * return adminConnection.importIdentity('hlfv1', 'PeerAdmin', certificate, privateKey)
      * .then(() => {
      *     // Identity imported
      *     console.log('identity imported successfully');
@@ -531,11 +531,11 @@ class AdminConnection {
      *
      * @param {string} connectionProfile Name of the connection profile
      * @param {string} id The id to associate with this identity
-     * @param {string} publicKey The signer cert in PEM format
+     * @param {string} certificate The signer cert in PEM format
      * @param {string} privateKey The private key in PEM format
      * @returns {Promise} A promise which is resolved when the identity is imported
      */
-    importIdentity(connectionProfile, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, id, certificate, privateKey) {
         let savedConnectionManager;
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
@@ -543,7 +543,7 @@ class AdminConnection {
                 return this.getProfile(connectionProfile);
             })
             .then((profileData) => {
-                return savedConnectionManager.importIdentity(connectionProfile, profileData, id, publicKey, privateKey);
+                return savedConnectionManager.importIdentity(connectionProfile, profileData, id, certificate, privateKey);
             })
             .catch((error) => {
                 throw new Error('failed to import identity. ' + error.message);
@@ -594,7 +594,7 @@ class AdminConnection {
      * Obtain the credentials associated with a given identity.
      * @param {String} connectionProfileName Name of the connection profile.
      * @param {String} id Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
      */
     exportIdentity(connectionProfileName, id) {
         let savedConnectionManager;

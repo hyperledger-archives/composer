@@ -1163,7 +1163,7 @@ describe('HLFConnectionManager', () => {
 
     describe('#exportIdentity', function() {
         const userId = 'Eric';
-        const publicCertificate = 'PUBLIC_CERTIFICATE';
+        const certificate = 'CERTIFICATE';
         const signerKey = 'SIGNER_KEY';
         let profile;
 
@@ -1173,7 +1173,7 @@ describe('HLFConnectionManager', () => {
 
             const mockUser = sinon.createStubInstance(User);
             const mockIdentity = {
-                _certificate: publicCertificate
+                _certificate: certificate
             };
             const mockSigningIdentity = sinon.createStubInstance(idModule.SigningIdentity);
             const mockSigner = sinon.createStubInstance(idModule.Signer);
@@ -1208,7 +1208,7 @@ describe('HLFConnectionManager', () => {
             return connectionManager.exportIdentity('connprof1', profile, userId)
                 .then((credentials) => {
                     credentials.should.deep.equal({
-                        publicKey: publicCertificate,
+                        certificate: certificate,
                         privateKey: signerKey
                     });
                 });

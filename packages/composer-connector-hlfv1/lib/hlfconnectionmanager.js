@@ -543,7 +543,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {String} connectionProfileName - Name of the connection profile.
      * @param {Object} connectionOptions - connection options loaded from the profile.
      * @param {String} id - Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
         const method = 'exportIdentity';
@@ -555,7 +555,7 @@ class HLFConnectionManager extends ConnectionManager {
             })
             .then((user) => {
                 const result = {
-                    publicKey: user.getIdentity()._certificate,
+                    certificate: user.getIdentity()._certificate,
                     privateKey: user.getSigningIdentity()._signer._key.toBytes()
                 };
                 LOG.exit(method, result);
