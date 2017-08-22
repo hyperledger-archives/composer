@@ -17,13 +17,58 @@ import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
-import { FileWallet } from 'composer-common';
+import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
+import * as chai from 'chai';
+
+let should = chai.should();
+
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 
 describe('InitializationService', () => {
+
+    let mockConfig = {
+        cards: [
+            {
+                metadata: {
+                    name: 'PeerAdmin',
+                    enrollmentId: 'PeerAdmin',
+                    enrollmentSecret: 'NOTUSED',
+                    roles: [
+                        'PeerAdmin',
+                        'ChannelAdmin'
+                    ]
+                },
+                connectionProfile: {
+                    name: 'hlfabric',
+                    description: 'Hyperledger Fabric v1.0',
+                    type: 'hlfv1',
+                    keyValStore: '/home/composer/.composer-credentials',
+                    timeout: 300,
+                    orderers: [
+                        {
+                            url: 'grpc://orderer.example.com:7050'
+                        }
+                    ],
+                    channel: 'composerchannel',
+                    mspID: 'Org1MSP',
+                    ca: {
+                        url: 'http://ca.org1.example.com:7054',
+                        name: 'ca.org1.example.com'
+                    },
+                    peers: [
+                        {
+                            requestURL: 'grpc://peer0.org1.example.com:7051',
+                            eventURL: 'grpc://peer0.org1.example.com:7053'
+                        }
+                    ]
+                },
+                credentials: null
+            }
+        ]
+    };
 
     let mockClientService;
     let mockAlertService;
@@ -40,6 +85,9 @@ describe('InitializationService', () => {
         mockWalletService = sinon.createStubInstance(WalletService);
         mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+
+        mockAlertService.busyStatus$ = {next: sinon.stub()};
+        mockAlertService.errorStatus$ = {next: sinon.stub()};
 
         TestBed.configureTestingModule({
             imports: [HttpModule],
@@ -81,12 +129,11 @@ describe('InitializationService', () => {
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
 
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-
             mockIdentityService.getLoggedIn.returns(false);
 
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
-            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve('cardRef'));
+
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
 
             service.initialize();
 
@@ -98,6 +145,29 @@ describe('InitializationService', () => {
             mockCreateSample.should.be.called;
         })));
 
+        it('should initialize and deploy sample with config data', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
+            mockCreateSample.returns(Promise.resolve());
+
+            let stubLoadConfig = sinon.stub(service, 'loadConfig');
+            stubLoadConfig.returns(Promise.resolve(mockConfig));
+
+            mockIdentityService.getLoggedIn.returns(false);
+
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
+
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
+
+            service.initialize();
+
+            tick();
+            stubLoadConfig.should.be.called;
+
+            mockIdentityCardService.loadIdentityCards.should.have.been.called;
+            mockIdentityCardService.addInitialIdentityCards.should.have.been.calledWith([sinon.match.instanceOf(IdCard)]);
+            mockCreateSample.should.be.called;
+        })));
+
         it('should initialize and not deploy sample as logged in', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             let mockCreateSample = sinon.stub(service, 'deployInitialSample');
             mockCreateSample.returns(Promise.resolve());
@@ -105,12 +175,10 @@ describe('InitializationService', () => {
             let stubLoadConfig = sinon.stub(service, 'loadConfig');
             stubLoadConfig.returns(Promise.resolve({}));
 
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-
             mockIdentityService.getLoggedIn.returns(true);
 
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
-            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve('cardRef'));
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
 
             service.initialize();
 
@@ -128,13 +196,10 @@ describe('InitializationService', () => {
 
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
-
             service.initialize();
             tick();
 
-            mockAlertService.errorStatus$.next.should.be.called;
+            mockAlertService.errorStatus$.next.should.have.been.called;
             service['initialized'].should.be.false;
 
             sinon.restore(service.loadConfig);
@@ -153,6 +218,45 @@ describe('InitializationService', () => {
             service.loadConfig().then((config) => {
                 config.should.deep.equal({result: 'a result'});
             });
+            tick();
+        })));
+
+        it('should load config and ignore 404', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
+            // setup a mocked response
+            mockBackend.connections.subscribe((connection) => {
+                connection.mockError(new Response(new ResponseOptions({
+                    status: 404,
+                    statusText: 'URL not Found',
+                })));
+            });
+
+            service.loadConfig()
+                .then((config) => {
+                    should.not.exist(config);
+                })
+                .catch((error) => {
+                    throw new Error('should not get here');
+                });
+            tick();
+        })));
+
+        it('should handle error', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
+            // setup a mocked response
+            mockBackend.connections.subscribe((connection) => {
+                connection.mockError(new Response(new ResponseOptions({
+                    status: 500,
+                    statusText: 'internal server error',
+                })));
+            });
+
+            service.loadConfig()
+                .then((config) => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.status.should.equal(500);
+                    error.statusText.should.equal('internal server error');
+                });
             tick();
         })));
     });
@@ -183,4 +287,5 @@ describe('InitializationService', () => {
             mockClientService.deployInitialSample.should.have.been.called;
         })));
     });
-});
+})
+;
