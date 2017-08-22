@@ -69,6 +69,90 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to load a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreLoad(connectionProfile, callback) {
+        const method = 'connectionProfileStoreLoad';
+        LOG.entry(method, connectionProfile);
+        return this.connectionProfileStore.load(connectionProfile)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Handle a request from the client to save a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreSave(connectionProfile, connectionOptions, callback) {
+        const method = 'connectionProfileStoreSave';
+        LOG.entry(method, connectionProfile, connectionOptions);
+        return this.connectionProfileStore.save(connectionProfile, connectionOptions)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Handle a request from the client to load all connection profiles.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreLoadAll(callback) {
+        const method = 'connectionProfileStoreLoadAll';
+        LOG.entry(method);
+        return this.connectionProfileStore.loadAll()
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Handle a request from the client to delete a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreDelete(connectionProfile, callback) {
+        const method = 'connectionProfileStoreDelete';
+        LOG.entry(method, connectionProfile);
+        return this.connectionProfileStore.delete(connectionProfile)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
      * Handle a request from the client to import an identity.
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
@@ -88,6 +172,32 @@ class ConnectorServer {
             .then(() => {
                 callback(null);
                 LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} Promise that resolves to credentials.
+     */
+    connectionManagerExportIdentity(connectionProfileName, connectionOptions, id, callback) {
+        const method = 'connectionManagerExportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        return this.connectionProfileManager.getConnectionManager(connectionProfileName)
+            .then((connectionManager) => {
+                return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
+            })
+            .then((credentials) => {
+                callback(null, credentials);
+                LOG.exit(method, credentials);
             })
             .catch((error) => {
                 LOG.error(error);

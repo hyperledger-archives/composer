@@ -12,9 +12,10 @@ import * as chai from 'chai';
 let should = chai.should();
 
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition } from 'composer-common';
+import { BusinessNetworkDefinition, ConnectionProfileStore } from 'composer-common';
 import { IdentityCardService } from './identity-card.service';
 import { AdminConnection } from 'composer-admin';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 describe('AdminService', () => {
 
@@ -25,6 +26,9 @@ describe('AdminService', () => {
     let identityCardMock;
 
     let adminConnectionMock;
+
+    let connectionProfileStoreMock;
+    let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -45,10 +49,15 @@ describe('AdminService', () => {
             next: sinon.stub()
         };
 
+        connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
+        connectionProfileStoreServiceMock = sinon.createStubInstance(ConnectionProfileStoreService);
+        connectionProfileStoreServiceMock.getConnectionProfileStore.returns(connectionProfileStoreMock);
+
         TestBed.configureTestingModule({
             providers: [AdminService,
                 {provide: AlertService, useValue: alertMock},
-                {provide: IdentityCardService, useValue: identityCardMock}]
+                {provide: IdentityCardService, useValue: identityCardMock},
+                {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
     });
 
@@ -63,6 +72,13 @@ describe('AdminService', () => {
             let result = service.getAdminConnection();
 
             result.should.deep.equal(adminConnectionMock);
+        }));
+
+        it('should create a new admin connection if it does not exist', inject([AdminService], (service: AdminService) => {
+            let result = service.getAdminConnection();
+
+            result.should.be.an.instanceOf(AdminConnection);
+            (<any> result).connectionProfileStore.should.equal(connectionProfileStoreMock);
         }));
     });
 

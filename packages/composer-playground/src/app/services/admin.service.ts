@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
+
 import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileManager, Logger, BusinessNetworkDefinition } from 'composer-common';
+
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 
@@ -14,7 +18,8 @@ export class AdminService {
     private connectingPromise: Promise<any> = null;
 
     constructor(private identityCardService: IdentityCardService,
-                private alertService: AlertService) {
+                private alertService: AlertService,
+                private connectionProfileStoreService: ConnectionProfileStoreService) {
         Logger.setFunctionalLogger({
             // tslint:disable-next-line:no-empty
             log: () => {
@@ -33,7 +38,9 @@ export class AdminService {
 
     getAdminConnection(): AdminConnection {
         if (!this.adminConnection) {
-            this.adminConnection = new AdminConnection();
+            this.adminConnection = new AdminConnection({
+                connectionProfileStore: this.connectionProfileStoreService.getConnectionProfileStore()
+            });
         }
 
         return this.adminConnection;

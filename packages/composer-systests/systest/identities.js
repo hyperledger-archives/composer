@@ -273,4 +273,43 @@ describe('Identity system tests', () => {
             .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
     });
 
+    it('should export credentials for previously imported identity', function () {
+        let profileName;
+        let certificate;
+        let privateKey;
+        if (TestUtil.isHyperledgerFabricV1()) {
+            profileName = 'composer-systests-org1';
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8').replace(/\r/g, '');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8').replace(/\r/g, '');
+        } else {
+            profileName = 'composer-systests';
+            certificate =
+                '----- BEGIN CERTIFICATE -----\n' +
+                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64') + '\n' +
+                '----- END CERTIFICATE -----\n';
+            privateKey = 'FAKE_PRIVATE_KEY';
+        }
+
+        const identity = uuid.v4();
+
+        const adminConnection = new AdminConnection();
+
+        return adminConnection.importIdentity(profileName, identity, certificate, privateKey)
+            .then(() => {
+                return adminConnection.exportIdentity(profileName, identity);
+            })
+            .then((credentials) => {
+                // Remove any carriage returns that may have been added by fabric
+                credentials.publicKey = credentials.publicKey.replace(/\r/g, '');
+                credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
+
+                credentials.should.deep.equal({
+                    publicKey: certificate,
+                    privateKey: privateKey
+                });
+            });
+    });
+
 });

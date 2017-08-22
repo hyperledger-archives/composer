@@ -23,6 +23,8 @@ const uuid = require('uuid');
 // The issuer for all identities.
 const DEFAULT_ISSUER = createHash('sha256').update('org1').digest('hex');
 
+const IDENTITY_COLLECTION_ID = 'identities';
+
 /**
  * Base class representing a connection manager that establishes and manages
  * connections to one or more business networks.
@@ -51,7 +53,7 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @returns {Promise} a promise
      */
     importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
-        return this.dataService.ensureCollection('identities')
+        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
             .then((identities) => {
                 const bytes = publicKey
                     .replace(/-----BEGIN CERTIFICATE-----/, '')
@@ -66,13 +68,39 @@ class EmbeddedConnectionManager extends ConnectionManager {
                     issuer: DEFAULT_ISSUER,
                     secret,
                     certificate: publicKey,
+                    privateKey: privateKey,
                     imported: true
                 };
                 return identities.add(id, identity);
             });
     }
 
-    /**
+     /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
+            .then((identities) => {
+                return identities.get(id);
+            })
+            .then((identity) => {
+                // Fake up a private key is none is present
+                const privateKey = identity.privateKey ||
+                    '-----BEGIN PRIVATE KEY-----\n' +
+                    Buffer.from(id).toString('base64') + '\n' +
+                    '-----END PRIVATE KEY-----\n';
+                return {
+                    publicKey: identity.certificate,
+                    privateKey: privateKey
+                };
+            });
+    }
+
+   /**
      * Establish a connection to the business network.
      * @param {string} connectionProfile The name of the connection profile
      * @param {string} businessNetworkIdentifier The identifier of the business network

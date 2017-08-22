@@ -537,6 +537,31 @@ class HLFConnectionManager extends ConnectionManager {
                 throw error;
             });
     }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        const method = 'exportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        const client = HLFConnectionManager.createClient();
+        return this._setupWallet(client, connectionOptions.wallet, connectionOptions.keyValStore)
+            .then(() => {
+                return client.getUserContext(id, true);
+            })
+            .then((user) => {
+                const result = {
+                    publicKey: user.getIdentity()._certificate,
+                    privateKey: user.getSigningIdentity()._signer._key.toBytes()
+                };
+                LOG.exit(method, result);
+                return result;
+            });
+    }
 }
 
 module.exports = HLFConnectionManager;
