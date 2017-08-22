@@ -12,7 +12,7 @@ import { Input, Output, EventEmitter, Directive } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
-import { AssetRegistry, TransactionRegistry } from 'composer-client';
+import { AssetRegistry, TransactionRegistry, Historian } from 'composer-client';
 import { BusinessNetworkDefinition, Serializer, Resource } from 'composer-common';
 
 // Load the implementations that should be tested
@@ -51,8 +51,8 @@ describe(`RegistryComponent`, () => {
 
     let mockAssetRegistry;
     let assetRegistryContents;
-    let mockTransactionRegistry;
-    let transactionRegistryContents;
+    let mockHistorian;
+    let historianContents;
 
     let sandbox;
 
@@ -96,8 +96,9 @@ describe(`RegistryComponent`, () => {
         mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
         mockAssetRegistry.registryType = 'Asset';
 
-        mockTransactionRegistry = sinon.createStubInstance(TransactionRegistry);
-        mockTransactionRegistry.registryType = 'Transaction';
+        mockHistorian = sinon.createStubInstance(Historian);
+        mockHistorian.registryType = 'Asset';
+        mockHistorian.id = 'org.hyperledger.composer.system.HistorianRecord';
     });
 
     afterEach(() => {
@@ -116,13 +117,13 @@ describe(`RegistryComponent`, () => {
             assetRegistryContents = [asset2, asset3, asset1];
 
             let trans1 = sinon.createStubInstance(Resource);
-            trans1.timestamp = '1';
+            trans1.transactionTimestamp = '1';
             let trans2 = sinon.createStubInstance(Resource);
-            trans2.timestamp = '2';
+            trans2.transactionTimestamp = '2';
             let trans3 = sinon.createStubInstance(Resource);
-            trans3.timestamp = '3';
+            trans3.transactionTimestamp = '3';
 
-            transactionRegistryContents = [trans1, trans2, trans3];
+            historianContents = [trans1, trans2, trans3];
         });
 
         afterEach(() => {
@@ -131,11 +132,11 @@ describe(`RegistryComponent`, () => {
 
         it('should call loadResources when registry is set', () => {
             sandbox.stub(component, 'loadResources');
-            mockAssetRegistry.registryType = 'transaction';
+            mockAssetRegistry.id = 'org.hyperledger.composer.system.HistorianRecord';
             component.registry = mockAssetRegistry;
             component.loadResources.should.be.called;
             component['_registry'].should.equal(mockAssetRegistry);
-            component['registryType'].should.equal('transaction');
+            component['registryId'].should.equal('org.hyperledger.composer.system.HistorianRecord');
         });
 
         it('should not call loadResources if null registry is given', () => {
@@ -162,7 +163,7 @@ describe(`RegistryComponent`, () => {
         it('should sort a list of assets by identifier', fakeAsync(() => {
             mockAssetRegistry.getAll.returns(Promise.resolve(assetRegistryContents));
             component['_registry'] = mockAssetRegistry;
-            component['registryType'] = mockAssetRegistry.registryType;
+            component['registryId'] = mockAssetRegistry.id;
             component.loadResources();
             tick();
             component['resources'][0].getIdentifier().should.equal('1');
@@ -170,15 +171,15 @@ describe(`RegistryComponent`, () => {
             component['resources'][2].getIdentifier().should.equal('3');
         }));
 
-        it('should sort a list of transactions by timestamp', fakeAsync(() => {
-            mockTransactionRegistry.getAll.returns(Promise.resolve(transactionRegistryContents));
-            component['_registry'] = mockTransactionRegistry;
-            component['registryType'] = mockTransactionRegistry.registryType;
+        it('should sort a list of historian resources by timestamp', fakeAsync(() => {
+            mockHistorian.getAll.returns(Promise.resolve(historianContents));
+            component['_registry'] = mockHistorian;
+            component['registryId'] = mockHistorian.id;
             component.loadResources();
             tick();
-            component['resources'][0].timestamp.should.equal('3');
-            component['resources'][1].timestamp.should.equal('2');
-            component['resources'][2].timestamp.should.equal('1');
+            component['resources'][0].transactionTimestamp.should.equal('3');
+            component['resources'][1].transactionTimestamp.should.equal('2');
+            component['resources'][2].transactionTimestamp.should.equal('1');
         }));
 
         it('should call AlertService.errorstatus$.next() on error', fakeAsync(() => {
@@ -340,17 +341,77 @@ describe(`RegistryComponent`, () => {
         }));
     });
 
-    describe('#isTransactionRegistry', () => {
-        it('should return true if reigstry type is transaction', () => {
-            component['registryType'] = 'Transaction';
+    describe('viewTransactionData', () => {
+        it('should open the modal', fakeAsync(() => {
+            mockClientService.resolveTransactionRelationship.returns(Promise.resolve({$class: 'myTransaction'}));
 
-            component['isTransactionRegistry']().should.be.true;
+            let componentInstance = {
+                transaction: {},
+                events: []
+            };
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: componentInstance,
+                result: Promise.resolve()
+            });
+
+            let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};
+            component.viewTransactionData(mockTransaction);
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal(['event 1']);
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            mockClientService.resolveTransactionRelationship.returns(Promise.resolve({$class: 'myTransaction'}));
+
+            let componentInstance = {
+                transaction: {},
+                events: []
+            };
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: componentInstance,
+                result: Promise.reject('some error')
+            });
+
+            let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};
+            component.viewTransactionData(mockTransaction);
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal(['event 1']);
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+    });
+
+    describe('updateTableScroll', () => {
+        it('should assign a value to the tableScrolled variable', () => {
+            component.tableScrolled.should.be.false;
+            component.updateTableScroll(true);
+            component.tableScrolled.should.be.true;
+            component.updateTableScroll(false);
+            component.tableScrolled.should.be.false;
+        });
+    });
+
+    describe('#isHistorian', () => {
+        it('should return true if registry type is historian', () => {
+            component['registryId'] = 'org.hyperledger.composer.system.HistorianRecord';
+
+            component['isHistorian']().should.be.true;
         });
 
-        it('should return false if registry type is not transaction', () => {
-            component['registryType'] = 'NotTransaction';
+        it('should return false if registry type is not historian', () => {
+            component['registryId'] = 'org.hyperledger.composer.system.Identity';
 
-            component['isTransactionRegistry']().should.be.false;
+            component['isHistorian']().should.be.false;
         });
     });
 });

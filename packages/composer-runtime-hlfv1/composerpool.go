@@ -14,9 +14,14 @@
 
 package main
 
+import "sync"
+
 // ComposerPool holds a pool of Composer objects.
 type ComposerPool struct {
-	Pool chan *Composer
+	Pool      chan *Composer
+	PoolMutex *sync.RWMutex
+	PoolCount int
+	PoolMax   int
 }
 
 // NewComposerPool creates a new pool of Composer objects.
@@ -24,9 +29,13 @@ func NewComposerPool(max int) (result *ComposerPool) {
 	logger.Debug("Entering NewComposerPool", max)
 	defer func() { logger.Debug("Exiting NewComposerPool", result) }()
 
-	return &ComposerPool{
-		Pool: make(chan *Composer, max),
+	result = &ComposerPool{
+		Pool:      make(chan *Composer, max),
+		PoolCount: 0,
+		PoolMax:   max,
+		PoolMutex: &sync.RWMutex{},
 	}
+	return result
 }
 
 // Get returns an existing Composer object from the pool, or creates a new one
@@ -35,11 +44,29 @@ func (cp *ComposerPool) Get() (result *Composer) {
 	logger.Debug("Entering ComposerPool.Get")
 	defer func() { logger.Debug("Exiting ComposerPool.Get", result) }()
 
-	select {
-	case result = <-cp.Pool:
-	default:
-		result = NewComposer()
+	// lock the pool and check to see how many Composer objects
+	// have been created - create a new one if we haven't hit the max yet
+	cp.PoolMutex.RLock()
+	if cp.PoolCount < cp.PoolMax {
+		cp.PoolMutex.RUnlock()
+		cp.PoolMutex.Lock()
+		defer cp.PoolMutex.Unlock()
+		if cp.PoolCount < cp.PoolMax {
+			result := NewComposer()
+			result.Index = cp.PoolCount
+			logger.Debug("Creating a new Composer object for pool", result.Index)
+			cp.PoolCount++
+			return result
+		}
+	} else {
+		cp.PoolMutex.RUnlock()
 	}
+
+	// we will get the newly created one, or wait for one. Potentially
+	// we could have had one put back during this time which we could
+	// have used if a new one was created, but never mind.
+	result = <-cp.Pool
+	logger.Debug("Got Composer object from pool", result.Index)
 	return result
 }
 
@@ -49,10 +76,7 @@ func (cp *ComposerPool) Put(composer *Composer) (result bool) {
 	logger.Debug("Entering ComposerPool.Put", composer)
 	defer func() { logger.Debug("Exiting ComposerPool.Put", result) }()
 
-	select {
-	case cp.Pool <- composer:
-		return true
-	default:
-		return false
-	}
+	logger.Debug("Putting Composer object into pool", composer.Index)
+	cp.Pool <- composer
+	return true
 }

@@ -25,7 +25,6 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
@@ -51,13 +50,14 @@ describe('composer network logLevel CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            connectionProfileName: PROFILE_NAME
+            connectionProfileName: 'someOtherProfile'
         };
 
         return LogLevel.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, PROFILE_NAME, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'someOtherProfile', argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.getLogLevel);
             });
     });
@@ -67,14 +67,15 @@ describe('composer network logLevel CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            connectionProfileName: PROFILE_NAME,
+            connectionProfileName: 'someOtherProfile',
             newlevel: 'DEBUG'
         };
 
         return LogLevel.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, PROFILE_NAME, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'someOtherProfile', argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.setLogLevel);
                 sinon.assert.calledWith(mockAdminConnection.setLogLevel, 'DEBUG');
             });

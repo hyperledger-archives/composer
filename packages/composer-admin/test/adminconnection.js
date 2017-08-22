@@ -73,6 +73,7 @@ describe('AdminConnection', () => {
         mockConnection.invokeChainCode.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
+        mockConnection.upgrade.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
@@ -210,22 +211,20 @@ describe('AdminConnection', () => {
         it('should be able to install a business network definition', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.install(businessNetworkDefinition)
+            return adminConnection.install('org-acme-biznet')
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.install);
-                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition);
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet');
             });
         });
 
         it('should be able to install a business network definition with install options', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.install(businessNetworkDefinition, {opt: 1})
+            return adminConnection.install('org-acme-biznet', {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.install);
-                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(mockConnection.install, mockSecurityContext, 'org-acme-biznet', {opt: 1});
             });
         });
 
@@ -257,6 +256,18 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#upgrade', () => {
+
+        it('should be able to upgrade a composer runtime', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.upgrade()
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.upgrade);
+                sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext);
+            });
+        });
+    });
 
     describe('#deploy', () => {
 
@@ -474,6 +485,30 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
                 .should.be.rejectedWith(/no identity imported/);
+        });
+
+
+    });
+
+    describe('#requestIdentity', () => {
+        it('should be able to request an identity', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.requestIdentity('testprofile', 'id', 'secret')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, 'testprofile', config, 'id', 'secret');
+                });
+        });
+
+        it('should throw an error if import fails', () => {
+            mockConnectionManager.requestIdentity = sinon.stub();
+            mockConnectionManager.requestIdentity.rejects(new Error('some error'));
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.requestIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+                .should.be.rejectedWith(/some error/);
         });
 
 

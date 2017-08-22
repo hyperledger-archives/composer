@@ -341,18 +341,69 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
+     * Request an identity's certificates.
+     *
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {any} enrollmentID The enrollment id
+     * @param {any} enrollmentSecret  The enrollment secret
+     * @returns {promise} resolves once the files have been written, rejected if a problem occurs
+     */
+    requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret) {
+        const method = 'requestIdentity';
+        LOG.entry(method, enrollmentID);
+
+        // Validate all the arguments.
+        if (!connectionProfile || typeof connectionProfile !== 'string') {
+            throw new Error('connectionProfile not specified or not a string');
+        } else if (!connectionOptions || typeof connectionOptions !== 'object') {
+            throw new Error('connectionOptions not specified or not an object');
+        } else if (!enrollmentID) {
+            throw new Error('enrollmentID not specified');
+        } else if (!enrollmentSecret) {
+            throw new Error('enrollmentSecret not specified');
+        } else if (!connectionOptions.ca) {
+            throw new Error('No ca defined in connection profile');
+        }
+
+        // Submit the enrollment request to Fabric CA.
+        LOG.debug(method, 'Submitting enrollment request');
+        let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
+        const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, Client.newCryptoSuite());
+
+        // determine the name of the ca.
+        let caName = 'default';
+        if (typeof connectionOptions.ca === 'object' && connectionOptions.ca.name) {
+            caName = connectionOptions.ca.name;
+        }
+        return caClient.enroll(options)
+            .then((enrollment) => {
+                enrollment.caName = caName;
+                enrollment.key = enrollment.key.toBytes();
+                LOG.exit(method);
+                return enrollment;
+            })
+            .catch((error) => {
+                const newError = new Error('Error trying to enroll user and return certificates. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+
+    }
+
+    /**
      * Import an identity into a profile wallet or keystore
      *
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} publicCert the public signer certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, connectionProfile, connectionOptions, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, publicCert, privateKey);
 
         // validate arguments
         if (!connectionProfile || typeof connectionProfile !== 'string') {
@@ -361,8 +412,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('connectionOptions not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
-        } else if (!publicKey || typeof publicKey !== 'string') {
-            throw new Error('publicKey not specified or not a string');
+        } else if (!publicCert || typeof publicCert !== 'string') {
+            throw new Error('publicCert not specified or not a string');
         } else if (!privateKey || typeof privateKey !== 'string') {
             throw new Error('privateKey not specified or not a string');
         }
@@ -382,7 +433,7 @@ class HLFConnectionManager extends ConnectionManager {
                     mspid: mspID,
                     cryptoContent: {
                         privateKeyPEM: privateKey,
-                        signedCertPEM: publicKey
+                        signedCertPEM: publicCert
                     }
                 });
             })
@@ -427,13 +478,13 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         // set the message limits if required
-        if (connectOptions.maxSendSize && typeof connectOptions.maxSendSize === 'number' && connectOptions.maxSendSize !== 0) {
-            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
+        if (connectOptions.maxSendSize && connectOptions.maxSendSize !== 0) {
+            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
         }
 
         // set the message limits if required
-        if (connectOptions.maxRecvSize && typeof connectOptions.maxRecvSize === 'number' && connectOptions.maxRecvSize !== 0) {
-            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
+        if (connectOptions.maxRecvSize && connectOptions.maxRecvSize !== 0) {
+            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
         }
 
         // Create a new client instance.

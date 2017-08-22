@@ -44,12 +44,12 @@ class HLFConnection extends Connection {
 
     /**
      * Create a new user.
-     * @param {string} enrollmentID The enrollment ID.
+     * @param {string} identity The identity of the user.
      * @param {Client} client The client.
      * @return {User} A new user.
      */
-    static createUser(enrollmentID, client) {
-        let user = new User(enrollmentID);
+    static createUser(identity, client) {
+        let user = new User(identity);
         user.setCryptoSuite(client.getCryptoSuite());
         return user;
     }
@@ -144,7 +144,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying disconnect. ' + error);
+                const newError = new Error('Error trying disconnect. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -194,7 +194,7 @@ class HLFConnection extends Connection {
                 return user;
             })
             .catch((error) => {
-                const newError = new Error('error trying to enroll user. ' + error);
+                const newError = new Error('Error trying to enroll user. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -245,24 +245,23 @@ class HLFConnection extends Connection {
 
     /**
      * Login as a participant on the business network.
-     * @param {string} enrollmentID The enrollment ID of the participant.
-     * @param {string} enrollmentSecret The enrollment secret of the participant.
+     * @param {string} identity The identity which represents the required crypto material.
+     * @param {string} enrollmentSecret The enrollment secret of the participant if required to obtain the
+     * crypto material from a Certificate Authority.
      * @return {Promise} A promise that is resolved with a {@link SecurityContext}
      * object representing the logged in participant, or rejected with a login error.
      */
-    login(enrollmentID, enrollmentSecret) {
+    login(identity, enrollmentSecret) {
         const method = 'login';
-        LOG.entry(method, enrollmentID);
+        LOG.entry(method, identity);
 
         // Validate all the arguments.
-        if (!enrollmentID) {
-            throw new Error('enrollmentID not specified');
-        } else if (!enrollmentSecret) {
-            throw new Error('enrollmentSecret not specified');
+        if (!identity) {
+            throw new Error('identity not specified');
         }
 
         // Get the user context (certificate) from the state store.
-        return this.client.getUserContext(enrollmentID, true)
+        return this.client.getUserContext(identity, true)
             .then((user) => {
 
                 // If the user exists and is enrolled, we use the data from the state store.
@@ -272,7 +271,7 @@ class HLFConnection extends Connection {
                     return user;
                 } else {
                     LOG.debug(method, 'User not enrolled, submitting enrollment request');
-                    return this.enroll(enrollmentID, enrollmentSecret);
+                    return this.enroll(identity, enrollmentSecret);
                 }
             })
             .then((user) => {
@@ -280,7 +279,7 @@ class HLFConnection extends Connection {
                 // Now we can create a security context.
                 LOG.debug(method, 'Creating new security context');
                 let result = new HLFSecurityContext(this);
-                result.setUser(enrollmentID);
+                result.setUser(identity);
                 this.user = user;
 
                 // now we can connect to the eventhubs
@@ -290,7 +289,7 @@ class HLFConnection extends Connection {
 
             })
             .catch((error) => {
-                const newError = new Error('error trying login and get user Context. ' + error);
+                const newError = new Error('Error trying login and get user Context. ' + error);
                 LOG.error(method, error);
                 throw newError;
             });
@@ -331,11 +330,14 @@ class HLFConnection extends Connection {
             })
             .then(() => {
                 // Update the chaincode source to have the runtime version in it.
-                let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'version.go');
+                // Also provide a default poolSize of 8 if not specified in install options.
+                const poolSize = installOptions && installOptions.poolSize ? installOptions.poolSize * 1 : 8;
+                let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'constants.go');
                 let targetFileContents = `
                 package main
                 // The version for this chaincode.
                 const version = "${runtimePackageJSON.version}"
+                const PoolSize = ${poolSize}
                 `;
                 return this.fs.outputFile(targetFilePath, targetFileContents);
 
@@ -371,7 +373,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying install chaincode. ' + error);
+                const newError = new Error('Error trying install chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -405,7 +407,7 @@ class HLFConnection extends Connection {
      * @memberOf HLFConnection
      */
     start(securityContext, businessNetwork, startOptions) {
-        const method = '_instantiate';
+        const method = 'start';
         LOG.entry(method, securityContext, businessNetwork, startOptions);
 
         if (!businessNetwork) {
@@ -489,7 +491,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying to instantiate chaincode. ' + error);
+                const newError = new Error('Error trying to instantiate chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -497,7 +499,7 @@ class HLFConnection extends Connection {
 
     /**
      * Deploy all business network artifacts.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {HLFSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
      * @param {Object} deployOptions connector specific deployment options
      * @param {string} deployOptions.logLevel the level of logging for the composer runtime
@@ -538,7 +540,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying deploy. ' + error);
+                const newError = new Error('Error trying deploy. ' + error);
                 LOG.error(method, error);
                 throw newError;
             });
@@ -623,7 +625,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying undeploy. ' + error);
+                const newError = new Error('Error trying undeploy. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -661,7 +663,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying to update business network. ' + error);
+                const newError = new Error('Error trying to update business network. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -669,7 +671,7 @@ class HLFConnection extends Connection {
 
     /**
      * Test ("ping") the connection to the business network.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {HLFSecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the
      * business network has been tested, or rejected with an error.
      */
@@ -680,35 +682,49 @@ class HLFConnection extends Connection {
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
-        // Submit a call to the ping function in the chaincode.
+        // Check our client version should be greater than or equal but only a micro version change.
+        return this._checkRuntimeVersions(securityContext)
+            .then((results) => {
+                if (!results.isCompatible) {
+                    throw new Error(`Composer runtime (${results.response.version}) is not compatible with client (${connectorPackageJSON.version})`);
+                }
+                LOG.exit(method, results.response);
+                return results.response;
+
+            })
+            .catch((error) => {
+                const newError = new Error('Error trying to ping. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+    }
+
+    /**
+     * perform a ping and check runtime versions haven't changed major/minor version numbers.
+     * Changes to micro version numbers are acceptable.
+     *
+     * @param {HLFSecurityContext} securityContext The participant's security context.
+     * @returns {Promise} which resolves to an array containing whether runtimes are compatible and the ping response,
+     * or is rejected with an error.
+     */
+    _checkRuntimeVersions(securityContext) {
+        const method = '_checkRuntimeVersions';
+        LOG.entry(method, securityContext);
+
         return this.queryChainCode(securityContext, 'ping', [])
             .then((buffer) => {
 
                 // Parse the response.
                 const response = JSON.parse(buffer.toString());
-
-                // Is the runtime using a prerelease version?
                 const runtimeVersion = response.version;
-                const prerelease = (semver.prerelease(runtimeVersion) !== null);
 
-                // If the runtime is using a prerelease version, then we must exactly match that version.
-                // If the runtime is using a normal version, then our client version should be greater than or equal.
-                const range = (prerelease ? runtimeVersion : `^${runtimeVersion}`);
-                if (!semver.satisfies(connectorPackageJSON.version, range)) {
-                    LOG.error('ping', 'Version mismatch', connectorPackageJSON.version, runtimeVersion, range);
-                    throw new Error(`Deployed chain-code (${response.version}) is incompatible with client (${connectorPackageJSON.version})`);
-                } else {
-                    LOG.info('ping', 'Successful ping', connectorPackageJSON.version, runtimeVersion, range);
-                }
-                LOG.exit(method, response);
-                return response;
-
-            })
-            .catch((error) => {
-                const newError = new Error('error trying to ping. ' + error);
-                LOG.error(method, newError);
-                throw newError;
+                // Check our client version should be greater than or equal but only a micro version change.
+                const range =  `^${runtimeVersion}`;
+                const result = {isCompatible: semver.satisfies(connectorPackageJSON.version, range), response: response};
+                LOG.exit(method, result);
+                return result;
             });
+
     }
 
     /**
@@ -763,7 +779,7 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                const newError = new Error('error trying to query chaincode. ' + error);
+                const newError = new Error('Error trying to query chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -844,7 +860,7 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                const newError = new Error('error trying invoke chaincode. ' + error);
+                const newError = new Error('Error trying invoke chaincode. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -876,7 +892,6 @@ class HLFConnection extends Connection {
         }
         options = options || {};
 
-        //TODO: org1 is one of the default affiliations in fabric-ca-server
         return new Promise((resolve, reject) => {
             let registerRequest = {
                 enrollmentID: userID,
@@ -961,7 +976,7 @@ class HLFConnection extends Connection {
                 return result;
             })
             .catch((error) => {
-                const newError = new Error('error trying to list instantiated chaincodes. ' + error);
+                const newError = new Error('Error trying to list instantiated chaincodes. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -1010,6 +1025,83 @@ class HLFConnection extends Connection {
      */
     _getLoggedInUser() {
         return this.user;
+    }
+
+    /**
+     * Upgrade runtime to a newer version
+     * @param {any} securityContext security context
+     * @param {string} businessNetworkIdentifier The identifier of the business network to upgrade
+     * @return {Promise} A promise that is resolved when the runtime has been upgraded,
+     * or rejected with an error.
+     * @memberof HLFConnection
+     */
+    upgrade(securityContext) {
+        const method = 'upgrade';
+        LOG.entry(method, securityContext);
+
+        if (!this.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified on connection');
+        }
+
+        let txId;
+        // check runtime versions to ensure only the micro version has changed, not minor or major.
+        return this._checkRuntimeVersions(securityContext)
+            .then((results) => {
+                if (!results.isCompatible) {
+                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${results.response.version}) has changed major or minor version and cannot be upgraded.`);
+                }
+                return this._initializeChannel();
+            })
+            .then(() => {
+                txId = this.client.newTransactionID();
+
+                // Submit the upgrade proposal
+                const request = {
+                    chaincodePath: chaincodePath,
+                    chaincodeVersion: runtimePackageJSON.version,
+                    chaincodeId: this.businessNetworkIdentifier,
+                    txId: txId,
+                    fcn: 'upgrade'
+                };
+
+                return this.channel.sendUpgradeProposal(request);
+            })
+            .then((results) => {
+                // Validate the instantiate proposal results
+                LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
+                let proposalResponses = results[0];
+                this._validateResponses(proposalResponses, true);
+
+                // Submit the endorsed transaction to the primary orderer.
+                const proposal = results[1];
+                const header = results[2];
+                return this.channel.sendTransaction({
+                    proposalResponses: proposalResponses,
+                    proposal: proposal,
+                    header: header
+                });
+
+            })
+            .then((response) => {
+
+                // If the transaction was successful, wait for it to be committed.
+                LOG.debug(method, 'Received response from orderer', response);
+                if (response.status !== 'SUCCESS') {
+                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                }
+                return this._waitForEvents(txId, this.connectOptions.timeout);
+
+            })
+            .then(() => {
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                const newError = new Error('Error trying upgrade chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+
+
     }
 
 }

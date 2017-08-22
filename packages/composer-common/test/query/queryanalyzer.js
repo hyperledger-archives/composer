@@ -259,7 +259,7 @@ describe('QueryAnalyzer', () => {
                 const result = queryAnalyzer.visit(mockQuery, {});
                 result.should.not.be.null;
                 result.length.should.equal(0);
-            }).should.throw(/Property foo does not exist on org.acme.Driver/);
+            }).should.throw(/Property foo does not exist on org.acme.Address/);
         });
 
         it('should throw when parameter is not a primitive, enum or relationship', () => {
@@ -271,7 +271,7 @@ describe('QueryAnalyzer', () => {
                 const result = queryAnalyzer.visit(mockQuery, {});
                 result.should.not.be.null;
                 result.length.should.equal(0);
-            }).should.throw(/Property address is not a primitive, enum or relationship on org.acme.Driver/);
+            }).should.throw(/Unsupported property type org.acme.Driver.address/);
         });
 
         it('should throw when using invalid AST', () => {

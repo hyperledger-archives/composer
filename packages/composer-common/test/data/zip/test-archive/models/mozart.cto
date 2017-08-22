@@ -48,12 +48,21 @@ abstract participant User identified by email {
   o String lastName
 }
 
+concept City {
+  o String postcode
+}
+
+concept Address {
+  o City city
+}
+
 /**
  * A Farmer participant
  */
 participant Farmer extends User {
     o String address1
     o String address2
+    o Address address optional
     o String county
     o String postcode
     o Integer age optional

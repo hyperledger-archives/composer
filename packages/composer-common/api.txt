@@ -1,6 +1,11 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
+class BaseFileException extends BaseException {
+   + void constructor(string,string,string) 
+   + string getFileLocation() 
+   + string getShortMessage() 
+}
 class BusinessNetworkDefinition {
    + void constructor(String,String,object,String) 
    + String getIdentifier() 
@@ -45,19 +50,16 @@ class FileWallet extends Wallet {
 class IdCard {
    + String getName() 
    + String getDescription() 
-   + String getBusinessNetwork() 
-   + Object getImage() 
-   + Object getConnection() 
-   + Map getCredentials() 
-   + Map getTlsCertificates() 
-   + Promise fromArchive(Buffer) 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + void setCredentials(Object) 
+   + Object getEnrollmentCredentials() 
+   + String[] getRoles() 
+   + Promise fromArchive() 
+   + Promise toArchive(Object,String) 
 }
-class BaseModelException extends BaseException {
-   + void constructor(string,string,string) 
-   + string getFileLocation() 
-   + string getShortMessage() 
-}
-class IllegalModelException extends BaseModelException {
+class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
    + string getModelFile() 
 }
@@ -66,7 +68,7 @@ class Introspector {
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
-class ParseException extends BaseModelException {
+class ParseException extends BaseFileException {
    + void constructor(string,string) 
 }
 class ConsoleLogger {
@@ -112,6 +114,10 @@ class ValidatedResource extends Resource {
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
 }
+class InvalidQueryException extends BaseFileException {
+   + void constructor(String,QueryFile,Object,String,String,String,String) 
+   + QueryFile getQueryFile() 
+}
 class SecurityContext {
    + void constructor(Connection,string) 
    + Connection getConnection() 
@@ -122,7 +128,7 @@ class SecurityException extends BaseException {
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
-   + Object toJSON(Resource,Object,boolean,boolean,boolean) throws Error
+   + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean) 
 }
 class ValidationException extends BaseException {

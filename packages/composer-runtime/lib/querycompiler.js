@@ -285,6 +285,8 @@ class QueryCompiler {
         const registry = select.getRegistry();
         if (registry) {
             query.selector.$registryId = registry;
+        } else if (classDeclaration instanceof TransactionDeclaration) {
+            query.selector.$registryId = 'default';
         } else {
             query.selector.$registryId = resource;
         }
@@ -325,7 +327,7 @@ class QueryCompiler {
             });
         }
 
-        LOG.exit(method, query);
+        LOG.exit(method, JSON.stringify(query));
         return query;
     }
 

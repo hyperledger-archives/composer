@@ -5,6 +5,7 @@ import { ClientService } from '../../services/client.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
 import { ConfirmComponent } from '../../basic-modals/confirm/confirm.component';
+import { ViewTransactionComponent } from '../view-transaction/view-transaction.component';
 
 @Component({
     selector: 'registry',
@@ -16,12 +17,14 @@ import { ConfirmComponent } from '../../basic-modals/confirm/confirm.component';
 
 export class RegistryComponent {
 
+    tableScrolled = false;
+
     private _registry = null;
     private _reload = null;
     private resources = [];
 
     private expandedResource = null;
-    private registryType: string = null;
+    private registryId: string = null;
 
     private overFlowedResources = {};
 
@@ -30,7 +33,7 @@ export class RegistryComponent {
         this._registry = registry;
         if (this._registry) {
             this.loadResources();
-            this.registryType = this._registry.registryType;
+            this.registryId = this._registry.id;
         }
     }
 
@@ -47,13 +50,13 @@ export class RegistryComponent {
                 private modalService: NgbModal) {
     }
 
-    loadResources() {
+    loadResources(): Promise<void> {
         this.overFlowedResources = {};
-        this._registry.getAll()
+        return this._registry.getAll()
             .then((resources) => {
-                if (this.isTransactionRegistry()) {
+                if (this.isHistorian()) {
                     this.resources = resources.sort((a, b) => {
-                        return b.timestamp - a.timestamp;
+                        return b.transactionTimestamp - a.transactionTimestamp;
                     });
                 } else {
                     this.resources = resources.sort((a, b) => {
@@ -126,7 +129,23 @@ export class RegistryComponent {
         });
     }
 
-    private isTransactionRegistry(): boolean {
-        return this.registryType === 'Transaction';
+    viewTransactionData(transaction: any) {
+        return this.clientService.resolveTransactionRelationship(transaction).then((resolvedTransction) => {
+            let transactionModalRef = this.modalService.open(ViewTransactionComponent);
+            transactionModalRef.componentInstance.transaction = resolvedTransction;
+            transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+
+            transactionModalRef.result.catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
+        });
+    }
+
+    updateTableScroll(hasScroll) {
+        this.tableScrolled = hasScroll;
+    }
+
+    private isHistorian(): boolean {
+        return this.registryId === 'org.hyperledger.composer.system.HistorianRecord';
     }
 }

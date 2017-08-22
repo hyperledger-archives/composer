@@ -19,18 +19,12 @@ const List = require ('./lib/list.js');
 module.exports.command = 'list [options]';
 module.exports.describe = 'List all identities in a business network';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = List.handler(argv)
-        .then(() => {
-            return;
-        })
-        .catch((error) => {
-            throw error;
-        });
+    return argv.thePromise = List.handler(argv);
 };

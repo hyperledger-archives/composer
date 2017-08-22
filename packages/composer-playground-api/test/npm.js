@@ -56,7 +56,7 @@ RegClient.prototype.fetch = function (url, options, callback) {
     }
 };
 
-let forceSearchFail = false, forceMetadataFail = false;
+let forceSearchFail = false, forceMetadataFail = false, sortableList = false;
 
 // class methods
 RegClient.prototype.get = function (url, options, callback) {
@@ -64,8 +64,27 @@ RegClient.prototype.get = function (url, options, callback) {
         objects : [{
             package : {
                 name : 'bob'
-            }
+            },
         }]
+    };
+
+    let getUnsortedSampleNames = {
+        objects : [{
+            package : {
+                name : 'cat',
+            }
+        },
+        {
+            package : {
+                name : 'ant',
+            }
+        },
+        {
+            package : {
+                name : 'bat',
+            }
+        }
+        ]
     };
 
     let getMetaData = {
@@ -77,6 +96,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'bob',
                 description : 'bob package',
                 version : '1.0',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -88,6 +109,8 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'bob',
                 description : 'bob package',
                 version : '1.0',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -123,9 +146,66 @@ RegClient.prototype.get = function (url, options, callback) {
         }
     };
 
+    let getMetaDataUnsortedCat = {
+        versions : {
+            '0.1.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'cat',
+                description : 'cat package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+        }
+    };
+
+    let getMetaDataUnsortedAnt = {
+        versions : {
+            '0.1.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'ant',
+                description : 'ant package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+        }
+    };
+
+    let getMetaDataUnsortedBat = {
+        versions : {
+            '0.1.0' : {
+                engines : {
+                    composer : '0.9.0'
+                },
+                name : 'bat',
+                description : 'bat package',
+                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
+                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
+                version : '1.0',
+                dist : {
+                    tarball : 'my tar'
+                }
+            },
+        }
+    };
+
     if (url.startsWith('https://registry.npmjs.org/-/v1/search') && forceSearchFail) {
         forceSearchFail = false;
         return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/-/v1/search') && sortableList) {
+        sortableList = false;
+        return callback(null, getUnsortedSampleNames);
     } else if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
         return callback(null, getSampleNames);
     }
@@ -133,9 +213,36 @@ RegClient.prototype.get = function (url, options, callback) {
     if (url.startsWith('https://registry.npmjs.org/bob') && forceMetadataFail) {
         forceMetadataFail = false;
         return callback('some error');
-    } else if (url.startsWith('https://registry.npmjs.org/bob')) {
+    } else if (url.startsWith('https://registry.npmjs.org/bob') && !sortableList) {
         return callback(null, getMetaData);
     }
+
+    if (url.startsWith('https://registry.npmjs.org/cat') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/cat')) {
+        return callback(null, getMetaDataUnsortedCat);
+    }
+
+    if (url.startsWith('https://registry.npmjs.org/ant') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/ant')) {
+        return callback(null, getMetaDataUnsortedAnt);
+    }
+
+    if (url.startsWith('https://registry.npmjs.org/bat') && forceMetadataFail) {
+        forceMetadataFail = false;
+        return callback('some error');
+    } else if (url.startsWith('https://registry.npmjs.org/bat')) {
+        return callback(null, getMetaDataUnsortedBat);
+    }
+
+    if (sortableList) {
+        sortableList = false;
+        return callback(null, getUnsortedSampleNames);
+    }
+
 };
 
 describe('npm routes', () => {
@@ -151,8 +258,8 @@ describe('npm routes', () => {
             beforeEach(() => {
 
                 mock = {
-                    'composer-common/package.json': {
-                        version: composerVersion
+                    'composer-common/package.json' : {
+                        version : composerVersion
                     },
                     'npm-registry-client' : RegClient
                 };
@@ -164,7 +271,6 @@ describe('npm routes', () => {
                 router(app);
 
                 app.listen();
-
 
             });
 
@@ -180,7 +286,42 @@ describe('npm routes', () => {
                                 name : 'bob',
                                 description : 'bob package',
                                 version : '1.0',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                                 tarball : 'my tar'
+                            }]);
+                        });
+                });
+
+                it('should sort the list correctly', () => {
+                    sortableList = true;
+                    return chai.request(app)
+                        .get('/api/getSampleList')
+                        .then((res) => {
+                            res.should.have.status(200);
+                            res.should.be.json;
+                            res.body.should.be.an('array');
+                            res.body.should.deep.equal([{
+                                name : 'ant',
+                                description : 'ant package',
+                                version : '1.0',
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
+                            }, {
+                                name : 'bat',
+                                description : 'bat package',
+                                version : '1.0',
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
+                            }, {
+                                name : 'cat',
+                                description : 'cat package',
+                                version : '1.0',
+                                tarball : 'my tar',
+                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
+                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
                             }]);
                         });
                 });
@@ -239,9 +380,6 @@ describe('npm routes', () => {
                         });
                 });
             });
-
         });
-
     });
-
 });

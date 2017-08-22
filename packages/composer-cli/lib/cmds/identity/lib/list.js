@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ora = require('ora');
 const Pretty = require('prettyjson');
 
@@ -23,7 +22,6 @@ const Pretty = require('prettyjson');
  * <p>
  * Composer "identity list" command
  * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class List {
@@ -37,11 +35,11 @@ class List {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = List.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
 
-        const spinner = ora('List all identities in the business network '+businessNetworkName).start();
+        const spinner = ora('List all identities in the business network '+businessNetworkName);
         return (() => {
 
             if (!argv.enrollSecret) {
@@ -60,6 +58,7 @@ class List {
             }
         })()
         .then(() => {
+            spinner.start();
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
@@ -90,15 +89,6 @@ class List {
             spinner.fail();
             throw error;
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

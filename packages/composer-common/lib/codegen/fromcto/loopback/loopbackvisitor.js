@@ -19,12 +19,14 @@ const ParticipantDeclaration = require('../../../introspect/participantdeclarati
 const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
+const EventDeclaration = require('../../../introspect/eventdeclaration');
 const Field = require('../../../introspect/field');
 const ModelFile = require('../../../introspect/modelfile');
 const ModelManager = require('../../../modelmanager');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
 const debug = require('debug')('concerto:jsonschemavisitor');
+const util = require('util');
 
 /**
  * Convert a fully qualified type name, for example org.acme.MyAsset,
@@ -76,6 +78,8 @@ class LoopbackVisitor {
             return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof TransactionDeclaration) {
             return this.visitTransactionDeclaration(thing, parameters);
+        } else if (thing instanceof EventDeclaration) {
+            return this.visitEventDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
@@ -85,7 +89,7 @@ class LoopbackVisitor {
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
         } else {
-            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
+            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 1 }));
         }
     }
 
@@ -270,6 +274,7 @@ class LoopbackVisitor {
         return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
 
     }
+
     /**
      * Visitor design pattern
      * @param {TransactionDeclaration} transactionDeclaration - the object being visited
@@ -311,6 +316,18 @@ class LoopbackVisitor {
         // Apply all the common schema elements.
         return this.visitClassDeclarationCommon(transactionDeclaration, parameters, jsonSchema);
 
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {EventDeclaration} eventDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitEventDeclaration(eventDeclaration, parameters) {
+        debug('entering visitEventDeclaration', eventDeclaration.getName());
+        return null;
     }
 
     /**

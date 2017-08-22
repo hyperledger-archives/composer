@@ -15,11 +15,7 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
-
 const ora = require('ora');
-// const chalk = require('chalk');
-
 
 /**
  * <p>
@@ -38,7 +34,7 @@ class Undeploy {
         let adminConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Undeploy.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
 
         let spinner;
@@ -81,15 +77,6 @@ class Undeploy {
 
               throw error;
           });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

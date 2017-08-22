@@ -1,0 +1,45 @@
+namespace org.acme
+
+enum CarType {
+    o HEAVY_GOODS
+    o LIGHT_GOODS
+    o SPORTS
+    o SUV
+}
+
+asset Car identified by id {
+  o String id
+  -->Driver owner
+  o CarType carType
+}
+
+concept City {
+  o String postcode
+}
+
+concept Address {
+  o City city
+}
+
+participant Driver identified by email {
+  o String email
+  o String firstName
+  o String lastName
+  o String[] middleNames
+  o Address address
+  o Integer age
+  o Boolean trustworthy
+  o DateTime dob
+  o Long length
+  o Double height
+}
+
+participant Regulator identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+transaction MyTransaction {
+
+}

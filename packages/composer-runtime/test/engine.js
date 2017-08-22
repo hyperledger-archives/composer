@@ -132,6 +132,11 @@ describe('Engine', () => {
             }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"businessNetworkArchive\",\"initArgs\"\]"/);
         });
 
+        it('should accept upgrade function', () => {
+            return engine.init(mockContext, 'upgrade')
+                .then(() => {});
+        });
+
         it('should enable logging if logging specified on the init', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);
@@ -276,6 +281,108 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockContext.transactionCommit);
                     sinon.assert.notCalled(mockContext.transactionRollback);
                     sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should reuse the cached compiled script bundle', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            let sysregistries = sinon.createStubInstance(DataCollection);
+            mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.throws(new Error('should not be called'));
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            Context.cacheCompiledScriptBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.returns(mockCompiledAclBundle);
+            mockContext.getAclCompiler.returns(mockAclCompiler);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
+            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            sandbox.stub(Context, 'cacheBusinessNetwork');
+            sandbox.stub(Context, 'cacheCompiledScriptBundle');
+            mockRegistryManager.createDefaults.resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+                .then(() => {
+                    sinon.assert.notCalled(Context.cacheCompiledScriptBundle);
+                });
+        });
+
+        it('should reuse the cached compiled query bundle', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            let sysregistries = sinon.createStubInstance(DataCollection);
+            mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.throws(new Error('should not be called'));
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
+            Context.cacheCompiledQueryBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledQueryBundle);
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.returns(mockCompiledAclBundle);
+            mockContext.getAclCompiler.returns(mockAclCompiler);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
+            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            sandbox.stub(Context, 'cacheBusinessNetwork');
+            sandbox.stub(Context, 'cacheCompiledQueryBundle');
+            mockRegistryManager.createDefaults.resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+                .then(() => {
+                    sinon.assert.notCalled(Context.cacheCompiledQueryBundle);
+                });
+        });
+
+        it('should reuse the cached compiled ACL bundle', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            let sysregistries = sinon.createStubInstance(DataCollection);
+            mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.throws(new Error('should not be called'));
+            mockContext.getAclCompiler.returns(mockAclCompiler);
+            Context.cacheCompiledAclBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
+            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            sandbox.stub(Context, 'cacheBusinessNetwork');
+            sandbox.stub(Context, 'cacheCompiledAclBundle');
+            mockRegistryManager.createDefaults.resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+                .then(() => {
+                    sinon.assert.notCalled(Context.cacheCompiledAclBundle);
                 });
         });
 

@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
@@ -35,9 +34,9 @@ class Revoke {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Revoke.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
-        let userId = argv.userId;
+        let identityId = argv.identityId;
 
         return (() => {
             if (!argv.enrollSecret) {
@@ -63,20 +62,11 @@ class Revoke {
             return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
         })
         .then(() => {
-            return businessNetworkConnection.revokeIdentity(userId);
+            return businessNetworkConnection.revokeIdentity(identityId);
         })
         .then((result) => {
-            console.log(`The identity '${userId}' was revoked and can no longer be used to connect to the business network.`);
+            console.log(`The identity '${identityId}' was revoked and can no longer be used to connect to the business network.`);
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

@@ -27,6 +27,9 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
 docker ps -aq | xargs docker rm -f
 docker images -aq | xargs docker rmi -f
 ```
+
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+
 ---
 
 
@@ -36,7 +39,7 @@ docker images -aq | xargs docker rmi -f
 
         curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
 
-2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.
+2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>. *Please note*: Private browsing is not supported when running the Playground locally.
 
 
 ## Deploying business networks to {{site.data.conrefs.hlf_full}} v1.0
@@ -51,6 +54,15 @@ Due to many breaking API changes between {{site.data.conrefs.hlf_full}} v1.0 alp
 
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
 
+### Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
+
+When deploying a business network to an instance of {{site.data.conrefs.hlf_full}} by using a locally installed {{site.data.conrefs.composer_full}} Playground, you may encounter the following error:
+
+```
+Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
+```
+
+Once this error has occurred, you must delete your local browser storage to restore normal function. *Please note*: Deleting local browser storage will delete your connection profile and identities in your wallet.
 
 ---
 <!--

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
+import { LocalStorageService } from 'angular-2-local-storage';
 
 import { AdminService } from './admin.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, TransactionDeclaration } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
@@ -24,9 +24,9 @@ export class ClientService {
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
 
     constructor(private adminService: AdminService,
-                private connectionProfileService: ConnectionProfileService,
-                private identityService: IdentityService,
-                private alertService: AlertService) {
+                private identityCardService: IdentityCardService,
+                private alertService: AlertService,
+                private localStorageService: LocalStorageService) {
     }
 
     // horrible hack for tests
@@ -46,7 +46,7 @@ export class ClientService {
 
     // horrible hack for tests
     createQueryFile(id, content) {
-      return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
+        return new QueryFile(id, this.getBusinessNetwork().getModelManager(), content);
     }
 
     // horrible hack for tests
@@ -74,12 +74,40 @@ export class ClientService {
         return this.currentBusinessNetwork;
     }
 
+    getBusinessNetworkName() {
+        return this.getBusinessNetwork().getMetadata().getName();
+    }
+
+    getBusinessNetworkDescription() {
+        return this.getBusinessNetwork().getMetadata().getDescription();
+    }
+
     getModelFile(id: string): ModelFile {
         return this.getBusinessNetwork().getModelManager().getModelFile(id);
     }
 
     getModelFiles(): ModelFile[] {
         return this.getBusinessNetwork().getModelManager().getModelFiles();
+    }
+
+    getScriptFile(id: string): Script {
+        return this.getBusinessNetwork().getScriptManager().getScript(id);
+    }
+
+    getScripts(): Script[] {
+        return this.getBusinessNetwork().getScriptManager().getScripts();
+    }
+
+    getAclFile(): AclFile {
+        return this.getBusinessNetwork().getAclManager().getAclFile();
+    }
+
+    getQueryFile(): QueryFile {
+        return this.getBusinessNetwork().getQueryManager().getQueryFile();
+    }
+
+    getMetaData() {
+        return this.getBusinessNetwork().getMetadata();
     }
 
     validateFile(id: string, content: any, type: string): string {
@@ -128,6 +156,8 @@ export class ClientService {
             } else if (type === 'query') {
                 let query = this.createQueryFile(id, content);
                 this.getBusinessNetwork().getQueryManager().setQueryFile(query);
+            } else if (type === 'readme') {
+                this.setBusinessNetworkReadme(content);
             }
 
             this.businessNetworkChanged$.next(true);
@@ -166,105 +196,72 @@ export class ClientService {
         }
     }
 
-    getScriptFile(id: string): Script {
-        return this.getBusinessNetwork().getScriptManager().getScript(id);
-    }
-
-    getScripts(): Script[] {
-        return this.getBusinessNetwork().getScriptManager().getScripts();
-    }
-
-    getAclFile(): AclFile {
-        return this.getBusinessNetwork().getAclManager().getAclFile();
-    }
-
-    getQueryFile(): QueryFile {
-        return this.getBusinessNetwork().getQueryManager().getQueryFile();
-    }
-
-    getMetaData() {
-        return this.getBusinessNetwork().getMetadata();
-    }
-
     setBusinessNetworkReadme(readme) {
-        let name = this.getBusinessNetwork().getMetadata().getName();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
-        let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let version = this.getBusinessNetwork().getMetadata().getVersion();
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
-    }
-
-    setBusinessNetworkName(name: string) {
-        let version = this.getBusinessNetwork().getMetadata().getVersion();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
-        let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        // need to update the name in the package json
-        packageJson.name = name;
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
-    }
-
-    getBusinessNetworkName() {
-        return this.getBusinessNetwork().getMetadata().getName();
+        this.getBusinessNetwork().setReadme(readme);
+        this.businessNetworkChanged$.next(true);
     }
 
     setBusinessNetworkVersion(version: string) {
-        let name = this.getBusinessNetwork().getMetadata().getName();
-        let description = this.getBusinessNetwork().getMetadata().getDescription();
         let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        // need to update the version in the packageJson
         packageJson.version = version;
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
+        this.getBusinessNetwork().setPackageJson(packageJson);
+        this.businessNetworkChanged$.next(true);
     }
 
     setBusinessNetworkPackageJson(packageJson: any) {
-        // if we have updated package json we should take the values in there for the name etc
-        let name = packageJson.name;
-        let version = packageJson.version;
-        let description = packageJson.description;
-        let readme = this.getBusinessNetwork().getMetadata().getREADME();
-
-        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
+        // prevent BND name change
+        if (packageJson.name !== this.getBusinessNetworkName()) {
+            throw new Error('Unsupported attempt to update Business Network Name.');
+        } else {
+            this.getBusinessNetwork().setPackageJson(packageJson);
+            this.businessNetworkChanged$.next(true);
+        }
     }
 
-    ensureConnected(force: boolean = true): Promise<any> {
+    ensureConnected(name: string = null, force: boolean = false): Promise<any> {
         if (this.isConnected && !force) {
             return Promise.resolve();
         } else if (this.connectingPromise) {
             return this.connectingPromise;
         }
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
-            text: 'Using the connection profile ' + connectionProfile
+            text: 'Using the connection profile ' + connectionProfile.name
         });
-        console.log('Connecting to connection profile', connectionProfile);
-        this.connectingPromise = this.adminService.ensureConnected(force)
+
+        let businessNetworkName: string;
+        let userId = this.identityCardService.getCurrentEnrollmentCredentials().id;
+
+        if (!name) {
+            try {
+                businessNetworkName = this.getBusinessNetworkName();
+            } catch (error) {
+                console.log('business network name not set yet so using from local storage');
+            } finally {
+                if (!businessNetworkName) {
+                    businessNetworkName = this.getSavedBusinessNetworkName(userId);
+                }
+            }
+        } else {
+            businessNetworkName = name;
+        }
+
+        this.connectingPromise = this.adminService.connect(businessNetworkName, force)
             .then(() => {
-                return this.refresh();
+                return this.refresh(businessNetworkName);
             })
             .then(() => {
                 console.log('connected');
                 this.isConnected = true;
                 this.connectingPromise = null;
-            })
-            .then(() => {
-                if (this.adminService.isInitialDeploy()) {
-                    return this.deployInitialSample();
-                }
-            })
-            .then(() => {
+                this.setSavedBusinessNetworkName(userId);
                 this.alertService.busyStatus$.next(null);
             })
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
                 this.isConnected = false;
                 this.connectingPromise = null;
                 throw error;
@@ -273,32 +270,31 @@ export class ClientService {
     }
 
     reset(): Promise<any> {
-        return this.ensureConnected()
+        // TODO: hack hack hack, this should be in the admin API.
+        return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
+    }
+
+    refresh(businessNetworkName): Promise<any> {
+        this.currentBusinessNetwork = null;
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+
+        this.alertService.busyStatus$.next({
+            title: 'Refreshing Connection',
+            text: 'refreshing the connection to ' + connectionProfile.name
+        });
+
+        return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                // TODO: hack hack hack, this should be in the admin API.
-                return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, enrollmentCredentials.id, enrollmentCredentials.secret);
             });
     }
 
-    refresh(): Promise<any> {
-        this.currentBusinessNetwork = null;
-        let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        this.alertService.busyStatus$.next({
-            title: 'Refreshing Connection',
-            text: 'refreshing the connection to ' + connectionProfile
-        });
-        let userID;
-        return this.getBusinessNetworkConnection().disconnect()
-            .then(() => {
-                return this.identityService.getUserID();
-            })
-            .then((userId) => {
-                userID = userId;
-                return this.identityService.getUserSecret();
-            })
-            .then((userSecret) => {
-                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org-acme-biznet', userID, userSecret);
-            });
+    public disconnect() {
+        this.isConnected = false;
+        this.adminService.disconnect();
+        return this.getBusinessNetworkConnection().disconnect();
     }
 
     public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
@@ -306,17 +302,47 @@ export class ClientService {
     }
 
     deployInitialSample(): Promise<any> {
-        this.alertService.busyStatus$.next({
-            title: 'Deploying Business Network',
-            text: 'deploying sample business network'
-        });
-
+        let businessNetwork: BusinessNetworkDefinition;
         return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
             .then((sampleBusinessNetworkDefinition) => {
-                return this.adminService.update(sampleBusinessNetworkDefinition);
+                businessNetwork = sampleBusinessNetworkDefinition;
+                return this.adminService.createNewBusinessNetwork(businessNetwork.getName(), businessNetwork.getDescription())
+                    .catch((error) => {
+                        // if it already exists we just carry on otherwise we need to throw the error that happened
+                        if (error.message !== 'businessNetwork with name ' + businessNetwork.getName() + ' already exists') {
+                            throw error;
+                        }
+                    });
+            })
+            .then((created) => {
+                if (created) {
+                    this.alertService.busyStatus$.next({
+                        title: 'Deploying Business Network',
+                        text: 'deploying sample business network',
+                        force: true
+                    });
+                    return this.adminService.update(businessNetwork);
+                }
             })
             .then(() => {
-                return this.refresh();
+                this.alertService.busyStatus$.next({
+                    title: 'Creating identity card',
+                    text: 'creating identity card admin',
+                    force: true
+                });
+                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+                if (connectionProfile.type !== 'web') {
+                    return this.identityCardService.createIdentityCard('admin', businessNetwork.getName(), 'admin', 'adminpw', connectionProfile);
+                }
+            })
+            .then(() => {
+                return this.getBusinessNetworkConnection().disconnect();
+            })
+            .then(() => {
+                let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+                let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetwork.getName(), enrollmentCredentials.id, enrollmentCredentials.secret);
             })
             .then(() => {
                 return this.reset();
@@ -328,62 +354,48 @@ export class ClientService {
     }
 
     issueIdentity(userID, participantFQI, options): Promise<string> {
-        let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
 
-        return this.connectionProfileService.getProfile(connectionProfileName)
-            .then((connectionProfile) => {
-                ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
-                    if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
-                        // Smells like Bluemix with their non-default affiliations.
-                        options.affiliation = 'group1';
-                    }
-                });
-
-                return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
-            });
-    }
-
-    revokeIdentity(userID: string) {
-        return this.getBusinessNetworkConnection().revokeIdentity(userID);
-    }
-
-    createNewBusinessNetwork(name, version, description, packageJson, readme) {
-
-        this.alertService.busyStatus$.next({
-            title: 'Updating Business Network',
-            text: 'Updating Business Network ' + name
+        ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
+            if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
+                // Smells like Bluemix with their non-default affiliations.
+                options.affiliation = 'group1';
+            }
         });
 
-        try {
-            let newBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-            let modelFiles = this.filterModelFiles(this.getBusinessNetwork().getModelManager().getModelFiles());
+        return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
+    }
 
-            newBusinessNetwork.getModelManager().addModelFiles(modelFiles);
-
-            this.getBusinessNetwork().getScriptManager().getScripts().forEach((script) => {
-                newBusinessNetwork.getScriptManager().addScript(script);
-            });
-
-            if (this.getBusinessNetwork().getAclManager().getAclFile()) {
-                newBusinessNetwork.getAclManager().setAclFile(this.getBusinessNetwork().getAclManager().getAclFile());
-            }
-
-            if (this.getBusinessNetwork().getQueryManager().getQueryFile()) {
-                newBusinessNetwork.getQueryManager().setQueryFile(this.getBusinessNetwork().getQueryManager().getQueryFile());
-            }
-
-            this.currentBusinessNetwork = newBusinessNetwork;
-            this.alertService.busyStatus$.next(null);
-            this.businessNetworkChanged$.next(true);
-        } catch (error) {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(`Failed to Update Business Network: ${error}`);
-        }
+    revokeIdentity(identity) {
+        // identity should be the full ValidatedResource object
+        return this.getBusinessNetworkConnection().revokeIdentity(identity);
     }
 
     filterModelFiles(files) {
         return files.filter((model) => {
-                return !model.isSystemModelFile();
+            return !model.isSystemModelFile();
+        });
+    }
+
+    resolveTransactionRelationship(relationship): Promise<TransactionDeclaration> {
+        let identifier = relationship.getIdentifier();
+
+        return this.getBusinessNetworkConnection().getTransactionRegistry()
+            .then((transactionRegistry) => {
+                return transactionRegistry.get(identifier);
+            })
+            .then((resolvedTransaction) => {
+                return resolvedTransaction;
             });
+    }
+
+    private getSavedBusinessNetworkName(identity: string): string {
+        let key = `currentBusinessNetwork:${identity}`;
+        return this.localStorageService.get<string>(key);
+    }
+
+    private setSavedBusinessNetworkName(identity: string): void {
+        let key = `currentBusinessNetwork:${identity}`;
+        this.localStorageService.set(key, this.getBusinessNetworkName());
     }
 }

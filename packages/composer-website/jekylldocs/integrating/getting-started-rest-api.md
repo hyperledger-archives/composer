@@ -19,7 +19,7 @@ To launch the REST Server simply type:
 composer-rest-server
 ```
 
-You will then be asked to enter a few simple details about your business network.
+You will then be asked to enter a few simple details about your business network. An example of consuming a deployed business network is shown below.
 
 ```bash
 
@@ -35,10 +35,10 @@ You will then be asked to enter a few simple details about your business network
 | |__| (_) | | | | | | |_) | (_) \__ \  __/ |   
  \____\___/|_| |_| |_| .__/ \___/|___/\___|_|   
                      |_|                                                     
-? Enter your Fabric Connection Profile Name: defaultProfile
+? Enter your Fabric Connection Profile Name: hlfv1
 ? Enter your Business Network Identifier : digitalproperty-network
-? Enter your Fabric username : WebAppAdmin
-? Enter your secret: DJY27pEnl16d
+? Enter your Fabric username : admin
+? Enter your secret: adminpw
 Loopback Connector for Hyperledger Composer
 Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer

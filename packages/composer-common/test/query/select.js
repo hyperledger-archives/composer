@@ -29,9 +29,19 @@ const Where = require('../../lib/query/where');
 const should = require('chai').should();
 const sinon = require('sinon');
 
+/**
+ * Returns the AST for a SELECT query expression
+ * @param {String} selectExpression - the SELECT for the query
+ * @returns {object} the AST
+ * @private
+ */
+function toSelectAst(selectExpression) {
+    return parser.parse(selectExpression, { startRule: 'SelectStatement' });
+}
+
 describe('Select', () => {
 
-    const testModel = fs.readFileSync(path.resolve(__dirname, './model.cto'), 'utf8');
+    const testModel = fs.readFileSync(path.resolve(__dirname, '../data/query/model.cto'), 'utf8');
 
     let modelManager;
     let sandbox;
@@ -40,25 +50,26 @@ describe('Select', () => {
 
     const select = parser.parse('SELECT org.acme.Driver', { startRule: 'SelectStatement' });
 
-    const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (prop = "value")', { startRule: 'SelectStatement' });
+    const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (firstName == "value")', { startRule: 'SelectStatement' });
 
-    const selectWhereOrderBy = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id ASC]', { startRule: 'SelectStatement' });
+    const selectWhereOrderBy = parser.parse('SELECT org.acme.Driver WHERE (prop == "value") ORDER BY [id ASC]', { startRule: 'SelectStatement' });
 
-    const selectWhereLimit = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") LIMIT 10', { startRule: 'SelectStatement' });
+    const selectWhereLimit = parser.parse('SELECT org.acme.Driver WHERE (prop == "value") LIMIT 10', { startRule: 'SelectStatement' });
 
-    const selectWhereLimitSkip = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") LIMIT 10 SKIP 5', { startRule: 'SelectStatement' });
+    const selectWhereLimitSkip = parser.parse('SELECT org.acme.Driver WHERE (prop == "value") LIMIT 10 SKIP 5', { startRule: 'SelectStatement' });
 
     const selectFrom = parser.parse('SELECT org.acme.Driver FROM DogesDrivers', { startRule: 'SelectStatement' });
 
     const selectConcept = parser.parse('SELECT org.acme.Address', { startRule: 'SelectStatement' });
 
-    const selectEnum = parser.parse('SELECT org.acme.Enum', { startRule: 'SelectStatement' });
+    const selectEnum = parser.parse('SELECT org.acme.CarType', { startRule: 'SelectStatement' });
 
     beforeEach(() => {
         modelManager = new ModelManager();
         modelManager.addModelFile(testModel);
         sandbox = sinon.sandbox.create();
         mockQuery = sinon.createStubInstance(Query);
+        mockQuery.getName.returns('test');
         mockQueryFile = sinon.createStubInstance(QueryFile);
         mockQuery.getQueryFile.returns(mockQueryFile);
         mockQueryFile.getModelManager.returns(modelManager);
@@ -107,6 +118,95 @@ describe('Select', () => {
     });
 
     describe('#validate', () => {
+
+        it('should not throw for valid select statements', () => {
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (age == 10)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (age == _$param1)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (address.city.postcode == "SO225GB")')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (address.city.postcode == _$param1)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (owner == "DAN")')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (owner == _$param1)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (carType == "DAN")')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (carType == _$param1)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height == 6.2)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height < 6.2)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height <= 6.2)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height > 6.2)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height >= 6.2)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (6.2 == height)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (length == 123)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (trustworthy == false)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (trustworthy != false)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (dob == "2017-07-24")')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE ("2017-07-24" == dob)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE ("2017-07-24" > dob)')).validate();
+        });
+
+        it('should throw for arrays', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (middleNames == "DAN")')).validate();
+            }).should.throw(/Property middleNames of type String/);
+        });
+
+        it('should throw Integer type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (age == "DAN")')).validate();
+            }).should.throw(/Property age/);
+        });
+
+        it('should throw Double type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (height == true)')).validate();
+            }).should.throw(/Property height/);
+        });
+
+        it('should throw Long type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (length == "true")')).validate();
+            }).should.throw(/Property length/);
+        });
+
+        it('should throw String type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (firstName == true)')).validate();
+            }).should.throw(/Property firstName/);
+        });
+
+        it('should throw DateTime type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (dob == true)')).validate();
+            }).should.throw(/Property dob/);
+        });
+
+        it('should throw Enum type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (carType == true)')).validate();
+            }).should.throw(/Enum property carType/);
+        });
+
+        it('should throw Relationship type violation', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (owner == 10)')).validate();
+            }).should.throw(/Relationship owner cannot be compared with 10/);
+        });
+
+        it('should throw on missing property', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Car WHERE (foo == 10)')).validate();
+            }).should.throw(/Property foo does not exist on org.acme.Car/);
+        });
+
+        it('should throw on missing property', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (address.goo == 10)')).validate();
+            }).should.throw(/Property goo does not exist on org.acme.Address/);
+        });
 
         it('should throw for concept resources', () => {
             const s = new Select(mockQuery, selectConcept);
@@ -158,7 +258,7 @@ describe('Select', () => {
             const s = new Select(mockQuery, selectWhere);
             const where = s.getWhere();
             where.should.be.an.instanceOf(Where);
-            where.getAST().type.should.equal('AssignmentExpression');
+            where.getAST().type.should.equal('BinaryExpression');
         });
 
     });

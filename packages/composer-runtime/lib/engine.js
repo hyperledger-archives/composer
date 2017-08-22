@@ -88,8 +88,19 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
+        // chaincode was upgraded, no change to business network and obviously
+        // nothing the runtime can do to stop it.
+        if (fcn === 'upgrade') {
+            LOG.info(method, 'runtime has been upgraded');
+            //TODO: Here we would need to invoke migrations if we are to support
+            //upgrading from anything more than just micro version changes of the
+            //runtime. Currently not supported and the connector will not allow
+            //the upgrade. We could add a check here as well and reject the upgrade
+            //but it's overkill at the moment.
+            return Promise.resolve();
+        }
+
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
         } else if (args.length !== 2) {
@@ -141,19 +152,28 @@ class Engine {
                 Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
 
                 // Cache the compiled script bundle.
-                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
+                if (!compiledScriptBundle) {
+                    compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                    Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                }
 
                 // Cache the compiled query bundle.
-                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-                LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-                Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                compiledQueryBundle = Context.getCachedCompiledQueryBundle(businessNetworkHash);
+                if (!compiledQueryBundle) {
+                    compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                    LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
+                    Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                }
 
                 // Cache the compiled ACL bundle.
-                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                compiledAclBundle = Context.getCachedCompiledAclBundle(businessNetworkHash);
+                if (!compiledAclBundle) {
+                    compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                    Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                }
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
@@ -161,8 +181,9 @@ class Engine {
 
             })
             .then((sysdata_) => {
-                sysdata = sysdata_;
+
                 // Add the business network definition to the sysdata collection.
+                sysdata = sysdata_;
                 return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })

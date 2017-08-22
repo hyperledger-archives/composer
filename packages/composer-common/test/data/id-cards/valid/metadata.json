@@ -1,6 +1,6 @@
 {
-    "name" : "com.example.cards.Dan",
-    "description" : "Dan's Card for Production Network",
-    "businessNetwork" : "org-acme-biznet",
-    "image" : "images/conga.png"
+    "name": "Conga",
+    "description": "A valid ID card",
+    "businessNetwork": "org-acme-biznet",
+    "image": "images/conga.png"
 }

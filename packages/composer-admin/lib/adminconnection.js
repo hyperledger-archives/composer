@@ -330,6 +330,34 @@ class AdminConnection {
     }
 
     /**
+     * Upgrades an existing business network's composer runtime to a later level.
+     * The connection must be connected specifying the business network identifier as part of the
+     * connection for this method to succeed.
+     * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
+     * or rejected otherwise.
+     * @example
+     * // Upgrade the Hyperledger Composer runtime
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.connect(connectionProfileName, upgradeId, upgradeSecret, businessNetworkDefinition.getName())
+     * .then(() => {
+     *      return adminConnection.upgrade();
+     * })
+     * .then(() => {
+     *     // Business network definition upgraded
+     * })
+     * .catch((error) => {
+     *     // Add optional error handling here.
+     * });
+
+     * @memberof AdminConnection
+     */
+    upgrade() {
+        Util.securityCheck(this.securityContext);
+        return this.connection.upgrade(this.securityContext);
+    }
+
+    /**
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the node.js module.
      * @example
@@ -495,8 +523,6 @@ class AdminConnection {
      * @param {string} publicKey The signer cert in PEM format
      * @param {string} privateKey The private key in PEM format
      * @returns {Promise} A promise which is resolved when the identity is imported
-     *
-     * @memberOf AdminConnection
      */
     importIdentity(connectionProfile, id, publicKey, privateKey) {
         let savedConnectionManager;
@@ -512,6 +538,47 @@ class AdminConnection {
                 throw new Error('failed to import identity. ' + error.message);
             });
     }
+
+    /**
+     * Request the certificates for an identity. No connection needs to be established
+     * for this method to succeed.
+    * @example
+     * // Request the cryptographic material for am identity of a hlf v1 environment.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.requestIdentity('hlfv1', 'admin', 'adminpw')
+     * .then((response) => {
+     *     // Identity returned
+     *     console.log('public signing certificate:');
+     *     console.log(response.certificate);
+     *     console.log('private key:');
+     *     console.log(response.key);
+     *     console.log('ca root certificate:');
+     *     console.log(response.rootCertificate);
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {string} connectionProfile Name of the connection profile
+     * @param {string} enrollmentID The ID to enroll
+     * @param {string} enrollmentSecret The secret for the ID
+     * @returns {Promise} A promise which is resolved when the identity is imported
+     */
+    requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
+        let savedConnectionManager;
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                savedConnectionManager = connectionManager;
+                return this.getProfile(connectionProfile);
+            })
+            .then((profileData) => {
+                return savedConnectionManager.requestIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
+            })
+            .catch((error) => {
+                throw new Error('failed to request identity. ' + error.message);
+            });
+    }
+
 
 }
 

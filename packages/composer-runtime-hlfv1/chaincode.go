@@ -29,9 +29,9 @@ type Chaincode struct {
 func NewChaincode() (result *Chaincode) {
 	logger.Debug("Entering NewChaincode")
 	defer func() { logger.Debug("Exiting NewChaincode", result) }()
-
+	logger.Info("Setting the Composer pool size to", PoolSize)
 	return &Chaincode{
-		ComposerPool: NewComposerPool(8),
+		ComposerPool: NewComposerPool(PoolSize),
 	}
 }
 

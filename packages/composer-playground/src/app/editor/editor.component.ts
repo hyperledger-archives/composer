@@ -1,18 +1,27 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from './import/import.component';
+import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
+import { DrawerService } from '../common/drawer/drawer.service';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
+import {
+    ModelFile,
+    Script,
+    ScriptManager,
+    ModelManager,
+    AclManager,
+    AclFile,
+    QueryFile,
+    QueryManager
+} from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -41,6 +50,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private editActive: boolean = false; // Are the input boxes visible?
     private editingPackage: boolean = false; // Is the package.json being edited?
+    private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
     private deployedPackageName; // This is the deployed BND's package name
     private deployedPackageVersion; // This is the deployed BND's package version
@@ -58,15 +68,15 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
-                private initializationService: InitializationService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
-                private editorService: EditorService) {
+                private editorService: EditorService,
+                private drawerService: DrawerService) {
 
     }
 
     ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
+        return this.clientService.ensureConnected()
             .then(() => {
                 this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
                     .subscribe((noError) => {
@@ -95,6 +105,9 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     this.setInitialFile();
                 }
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
             });
     }
 
@@ -103,11 +116,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     updatePackageInfo() {
-        this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
-        this.deployedPackageVersion = this.clientService.getMetaData().getVersion(); // Set Version
-        this.deployedPackageDescription = this.clientService.getMetaData().getDescription(); // Set Description
-        this.inputPackageName = this.clientService.getMetaData().getName();
-        this.inputPackageVersion = this.clientService.getMetaData().getVersion();
+        let metaData = this.clientService.getMetaData();
+        this.deployedPackageName = metaData.getName(); // Set Name
+        this.deployedPackageVersion = metaData.getVersion(); // Set Version
+        this.deployedPackageDescription = metaData.getDescription(); // Set Description
+        this.inputPackageName = metaData.getName();
+        this.inputPackageVersion = metaData.getVersion();
     }
 
     setInitialFile() {
@@ -124,14 +138,14 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     setCurrentFile(file) {
         this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
-        let always = (this.currentFile === null || file.readme || file.acl);
+        let always = (this.currentFile === null || file.readme || file.acl || file.query);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
             }
-            if (file.script || file.model) {
+            if (file.script || file.model || file.query) {
                 this.deletableFile = true;
             } else {
                 this.deletableFile = false;
@@ -297,8 +311,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     addQueryFile(query) {
         if (this.files.findIndex((file) => file.query === true) !== -1) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current Query file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your Query file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processQueryFileAddition(query);
             }, (reason) => {
@@ -324,8 +339,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     addReadme(readme) {
         if (this.files[0].readme) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your README file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.clientService.setBusinessNetworkReadme(readme);
                 this.updateFiles();
@@ -347,8 +363,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     addRuleFile(rules) {
         if (this.files.findIndex((file) => file.acl === true) !== -1) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced.';
+            confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced with the new one that you are uploading.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your ACL file to disc.';
+            confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.processRuleFileAddition(rules);
             }, (reason) => {
@@ -373,41 +390,53 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        this.modalService.open(ImportComponent).result.then((result) => {
-            this.updatePackageInfo();
-            this.updateFiles();
-            if (this.files.length) {
-                let currentFile = this.files.find((file) => {
-                    return file.readme;
-                });
-                if (!currentFile) {
-                    currentFile = this.files[0];
+        const importModalRef = this.drawerService.open(ImportComponent);
+        // only want to update here not deploy
+        importModalRef.componentInstance.deployNetwork = false;
+
+        importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
+
+            importModalRef.close();
+
+            if (result.deployed) {
+                this.updatePackageInfo();
+                this.updateFiles();
+                if (this.files.length) {
+                    let currentFile = this.files.find((file) => {
+                        return file.readme;
+                    });
+                    if (!currentFile) {
+                        currentFile = this.files[0];
+                    }
+                    this.setCurrentFile(currentFile);
+                    this.alertService.successStatus$.next({
+                        title: 'Deploy Successful',
+                        text: 'Business network imported deployed successfully',
+                        icon: '#icon-deploy_24'
+                    });
                 }
-                this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next({
-                    title: 'Deploy Successful',
-                    text: 'Business network imported deployed successfully',
-                    icon: '#icon-deploy_24'
-                });
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
+            } else {
+                if (result.error) {
+                    this.alertService.errorStatus$.next(result.error);
+                }
             }
         });
     }
 
     exportBNA() {
         return this.clientService.getBusinessNetwork().toArchive().then((exportedData) => {
-            let file = new File([exportedData],
-                this.clientService.getBusinessNetworkName() + '.bna',
+            let file = new Blob([exportedData],
                 {type: 'application/octet-stream'});
-            saveAs(file);
+            saveAs(file, this.clientService.getBusinessNetworkName() + '.bna');
         });
     }
 
     openAddFileModal() {
-        this.modalService.open(AddFileComponent).result
+
+        const confirmModalRef = this.modalService.open(AddFileComponent);
+        confirmModalRef.componentInstance.files = this.files;
+
+        confirmModalRef.result
             .then((result) => {
                 if (result !== 0) {
                     try {
@@ -451,7 +480,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.dirty = false;
                 this.deploying = false;
-                return this.clientService.refresh();
+                return this.clientService.refresh(this.clientService.getBusinessNetworkName());
             })
             .then(() => {
                 this.updatePackageInfo();
@@ -477,20 +506,17 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     /*
+     * Sets the current README file editor state (from editor to previewer)
+     */
+    setReadmePreview(preview: boolean) {
+        this.previewReadme = preview;
+    }
+
+    /*
      * Swaps the toggle state. Used when editing Name and Version, will show input boxes.
      */
     toggleEditActive() {
         this.editActive = !this.editActive;
-    }
-
-    /*
-     * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageName() {
-        if (this.deployedPackageName !== this.inputPackageName) {
-            this.deployedPackageName = this.inputPackageName;
-            this.clientService.setBusinessNetworkName(this.deployedPackageName);
-        }
     }
 
     /*
@@ -571,6 +597,9 @@ export class EditorComponent implements OnInit, OnDestroy {
                     } else if (deleteFile.model) {
                         let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
                         modelManager.deleteModelFile(deleteFile.id);
+                    } else if (deleteFile.query) {
+                        let queryManager: QueryManager = this.clientService.getBusinessNetwork().getQueryManager();
+                        queryManager.deleteQueryFile();
                     } else {
                         throw new Error('Unable to process delete on selected file type');
                     }
@@ -668,13 +697,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                     file.invalid = false;
                 }
             } else if (file.query) {
-              let query = this.clientService.getQueryFile();
-              if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
-                  allValid = false;
-                  file.invalid = true;
-              } else {
-                  file.invalid = false;
-              }
+                let query = this.clientService.getQueryFile();
+                if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
+                }
             }
         }
         return allValid;

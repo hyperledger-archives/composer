@@ -244,6 +244,7 @@ class EngineBusinessNetworks {
                 // we know it isn't really.
                 let registryManager = context.getRegistryManager();
                 return registryManager.add('Transaction', 'default', 'Default Transaction Registry', true);
+
             })
             .then(() => {
 

@@ -2,72 +2,222 @@
 @import '../../assets/styles/base/_variables.scss';
 
 connection-profile {
-  display: flex;
-  width: 100%;
 
-  .side-bar {
-    display: flex;
-    flex-direction: column;
+    $highlighted: #e4e4e4;
 
-    .profiles {
-      & > * {
-        padding: $space-medium $space-large;
-      }
-      margin-top: $space-large;
+    button {
+        line-height: 30px;
+        font-size: 0.8rem;
+        margin-left: 2px;
+     }
 
-      span {
-        color: $secondary-text;
-      }
+     footer {
+         display: flex;
 
-      .side-bar-nav {
-        padding: 0;
-      }
+         .info {
+             color: $secondary-text;
+             font-style: italic;
+         }
 
-    }
+         &.with-info {
+             justify-content: space-between !important;
+         }
+     }
 
-    .about {
-      flex: 1;
-      justify-content: flex-end;
-      padding: $space-medium $space-large;
-    }
-  }
-
-  .main-view {
-    overflow-y: auto;
-    background-color: $fourth-highlight;
-    padding: $space-large $space-large $space-medium $space-large;
-    display: flex;
-    flex-direction: column;
-
-    .playground-profile-warning {
-      background-color: $white;
-      border: 1px solid $fourth-highlight;
-      border-radius: 0.25em;
-      padding: $space-medium;
-      margin-bottom: $space-large;
-
-      .profile-warning-content {
+    .profile-section{
         display: flex;
 
-        .profile-warning-text {
-          margin: 0 $space-smedium;
+        .description {
+            display: flex;
+            flex-basis: 20%;
+            color:$tertiary-text;
+
+            &.upper {
+                text-transform: uppercase;
+            }
         }
-      }
+
+        .profile-content {
+            display:flex;
+            flex-grow: 1;
+            flex-direction:column;
+            margin-right:15rem;
+
+            .profile-row {
+                display: flex;
+                flex-grow: 1;
+                flex-direction: row;
+                color: $primary-text;
+                font-size: 14px;
+                padding-bottom: $space-medium;
+
+                .profile-property {
+                    display: flex;
+                    align-self: flex-start;
+                    min-width: 7rem;
+                    flex-basis: 20%;
+                    padding-right: $space-large;
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+
+                .profile-value {
+                    display: flex;
+                    flex-grow: 1;
+                    flex-direction: column;
+
+                    .nested-group {
+                        display: flex;
+                        flex-grow: 1;
+                        flex-direction: column;
+                        margin-right:1rem;
+
+                        .nested-group-row {
+                            display: flex;
+                            flex-grow: 1;
+                            flex-direction: row;
+                            color: $primary-text;
+                            font-size: 14px;
+                            padding-bottom: $space-medium;
+
+                            .nested-group-value {
+                                display: flex;
+                                flex-grow: 1;
+                                flex-direction: column;
+                            }
+                        }
+                    }
+
+                    .nested-section {
+                        border-left: 4px solid $first-highlight;
+                        padding-left: $space-smedium;
+                        display: flex;
+                        flex-grow: 1;
+                        flex-direction: column;
+                        margin-bottom: $space-medium;
+
+                        .nested-row {
+                            display: flex;
+                            flex-grow: 1;
+                            align-items: center;
+                            padding-bottom: $space-medium;
+
+                            .nested-property {
+                                min-width: 7rem;
+                                font-style: italic;
+                                padding: 0 $space-smedium $space-small 0;
+                                font-weight: 600;
+                            }
+
+                            .nested-value-row {
+                                display: flex;
+                                flex-grow: 1;
+                                flex-direction: row;
+                            }
+
+                            .nested-value {
+                                    display: flex;
+                                    flex-grow: 1;
+                                    flex-direction: column;
+                                }
+                        }
+
+                        .nested-row:last-child {
+                            padding-bottom: 0;
+                        }
+                    }
+                }
+
+                .profile-buttons {
+                    align-self: flex-end;
+                    padding-bottom: $space-medium;
+                }
+            }
+        }
+
+        &.delimited {
+            margin-bottom: $space-large;
+            padding-bottom: $space-large;
+            border-bottom: 1px solid $fourth-highlight;
+        }
     }
 
-    .business-network-details {
-      display: flex;
-
-      .business-network-version {
-        margin-right: $space-smedium;
-        color: $secondary-text;
-      }
-      .margin-right {
-        margin-right: $space-smedium;
-      }
-      .edit-package-text {
-        font-style: italic;
-      }
+    .chevron {
+        @include transition(all);
+        transform: rotate(-90deg);
     }
-  }
+
+    .edit-data {
+        background-color: $white;
+        margin-top: $space-medium;
+
+        section {
+            padding: $space-medium;
+            margin-bottom: $space-large;
+
+            .section-title {
+                border-bottom: 1px solid $fourth-highlight;
+                padding-bottom: $space-medium;
+                margin-bottom: $space-medium;
+                font-size: 14px;
+                font-weight: 600;
+                color: $first-highlight;
+            }
+
+            div {
+                display: flex;
+
+                label {
+                    flex-basis: 20%;
+                }
+            }
+
+            .actions {
+                display: flex;
+                background-color: $third-highlight;
+                padding: $space-medium;
+
+                .info {
+                    flex: 1
+                }
+            }
+        }
+    }
+
+    .orderer-group {
+        display: flex;
+        flex-direction: column;
+
+        .orderer-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            .orderer-entry {
+                flex: 1;
+            }
+        }
+    }
+
+    .certificate-button {
+        @extend button;
+        padding-right: 10px;
+        padding-left: 10px;
+        min-width: 0;
+
+        &:hover {
+            background-color: $white;
+            border-color: $second-highlight;
+            svg {
+                fill: #3F55AF
+            }
+
+        }
+    }
+
+    .no-cert {
+        border-color: $error-colour-1;
+        background-color: $error-colour-2;
+    }
+
 }

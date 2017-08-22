@@ -14,7 +14,8 @@
 
 'use strict';
 
-const IllegalModelException = require('../introspect/illegalmodelexception');
+const InvalidQueryException = require('./invalidqueryexception');
+const WhereAstValidator = require('./whereastvalidator');
 
 /**
  * Where defines the WHERE portion of a SELECT statement
@@ -35,11 +36,12 @@ class Where {
      */
     constructor(select, ast) {
         if(!select || !ast) {
-            throw new IllegalModelException('Invalid Select or AST');
+            throw new InvalidQueryException('Invalid Select or AST');
         }
 
         this.ast = ast;
         this.select = select;
+        this.process();
     }
 
     /**
@@ -78,7 +80,24 @@ class Where {
      * @private
      */
     validate() {
-        // TODO (DCS) walk the AST and check that the properties exist in the model!
+        try {
+            const wv = new WhereAstValidator(this.getSelect().getResourceClassDeclaration());
+            wv.visit(this.getAST(), {});
+        }
+        catch(err) {
+            if(err instanceof InvalidQueryException === false) {
+                // console.log(err.stack);
+                let msg = err.message;
+
+                if(err.getShortMessage) {
+                    msg = err.getShortMessage();
+                }
+
+                throw new InvalidQueryException( 'Invalid WHERE clause in query ' + this.getSelect().getQuery().getName() + ': ' + msg, this.getSelect().getQuery().getQueryFile(), this.getSelect().getAST().location );
+            }
+
+            throw err;
+        }
     }
 
     /**

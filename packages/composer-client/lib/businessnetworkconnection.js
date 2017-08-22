@@ -22,6 +22,8 @@ const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfil
 const EventEmitter = require('events');
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Historian = require('./historian');
+const IdentityRegistry = require('./identityregistry');
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
 const Query = require('./query');
@@ -29,7 +31,6 @@ const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
-const IdentityRegistry = require('./identityregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 
@@ -113,7 +114,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAllAssetRegistries() {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -134,7 +135,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAssetRegistry(id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -157,7 +158,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     assetRegistryExists(id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -176,7 +177,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     addAssetRegistry(id, name) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -197,7 +198,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getAllParticipantRegistries() {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -218,7 +219,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     getParticipantRegistry(id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
      /**
@@ -241,7 +242,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     participantRegistryExists(id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -260,7 +261,7 @@ class BusinessNetworkConnection extends EventEmitter {
      */
     addParticipantRegistry(id, name) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -273,7 +274,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     return businessNetworkDefinition.getTransactionRegistry();
      * })
      * .then(function(transactionRegistry){
-     *     // Retrieved Transaction Registry
+     *     // Retrieved transaction registry.
      * });
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
@@ -291,16 +292,43 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
+     * Get the historian
+     * @example
+     * // Get the historian
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.getHistorian();
+     * })
+     * .then(function(historian){
+     *     // Retrieved historian
+     * });
+     * @return {Promise} - A promise that will be resolved to the {@link Historian}
+     */
+    getHistorian() {
+        Util.securityCheck(this.securityContext);
+        return Historian
+            .getHistorian(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
+            .then((historian) => {
+                if (historian) {
+                    return historian;
+                } else {
+                    throw new Error('Failed to find the historian');
+                }
+            });
+    }
+
+    /**
      * Get the identity registry.
      * @example
-     * // Get the transaction registry
+     * // Get the identity registry
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
      *     return businessNetworkDefinition.getIdentityRegistry();
      * })
      * .then(function(identityRegistry){
-     *     // Retrieved Identity Registry
+     *     // Retrieved identity registry
      * });
      * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
      */
@@ -312,7 +340,7 @@ class BusinessNetworkConnection extends EventEmitter {
                 if (identityRegistry) {
                     return identityRegistry;
                 } else {
-                    throw new Error('Failed to find the default identity registry');
+                    throw new Error('Failed to find the identity registry');
                 }
             });
     }

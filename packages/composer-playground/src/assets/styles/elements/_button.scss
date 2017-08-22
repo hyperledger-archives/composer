@@ -35,7 +35,7 @@
         }
 
         .ibm-spinner-indeterminate {
-            padding: 12%;
+            height: 40px;
         }
 
         h1 {
@@ -137,6 +137,11 @@
             color: $secondary-text;
             min-width: 0;
             padding: 0 $space-smedium;
+
+            &:hover {
+                color: $white;
+                background-color: $second-highlight;
+            }
         }
 
         &.action {
@@ -182,6 +187,20 @@
                     fill: $fourth-highlight;
                 }
             }
+        }
+
+        &.action.circular {
+            border-radius: 50%;
+            width: 42px;
+            box-sizing: border-box;
+            padding-top: 1px;
+            height: 42px;
+        }
+
+        &.action.circular:hover,
+        &.action.circular:focus {
+            background-color: $fourth-highlight;
+            border-bottom: 2px solid transparent;
         }
 
         &.icon {

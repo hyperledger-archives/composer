@@ -31,7 +31,7 @@ function onAnimalMovementDeparture(movementDeparture) {
     movementDeparture.animal.movementStatus = 'IN_TRANSIT';
 
      // save the animal
-    let ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    var ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
     ar.update(movementDeparture.animal);
 
      // add the animal to the incoming animals of the

@@ -24,24 +24,30 @@ editor-file {
       font-weight: bold;
     }
   }
+}
 
-  // .readme {
-  //   background-color: $white;
-  //   padding: $space-large;
-  //   min-height: 63vh;
-  //   max-height: 63vh;
-  //   overflow-y: scroll;
-  // }
+.scrollbar-padding {
+  // emulating the ".cm-s-default.CodeMirror" styling to mimic the editor having padding around the scroll bar
+  border-radius: 4px;
+  background: #262A35;
+  color: #FFFFFF;
+  padding: $space-medium $space-medium $space-medium 0px;
+  .CodeMirror-simplescroll-vertical {
+    margin: 0px;
+  }
+  .CodeMirror-lines {
+    margin-top: 0px;
+  }
 }
 
 .CodeMirror {
-  font-family: Source Code Pro
-
+  font-family: Source Code Pro;
 }
 
 .CodeMirror, .CodeMirror-scroll {
-  min-height: 63vh;
-  max-height: 63vh;
+  // account for the padding introduced by the '.scrollbar-padding' class
+  min-height: calc(64vh - #{2*$space-medium});
+  max-height: calc(64vh - #{2*$space-medium});
 }
 
 .ps.ps--active-x>.ps__scrollbar-x-rail,

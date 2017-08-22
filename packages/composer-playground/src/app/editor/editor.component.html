@@ -1,120 +1,150 @@
 <section class="side-bar">
-  <div class="files">
-    <span>Files</span>
-    <perfect-scrollbar class="side-bar-nav" scroll-to-element [elementId]="listItem">
-      <ul>
-        <li #editorFileList id="editorFileList{{fileIndex}}" *ngFor="let file of files; let fileIndex = index" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
-            <div class="flex-container">
-                <div class="flex">
-                    <h3 [class.error]="file.invalid" *ngIf="file.package">Package Details</h3>
-                    <h3 [class.error]="file.invalid" *ngIf="file.model">Model File</h3>
-                    <h3 [class.error]="file.invalid" *ngIf="file.script">Script File</h3>
-                    <h3 [class.error]="file.invalid" *ngIf="file.acl">Access Control</h3>
-                    <h3 [class.error]="file.invalid" *ngIf="file.readme">About</h3>
-                    <h3 [class.error]="file.invalid" *ngIf="file.query">Query File</h3>
-                    <div [class.error]="file.invalid">{{file.displayID}}</div>
-                </div>
-                <div *ngIf="file.invalid" class="error_dot">
-                    <svg class="ibm-icon" aria-hidden="true">
-                        <use xlink:href="#icon-error_dot"></use>
-                    </svg>
-                </div>
-          </div>
-        </li>
-      </ul>
-    </perfect-scrollbar>
-    <div class="add-file">
-      <button id="editor_addfile" class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
+    <div class="files">
+        <span>Files</span>
+        <perfect-scrollbar class="side-bar-nav" scroll-to-element [elementId]="listItem">
+            <ul>
+                <li #editorFileList id="editorFileList{{fileIndex}}" *ngFor="let file of files; let fileIndex = index"
+                    [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+                    <div class="flex-container">
+                        <div class="flex">
+                            <h3 [class.error]="file.invalid" *ngIf="file.package">Package Details</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.model">Model File</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.script">Script File</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.acl">Access Control</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.readme">About</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.query">Query File</h3>
+                            <div [class.error]="file.invalid">{{file.displayID}}</div>
+                        </div>
+                        <div *ngIf="file.invalid" class="error_dot">
+                            <svg class="ibm-icon" aria-hidden="true">
+                                <use xlink:href="#icon-error_dot"></use>
+                            </svg>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </perfect-scrollbar>
+        <div class="add-file">
+            <button id="editor_addfile" class="action" type="button" (click)="openAddFileModal()">+ Add a file...
+            </button>
+        </div>
+        <div>
+            <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
+                Deploy
+            </button>
+        </div>
     </div>
-    <div>
-      <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
-        Deploy
-      </button>
+    <div class="actions">
+        <div>
+            <button id="editor_import" type="button" class="action" (click)="openImportModal()">
+                <svg class="standard-icon" aria-hidden="true">
+                    <use xlink:href="#icon-upload_32"></use>
+                </svg>
+                Import/Replace
+            </button>
+        </div>
+        <div>
+            <button id="editor_export" type="button" class="action" (click)="exportBNA()">
+                <svg class="standard-icon" aria-hidden="true">
+                    <use xlink:href="#icon-download_32"></use>
+                </svg>
+                Export
+            </button>
+        </div>
     </div>
-  </div>
-  <div class="actions">
-    <div>
-      <button id="editor_import" type="button" class="action" (click)="openImportModal()">
-        <svg class="standard-icon" aria-hidden="true">
-          <use xlink:href="#icon-download_32"></use>
-        </svg>
-        Import/Replace
-      </button>
-    </div>
-    <div>
-      <button id="editor_export" type="button" class="action" (click)="exportBNA()">
-        <svg class="standard-icon" aria-hidden="true">
-          <use xlink:href="#icon-upload_32"></use>
-        </svg>
-        Export
-      </button>
-    </div>
-  </div>
 </section>
 <section class="main-view">
-  <div>
-    <div *ngIf="editingPackage" class="business-network-details">
-      <h1>Editing package.json</h1>
-    </div>
-    <div *ngIf="!editActive && !editingPackage" class="business-network-details">
-      <div style="flex-shrink:1;align-self: center">
-        <h1 *ngIf="currentFile && fileType(currentFile)!='Readme'" class="margin-right">{{ fileType(currentFile) }} File</h1>
-        <h1 id="editor_deployedPackageName" *ngIf="currentFile && fileType(currentFile)=='Readme'" class="margin-right">{{ deployedPackageName }}</h1>
-      </div>
-      <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
-      <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
-      <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
-        <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
-          <svg class="ibm-icon vertical-top" aria-hidden="true">
-            <use xlink:href="#icon-edit_24"></use>
-          </svg>
-        </button>
-      </div>
-      <div *ngIf="deletableFile" class="delete_icon">
-        <button id="deleteFileButton" type="button" class="action" (click)="openDeleteFileModal()">
-          <svg class="ibm-icon vertical-top" aria-hidden="true">
-            <use xlink:href="#icon-trash_32"></use>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div *ngIf="editActive && fileType(currentFile)=='Readme'" class="business-network-details">
-      <label class="edit-label margin-right" for="editName">Name</label>
-      <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
-      <label class="edit-label margin-right" for="editVersion">Version</label>
-      <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
-             [(ngModel)]="inputPackageVersion">
-      <div class="edit-package-text margin-right">
-        <button id="editPackageButton" type="button" class="action" (click)="setCurrentFile({
+    <div class="main-view-content">
+        <div>
+            <div *ngIf="editingPackage" class="business-network-details">
+                <h1>Editing package.json</h1>
+            </div>
+            <div *ngIf="!editActive && !editingPackage" class="business-network-details">
+                <div style="flex-shrink:1;align-self: center">
+                    <h1 *ngIf="currentFile && fileType(currentFile)!='Readme'" class="margin-right">{{
+                        fileType(currentFile) }} File</h1>
+                    <h1 id="editor_deployedPackageName" *ngIf="currentFile && fileType(currentFile)=='Readme'"
+                        class="business-network-description"><p>{{ deployedPackageDescription }}</p>
+                        <div class="tooltiptext">{{ deployedPackageDescription }}</div>
+                    </h1>
+                </div>
+                <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center"
+                     class="business-network-version small">{{currentFile.displayID}}
+                </div>
+                <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center"
+                     class="business-network-version small">v{{deployedPackageVersion}}
+                </div>
+                <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
+                    <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-edit_24"></use>
+                        </svg>
+                    </button>
+                </div>
+                <div *ngIf="deletableFile" class="delete_icon">
+                    <button id="deleteFileButton" type="button" class="action" (click)="openDeleteFileModal()">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-trash_32"></use>
+                        </svg>
+                    </button>
+                </div>
+
+                <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_preview">
+                    <button id="editFileButton" type="button" class="action" [class.active]="previewReadme"
+                            (click)="setReadmePreview(true)">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-view_24"></use>
+                        </svg>
+                    </button>
+                </div>
+
+                <div *ngIf="currentFile && fileType(currentFile)=='Readme'" class="readme_icon_edit">
+                    <button id="editFileButton" type="button" class="action" [class.active]="!previewReadme"
+                            (click)="setReadmePreview(false)">
+                        <svg class="ibm-icon vertical-top" aria-hidden="true">
+                            <use xlink:href="#icon-code_24"></use>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="editActive && fileType(currentFile)=='Readme'" class="business-network-details">
+                <label class="edit-label margin-right" for="editVersion">Version: </label>
+                <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
+                       [(ngModel)]="inputPackageVersion">
+                <div class="edit-package-text margin-right">
+                    <button id="editPackageButton" type="button" class="action" (click)="setCurrentFile({
           package: true,
           id: 'package',
           displayID: 'package.json'
         });hideEdit();">View/edit full metadata in package.json
-        </button>
-      </div>
-    </div>
-    <div *ngIf="editActive && fileType(currentFile)!='Readme'" class="business-network-details">
-      <div class="flex-container" style="flex-direction:column">
-        <div class="edit-file-row">
-            <label class="edit-file-label" for="editName">Name</label>
-            <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">models/</div>
-            <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">lib/</div>
-            <div class="edit-file-value">
-                <input *ngIf="!fileNameError" style="margin-top: 0.2rem" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]">
-                <input *ngIf="fileNameError" class="error-underline" style="margin-top: 0.2rem" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]">
+                    </button>
+                </div>
             </div>
-            <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">.cto</div>
-            <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">.js</div>
+            <div *ngIf="editActive && fileType(currentFile)!='Readme'" class="business-network-details">
+                <div class="flex-container" style="flex-direction:column">
+                    <div class="edit-file-row">
+                        <label class="edit-file-label" for="editName">Name</label>
+                        <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">models/</div>
+                        <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">lib/</div>
+                        <div class="edit-file-value">
+                            <input *ngIf="!fileNameError" style="margin-top: 0.2rem" type="text" (blur)="editFileName()"
+                                   [(ngModel)]="inputFileNameArray[1]">
+                            <input *ngIf="fileNameError" class="error-underline" style="margin-top: 0.2rem" type="text"
+                                   (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]">
+                        </div>
+                        <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">.cto</div>
+                        <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">.js</div>
+                    </div>
+                    <div *ngIf="fileNameError" class="error-message">
+                        {{fileNameError}}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div *ngIf="fileNameError" class="error-message">
-              {{fileNameError}}
+
+        <div class="flex">
+            <editor-file [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file>
         </div>
     </div>
-    </div>
-  </div>
-
-  <div class="flex"><editor-file [editorFile]="currentFile"></editor-file></div>
-
-  <app-footer></app-footer>
-
+    <app-footer></app-footer>
 </section>

@@ -38,19 +38,19 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOM',
                 exchangeId: [
-                    'NYSE'
+                    'LDN'
                 ],
                 faceAmount: 1000,
                 instrumentId: [
                     'AliceCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#1',
-                maturity: '2018-02-27T21:03:52.000Z',
+                maturity: '2017-02-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
-                    periodMultiplier: 6
+                    periodMultiplier: 7
                 }
             }
         }, {
@@ -66,13 +66,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 instrumentId: [
                     'BobCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
-                maturity: '2018-02-27T21:03:52.000Z',
+                issuer: 'resource:org.acme.bond.Issuer#2',
+                maturity: '2017-02-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
-                    periodMultiplier: 6
+                    periodMultiplier: 7
                 }
             }
         }, {
@@ -84,21 +84,21 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 500,
                 instrumentId: [
                     'CharlieCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
+                issuer: 'resource:org.acme.bond.Issuer#3',
                 maturity: '2018-02-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
-                    period: 'MONTH',
-                    periodMultiplier: 6
+                    period: 'YEAR',
+                    periodMultiplier: 1
                 }
             }
         }, {
-            // $class: 'org.acme.bond.BondAsset',
+            $class: 'org.acme.bond.BondAsset',
             ISINCode: 'ISIN_4',
             bond: {
                 $class: 'org.acme.bond.Bond',
@@ -106,17 +106,17 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 500,
                 instrumentId: [
                     'DogeCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
+                issuer: 'resource:org.acme.bond.Issuer#4',
                 maturity: '2018-02-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
-                    period: 'MONTH',
-                    periodMultiplier: 6
+                    period: 'YEAR',
+                    periodMultiplier: 1
                 }
             }
         }];
@@ -152,8 +152,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     namespaces: namespaces
                 });
             })
-            .then((app_) => {
-                app = app_;
+            .then((result) => {
+                app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
                 return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
@@ -164,14 +164,16 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 assetRegistry = assetRegistry_;
                 return assetRegistry.addAll([
                     serializer.fromJSON(assetData[0]),
-                    serializer.fromJSON(assetData[1])
+                    serializer.fromJSON(assetData[1]),
+                    serializer.fromJSON(assetData[2]),
+                    serializer.fromJSON(assetData[3])
                 ]);
             });
         });
 
         describe(`GET / namespaces[${namespaces}]`, () => {
 
-            it('should return all of the assets', () => {
+            it('should return all of the assets with a double type variable', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByFaceAmount?faceAmount=500')
                     .then((res) => {
@@ -182,7 +184,70 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-
+            it('should return a 404 if query a double type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByFaceAmount?faceAmount=10000')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
+            it('should return all of the assets with an enum type variable', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriod?period=MONTH')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                        ]);
+                    });
+            });
+            it('should return a 404 if query an enum type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriod?period=QUARTER')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
+            it('should return all of the assets with an integer type variable', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=7')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                        ]);
+                    });
+            });
+            it('should return a 404 if query an integer type vairable with a non-existing value', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByPaymentFrequencyPeriodMultiplier?multiplier=6')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
+            it('should return a 404 if the query specified variable is an unsupported array type', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByExchangeIdUnsupported?exchangeId[]=LDN')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
+            it('should return a 404 if the specified asset does not exist', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByMaturity?maturity=2019-02-27T21:03:52.000Z')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
+            it('should return a 404 if the specified query does not exist', () => {
+                return chai.request(app)
+                    .get('/api/queries/nonDefinedQuery?wombat=cuddly')
+                    .catch((err) => {
+                        err.response.should.have.status(404);
+                    });
+            });
         });
     });
 });

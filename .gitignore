@@ -52,6 +52,10 @@ jspm_packages
 #generated jsdoc
 packages/composer-website/jekylldocs/jsdoc/
 
+#Broken link report
+packages/composer-website/linkresults.txt
+
+
 packages/composer-playground/src/assets/npmlist.json
 
 packages/composer-systests/systestv1/tls/ca/fabric-ca-server.db

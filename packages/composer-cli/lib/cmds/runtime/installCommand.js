@@ -17,7 +17,7 @@
 const Install = require ('./lib/install.js');
 
 module.exports.command = 'install [options]';
-module.exports.describe = 'Installs a business network to the Hyperledger Fabric';
+module.exports.describe = 'Installs the Hyperledger Composer runtime for a business network to the Hyperledger Fabric';
 module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
@@ -28,14 +28,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    argv.thePromise =  Install.handler(argv)
-    .then(() => {
-        return;
-    })
-    .catch((error) => {
-        throw error;
-
-    });
-
-    return argv.thePromise;
+    return argv.thePromise = Install.handler(argv);
 };

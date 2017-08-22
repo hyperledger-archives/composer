@@ -27,16 +27,10 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
         cd MyProfile
 
-4. Create a new file called `connection.json` that contains the following information for either {{site.data.conrefs.hlf_full}} v0.6 or v1.0. If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v0.6, use the following format:
-
-        {
-            "type": <hlf|web>,
-            "keyValStore":"/home/<your-username>/.composer-credentials",
-            "membershipServicesURL": <your-membership-services-url>,
-            "peerURL": <your-peer-url>,
-            "eventHubURL": <your-event-hub-url>
+4. Create a new file called `connection.json` that contains the following information for {{site.data.conrefs.hlf_full}} v1.0. 
         }
-  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
+  
+  Create a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
 
         {
             "type": "hlfv1",
@@ -53,7 +47,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "ca": {
                     "url:" "https://",
                     "name": "",
-                    "trustedRoots": "",
+                    "trustedRoots": [""],
                     "verify": true
             },
             "peers": [
@@ -107,6 +101,8 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         }
 
   - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0 is must be `hlfv1`.
+  - `ca` defines the url of a {{site.data.conrefs.hlf_full}} certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of `ca` as shown in the first {{site.data.conrefs.hlf_full}} v1.0 example above.
+  - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
   - `orderers` is an array of objects which describe the orderes to communicate with. Within `orderers`, you must define the `url` of each orderer. If you are connecting via TLS, all `url` properties in your connection profile must begin with `grpcs://` and must also contain the correct TLS certificate in the `cert` property.
   - `peers` is an array of objects describing the peers to communicate with. Each `peer` must have a defined `requestURL` and a defined `eventURL`. If you are connecting using TLS, each `peer` must also have the correct TLS certificate in the `cert` property.
 
@@ -120,3 +116,4 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   - `globalcert` defines the TLS certificate which is used for all peers and orderers if no `cert` property is specified. If a `cert` property is specified, it overrides the `globalcert` property only for the peer or orderer it is specified for.
   - `maxSendSize` is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
   - `maxRecvSize` is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
+  

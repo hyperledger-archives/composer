@@ -3,6 +3,7 @@ import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
+import { Identity } from '../component/identity';
 import { Replace } from '../component/replace';
 import { AddFile } from '../component/add-file';
 import { EditorFile } from '../component/editor-file';
@@ -17,14 +18,22 @@ let expect = chai.expect;
 
 describe('Editor Define', (() => {
 
+  let baseTiles: Array<string> = null;
+  let npmTiles: Array<string> = null;
+  let sampleOptions;
+
   // Navigate to Editor base page and move past welcome splash
   beforeAll(() =>  {
+    // Important angular configuration and intial step passage to reach editor
     browser.waitForAngularEnabled(false);
     OperationsHelper.navigatePastWelcome();
+    Identity.connectViaNamedCard('admin');
   });
 
   afterAll(() =>  {
     browser.waitForAngularEnabled(true);
+    browser.executeScript('window.sessionStorage.clear();');
+    browser.executeScript('window.localStorage.clear();');
   });
 
   describe('On initialise', (() => {
@@ -55,21 +64,50 @@ describe('Editor Define', (() => {
     }));
   }));
 
+  describe('Export BND button', (() => {
+
+      it('should export BNA named as the package name', (() => {
+          Editor.waitForProjectFilesToLoad();
+
+          Editor.retrieveDeployedPackageName()
+          .then((packageName) => {
+              let filename = './e2e/downloads/' + packageName + '.bna';
+              if (fs.existsSync(filename)) {
+                  // Make sure the browser doesn't have to rename the download.
+                  fs.unlinkSync(filename);
+              }
+              return filename;
+          })
+          .then((filename) => {
+               Editor.clickExportBND();
+               return waitForFileToExist(filename)
+               .then(() => { return retrieveZipContentList(filename); });
+          })
+          .then((contents) => {
+              // -should have known contents
+              let expectedContents = [ 'package.json',
+                                          'README.md',
+                                          'permissions.acl',
+                                          'models/',
+                                          'models/sample.cto',
+                                          'lib/',
+                                          'lib/sample.js' ];
+              expect(contents).to.be.an('array').lengthOf(7);
+              expect(contents).to.deep.equal(expectedContents);
+          });
+      }));
+    }));
+
   describe('Import BND button', (() => {
 
     // Press the 'Import' button
     beforeEach(() =>  {
         Editor.clickImportBND();
+        Import.waitToLoadBaseOptions();
+        Import.waitToLoadNpmOptions();
     });
 
-    it('should enable cancel of BNA import', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
-
-        // Replace confirm should show, cancel it
-        Replace.cancelReplace();
-
-        // Cancel import modal
+    it('should enable to close/cancel import slide out', (() => {
         Import.cancelImport();
 
         // -expected files in navigator (unchanged)
@@ -92,9 +130,36 @@ describe('Editor Define', (() => {
 
     }));
 
-    it('should enable empty BNA import via file selection', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/unnamed-network.bna');
+    it('should enable to cancel import import at replacement warning', (() => {
+        // Select default item
+        Import.confirmImport();
+
+        // Cancel on replace warning
+        Replace.cancelReplace();
+
+        // -expected files in navigator (unchanged)
+        let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
+        Editor.retrieveNavigatorFileNames()
+        .then((filelist: any) => {
+            expect(filelist).to.be.an('array').lengthOf(4);
+            filelist.forEach((file) => {
+                expect(file).to.be.oneOf(expectedFiles);
+            });
+        });
+
+        // -deploy not enabled
+        Editor.retrieveNavigatorFileActionButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+            expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+        });
+
+    }));
+
+    it('should enable empty BNA import via tile selection', (() => {
+        // Select Empty BNA
+        Import.selectBaseImportOption('empty-business-network');
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -120,8 +185,8 @@ describe('Editor Define', (() => {
     }));
 
     it('should enable populated BNA import via file selection', (() => {
-        // Select BNA
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
+         // Select Basic Sample Network BNA
+        Import.selectBaseImportOption('basic-sample-network');
 
         // Replace confirm should show, confirm it
         Replace.confirmReplace();
@@ -131,7 +196,7 @@ describe('Editor Define', (() => {
         Import.waitToDisappear();
         // -success message
         OperationsHelper.processExpectedSuccess();
-        // -expected files in navigator (Just a readme)
+        // -expected files in navigator
         Editor.retrieveNavigatorFileNames()
         .then((filelist: any) => {
             let expectedFiles = ['About\nREADME.md', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'];
@@ -148,39 +213,106 @@ describe('Editor Define', (() => {
             expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
         });
     }));
-  }));
 
-  describe('Export BND button', (() => {
+    it('should enable import of npm hosted animaltracking-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('animaltracking-network');
+        Replace.confirmReplace();
 
-    it('should export BNA named as the package name', (() => {
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
 
-        Editor.retrieveDeployedPackageName()
-        .then((packageName) => {
-            let filename = './e2e/downloads/' + packageName + '.bna';
-            if (fs.existsSync(filename)) {
-                // Make sure the browser doesn't have to rename the download.
-                fs.unlinkSync(filename);
-            }
-            return filename;
-        })
-        .then((filename) => {
-             Editor.clickExportBND();
-             return waitForFileToExist(filename)
-             .then(() => { return retrieveZipContentList(filename); });
-        })
-        .then((contents) => {
-            // -should have known contents
-            let expectedContents = [ 'package.json',
-                                        'README.md',
-                                        'permissions.acl',
-                                        'models/',
-                                        'models/sample.cto',
-                                        'lib/',
-                                        'lib/sample.js' ];
-            expect(contents).to.be.an('array').lengthOf(7);
-            expect(contents).to.deep.equal(expectedContents);
-        });
     }));
+
+    it('should enable import of npm hosted bond-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('bond-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted carauction-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('carauction-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted digitalproperty-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('digitalproperty-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted marbles-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('marbles-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted perishable-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('perishable-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted pii-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('pii-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted trade-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('trade-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
+    it('should enable import of npm hosted vehicle-lifecycle-network', (() => {
+        // Select & Confirm
+        Import.selectNpmImportOption('vehicle-lifecycle-network');
+        Replace.confirmReplace();
+
+        // Expect success
+        Import.waitToDisappear();
+        OperationsHelper.processExpectedSuccess();
+
+    }));
+
   }));
 
   describe('Add File button', (() => {
@@ -193,13 +325,9 @@ describe('Editor Define', (() => {
         });
     });
 
-    afterAll(() =>  {
-        // Reset network
-        Editor.clickImportBND();
-        Import.selectBusinessNetworkDefinitionFromFile('./e2e/data/bna/basic-sample-network.bna');
-        Replace.confirmReplace();
-        Import.waitToDisappear();
-        OperationsHelper.processExpectedSuccess();
+    afterEach(() =>  {
+        // Reset network to basic sample network
+        OperationsHelper.importBusinessNetworkArchiveFromTile('basic-sample-network', true);
     });
 
     it('should bring up an AddFile modal that can be closed by cancel button', (() => {
@@ -298,7 +426,7 @@ describe('Editor Define', (() => {
             });
 
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Script File\nlib/script.js');
@@ -334,7 +462,7 @@ describe('Editor Define', (() => {
                 expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
             });
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Script File\nlib/importScript.js');
@@ -353,7 +481,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Model File\nmodels/org.acme.model.cto');
@@ -401,7 +529,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Model File\nmodels/importModel.cto');
@@ -448,7 +576,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Access Control\npermissions.acl');
@@ -489,6 +617,60 @@ describe('Editor Define', (() => {
         });
     }));
 
+    it('should enable the addition of an ACL file via radio button selection', (() => {
+        AddFile.clickCancelAdd();
+        OperationsHelper.importBusinessNetworkArchiveFromTile('empty-business-network', true);
+
+        Editor.clickAddFile();
+        AddFile.waitToAppear();
+
+        Editor.retrieveNavigatorFileNames()
+        .then((names) => {
+            // Select radio option
+            AddFile.selectAddAclViaRadioOption();
+            // Add option becomes enabled
+            AddFile.clickConfirmAdd();
+            return names;
+        })
+        .then((startFiles) => {
+            // -active file
+            Editor.retrieveNavigatorActiveFiles()
+            .then((list: any) => {
+                expect(list).to.be.an('array').lengthOf(1);
+                expect(list).to.include('Access Control\npermissions.acl');
+            });
+            // Check extracted against new template file that we should have in the list
+            Editor.retrieveNavigatorFileNames()
+            .then((filenames: any) => {
+                // We should have added one file
+                expect(filenames).to.be.an('array').lengthOf(startFiles.length + 1);
+                expect(filenames).to.include('Access Control\npermissions.acl');
+                // Previous files should still exist
+                startFiles.forEach((file) => {
+                    expect(file).to.be.oneOf(filenames);
+                });
+            });
+            // -deploy enabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
+            });
+            // deploy new item
+            Editor.clickDeployBND();
+            // -success message
+            OperationsHelper.processExpectedSuccess();
+            // -deploy disabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+            });
+        });
+    }));
+
     it('should enable the addition of a Readme file via file input event', (() => {
         Editor.retrieveNavigatorFileNames()
         .then((names) => {
@@ -501,7 +683,7 @@ describe('Editor Define', (() => {
         .then((startFiles) => {
             // Check for new contents (we only have one readme file)
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('About\nREADME.md');
@@ -541,6 +723,54 @@ describe('Editor Define', (() => {
         });
     }));
 
+    it('should enable the addition of a Query file via radio button selection', (() => {
+        Editor.retrieveNavigatorFileNames()
+        .then((names) => {
+            // Select radio option
+            AddFile.selectAddQueryViaRadioOption();
+            // Add option becomes enabled
+            AddFile.clickConfirmAdd();
+            return names;
+        })
+        .then((startFiles) => {
+            // -active file
+            Editor.retrieveNavigatorActiveFiles()
+            .then((list: any) => {
+                expect(list).to.be.an('array').lengthOf(1);
+                expect(list).to.include('Query File\nqueries.qry');
+            });
+            // Check extracted against new template file that we should have in the list
+            Editor.retrieveNavigatorFileNames()
+            .then((filenames: any) => {
+                // We should have added one file
+                expect(filenames).to.be.an('array').lengthOf(startFiles.length + 1);
+                expect(filenames).to.include('Query File\nqueries.qry');
+                // Previous files should still exist
+                startFiles.forEach((file) => {
+                    expect(file).to.be.oneOf(filenames);
+                });
+            });
+            // -deploy enabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: true});
+            });
+            // deploy new item
+            Editor.clickDeployBND();
+            // -success message
+            OperationsHelper.processExpectedSuccess();
+            // -deploy disabled
+            Editor.retrieveNavigatorFileActionButtons()
+            .then((buttonlist: any) => {
+                expect(buttonlist).to.be.an('array').lengthOf(2);
+                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
+            });
+        });
+    }));
+
     it('should enable the addition of a Query file via file input event', (() => {
         Editor.retrieveNavigatorFileNames()
         .then((names) => {
@@ -550,7 +780,7 @@ describe('Editor Define', (() => {
         })
         .then((startFiles) => {
             // -active file
-            Editor.retrieveNavigatorActiveFile()
+            Editor.retrieveNavigatorActiveFiles()
             .then((list: any) => {
                 expect(list).to.be.an('array').lengthOf(1);
                 expect(list).to.include('Query File\nqueries.qry');
@@ -589,6 +819,29 @@ describe('Editor Define', (() => {
                 expect(buttonlist[1]).to.deep.equal({text: 'Deploy', enabled: false});
             });
         });
+    }));
+
+    it('should prevent the addition of a query file and/or acl file if one exists already', (() => {
+        // Add a query file
+        AddFile.selectFromFile('./e2e/data/files/importQuery.qry');
+        AddFile.clickConfirmAdd();
+
+        // Click add file
+        Editor.clickAddFile();
+        AddFile.waitToAppear();
+
+        // Inspect radio button status
+        AddFile.retrieveAddFileRadioButtons()
+        .then((radioList: any) => {
+            expect(radioList).to.be.an('array').lengthOf(4);
+            expect(radioList).to.contain({name: 'file-type-cto', enabled: true});
+            expect(radioList).to.contain({name: 'file-type-js', enabled: true});
+            expect(radioList).to.contain({name: 'file-type-qry', enabled: false});
+            expect(radioList).to.contain({name: 'file-type-acl', enabled: false});
+        });
+
+        AddFile.clickCancelAdd();
+
     }));
 
     it('should prevent the addition of a file with an invalid file extension', (() => {

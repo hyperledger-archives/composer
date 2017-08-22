@@ -62,7 +62,7 @@ elif [ "${SYSTEST}" != "" ]; then
 else
 
     # Run the unit tests.
-    npm test 2>&1 | tee
+    npm test 2>&1
 
     # Build the Composer Playground.
     cd "${DIR}/packages/composer-playground"

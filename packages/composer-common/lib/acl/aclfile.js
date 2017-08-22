@@ -67,7 +67,7 @@ class AclFile {
     }
 
     /**
-     * Returns the identifier of this ACL File.
+     * Returns the name of this ACL File.
      * @return {string} the identifier of this ACL File
      */
     getIdentifier() {

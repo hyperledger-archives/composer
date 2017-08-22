@@ -15,11 +15,9 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const InstallCmd = require('../../lib/cmds/runtime/installCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -28,9 +26,6 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-let testBusinessNetworkId = 'net-biz-TestNetwork-0.0.1';
-let testBusinessNetworkDescription = 'Test network description';
-let mockBusinessNetworkDefinition;
 let mockAdminConnection;
 
 describe('composer install runtime CLI unit tests', function () {
@@ -40,16 +35,11 @@ describe('composer install runtime CLI unit tests', function () {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
 
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
-
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
 
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
     });
@@ -70,6 +60,7 @@ describe('composer install runtime CLI unit tests', function () {
 
             return InstallCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.installId, argv.installSecret, null);

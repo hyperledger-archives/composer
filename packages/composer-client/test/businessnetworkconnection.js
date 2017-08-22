@@ -32,6 +32,7 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('../lib/transactionregistry');
+const Historian = require('../lib/historian');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -534,6 +535,56 @@ describe('BusinessNetworkConnection', () => {
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', 'much participants are here', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(participantRegistry);
                 });
+
+        });
+
+    });
+
+
+    describe('#getHistorian', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            let historian = sinon.createStubInstance(Historian);
+            sandbox.stub(Historian, 'getHistorian').resolves(historian);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getHistorian()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let mockHistorian = sinon.createStubInstance(Historian);
+            let stub = sandbox.stub(Historian, 'getHistorian').resolves(mockHistorian);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getHistorian()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(mockHistorian);
+                });
+
+        });
+
+        it('should throw when the default transaction registry does not exist', () => {
+
+            // Set up the mock.
+            sandbox.stub(Historian, 'getHistorian').resolves(null);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getHistorian()
+                .should.be.rejectedWith(/historian/);
 
         });
 
@@ -1256,7 +1307,7 @@ describe('BusinessNetworkConnection', () => {
             // Invoke the function.
             return businessNetworkConnection
                 .getIdentityRegistry()
-                .should.be.rejectedWith(/default identity registry/);
+                .should.be.rejectedWith(/identity registry/);
 
         });
     });

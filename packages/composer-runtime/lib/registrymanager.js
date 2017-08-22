@@ -21,12 +21,16 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
+
+// Do not add additional types to these constants. All system types are assets.
 const TYPE_MAP = {
-    'Asset': 'AssetRegistry',
-    'Participant': 'ParticipantRegistry',
-    'Transaction': 'TransactionRegistry',
-    'Network': 'Network'
+    Asset: 'AssetRegistry',
+    Participant: 'ParticipantRegistry',
+    Transaction: 'TransactionRegistry',
+    Network: 'Network'
 };
+
+// This is a list of non-abstract system types that we do not want registries created for.
 const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',

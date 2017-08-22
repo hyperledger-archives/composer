@@ -10,13 +10,13 @@ excerpt: Queries are used to return data about the blockchain world-state; for e
 
 # Querying business network data
 
->**Warning**: The status of this feature is experimental. You **must** use Hyperledger Composer v0.8+ with the the HLFv1 runtime to use queries. We welcome feedback and comments while we continue to iterate upon query functionality. The API may change based on the feedback received.
+>**Warning**: The status of this feature is experimental. You **must** use Hyperledger Composer v0.8 or greater (preferably 'latest') with the {{site.data.conrefs.hlf_full}} v1.0 GA runtime to use queries. We welcome feedback and comments while we continue to iteratively add query functionality. The API may change, based on the feedback received.
 
 Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a specified age, or all drivers with a specific name. The composer-rest-server component exposes named queries via the generated REST API.
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with the {{site.data.conrefs.hlf_full}} v0.6 runtime.
+Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. 
 
 ## Types of Queries
 

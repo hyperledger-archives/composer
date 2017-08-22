@@ -11,6 +11,15 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.11.2 {b25b7803dd52d44e06116dac595cdd6b} 2017-08-08
+- added requestIdentity method
+
+Version 0.10.2 {1e34bbbec048a9c65cd1464415658d45} 2017-07-27
+- moved upgrade in line with update
+
+Version 0.10.1 {a29c92b5be618f000f0e75ffa6840e4b} 2017-07-21
+- added upgrade method.
+
 Version 0.10.0 {3af411e8da53bb013ab9718ed5980c20} 2017-07-17
 - added install and start method.
 

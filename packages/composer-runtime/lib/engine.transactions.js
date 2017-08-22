@@ -44,6 +44,8 @@ class EngineTransactions {
         // Find the default transaction registry.
         let registryManager = context.getRegistryManager();
         let transaction = null;
+        let historian = null;
+        let txRegistry = null;
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
@@ -101,18 +103,106 @@ class EngineTransactions {
                     throw error;
                 }
 
+                // Get the historian.
+                LOG.debug(method, 'Getting historian');
+                return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
+
+            })
+            .then((result) => {
+                historian = result;
                 // Get the default transaction registry.
                 LOG.debug(method, 'Getting default transaction registry');
                 return registryManager.get('Transaction', 'default');
-
             })
-            .then((transactionRegistry) => {
-
+            .then((result) => {
+                txRegistry = result;
                 // Store the transaction in the transaction registry.
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
-                return transactionRegistry.add(transaction);
+                return txRegistry.add(transaction);
+            })
+            .then(()=>{
+                return this.createHistorianRecord(transaction,context);
+            })
+            .then((result) => {
+                // Store the transaction in the transaction registry.
+                LOG.debug(method, 'Storing historian record in the registry');
+                return historian.add(result);
 
             });
+
+    }
+
+    /**
+     * Creates the Historian Record for a given transaction
+     * @param {Transaction} transaction originally submitted transaction
+     * @param {Context} context of the transaction
+     * @return {Promise} resolved with the Historian Record
+     * @private
+     */
+    createHistorianRecord(transaction,context) {
+        const method = 'createHistorianRecord';
+        LOG.entry(method,transaction,context);
+        // For reference the historian record looks like this
+        // asset HistorianRecord identified by transactionId {
+        //     o String      transactionId
+        //   --> Transaction transactionInvoked
+        //   --> Participant participantInvoking
+        //   --> Identity    identityUsed
+        //   o Event[]     eventsEmitted
+        //   o DateTime      tranactionTimestamp
+        // }
+
+        // create a record from the factory
+        let factory = context.getFactory();
+        let record = factory.newResource('org.hyperledger.composer.system', 'HistorianRecord', transaction.getIdentifier());
+
+        LOG.info(method,'created historian record');
+        // Get the current participant & create a relationship
+        let participant = context.getParticipant();
+        if (!participant){
+            record.participantInvoking = null;
+        } else {
+            record.participantInvoking = factory.newRelationship('org.hyperledger.composer.system','Participant',participant.getIdentifier());
+        }
+
+        // Get the transaction in question and also create a relationship
+        record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
+        record.transactionTimestamp = transaction.timestamp;
+        record.transactionType = transaction.getType();
+
+        // Get the events that are generated - getting these as Resources
+        let evtSvr = context.getEventService();
+        record.eventsEmitted = [];
+
+        if(evtSvr) {
+            let s = evtSvr.getEvents();
+            if (s) {
+                s.forEach((element) => {
+                    let r = context.getSerializer().fromJSON(element);
+                    record.eventsEmitted.push(r);
+                } );
+            }
+        }
+
+        // Note that this is only call out to collect data that returns a promise.
+        // Get the current identity that is being used
+        return context.getIdentityManager().getIdentity()
+        .then( (result) => {
+            record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
+            LOG.exit(method, record);
+            return record;
+        }).catch(/* istanbul ignore next */error => {
+            //TODO:  need to remove this when the admin is sorted out!
+            /* istanbul ignore next */
+            if(error.identityName){
+                LOG.debug(method, 'admin userid again');
+            } else {
+                throw error;
+            }
+        }).then(()=>{
+            LOG.exit(method, record);
+            return record;
+        } );
 
     }
 

@@ -43,6 +43,22 @@ export class EditorFileComponent {
         scrollbarStyle: 'simple'
     };
 
+    private mdCodeConfig = {
+        lineNumbers: true,
+        lineWrapping: true,
+        readOnly: false,
+        mode: 'markdown',
+        autofocus: true,
+        extraKeys: {
+            'Ctrl-Q': (cm) => {
+                cm.foldCode(cm.getCursor());
+            }
+        },
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+        scrollbarStyle: 'simple'
+    };
+
     private currentError: string = null;
 
     private _editorFile;
@@ -55,6 +71,14 @@ export class EditorFileComponent {
             this._editorFile = editorFile;
             this.loadFile();
         }
+    }
+
+    private _previewReadmeActive: boolean = false;
+    private previewContent; // used for the README marked() version
+
+    @Input()
+    set previewReadmeActive(previewReadme: boolean) {
+        this._previewReadmeActive = previewReadme;
     }
 
     constructor(private clientService: ClientService) {
@@ -97,7 +121,8 @@ export class EditorFileComponent {
         } else if (this._editorFile.readme) {
             let readme = this.clientService.getMetaData().getREADME();
             if (readme) {
-                this.editorContent = marked(readme);
+                this.editorContent = readme;
+                this.previewContent = marked(readme);
                 this.editorType = 'readme';
             }
         } else if (this._editorFile.query) {
@@ -105,7 +130,7 @@ export class EditorFileComponent {
           if (queryFile) {
               this.editorContent = queryFile.getDefinitions();
               this.editorType = 'code';
-              this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'qry');
+              this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'query');
           } else {
               this.editorContent = null;
           }
@@ -131,6 +156,9 @@ export class EditorFileComponent {
                 let packageObject = JSON.parse(this.editorContent);
                 this.clientService.setBusinessNetworkPackageJson(packageObject);
                 this.clientService.businessNetworkChanged$.next(true);
+            } else if (this._editorFile.readme) {
+                type = 'readme';
+                this.previewContent = marked(this.editorContent);
             }
             this.currentError = this.clientService.updateFile(this._editorFile.id, this.editorContent, type);
         } catch (e) {

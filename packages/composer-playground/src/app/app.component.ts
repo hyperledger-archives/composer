@@ -3,12 +3,10 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
 import { AlertService } from './basic-modals/alert.service';
-import { ConnectionProfileService } from './services/connectionprofile.service';
-import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';
+import { IdentityCardService } from './services/identity-card.service';
 import { InitializationService } from './services/initialization.service';
 import { BusyComponent } from './basic-modals/busy';
 import { ErrorComponent } from './basic-modals/error';
@@ -16,8 +14,9 @@ import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
-import { TransactionService } from './services/transaction.service';
 import { ViewTransactionComponent } from './test/view-transaction';
+
+import { IdCard } from 'composer-common';
 
 /* tslint:disable-next-line:no-var-requires */
 const LZString = require('lz-string');
@@ -38,33 +37,27 @@ const LZString = require('lz-string');
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-    private connectionProfiles: any = [];
-    private currentConnectionProfile: any = null;
-    private identities: any = [];
-    private currentIdentity: any = null;
     private subs: any = null;
 
     private usingLocally = false;
+    private showHeaderLinks = false;
+    private showWelcome = true;
+    private dropListActive = false;
 
-    private composerRuntimeVersion = '<none>';
-    private participantFQI = '<none>';
+    private composerBanner = ['Hyperledger', 'Composer Playground'];
 
     private busyModalRef = null;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
-                private adminService: AdminService,
                 private clientService: ClientService,
-                private connectionProfileService: ConnectionProfileService,
-                private walletService: WalletService,
                 private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
                 private initializationService: InitializationService,
                 private alertService: AlertService,
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
-                private aboutService: AboutService,
-                private transactionService: TransactionService) {
-
+                private aboutService: AboutService) {
     }
 
     ngOnInit() {
@@ -78,20 +71,11 @@ export class AppComponent implements OnInit, OnDestroy {
             this.route.queryParams.subscribe((queryParams) => {
                 this.queryParamsUpdated(queryParams);
             }),
-            this.transactionService.event$.subscribe((eventStatus) => {
-                this.onEvent(eventStatus);
+            this.alertService.transactionEvent$.subscribe((eventStatus) => {
+                this.onTransactionEvent(eventStatus);
             }),
             this.router.events.filter((e) => e instanceof NavigationEnd).subscribe((e) => {
-                if (e['url'] === '/') {
-                    this.openWelcomeModal();
-                } else {
-                    return this.checkVersion().then((success) => {
-                        if (!success) {
-                            this.openVersionModal();
-                        }
-                    });
-                }
-
+                this.processRouteEvent(e);
             })
         ];
     }
@@ -102,103 +86,69 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    queryParamsUpdated(queryParams: Object): Promise<any> {
-        // Check for the invitation if specified.
-        let invitation = queryParams['invitation'];
-        if (invitation) {
-            let invitationData = JSON.parse(LZString.decompressFromEncodedURIComponent(invitation));
-            let connectionProfileName = invitationData.connectionProfileName;
-            let connectionProfile = invitationData.connectionProfile;
-            let userID = invitationData.userID;
-            let userSecret = invitationData.userSecret;
-            // Create the connection profile and set it as the default.
-            this.adminService.getAdminConnection().createProfile(connectionProfileName, connectionProfile);
-            this.connectionProfileService.setCurrentConnectionProfile(connectionProfileName);
-            // Add the credentials to the wallet.
-            let wallet = this.walletService.getWallet(connectionProfileName);
-            return wallet.contains(userID)
-            .then((exists) => {
-                if (exists) {
-                    return wallet.update(userID, userSecret);
-                } else {
-                    return wallet.add(userID, userSecret);
+    logout() {
+        this.clientService.disconnect();
+        this.identityService.setLoggedIn(false);
+        this.composerBanner = ['Hyperledger', 'Composer Playground'];
+        this.showWelcome = false;
+
+        return this.router.navigate(['/login']);
+    }
+
+    processRouteEvent(event): Promise<void> {
+        let welcomePromise;
+        if (event['url'] === '/login' && this.showWelcome) {
+            welcomePromise = this.openWelcomeModal();
+        } else {
+            welcomePromise = this.checkVersion().then((success) => {
+                if (!success) {
+                    this.openVersionModal();
                 }
-            })
-            .then(() => {
-                return this.identityService.setIdentity(connectionProfileName, userID);
-            })
-            .then(() => {
-                return this.router.navigate(['/editor'])
-                .then((result) => {
-                    if (result) {
-                        window.location.reload();
-                    } else {
-                        throw new Error('Failed to navigate to main page');
-                    }
-                });
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(error);
             });
         }
 
-        // We load the connection profiles now, so we can immediately populate the menu.
-        this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.updateConnectionData()
-        .then(() => {
-            return this.initializationService.initialize();
-        })
-        .then(() => {
-            return this.clientService.getBusinessNetworkConnection().ping();
-        })
-        .then((ping) => {
-            this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
-            this.participantFQI = ping.participant || this.participantFQI;
-            // We then load the connection profiles again, as the connect calls may have
-            // created versions of the default connection profiles.
-            return this.updateConnectionData();
-        })
-        .then(() => {
-            return this.identityService.getCurrentIdentity();
-        })
-        .then((currentIdentity) => {
-            this.currentIdentity = currentIdentity;
-            return this.initializationService.isWebOnly();
-        })
-        .then((webOnly) => {
-            if (webOnly) {
-                this.usingLocally = false;
-            } else {
-                this.usingLocally = true;
-            }
-        });
+        if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
+            this.showHeaderLinks = false;
+        } else {
+            this.showHeaderLinks = true;
+            this.clientService.ensureConnected()
+                .then(() => {
+                    let card: IdCard = this.identityCardService.getCurrentIdentityCard();
+                    let connectionProfile = card.getConnectionProfile();
+                    let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
+                    let busNetName = this.clientService.getBusinessNetworkName();
+                    this.composerBanner = [profileName, busNetName];
+                });
+        }
+
+        return welcomePromise;
     }
 
-    updateConnectionData(): Promise<any> {
-        let newConnectionProfiles = [];
-        return this.adminService.getAdminConnection().getAllProfiles()
-        .then((connectionProfiles) => {
-            let keys = Object.keys(connectionProfiles).sort();
-            keys.forEach((key) => {
-                let connectionProfile = connectionProfiles[key];
-                newConnectionProfiles.push({
-                    name: key,
-                    profile: connectionProfile,
-                    default: key === '$default'
-                });
+    queryParamsUpdated(queryParams: Object): Promise<any> {
+        // Initialise playground
+        return this.initializationService.initialize()
+            .then(() => {
+                return this.initializationService.isWebOnly();
+            })
+            .then((webOnly) => {
+                if (webOnly) {
+                    this.usingLocally = false;
+                } else {
+                    this.usingLocally = true;
+                }
             });
-            this.connectionProfiles = newConnectionProfiles;
-            return this.identityService.getCurrentIdentities();
-        })
-        .then((identities) => {
-            this.identities = identities;
-        });
     }
 
     onBusyStatus(busyStatus) {
-        let currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        if (currentConnectionProfile === '$default') {
-            // Don't show the modal for the web runtime, as it's too fast to care.
+        let card: IdCard = this.identityCardService.getCurrentIdentityCard();
+        if (card && busyStatus) {
+            let connectionProfileType = card.getConnectionProfile().type;
+            if ('web' === connectionProfileType && !busyStatus.force) {
+                // Don't show the modal for the web runtime, as it's too fast to care.
+                return;
+            }
+        } else if (!card && (!busyStatus || !busyStatus.force)) {
+            // if no card then only show if forced
             return;
         }
 
@@ -220,9 +170,23 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    onEvent(eventStatus) {
+    onTransactionEvent(eventStatus) {
         if (eventStatus) {
-            this.modalService.open(ViewTransactionComponent);
+            let transactionModalRef = this.modalService.open(ViewTransactionComponent);
+            transactionModalRef.componentInstance.transaction = eventStatus.transaction;
+            transactionModalRef.componentInstance.events = eventStatus.events;
+
+            transactionModalRef.result.catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
+        }
+    }
+
+    onToggle(open) {
+        if (open) {
+            this.dropListActive = true;
+        } else {
+            this.dropListActive = false;
         }
     }
 

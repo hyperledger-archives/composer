@@ -8,6 +8,11 @@ query participants_stringValue {
     statement: SELECT systest.queries.SampleParticipant WHERE (stringValue == 'string 0')
 }
 
+query transactions_stringValue {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction WHERE (stringValue == 'string 0')
+}
+
 query assets_stringValueParameter {
     description: ""
     statement: SELECT systest.queries.SampleAsset WHERE (stringValue == _$inputStringValue)
@@ -16,6 +21,11 @@ query assets_stringValueParameter {
 query participants_stringValueParameter {
     description: ""
     statement: SELECT systest.queries.SampleParticipant WHERE (stringValue == _$inputStringValue)
+}
+
+query transactions_stringValueParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction WHERE (stringValue == _$inputStringValue)
 }
 
 query assets_nestedStringValue {
@@ -28,6 +38,11 @@ query participants_nestedStringValue {
     statement: SELECT systest.queries.SampleParticipant WHERE (conceptValue.stringValue == 'string 0')
 }
 
+query transactions_nestedStringValue {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction WHERE (conceptValue.stringValue == 'string 0')
+}
+
 query assets_nestedStringValueParameter {
     description: ""
     statement: SELECT systest.queries.SampleAsset WHERE (conceptValue.stringValue == _$inputStringValue)
@@ -36,6 +51,11 @@ query assets_nestedStringValueParameter {
 query participants_nestedStringValueParameter {
     description: ""
     statement: SELECT systest.queries.SampleParticipant WHERE (conceptValue.stringValue == _$inputStringValue)
+}
+
+query transactions_nestedStringValueParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction WHERE (conceptValue.stringValue == _$inputStringValue)
 }
 
 query assets_limit {
@@ -48,6 +68,11 @@ query participants_limit {
     statement: SELECT systest.queries.SampleParticipant LIMIT 2
 }
 
+query transactions_limit {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction LIMIT 2
+}
+
 query assets_skip {
     description: ""
     statement: SELECT systest.queries.SampleAsset SKIP 4
@@ -56,6 +81,11 @@ query assets_skip {
 query participants_skip {
     description: ""
     statement: SELECT systest.queries.SampleParticipant SKIP 4
+}
+
+query transactions_skip {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction SKIP 4
 }
 
 query assets_limitParameter {
@@ -68,6 +98,11 @@ query participants_limitParameter {
     statement: SELECT systest.queries.SampleParticipant LIMIT _$inputLimit
 }
 
+query transactions_limitParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction LIMIT _$inputLimit
+}
+
 query assets_skipParameter {
     description: ""
     statement: SELECT systest.queries.SampleAsset SKIP _$inputSkip
@@ -76,4 +111,9 @@ query assets_skipParameter {
 query participants_skipParameter {
     description: ""
     statement: SELECT systest.queries.SampleParticipant SKIP _$inputSkip
+}
+
+query transactions_skipParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleTransaction SKIP _$inputSkip
 }
