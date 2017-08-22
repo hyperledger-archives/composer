@@ -5,16 +5,22 @@ category: tutorials
 section: tutorials
 index-order: 303
 sidebar: sidebars/accordion-toc0.md
-excerpt: "This guide will walk you through the steps required to add and try out Composer queries to the Developer tutorial that precedes this. It connects to the running Hyperledger Fabric whence the user started up for the Developer tutorial."
+excerpt: "This guide will walk you through the steps required to create, then try out Composer Queries, adding to the Developer tutorial that precedes this. It connects to the running Hyperledger Fabric whence the user started up for the Developer tutorial."
 ---
 
 # Queries Tutorial using the Composer Query language and REST APIs
 
 In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
 
-Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' Developer tutorial, we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
+Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' [Developer-Tutorial](developer-guide.html), we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
 
-It is recommended to do the Developer Tutorial first, where the business network `my-network` has been deployed. (Alternatively, you can  if you wish, do this tutorial from 'scratch' - just build a new 'my-network' VSCode project (just like the Developer tutorial did) and edit your package.json accordingly / create the files (below) as you go along  - in this instance, remember to use `composer network deploy` (as a new network) to deploy the BNA file later on in this tutorial).
+It is recommended to do the [Developer-Tutorial](developer-guide.html) first, where the business network `my-network` has first been deployed. Alternatively, you can  if you wish, do this tutorial from 'scratch' but observe these following 3 steps:
+
+``` 
+1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial) 
+2. Edit your package.json, once again changing the 'name' field to `my-network`, the 'description' to 'My Commodity Trading network' and modify the 'prepublish' script (at the end) to change the filename of the business network archive (.bna) - ie to 'my-network.bna'
+3. Finally, you must use the `composer network deploy` command later on (ie not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
+```
 
 ## Re-open your Commodities Trading 'my-network' project
 
