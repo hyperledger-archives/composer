@@ -6,7 +6,7 @@ The runtime should be verified against the following platforms:
 
 A fresh virtualised image should be used where possible, to ensure that the process will be as that of a new user with a fresh machine. This does however preclude this process from detecting issues where a user already has some components (dependancies etc) pre-installed and may cause a conflict with script files provided.
 
-## CLI
+## Sample Applications (digital property app)
 Cmd line Installation Verification  (Mac OS X and Ubuntu). These test should be run following the instructions in the web pages.
 _These should be run using the unstable releases of the code to validate what is going to be released is good_
 
@@ -14,14 +14,6 @@ This short output shows how to install and update the package.json of the gettin
 
 ```bash
 $ npm install -g composer-cli@unstable
-<output redacted>
-$ composer --version
-composer-cli                   v0.10.0-20170720064757
-composer-admin                 v0.10.0-20170720064757
-composer-client                v0.10.0-20170720064757
-composer-common                v0.10.0-20170720064757
-composer-runtime-hlf           v0.10.0-20170720064757
-composer-connector-hlf         v0.10.0-20170720064757
 
 # Execute the following 4 steps, to stand up a runtime Fabric 
 $ mkdir fabric-tools && cd fabric-tools
@@ -40,6 +32,25 @@ $ docker ps -a # check the container version after the business network name eg 
 $ npm test # check the assets are bootstrapped / updated.
 ```
 
+## Sample Applications (vehicle lifecycle)
+The composer-sample-applications repository also contains the vehicle-lifecyle demo. This should be run on a clean VM using the one line install.
+ - packages/vehicle-lifecyle contains the Readme to follow to perform the install.
+
+## Sample Networks
+Following from testing of the digital-property-app, a similar operation should be performed targetting the composer-sample-networks repository.
+
+```
+$ git clone https://github.com/hyperledger/composer-sample-networks.git
+```
+
+Move through each of the sample networks in sequence, updating their composer package dependancies to point to the unstable version and then run the npm test.
+```
+$ cd composer-sample-networks/packages/myTestPackageItem
+$ sed -i.ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
+$ npm install --tag=unstable
+$npm test
+```
+ 
 ## New Feature Testing
 
 All new features added for the release, which will be named in the release notes outline, should be proven on the unstable build. At this point some exploratory testing needs to be investigated, in an attempt to break the delivered feature and/or knowingly drive it towards a state where features could be working from invalid information.
