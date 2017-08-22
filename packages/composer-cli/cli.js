@@ -22,7 +22,6 @@ const yargs = require('yargs');
 
 
 const chalk = require('chalk');
-console.log('');
 
 let results = yargs
     .commandDir('./lib/cmds')
@@ -73,7 +72,7 @@ if (typeof(results.thePromise) !== 'undefined'){
  */
 function getVersion(){
     try{
-        return 'v' +require('./package.json').version+'\n';
+        return 'v' +require('./package.json').version;
     }
     catch (error){
       // oh well - we'll just return a blank string

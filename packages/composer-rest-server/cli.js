@@ -162,7 +162,7 @@ module.exports = promise.then((composer) => {
  */
 function getVersion(){
     try{
-        return 'v' +require('./package.json').version+'\n';
+        return 'v' +require('./package.json').version;
     }
     catch (error){
       // oh well - we'll just return a blank string
