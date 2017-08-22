@@ -48,14 +48,14 @@ class WebConnectionManager extends ConnectionManager {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
         return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
             .then((identities) => {
-                const bytes = publicKey
+                const bytes = certificate
                     .replace(/-----BEGIN CERTIFICATE-----/, '')
                     .replace(/-----END CERTIFICATE-----/, '')
                     .replace(/[\r\n]+/g, '');
@@ -67,7 +67,7 @@ class WebConnectionManager extends ConnectionManager {
                     name: id,
                     issuer: DEFAULT_ISSUER,
                     secret,
-                    certificate: publicKey,
+                    certificate: certificate,
                     privateKey: privateKey,
                     imported: true
                 };
@@ -80,7 +80,7 @@ class WebConnectionManager extends ConnectionManager {
      * @param {String} connectionProfileName - Name of the connection profile.
      * @param {Object} connectionOptions - connection options loaded from the profile.
      * @param {String} id - Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
         return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
@@ -94,7 +94,7 @@ class WebConnectionManager extends ConnectionManager {
                     Buffer.from(id).toString('base64') + '\n' +
                     '-----END PRIVATE KEY-----\n';
                 return {
-                    publicKey: identity.certificate,
+                    certificate: identity.certificate,
                     privateKey: privateKey
                 };
             });

@@ -50,7 +50,7 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            publicKeyFile: CERT_PATH,
+            certificateFile: CERT_PATH,
             privateKeyFile: KEY_PATH
         };
 
@@ -69,7 +69,7 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            publicKeyFile: CERT_PATH,
+            certificateFile: CERT_PATH,
             privateKeyFile: KEY_PATH
         };
 
@@ -84,7 +84,7 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            publicKeyFile: CERT_PATH,
+            certificateFile: CERT_PATH,
             privateKeyFile: KEY_PATH
         };
 
@@ -100,7 +100,7 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            publicKeyFile: CERT_PATH,
+            certificateFile: CERT_PATH,
             privateKeyFile: KEY_PATH
         };
 

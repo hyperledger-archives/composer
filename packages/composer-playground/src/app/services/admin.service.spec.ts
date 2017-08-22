@@ -640,7 +640,7 @@ describe('AdminService', () => {
             mockIdCard.getBusinessNetworkName.returns('myNetwork');
             mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
             mockIdCard.getEnrollmentCredentials.returns({id: 'myId'});
-            mockIdCard.getCredentials.returns({public: 'publicKey', private: 'privateKey'});
+            mockIdCard.getCredentials.returns({certificate: 'certificate', privateKey: 'privateKey'});
         });
 
         it('should import the certificates', fakeAsync(inject([AdminService], (service: AdminService) => {
@@ -658,7 +658,7 @@ describe('AdminService', () => {
             mockIdCard.getEnrollmentCredentials.should.have.been.called;
             mockIdCard.getCredentials.should.have.been.called;
 
-            adminConnectionMock.importIdentity.should.have.been.calledWith('qpn', 'myId', 'publicKey', 'privateKey');
+            adminConnectionMock.importIdentity.should.have.been.calledWith('qpn', 'myId', 'certificate', 'privateKey');
         })));
 
         it('should do nothing if no certs but is a secret', fakeAsync(inject([AdminService], (service: AdminService) => {
@@ -685,7 +685,7 @@ describe('AdminService', () => {
         })));
 
         it('should give an error if no private key and no secret', fakeAsync(inject([AdminService], (service: AdminService) => {
-            mockIdCard.getCredentials.returns({public: 'publicKey'});
+            mockIdCard.getCredentials.returns({certificate: 'certificate'});
 
             adminConnectionMock.importIdentity.returns(Promise.resolve());
 
@@ -707,7 +707,7 @@ describe('AdminService', () => {
         })));
 
         it('should give an error if no public key and no secret', fakeAsync(inject([AdminService], (service: AdminService) => {
-            mockIdCard.getCredentials.returns({private: 'privateKey'});
+            mockIdCard.getCredentials.returns({privateKey: 'privateKey'});
 
             adminConnectionMock.importIdentity.returns(Promise.resolve());
 

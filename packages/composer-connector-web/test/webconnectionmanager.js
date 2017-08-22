@@ -104,7 +104,7 @@ describe('WebConnectionManager', () => {
             mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
             return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
                 .should.become({
-                    publicKey: testCertificate,
+                    certificate: testCertificate,
                     privateKey: testPrivateKey
                 });
         });
@@ -117,7 +117,7 @@ describe('WebConnectionManager', () => {
             mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
             return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
                 .then((credentials) => {
-                    credentials.should.have.all.keys('publicKey', 'privateKey');
+                    credentials.should.have.all.keys('certificate', 'privateKey');
                     credentials.privateKey.should.be.a('String').that.is.not.empty;
                 });
         });
