@@ -246,25 +246,24 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">    .then(() =&gt; {       
         return businessNetworkConnection.getHistorian();
     }).then((historian) =&gt; {
-
         return historian.getAll();
     }).then((historianRecords) =&gt; {        
-       console.log(prettyoutput(historianRecords));
+        console.log(prettyoutput(historianRecords));
     })
 </code></pre></div>
 <p>As this is a &#39;getAll&#39; call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in exactly the same way.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
-  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord' +
-                                                'FROM HistorianRegistry WHERE (transactionTimestamp &gt; _$justnow)');   
+  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
+                                                'WHERE (transactionTimestamp &gt; _$justnow)');   
 
   return businessNetworkConnection.query(q1,{justnow:now});
 </code></pre></div>
 <p>More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
-      `SELECT org.hyperledger.composer.system.HistorianRecord FROM HistorianRegistry
+      `SELECT org.hyperledger.composer.system.HistorianRecord
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 

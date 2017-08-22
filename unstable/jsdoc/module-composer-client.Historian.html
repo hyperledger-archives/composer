@@ -90,7 +90,7 @@
         Historian
         </h2>
         
-            <div class="class-description"><p>The Historian is used to store a set of HistorianRecords<br>These records are defined in the org.hyperledger.composer.system model and allow<br>applications to track changes as the result of submitted transactions over time.</p></div>
+            <div class="class-description"><p>The historian records the history of all business events on the blockchain.</p></div>
         
     
 </header>
@@ -110,7 +110,7 @@
 
     
     <div class="description">
-        <p>Create an transaction registry.<br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from BusinessNetworkConnection</strong><br></p></p>
+        <p>Create a historian.<br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from BusinessNetworkConnection</strong><br></p></p>
     </div>
     
 
@@ -327,7 +327,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_historian.js.html">composer-client/lib/historian.js</a>,
-				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-33">line 33</a>
+				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-29">line 29</a>
 			</li>
 		</ul>
 	</dd>
@@ -396,7 +396,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id=".addHistorian"><span class="type-signature">&lt;static> </span>addHistorian(securityContext, id, name, modelManager, factory, serializer)</h4>
+    <h4 class="name" id=".getHistorian"><span class="type-signature">&lt;static> </span>getHistorian(securityContext, modelManager, factory, serializer)</h4>
     
     
 </dt>
@@ -404,289 +404,7 @@
 
     
     <div class="description">
-        <p>Add a new transaction registry.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>securityContext</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">SecurityContext</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The user's security context.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The unique identifier of the transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>modelManager</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ModelManager</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The ModelManager to use for this transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>factory</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Factory</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The factory to use for this transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>serializer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Serializer</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Serializer to use for this transaction registry.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-client_lib_historian.js.html">composer-client/lib/historian.js</a>,
-				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-102">line 102</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise that will be resolved with a TransactionRegistry<br>instance representing the new transaction registry.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id=".getAllHistorians"><span class="type-signature">&lt;static> </span>getAllHistorians(securityContext, modelManager, factory, serializer)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get a list of all existing transaction registries.</p>
+        <p>Get an existing historian.</p>
     </div>
     
 
@@ -762,7 +480,7 @@
 
             
 
-            <td class="description last"><p>The ModelManager to use for this transaction registry.</p></td>
+            <td class="description last"><p>The ModelManager to use for this historian.</p></td>
         </tr>
 
     
@@ -786,7 +504,7 @@
 
             
 
-            <td class="description last"><p>The factory to use for this transaction registry.</p></td>
+            <td class="description last"><p>The factory to use for this historian.</p></td>
         </tr>
 
     
@@ -810,7 +528,7 @@
 
             
 
-            <td class="description last"><p>The Serializer to use for this transaction registry.</p></td>
+            <td class="description last"><p>The Serializer to use for this historian.</p></td>
         </tr>
 
     
@@ -855,7 +573,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_historian.js.html">composer-client/lib/historian.js</a>,
-				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-45">line 45</a>
+				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-41">line 41</a>
 			</li>
 		</ul>
 	</dd>
@@ -884,265 +602,7 @@
     
             
 <div class="param-desc">
-    <p>A promise that will be resolved with a list of TransactionRegistry<br>instances representing the transaction registries.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id=".getHistorian"><span class="type-signature">&lt;static> </span>getHistorian(securityContext, id, modelManager, factory, serializer)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get an existing transaction registry.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>securityContext</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">SecurityContext</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The user's security context.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The unique identifier of the transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>modelManager</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ModelManager</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The ModelManager to use for this transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>factory</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Factory</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The factory to use for this transaction registry.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>serializer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Serializer</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Serializer to use for this transaction registry.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-client_lib_historian.js.html">composer-client/lib/historian.js</a>,
-				 <a href="composer-client_lib_historian.js.html#sunlight-1-line-73">line 73</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise that will be resolved with a TransactionRegistry<br>instance representing the transaction registry.</p>
+    <p>A promise that will be resolved with a IdentityRegistry<br>instance representing the historian.</p>
 </div>
 
 

@@ -2109,6 +2109,20 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
         
 
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Get all participant registries
+var businessNetwork = new BusinessNetworkConnection();
+return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
+.then(function(businessNetworkDefinition){
+    return businessNetworkDefinition.getAllParticipantRegistries();
+})
+.then(function(participantRegistries){
+    // Retrieved Participant Registries
+});</pre>
+
+
+    
 </dd>
 
         
@@ -2427,7 +2441,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
     
     <div class="description">
-        <p>Get the Historian.</p>
+        <p>Get the historian</p>
     </div>
     
 
@@ -2529,14 +2543,14 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">// Get the Historian
+    <pre class="sunlight-highlight-javascript">// Get the historian
 var businessNetwork = new BusinessNetworkConnection();
 return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
 .then(function(businessNetworkDefinition){
     return businessNetworkDefinition.getHistorian();
 })
 .then(function(historian){
-    // Retrieved Historian
+    // Retrieved historian
 });</pre>
 
 
@@ -2657,14 +2671,14 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">// Get the transaction registry
+    <pre class="sunlight-highlight-javascript">// Get the identity registry
 var businessNetwork = new BusinessNetworkConnection();
 return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
 .then(function(businessNetworkDefinition){
     return businessNetworkDefinition.getIdentityRegistry();
 })
 .then(function(identityRegistry){
-    // Retrieved Identity Registry
+    // Retrieved identity registry
 });</pre>
 
 
@@ -2970,7 +2984,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
     return businessNetworkDefinition.getTransactionRegistry();
 })
 .then(function(transactionRegistry){
-    // Retrieved Transaction Registry
+    // Retrieved transaction registry.
 });</pre>
 
 

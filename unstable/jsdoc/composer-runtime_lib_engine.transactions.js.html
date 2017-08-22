@@ -140,7 +140,7 @@ class EngineTransactions {
         // Now we need to convert the JavaScript object into a transaction resource.
         LOG.debug(method, 'Parsing transaction from parsed JSON object');
         // First we parse *our* copy, that is not resolved. This is the copy that gets added to the
-        // historian registry, and is the one in the context (for adding log entries).
+        // transaction registry, and is the one in the context (for adding log entries).
         transaction = context.getSerializer().fromJSON(transactionData);
 
         // Store the transaction in the context.
@@ -181,6 +181,7 @@ class EngineTransactions {
 
             })
             .then(() => {
+
                 // Check that a transaction processor function was executed.
                 if (totalCount === 0) {
                     const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
@@ -188,9 +189,9 @@ class EngineTransactions {
                     throw error;
                 }
 
-                // Get the default transaction registry.
-                LOG.debug(method, 'Getting default transaction registry');
-                return registryManager.get('Historian', 'HistorianRegistry');
+                // Get the historian.
+                LOG.debug(method, 'Getting historian');
+                return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
 
             })
             .then((result) => {
