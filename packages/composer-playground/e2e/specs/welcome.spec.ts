@@ -10,6 +10,8 @@ describe('Welcome Splash', (() => {
 
   afterAll(() =>  {
     browser.waitForAngularEnabled(true);
+    browser.executeScript('window.sessionStorage.clear();');
+    browser.executeScript('window.localStorage.clear();');
   });
 
   // Navigate to Editor base page

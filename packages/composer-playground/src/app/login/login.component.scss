@@ -1,0 +1,98 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+app-login {
+    width: 100vw;
+    background-color: $fourth-highlight;
+
+    section.header {
+        display: flex;
+        padding: $space-large $space-large $space-medium $space-large;
+        align-items: center;
+
+        h1.left-align {
+            flex: 1;
+        }
+
+        div.right-align {
+            margin-right: $space-medium;
+        }
+    }
+
+    section.main-view {
+        overflow-y: auto;
+        height: calc(100vh - 63px - 96px - 55px);
+        padding: $space-medium $space-large;
+
+        div.connection-profile:first-child {
+            margin-top: 0;
+        }
+
+        div.connection-profile {
+            margin-top: $space-large;
+            padding-left: $space-large;
+
+            .connection-profile-buttons {
+                display: inline-block;
+                margin-left: $space-medium;
+
+                button {
+                    &.action.circular:hover,
+                    &.action.circular:focus {
+                        background-color: $white;
+                        border-bottom: 2px solid transparent;
+                    }
+                }
+            }
+
+            .identities {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: $space-smedium;
+
+                identity-card {
+                    margin-left: $space-large;
+                    margin-bottom: $space-large;
+                }
+            }
+        }
+    }
+
+    section.sub-view {
+        padding: $space-large;
+        height: calc(100vh - 63px - 55px);
+        overflow-y: auto;
+
+        .header {
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
+
+    section.edit-connection-profile {
+        padding: $space-large;
+        height: calc(100vh - 63px);
+        overflow-y: auto;
+
+        .header {
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
+}
+
+

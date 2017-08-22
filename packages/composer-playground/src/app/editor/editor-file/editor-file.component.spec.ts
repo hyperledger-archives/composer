@@ -102,6 +102,20 @@ describe('EditorFileComponent', () => {
         });
     });
 
+    describe('set previewReadmeActive', () => {
+        it('should set the preview boolean to true', () => {
+            component['_previewReadmeActive'] = false;
+            component.previewReadmeActive = true;
+            component['_previewReadmeActive'].should.be.true;
+        });
+
+        it('should set the preview boolean to false', () => {
+            component['_previewReadmeActive'] = true;
+            component.previewReadmeActive = false;
+            component['_previewReadmeActive'].should.be.false;
+        });
+    });
+
     describe('loadFile', () => {
         it('should load a model file', () => {
             mockClientService.getModelFile.returns({
@@ -280,24 +294,17 @@ describe('EditorFileComponent', () => {
             should.not.exist(component['editorContent']);
         });
 
-        it('should not load any file', () => {
-            component['_editorFile'] = {};
+        it('should load no files', () => {
+            mockClientService.getScriptFile.returns(null);
+
+            component['_editorFile'] = {
+                id: 'script'
+            };
 
             component.loadFile();
 
             should.not.exist(component['editorContent']);
-            should.not.exist(component['editorType']);
         });
-
-        it('should set currentError to null', () => {
-            component['_editorFile'] = {};
-            component['currentError'] = 'Test error message';
-
-            component.loadFile();
-
-            should.not.exist(component['currentError']);
-        });
-
     });
 
     describe('setCurrentCode', () => {

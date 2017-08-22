@@ -90,7 +90,7 @@ export class AddFile {
 
   // Get all radio buttons
   static retrieveAddFileRadioButtons() {
-    return OperationsHelper.retriveMatchingElementsByCSS('.file-types-list', '[type="radio"]')
+    return OperationsHelper.retriveMatchingElementsByCSS('.file-types-list', '[type="radio"]', 0)
     .map((elm) => { return {name: elm.getAttribute('id'), enabled: elm.isEnabled()}; });
   }
 

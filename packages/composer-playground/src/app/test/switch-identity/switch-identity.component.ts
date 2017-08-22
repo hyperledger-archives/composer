@@ -70,10 +70,9 @@ export class SwitchIdentityComponent implements OnInit {
         }
 
         switchIdentityPromise.then(() => {
-            this.connectionProfileService.setCurrentConnectionProfile(this.connectionProfileName);
             this.identityService.setCurrentIdentity(chosenUser);
 
-            return this.clientService.ensureConnected(true);
+            return this.clientService.ensureConnected(null, true);
         })
         .then(() => {
             this.switchInProgress = false;

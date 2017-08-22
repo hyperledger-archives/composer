@@ -12,6 +12,8 @@ import {
 } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
 
+import * as sinon from 'sinon';
+
 const mockResponse = {
     name: 'composer-playground',
     version: '1',
@@ -69,32 +71,43 @@ describe('AboutService', () => {
 
             // make the call to the service which was injected
             return aboutService.getVersions()
-            .then((versions) => {
-                versions.playground.name.should.equal('playground');
-                versions.playground.version.should.equal('1');
-                versions.admin.name.should.equal('composer-admin');
-                versions.admin.version.should.equal('2');
-                versions.client.name.should.equal('composer-client');
-                versions.client.version.should.equal('3');
-                versions.common.name.should.equal('composer-common');
-                versions.common.version.should.equal('4');
-            });
+                .then((versions) => {
+                    versions.playground.name.should.equal('playground');
+                    versions.playground.version.should.equal('1');
+                    versions.admin.name.should.equal('composer-admin');
+                    versions.admin.version.should.equal('2');
+                    versions.client.name.should.equal('composer-client');
+                    versions.client.version.should.equal('3');
+                    versions.common.name.should.equal('composer-common');
+                    versions.common.version.should.equal('4');
+                });
         })));
 
-    it('should enter catch block',
-        async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
-            mockBackend.connections.subscribe(
-                (connection) => {
-                    connection.mockError(new Error('error'));
-                }
-            );
+    it('should enter catch block', async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
+        mockBackend.connections.subscribe(
+            (connection) => {
+                connection.mockError(new Error('error'));
+            }
+        );
 
-            return aboutService.getVersions()
+        return aboutService.getVersions()
             .then(() => {
                 // Ignore this
             })
             .catch((error) => {
                 error.message.should.equal('error');
             });
-        })));
+    })));
+
+    it('should return the version if already set', fakeAsync(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
+        aboutService['versions'] = {version: 'myVersion'};
+
+        let getModulesStub = sinon.stub(aboutService, 'getModules');
+
+        aboutService.getVersions().then((result) => {
+            result.should.deep.equal({version: 'myVersion'});
+        });
+
+        tick();
+    })));
 });
