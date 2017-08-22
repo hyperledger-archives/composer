@@ -372,17 +372,6 @@ describe('QueryCompiler', () => {
             });
         });
 
-        it('should compile a select statement for the historian', () => {
-            const result = queryCompiler.visitSelect(selectsFromQueries.Q15, {});
-            result.should.deep.equal({
-                selector: {
-                    $registryType: 'Historian',
-                    $registryId: 'HistorianRegistry',
-                    $class: 'org.hyperledger.composer.system.HistorianRecord'
-                }
-            });
-        });
-
         it('should throw for a select statement for a concept', () => {
             selectsFromQueries.Q2.resource = 'org.acme.sample.SampleConcept';
             (() => {
