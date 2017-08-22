@@ -1483,7 +1483,7 @@ return adminConnection.disconnect()
     
             
 <div class="param-desc">
-    <p>Resolves to credentials in the form <em>{ publicKey: publicCertificate, privateKey: signerKey }</em>.</p>
+    <p>Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.</p>
 </div>
 
 
@@ -1811,7 +1811,7 @@ return adminConnection.getProfile(&#x27;testprofile&#x27;)
             
 <hr>
 <dt>
-    <h4 class="name" id="importIdentity"><span class="type-signature"></span>importIdentity(connectionProfile, id, publicKey, privateKey)</h4>
+    <h4 class="name" id="importIdentity"><span class="type-signature"></span>importIdentity(connectionProfile, id, certificate, privateKey)</h4>
     
     
 </dt>
@@ -1902,7 +1902,7 @@ return adminConnection.getProfile(&#x27;testprofile&#x27;)
 
         <tr>
             
-                <td class="name"><code>publicKey</code></td>
+                <td class="name"><code>certificate</code></td>
             
 
             <td class="type">
@@ -2043,7 +2043,7 @@ return adminConnection.getProfile(&#x27;testprofile&#x27;)
         
     <pre class="sunlight-highlight-javascript">// Import an identity into a profiles&#x27; wallet
 var adminConnection = new AdminConnection();
-return adminConnection.importIdentity(&#x27;hlfv1&#x27;, &#x27;PeerAdmin&#x27;, publicKey, privateKey)
+return adminConnection.importIdentity(&#x27;hlfv1&#x27;, &#x27;PeerAdmin&#x27;, certificate, privateKey)
 .then(() =&gt; {
     // Identity imported
     console.log(&#x27;identity imported successfully&#x27;);
