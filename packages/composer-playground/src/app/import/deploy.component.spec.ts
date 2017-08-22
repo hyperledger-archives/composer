@@ -222,7 +222,7 @@ describe('DeployComponent', () => {
         it('should select the empty network', () => {
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
-            component.selectNetwork({name: 'Empty Business Network'});
+            component.selectNetwork({name: 'empty-business-network'});
 
             empty.should.have.been.called;
         });
@@ -238,7 +238,7 @@ describe('DeployComponent', () => {
             let INPUT_NETWORKS = [{name: BASIC_SAMPLE}, {name: BAR}, {name: FOO}];
             let result = component.addEmptyNetworkOption(INPUT_NETWORKS);
             result.length.should.equal(4);
-            result[0].name.should.equal('Empty Business Network');
+            result[0].name.should.equal('empty-business-network');
             result[1].name.should.equal(BASIC_SAMPLE);
             result[2].name.should.equal(BAR);
             result[3].name.should.equal(FOO);

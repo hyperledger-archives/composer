@@ -173,6 +173,7 @@ export class IdentityComponent implements OnInit {
         confirmModalRef.componentInstance.fileName = identity.name;
         confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';
         confirmModalRef.componentInstance.confirmButtonText = 'Revoke';
+        confirmModalRef.componentInstance.action = 'revoke';
 
         return confirmModalRef.result
             .then((result) => {
