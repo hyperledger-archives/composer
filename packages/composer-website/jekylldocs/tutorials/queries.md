@@ -14,13 +14,11 @@ In this tutorial, we will build on the 'Commodity Trading' developer tutorial, e
 
 Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' [Developer-Tutorial](developer-guide.html), we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
 
-It is recommended to do the [Developer-Tutorial](developer-guide.html) first, where the business network `my-network` has first been deployed. Alternatively, you can  if you wish, do this tutorial from 'scratch' but observe these following 3 steps:
+It is recommended to do the [Developer-Tutorial](developer-guide.html) first, where the business network `my-network` has first been deployed and setup steps are performed. Alternatively, you can  if you wish, do this tutorial from 'scratch' but observe these following 3 steps:
 
-`
-1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial) 
+1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial where its based on the `basic-sample-network` project) 
 2. Edit your package.json, once again changing the 'name' field to `my-network`, the 'description' to 'My Commodity Trading network' and modify the 'prepublish' script (at the end) to change the filename of the business network archive (.bna) - ie to 'my-network.bna'
-3. Finally, you must use the `composer network deploy` command later on (ie not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
-`
+3. Finally, you must use the `composer network deploy` command later on here (ie not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
 
 ## Re-open your Commodities Trading 'my-network' project
 
@@ -159,7 +157,7 @@ function removeHighQuantityCommodities(remove) {
 
 The first function `tradeCommodity` will change the owner property on a commodity (with a new owner Participant) on an incoming Trade transaction and emit a Notification event to that effect. It then persists the modified Commodity back into the asset registry which is used to store Commodity instances.
 
-The second function will call a named query called 'selectCommoditiesWithHighQuantity' (defined in `queries.qry`) which will return all Commodity asset records that have a quantity > 60 ; emit an event ; and remove the Commodity from the AssetRegistry.
+The second function calls a named query 'selectCommoditiesWithHighQuantity' (defined in `queries.qry`) which will return all Commodity asset records that have a quantity > 60 ; emit an event ; and remove the Commodity from the AssetRegistry.
 
 Save your changes to `lib/sample.js`
 
@@ -235,7 +233,7 @@ Save your changes to `permissions.acl`
 
 Due to the changes in our business network,  we need to re-generate the Business Network Archive (BNA) file for your newly updated business network definition. This new network will later be updated to the Composer runtime, and become the latest deployed network. From the previous tutorial, we have already done an `npm install` of our business network.
 
-Switch back to the terminal and from the `my-network` project directory,  type:
+Switch back to the terminal, then from the `my-network` project directory,  type:
 
 ```
 
@@ -243,7 +241,7 @@ composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
 ```
 
-(including the trailing '.' please note) - check that it creates this ok :
+The output should be similar to the following:
 
 ```
 
@@ -267,9 +265,9 @@ The `composer archive create` command has updated the file called `my-network.bn
 ```
 
 
-## Write and Perform Unit Tests to include Queries
+## Write and Perform Unit Tests, to include Queries
 
-All code should have unit tests - even your business network logic!
+All code should have unit tests - even your business network logic (why, of course!)
 
 We are now going to add a simple unit test for the business network definition, testing the logic of our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process.
 
@@ -609,7 +607,7 @@ Feature: Sample
 
 ```
 
-And the cucumber tests defined in the file `features/sample.feature` will produce the following output:
+And the cucumber tests defined in the file `features/sample.feature` will produce the following output (redacted):
 
 ![Cucumber test output](../assets/img/tutorials/query/cucumber-output.png)
 
@@ -624,7 +622,7 @@ You can browse the structure of the updated Trade Commodity business network by 
 
 ## Deploy the updated Business Network Definition to the runtime Fabric
 
-We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file(suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. 
+We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file (suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. (Remember: if you did not complete the Developer tutorial before this tutorial, use the command  `composer network deploy` and not `composer network update` )
 
 Switch to the terminal, change directory to the dist folder containing the `my-network.bna` file:
 
@@ -658,7 +656,7 @@ You can test that it deployed OK:
 composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 ```
 
-## Re-generate the REST APIs for the updated Business Network
+## Regenerate the REST APIs for the updated Business Network
 
 We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network. 
 
