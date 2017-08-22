@@ -11,7 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.11.3 {9359df83a96f1add130682b7373fb10d} 2017-08-17
+Version 0.12.0 {be483dc13bd46652cdfa59579783a515} 2017-08-21
+- added connectionProfileStore option to AdminConnection constructor
 - Add exportIdentity function to AdminConnection
 
 Version 0.11.2 {b25b7803dd52d44e06116dac595cdd6b} 2017-08-08

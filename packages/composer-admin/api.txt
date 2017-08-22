@@ -1,5 +1,5 @@
 class AdminConnection {
-   + void constructor(Object,Object) 
+   + void constructor(Object,ConnectionProfileStore,Object) 
    + Promise connect(string,string,string,string) 
    + Promise createProfile(string,Object) 
    + Promise deleteProfile(string) 

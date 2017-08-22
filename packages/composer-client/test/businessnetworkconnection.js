@@ -20,6 +20,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
+const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Factory = require('composer-common').Factory;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdentityRegistry = require('../lib/identityregistry');
@@ -104,6 +105,13 @@ describe('BusinessNetworkConnection', () => {
     });
 
     describe('#constructor', () => {
+
+        it('should create a new instance with a specified connection profile store', () => {
+            const mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
+            businessNetworkConnection = new BusinessNetworkConnection({ connectionProfileStore: mockConnectionProfileStore });
+            should.equal(businessNetworkConnection.connection, null);
+            businessNetworkConnection.connectionProfileStore.should.equal(mockConnectionProfileStore);
+        });
 
         it('should create a new instance with a file system connection profile store', () => {
             businessNetworkConnection = new BusinessNetworkConnection();
