@@ -3,9 +3,12 @@ import { ExpectedConditions } from 'protractor';
 import { dragDropFile } from '../utils/fileUtils';
 import { OperationsHelper } from '../utils/operations-helper';
 
-let scrollMe = (target) => {
-    target.scrollIntoView(true);
-};
+// Initialise known tile orderings
+let baseTiles = ['basic-sample-network', 'empty-business-network', 'drag-drop'];
+
+let npmTiles = ['animaltracking-network', 'bond-network', 'carauction-network',
+                'digitalproperty-network', 'marbles-network', 'perishable-network',
+                'pii-network', 'trade-network', 'vehicle-lifecycle-network'];
 
 export class Import {
 
@@ -34,7 +37,7 @@ export class Import {
   // Deploy default Tile option
   static selectDefaultBusinessDefinitionTileOption() {
     // Wait for poplation of sample-network-list-item(s)
-    OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
+    this.retrieveBaseTileOptions()
     .then((options) => {
         let confirmElement = element(by.id('import_confirm'));
         browser.executeScript('arguments[0].scrollIntoView();', confirmElement.getWebElement());
@@ -42,22 +45,52 @@ export class Import {
     });
   }
 
-  // Deploy selected Tile option
-  static selectBusinessDefinitionTileOption(option) {
+  // Deploy selected Tile option from Base tiles
+  static selectBaseImportOption(importOption: string) {
     // Wait for poplation of sample-network-list-item(s)
-    OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
+    this.retrieveBaseTileOptions()
     .then((options) => {
-        options[option].getWebElement().click();
+        // Figure out which one we want
+        let index = baseTiles.findIndex((tile) => tile === importOption);
+        let optionElement = options[index].getWebElement();
+        // Scroll into view
+        browser.executeScript('arguments[0].scrollIntoView();', optionElement);
+
+        // Click
+        optionElement.click();
+
+        // Confirm
         let confirmElement = element(by.id('import_confirm'));
-        browser.executeScript('arguments[0].scrollIntoView();', confirmElement.getWebElement());
+        browser.executeScript('arguments[0].scrollIntoView();', confirmElement);
+        OperationsHelper.click(confirmElement);
+    });
+  }
+
+  // Deploy selected Tile option from NPM tiles
+  static selectNpmImportOption(importOption: string) {
+    // Wait for poplation of sample-network-list-item(s)
+    this.retrieveNpmTileOptions()
+    .then((options) => {
+        // Figure out which one we want
+        let index = npmTiles.findIndex((tile) => tile === importOption);
+        let optionElement = options[index].getWebElement();
+        // Scroll into view
+        browser.executeScript('arguments[0].scrollIntoView();', optionElement);
+
+        // Click
+        optionElement.click();
+
+        // Confirm
+        let confirmElement = element(by.id('import_confirm'));
+        browser.executeScript('arguments[0].scrollIntoView();', confirmElement);
         OperationsHelper.click(confirmElement);
     });
   }
 
   // Confirm import
   static confirmImport() {
-    // Import drawer should be present and populated
-    browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), 10000)
+    // Import drawer should be present and populated with chosen-network div
+    browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), 10000);
 
     // Wait for poplation of sample-network-list-item(s)
     OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
@@ -70,8 +103,8 @@ export class Import {
 
   // Cancel import
   static cancelImport() {
-      // Import drawer should be present, button should be visible
-      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), 5000);
+      // Import drawer should be present, button should be visible within chosen-network div
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), 5000);
 
       // Wait for poplation of sample-network-list-item(s)
       OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
@@ -90,5 +123,24 @@ export class Import {
   static waitToDisappear() {
       browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.drawer'))), 5000);
   }
+
+  static waitToLoadBaseOptions() {
+      browser.wait(OperationsHelper.elementsPresent(element(by.id('base-samples')).all(by.css('.sample-network-list-item')), baseTiles.length), 20000);
+  }
+
+  static waitToLoadNpmOptions() {
+      browser.wait(OperationsHelper.elementsPresent(element(by.id('npm-samples')).all(by.css('.sample-network-list-item')), npmTiles.length), 20000);
+  }
+
+  static retrieveBaseTileOptions() {
+    this.waitToLoadBaseOptions();
+    return element(by.id('base-samples')).all(by.css('.sample-network-list-item'));
+  }
+
+  static retrieveNpmTileOptions() {
+    this.waitToLoadNpmOptions();
+    return element(by.id('npm-samples')).all(by.css('.sample-network-list-item'));
+  }
+
 
 }

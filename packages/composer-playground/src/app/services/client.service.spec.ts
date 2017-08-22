@@ -993,8 +993,7 @@ describe('ClientService', () => {
         it('should deploy the initial sample', fakeAsync(inject([ClientService], (service: ClientService) => {
             let resetMock = sinon.stub(service, 'reset');
 
-            adminMock.createNewBusinessNetwork.returns(Promise.resolve());
-            adminMock.isInitialDeploy.returns(true);
+            adminMock.createNewBusinessNetwork.returns(Promise.resolve(true));
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1005,18 +1004,23 @@ describe('ClientService', () => {
 
             service.deployInitialSample();
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
+            tick();
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Deploying Business Network',
-                text: 'deploying sample business network'
+                text: 'deploying sample business network',
+                force: true
             });
 
-            tick();
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
+                title: 'Creating identity card',
+                text: 'creating identity card admin',
+                force: true
+            });
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.have.been.called;
 
             adminMock.update.should.have.been.calledWith({
                 name: 'bob',
@@ -1029,11 +1033,15 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('web-$default', 'myNetwork', 'admin', 'adminpw');
         })));
 
-        it('should not deploy if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
+        it('should deploy the initial sample and create id card', fakeAsync(inject([ClientService], (service: ClientService) => {
+            identityCardServiceMock.getCurrentConnectionProfile.returns({name: 'hlfv1', type: 'hlfv1'});
+            identityCardServiceMock.getQualifiedProfileName.returns('qpn');
+
+            identityCardServiceMock.createIdentityCard.returns(Promise.resolve());
+
             let resetMock = sinon.stub(service, 'reset');
 
-            adminMock.createNewBusinessNetwork.returns(Promise.reject({message: 'businessNetwork with name myNetwork already exists'}));
-            adminMock.isInitialDeploy.returns(false);
+            adminMock.createNewBusinessNetwork.returns(Promise.resolve(true));
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1044,18 +1052,56 @@ describe('ClientService', () => {
 
             service.deployInitialSample();
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
+            tick();
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Deploying Business Network',
-                text: 'deploying sample business network'
+                text: 'deploying sample business network',
+                force: true
             });
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
+                title: 'Creating identity card',
+                text: 'creating identity card admin',
+                force: true
+            });
+
+            businessNetworkFromArchiveMock.should.have.been.called;
+
+            adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
+
+            adminMock.update.should.have.been.calledWith({
+                name: 'bob',
+                getName: sinon.match.func,
+                getDescription: sinon.match.func
+            });
+            resetMock.should.have.been.called;
+
+            businessNetworkConMock.disconnect.should.have.been.called;
+            businessNetworkConMock.connect.should.have.been.calledWith('qpn', 'myNetwork', 'admin', 'adminpw');
+
+            identityCardServiceMock.createIdentityCard.should.have.been.calledWith('admin', 'myNetwork', 'admin', 'adminpw', { name: 'hlfv1', type: 'hlfv1' });
+        })));
+
+        it('should not deploy if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let resetMock = sinon.stub(service, 'reset');
+
+            adminMock.createNewBusinessNetwork.returns(Promise.reject({message: 'businessNetwork with name myNetwork already exists'}));
+
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
+                name: 'bob',
+                getName: sinon.stub().returns('myNetwork'),
+                getDescription: sinon.stub().returns('myDescription')
+            }));
+
+            service.deployInitialSample();
 
             tick();
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.have.been.called;
 
             adminMock.update.should.not.have.been.called;
             resetMock.should.have.been.called;
@@ -1068,7 +1114,6 @@ describe('ClientService', () => {
             let resetMock = sinon.stub(service, 'reset');
 
             adminMock.createNewBusinessNetwork.returns(Promise.reject('some error'));
-            adminMock.isInitialDeploy.returns(true);
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1085,18 +1130,11 @@ describe('ClientService', () => {
                     error.should.equal('some error');
                 });
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
-                title: 'Deploying Business Network',
-                text: 'deploying sample business network'
-            });
-
             tick();
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.not.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));

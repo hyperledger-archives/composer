@@ -572,6 +572,50 @@ describe('AppComponent', () => {
             mockModal.open.should.not.have.been.called;
         });
 
+        it('should not show if in web mode unless force', () => {
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: true});
+
+            mockModal.open.should.have.been.called;
+        });
+
+        it('should not show with no card unless force', () => {
+            mockIdentityCardService.getCurrentIdentityCard.returns(null);
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: true});
+
+            mockModal.open.should.have.been.called;
+        });
+
+        it('should not show with no card', () => {
+            mockIdentityCardService.getCurrentIdentityCard.returns(null);
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: false});
+
+            mockModal.open.should.not.have.been.called;
+        });
+
         it('should open the modal', () => {
             mockIdCard.getConnectionProfile.returns({name: 'notWebMode'});
             activatedRoute.testParams = {};

@@ -230,30 +230,30 @@ describe('IdentityCardService', () => {
             let initialCards = [mockIdCard1, mockIdCard2];
             let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
 
-            let cardRef;
-            service.addInitialIdentityCards(initialCards).then((defaultCardRef) => {
-                cardRef = defaultCardRef;
+            let cardRefs;
+            service.addInitialIdentityCards(initialCards).then((results) => {
+                cardRefs = results;
             });
 
             tick();
 
             addIdentityCardSpy.should.have.been.calledThrice;
-            service['idCards'].get(cardRef).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
             service['idCards'].size.should.equal(3);
         })));
 
         it('should only add default identity card if initial card array is not specified', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let cardRef;
-            service.addInitialIdentityCards().then((defaultCardRef) => {
-                cardRef = defaultCardRef;
+            let cardRefs;
+            service.addInitialIdentityCards().then((results) => {
+                cardRefs = results;
             });
 
             tick();
 
-            service['idCards'].get(cardRef).getName().should.equal('admin');
-            service['idCards'].get(cardRef).getConnectionProfile().name.should.equal('$default');
-            service['idCards'].get(cardRef).getEnrollmentCredentials().id.should.equal('admin');
-            service['idCards'].get(cardRef).getEnrollmentCredentials().secret.should.equal('adminpw');
+            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getConnectionProfile().name.should.equal('$default');
+            service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().id.should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().secret.should.equal('adminpw');
         })));
 
         it('should not add inital identity cards if there are any identity cards already', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -263,14 +263,14 @@ describe('IdentityCardService', () => {
             service['idCards'] = mockCardMap;
             let addCardSpy = sinon.spy(service, 'addIdentityCard');
 
-            let cardRef;
-            service.addInitialIdentityCards().then((defaultCardRef) => {
-                cardRef = defaultCardRef;
+            let cardRefs;
+            service.addInitialIdentityCards().then((results) => {
+                cardRefs = results;
             });
 
             tick();
 
-            should.not.exist(cardRef);
+            should.not.exist(cardRefs);
             addCardSpy.should.not.have.been.called;
             service['idCards'].size.should.equal(1);
         })));

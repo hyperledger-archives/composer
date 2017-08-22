@@ -20,19 +20,25 @@ sleep 10
 cat ${DIR}/jekyll.log
 URL="$( cat ${DIR}/jekyll.log | awk '/Server address:/ { print $3 }')"
 
+# set the return code for this script
+RC=0
+
 echo Starting linkchecking... ${URL}
 linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt 
-
 if [ "$?" != "0" ]; then
-	asciify '!!Broken Links!!' -f standard 
+	asciify '!!Broken Links!!' -f standard    
+    cat ${DIR}/linkresults.txt    
+    # return 1 to indicate the the build has failed
+    RC=1
 
-  # set the links as being broken.
-  # need to ignore the jsdoc somehow for the momeny
 fi
 
 # always show the file - includes number of links checked
 cat ${DIR}/linkresults.txt
 
+# clean up the running Jekyll server
 kill %${JOBN}
 sleep 1
 jobs
+echo Ending script with rc=${RC}
+exit ${RC}

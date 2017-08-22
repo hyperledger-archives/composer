@@ -12,6 +12,8 @@ export class OperationsHelper {
     browser.wait(ExpectedConditions.presenceOf(elm), 10000);
     browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
     browser.wait(ExpectedConditions.elementToBeClickable(elm), 10000);
+    // Scroll into view
+    browser.executeScript('arguments[0].scrollIntoView();', elm);
     return browser.wait(() => {
         return elm.click()
         .then(() => true)
@@ -30,7 +32,7 @@ export class OperationsHelper {
 
   // Retrieve an array of all matching elements
   static retriveMatchingElementsByCSS(type: string, subset: string, minCount) {
-    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), 5000);
+    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), 10000);
     return element(by.css(type)).all(by.css(subset));
   }
 
@@ -39,7 +41,7 @@ export class OperationsHelper {
     let hasCount = (() => {
       return elementArrayFinder.count()
       .then((count) => {
-        return count > minCount;
+        return count >= minCount;
       });
     });
     return ExpectedConditions.and(ExpectedConditions.presenceOf(elementArrayFinder), hasCount);
@@ -63,15 +65,23 @@ export class OperationsHelper {
 
   static importBusinessNetworkArchiveFromFile(fileName: string) {
     Editor.clickImportBND();
+    Import.waitToLoadBaseOptions();
+    Import.waitToLoadNpmOptions();
     Import.selectBusinessNetworkDefinitionFromFile(fileName);
     Replace.confirmReplace();
     Import.waitToDisappear();
     this.processExpectedSuccess();
   }
 
-  static importBusinessNetworkArchiveFromTile(option) {
+  static importBusinessNetworkArchiveFromTile(option: string, isBaseOption: boolean) {
     Editor.clickImportBND();
-    Import.selectBusinessDefinitionTileOption(option);
+    Import.waitToLoadBaseOptions();
+    Import.waitToLoadNpmOptions();
+    if (isBaseOption) {
+        Import.selectBaseImportOption(option);
+    } else {
+        Import.selectNpmImportOption(option);
+    }
     Replace.confirmReplace();
     Import.waitToDisappear();
     this.processExpectedSuccess();
