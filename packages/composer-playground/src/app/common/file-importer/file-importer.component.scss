@@ -4,9 +4,8 @@
 file-importer {
     display: flex;
     flex-direction: column;
-
-    border: 1px solid $fourth-highlight;
-    border-radius: 0.25em;
+    border: 2px dashed $first-highlight;
+    border-radius: 12px;
     margin-bottom: 1em;
     vertical-align: middle;
     color: $primary-text;
@@ -16,19 +15,32 @@ file-importer {
     padding: $space-medium;
     justify-content: center;
     align-items: center;
-    height: 57px;
+    height: 350px;
 
     svg {
-        margin-right: $space-smedium;
-        width: 16px;
-        height: 16px;
+      &.ibm-icon {
+      width: 200px;
+      height: 250px;
+      margin-right: 0;
+      }
     }
 
     .underline {
-        text-decoration: underline;
+        border-bottom: 1px solid $primary-text;
+        padding-bottom: 0px;
+        font-weight: 600;
     }
 
-    @include transition(all);
+    .centre-text {
+        text-align: center;
+    }
+    .max-file-size {
+        color: $secondary-text;
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    @include transition-360(all);
 
     input[type=file] {
         position: absolute;
@@ -43,19 +55,20 @@ file-importer {
 
     &:hover,
     &:focus {
-        border: 1px dashed $first-highlight;
+        border: 2px dashed $first-highlight;
+        background-color: rgba($keyline-highlight, 0.5);
     }
 
     &.expandFile {
         flex: 1;
-        height: 200px;
+        height: 800px;
         padding: $space-medium;
-
-        border: 1px dashed $first-highlight;
+        border: 2px dashed $first-highlight;
+        background-color: rgba($first-highlight, 0.1);
 
         svg {
-            width: 131px;
-            height: 150px;
+            width: 200px;
+            height: 250px;
             margin-right: 0;
         }
 
@@ -64,9 +77,8 @@ file-importer {
         }
         .max-file-size {
             color: $secondary-text;
+            font-style: italic;
+            font-weight: 400;
         }
     }
 }
-
-
-
