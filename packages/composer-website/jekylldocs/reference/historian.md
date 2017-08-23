@@ -4,18 +4,18 @@ title: Historian
 section: reference
 index-order: 911
 sidebar: sidebars/accordion-toc0.md
-excerpt: The Hyperledger Composer Historian provides a registry retain information about previous transactions
+excerpt: The Hyperledger Composer Historian provides a registry that contains information about historical transactions
 ---
 
 # {{site.data.conrefs.composer_full}} Historian
 
 >**Warning**: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.
 
-The historian is a registry populated with `HistorianRecords`. When a transaction is submitted, the `HistorianRecords` show the changes to assets within a business network, and the participants and identities involved in submitting those transactions. Historian records can also be queried to extract specific records or data.
+The Historian is a registry populated with `HistorianRecords` that contains information about historical transactions.  When a transaction is submitted, the `HistorianRecord` is updated, and over time, maintains a history of transactions within a business network, and the participants and identities involved in submitting those transactions. Historian records can be queried using Composer Queries to extract specific records or data. An example would be tracking the lifecycle of an asset such as a Land Title, from creation (with a Land Title ID) through update, through ownership changes carried out by different identities and/or participants. The transactions associated with this example can be queried in Historian, say, over a given time period.
 
 ## Historian Record
 
-A `HistorianRecord` is an asset defined in the {{site.data.conrefs.composer_full}} system namespace. `HistorianRecord`s are defined as follows.
+A `HistorianRecord` is an 'asset' defined in the {{site.data.conrefs.composer_full}} system namespace. `HistorianRecord`s are defined as follows.
 
 ```
 asset HistorianRecord identified by transactionId {
