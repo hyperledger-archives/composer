@@ -18,12 +18,12 @@
 // not using the config file module as this could be run anwhere so suppress warning
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
-const version = 'v' + require('./package.json').version;
-
 const yargs = require('yargs');
 
 
 const chalk = require('chalk');
+
+const version = 'v' +require('./package.json').version;
 
 let results = yargs
     .commandDir('./lib/cmds')
