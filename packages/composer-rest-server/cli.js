@@ -17,9 +17,6 @@
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
-const chalk = require('chalk');
-const clear = require('clear');
-const figlet = require('figlet');
 const path = require('path');
 const server = require('./server/server');
 const Util = require('./lib/util');
@@ -69,10 +66,10 @@ if (interactive) {
         .then((answers) => {
             // augment the app with the extra config that we've just collected
             const composer = {
-                connectionProfileName: answers.profilename,
-                businessNetworkIdentifier: answers.businessNetworkId,
-                participantId: answers.userid,
-                participantPwd: answers.secret,
+                connectionProfileName: answers.connectionProfileName,
+                businessNetworkIdentifier: answers.businessNetworkName,
+                participantId: answers.enrollementId,
+                participantPwd: answers.enrollementSecret,
                 namespaces: answers.namespaces,
                 security: answers.security,
                 websockets: answers.websockets,
