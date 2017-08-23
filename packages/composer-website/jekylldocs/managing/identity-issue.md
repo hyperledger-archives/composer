@@ -5,12 +5,12 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**A new identity can be issued to a participant using either the API or the command line**](../managing/identity-issue.html). Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant."
-index-order: 703
+index-order: 704
 ---
 
 # Issuing a new identity to a participant
 
-A new identity can be issued to a participant using either the API or the command line. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.
+A new identity can be issued to a participant using either the API, the command line, or by using ID cards in the {{site.data.conrefs.composer_full}} Playground. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.
 
 When using {{site.data.conrefs.hlf_full}}, {{site.data.conrefs.composer_full}} issues new identities by using the {{site.data.conrefs.hlf_full}} certificate authority (CA) to register new enrollment certificates. The {{site.data.conrefs.hlf_full}} certificate authority generates an enrollment secret that can be given to the participant, who can then use the enrollment secret to request their enrollment certificate and private keys from the {{site.data.conrefs.hlf_full}} certificate authority.
 

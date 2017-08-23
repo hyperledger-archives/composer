@@ -53,9 +53,9 @@ If and when an identity is revoked, the entry in the identity registry for that 
 
 ## Identities and ID cards in the {{site.data.conrefs.composer_full}} Playground
 
-_content goes here_
+In the {{site.data.conrefs.composer_full}} Playground, there is a wallet containing locally stored ID cards. An ID card is an access card to a business network, comprising identity data, a connection profile, and the correct certificates for business network access.
 
-
+ID cards can be exported to allow the assignment of identities to others. Once the certificates associated with an identity have been used to register the ID card, they cannot be reused, for this reason it is important connect using an ID card before exporting, if that id card is being assigned to another user.
 
 
 ## Performing identity management tasks in {{site.data.conrefs.composer_full}}
