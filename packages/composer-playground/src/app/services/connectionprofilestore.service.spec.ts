@@ -7,7 +7,7 @@ import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from './config.service';
 import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 import { FSConnectionProfileStore } from 'composer-common';
-const ProxyConnectionProfileStore = require('composer-connector-proxy').ProxyConnectionProfileStore;
+import { PlaygroundConnectionProfileStore } from './playgroundconnectionprofilestore';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -36,12 +36,12 @@ describe('ConnectionProfileStoreService', () => {
                 }
             ));
 
-        it('should create a new proxy connection profile store',
+        it('should create a new playground connection profile store',
             inject([ConnectionProfileStoreService],
                 (connectionProfileStoreService) => {
                     connectionProfileStoreService.should.be.ok;
                     const connectionProfileStore = connectionProfileStoreService.getConnectionProfileStore();
-                    connectionProfileStore.should.be.an.instanceOf(ProxyConnectionProfileStore);
+                    connectionProfileStore.should.be.an.instanceOf(PlaygroundConnectionProfileStore);
                 }
             ));
 
