@@ -29,8 +29,10 @@
         header {
             button.dismiss {
                 position: absolute;
-                top: 0;
-                right: $space-smedium;
+                top: 5px;
+                right: 14px;
+                // top: 0;
+                // right: $space-smedium;
 
                 svg {
                     fill: $second-highlight;

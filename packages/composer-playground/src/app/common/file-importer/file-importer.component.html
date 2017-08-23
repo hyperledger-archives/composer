@@ -1,9 +1,10 @@
-  <input id="file-importer_input" type="file" (change)="onFileChange($event)">
+<input id="file-importer_input" type="file" (change)="onFileChange($event)">
   <div *ngIf="!expandInput">
-    <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-upload"></use>
+    <svg class="ibm-icon" aria-hidden="false">
+      <use xlink:href="#icon-Card_Upload"></use>
     </svg>
-      <span>Drop here to upload or <span class="underline">browse</span></span>
+      <div class="centre-text">Drop here to upload or <span class="underline">browse</span></div>
+      <div class="max-file-size centre-text">Max file size {{(maxFileSize/1024)/1024}}mb</div>
   </div>
   <div *ngIf="expandInput">
     <svg class="ibm-icon" aria-hidden="true">
@@ -12,4 +13,3 @@
     <div class="centre-text">Drop here to upload</div>
     <div class="max-file-size centre-text">Max file size {{(maxFileSize/1024)/1024}}mb</div>
   </div>
-

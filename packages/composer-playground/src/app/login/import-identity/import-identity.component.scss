@@ -4,6 +4,8 @@
 import-identity {
     .import-card, .current-card {
         padding: 0 $space-large 0 $space-large;
+        padding-left: 3rem;
+        padding-right: 3rem;
     }
 
     .current-card {
