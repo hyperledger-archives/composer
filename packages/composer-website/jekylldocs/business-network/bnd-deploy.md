@@ -36,7 +36,8 @@ When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using t
 
 Identities in playground are associated with ID cards, comprising a connection profile, identity metadata, and certificates.
 
-When deploying a business network using Playground locally, you must have an ID card containing the correct admin certificates. You must also have an ID card with the `PeerAdmin` role and the `ChannelAdmin` role, although these can be on separate ID cards.
+When deploying a business network using Playground locally, you must have at least one ID card with the `PeerAdmin` role and at least one ID card with the `ChannelAdmin` role. Each of these ID cards must contain the correct admin certificates.
+
 
 ### Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
 
