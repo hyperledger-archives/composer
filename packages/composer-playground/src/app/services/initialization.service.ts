@@ -78,20 +78,10 @@ export class InitializationService {
     }
 
     loadConfig(): Promise<any> {
-        let url = 'http://localhost:15699';
-        if (ENV && ENV !== 'development') {
-            url = window.location.origin;
-        }
         // Load the config data.
-        return this.http.get(url + '/config.json')
+        return this.http.get('/config.json')
             .map((res: Response) => res.json())
-            .toPromise()
-            .catch((error) => {
-                // don't need to worry about 404 just means COMPOSER_CONFIG env var not set
-                if (error && error.status !== 404) {
-                    throw error;
-                }
-            });
+            .toPromise();
     }
 
     deployInitialSample(defaultCardRef) {
