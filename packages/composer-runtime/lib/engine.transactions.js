@@ -168,7 +168,7 @@ class EngineTransactions {
         // Get the transaction in question and also create a relationship
         record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
         record.transactionTimestamp = transaction.timestamp;
-        record.transactionType = transaction.getType();
+        record.transactionType = transaction.getFullyQualifiedType();
 
         // Get the events that are generated - getting these as Resources
         let evtSvr = context.getEventService();
