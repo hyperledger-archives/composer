@@ -78,7 +78,24 @@ export class LoginComponent implements OnInit {
                 }, new Map<string, string[]>());
 
             this.idCardRefs = newCardRefs;
-            this.connectionProfileRefs = Array.from(this.connectionProfileNames.keys());
+            let unsortedConnectionProfiles = Array.from(this.connectionProfileNames.keys());
+            let indexOfWeb = unsortedConnectionProfiles.indexOf('web-$default');
+            let webProfile = unsortedConnectionProfiles[indexOfWeb];
+            unsortedConnectionProfiles.splice(indexOfWeb, 1);
+            unsortedConnectionProfiles.sort((a: string, b: string): number => {
+                let aName = this.connectionProfileNames.get(a);
+                let bName = this.connectionProfileNames.get(b);
+
+                if (aName < bName) {
+                    return -1;
+                }
+                if (aName > bName) {
+                    return 1;
+                }
+            });
+            unsortedConnectionProfiles.unshift(webProfile);
+            this.connectionProfileRefs = unsortedConnectionProfiles;
+
         }).catch((error) => {
             this.alertService.errorStatus$.next(error);
         });
@@ -164,10 +181,10 @@ export class LoginComponent implements OnInit {
             return this.identityCardService.addIdentityCard(result);
         }).then((cardRef) => {
             this.alertService.successStatus$.next({
-                    title: 'ID Card imported',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully imported',
-                    icon: '#icon-role_24'
-                });
+                title: 'ID Card imported',
+                text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully imported',
+                icon: '#icon-role_24'
+            });
         }).then(() => {
             return this.loadIdentityCards();
         }).catch((reason) => {
