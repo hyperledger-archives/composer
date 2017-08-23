@@ -39,7 +39,7 @@
     </section>
     <section class="business-network-details" *ngIf="identity.getBusinessNetworkName()">
         <h3>Business Network</h3>
-        <p>{{identity.getBusinessNetworkName()}}</p>
+        <p title="{{identity.getBusinessNetworkName()}}">{{identity.getBusinessNetworkName()}}</p>
     </section>
     <footer>
         <button *ngIf="!preview && identity.getBusinessNetworkName()" type="button" class="action connect"

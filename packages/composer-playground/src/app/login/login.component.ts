@@ -77,6 +77,10 @@ export class LoginComponent implements OnInit {
                     return prev.set(cur[0], [...curCardRefs, cardRef]);
                 }, new Map<string, string[]>());
 
+            newCardRefs.forEach((cardRefs: string[], key: string) => {
+                cardRefs.sort(this.sortIdCards.bind(this));
+            });
+
             this.idCardRefs = newCardRefs;
             let unsortedConnectionProfiles = Array.from(this.connectionProfileNames.keys());
             let indexOfWeb = unsortedConnectionProfiles.indexOf('web-$default');
@@ -244,5 +248,58 @@ export class LoginComponent implements OnInit {
                     this.alertService.errorStatus$.next(reason);
                 }
             });
+    }
+
+    private sortIdCards(a, b): number {
+        let cardA = this.identityCardService.getIdentityCard(a);
+        let cardB = this.identityCardService.getIdentityCard(b);
+
+        let aBusinessNetwork = cardA.getBusinessNetworkName();
+        let bBusinessNetwork = cardB.getBusinessNetworkName();
+        let aName = cardA.getName();
+        let bName = cardB.getName();
+        let aRoles = cardA.getRoles();
+        let bRoles = cardB.getRoles();
+
+        // sort by business network name
+        let result = this.sortBy(aBusinessNetwork, bBusinessNetwork);
+
+        if (result !== 0) {
+            return result;
+        }
+
+        // then by role
+        result = this.sortBy(aRoles, bRoles);
+        if (result !== 0) {
+            return result;
+        }
+
+        // then by name
+        result = this.sortBy(aName, bName);
+    }
+
+    private sortBy(aName, bName): number {
+        if (!aName && !bName) {
+            return 0;
+        }
+
+        if (!aName && bName) {
+            return -1;
+        }
+
+        if (aName && !bName) {
+            return 1;
+        }
+
+        if (aName < bName) {
+            return -1;
+        }
+
+        if (aName > bName) {
+            return 1;
+        }
+
+        // they are equal
+        return 0;
     }
 }
