@@ -17,6 +17,8 @@
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
+const version = 'v' + require('./package.json').version;
+
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
@@ -42,9 +44,7 @@ const yargs = require('yargs')
     .option('c', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
     .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
     .alias('v', 'version')
-    .version(() => {
-        return getVersion();
-    })
+    .version(version)
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -155,17 +155,3 @@ module.exports = promise.then((composer) => {
     console.error(error);
     process.exit(1);
 });
-
-/**
- * [getInfo description]
- * @return {[type]}            [description]
- */
-function getVersion(){
-    try{
-        return 'v' +require('./package.json').version;
-    }
-    catch (error){
-      // oh well - we'll just return a blank string
-        return '';
-    }
-}
