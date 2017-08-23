@@ -216,45 +216,6 @@ describe('InitializationService', () => {
             });
             tick();
         })));
-
-        it('should load config and ignore 404', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
-            // setup a mocked response
-            mockBackend.connections.subscribe((connection) => {
-                connection.mockError(new Response(new ResponseOptions({
-                    status: 404,
-                    statusText: 'URL not Found',
-                })));
-            });
-
-            service.loadConfig()
-                .then((config) => {
-                    should.not.exist(config);
-                })
-                .catch((error) => {
-                    throw new Error('should not get here');
-                });
-            tick();
-        })));
-
-        it('should handle error', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
-            // setup a mocked response
-            mockBackend.connections.subscribe((connection) => {
-                connection.mockError(new Response(new ResponseOptions({
-                    status: 500,
-                    statusText: 'internal server error',
-                })));
-            });
-
-            service.loadConfig()
-                .then((config) => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.status.should.equal(500);
-                    error.statusText.should.equal('internal server error');
-                });
-            tick();
-        })));
     });
 
     describe('isWebOnly', () => {
