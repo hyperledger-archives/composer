@@ -562,6 +562,7 @@ describe('Context', () => {
             sinon.stub(context, 'getDataService').returns(mockDataService);
             mockSystemRegistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
+            sinon.stub(context, 'initializeInner').resolves();
         });
 
         it('should initialize the context', () => {
@@ -583,6 +584,7 @@ describe('Context', () => {
                     sinon.assert.calledOnce(context.loadCurrentParticipant);
                     should.equal(context.participant, null);
                     context.sysregistries.should.equal(mockSystemRegistries);
+                    sinon.assert.calledOnce(context.initializeInner);
                 });
         });
 
@@ -650,6 +652,38 @@ describe('Context', () => {
                 .then(() => {
                     context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
                 });
+        });
+
+    });
+
+    describe('#initializeInner', () => {
+
+        it('should call _initializeInner and handle no error', () => {
+            sinon.stub(context, '_initializeInner').yields(null);
+            return context.initializeInner()
+                .then(() => {
+                    sinon.assert.calledWith(context._initializeInner);
+                });
+        });
+
+        it('should call _initializeInner and handle an error', () => {
+            sinon.stub(context, '_initializeInner').yields(new Error('error'));
+            return context.initializeInner()
+                .should.be.rejectedWith(/error/)
+                .then(() => {
+                    sinon.assert.calledWith(context._initializeInner);
+                });
+        });
+
+    });
+
+    describe('#_initializeInner', () => {
+
+        it('should not throw', () => {
+            const cb = sinon.stub();
+            context._initializeInner(cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null);
         });
 
     });

@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';
-import { WalletService } from './wallet.service';
 
 import { IdCard, Logger } from 'composer-common';
 
@@ -37,8 +36,7 @@ export class IdentityCardService {
 
     constructor(private connectionProfileService: ConnectionProfileService,
                 private identityService: IdentityService,
-                private identityCardStorageService: IdentityCardStorageService,
-                private walletService: WalletService) {
+                private identityCardStorageService: IdentityCardStorageService) {
         Logger.setFunctionalLogger({
             // tslint:disable-next-line:no-empty
             log: () => {
@@ -181,24 +179,10 @@ export class IdentityCardService {
         }
 
         let card = this.idCards.get(cardRef);
-        let cardCredientials = card.getEnrollmentCredentials();
-
-        // needed as the wallet blows up without an enrollment id
-        let enrollmentId = '';
-        if (cardCredientials) {
-            enrollmentId = cardCredientials.id;
-        }
         let connectionProfile = card.getConnectionProfile();
         let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
 
-        let wallet = this.walletService.getWallet(connectionProfileName);
-
-        return wallet.contains(enrollmentId)
-            .then((inWallet) => {
-                if (inWallet) {
-                    return this.walletService.removeFromWallet(connectionProfileName, enrollmentId);
-                }
-            })
+        return Promise.resolve()
             .then(() => {
                 // only delete if this is the last id card using the connection profile
                 if (this.getAllCardRefsForProfile(connectionProfileName).length === 1) {
@@ -309,8 +293,6 @@ export class IdentityCardService {
 
             // Is this enough activation? What about the identity import thing?
             return this.connectionProfileService.createProfile(connectionProfileName, connectionProfile).then(() => {
-                return this.setIdentity(connectionProfileName, enrollmentCredentials.id, enrollmentCredentials.secret);
-            }).then(() => {
                 return this.currentCard;
             });
         }
@@ -320,23 +302,5 @@ export class IdentityCardService {
 
     private dataRef(cardRef: string): string {
         return cardRef + '-pd';
-    }
-
-    private setIdentity(connectionProfileName: string, enrollmentId: string, enrollmentSecret: string): Promise<any> {
-        let wallet = this.walletService.getWallet(connectionProfileName);
-
-        // needed as secret isn't required but the wallet blows up if the secret is undefined
-        if (!enrollmentSecret) {
-            enrollmentSecret = '';
-        }
-
-        return wallet.contains(enrollmentId)
-            .then((contains) => {
-                if (contains) {
-                    return wallet.update(enrollmentId, enrollmentSecret);
-                } else {
-                    return wallet.add(enrollmentId, enrollmentSecret);
-                }
-            });
     }
 }

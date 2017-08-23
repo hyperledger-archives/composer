@@ -21,7 +21,7 @@ module.exports.describe = 'Import an identity to wallet defined by the connectio
 module.exports.builder = {
     connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
     userId: { alias: 'u', required: true, describe: 'The user ID for the new identity', type: 'string' },
-    publicKeyFile: { alias: 'c', required: true, describe: 'File containing the public key', type: 'string' },
+    certificateFile: { alias: 'c', required: true, describe: 'File containing the certificate', type: 'string' },
     privateKeyFile: { alias: 'k', required: true, describe: 'File containing the private key', type: 'string' }
 };
 

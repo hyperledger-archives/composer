@@ -42,8 +42,7 @@
         </button>
     </div>
     <div *ngIf="showDeployNetwork">
-        <import-business-network class="deploy" [deployNetwork]="true"
-                                 (finishedSampleImport)="finishedDeploying()"></import-business-network>
+        <deploy-business-network (finishedSampleImport)="finishedDeploying()"></deploy-business-network>
     </div>
     <div *ngIf="creatingIdCard">
         <create-identity-card [connectionProfileRefs]="connectionProfileRefs"

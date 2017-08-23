@@ -8,7 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
-import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
+import { BusinessNetworkDefinition } from 'composer-admin';
 import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AclManager, AssetDeclaration, QueryFile, QueryManager } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
@@ -26,10 +26,6 @@ import { expect } from 'chai';
 const fs = require('fs');
 
 class MockAdminService {
-    getAdminConnection(): AdminConnection {
-        return new AdminConnection();
-    }
-
     ensureConnection(): Promise<any> {
         return new Promise((resolve, reject) => {
             resolve(true);
@@ -569,7 +565,7 @@ namespace org.acme.model`);
  */
  rule AllAccess {
      description: "AllAccess - grant everything to everybody."
-     participant: "org.hyperledger.composer.system.Participant" 
+     participant: "org.hyperledger.composer.system.Participant"
      operation: ALL
      resource: "org.hyperledger.composer.system.**"
      action: ALLOW

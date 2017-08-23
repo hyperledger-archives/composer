@@ -1,103 +1,26 @@
 @import '../../assets/styles/base/colors';
 @import '../../assets/styles/base/variables';
 
-import-business-network {
+update-business-network {
 
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow-y: auto;
 
-    &.deploy {
-        flex-direction: row;
-        height: inherit;
-        overflow-y: inherit;
-
-        div.choose-network {
-            margin-right: $space-large;
-
-            section {
-                & > div {
-                    flex-basis: 70%;
-                    padding: $space-large;
-                }
-
-                h3.title {
-                    padding: $space-large;
-                }
-
-                h3.sub-title {
-                    padding: 0 $space-large;
-                }
-
-                .information {
-                    padding: $space-medium $space-large;
-
-                    input.ng-invalid {
-                        border-bottom: 2px solid $error-colour-1;
-                    }
-                }
-            }
-
-            .sample-network-list-container {
-                background-color: $white;
-                padding: 0 $space-large;
-            }
-        }
-
-        div.chosen-network {
-            .image {
-                margin: 0 auto;
-                width: 50%;
-                padding-top: $space-large;
-            }
-
-            div.chosen-network-info {
-                box-shadow: 3px 6px 15px 0 rgba(0, 0, 0, 0.20);
-                width: 275px;
-                display: block;
-                padding: 0;
-                border-bottom: none;
-            }
-
-            div.deploy {
-                width: 50%;
-                margin: 0 auto;
-                display: block;
-            }
+    header {
+        h3.sub-title {
+            padding: $space-medium 0;
         }
     }
 
-    div.choose-network {
+    div.scroll-view {
         background-color: $white;
         margin-right: 0;
         flex: 1;
+        overflow-y: auto;
 
-        h2 {
-            padding: $space-large $space-large 0;
-        }
-
-        section {
+        section.choose-network {
             display: flex;
-            border-bottom: 1px solid $fourth-highlight;
-
-            h3.title {
-                flex-basis: 30%;
-                text-transform: uppercase;
-                color: $second-highlight;
-            }
-
-            h3.sub-title {
-                padding: $space-medium $space-large;
-            }
-
-            p {
-                padding: 0 $space-large;
-            }
-
-            & > div {
-                flex-basis: initial;
-            }
 
             .information {
 
@@ -133,6 +56,7 @@ import-business-network {
                 .sample-network-list {
                     display: flex;
                     flex-wrap: wrap;
+                    justify-content: center;
                     margin: $space-medium 0;
 
                     file-importer.sample-network-list-item {
@@ -151,16 +75,32 @@ import-business-network {
                         width: 150px;
                         display: flex;
                         flex-direction: column;
-                        justify-content: flex-end;
                         position: relative;
+                        height: 150px;
+
+                        img {
+                            height: 50px;
+                            width: 90px;
+                            margin: 1.5rem 1.5rem auto;
+                        }
+
+                        svg {
+                            width: 80px;
+                            height: 50px;
+                            margin: 1.5rem 1.5rem auto;
+                        }
 
                         &.file-importer {
-                            height: 227px;
+                            height: 150px;
 
                             svg.ibm-icon {
-                                width: 100px;
-                                height: 100px;
-                                margin-bottom: $space-large;
+                                width: 80px;
+                                height: 50px;
+                                margin: 1rem auto;
+                            }
+
+                            span {
+                                display: inline-block;
                             }
                         }
 
@@ -176,20 +116,15 @@ import-business-network {
                             border: 1px dashed $second-highlight;
                         }
 
-                        .sample-network-name {
-                            margin-top: $space-medium;
-                            flex-basis: 20%;
-                        }
-
                         button.close-dropped {
                             position: absolute;
-                            top: -18px;
-                            right: -9px;
+                            top: -35px;
+                            right: -35px;
 
                             svg {
                                 fill: $first-highlight;
-                                width: $space-medium;
-                                height: $space-medium;
+                                width: 20px;
+                                height: 20px;
                             }
                         }
                     }
@@ -198,17 +133,16 @@ import-business-network {
         }
     }
 
-    div.chosen-network {
+    section.chosen-network {
         .replace-message {
+            background-color: $white;
             padding: $space-large;
         }
 
         div.chosen-network-info {
             display: flex;
             background-color: $white;
-            margin-bottom: $space-large;
             padding: $space-large $space-large 0 $space-large;
-            border-bottom: 1px solid $fourth-highlight;
 
             .animated-image {
                 width: 125px;
@@ -242,12 +176,14 @@ import-business-network {
 
             }
         }
+    }
 
-        div.deploy {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: $space-large;
-            margin-right: $space-large;
-        }
+    div.deploy {
+        display: flex;
+        justify-content: flex-end;
+        padding: $space-large;
+        background-color: $white;
+        border-top: 1px solid $fourth-highlight;
+
     }
 }

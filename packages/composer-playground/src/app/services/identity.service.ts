@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs/Rx';
 
 import { Logger } from 'composer-common';
 import { IdentityCardService } from './identity-card.service';
-import { WalletService } from './wallet.service';
 
 @Injectable()
 export class IdentityService {
@@ -14,21 +13,12 @@ export class IdentityService {
     // tslint:disable-next-line:member-ordering
     public readonly currentIdentity: Observable<string> = this._currentIdentity.asObservable();
 
-    constructor(private localStorageService: LocalStorageService,
-                private walletService: WalletService) {
+    constructor(private localStorageService: LocalStorageService) {
 
         Logger.setFunctionalLogger({
             // tslint:disable-next-line:no-empty
             log: () => {
             }
-        });
-    }
-
-    getIdentities(connectionProfile: string): Promise<string[]> {
-        let wallet = this.walletService.getWallet(connectionProfile);
-        return wallet.list()
-        .then((identities) => {
-            return identities.sort();
         });
     }
 
