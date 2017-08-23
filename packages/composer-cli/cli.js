@@ -18,6 +18,8 @@
 // not using the config file module as this could be run anwhere so suppress warning
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
+const version = 'v' + require('./package.json').version;
+
 const yargs = require('yargs');
 
 
@@ -32,9 +34,7 @@ let results = yargs
     .strict()
     .epilogue('For more information on Hyperledger Composer: https://hyperledger.github.io/composer/')
     .alias('v', 'version')
-    .version(function() {
-        return getVersion();
-    })
+    .version(version)
     .describe('v', 'show version information')
     .command(
     {
@@ -63,19 +63,4 @@ if (typeof(results.thePromise) !== 'undefined'){
     });
 } else {
     process.exit(0);
-}
-
-
-/**
- * [getInfo description]
- * @return {[type]}            [description]
- */
-function getVersion(){
-    try{
-        return 'v' +require('./package.json').version;
-    }
-    catch (error){
-      // oh well - we'll just return a blank string
-        return '';
-    }
 }
