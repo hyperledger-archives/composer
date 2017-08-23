@@ -23,7 +23,7 @@ If you have previously used Playground, be sure to clear your browser local stor
 
 ## Step 2: Choose an Identity
 
-At the **My Wallet** page, click **Connect now** on the **Admin** ID card. This will allow us to make any changes to the business network definition.
+At the **My Wallet** page, click **Connect now** on the **Admin** ID card. This will allow us to make changes to the business network definition.
 
 ## Step 3: Define your Domain Model
 

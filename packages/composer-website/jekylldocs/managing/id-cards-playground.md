@@ -67,7 +67,7 @@ ID cards are composite files containing up to three elements:
 - A metadata file containing the data for the identity to use to connect to the business network. (`metadata.json`)
 - An optional credentials directory containing a public and private key.
 
-_Please note_: If there is no credentials directory, the metadata file must contain the _User Secret_ property with the property name _enrollmentSecret_. If an _enrollmentSecret_ is specified, the first time the ID card is used to connect to a business network, a credentials directory will be created and populated with the correct certificates.
+_Please note_: If there is no credentials directory, the metadata file must contain the _User Secret_ property with the property name _enrollmentSecret_. If an _enrollmentSecret_ is specified, a credentials directory with certificates will be created and populated if the ID card is exported.
 
 The metadata file should take the following format:
 
@@ -75,6 +75,7 @@ The metadata file should take the following format:
 {
     "name": "PeerAdmin",
     "description": "A valid ID card",
+    "businessNetworkName": "basic-sample-network"
     "enrollmentId": "UserID",
     "enrollmentSecret": "UserSecret",
     "image": "images/conga.png",
@@ -84,9 +85,9 @@ The metadata file should take the following format:
 }
 ```
 
-The _enrollmentSecret_ and _roles_ properties are optional.
+The _businessNetworkName_, _image_, _enrollmentSecret_, and _roles_ properties are optional. The available _roles_ are `PeerAdmin` and `ChannelAdmin`.
 
-To create the ID card file, compress a directory containing the connection profile, metadata file, and optionally a credentials file, then modify the file type to `.card`.
+To create the ID card file, compress the connection profile, metadata file, and optionally a credentials file, then modify the file type to `.card`.
 
 This ID card can now be imported using the {{site.data.conrefs.composer_full}} Playground.
 
@@ -96,15 +97,12 @@ This ID card can now be imported using the {{site.data.conrefs.composer_full}} P
 
 Importing and exporting ID cards is the simplest way to grant access to other users of the business network in Playground. Valid ID cards must be created using one of the methods above, but can then be exported and sent to other users.
 
-_Please note_: An ID card must not be used to connect to a business network before it is exported, or it will be unusable after it is imported.
-
 ### Exporting ID Cards
 
 1. To export an ID card create an identity by [using a business network](#creating-an-id-card-within-a-business-network) and add the ID card to your wallet.
 
 2. On the **My Wallet** page, click the **Export** icon on the ID card you wish to export. The ID card should download as a `.card` file.
 
-_Please note_: An ID card must not be used to connect to a business network before it is exported, or it will be unusable after it is imported.
 
 ### Importing ID Cards
 
