@@ -66,10 +66,10 @@ if (interactive) {
         .then((answers) => {
             // augment the app with the extra config that we've just collected
             const composer = {
-                connectionProfileName: answers.profilename,
-                businessNetworkIdentifier: answers.businessNetworkId,
-                participantId: answers.userid,
-                participantPwd: answers.secret,
+                connectionProfileName: answers.connectionProfileName,
+                businessNetworkIdentifier: answers.businessNetworkName,
+                participantId: answers.enrollementId,
+                participantPwd: answers.enrollementSecret,
                 namespaces: answers.namespaces,
                 security: answers.security,
                 websockets: answers.websockets,
