@@ -32,6 +32,7 @@ composer network list -n <business-network-id>  -p <connectionProfileName> -i <e
 
 ```
 composer network list -n digitalproperty-network -p hlfv1 -i admin -s adminpw
+
 ✔ List business network digitalproperty-network
 name:       digitalproperty-network
 models: 
