@@ -31,10 +31,10 @@ describe('composer-rest-server CLI unit tests', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         sandbox.stub(Util, 'getConnectionSettings').resolves({
-            profilename: 'defaultProfile',
-            businessNetworkId: 'org-acme-biznet',
-            userid: 'admin',
-            secret: 'adminpw',
+            connectionProfileName: 'defaultProfile',
+            businessNetworkName: 'org-acme-biznet',
+            enrollementId: 'admin',
+            enrollementSecret: 'adminpw',
             namespaces: 'always',
             security: false,
             websockets: true,
