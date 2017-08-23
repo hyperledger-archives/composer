@@ -514,7 +514,7 @@ And the cucumber tests defined in the file `features/sample.feature` will produc
 
 ## Import into Playground and Test
 
-Change directory to your toplevel project folder (my-network). Generate the BNA file using the following command:
+Ensure you are at the toplevel project folder (my-network). Generate the BNA file using the following command:
 
 ```
 mkdir dist
@@ -655,7 +655,7 @@ Which should give the following output:
 user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-	version: 0.10.0
+	version: 0.12.0
 	participant: <no participant found>
 
 Command succeeded
@@ -678,7 +678,7 @@ cd ..
 composer-rest-server
 ```
 
-Answer the questions posed at startup. These allow the composer-rest-server to connect to {{site.data.conrefs.hlf_full}} and configure how the REST API is generated.
+Answer the questions posed at startup as shown in the diagram below. These allow the composer-rest-server to connect to {{site.data.conrefs.hlf_full}} and configure how the REST API is generated.
 
 ![Composer REST Server](../assets/img/tutorials/developer/composer-rest-server.png)
 
@@ -699,8 +699,6 @@ You should see the LoopBack API Explorer, allowing you to inspect and test the g
 
 First, use the `POST` method on Trader to create a new instance of a Trader - first select 'List Operations' alongside the Trader to see the operations available.
 
-![Create trader](../assets/img/tutorials/developer/lb_create_trader.png)
-
 ```
 {
   "$class": "org.acme.mynetwork.Trader",
@@ -711,6 +709,8 @@ First, use the `POST` method on Trader to create a new instance of a Trader - fi
 ```
 
 Enter the values and then press the "Try it Out" button to submit. You should see an HTTP 200 response indicating that the Trader was successfully created and stored on the blockchain.
+
+![Create trader](../assets/img/tutorials/developer/lb_create_trader.png)
 
 Use the `GET` operation/method on `Trader` (leave the filter parameter blank) and press the "Try it Out" button. You should see your Trader returned.
 
@@ -744,7 +744,9 @@ create src/app/Commodity/Commodity.component.css
 
 Wait a couple of minutes for the install of the application dependencies to complete.
 
-Next, change directory to your new Angular application directory (eg. my-app) located in your home directory (eg. /home/joe):
+Next, change directory to your new Angular application directory (eg. my-app) - _this may be located in your home directory (eg. /home/joe):_
+
+Then start the application using `npm start` eg.
 
 ```
 cd my-app
