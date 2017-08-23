@@ -21,7 +21,11 @@ Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.da
 
 If you have previously used Playground, be sure to clear your browser local storage by running `localStorage.clear()` in your browser Console.
 
-## Step 2: Define your Domain Model
+## Step 2: Choose an Identity
+
+At the **My Wallet** page, click **Connect now** on the **Admin** ID card. This will allow us to make changes to the business network definition.
+
+## Step 3: Define your Domain Model
 
 Open the file **Model File** from the left hand side navigation in Playground. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network.
 
@@ -56,7 +60,7 @@ This domain model defines a single asset `Commodity` and single participant `Tra
 
 _Note: You can add as many model files as convenient under the `models` folder, however each model file must have a unique namespace and you can import types from one namespace into other namespaces._
 
-## Step 3: Define Transaction Processor Functions
+## Step 4: Define Transaction Processor Functions
 
 Now that the domain model has been defined, we can define the business logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.
 
@@ -81,7 +85,7 @@ This function simply changes the `owner` property on a commodity based on the `n
 
 _Note: You can create as many JavaScript files as convenient for your business network definition. If a JavaScript function has the `@transaction` annotation, it will be automatically invoked when a transaction of the type defined by the `@param` annotation is submitted._
 
-## Step 4: Define your Access Control Rules
+## Step 5: Define your Access Control Rules
 
 Open the **Access Control** file that defines the access control rules for the business network definition and replace the entire contents with the rule below.
 
@@ -108,7 +112,7 @@ rule SystemACL {
 
 This access control simply allows all participants access to all resources.
 
-## Step 5: Deploy changes
+## Step 6: Deploy changes
 
 Using the **Deploy** button in the left hand navigation we need to deploy our changes to the web browser.
 
@@ -116,7 +120,7 @@ Using the **Deploy** button in the left hand navigation we need to deploy our ch
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
 </video>
 
-## Step 6: Testing our Business Network Definition
+## Step 7: Testing our Business Network Definition
 
 Navigate to the **Test** tab at the top to test our Business Network Definition
 
@@ -124,7 +128,7 @@ Navigate to the **Test** tab at the top to test our Business Network Definition
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/test_tab_render.mp4" type="video/mp4" />
 </video>
 
-## Step 7: Creating two Traders
+## Step 8: Creating two Traders
 
 Create two 'Trader' participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the **Create New Participant** button.
 
@@ -152,7 +156,7 @@ Create two 'Trader' participants (TRADER1 and TRADER2) by clicking the Trader re
 
 After creating these two participants, you should now see them in the participant registry.
 
-## Step 8: Creating a commodity
+## Step 9: Creating a commodity
 
 Create a new instance of a Commodity by navigating to the Commodity registry on the left and then click the **Create New Asset** button.
 
@@ -173,7 +177,7 @@ Create a new instance of a Commodity by navigating to the Commodity registry on 
 
 After creating this asset, you should now see them in the asset registry.
 
-## Step 9: Transferring that commodity between the traders
+## Step 10: Transferring that commodity between the traders
 
 Next, submit a `Trade` transaction by clicking the **Submit Transaction** button, bottom left of the left hand navigation panel, to move the commodity from TRADER1 to TRADER2.
 
@@ -201,7 +205,7 @@ As a result, the owner of the commodity ABC should now be owned TRADER2 in the A
 
 We defined the business network definition in the **Model File**, **Script File**, **Access Controls**, tested that business network definition by creating a couple of participants `TRADER1` `TRADER2`, an asset `ABC` and submitting a transaction  `Trade` to transfer that asset to a different participant. -->
 
-##Congratulations you've completed the Playground tutorial!
+## Congratulations you've completed the Playground tutorial!
 
 Next, you might want to try the [**Developer Tutorial**](../tutorials/developer-guide.html), to get your local development environment setup, generate a REST API and a skeleton web application.
 
