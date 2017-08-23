@@ -138,11 +138,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -205,7 +206,11 @@ ga('send', 'pageview');
 
 <p>If you have previously used Playground, be sure to clear your browser local storage by running <code>localStorage.clear()</code> in your browser Console.</p>
 
-<h2 id="step-2-define-your-domain-model">Step 2: Define your Domain Model</h2>
+<h2 id="step-2-choose-an-identity">Step 2: Choose an Identity</h2>
+
+<p>At the <strong>My Wallet</strong> page, click <strong>Connect now</strong> on the <strong>Admin</strong> ID card. This will allow us to make changes to the business network definition.</p>
+
+<h2 id="step-3-define-your-domain-model">Step 3: Define your Domain Model</h2>
 
 <p>Open the file <strong>Model File</strong> from the left hand side navigation in Playground. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network.</p>
 
@@ -237,7 +242,7 @@ transaction Trade {
 
 <p><em>Note: You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace and you can import types from one namespace into other namespaces.</em></p>
 
-<h2 id="step-3-define-transaction-processor-functions">Step 3: Define Transaction Processor Functions</h2>
+<h2 id="step-4-define-transaction-processor-functions">Step 4: Define Transaction Processor Functions</h2>
 
 <p>Now that the domain model has been defined, we can define the business logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
 
@@ -259,7 +264,7 @@ function tradeCommodity(trade) {
 
 <p><em>Note: You can create as many JavaScript files as convenient for your business network definition. If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</em></p>
 
-<h2 id="step-4-define-your-access-control-rules">Step 4: Define your Access Control Rules</h2>
+<h2 id="step-5-define-your-access-control-rules">Step 5: Define your Access Control Rules</h2>
 
 <p>Open the <strong>Access Control</strong> file that defines the access control rules for the business network definition and replace the entire contents with the rule below.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
@@ -283,7 +288,7 @@ rule SystemACL {
 </code></pre></div>
 <p>This access control simply allows all participants access to all resources.</p>
 
-<h2 id="step-5-deploy-changes">Step 5: Deploy changes</h2>
+<h2 id="step-6-deploy-changes">Step 6: Deploy changes</h2>
 
 <p>Using the <strong>Deploy</strong> button in the left hand navigation we need to deploy our changes to the web browser.</p>
 
@@ -291,7 +296,7 @@ rule SystemACL {
 <source src="/composer/unstable/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
 </video>
 
-<h2 id="step-6-testing-our-business-network-definition">Step 6: Testing our Business Network Definition</h2>
+<h2 id="step-7-testing-our-business-network-definition">Step 7: Testing our Business Network Definition</h2>
 
 <p>Navigate to the <strong>Test</strong> tab at the top to test our Business Network Definition</p>
 
@@ -299,7 +304,7 @@ rule SystemACL {
 <source src="/composer/unstable/assets/img/tutorials/playground/test_tab_render.mp4" type="video/mp4" />
 </video>
 
-<h2 id="step-7-creating-two-traders">Step 7: Creating two Traders</h2>
+<h2 id="step-8-creating-two-traders">Step 8: Creating two Traders</h2>
 
 <p>Create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the <strong>Create New Participant</strong> button.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
@@ -321,7 +326,7 @@ rule SystemACL {
 
 <p>After creating these two participants, you should now see them in the participant registry.</p>
 
-<h2 id="step-8-creating-a-commodity">Step 8: Creating a commodity</h2>
+<h2 id="step-9-creating-a-commodity">Step 9: Creating a commodity</h2>
 
 <p>Create a new instance of a Commodity by navigating to the Commodity registry on the left and then click the <strong>Create New Asset</strong> button.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
@@ -339,7 +344,7 @@ rule SystemACL {
 
 <p>After creating this asset, you should now see them in the asset registry.</p>
 
-<h2 id="step-9-transferring-that-commodity-between-the-traders">Step 9: Transferring that commodity between the traders</h2>
+<h2 id="step-10-transferring-that-commodity-between-the-traders">Step 10: Transferring that commodity between the traders</h2>
 
 <p>Next, submit a <code>Trade</code> transaction by clicking the <strong>Submit Transaction</strong> button, bottom left of the left hand navigation panel, to move the commodity from TRADER1 to TRADER2.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">

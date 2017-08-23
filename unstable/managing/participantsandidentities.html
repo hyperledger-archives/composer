@@ -138,11 +138,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -197,13 +198,9 @@ ga('send', 'pageview');
 
 <h2 id="concepts">Concepts</h2>
 
-<p>A <code>Participant</code> is an actor in a business network. A participant might be an individual
-an organization. A participant can create assets, and also exchange assets with
-other participants. A participant works with assets by submitting transactions.</p>
+<p>A <code>Participant</code> is an actor in a business network. A participant might be an individual an organization. A participant can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
 
-<p>A participant has a set of <code>Identity</code> documents that can be validated to prove the
-identity of that participant. For example, an individual may have one or more of
-the following identity documents that prove who they are:</p>
+<p>A participant has a set of <code>Identity</code> documents that can be validated to prove the identity of that participant. For example, an individual may have one or more of the following identity documents that prove who they are:</p>
 
 <ul>
 <li>Passport</li>
@@ -213,85 +210,42 @@ the following identity documents that prove who they are:</p>
 <li>SSL certificate</li>
 </ul>
 
-<p>In Hyperledger Composer, participants are separated from the set of
-identity documents that they can use to interact with a business network.</p>
+<p>In Hyperledger Composer, participants are separated from the set of identity documents that they can use to interact with a business network.</p>
 
-<p>In order for a new participant to join a business network, a new instance of that
-participant must be created in the business network. The participant instance
-stores all of the required information about that participant, but it does not give
-that participant access to interact with the business network.</p>
+<p>In order for a new participant to join a business network, a new instance of that participant must be created in the business network. The participant instance stores all of the required information about that participant, but it does not give that participant access to interact with the business network.</p>
 
-<p>In order to grant the participant access to interact with the business network, an
-identity document must then be <code>Issued</code> to that participant. The new participant
-can then use that identity document to interact with the business network.</p>
+<p>In order to grant the participant access to interact with the business network, an identity document must then be <code>Issued</code> to that participant. The new participant can then use that identity document to interact with the business network.</p>
 
-<p>A participant may have an existing identity document that they use to interact with
-other business networks or other external systems. These identity documents can
-be reused and <code>Bound</code> to that participant. The new participant can then use their
-existing identity document to interact with the business network.</p>
+<p>A participant may have an existing identity document that they use to interact with other business networks or other external systems. These identity documents can be reused and <code>Bound</code> to that participant. The new participant can then use their existing identity document to interact with the business network.</p>
 
-<p>Identity documents usually expire after a set period of time. Identity documents may
-also be lost or stolen. If the identity document expires, or if it needs to be
-replaced, then it must be <code>Revoked</code> so it can no longer be used to interact with
-the business network.</p>
+<p>Identity documents usually expire after a set period of time. Identity documents may also be lost or stolen. If the identity document expires, or if it needs to be replaced, then it must be <code>Revoked</code> so it can no longer be used to interact with the business network.</p>
 
-<p>However, revoking an identity document does not remove the information about that
-participant and any assets that they own. Revoking the identity document simply
-removes the participants ability to interact with the business network using that
-identity document. Access to the business network can be restored by issuing the
-participant with a new identity document.</p>
+<p>However, revoking an identity document does not remove the information about that participant and any assets that they own. Revoking the identity document simply removes the participants ability to interact with the business network using that identity document. Access to the business network can be restored by issuing the participant with a new identity document.</p>
 
-<p>These participant and identity management actions are performed by an existing
-participant in the business network, for example a regulatory body, or a participant
-in the same organization who has been trusted to manage participants/identities in
+<p>These participant and identity management actions are performed by an existing participant in the business network, for example a regulatory body, or a participant in the same organization who has been trusted to manage participants/identities in
 that organization.</p>
 
 <h2 id="participants-and-identities-in-hyperledger-composer">Participants and identities in Hyperledger Composer</h2>
 
-<p>In Hyperledger Composer, the structure of a participant is modelled in a
-model file. This structure may include various information about the participant,
-for example the participants name, address, e-mail address, date of birth, etc.
-New instances of that modelled participant can then be created and added to a
-participant registry.</p>
+<p>In Hyperledger Composer, the structure of a participant is modeled in a model file. This structure may include various information about the participant, for example the participants name, address, e-mail address, date of birth, etc. New instances of that modeled participant can then be created and added to a participant registry.</p>
 
-<p>Hyperledger Composer requires the use Blockchain identities as the
-form of identity documents. For example, when deploying a business network to Hyperledger
-Fabric, enrolment certificates are used as the form of identity document. These enrolment
-certificates are used to cryptographically sign the transactions that are submitted to
-the deployed business network.</p>
+<p>Hyperledger Composer requires the use Blockchain identities as the form of identity documents. For example, when deploying a business network to Hyperledger Fabric, enrollment certificates are used as the form of identity document. These enrollment certificates are used to cryptographically sign the transactions that are submitted to the deployed business network.</p>
 
-<p>A deployed business network maintains a set of mappings of identities to participants
-in the <code>Identity Registry</code>. When an identity is <code>Issued</code> or <code>Bound</code> to a participant, a new
-mapping is added to the identity registry. When that participant uses that identity to
-submit transactions to the deployed business network, the Composer runtime looks for a
-valid mapping for that identity in the identity registry. This lookup is done using
-the public key signature or fingerprint, essentially a hash of the certificate contents
-that is unique to that certificate and identity.</p>
+<p>A deployed business network maintains a set of mappings of identities to participants in the <code>Identity Registry</code>. When an identity is <code>Issued</code> or <code>Bound</code> to a participant, a new mapping is added to the identity registry. When that participant uses that identity to submit transactions to the deployed business network, the Composer runtime looks for a valid mapping for that identity in the identity registry. This lookup is done using the public key signature or fingerprint, essentially a hash of the certificate contents that is unique to that certificate and identity.</p>
 
-<p>Once a mapping is found in the identity registry, the participant for that identity is
-retrieved from that mapping. That participant becomes the <code>Current Participant</code>, the
-participant who submitted the transaction. All access control in Hyperledger Composer
-is based around the current participant. Access control rules that define which participants
-can perform which operations on which resources all operate on the current participant.</p>
+<p>Once a mapping is found in the identity registry, the participant for that identity is retrieved from that mapping. That participant becomes the <code>Current Participant</code>, the participant who submitted the transaction. All access control in Hyperledger Composer is based around the current participant. Access control rules that define which participants can perform which operations on which resources all operate on the current participant.</p>
 
-<p>When a participant uses an identity to submit a transaction to the deployed business
-network for the first time, that identity is <code>Activated</code>. This means that the entry in
-the identity registry is updated to record the fact that the identity was used for the
-first time. Additional information about the identity, such as the certificate, may also
-be recorded in the identity registry during activation if it was not available when the
-identity was issued or bound to the participant.</p>
+<p>When a participant uses an identity to submit a transaction to the deployed business network for the first time, that identity is <code>Activated</code>. This means that the entry in the identity registry is updated to record the fact that the identity was used for the first time. Additional information about the identity, such as the certificate, may also be recorded in the identity registry during activation if it was not available when the identity was issued or bound to the participant.</p>
 
-<p>If and when an identity is revoked, the entry in the identity registry for that identity
-is updated to change the status to <code>Revoked</code>. After an identity is revoked, if a participant
-tries to use that identity to submit a transaction to the deployed business network, that
-transaction will be rejected.</p>
+<p>If and when an identity is revoked, the entry in the identity registry for that identity is updated to change the status to <code>Revoked</code>. After an identity is revoked, if a participant tries to use that identity to submit a transaction to the deployed business network, that transaction will be rejected.</p>
+
+<h2 id="identities-and-id-cards-in-the-hyperledger-composer-playground">Identities and ID cards in the Hyperledger Composer Playground</h2>
+
+<p>In the Hyperledger Composer Playground, there is a wallet containing locally stored ID cards. An ID card is an access card to a business network, comprising identity data, a connection profile, and the correct certificates for business network access. ID cards can be exported to allow the assignment of identities to others.</p>
 
 <h2 id="performing-identity-management-tasks-in-hyperledger-composer">Performing identity management tasks in Hyperledger Composer</h2>
 
-<p>The Hyperledger Composer Node.js client APIs, REST APIs, and command line
-interfaces can all be used to perform identity management operations. For example, the
-following identity management operations are available through all Hyperledger Composer
-interfaces:</p>
+<p>The Hyperledger Composer Node.js client APIs, REST APIs, and command line interfaces can all be used to perform identity management operations. For example, the following identity management operations are available through all Hyperledger Composer interfaces:</p>
 
 <ul>
 <li>Adding a new participant to a participant registry</li>

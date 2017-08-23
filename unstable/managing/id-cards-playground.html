@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Managing a Deployed Business Network | Hyperledger Composer</title>
+    <title>Creating, Exporting, and Importing ID Cards | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Managing a Deployed Business Network</p>
+          <p>Creating, Exporting, and Importing ID Cards</p>
           </div>
 
           <nav class="context-nav">
@@ -194,50 +194,103 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="managing-your-hyperledger-composer-solution">Managing your Hyperledger Composer Solution</h1>
+              <h1 id="creating-exporting-and-importing-id-cards">Creating, Exporting, and Importing ID Cards</h1>
 
-<h3 id="connector-specific-information">Connector Specific Information</h3>
+<p>ID cards are represented by <code>.card</code> files containing a <code>metadata.JSON</code> file, a connection profile, and optional certificates.</p>
 
-<h3 id="participants-and-identities">Participants and identities</h3>
-
-<p>Participants and identities are core concepts of Hyperledger Composer. A participant is a member of business networks and might represent individuals or organizations. Participants have identity documents which can be validated to prove their identity. For more information, see <a href="../managing/participantsandidentities.html"><strong>participants and identities</strong></a>.</p>
-
-<h3 id="adding-participants">Adding participants</h3>
-
-<p><a href="../managing/participant-add.html"><strong>Participants must be added to a business network</strong></a> before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
-
-<h3 id="creating-exporting-and-importing-id-cards">Creating, Exporting, and Importing ID Cards</h3>
-
-<p>ID cards combine a connection profile, identity, and certificates to allow a connection to a business network in Hyperledger Composer Playground. ID cards can be <a href="./id-cards-playground.html">created, exported and imported</a> from the <strong>My Wallet</strong> page in Hyperledger Composer Playground.</p>
-
-<h3 id="issuing-a-new-identity-to-a-participant">Issuing a new identity to a participant</h3>
-
-<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
-
-<h3 id="binding-an-existing-identity-to-a-participant">Binding an existing identity to a participant</h3>
-
-<p><a href="../managing/identity-issue.html"><strong>An existing identity can be bound to a participant using either the API or the command line</strong></a>. Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
-
-<h3 id="listing-all-identities-in-a-business-network">Listing all identities in a business network</h3>
-
-<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
-
-<h3 id="revoking-an-identity-from-a-participant">Revoking an identity from a participant</h3>
-
-<p><a href="../managing/identity-revoke.html"><strong>An identity can be revoked from a participant using either the API or the command line</strong></a>. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.</p>
-
-<h3 id="updating-the-hyperledger-composer-runtime">Updating the Hyperledger Composer Runtime</h3>
-
-<p>To <a href="./updating-composer.html">update Hyperledger Composer</a> to a new version, the Hyperledger Composer components must be uninstalled and reinstalled using npm.</p>
+<p>ID cards can be used in the Hyperledger Composer Playground to manage identities for different business networks and connection profiles.</p>
 
 <hr>
 
-<h2 id="what-next">What next?</h2>
+<h2 id="creating-id-cards">Creating ID Cards</h2>
+
+<p>ID cards can be created in the wallet screen, created from the component files, or created within a business network.</p>
+
+<p><em>Please note</em>: If cards are created from the wallet screen, or created from the component files, there must be a corresponding identity already created in the business network.</p>
+
+<h3 id="creating-an-id-card-within-a-business-network">Creating an ID card within a business network</h3>
+
+<ol>
+<li><p>From the <strong>My Wallet</strong> screen, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity with the permission to create new identities.</p></li>
+<li><p><em>Optional</em>: To create a participant to assign to the identity, click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</p></li>
+<li><p>Click the name of your identity in the upper right, and click <strong>ID Registry</strong>.</p></li>
+<li><p>Click <strong>Issue New ID</strong>.</p></li>
+<li><p>Choose an <strong>ID Name</strong>, and select a <strong>Participant</strong> to associate the new identity with.</p></li>
+<li><p>Click <strong>Create New</strong>.</p></li>
+<li><p>Click <strong>Add to My Wallet</strong>. Adding the ID card to your wallet allows you to use it to connect to the business network, or export it for someone else to use.</p></li>
+</ol>
+
+<p>The <strong>My Wallet</strong> screen should now show the new ID card.</p>
+
+<h3 id="creating-an-id-card-using-from-the-wallet">Creating an ID card using from the Wallet</h3>
+
+<p>An ID card can be created from the <strong>My Wallet</strong> page, however, a corresponding identity must already have been created in the business network. Creating an ID card from the <strong>My Wallet</strong> page requires that you use the same <em>User ID</em>, <em>User Secret</em> and the correct <em>Business network name</em> credentials as when the identity was created within the business network.</p>
+
+<p>To create an ID card from the <strong>My Wallet</strong> page:</p>
+
+<ol>
+<li><p>After receiving a valid <em>User ID</em> and <em>User Secret</em>, click the <strong>Create ID Card</strong> button in the upper right of the <strong>My Wallet</strong> page.</p></li>
+<li><p>Select a connection profile and click <strong>Next</strong>.</p></li>
+<li><p>Enter the <em>User ID</em> and <em>User Secret</em> that were generated when the identity was created.</p></li>
+<li><p>Enter the correct <em>Business Network Name</em> and click <strong>Create</strong>.</p></li>
+</ol>
+
+<p>The ID card should now be displayed in the <strong>My Wallet</strong> page.</p>
+
+<h3 id="creating-an-id-card-from-component-files">Creating an ID card from component files</h3>
+
+<p>ID cards are composite files containing up to three elements:</p>
 
 <ul>
-<li>You might want to <a href="../integrating/integrating-index.html"><strong>integrate your existing systems</strong></a> with Hyperledger Composer using LoopBack.</li>
-<li>Applications which consume data from your business network can <a href="../applications/subscribing-to-events.html"><strong>subscribe to events</strong></a>.</li>
+<li>A connection profile. (<code>.json</code>)</li>
+<li>A metadata file containing the data for the identity to use to connect to the business network. (<code>metadata.json</code>)</li>
+<li>An optional credentials directory containing a public and private key.</li>
 </ul>
+
+<p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>User Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID card is exported.</p>
+
+<p>The metadata file should take the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PeerAdmin"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid ID card"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"businessNetwork"</span><span class="p">:</span><span class="w"> </span><span class="s2">"basic-sample-network"</span><span class="w">
+    </span><span class="s2">"enrollmentId"</span><span class="err">:</span><span class="w"> </span><span class="s2">"UserID"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserSecret"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"images/conga.png"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>The <em>businessNetworkName</em>, <em>image</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
+
+<p>To create the ID card file, compress the connection profile, metadata file, and optionally a credentials file, then modify the file type to <code>.card</code>.</p>
+
+<p>This ID card can now be imported using the Hyperledger Composer Playground.</p>
+
+<hr>
+
+<h2 id="importing-and-exporting-id-cards">Importing and Exporting ID cards</h2>
+
+<p>Importing and exporting ID cards is the simplest way to grant access to other users of the business network in Playground. Valid ID cards must be created using one of the methods above, but can then be exported and sent to other users.</p>
+
+<h3 id="exporting-id-cards">Exporting ID Cards</h3>
+
+<ol>
+<li><p>To export an ID card create an identity by <a href="#creating-an-id-card-within-a-business-network">using a business network</a> and add the ID card to your wallet.</p></li>
+<li><p>On the <strong>My Wallet</strong> page, click the <strong>Export</strong> icon on the ID card you wish to export. The ID card should download as a <code>.card</code> file.</p></li>
+</ol>
+
+<h3 id="importing-id-cards">Importing ID Cards</h3>
+
+<p>Importing an ID card allows you to connect to a business network without creating a connection profile, identity, and certificates. Members of a business network can create ID cards and export them to give others access to a business network.</p>
+
+<ol>
+<li><p>On the <strong>My Wallet</strong> screen, click <strong>Import ID card</strong> in the upper right.</p></li>
+<li><p>Drag and drop, or browse, to select an ID card (<code>.card</code>) file to import. Click <strong>Import</strong>.</p></li>
+</ol>
+
+<p>The ID card should now be visible in your wallet.</p>
 
             
           </section>
