@@ -14,7 +14,7 @@ The `composer archive create` utility is used to create a business network archi
 
 To create an archive from source flles (ie business network definition project files) present in the current 'working' directory:
 
-```
+bash```
 composer archive create -a <business-network-archive>
 ```
 
@@ -22,7 +22,7 @@ or
 
 to specify paths (to a source business network definition,  and a destination directory for the archive file (.bna file)):
 
-```
+bash```
 composer archive create --sourceType dir --sourceName <dirpath> -a digitalproperty-network.bna
 ```
 
