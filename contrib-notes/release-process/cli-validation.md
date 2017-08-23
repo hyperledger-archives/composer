@@ -59,7 +59,7 @@ Obtain two BNA files from the [Composer Playground on Bluemix](http://composer-p
 
 6) Work with IDs
     - list current IDs ``` composer identity list -i PeerAdmin -n basic-sample-network -p hlfv1 -s secret ```
-    - issue to bob ``` composer identity issue -p hlfv1 -n basic-sample-network -i admin -u newUser1 -x false -s adminpw -a org.acme.sample.SampleParticipant#bob ```
+    - issue to bob ``` composer identity issue -p hlfv1 -n basic-sample-network -i admin -u newUser1 -x false -s adminpw -a "resource:org.acme.sample.SampleParticipant#bob" ```
     - record the output userid and secret for later. 
     - list current IDs again ``` composer identity list -i PeerAdmin -n basic-sample-network -p hlfv1 -s secret ``` (looking for ID status)
     - connect to the business network using the above userId and secret ``` composer network list -n basic-sample-network -p hlfv1 -i newUser1 -s myProvidedSecret ```
