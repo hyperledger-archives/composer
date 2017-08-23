@@ -16,7 +16,6 @@ To create an archive from source flles (ie business network definition project f
 
 ```
 composer archive create -a <business-network-archive>
-
 ```
 
 or
