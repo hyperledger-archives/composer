@@ -162,6 +162,36 @@ describe('ProxyConnectionManager', () => {
 
     });
 
+    describe('#exportIdentity', () => {
+        beforeEach(() => {
+            mockConnection = sinon.createStubInstance(ProxyConnection);
+            mockConnection.connectionID = connectionID;
+            mockConnection.socket = mockSocket;
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+            connectionManager.connected = true;
+        });
+
+        it('should send exportIdentity call to connector server', function() {
+            const expected = {
+                certificate: 'CERTIFICATE',
+                privateKey: 'PRIVATE_KEY'
+            };
+            mockSocket.emit.withArgs('/api/connectionManagerExportIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func).yields(null, expected);
+            sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
+            return connectionManager.exportIdentity(connectionProfile, connectionOptions, 'bob1')
+                .should.become(expected);
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerExportIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func).yields(serializedError);
+            return connectionManager.exportIdentity(connectionProfile, connectionOptions, 'bob1')
+                .should.be.rejectedWith(TypeError, /such type error/);
+        });
+
+    });
+
     describe('#connect', () => {
 
         beforeEach(() => {

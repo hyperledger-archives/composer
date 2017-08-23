@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'version-check-modal',
@@ -11,22 +10,12 @@ import { Router } from '@angular/router';
 export class VersionCheckComponent {
 
     constructor(public activeModal: NgbActiveModal,
-                private localStorageService: LocalStorageService,
-                private router: Router) {
+                private localStorageService: LocalStorageService) {
     }
 
-    public clearLocalStorage(): Promise<boolean> {
+    public clearLocalStorage() {
         if (this.localStorageService.clearAll()) {
-            return this.router.navigateByUrl('/')
-            .then((result) => {
-
-                if (result) {
-                    window.open('/', '_self');
-                }
-
-                return result;
-
-            });
+            return window.location.reload();
         } else {
             throw new Error('Failed to clear local storage');
         }

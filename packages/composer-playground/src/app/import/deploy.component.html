@@ -5,9 +5,12 @@
         <div class="information">
             <div>
                 <label for="import-businessNetworkName">Give your new Business Network a name:</label>
-                <input type="text" id="import-businessNetworkName" [ngModel]="networkName"
-                       (ngModelChange)="setNetworkName($event)" pattern="[a-z0-9-]+"
-                       placeholder="eg commodity-trading">
+                <div>
+                    <input [ngClass]="{'error-underline': !networkNameValid}" type="text" id="import-businessNetworkName" [ngModel]="networkName"
+                        (ngModelChange)="setNetworkName($event)"
+                        placeholder="eg commodity-trading">
+                    <div *ngIf="!networkNameValid" class="error-message">Names must be lower case alpha-numeric with no whitespace</div>
+                </div>
             </div>
             <div>
                 <label for="import-businessNetworkDescription">Describe what your Business Network will be used
@@ -97,7 +100,8 @@
         </div>
         <div>
             <section>
-                <h3>{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <h3 *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <h3 *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName : 'Business Network Name'}}</h3>
                 <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when
                     entered in the basic information section.'}}</p>
             </section>

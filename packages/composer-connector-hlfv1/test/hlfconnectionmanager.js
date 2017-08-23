@@ -15,6 +15,7 @@
 'use strict';
 
 const api = require('fabric-client/lib/api');
+const idModule = require('fabric-client/lib/msp/identity');
 const Channel = require('fabric-client/lib/Channel');
 const Client = require('fabric-client');
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
@@ -26,6 +27,7 @@ const KeyValueStore = api.KeyValueStore;
 const CryptoSuite = api.CryptoSuite;
 const Orderer = require('fabric-client/lib/Orderer');
 const Peer = require('fabric-client/lib/Peer');
+const User = require('fabric-client/lib/User');
 const Wallet = require('composer-common').Wallet;
 
 const chai = require('chai');
@@ -1156,6 +1158,60 @@ describe('HLFConnectionManager', () => {
             mockCAClient.enroll.rejects('Error','wow such fail');
             return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
                 .should.be.rejectedWith(/wow such fail/);
+        });
+    });
+
+    describe('#exportIdentity', function() {
+        const userId = 'Eric';
+        const certificate = 'CERTIFICATE';
+        const signerKey = 'SIGNER_KEY';
+        let profile;
+
+        beforeEach(() => {
+            const mockClient = sinon.createStubInstance(Client);
+            sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
+
+            const mockUser = sinon.createStubInstance(User);
+            const mockIdentity = {
+                _certificate: certificate
+            };
+            const mockSigningIdentity = sinon.createStubInstance(idModule.SigningIdentity);
+            const mockSigner = sinon.createStubInstance(idModule.Signer);
+            const mockSignerKey = sinon.createStubInstance(api.Key);
+
+            mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
+            mockUser.getIdentity.returns(mockIdentity);
+            mockUser.getSigningIdentity.returns(mockSigningIdentity);
+            mockSigningIdentity._signer = mockSigner;
+            mockSigner._key = mockSignerKey;
+            mockSignerKey.toBytes.returns(signerKey);
+
+            profile = {
+                orderers: [
+                    'grpc://localhost:7050'
+                ],
+                peers: [
+                    {
+                        requestURL: 'grpc://localhost:7051',
+                        eventURL: 'grpc://localhost:7053'
+                    }
+                ],
+                ca: 'http://localhost:7054',
+                keyValStore: '/tmp/hlfabric1',
+                channel: 'testchainid',
+                timeout: 123,
+                mspID: 'MSP1Org'
+            };
+        });
+
+        it('should return identity credentials from Fabric Client', function() {
+            return connectionManager.exportIdentity('connprof1', profile, userId)
+                .then((credentials) => {
+                    credentials.should.deep.equal({
+                        certificate: certificate,
+                        privateKey: signerKey
+                    });
+                });
         });
     });
 

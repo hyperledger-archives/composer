@@ -316,19 +316,13 @@ describe('EditorComponent', () => {
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
             let mockMetaData = {
-                getName: sinon.stub().returns('my name'),
                 getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
             };
 
             mockClientService.getMetaData = sinon.stub().returns(mockMetaData);
 
             component.updatePackageInfo();
-
-            component['deployedPackageName'].should.equal('my name');
             component['deployedPackageVersion'].should.equal('my version');
-            component['deployedPackageDescription'].should.equal('my description');
-            component['inputPackageName'].should.equal('my name');
             component['inputPackageVersion'].should.equal('my version');
         });
     });
@@ -1467,6 +1461,7 @@ describe('EditorComponent', () => {
         });
 
         it('should toggle editing', () => {
+            component['currentFile'] = {model : true};
             component['editActive'] = false;
 
             component.toggleEditActive();
@@ -1477,12 +1472,7 @@ describe('EditorComponent', () => {
         it('should make edit package fields visible when true for README', () => {
             component['editActive'] = false;
             component['editingPackage'] = false;
-            component['deployedPackageDescription'] = 'description';
             component['deployedPackageVersion'] = '1.0.0';
-
-            mockClientService.getMetaData.returns({
-                getPackageJson: sinon.stub().returns('description')
-            });
 
             // Specify README file
             let file = {readme: true, id: 'readme', displayID: 'README.md'};
@@ -1493,87 +1483,17 @@ describe('EditorComponent', () => {
             // Expect to see "description" visible within class="business-network-details"
             // Expect to have "edit" option available within class="business-network-details"
             let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-            element.textContent.should.contain('description');
             element.innerHTML.should.contain('id="editFileButton"');
 
             // Flip editActive boolean
-            component['editActive'] = true;
+            component.toggleEditActive();
             fixture.detectChanges();
 
-            // Expect two visible edit fields:
-            // 1) Version (input text)
-            // 2) Full package (button)
+            // Should show the package json
             element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
             element.innerHTML.should.not.contain('id="editFileButton"');
-            element.innerHTML.should.contain('id="editPackageButton"');
-            element.textContent.should.contain('Version');
-            element.textContent.should.contain('View/edit full metadata in package.json');
-
-        });
-
-        it('should make edit fields interactable when true for README', () => {
-            component['editActive'] = true;
-
-            // Specify README file
-            let file = {readme: true, id: 'readme', displayID: 'README.md'};
-            component['currentFile'] = file;
-
-            fixture.detectChanges();
-
-            // Expect edit fields:
-            // 1) Name & Version (input text) should not be editable (focused)
-            // 2) Full package (button) to be enabled
-
-            let editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
-            (editItem as HTMLInputElement).isContentEditable.should.be.false;
-
-            editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement;
-            (editItem as HTMLButtonElement).disabled.should.be.false;
-
-        });
-
-        it('should only show package information if editingPackage==true', () => {
-            component['editingPackage'] = true;
-            component['deployedPackageName'] = 'TestPackageName';
-
-            fixture.detectChanges();
-
-            // Grab element
-            let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-
-            // Should contain package name edit only
             element.textContent.should.contain('Editing package.json');
 
-            // Should not contain any buttons/text entry
-            should.not.exist(fixture.debugElement.query(By.css('#editName')));
-            should.not.exist(fixture.debugElement.query(By.css('#editVersion')));
-            should.not.exist(fixture.debugElement.query(By.css('#editPackageButton')));
-        });
-
-    });
-
-    describe('editPackageVersion', () => {
-        beforeEach(() => {
-            mockClientService.setBusinessNetworkVersion.reset();
-        });
-
-        it('should edit the package version', () => {
-            component['inputPackageVersion'] = 'my version';
-
-            component.editPackageVersion();
-
-            mockClientService.setBusinessNetworkVersion.should.have.been.calledWith('my version');
-            component['editActive'].should.equal(false);
-            component['deployedPackageVersion'].should.equal('my version');
-        });
-
-        it('should not edit the package version if not changed', () => {
-            component['deployedPackageVersion'] = 'my version';
-            component['inputPackageVersion'] = 'my version';
-
-            component.editPackageVersion();
-
-            mockClientService.setBusinessNetworkVersion.should.not.have.been.called;
         });
     });
 

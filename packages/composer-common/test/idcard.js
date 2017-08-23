@@ -85,8 +85,8 @@ describe('IdCard', function() {
 
         emptyCredentials = { };
         validCredentials = {
-            public: 'public-key-data',
-            private: 'private-key-data'
+            certificate: 'public-key-data',
+            privateKey: 'private-key-data'
         };
 
         minimalCard = new IdCard(minimalMetadata, minimalConnectionProfile);
@@ -180,8 +180,8 @@ describe('IdCard', function() {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
                 const credentials = card.getCredentials();
-                credentials.public.should.include('-----BEGIN PUBLIC KEY-----');
-                credentials.private.should.include('-----BEGIN PRIVATE KEY-----');
+                credentials.certificate.should.include('-----BEGIN CERTIFICATE-----');
+                credentials.privateKey.should.include('-----BEGIN PRIVATE KEY-----');
             });
         });
 
