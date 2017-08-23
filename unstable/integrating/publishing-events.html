@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Runtime Start CLI | Hyperledger Composer</title>
+    <title>Publishing events from the REST server | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Runtime Start CLI</p>
+          <p>Publishing events from the REST server</p>
           </div>
 
           <nav class="context-nav">
@@ -195,27 +195,39 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-runtime-install">Hyperledger Composer Runtime Install</h1>
+              <h1 id="publishing-events-from-the-rest-server">Publishing events from the REST server</h1>
 
 <hr>
 
-<p>The <code>composer runtime install</code> command is used to install the Hyperledger Composer runtime on the Hyperledger Fabric peers of the blockchain network you are connecting to. This command must be run before the <code>composer network start</code> command.</p>
+<p>The REST server can be configured to subscribe to business events that are emitted from a deployed business network, and publish those business events out to client applications. Currently, the REST server supports publishing business events out to client applications over WebSockets. Client applications can use a WebSocket client to subscribe to the business events that are published by the REST server. There are WebSocket clients available for all major programming languages and application types - for example, client side web user interfaces, backend server processes, mobile applications, and integration tools.</p>
 
-<p><em>Please Note</em>: The <code>--businessNetworkName, -n</code> option <strong>must</strong> contain the same name as the business network name you intend to run on the Hyperledger Fabric peers. Only business networks with names matching the <code>--businessNetworkName, -n</code> option given in this command will successfully run.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n &lt;businessNetworkName&gt; -p &lt;connectionProfileName&gt; -i &lt;installId&gt; -s &lt;installSecret&gt;
+<h2 id="enabling-websockets">Enabling WebSockets</h2>
+
+<p>You can enable WebSockets using the <code>-w</code> argument to the command line:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -w
 </code></pre></div>
-<h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install [options]
+<p>Alternatively, you can enable WebSockets by using the <code>COMPOSER_WEBSOCKETS</code> environment variable:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_WEBSOCKETS=true
+composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+</code></pre></div>
+<p>When you have successfully enabled WebSockets, you will be able to connect a WebSocket client to the base URL displayed in the output of the REST server:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
+</code></pre></div>
+<p>In this example, the base URL to use is <code>http://localhost:3000</code>. You must convert this into a WebSocket URL by changing the protocol from <code>http</code> to <code>ws</code>. In this example, the WebSocket URL to use is <code>ws://localhost:3000</code>.</p>
 
-Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --option, -o                 Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O            A file containing options that are specific to connection  [string]
-  --installId, -i              The id of the user permitted to install the runtime  [string] [required]
-  --installSecret, -s          The secret of the user permitted to install the runtime, if required  [string]
+<h2 id="testing-that-websockets-has-been-enabled">Testing that WebSockets has been enabled</h2>
+
+<p>You can test that WebSockets has been enabled by using a WebSocket client to subscribe to events. The open source command line application <code>wscat</code> can be used for this purpose.</p>
+
+<p>To install <code>wscat</code>, you can use <code>npm</code>. You may need to run this command with sudo, or as root, if you do not have the correct permissions to globally install <code>npm</code> modules:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g wscat
+</code></pre></div>
+<p>You can then use <code>wscat</code> to connect to and subscribe to business events published by the REST server. Any business events received will be printed to the console:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ wscat -c ws://localhost:3000
+connected (press CTRL+C to quit)
+&lt; {"$class":"org.acme.sample.SampleEvent","asset":"resource:org.acme.sample.SampleAsset#assetId:1","oldValue":"","newValue":"hello world","eventId":"a80d220b-09db-4812-b04b-d5d03b663671#0","timestamp":"2017-08-23T12:47:17.685Z"}
+&gt;
 </code></pre></div>
             
           </section>
