@@ -57,8 +57,8 @@ deploy-business-network {
                     }
                 }
 
-                input.ng-invalid {
-                    border-bottom: 2px solid $error-colour-1;
+                input {
+                    margin-bottom: 0;
                 }
             }
 
