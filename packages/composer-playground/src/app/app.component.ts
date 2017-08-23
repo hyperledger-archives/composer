@@ -116,7 +116,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     let card: IdCard = this.identityCardService.getCurrentIdentityCard();
                     let connectionProfile = card.getConnectionProfile();
                     let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
-                    let busNetName = this.clientService.getBusinessNetworkName();
+                    let busNetName = card.getBusinessNetworkName() === null ? 'un-named' : card.getBusinessNetworkName();
                     this.composerBanner = [profileName, busNetName];
                 });
         }
