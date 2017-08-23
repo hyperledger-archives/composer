@@ -69,7 +69,7 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
   ```bash
-  composer identity issue -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+  composer identity issue -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u maeid1 -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
   ```
 
   The enrollment secret will be printed to the console.
