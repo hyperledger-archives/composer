@@ -62,7 +62,7 @@ describe('composer identity bind CLI unit tests', () => {
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .then((res) => {
@@ -81,7 +81,7 @@ describe('composer identity bind CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .then((res) => {
@@ -101,7 +101,7 @@ describe('composer identity bind CLI unit tests', () => {
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .should.be.rejectedWith(/such error/);
@@ -115,7 +115,7 @@ describe('composer identity bind CLI unit tests', () => {
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .should.be.rejectedWith(/such error/);

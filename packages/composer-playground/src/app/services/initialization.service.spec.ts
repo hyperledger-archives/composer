@@ -16,7 +16,6 @@ import { InitializationService } from './initialization.service';
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
 import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
@@ -73,7 +72,6 @@ describe('InitializationService', () => {
     let mockClientService;
     let mockAlertService;
     let mockConnectionProfileService;
-    let mockWalletService;
     let mockIdentityService;
     let mockIdentityCardService;
 
@@ -82,7 +80,6 @@ describe('InitializationService', () => {
         mockClientService = sinon.createStubInstance(ClientService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockWalletService = sinon.createStubInstance(WalletService);
         mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
@@ -98,7 +95,6 @@ describe('InitializationService', () => {
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
-                {provide: WalletService, useValue: mockWalletService},
                 {provide: XHRBackend, useClass: MockBackend}
             ]
         });

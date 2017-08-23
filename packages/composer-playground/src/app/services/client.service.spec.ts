@@ -13,10 +13,11 @@ let expect = chai.expect;
 
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, ConnectionProfileStore } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityCardService } from './identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 describe('ClientService', () => {
 
@@ -32,6 +33,8 @@ describe('ClientService', () => {
     let aclFileMock;
     let queryFileMock;
     let mockLocalStorage;
+    let connectionProfileStoreMock;
+    let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -50,12 +53,17 @@ describe('ClientService', () => {
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
 
+        connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
+        connectionProfileStoreServiceMock = sinon.createStubInstance(ConnectionProfileStoreService);
+        connectionProfileStoreServiceMock.getConnectionProfileStore.returns(connectionProfileStoreMock);
+
         TestBed.configureTestingModule({
             providers: [ClientService,
                 {provide: AdminService, useValue: adminMock},
                 {provide: AlertService, useValue: alertMock},
                 {provide: IdentityCardService, useValue: identityCardServiceMock},
-                {provide: LocalStorageService, useValue: mockLocalStorage}]
+                {provide: LocalStorageService, useValue: mockLocalStorage},
+                {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
     });
 
@@ -64,18 +72,18 @@ describe('ClientService', () => {
     });
 
     describe('getBusinessNetworkConnection', () => {
-        it('should get business network connection', inject([ClientService], (service: ClientService) => {
+        it('should get business network connection if set', inject([ClientService], (service: ClientService) => {
             service['businessNetworkConnection'] = businessNetworkConMock;
             let result = service.getBusinessNetworkConnection();
 
             result.should.deep.equal(businessNetworkConMock);
         }));
 
-        it('should create a new business network connection if none exist', inject([ClientService], (service: ClientService) => {
-            let mockCreate = sinon.stub(service, 'createBusinessNetworkConnection');
+        it('should create a new business network connection if not set', inject([ClientService], (service: ClientService) => {
             let result = service.getBusinessNetworkConnection();
 
-            mockCreate.should.have.been.called;
+            result.should.be.an.instanceOf(BusinessNetworkConnection);
+            (<any> result).connectionProfileStore.should.equal(connectionProfileStoreMock);
         }));
     });
 

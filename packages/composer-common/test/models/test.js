@@ -237,7 +237,9 @@ describe('Test Model', function(){
 
             // check the clear
             modelManager.clearModelFiles();
-            modelManager.getModelFiles().length.should.equal(1);
+            modelManager.getModelFiles().filter((modelFile) => {
+                return !modelFile.isSystemModelFile();
+            }).length.should.equal(0);
             // the system model will remain hence 1.
 
             // re-add

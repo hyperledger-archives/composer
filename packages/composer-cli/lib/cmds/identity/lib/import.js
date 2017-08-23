@@ -33,21 +33,21 @@ class Import {
     */
     static handler(argv) {
         let userId;
-        let publicKeyFile;
+        let certificateFile;
         let privateKeyFile;
         let connectionProfileName;
 
         userId = argv.userId;
-        publicKeyFile = argv.publicKeyFile;
+        certificateFile = argv.certificateFile;
         privateKeyFile = argv.privateKeyFile;
         connectionProfileName = argv.connectionProfileName;
         let adminConnection = cmdUtil.createAdminConnection();
         let signerCert;
         let key;
         try {
-            signerCert = fs.readFileSync(publicKeyFile).toString();
+            signerCert = fs.readFileSync(certificateFile).toString();
         } catch(error) {
-            return Promise.reject(new Error('Unable to read public key file ' + publicKeyFile + '. ' + error.message));
+            return Promise.reject(new Error('Unable to read certificate file ' + certificateFile + '. ' + error.message));
         }
         try {
             key = fs.readFileSync(privateKeyFile).toString();

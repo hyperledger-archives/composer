@@ -22,7 +22,7 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
 
-import { FileWallet, IdCard } from 'composer-common';
+import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
 
@@ -492,14 +492,12 @@ describe('AppComponent', () => {
     });
 
     describe('queryParamsUpdated', () => {
-        let mockWallet;
         let mockOnBusy;
         let mockOnError;
         let mockOnTransactionEvent;
         let errorStatusSpy;
 
         beforeEach(async(() => {
-            mockWallet = sinon.createStubInstance(FileWallet);
             routerStub.navigate.returns(Promise.resolve(false));
 
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
