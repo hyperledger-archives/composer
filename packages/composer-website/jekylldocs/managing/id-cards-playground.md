@@ -75,7 +75,7 @@ The metadata file should take the following format:
 {
     "name": "PeerAdmin",
     "description": "A valid ID card",
-    "businessNetworkName": "basic-sample-network"
+    "businessNetwork": "basic-sample-network"
     "enrollmentId": "UserID",
     "enrollmentSecret": "UserSecret",
     "image": "images/conga.png",
