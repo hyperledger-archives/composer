@@ -19,6 +19,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
+const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -97,6 +98,13 @@ describe('AdminConnection', () => {
     });
 
     describe('#constructor', () => {
+
+        it('should create a new AdminConnection instance with a specified connection profile store', () => {
+            const mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
+            let adminConnection = new AdminConnection({ connectionProfileStore: mockConnectionProfileStore });
+            adminConnection.should.not.be.null;
+            adminConnection.connectionProfileStore.should.equal(mockConnectionProfileStore);
+        });
 
         it('should create a new AdminConnection instance with a file system connection profile store', () => {
             let adminConnection = new AdminConnection();

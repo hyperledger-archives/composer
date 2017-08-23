@@ -302,11 +302,11 @@ describe('Identity system tests', () => {
             })
             .then((credentials) => {
                 // Remove any carriage returns that may have been added by fabric
-                credentials.publicKey = credentials.publicKey.replace(/\r/g, '');
+                credentials.certificate = credentials.certificate.replace(/\r/g, '');
                 credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
 
                 credentials.should.deep.equal({
-                    publicKey: certificate,
+                    certificate: certificate,
                     privateKey: privateKey
                 });
             });
