@@ -17,9 +17,6 @@
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
-const chalk = require('chalk');
-const clear = require('clear');
-const figlet = require('figlet');
 const path = require('path');
 const server = require('./server/server');
 const Util = require('./lib/util');
@@ -64,22 +61,15 @@ const interactive = process.argv.slice(2).length === 0 && // No command line arg
                     });
 let promise;
 if (interactive) {
-    // Gather some args interactively
-    clear();
-    console.log(
-        chalk.yellow(
-            figlet.textSync('Hyperledger-Composer', { horizontalLayout: 'full' })
-        )
-    );
     // Get details of the server that we want to run
     promise = Util.getConnectionSettings()
         .then((answers) => {
             // augment the app with the extra config that we've just collected
             const composer = {
-                connectionProfileName: answers.profilename,
-                businessNetworkIdentifier: answers.businessNetworkId,
-                participantId: answers.userid,
-                participantPwd: answers.secret,
+                connectionProfileName: answers.connectionProfileName,
+                businessNetworkIdentifier: answers.businessNetworkName,
+                participantId: answers.enrollementId,
+                participantPwd: answers.enrollementSecret,
                 namespaces: answers.namespaces,
                 security: answers.security,
                 websockets: answers.websockets,
