@@ -38,12 +38,12 @@ require('composer-common').ConnectionProfileManager.registerConnectionManagerLoa
 * @module composer-client
 */
 
-module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
 module.exports.AssetRegistry = require('./lib/assetregistry');
+module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
+module.exports.Historian = require('./lib/historian');
 module.exports.IdentityRegistry = require('./lib/identityregistry');
 module.exports.ParticipantRegisty = require('./lib/participantregistry');
 module.exports.TransactionRegistry = require('./lib/transactionregistry');
-module.exports.Historian = require('./lib/historian');
 
 /**
  * Expose key composer-common classes to simplify client application dependencies

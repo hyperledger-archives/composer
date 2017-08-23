@@ -24,7 +24,7 @@ export class RegistryComponent {
     private resources = [];
 
     private expandedResource = null;
-    private registryType: string = null;
+    private registryId: string = null;
 
     private overFlowedResources = {};
 
@@ -33,7 +33,7 @@ export class RegistryComponent {
         this._registry = registry;
         if (this._registry) {
             this.loadResources();
-            this.registryType = this._registry.registryType;
+            this.registryId = this._registry.id;
         }
     }
 
@@ -146,6 +146,6 @@ export class RegistryComponent {
     }
 
     private isHistorian(): boolean {
-        return this.registryType === 'Historian';
+        return this.registryId === 'org.hyperledger.composer.system.HistorianRecord';
     }
 }

@@ -16,7 +16,7 @@
 
 const Resource = require('composer-common').Resource;
 const Util = require('composer-common').Util;
-// const ModelUtil = require('composer-common').ModelUtil;
+
 /**
  * Class representing an Abstract Registry.
  * <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="height:100%;"/></a></p>

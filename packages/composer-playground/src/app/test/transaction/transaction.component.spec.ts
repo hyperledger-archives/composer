@@ -184,7 +184,7 @@ describe('TransactionComponent', () => {
             mockModelFile.getNamespace.returns('com.test');
         });
 
-        it('should generate valid transaction definition', () => {
+        it('should generate valid transaction definition with undefined', () => {
             mockSerializer.fromJSON.returns(mockTransaction);
             mockTransaction.getIdentifierFieldName.returns('transactionId');
             mockTransaction.getModelFile.returns(mockModelFile);
@@ -194,8 +194,58 @@ describe('TransactionComponent', () => {
             // should start clean
             should.not.exist(component['definitionError']);
 
-            // run method
+            // run method (no params)
             component['generateTransactionDeclaration']();
+
+            // should not result in definitionError
+            should.not.exist(component['definitionError']);
+
+            // resourceDefinition should be set as per serializer.toJSON output
+            component['resourceDefinition'].should.equal('{\n  "$class": "mock.class",\n  "timestamp": "now",\n  "transactionId": "A"\n}');
+
+            // We use the following methods:
+            mockFactory.newTransaction.should.be.called;
+            mockSerializer.toJSON.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+        });
+
+        it('should generate valid transaction definition with false', () => {
+            mockSerializer.fromJSON.returns(mockTransaction);
+            mockTransaction.getIdentifierFieldName.returns('transactionId');
+            mockTransaction.getModelFile.returns(mockModelFile);
+            mockTransaction.validate = sandbox.stub();
+            component['selectedTransaction'] = mockTransaction;
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method (false)
+            component['generateTransactionDeclaration'](false);
+
+            // should not result in definitionError
+            should.not.exist(component['definitionError']);
+
+            // resourceDefinition should be set as per serializer.toJSON output
+            component['resourceDefinition'].should.equal('{\n  "$class": "mock.class",\n  "timestamp": "now",\n  "transactionId": "A"\n}');
+
+            // We use the following methods:
+            mockFactory.newTransaction.should.be.called;
+            mockSerializer.toJSON.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+        });
+
+        it('should generate valid transaction definition with true', () => {
+            mockSerializer.fromJSON.returns(mockTransaction);
+            mockTransaction.getIdentifierFieldName.returns('transactionId');
+            mockTransaction.getModelFile.returns(mockModelFile);
+            mockTransaction.validate = sandbox.stub();
+            component['selectedTransaction'] = mockTransaction;
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method (true)
+            component['generateTransactionDeclaration'](true);
 
             // should not result in definitionError
             should.not.exist(component['definitionError']);
@@ -386,6 +436,24 @@ describe('TransactionComponent', () => {
             component['submitInProgress'].should.be.false;
             should.not.exist(component['definitionError']);
             mockNgbActiveModal.close.should.be.called;
+        }));
+
+        it('should deal with error', fakeAsync(() => {
+            mockClientService.getBusinessNetworkConnection.throws(new Error('test error'));
+            component['resourceDefinition'] = JSON.stringify({
+                $class: 'mock.class',
+                timestamp: 'now',
+                transactionId: 'A'
+            });
+            component['selectedTransaction'] = mockTransaction;
+
+            component['submitTransaction']();
+
+            component['submitInProgress'].should.be.true;
+            tick();
+            tick();
+            component['submitInProgress'].should.be.false;
+            should.exist(component['definitionError']);
         }));
 
     });

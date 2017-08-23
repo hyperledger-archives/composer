@@ -18,8 +18,12 @@ $space-xsmall: 2px;
 $space-small: 4px;
 $space-smedium: 8px;
 $space-medium: 16px;
+$space-mlarge: 24px;
 $space-large: 32px;
 $space-xlarge: 64px;
+
+// Radius
+$radius-medium: 4px;
 
 // Animation
 @mixin transition($properties...) {

@@ -30,7 +30,7 @@
         </div>
         <div>
             <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
-                Deploy
+                Update
             </button>
         </div>
     </div>
@@ -64,15 +64,16 @@
                     <h1 *ngIf="currentFile && fileType(currentFile)!='Readme'" class="margin-right">{{
                         fileType(currentFile) }} File</h1>
                     <h1 id="editor_deployedPackageName" *ngIf="currentFile && fileType(currentFile)=='Readme'"
-                        class="margin-right">{{ deployedPackageName }}</h1>
+                        class="business-network-description"><p>{{ deployedPackageDescription }}</p>
+                        <div class="tooltiptext">{{ deployedPackageDescription }}</div>
+                    </h1>
                 </div>
                 <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center"
                      class="business-network-version small">{{currentFile.displayID}}
                 </div>
                 <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center"
-                     class="business-network-version small">{{deployedPackageVersion}}
+                     class="business-network-version small">v{{deployedPackageVersion}}
                 </div>
-
                 <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
                     <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
                         <svg class="ibm-icon vertical-top" aria-hidden="true">
@@ -106,12 +107,8 @@
                     </button>
                 </div>
             </div>
-
             <div *ngIf="editActive && fileType(currentFile)=='Readme'" class="business-network-details">
-                <label class="edit-label margin-right" for="editName">Name</label>
-                <input class="margin-right" id="editName" type="text" (blur)="editPackageName()"
-                       [(ngModel)]="inputPackageName">
-                <label class="edit-label margin-right" for="editVersion">Version</label>
+                <label class="edit-label margin-right" for="editVersion">Version: </label>
                 <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
                        [(ngModel)]="inputPackageVersion">
                 <div class="edit-package-text margin-right">
@@ -149,7 +146,5 @@
             <editor-file [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file>
         </div>
     </div>
-
     <app-footer></app-footer>
-
 </section>

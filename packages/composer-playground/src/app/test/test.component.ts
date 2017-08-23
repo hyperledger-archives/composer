@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
 import { TransactionDeclaration } from 'composer-common';
@@ -27,14 +26,12 @@ export class TestComponent implements OnInit, OnDestroy {
     private eventsTriggered = [];
 
     constructor(private clientService: ClientService,
-                private initializationService: InitializationService,
                 private alertService: AlertService,
                 private modalService: NgbModal) {
     }
 
     ngOnInit(): Promise<any> {
-        this.initializeEventListener();
-        return this.initializationService.initialize()
+        return this.clientService.ensureConnected()
             .then(() => {
 
                 let introspector = this.clientService.getBusinessNetwork().getIntrospector();

@@ -207,7 +207,9 @@ describe('ModelManager', () => {
             }
 
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.getModelFiles().length.should.equal(2);
+            modelManager.getModelFiles().filter((modelFile) => {
+                return !modelFile.isSystemModelFile();
+            }).length.should.equal(1);
         });
 
         it('should restore existing model files on validation error', () => {
@@ -384,7 +386,9 @@ describe('ModelManager', () => {
             let mf2 = sinon.createStubInstance(ModelFile);
             mf2.getNamespace.returns('org.such');
             modelManager.addModelFile(mf2);
-            modelManager.getNamespaces().should.have.members(['org.hyperledger.composer.system', 'org.wow', 'org.such']);
+            let ns = modelManager.getNamespaces();
+            ns.should.include('org.wow');
+            ns.should.include('org.such');
         });
 
     });
