@@ -24,7 +24,7 @@ module.exports.builder = {
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
-    publicKeyFile: { alias: 'c', required: true, describe: 'File containing the public key', type: 'string' }
+    certificateFile: { alias: 'c', required: true, describe: 'File containing the certificate', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

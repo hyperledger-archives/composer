@@ -80,13 +80,11 @@ class MockConnectionProfileComponent {
 }
 
 @Component({
-    selector: 'import-business-network',
+    selector: 'deploy-business-network',
     template: ''
 })
-class MockImportComponent {
+class MockDeployComponent {
 
-    @Input()
-    public deployNetwork;
     @Output()
     public finishedSampleImport: EventEmitter<any> = new EventEmitter<any>();
 }
@@ -163,7 +161,7 @@ describe(`LoginComponent`, () => {
                 MockCreateIdentityCardComponent,
                 MockIdentityCardComponent,
                 MockFooterComponent,
-                MockImportComponent,
+                MockDeployComponent,
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
@@ -216,6 +214,8 @@ describe(`LoginComponent`, () => {
         let mockIdCard1;
         let mockIdCard2;
         let mockIdCard3;
+        let mockIdCard4;
+        let mockIdCard5;
         let mockIdCards: Map<string, IdCard>;
 
         beforeEach(() => {
@@ -228,32 +228,46 @@ describe(`LoginComponent`, () => {
             mockIdCard3 = sinon.createStubInstance(IdCard);
             mockIdCard3.getName.returns('card3');
             mockIdCard3.getConnectionProfile.returns({name: 'myProfile1'});
+            mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getName.returns('web');
+            mockIdCard4.getConnectionProfile.returns({name: '$default'});
+            mockIdCard5 = sinon.createStubInstance(IdCard);
+            mockIdCard5.getName.returns('card4');
+            mockIdCard5.getConnectionProfile.returns({name: 'bobProfile'});
 
             mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef1', mockIdCard1);
             mockIdCards.set('myCardRef2', mockIdCard2);
             mockIdCards.set('myCardRef3', mockIdCard3);
+            mockIdCards.set('myCardRef4', mockIdCard4);
+            mockIdCards.set('myCardRef5', mockIdCard5);
 
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'myProfile1'}).returns('xxx-myProfile1');
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'myProfile2'}).returns('xxx-myProfile2');
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'bobProfile'}).returns('xxx-bobProfile');
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: '$default'}).returns('web-$default');
         });
 
-        it('should load identity cards', fakeAsync(() => {
+        it('should load identity cards and sort the profiles', fakeAsync(() => {
             mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
 
             component.loadIdentityCards();
 
             tick();
 
-            component['connectionProfileRefs'].should.deep.equal(['xxx-myProfile1', 'xxx-myProfile2']);
-            component['connectionProfileNames'].size.should.equal(2);
+            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2']);
+            component['connectionProfileNames'].size.should.equal(4);
             component['connectionProfileNames'].get('xxx-myProfile1').should.equal('myProfile1');
             component['connectionProfileNames'].get('xxx-myProfile2').should.equal('myProfile2');
-            component['idCardRefs'].size.should.equal(2);
+            component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
+            component['connectionProfileNames'].get('web-$default').should.equal('$default');
+            component['idCardRefs'].size.should.equal(4);
             component['idCardRefs'].get('xxx-myProfile1').length.should.equal(2);
             component['idCardRefs'].get('xxx-myProfile1').should.deep.equal(['myCardRef1', 'myCardRef3']);
             component['idCardRefs'].get('xxx-myProfile2').length.should.equal(1);
             component['idCardRefs'].get('xxx-myProfile2').should.deep.equal(['myCardRef2']);
+            component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef5']);
+            component['idCardRefs'].get('web-$default').should.deep.equal(['myCardRef4']);
         }));
 
         it('should handle error', fakeAsync(() => {

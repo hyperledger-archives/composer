@@ -101,7 +101,7 @@ class IdCard {
      * Credentials associated with this card, and which are used to connect to the associated business network.
      * <p>
      * For PKI-based authentication, the credentials are expected to be of the form:
-     * <em>{ public: String, private: String }</em>.
+     * <em>{ certificate: String, privateKey: String }</em>.
      * @return {Object} credentials.
      */
     getCredentials() {
@@ -112,7 +112,7 @@ class IdCard {
      * Credentials to associate with this card.
      * <p>
      * For PKI-based authentication, the credentials are expected to be of the form:
-     * <em>{ public: String, private: String }</em>.
+     * <em>{ certificate: String, privateKey: String }</em>.
      * @param {Object} credentials credentials.
      */
     setCredentials(credentials) {

@@ -1,12 +1,16 @@
 <div class="choose-network">
-    <h2>{{deployNetwork ? 'Deploy New Business Network' : 'Import/Replace Network'}}</h2>
-    <section *ngIf="deployNetwork">
+    <h2>Deploy New Business Network</h2>
+    <section>
         <h3 class="title">1. Basic Information</h3>
         <div class="information">
             <div>
                 <label for="import-businessNetworkName">Give your new Business Network a name:</label>
-                <input type="text" id="import-businessNetworkName" [ngModel]="networkName" (ngModelChange)="setNetworkName($event)" pattern="[a-z0-9-]+"
-                       placeholder="eg commodity-trading">
+                <div>
+                    <input [ngClass]="{'error-underline': !networkNameValid}" type="text" id="import-businessNetworkName" [ngModel]="networkName"
+                        (ngModelChange)="setNetworkName($event)"
+                        placeholder="eg commodity-trading">
+                    <div *ngIf="!networkNameValid" class="error-message">Names must be lower case alpha-numeric with no whitespace</div>
+                </div>
             </div>
             <div>
                 <label for="import-businessNetworkDescription">Describe what your Business Network will be used
@@ -20,9 +24,9 @@
              (fileDragDropFileRejected)="fileRejected($event)"
              (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
              [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
-        <h3 class="title" *ngIf="deployNetwork">2. Model Network Starter Template</h3>
+        <h3 class="title">2. Model Network Starter Template</h3>
         <div>
-            <h3 class="sub-title">Choose a Business Network Definition to {{deployNetwork ? 'start with:' : 'replace your current one:'}}</h3>
+            <h3 class="sub-title">Choose a Business Network Definition to start with:</h3>
             <p>Choose a sample to play with, start a new project, or import your previous work</p>
             <div class="github-spinner" *ngIf="npmInProgress">
                 <div class="ibm-spinner-indeterminate medium loop">
@@ -35,31 +39,30 @@
             </div>
             <div *ngIf="!npmInProgress" class="sample-network-list-container">
                 <div class="sample-network-list"
-                     [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}"
-                     id="base-samples">
+                     [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}" id="base-samples">
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
                          (click)="selectNetwork(sampleNetworks[1])">
                         <img src="{{sampleNetworks[1].networkImage}}">
                         <div class="sample-network-name">{{sampleNetworks[1].name}}</div>
                     </div>
-                    <div class="sample-network-list-item" (click)="selectNetwork(sampleNetworks[0])">
+                    <div class="sample-network-list-item" [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}" (click)="selectNetwork(sampleNetworks[0])">
                         <svg>
                             <use xlink:href="#icon-default-network"></use>
                         </svg>
                         <div class="sample-network-name">{{sampleNetworks[0].name}}</div>
                     </div>
-                    <div *ngIf="sampleDropped" class="sample-network-list-item">
+                    <div *ngIf="sampleDropped" class="sample-network-list-item"  [ngClass]="{'selected-network' : uploadedNetwork.name === chosenNetwork.name}" (click)="selectNetwork(uploadedNetwork)">
                         <button class="icon close-dropped" (click)="closeSample()">
                             <svg class="ibm-icon">
                                 <use xlink:href="#icon-close_24"></use>
                             </svg>
                         </button>
-                        <img *ngIf="chosenNetwork && chosenNetwork.networkImage" src="{{chosenNetwork.networkImage}}">
-                        <svg *ngIf="!chosenNetwork || !chosenNetwork.networkImage">
+                        <img *ngIf="uploadedNetwork && uploadedNetwork.networkImage" src="{{uploadedNetwork.networkImage}}">
+                        <svg *ngIf="!uploadedNetwork || !uploadedNetwork.networkImage">
                             <use xlink:href="#icon-default-network"></use>
                         </svg>
-                        <div class="sample-network-name">{{chosenNetwork.name}}</div>
+                        <div class="sample-network-name">{{uploadedNetwork.name}}</div>
                     </div>
                     <file-importer *ngIf="!sampleDropped" class="sample-network-list-item file-importer"
                                    (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)"
@@ -88,22 +91,21 @@
     </section>
 </div>
 <div *ngIf="!npmInProgress" class="chosen-network">
-    <div *ngIf="!deployNetwork" class="replace-message">
-        The files in the <b>{{networkName}}</b> will be replaced with files from:
-    </div>
     <div class="chosen-network-info">
         <div class="image">
             <img class="animated-image" *ngIf="chosenNetwork && chosenNetwork.networkImageanimated"
-                 src="{{chosenNetwork.networkImageanimated}}" />
+                 src="{{chosenNetwork.networkImageanimated}}"/>
             <img class="animated-image" *ngIf="!chosenNetwork || !chosenNetwork.networkImageanimated"
-                 src="../../assets/svg/other/default-network-animated.svg" />
+                 src="../../assets/svg/other/default-network-animated.svg"/>
         </div>
         <div>
-            <section *ngIf="deployNetwork">
-                <h3>{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when entered in the basic information section.'}}</p>
+            <section>
+                <h3 *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <h3 *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when
+                    entered in the basic information section.'}}</p>
             </section>
-            <section *ngIf="deployNetwork">
+            <section>
                 <div class="title">
                     connection profile
                 </div>
@@ -120,7 +122,7 @@
             </section>
             <section *ngIf="!npmInProgress">
                 <div>
-                    <div class="title" *ngIf="deployNetwork">
+                    <div class="title">
                         based on
                     </div>
                     <h3>{{chosenNetwork.name}}</h3>
@@ -138,10 +140,19 @@
             </section>
         </div>
     </div>
-
     <div class="deploy">
-        <button id="import_cancel" *ngIf="!deployNetwork" type="button" class="secondary" (click)="cancel()">Cancel</button>
-        <button id="import_confirm" [disabled]="deployNetwork && (!networkName || !networkNameValid)" type="button" class="primary" (click)="deploy()">{{deployNetwork ? 'Deploy Network' : 'Import'}}
+        <button id="import_confirm" [disabled]="!networkName || !networkNameValid || deployInProgress" type="button"
+                class="primary" (click)="deploy()">
+            <div *ngIf="!deployInProgress">
+                <span>Deploy</span>
+            </div>
+            <div *ngIf="deployInProgress" class="ibm-spinner-indeterminate small loop">
+                <div class="loader">
+                    <svg class="circular" viewBox="25 25 50 50">
+                        <circle class="circle-path" cx="50" cy="50" r="20"/>
+                    </svg>
+                </div>
+            </div>
         </button>
     </div>
 </div>

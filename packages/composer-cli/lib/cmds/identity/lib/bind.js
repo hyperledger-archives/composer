@@ -38,12 +38,12 @@ class Bind {
         let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let participantId = argv.participantId;
-        let publicKeyFile = argv.publicKeyFile;
+        let certificateFile = argv.certificateFile;
         let certificate;
         try {
-            certificate = fs.readFileSync(publicKeyFile).toString();
+            certificate = fs.readFileSync(certificateFile).toString();
         } catch(error) {
-            return Promise.reject(new Error('Unable to read public key file ' + publicKeyFile + '. ' + error.message));
+            return Promise.reject(new Error('Unable to read certificate file ' + certificateFile + '. ' + error.message));
         }
 
         return (() => {

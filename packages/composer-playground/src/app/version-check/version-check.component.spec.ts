@@ -9,7 +9,6 @@ import { DebugElement } from '@angular/core';
 import { VersionCheckComponent } from './version-check.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { Router } from '@angular/router';
 import * as sinon from 'sinon';
 
 describe('VersionCheckComponent', () => {
@@ -19,7 +18,6 @@ describe('VersionCheckComponent', () => {
     let element: HTMLElement;
 
     let storageBool: boolean;
-    let routerBool: boolean;
 
     let ngbActiveModalMock = {
         close: sinon.stub(),
@@ -32,26 +30,15 @@ describe('VersionCheckComponent', () => {
         }
     };
 
-    let routerMock = {
-        navigateByUrl: (url) => {
-            return new Promise((resolve, reject) => {
-                if (routerBool) {
-                    let something = sinon.stub(window, 'open');
-                    something.returns('');
-                }
-                resolve(routerBool);
-            });
-        }
-    };
+    let reload;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [VersionCheckComponent],
             providers: [{provide: NgbActiveModal, useValue: ngbActiveModalMock},
-                {provide: LocalStorageService, useValue: localStorageServiceMock},
-                {provide: Router, useValue: routerMock}]
+                {provide: LocalStorageService, useValue: localStorageServiceMock}]
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
@@ -78,24 +65,5 @@ describe('VersionCheckComponent', () => {
             component.clearLocalStorage();
         }).should.throw(Error, 'Failed to clear local storage');
 
-    });
-
-    it('should handle navigating to root failure', () => {
-        storageBool = true;
-        routerBool = false;
-
-        component.clearLocalStorage().then((result) => {
-            result.should.be.false;
-        });
-
-    });
-
-    it('should handle navigating to root sucess', () => {
-        storageBool = true;
-        routerBool = true;
-
-        component.clearLocalStorage().catch((result) => {
-            result.should.be.true;
-        });
     });
 });

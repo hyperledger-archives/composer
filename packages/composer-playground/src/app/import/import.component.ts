@@ -1,48 +1,45 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { BusinessNetworkDefinition } from 'composer-common';
 
 @Component({
     selector: 'import-business-network',
-    templateUrl: './import.component.html',
-    styleUrls: ['./import.component.scss'.toString()]
+    template: ``
 })
-export class ImportComponent implements OnInit {
+export abstract class ImportComponent implements OnInit {
 
-    // choose whether to deploy or update the business network
-    @Input() deployNetwork: boolean;
     @Output() finishedSampleImport = new EventEmitter<any>();
 
-    private deployInProgress: boolean = false;
-    private npmInProgress: boolean = true;
+    protected networkName: string;
+    protected deployInProgress: boolean = false;
+    protected currentBusinessNetwork = null;
+    protected networkDescription: string;
+
+    private npmInProgress: boolean = false;
     private sampleNetworks = [];
     private chosenNetwork = null;
     private expandInput: boolean = false;
     private sampleDropped: boolean = false;
+    private uploadedNetwork = null;
 
     private maxFileSize: number = 5242880;
     private supportedFileTypes: string[] = ['.bna'];
 
-    private currentBusinessNetwork = null;
     private currentBusinessNetworkPromise: Promise<BusinessNetworkDefinition>;
-    private networkName: string;
-    private networkNameValid: boolean = true;
-    private networkDescription: string;
 
-    private NAME = 'Empty Business Network';
+    private NAME = 'empty-business-network';
     private DESC = 'Start from scratch with a blank business network';
     private EMPTY_BIZNET = {name: this.NAME, description: this.DESC};
 
-    constructor(private clientService: ClientService,
-                public modalService: NgbModal,
-                private sampleBusinessNetworkService: SampleBusinessNetworkService,
-                private alertService: AlertService) {
+    constructor(protected clientService: ClientService,
+                protected modalService: NgbModal,
+                protected sampleBusinessNetworkService: SampleBusinessNetworkService,
+                protected alertService: AlertService) {
 
     }
 
@@ -52,9 +49,6 @@ export class ImportComponent implements OnInit {
     }
 
     onShow(): Promise<void> {
-        if (!this.deployNetwork) {
-            this.networkName = this.clientService.getBusinessNetworkName();
-        }
         this.npmInProgress = true;
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
@@ -87,46 +81,7 @@ export class ImportComponent implements OnInit {
         this.currentBusinessNetwork = null;
     }
 
-    deploy() {
-        let replacePromise;
-
-        let deployed: boolean = true;
-
-        if (this.deployNetwork) {
-            replacePromise = Promise.resolve(true);
-        } else {
-            const confirmModalRef = this.modalService.open(ReplaceComponent);
-            confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
-            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
-            confirmModalRef.componentInstance.resource = 'definition';
-            replacePromise = confirmModalRef.result;
-        }
-
-        replacePromise.then((result) => {
-            if (result === true) {
-                this.deployInProgress = true;
-                let deployPromise;
-                if (this.deployNetwork) {
-                    return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.networkName, this.networkDescription);
-                } else {
-                    return this.sampleBusinessNetworkService.updateBusinessNetwork(this.currentBusinessNetwork);
-                }
-            } else {
-                deployed = false;
-            }
-        })
-            .then(() => {
-                this.deployInProgress = false;
-                this.finishedSampleImport.emit({deployed: deployed});
-            })
-            .catch((error) => {
-                this.deployInProgress = false;
-                this.alertService.errorStatus$.next(error);
-                this.finishedSampleImport.emit({deployed: false, error: error});
-            });
-
-        return replacePromise;
-    }
+    abstract deploy()
 
     deployEmptyNetwork(): void {
         let readme = 'This is the readme file for the Business Network Definition created in Playground';
@@ -178,10 +133,6 @@ export class ImportComponent implements OnInit {
         this.selectNetwork(this.sampleNetworks[1]);
     }
 
-    cancel() {
-        this.finishedSampleImport.emit({deployed: false});
-    }
-
     addEmptyNetworkOption(networks: any[]): any[] {
 
         let newOrder = [];
@@ -213,9 +164,10 @@ export class ImportComponent implements OnInit {
                 .then((businessNetwork) => {
                     this.chosenNetwork = businessNetwork.getMetadata().getPackageJson();
                     this.currentBusinessNetwork = businessNetwork;
-                    // needed for if browse file
                     this.sampleDropped = true;
+                    // needed for if browse file
                     this.expandInput = false;
+                    this.uploadedNetwork = this.chosenNetwork;
                     return businessNetwork;
                 })
                 .catch((error) => {
@@ -232,11 +184,5 @@ export class ImportComponent implements OnInit {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
-    }
-
-    private setNetworkName(name) {
-        this.networkName = name;
-        let pattern = /^[a-z0-9-]+$/;
-        this.networkNameValid = pattern.test(this.networkName);
     }
 }

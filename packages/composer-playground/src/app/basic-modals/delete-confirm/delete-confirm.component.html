@@ -12,7 +12,7 @@
   </div>
   <section class="modal-body">
     <section class="information">
-        <p>You are about to remove the {{ fileType }} <b>{{ fileName }}</b>{{ deleteFrom ? ' from ' + deleteFrom + '.' : '.'}}</p>
+        <p>You are about to {{ action || 'remove'}} the {{ fileType }} <b>{{ fileName }}</b>{{ deleteFrom ? ' from ' + deleteFrom + '.' : '.'}}</p>
         <p>{{deleteMessage}}</p>
     </section>
   </section>
