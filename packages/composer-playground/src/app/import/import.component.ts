@@ -32,7 +32,7 @@ export abstract class ImportComponent implements OnInit {
 
     private currentBusinessNetworkPromise: Promise<BusinessNetworkDefinition>;
 
-    private NAME = 'Empty Business Network';
+    private NAME = 'empty-business-network';
     private DESC = 'Start from scratch with a blank business network';
     private EMPTY_BIZNET = {name: this.NAME, description: this.DESC};
 
