@@ -80,8 +80,10 @@
 
     .modal-exit {
       position: absolute;
-      top: 0px;
-      right: $space-smedium;
+      // top: 0px;
+      // right: $space-smedium;
+      top: 15px;
+      right: 24px;
       color: $primary-text;
     }
   }

@@ -29,7 +29,13 @@ $radius-medium: 4px;
 @mixin transition($properties...) {
   transition-property: $properties;
   transition-duration: .5s;
-  transition-timing-function: ease;
+  transition-timing-function: ease-in-out;
+}
+
+@mixin transition-360($properties...) {
+  transition-property: $properties;
+  transition-duration: 167ms;
+  transition-timing-function: cubic-bezier(0.2, 0.2, 0.6, 1);
 }
 
 $cubic-bezier: .3s cubic-bezier(.5, .8, 0, 1);
