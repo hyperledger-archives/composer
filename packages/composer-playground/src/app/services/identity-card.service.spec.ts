@@ -75,6 +75,14 @@ describe('IdentityCardService', () => {
         })));
     });
 
+    describe('#getIndestructibleIdentityCards', () => {
+        it('should get an array of indestructible identity card refs', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            service['indestructibleCards'] = ['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'];
+
+            service.getIndestructibleIdentityCards().should.deep.equal(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']);
+        })));
+    });
+
     describe('#getIdentityCardForExport', () => {
         let mockIdCard1;
         let mockIdCard2;
@@ -224,6 +232,23 @@ describe('IdentityCardService', () => {
             service['currentCard'].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
             setCurrentIdentityCardStub.should.have.been.called;
         })));
+
+        it('should keep track of indestructible identity cards', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
+            setCurrentIdentityCardStub.returns(Promise.resolve());
+
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"indestructible":true}'));
+
+            service.loadIdentityCards(false);
+
+            tick();
+
+            should.not.exist(service['currentCard']);
+            service['indestructibleCards'].length.should.equal(1);
+            service['indestructibleCards'][0].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            setCurrentIdentityCardStub.should.not.have.been.called;
+        })));
     });
 
     describe('#getIdentityCards', () => {
@@ -334,9 +359,10 @@ describe('IdentityCardService', () => {
             tick();
 
             service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(0);
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith(result);
-            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true});
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: false});
             activateIdentityCardStub.should.not.have.been.called;
         })));
 
@@ -355,10 +381,31 @@ describe('IdentityCardService', () => {
             tick();
 
             service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(0);
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith(result);
-            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true});
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: false});
             activateIdentityCardStub.should.have.been.called;
+        })));
+
+        it('should add an indestructible identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getName.returns('bcc');
+
+            let result;
+            service.addIdentityCard(mockIdCard, true).then((cardRef) => {
+                result = cardRef;
+            });
+
+            tick();
+
+            service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(1);
+            service['indestructibleCards'][0].should.equal(result);
+            mockIdentityCardStorageService.set.should.have.been.calledTwice;
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result);
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: true});
         })));
     });
 

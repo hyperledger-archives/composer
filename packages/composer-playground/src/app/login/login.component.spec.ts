@@ -103,6 +103,7 @@ class MockFooterComponent {
 })
 class MockIdentityCardComponent {
     @Input() identity: any;
+    @Input() indestructible: any;
 }
 
 @Component({
@@ -250,6 +251,7 @@ describe(`LoginComponent`, () => {
 
         it('should load identity cards and sort the profiles', fakeAsync(() => {
             mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
+            mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef4']);
             let sortCards = sinon.stub(component, 'sortIdCards');
 
             component.loadIdentityCards();
@@ -271,6 +273,7 @@ describe(`LoginComponent`, () => {
             component['idCardRefs'].get('xxx-myProfile2').should.deep.equal(['myCardRef2']);
             component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef5']);
             component['idCardRefs'].get('web-$default').should.deep.equal(['myCardRef4']);
+            component['indestructibleCards'].should.deep.equal(['myCardRef4']);
         }));
 
         it('should handle error', fakeAsync(() => {
