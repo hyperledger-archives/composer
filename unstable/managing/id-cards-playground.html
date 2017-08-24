@@ -245,7 +245,7 @@ ga('send', 'pageview');
 <ul>
 <li>A connection profile. (<code>.json</code>)</li>
 <li>A metadata file containing the data for the identity to use to connect to the business network. (<code>metadata.json</code>)</li>
-<li>An optional credentials directory containing a public and private key.</li>
+<li>An optional credentials directory containing a certificate and private key.</li>
 </ul>
 
 <p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>User Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID card is exported.</p>
@@ -265,7 +265,7 @@ ga('send', 'pageview');
 </span></code></pre></div>
 <p>The <em>businessNetworkName</em>, <em>image</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
 
-<p>To create the ID card file, compress the connection profile, metadata file, and optionally a credentials file, then modify the file type to <code>.card</code>.</p>
+<p>To create the ID card file, compress the connection profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>
 
 <p>This ID card can now be imported using the Hyperledger Composer Playground.</p>
 
@@ -281,6 +281,10 @@ ga('send', 'pageview');
 <li><p>To export an ID card create an identity by <a href="#creating-an-id-card-within-a-business-network">using a business network</a> and add the ID card to your wallet.</p></li>
 <li><p>On the <strong>My Wallet</strong> page, click the <strong>Export</strong> icon on the ID card you wish to export. The ID card should download as a <code>.card</code> file.</p></li>
 </ol>
+
+<p><em>Please note</em>: If you export an ID card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and public key which are then used to identify participants. Alternatively, if you export an ID card that has been used before, it will already contain the certificate and public key.</p>
+
+<p><strong>Important</strong>: Exported identity cards should be handled with care since they contain unprotected credentials. For example, you should never send identity cards via email or other unencrypted means of communication.</p>
 
 <h3 id="importing-id-cards">Importing ID Cards</h3>
 
