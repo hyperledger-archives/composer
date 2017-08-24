@@ -334,6 +334,7 @@ class Context {
 
                 // Validate the identity.
                 try {
+                    this.setIdentity(identity);
                     this.getIdentityManager().validateIdentity(identity);
                 } catch (e) {
 
@@ -341,7 +342,7 @@ class Context {
                     let isActivation = false;
                     try {
                         if (this.getFunction() === 'submitTransaction') {
-                            const json = JSON.parse(this.getArguments()[1]);
+                            const json = JSON.parse(this.getArguments()[0]);
                             isActivation = json.$class === 'org.hyperledger.composer.system.ActivateCurrentIdentity';
                         }
                     } catch (e) {
@@ -362,7 +363,7 @@ class Context {
 
                 }
                 
-                this.setIdentity(identity);
+               
 
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);

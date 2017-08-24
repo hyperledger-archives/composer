@@ -18,6 +18,7 @@ const AssetDeclaration = require('composer-common').AssetDeclaration;
 const EventEmitter = require('events');
 const Logger = require('composer-common').Logger;
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
@@ -99,7 +100,7 @@ class RegistryManager extends EventEmitter {
                 return !classDeclaration.isAbstract();
             })
             .filter((classDeclaration) => {
-                return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration);
+                return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration) || (classDeclaration instanceof TransactionDeclaration);
             })
             .filter((classDeclaration) => {
                 return !(classDeclaration.isSystemType() && VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1);

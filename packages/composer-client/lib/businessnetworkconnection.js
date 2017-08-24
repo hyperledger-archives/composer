@@ -280,19 +280,31 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(transactionRegistry){
      *     // Retrieved transaction registry.
      * });
+     * @param {string} id - The unique identifier of the transaction registry
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
-    getTransactionRegistry() {
+    getTransactionRegistry(id) {
         Util.securityCheck(this.securityContext);
-        return TransactionRegistry
-            .getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
-            .then((transactionRegistries) => {
-                if (transactionRegistries.length >= 1) {
-                    return transactionRegistries[0];
-                } else {
-                    throw new Error('Failed to find the default transaction registry');
-                }
-            });
+        return TransactionRegistry.getTransactionRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+    }
+
+    /**
+     * Get all transaction registries.
+     * @example
+     * // Get the transaction registry
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.getTransactionRegistry();
+     * })
+     * .then(function(transactionRegistry){
+     *     // Retrieved transaction registry.
+     * });
+     * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
+     */
+    getAllTransactionRegistries() {
+        Util.securityCheck(this.securityContext);
+        return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
     }
 
     /**
@@ -472,11 +484,10 @@ class BusinessNetworkConnection extends EventEmitter {
         if (timestamp === null || timestamp === undefined) {
             timestamp = transaction.timestamp = new Date();
         }
+
         let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-        return this.getTransactionRegistry(this.securityContext)
-            .then((transactionRegistry) => {
-                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [transactionRegistry.id, JSON.stringify(data)]);
-            });
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)]);
+
     }
 
     /**
@@ -637,7 +648,8 @@ class BusinessNetworkConnection extends EventEmitter {
             transactionId: uuid.v4(),
             timestamp: new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
+        console.log(json);
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);
             });

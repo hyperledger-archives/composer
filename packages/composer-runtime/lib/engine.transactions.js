@@ -36,9 +36,9 @@ class EngineTransactions {
     submitTransaction(context, args) {
         const method = 'submitTransaction';
         LOG.entry(method, context, args);
-        if (args.length !== 2) {
+        if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'submitTransaction', ['registryId', 'serializedResource']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'submitTransaction', [ 'serializedResource']));
         }
 
         // Find the default transaction registry.
@@ -49,8 +49,9 @@ class EngineTransactions {
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
-        let transactionData = JSON.parse(args[1]);
+        let transactionData = JSON.parse(args[0]);
 
+        
         // Now we need to convert the JavaScript object into a transaction resource.
         LOG.debug(method, 'Parsing transaction from parsed JSON object');
         // First we parse *our* copy, that is not resolved. This is the copy that gets added to the
@@ -63,6 +64,8 @@ class EngineTransactions {
         // This is the count of transaction processor functions executed.
         let totalCount = 0;
 
+        let txClass = transaction.getFullyQualifiedType();
+        LOG.debug(method, 'Getting default transaction registry for '+txClass);
         // Resolve the users copy of the transaction.
         LOG.debug(method, 'Parsed transaction, resolving it', transaction);
         let resolvedTransaction;
@@ -110,9 +113,8 @@ class EngineTransactions {
             })
             .then((result) => {
                 historian = result;
-                // Get the default transaction registry.
-                LOG.debug(method, 'Getting default transaction registry');
-                return registryManager.get('Transaction', 'default');
+                LOG.debug(method, 'Getting default transaction registry for '+txClass);
+                return registryManager.get('Transaction', txClass);
             })
             .then((result) => {
                 txRegistry = result;

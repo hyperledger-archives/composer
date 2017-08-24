@@ -14,7 +14,7 @@
 
 'use strict';
 
-const sprintf = require('sprintf-js').sprintf;
+// const sprintf = require('sprintf-js').sprintf;
 const Tree = require('./tree.js');
 
 
@@ -74,6 +74,11 @@ class Logger {
      */
     constructor(name) {
         this.className = name;
+        this.str25 = Array(25).join(' ');
+    }
+
+    padRight(pad, str) {
+          return (str + pad).slice(0, pad.length);
     }
 
     /**
@@ -110,19 +115,22 @@ class Logger {
     _intLogMain(loglevel,method,msg){
         if (typeof arguments[3] ==='undefined'){
             // this is the case where there are no additional arguements; data for example
-            _logger.log(loglevel,sprintf('%-25s:%-25s', this.className,method+'()'),msg);
+            // _logger.log(loglevel,sprintf('%-25s:%-25s', this.className,method+'()'),msg);
+            _logger.log(loglevel,this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg);
         } else {
             // loop over the aguements - if any are Errors make sure that the stack trace is captured
             let args = [];
             for(let i = 3; i < arguments.length; i++) {
                 if (arguments[i] instanceof Error){
-                    args.push(  {'stack' : sprintf('{%s}%s %s',arguments[i].name,arguments[i].message,arguments[i].stack).match(/[^\r\n]+/g)});
+                    // let str = sprintf('{%s}%s %s',arguments[i].name,arguments[i].message,arguments[i].stack);
+                    let str = '{'+arguments[i].name + '}'+ arguments[i].message+' '+ arguments[i].stack;
+                    args.push(  {'stack' : str.match(/[^\r\n]+/g)});
                 }else {
                     args.push(arguments[i]);
                 }
             }
 
-            _logger.log(loglevel,sprintf('%-25s:%-25s', this.className,method+'()'),msg, args);
+            _logger.log(loglevel,this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg, args);
         }
 
     }
