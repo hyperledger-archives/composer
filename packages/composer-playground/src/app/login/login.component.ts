@@ -221,14 +221,8 @@ export class LoginComponent implements OnInit {
         confirmModalRef.result
             .then((result) => {
                 if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Removing ID card',
-                        text: 'removing the ID card ' + userId
-                    });
-
                     this.identityCardService.deleteIdentityCard(cardRef)
                         .then(() => {
-                            this.alertService.busyStatus$.next(null);
                             this.alertService.successStatus$.next({
                                 title: 'ID Card Removed',
                                 text: 'The ID card was successfully removed from My Wallet.',
@@ -238,13 +232,11 @@ export class LoginComponent implements OnInit {
                             return this.loadIdentityCards();
                         })
                         .catch((error) => {
-                            this.alertService.busyStatus$.next(null);
                             this.alertService.errorStatus$.next(error);
                         });
                 }
             }, (reason) => {
                 if (reason && reason !== 1) {
-                    this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
             });

@@ -140,26 +140,32 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     onBusyStatus(busyStatus) {
-        let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-        if (card && busyStatus) {
-            let connectionProfileType = card.getConnectionProfile().type;
-            if ('web' === connectionProfileType && !busyStatus.force) {
-                // Don't show the modal for the web runtime, as it's too fast to care.
-                return;
-            }
-        } else if (!card && (!busyStatus || !busyStatus.force)) {
-            // if no card then only show if forced
+
+        // if we pass in null we must close regardless
+        if (this.busyModalRef && !busyStatus) {
+            this.busyModalRef.close();
+            this.busyModalRef = null;
             return;
         }
 
-        if (!this.busyModalRef && busyStatus) {
+        // if no busy status do nothing
+        if (!busyStatus) {
+            return;
+        }
+
+        if (busyStatus && !busyStatus.force) {
+            let card: IdCard = this.identityCardService.getCurrentIdentityCard();
+            if (!card || (card && card.getConnectionProfile().type === 'web')) {
+                // Don't show the modal for the web runtime, as it's too fast to care.
+                return;
+            }
+        }
+
+        if (!this.busyModalRef) {
             this.busyModalRef = this.modalService.open(BusyComponent);
             this.busyModalRef.componentInstance.busy = busyStatus;
-        } else if (this.busyModalRef && busyStatus) {
+        } else {
             this.busyModalRef.componentInstance.busy = busyStatus;
-        } else if (this.busyModalRef && !busyStatus) {
-            this.busyModalRef.close();
-            this.busyModalRef = null;
         }
     }
 
