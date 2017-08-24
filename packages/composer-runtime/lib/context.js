@@ -361,6 +361,8 @@ class Context {
                     }
 
                 }
+                
+                this.setIdentity(identity);
 
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);
@@ -827,6 +829,26 @@ class Context {
         }
         this.participant = participant;
         this.getAccessController().setParticipant(participant);
+    }
+
+
+    /**
+     * Get the current identity.
+     * @return {Resource} the current identity.
+     */
+    getIdentity() {
+        return this.currentIdentity;
+    }
+
+    /**
+     * Set the current identity.
+     * @param {Resource} currentIdentity the current identity.
+     */
+    setIdentity(currentIdentity) {
+        if (this.currentIdentity) {
+            throw new Error('A current identity has already been specified');
+        }
+        this.currentIdentity = currentIdentity;
     }
 
     /**

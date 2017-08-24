@@ -184,25 +184,17 @@ class EngineTransactions {
             }
         }
 
-        // Note that this is only call out to collect data that returns a promise.
-        // Get the current identity that is being used
-        return context.getIdentityManager().getIdentity()
-        .then( (result) => {
-            record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',result.getIdentifier());
-            LOG.exit(method, record);
-            return record;
-        }).catch(/* istanbul ignore next */error => {
-            //TODO:  need to remove this when the admin is sorted out!
-            /* istanbul ignore next */
-            if(error.identityName){
-                LOG.debug(method, 'admin userid again');
-            } else {
-                throw error;
-            }
-        }).then(()=>{
-            LOG.exit(method, record);
-            return record;
-        } );
+        // get the cached indentity
+        // TODO there is the issue with the Admin userid that will be resolved in due course
+        let id = context.getIdentity();
+        if (id){
+            record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',id.getIdentifier());
+        } else {
+            LOG.debug(method, 'assuming admin userid again');
+        }
+
+
+        return Promise.resolve(record);
 
     }
 
