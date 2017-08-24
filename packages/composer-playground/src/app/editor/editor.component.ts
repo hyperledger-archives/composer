@@ -385,9 +385,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     openImportModal() {
         const importModalRef = this.drawerService.open(UpdateComponent);
         importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
-
-            importModalRef.close();
-
             if (result.deployed) {
                 this.updatePackageInfo();
                 this.updateFiles();
