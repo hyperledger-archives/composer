@@ -65,7 +65,7 @@ ID cards are composite files containing up to three elements:
 
 - A connection profile. (`.json`)
 - A metadata file containing the data for the identity to use to connect to the business network. (`metadata.json`)
-- An optional credentials directory containing a public and private key.
+- An optional credentials directory containing a certificate and private key.
 
 _Please note_: If there is no credentials directory, the metadata file must contain the _User Secret_ property with the property name _enrollmentSecret_. If an _enrollmentSecret_ is specified, a credentials directory with certificates will be created and populated if the ID card is exported.
 
@@ -87,7 +87,7 @@ The metadata file should take the following format:
 
 The _businessNetworkName_, _image_, _enrollmentSecret_, and _roles_ properties are optional. The available _roles_ are `PeerAdmin` and `ChannelAdmin`.
 
-To create the ID card file, compress the connection profile, metadata file, and optionally a credentials file, then modify the file type to `.card`.
+To create the ID card file, compress the connection profile, metadata file, and optionally a credentials directory, then modify the file type to `.card`.
 
 This ID card can now be imported using the {{site.data.conrefs.composer_full}} Playground.
 
@@ -103,6 +103,9 @@ Importing and exporting ID cards is the simplest way to grant access to other us
 
 2. On the **My Wallet** page, click the **Export** icon on the ID card you wish to export. The ID card should download as a `.card` file.
 
+_Please note_: If you export an ID card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and public key which are then used to identify participants. Alternatively, if you export an ID card that has been used before, it will already contain the certificate and public key.
+
+**Important**: Exported identity cards should be handled with care since they contain unprotected credentials. For example, you should never send identity cards via email or other unencrypted means of communication.
 
 ### Importing ID Cards
 

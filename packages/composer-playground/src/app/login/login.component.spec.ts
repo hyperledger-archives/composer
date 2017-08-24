@@ -552,15 +552,12 @@ describe(`LoginComponent`, () => {
     describe('exportIdentity', () => {
         let sandbox = sinon.sandbox.create();
         let mockIdCard;
-        let mockIdCards: Map<string, IdCard>;
         let saveAsStub;
 
         beforeEach(() => {
             saveAsStub = sandbox.stub(fileSaver, 'saveAs');
             mockIdCard = sinon.createStubInstance(IdCard);
             mockIdCard.getName.returns('myCard');
-            mockIdCards = new Map<string, IdCard>();
-            mockIdCards.set('myCardRef', mockIdCard);
         });
 
         afterEach(() => {
@@ -568,8 +565,8 @@ describe(`LoginComponent`, () => {
         });
 
         it('should export an identity card', fakeAsync(() => {
+            mockIdentityCardService.getIdentityCardForExport.returns(Promise.resolve(mockIdCard));
             mockIdCard.toArchive.returns(Promise.resolve('card data'));
-            component['idCards'] = mockIdCards;
 
             component.exportIdentity('myCardRef');
             tick();
@@ -579,8 +576,8 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should handle errors', fakeAsync(() => {
+            mockIdentityCardService.getIdentityCardForExport.returns(Promise.resolve(mockIdCard));
             mockIdCard.toArchive.returns(Promise.reject('some error'));
-            component['idCards'] = mockIdCards;
 
             component.exportIdentity('myCardRef');
             tick();
