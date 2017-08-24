@@ -584,7 +584,7 @@ describe('AppComponent', () => {
             mockModal.open.should.have.been.called;
         });
 
-        it('should not show with no card unless force', () => {
+        it('should show with no card if forced', () => {
             mockIdentityCardService.getCurrentIdentityCard.returns(null);
             activatedRoute.testParams = {};
 

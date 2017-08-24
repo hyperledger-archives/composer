@@ -427,7 +427,6 @@ describe(`LoginComponent`, () => {
             component.removeIdentity('myCardRef');
             tick();
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.not.have.been.called;
         }));
@@ -442,7 +441,6 @@ describe(`LoginComponent`, () => {
             component.removeIdentity('myCardRef');
             tick();
 
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.not.have.been.called;
         }));
@@ -461,7 +459,7 @@ describe(`LoginComponent`, () => {
             // check services called
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
-            mockAlertService.busyStatus$.next.should.have.been.called;
+
             mockAlertService.successStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
@@ -478,7 +476,6 @@ describe(`LoginComponent`, () => {
             tick();
 
             // check services called
-            mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.not.have.been.called;
             loadIdentityCardsStub.should.not.have.been.called;
