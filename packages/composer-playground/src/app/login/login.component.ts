@@ -197,15 +197,21 @@ export class LoginComponent implements OnInit {
     }
 
     exportIdentity(cardRef): Promise<any> {
-        let card = this.idCards.get(cardRef);
+        let fileName;
 
-        return card.toArchive().then((exportedData) => {
-            let file = new Blob([exportedData],
-                {type: 'application/octet-stream'});
-            saveAs(file, card.getName() + '.card');
-        }).catch((reason) => {
-            this.alertService.errorStatus$.next(reason);
-        });
+        return this.identityCardService.getIdentityCardForExport(cardRef)
+            .then((card) => {
+                fileName = card.getName() + '.card';
+                return card.toArchive();
+            })
+            .then((archiveData) => {
+                let file = new Blob([archiveData],
+                    {type: 'application/octet-stream'});
+                saveAs(file, fileName);
+            })
+            .catch((reason) => {
+                this.alertService.errorStatus$.next(reason);
+            });
     }
 
     removeIdentity(cardRef): void {
