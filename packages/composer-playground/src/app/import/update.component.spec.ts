@@ -15,6 +15,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { UpdateComponent } from './update.component';
+import { ActiveDrawer } from '../common/drawer';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -105,7 +106,8 @@ describe('UpdateComponent', () => {
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: NgbModal, useValue: mockNgbModal}
+                {provide: NgbModal, useValue: mockNgbModal},
+                ActiveDrawer
             ],
         });
 
@@ -431,6 +433,26 @@ describe('UpdateComponent', () => {
             component['deployInProgress'].should.equal(false);
             finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: 'some error'});
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should close the tray', fakeAsync(() => {
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            let traySpy = sinon.spy(component['activeDrawer'], 'close');
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(false)
+            });
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false});
+            });
+
+            component.deploy();
+
+            tick();
+
+            traySpy.should.have.been.called;
         }));
     });
 
