@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { ActiveDrawer } from '../common/drawer';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
@@ -17,7 +18,8 @@ export class UpdateComponent extends ImportComponent {
     constructor(protected clientService: ClientService,
                 protected modalService: NgbModal,
                 protected sampleBusinessNetworkService: SampleBusinessNetworkService,
-                protected alertService: AlertService) {
+                protected alertService: AlertService,
+                protected activeDrawer: ActiveDrawer ) {
         super(clientService, modalService, sampleBusinessNetworkService, alertService);
     }
 
@@ -28,7 +30,8 @@ export class UpdateComponent extends ImportComponent {
 
     deploy() {
         let deployed: boolean = true;
-
+        // close the draw as we no longer need it
+        this.activeDrawer.close();
         const confirmModalRef = this.modalService.open(ReplaceComponent);
         confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
         confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
