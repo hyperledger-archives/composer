@@ -3,7 +3,7 @@ layout: default
 title: Deploying the REST server for a business network
 category: start
 section: integrating
-index-order: 606
+index-order: 706
 sidebar: sidebars/accordion-toc0.md
 excerpt: By deploying a REST server for a business network, you can [**integrate existing systems and data with your Hyperledger Composer business network**](./deploying-the-rest-server.html), allowing you to create, update, or delete assets and participants, as well as get and submit transactions.
 ---

@@ -5,7 +5,7 @@ category: start
 sidebar: sidebars/accordion-toc0.md
 excerpt: Get support with Hyperledger Composer
 section: support
-index-order: 1000
+index-order: 1100
 ---
 
 #Community
