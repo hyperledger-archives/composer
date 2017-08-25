@@ -126,11 +126,13 @@ class RegistryManager extends EventEmitter {
     /**
      * Get all of the registries.
      * @param {string} type The type of the registry.
+     * @param {boolean} includeSystem true if system registries should be included (optional, default is false)
      * @return {Promise} A promise that is resolved with an array of {@link Registry}
      * objects when complete, or rejected with an error.
      */
-    getAll(type) {
+    getAll(type,includeSystem) {
         const method = 'getAll';
+        includeSystem = includeSystem || false;
         LOG.entry(method, type);
         return this.sysregistries.getAll()
             .then((registries) => {
@@ -143,7 +145,6 @@ class RegistryManager extends EventEmitter {
 
                         return this.get(registry.type, registry.registryId)
                             .then((r) => {
-                                // console.log(r);
                                 LOG.debug(method, 'reducing', r.name);
                                 result.push(r);
                                 return result;
@@ -157,9 +158,12 @@ class RegistryManager extends EventEmitter {
                 }, Promise.resolve([]));
             })
             .then((registries) => {
-                registries = registries.filter((registry) => {
-                    return !registry.system;
-                });
+                if (!includeSystem){
+                    registries = registries.filter((registry) => {
+                        return !registry.system;
+                    });
+                }
+
                 LOG.exit(method, registries);
                 return registries;
             });

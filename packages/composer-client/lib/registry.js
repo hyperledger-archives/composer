@@ -32,15 +32,17 @@ class Registry {
      * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {string} registryType The type of this registry.
+     * @param {boolean} includeSystem True if system regisitries should be included (optional default is false)
      * @return {Promise} A promise that will be resolved with an array of JSON
      * objects representing the registries.
      */
-    static getAllRegistries(securityContext, registryType) {
+    static getAllRegistries(securityContext, registryType,includeSystem) {
         Util.securityCheck(securityContext);
+        includeSystem = includeSystem || false;
         if (!registryType) {
             throw new Error('registryType not specified');
         }
-        return Util.queryChainCode(securityContext, 'getAllRegistries', [registryType])
+        return Util.queryChainCode(securityContext, 'getAllRegistries', [registryType,includeSystem])
             .then((buffer) => {
                 return JSON.parse(buffer.toString());
             });

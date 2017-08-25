@@ -51,7 +51,6 @@ class EngineTransactions {
         LOG.debug(method, 'Parsing transaction from JSON');
         let transactionData = JSON.parse(args[0]);
 
-        
         // Now we need to convert the JavaScript object into a transaction resource.
         LOG.debug(method, 'Parsing transaction from parsed JSON object');
         // First we parse *our* copy, that is not resolved. This is the copy that gets added to the

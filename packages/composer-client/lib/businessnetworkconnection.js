@@ -295,17 +295,44 @@ class BusinessNetworkConnection extends EventEmitter {
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getTransactionRegistry();
+     *     return businessNetworkDefinition.getAllTransactionRegistries();
      * })
-     * .then(function(transactionRegistry){
-     *     // Retrieved transaction registry.
+     * .then(function(transactionRegistries){
+     *     // Retrieved transaction Registries
      * });
+     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
-    getAllTransactionRegistries() {
+    getAllTransactionRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
-        return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        let sysReg = includeSystem || false;
+        return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
     }
+
+
+    /**
+     * Determine whether a transaction registry exists.
+     * @example
+     * // Determine whether an transaction registry exists
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.transactionRegistryExists('businessNetworkIdentifier.registryId');
+     * })
+     * .then(function(exists){
+     *     // if (exists === true) {
+     *     // logic here...
+     *     //}
+     * });
+     * @param {string} id - The unique identifier of the transaction registry
+     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the transaction
+     * registry exists.
+     */
+    transactionRegistryExists(id) {
+        Util.securityCheck(this.securityContext);
+        return TransactionRegistry.transactionRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+    }
+
 
     /**
      * Get the historian
@@ -648,7 +675,6 @@ class BusinessNetworkConnection extends EventEmitter {
             transactionId: uuid.v4(),
             timestamp: new Date().toISOString()
         };
-        console.log(json);
         return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);

@@ -77,8 +77,14 @@ class Logger {
         this.str25 = Array(25).join(' ');
     }
 
+    /**
+     * Pad a string
+     * @param {String} pad padding
+     * @param {String} str string
+     * @return {String} padded string
+     */
     padRight(pad, str) {
-          return (str + pad).slice(0, pad.length);
+        return (str + pad).slice(0, pad.length);
     }
 
     /**

@@ -362,8 +362,7 @@ class Context {
                     }
 
                 }
-                
-               
+
 
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);

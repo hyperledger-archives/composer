@@ -36,10 +36,11 @@ class TransactionRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
      * @param {Factory} factory The factory to use for this transaction registry.
      * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @param {Boolean} systemRegistry True if system transaction regisitries should be included in the list. 
      * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
      * instances representing the transaction registries.
      */
-    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer) {
+    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer,systemRegistry) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -48,7 +49,7 @@ class TransactionRegistry extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
+        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE,systemRegistry)
             .then((transactionRegistries) => {
                 return transactionRegistries.map((transactionRegistry) => {
                     return new TransactionRegistry(transactionRegistry.id, transactionRegistry.name, securityContext, modelManager, factory, serializer);
