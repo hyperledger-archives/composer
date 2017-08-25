@@ -20,6 +20,7 @@ import { ConnectionProfileService } from '../services/connectionprofile.service'
 import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConfigService } from '../services/config.service';
 
 import { DrawerService } from '../common/drawer';
 import { IdCard } from 'composer-common';
@@ -133,6 +134,7 @@ describe(`LoginComponent`, () => {
     let mockInitializationService;
     let routerStub;
     let mockAlertService;
+    let mockConfigService;
     let mockModal;
     let mockDrawer;
 
@@ -145,6 +147,7 @@ describe(`LoginComponent`, () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
 
@@ -173,7 +176,8 @@ describe(`LoginComponent`, () => {
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: DrawerService, useValue: mockDrawer},
-                {provide: NgbModal, useValue: mockModal}
+                {provide: NgbModal, useValue: mockModal},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         });
 
@@ -199,13 +203,13 @@ describe(`LoginComponent`, () => {
 
         it('should check if playground is hosted or being used locally', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(true);
+            mockConfigService.isWebOnly.returns(true);
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
             component.ngOnInit();
 
             tick();
 
-            mockInitializationService.isWebOnly.should.have.been.called;
+            mockConfigService.isWebOnly.should.have.been.called;
             component['usingLocally'].should.be.false;
         }));
     });
