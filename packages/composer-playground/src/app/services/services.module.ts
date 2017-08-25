@@ -12,6 +12,7 @@ import { IdentityCardStorageService } from './identity-card-storage.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConfigService } from './config.service';
 
 let identityCardStorageServiceConfig = {
     prefix: 'idcard',
@@ -33,6 +34,7 @@ let identityCardStorageServiceConfig = {
         IdentityCardStorageService,
         InitializationService,
         SampleBusinessNetworkService,
+        ConfigService,
         { provide: 'IDENTITY_CARD_STORAGE_SERVICE_CONFIG', useValue: identityCardStorageServiceConfig }
     ],
     exports: []

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
 
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
+import { ConfigService } from './config.service';
 import { IdCard } from 'composer-common';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class InitializationService {
                 private alertService: AlertService,
                 private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
-                private http: Http) {
+                private configService: ConfigService) {
     }
 
     initialize(): Promise<any> {
@@ -31,7 +31,7 @@ export class InitializationService {
 
         this.initializingPromise = Promise.resolve()
             .then(() => {
-                return this.loadConfig();
+                return this.configService.loadConfig();
             })
             .then((config) => {
                 let force = !this.identityService.getLoggedIn();
@@ -40,7 +40,7 @@ export class InitializationService {
                     force: force
                 });
                 this.config = config;
-                return this.identityCardService.loadIdentityCards(this.isWebOnly());
+                return this.identityCardService.loadIdentityCards(this.configService.isWebOnly());
             })
             .then(() => {
                 let idCards: IdCard[] = [];
@@ -77,24 +77,10 @@ export class InitializationService {
         return this.initializingPromise;
     }
 
-    loadConfig(): Promise<any> {
-        // Load the config data.
-        return this.http.get('/config.json')
-            .map((res: Response) => res.json())
-            .toPromise();
-    }
-
     deployInitialSample(defaultCardRef) {
         return this.identityCardService.setCurrentIdentityCard(defaultCardRef)
             .then(() => {
                 return this.clientService.deployInitialSample();
             });
-    }
-
-    isWebOnly(): boolean {
-        if (!this.config) {
-            return false;
-        }
-        return this.config.webonly;
     }
 }

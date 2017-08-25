@@ -75,7 +75,7 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "@ng-bootstrap/ng-bootstrap": "1.0.0-alpha.24",
+    "@ng-bootstrap/ng-bootstrap": "1.0.0-beta.2",
     "cheerio": "^0.22.0",
     "composer-common": "0.12.0",
     "composer-playground-api": "0.12.0",

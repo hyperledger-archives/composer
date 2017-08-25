@@ -6,6 +6,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
+import { ConfigService } from '../services/config.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
@@ -42,14 +43,15 @@ export class LoginComponent implements OnInit {
                 private identityCardService: IdentityCardService,
                 private modalService: NgbModal,
                 private drawerService: DrawerService,
-                private alertService: AlertService) {
+                private alertService: AlertService,
+                private configService: ConfigService) {
 
     }
 
     ngOnInit(): Promise<void> {
         return this.initializationService.initialize()
             .then(() => {
-                this.usingLocally = !this.initializationService.isWebOnly();
+                this.usingLocally = !this.configService.isWebOnly();
 
                 return this.loadIdentityCards();
             });

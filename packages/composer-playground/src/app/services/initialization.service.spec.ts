@@ -16,6 +16,7 @@ import { InitializationService } from './initialization.service';
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
+import { ConfigService } from './config.service';
 import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
@@ -74,6 +75,7 @@ describe('InitializationService', () => {
     let mockConnectionProfileService;
     let mockIdentityService;
     let mockIdentityCardService;
+    let mockConfigService;
 
     beforeEach(() => {
 
@@ -82,6 +84,7 @@ describe('InitializationService', () => {
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
 
         mockAlertService.busyStatus$ = {next: sinon.stub()};
         mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -95,7 +98,8 @@ describe('InitializationService', () => {
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
-                {provide: XHRBackend, useClass: MockBackend}
+                {provide: XHRBackend, useClass: MockBackend},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         });
     });
@@ -122,8 +126,7 @@ describe('InitializationService', () => {
             let mockCreateSample = sinon.stub(service, 'deployInitialSample');
             mockCreateSample.returns(Promise.resolve());
 
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({}));
+            mockConfigService.loadConfig.returns(Promise.resolve({}));
 
             mockIdentityService.getLoggedIn.returns(false);
 
@@ -134,7 +137,7 @@ describe('InitializationService', () => {
             service.initialize();
 
             tick();
-            stubLoadConfig.should.be.called;
+            mockConfigService.loadConfig.should.be.called;
 
             mockIdentityCardService.loadIdentityCards.should.have.been.called;
             mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
@@ -145,8 +148,7 @@ describe('InitializationService', () => {
             let mockCreateSample = sinon.stub(service, 'deployInitialSample');
             mockCreateSample.returns(Promise.resolve());
 
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve(mockConfig));
+            mockConfigService.loadConfig.returns(Promise.resolve(mockConfig));
 
             mockIdentityService.getLoggedIn.returns(false);
 
@@ -157,7 +159,7 @@ describe('InitializationService', () => {
             service.initialize();
 
             tick();
-            stubLoadConfig.should.be.called;
+            mockConfigService.loadConfig.should.be.called;
 
             mockIdentityCardService.loadIdentityCards.should.have.been.called;
             mockIdentityCardService.addInitialIdentityCards.should.have.been.calledWith([sinon.match.instanceOf(IdCard)]);
@@ -168,8 +170,7 @@ describe('InitializationService', () => {
             let mockCreateSample = sinon.stub(service, 'deployInitialSample');
             mockCreateSample.returns(Promise.resolve());
 
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({}));
+            mockConfigService.loadConfig.returns(Promise.resolve({}));
 
             mockIdentityService.getLoggedIn.returns(true);
 
@@ -179,7 +180,7 @@ describe('InitializationService', () => {
             service.initialize();
 
             tick();
-            stubLoadConfig.should.be.called;
+            mockConfigService.loadConfig.should.be.called;
 
             mockIdentityCardService.loadIdentityCards.should.have.been.called;
             mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
@@ -188,7 +189,7 @@ describe('InitializationService', () => {
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
 
-            let loadConfigStub = sinon.stub(service, 'loadConfig').throws();
+            mockConfigService.loadConfig.throws();
 
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
@@ -198,38 +199,7 @@ describe('InitializationService', () => {
             mockAlertService.errorStatus$.next.should.have.been.called;
             service['initialized'].should.be.false;
 
-            sinon.restore(service.loadConfig);
-        })));
-    });
-
-    describe('loadConfig', () => {
-        it('should load config', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
-            // setup a mocked response
-            mockBackend.connections.subscribe((connection) => {
-                connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify({result: 'a result'})
-                })));
-            });
-
-            service.loadConfig().then((config) => {
-                config.should.deep.equal({result: 'a result'});
-            });
-            tick();
-        })));
-    });
-
-    describe('isWebOnly', () => {
-        it('should return false if web only', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let result = service.isWebOnly();
-            tick();
-            result.should.equal(false);
-        })));
-
-        it('should return true if not web only', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {webonly: true};
-            let result = service.isWebOnly();
-            tick();
-            result.should.equal(true);
+            sinon.restore(mockConfigService.loadConfig);
         })));
     });
 
