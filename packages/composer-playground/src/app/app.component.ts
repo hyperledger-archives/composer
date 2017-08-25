@@ -14,6 +14,7 @@ import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
+import { ConfigService } from './services/config.service';
 import { ViewTransactionComponent } from './test/view-transaction';
 
 import { IdCard } from 'composer-common';
@@ -57,7 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 private alertService: AlertService,
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
-                private aboutService: AboutService) {
+                private aboutService: AboutService,
+                private configService: ConfigService) {
     }
 
     ngOnInit() {
@@ -128,14 +130,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Initialise playground
         return this.initializationService.initialize()
             .then(() => {
-                return this.initializationService.isWebOnly();
-            })
-            .then((webOnly) => {
-                if (webOnly) {
-                    this.usingLocally = false;
-                } else {
-                    this.usingLocally = true;
-                }
+                this.usingLocally = !this.configService.isWebOnly();
             });
     }
 
