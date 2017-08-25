@@ -18,6 +18,9 @@ export class IdentityCardComponent {
     @Input()
     preview: boolean = false;
 
+    @Input()
+    indestructible: boolean = false;
+
     @Output()
     onConnect: EventEmitter<string> = new EventEmitter<string>();
 

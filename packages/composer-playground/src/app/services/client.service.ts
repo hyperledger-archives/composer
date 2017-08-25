@@ -3,6 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { LocalStorageService } from 'angular-2-local-storage';
 
 import { AdminService } from './admin.service';
+import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileStoreService } from './connectionprofilestore.service';
@@ -25,6 +26,7 @@ export class ClientService {
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
 
     constructor(private adminService: AdminService,
+                private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private alertService: AlertService,
                 private localStorageService: LocalStorageService,
@@ -224,7 +226,8 @@ export class ClientService {
             return this.connectingPromise;
         }
 
-        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityService.getCurrentConnectionProfile();
+        let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
@@ -232,7 +235,7 @@ export class ClientService {
         });
 
         let businessNetworkName: string;
-        let userId = this.identityCardService.getCurrentEnrollmentCredentials().id;
+        let userId = enrollmentCredentials.id;
 
         if (!name) {
             try {
@@ -275,9 +278,9 @@ export class ClientService {
 
     refresh(businessNetworkName): Promise<any> {
         this.currentBusinessNetwork = null;
-        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
-        let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
-        let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
+        let connectionProfile = this.identityService.getCurrentConnectionProfile();
+        let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
+        let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
@@ -329,7 +332,7 @@ export class ClientService {
                     text: 'creating identity card admin',
                     force: true
                 });
-                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+                let connectionProfile = this.identityService.getCurrentConnectionProfile();
                 if (connectionProfile.type !== 'web') {
                     return this.identityCardService.createIdentityCard('admin', businessNetwork.getName(), 'admin', 'adminpw', connectionProfile);
                 }
@@ -338,9 +341,8 @@ export class ClientService {
                 return this.getBusinessNetworkConnection().disconnect();
             })
             .then(() => {
-                let enrollmentCredentials = this.identityCardService.getCurrentEnrollmentCredentials();
-                let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
-                let connectionProfileRef = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
+                let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
                 return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetwork.getName(), enrollmentCredentials.id, enrollmentCredentials.secret);
             })
             .then(() => {
@@ -353,7 +355,7 @@ export class ClientService {
     }
 
     issueIdentity(userID, participantFQI, options): Promise<string> {
-        let connectionProfile = this.identityCardService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityService.getCurrentConnectionProfile();
 
         ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
             if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {

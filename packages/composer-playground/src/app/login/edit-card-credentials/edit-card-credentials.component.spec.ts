@@ -134,7 +134,7 @@ describe('EditCardCredentialsComponent', () => {
             component['validContents']().should.be.false;
         });
 
-        it('should validate if a Business Network Name field is empty when specifying user ID/Secret', () => {
+        it('should not validate if a Business Network Name field is empty when specifying user ID/Secret', () => {
             // Secret/ID path
             component['useCerts'] = false;
             component['addInProgress'] = false;
@@ -142,7 +142,7 @@ describe('EditCardCredentialsComponent', () => {
             component['userSecret'] = 'mySecret';
             component['busNetName'] = null;
 
-            component['validContents']().should.be.true;
+            component['validContents']().should.be.false;
         });
 
         it('should validate if all text fields are added when specifying user ID/Secret', () => {

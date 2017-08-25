@@ -7,6 +7,8 @@ import { IdentityService } from './identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import * as sinon from 'sinon';
 
+import { IdCard } from 'composer-common';
+
 describe('IdentityService', () => {
 
     let mockLocalStorageService;
@@ -22,13 +24,50 @@ describe('IdentityService', () => {
 
     describe('setCurrentIdentity', () => {
         it('should set current identity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            let idCardMock = sinon.createStubInstance(IdCard);
+            idCardMock.getConnectionProfile.returns({name: 'hlfv1'});
+            idCardMock.getEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
             let nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
-            service.setCurrentIdentity('identity1');
+
+            service.setCurrentIdentity('qpn-hlfv1', idCardMock);
 
             tick();
 
             nextCurrentIdentitySpy.should.have.been.called;
+            service['currentQualifiedProfileName'].should.equal('qpn-hlfv1');
+            service['currentConnectionProfile'].should.deep.equal({name: 'hlfv1'});
+            service['currentEnrollmentCredentials'].should.deep.equal({id: 'admin', secret: 'adminpw'});
         })));
+    });
+
+    describe('getCurrentConnectionProfile', () => {
+        it('should get the current connection profile', inject([IdentityService], (service: IdentityService) => {
+            service['currentConnectionProfile'] = {name: 'hlfv1'};
+
+            let result = service.getCurrentConnectionProfile();
+
+            result.should.deep.equal({name: 'hlfv1'});
+        }));
+    });
+
+    describe('getCurrentQualifiedProfileName', () => {
+        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
+            service['currentQualifiedProfileName'] = 'qpn-hlfv1';
+
+            let result = service.getCurrentQualifiedProfileName();
+
+            result.should.equal('qpn-hlfv1');
+        }));
+    });
+
+    describe('getCurrentEnrollmentCredentials', () => {
+        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
+            service['currentEnrollmentCredentials'] = {id: 'admin', secret: 'adminpw'};
+
+            let result = service.getCurrentEnrollmentCredentials();
+
+            result.should.deep.equal({id: 'admin', secret: 'adminpw'});
+        }));
     });
 
     describe('getLoggedIn', () => {
