@@ -25,6 +25,7 @@
         <div class="identities">
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
+                           [indestructible]="(indestructibleCards.indexOf(cardRef) > -1)"
                            (onConnect)="changeIdentity(cardRef)"
                            (onExport)="exportIdentity(cardRef)"
                            (onDelete)="removeIdentity(cardRef)">
