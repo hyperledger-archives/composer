@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
     private connectionProfiles: Map<string, string>;
     private idCardRefs: Map<string, string[]>;
     private idCards: Map<string, IdCard>;
+    private indestructibleCards: string[];
     private showDeployNetwork: boolean = false;
     private editingConnectionProfile = null;
     private creatingIdCard: boolean = false;
@@ -58,6 +59,7 @@ export class LoginComponent implements OnInit {
 
     loadIdentityCards(): Promise<void> {
         return this.identityCardService.getIdentityCards().then((cards) => {
+            this.indestructibleCards = this.identityCardService.getIndestructibleIdentityCards();
             this.idCards = cards;
             this.connectionProfileNames = new Map<string, string>();
             this.connectionProfiles = new Map<string, string>();

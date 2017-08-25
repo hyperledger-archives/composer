@@ -35,6 +35,8 @@ export class IdentityCardService {
 
     private idCards: Map<string, IdCard> = new Map<string, IdCard>();
 
+    private indestructibleCards: string[] = [];
+
     constructor(private adminService: AdminService,
                 private connectionProfileService: ConnectionProfileService,
                 private identityService: IdentityService,
@@ -52,6 +54,10 @@ export class IdentityCardService {
 
     getCurrentIdentityCard(): IdCard {
         return this.getIdentityCard(this.currentCard);
+    }
+
+    getIndestructibleIdentityCards(): string[] {
+        return this.indestructibleCards;
     }
 
     getIdentityCardRefsWithProfileAndRole(qualifiedProfileName: string, role: string): string[] {
@@ -100,6 +106,7 @@ export class IdentityCardService {
 
     loadIdentityCards(webOnly: boolean): Promise<number> {
         this.currentCard = null;
+        this.indestructibleCards = [];
 
         return new Promise((resolve, reject) => {
             this.idCards = this.identityCardStorageService
@@ -117,8 +124,13 @@ export class IdentityCardService {
                         let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
                         cardObject.setCredentials(cardProperties.credentials);
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
-                        if (data && data.current) {
-                            this.currentCard = cardRef;
+                        if (data) {
+                            if (data.current) {
+                                this.currentCard = cardRef;
+                            }
+                            if (data.indestructible) {
+                                this.indestructibleCards.push(cardRef);
+                            }
                         }
                         return [cardRef, cardObject];
                     }
@@ -154,7 +166,7 @@ export class IdentityCardService {
         initialCards.unshift(defaultCardObject);
 
         let addCardPromises: Promise<any>[] = initialCards.map((card, index) => {
-            return this.addIdentityCard(card).then((cardRef: string) => {
+            return this.addIdentityCard(card, true).then((cardRef: string) => {
                 return cardRef;
             });
         });
@@ -176,14 +188,21 @@ export class IdentityCardService {
         return this.addIdentityCard(card);
     }
 
-    addIdentityCard(card: IdCard): Promise<string> {
+    addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string> {
         let cardRef: string = uuid.v4();
+        let data = {
+            unused: true,
+            indestructible: indestructible
+        };
 
         return Promise.resolve()
             .then(() => {
                 this.identityCardStorageService.set(cardRef, card);
-                this.identityCardStorageService.set(this.dataRef(cardRef), {unused: true});
+                this.identityCardStorageService.set(this.dataRef(cardRef), data);
                 this.idCards.set(cardRef, card);
+                if (indestructible) {
+                    this.indestructibleCards.push(cardRef);
+                }
 
                 let credentials = card.getCredentials();
                 if (credentials && credentials.certificate && credentials.privateKey) {
