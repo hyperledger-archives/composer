@@ -32,25 +32,55 @@ app-login {
             margin-top: $space-large;
             padding-left: $space-large;
 
-            .connection-profile-buttons {
-                display: inline-block;
-                margin-left: $space-medium;
-
-                button {
-                    &.action.circular:hover,
-                    &.action.circular:focus {
-                        background-color: $white;
-                        border-bottom: 2px solid transparent;
-                    }
-                }
-            }
-
             .identities {
                 display: flex;
                 flex-wrap: wrap;
-                margin-top: $space-smedium;
+                margin-top: $space-large;
 
-                identity-card {
+                .connection-profile-card {
+                    width: 275px;
+                    min-height: 325px;
+                    color: $fifth-highlight;
+                    background-color: $fourth-highlight;
+                }
+
+                button.connection-profile-card {
+                    border: 1px dashed $fifth-highlight;
+                    border-radius: 5px;
+                
+                    &:hover, &:focus {
+                        background-color: rgba(255,255,255,0.30);
+                    }
+                }
+
+                .card-content {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+
+                    a {
+                        color: $secondary-text;
+                        text-decoration: none;
+
+                        &:hover, &:focus {
+                            text-decoration: underline;
+                            outline: none;
+                        }
+                    }
+
+                    p {
+                        text-align: center;
+                    }
+
+                    svg {
+                        fill: $fifth-highlight;
+                        width: 60px;
+                        height: 55px;
+                    }
+                }
+
+                identity-card, .connection-profile-card {
                     margin-left: $space-large;
                     margin-bottom: $space-large;
                 }

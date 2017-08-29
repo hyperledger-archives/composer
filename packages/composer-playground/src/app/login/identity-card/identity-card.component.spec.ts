@@ -145,4 +145,42 @@ describe(`IdentityCardComponent`, () => {
             result.should.equal(':)');
         });
     });
+
+    describe('#getRoles', () => {
+        it('should get PeerAdmin role', () => {
+            mockIdCard.getRoles.returns(['PeerAdmin']);
+            component.identity = mockIdCard;
+
+            let result = component.getRoles();
+
+            result.should.deep.equal('PeerAdmin');
+        });
+
+        it('should get ChannelAdmin role', () => {
+            mockIdCard.getRoles.returns(['ChannelAdmin']);
+            component.identity = mockIdCard;
+
+            let result = component.getRoles();
+
+            result.should.deep.equal('ChannelAdmin');
+        });
+
+        it('should not get other roles', () => {
+            mockIdCard.getRoles.returns(['GreenConga']);
+            component.identity = mockIdCard;
+
+            let result = component.getRoles();
+
+            should.not.exist(result);
+        });
+
+        it('should get valid roles as comma separated string', () => {
+            mockIdCard.getRoles.returns(['BlueConga', 'PeerAdmin', 'GreenConga', 'ChannelAdmin', 'PurpleConga']);
+            component.identity = mockIdCard;
+
+            let result = component.getRoles();
+
+            result.should.deep.equal('PeerAdmin, ChannelAdmin');
+        });
+    });
 });

@@ -24,9 +24,9 @@ module.exports = function (app) {
         return;
     }
 
-    // We only need to enable thhis code if security has been enabled.
-    const security = !!composer.security;
-    if (!security) {
+    // We only need to enable this code if the multiple user option has been specified.
+    const multiuser = !!composer.multiuser;
+    if (!multiuser) {
         return;
     }
 

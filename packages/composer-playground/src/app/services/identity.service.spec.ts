@@ -5,55 +5,69 @@
 import { TestBed, async, inject, fakeAsync, tick } from '@angular/core/testing';
 import { IdentityService } from './identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { WalletService } from './wallet.service';
 import * as sinon from 'sinon';
-import { FileWallet } from 'composer-common';
+
+import { IdCard } from 'composer-common';
 
 describe('IdentityService', () => {
 
     let mockLocalStorageService;
-    let mockWalletService;
-    let mockFileWallet;
 
     beforeEach(() => {
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
-        mockWalletService = sinon.createStubInstance(WalletService);
-
-        mockFileWallet = sinon.createStubInstance(FileWallet);
-        mockFileWallet.list.returns(Promise.resolve(['identity2', 'identity1']));
-        mockWalletService.getWallet.returns(mockFileWallet);
 
         TestBed.configureTestingModule({
             providers: [IdentityService,
-                {provide: LocalStorageService, useValue: mockLocalStorageService},
-                {provide: WalletService, useValue: mockWalletService}]
+                {provide: LocalStorageService, useValue: mockLocalStorageService}]
         });
-    });
-
-    describe('getIdentities', () => {
-        it('should get identities', fakeAsync(inject([IdentityService], (service: IdentityService) => {
-
-            service.getIdentities('xxx-profile').then((identities) => {
-                tick();
-                identities.should.deep.equal(['identity1', 'identity2']);
-                mockWalletService.getWallet.should.be.calledWith('xxx-profile');
-                mockFileWallet.list.should.be.called;
-            });
-
-            tick();
-
-        })));
     });
 
     describe('setCurrentIdentity', () => {
         it('should set current identity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            let idCardMock = sinon.createStubInstance(IdCard);
+            idCardMock.getConnectionProfile.returns({name: 'hlfv1'});
+            idCardMock.getEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
             let nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
-            service.setCurrentIdentity('identity1');
+
+            service.setCurrentIdentity('qpn-hlfv1', idCardMock);
 
             tick();
 
             nextCurrentIdentitySpy.should.have.been.called;
+            service['currentQualifiedProfileName'].should.equal('qpn-hlfv1');
+            service['currentConnectionProfile'].should.deep.equal({name: 'hlfv1'});
+            service['currentEnrollmentCredentials'].should.deep.equal({id: 'admin', secret: 'adminpw'});
         })));
+    });
+
+    describe('getCurrentConnectionProfile', () => {
+        it('should get the current connection profile', inject([IdentityService], (service: IdentityService) => {
+            service['currentConnectionProfile'] = {name: 'hlfv1'};
+
+            let result = service.getCurrentConnectionProfile();
+
+            result.should.deep.equal({name: 'hlfv1'});
+        }));
+    });
+
+    describe('getCurrentQualifiedProfileName', () => {
+        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
+            service['currentQualifiedProfileName'] = 'qpn-hlfv1';
+
+            let result = service.getCurrentQualifiedProfileName();
+
+            result.should.equal('qpn-hlfv1');
+        }));
+    });
+
+    describe('getCurrentEnrollmentCredentials', () => {
+        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
+            service['currentEnrollmentCredentials'] = {id: 'admin', secret: 'adminpw'};
+
+            let result = service.getCurrentEnrollmentCredentials();
+
+            result.should.deep.equal({id: 'admin', secret: 'adminpw'});
+        }));
     });
 
     describe('getLoggedIn', () => {

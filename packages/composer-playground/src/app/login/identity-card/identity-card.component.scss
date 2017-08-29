@@ -53,10 +53,22 @@
                     margin-right: $space-smedium;
                 }
 
-                svg {
+                svg.ibm-icon {
                     // why is the align-self required for Safari?!
                     align-self: center;
                     fill: $second-highlight;
+                }
+
+                &.action[disabled],
+                &.action[disabled]:active,
+                &.action[disabled]:focus {
+                    span {
+                        color: $fifth-highlight;
+                    }
+
+                    svg.ibm-icon {
+                        fill: $fifth-highlight;
+                    }
                 }
             }
         }
@@ -132,6 +144,15 @@
         .connection-profile-details, .business-network-details {
             padding-top: $space-medium;
             border-top: 1px solid $fourth-highlight;
+
+            p {
+                text-overflow: ellipsis;
+                overflow: hidden;
+
+                &.none {
+                    color: $fifth-highlight;
+                }
+            }
         }
     }
 }

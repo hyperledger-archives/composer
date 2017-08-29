@@ -30,7 +30,7 @@
         </div>
         <div>
             <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
-                Deploy
+                Update
             </button>
         </div>
     </div>
@@ -63,10 +63,6 @@
                 <div style="flex-shrink:1;align-self: center">
                     <h1 *ngIf="currentFile && fileType(currentFile)!='Readme'" class="margin-right">{{
                         fileType(currentFile) }} File</h1>
-                    <h1 id="editor_deployedPackageName" *ngIf="currentFile && fileType(currentFile)=='Readme'"
-                        class="business-network-description"><p>{{ deployedPackageDescription }}</p>
-                        <div class="tooltiptext">{{ deployedPackageDescription }}</div>
-                    </h1>
                 </div>
                 <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center"
                      class="business-network-version small">{{currentFile.displayID}}
@@ -107,19 +103,7 @@
                     </button>
                 </div>
             </div>
-            <div *ngIf="editActive && fileType(currentFile)=='Readme'" class="business-network-details">
-                <label class="edit-label margin-right" for="editVersion">Version: </label>
-                <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
-                       [(ngModel)]="inputPackageVersion">
-                <div class="edit-package-text margin-right">
-                    <button id="editPackageButton" type="button" class="action" (click)="setCurrentFile({
-          package: true,
-          id: 'package',
-          displayID: 'package.json'
-        });hideEdit();">View/edit full metadata in package.json
-                    </button>
-                </div>
-            </div>
+
             <div *ngIf="editActive && fileType(currentFile)!='Readme'" class="business-network-details">
                 <div class="flex-container" style="flex-direction:column">
                     <div class="edit-file-row">

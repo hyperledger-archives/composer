@@ -13,10 +13,12 @@ let expect = chai.expect;
 
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, ConnectionProfileStore } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
+import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 describe('ClientService', () => {
 
@@ -25,6 +27,7 @@ describe('ClientService', () => {
     let adminMock;
     let alertMock;
     let businessNetworkDefMock;
+    let identityServiceMock;
     let identityCardServiceMock;
     let businessNetworkConMock;
     let modelFileMock;
@@ -32,6 +35,8 @@ describe('ClientService', () => {
     let aclFileMock;
     let queryFileMock;
     let mockLocalStorage;
+    let connectionProfileStoreMock;
+    let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -39,6 +44,7 @@ describe('ClientService', () => {
         businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
         adminMock = sinon.createStubInstance(AdminService);
         alertMock = sinon.createStubInstance(AlertService);
+        identityServiceMock = sinon.createStubInstance(IdentityService);
         identityCardServiceMock = sinon.createStubInstance(IdentityCardService);
         businessNetworkConMock = sinon.createStubInstance(BusinessNetworkConnection);
         modelFileMock = sinon.createStubInstance(ModelFile);
@@ -50,12 +56,18 @@ describe('ClientService', () => {
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
 
+        connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
+        connectionProfileStoreServiceMock = sinon.createStubInstance(ConnectionProfileStoreService);
+        connectionProfileStoreServiceMock.getConnectionProfileStore.returns(connectionProfileStoreMock);
+
         TestBed.configureTestingModule({
             providers: [ClientService,
                 {provide: AdminService, useValue: adminMock},
                 {provide: AlertService, useValue: alertMock},
+                {provide: IdentityService, useValue: identityServiceMock},
                 {provide: IdentityCardService, useValue: identityCardServiceMock},
-                {provide: LocalStorageService, useValue: mockLocalStorage}]
+                {provide: LocalStorageService, useValue: mockLocalStorage},
+                {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
     });
 
@@ -64,18 +76,18 @@ describe('ClientService', () => {
     });
 
     describe('getBusinessNetworkConnection', () => {
-        it('should get business network connection', inject([ClientService], (service: ClientService) => {
+        it('should get business network connection if set', inject([ClientService], (service: ClientService) => {
             service['businessNetworkConnection'] = businessNetworkConMock;
             let result = service.getBusinessNetworkConnection();
 
             result.should.deep.equal(businessNetworkConMock);
         }));
 
-        it('should create a new business network connection if none exist', inject([ClientService], (service: ClientService) => {
-            let mockCreate = sinon.stub(service, 'createBusinessNetworkConnection');
+        it('should create a new business network connection if not set', inject([ClientService], (service: ClientService) => {
             let result = service.getBusinessNetworkConnection();
 
-            mockCreate.should.have.been.called;
+            result.should.be.an.instanceOf(BusinessNetworkConnection);
+            (<any> result).connectionProfileStore.should.equal(connectionProfileStoreMock);
         }));
     });
 
@@ -791,8 +803,8 @@ describe('ClientService', () => {
 
     describe('ensureConnected', () => {
         beforeEach(() => {
-            identityCardServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
-            identityCardServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myId'});
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myId'});
         });
 
         it('should return if connected when not forced', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -800,7 +812,7 @@ describe('ClientService', () => {
 
             service.ensureConnected();
 
-            identityCardServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
         })));
 
         it('should return if connecting', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -808,7 +820,7 @@ describe('ClientService', () => {
 
             service.ensureConnected();
 
-            identityCardServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
         })));
 
         it('should connect if not connected', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -821,7 +833,7 @@ describe('ClientService', () => {
 
             tick();
 
-            identityCardServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -852,7 +864,7 @@ describe('ClientService', () => {
 
             tick();
 
-            identityCardServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -887,7 +899,7 @@ describe('ClientService', () => {
 
             tick();
 
-            identityCardServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -944,9 +956,9 @@ describe('ClientService', () => {
 
     describe('refresh', () => {
         beforeEach(() => {
-            identityCardServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
-            identityCardServiceMock.getQualifiedProfileName.returns('xxx-myProfile');
-            identityCardServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myUser', secret: 'mySecret'});
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityServiceMock.getCurrentQualifiedProfileName.returns('xxx-myProfile');
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myUser', secret: 'mySecret'});
         });
 
         it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -985,16 +997,15 @@ describe('ClientService', () => {
 
     describe('it should deployInitial sample', () => {
         beforeEach(() => {
-            identityCardServiceMock.getCurrentConnectionProfile.returns({name: '$default', type: 'web'});
-            identityCardServiceMock.getQualifiedProfileName.returns('web-$default');
-            identityCardServiceMock.getCurrentEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
+            identityServiceMock.getCurrentConnectionProfile.returns({name: '$default', type: 'web'});
+            identityServiceMock.getCurrentQualifiedProfileName.returns('web-$default');
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
         });
 
         it('should deploy the initial sample', fakeAsync(inject([ClientService], (service: ClientService) => {
             let resetMock = sinon.stub(service, 'reset');
 
-            adminMock.createNewBusinessNetwork.returns(Promise.resolve());
-            adminMock.isInitialDeploy.returns(true);
+            adminMock.createNewBusinessNetwork.returns(Promise.resolve(true));
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1005,18 +1016,23 @@ describe('ClientService', () => {
 
             service.deployInitialSample();
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
+            tick();
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Deploying Business Network',
-                text: 'deploying sample business network'
+                text: 'deploying sample business network',
+                force: true
             });
 
-            tick();
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
+                title: 'Creating identity card',
+                text: 'creating identity card admin',
+                force: true
+            });
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.have.been.called;
 
             adminMock.update.should.have.been.calledWith({
                 name: 'bob',
@@ -1029,11 +1045,15 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('web-$default', 'myNetwork', 'admin', 'adminpw');
         })));
 
-        it('should not deploy if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
+        it('should deploy the initial sample and create id card', fakeAsync(inject([ClientService], (service: ClientService) => {
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'hlfv1', type: 'hlfv1'});
+            identityServiceMock.getCurrentQualifiedProfileName.returns('qpn');
+
+            identityCardServiceMock.createIdentityCard.returns(Promise.resolve());
+
             let resetMock = sinon.stub(service, 'reset');
 
-            adminMock.createNewBusinessNetwork.returns(Promise.reject({message: 'businessNetwork with name myNetwork already exists'}));
-            adminMock.isInitialDeploy.returns(false);
+            adminMock.createNewBusinessNetwork.returns(Promise.resolve(true));
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1044,18 +1064,56 @@ describe('ClientService', () => {
 
             service.deployInitialSample();
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
+            tick();
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Deploying Business Network',
-                text: 'deploying sample business network'
+                text: 'deploying sample business network',
+                force: true
             });
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
+                title: 'Creating identity card',
+                text: 'creating identity card admin',
+                force: true
+            });
+
+            businessNetworkFromArchiveMock.should.have.been.called;
+
+            adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
+
+            adminMock.update.should.have.been.calledWith({
+                name: 'bob',
+                getName: sinon.match.func,
+                getDescription: sinon.match.func
+            });
+            resetMock.should.have.been.called;
+
+            businessNetworkConMock.disconnect.should.have.been.called;
+            businessNetworkConMock.connect.should.have.been.calledWith('qpn', 'myNetwork', 'admin', 'adminpw');
+
+            identityCardServiceMock.createIdentityCard.should.have.been.calledWith('admin', 'myNetwork', 'admin', 'adminpw', { name: 'hlfv1', type: 'hlfv1' });
+        })));
+
+        it('should not deploy if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let resetMock = sinon.stub(service, 'reset');
+
+            adminMock.createNewBusinessNetwork.returns(Promise.reject({message: 'businessNetwork with name myNetwork already exists'}));
+
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
+                name: 'bob',
+                getName: sinon.stub().returns('myNetwork'),
+                getDescription: sinon.stub().returns('myDescription')
+            }));
+
+            service.deployInitialSample();
 
             tick();
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.have.been.called;
 
             adminMock.update.should.not.have.been.called;
             resetMock.should.have.been.called;
@@ -1068,7 +1126,6 @@ describe('ClientService', () => {
             let resetMock = sinon.stub(service, 'reset');
 
             adminMock.createNewBusinessNetwork.returns(Promise.reject('some error'));
-            adminMock.isInitialDeploy.returns(true);
 
             let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
             let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({
@@ -1085,18 +1142,11 @@ describe('ClientService', () => {
                     error.should.equal('some error');
                 });
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({
-                title: 'Deploying Business Network',
-                text: 'deploying sample business network'
-            });
-
             tick();
 
             businessNetworkFromArchiveMock.should.have.been.called;
 
             adminMock.createNewBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
-
-            adminMock.isInitialDeploy.should.not.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
@@ -1105,7 +1155,7 @@ describe('ClientService', () => {
     describe('issueIdentity', () => {
 
         it('should generate and return an identity using internally held state information', fakeAsync(inject([ClientService], (service: ClientService) => {
-            identityCardServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
             businessNetworkConMock.issueIdentity.returns(Promise.resolve({
                 participant: 'uniqueName',
                 userID: 'userId',
@@ -1128,7 +1178,7 @@ describe('ClientService', () => {
         })));
 
         it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(inject([ClientService], (service: ClientService) => {
-            identityCardServiceMock.getCurrentConnectionProfile.returns({
+            identityServiceMock.getCurrentConnectionProfile.returns({
                 name: 'myProfile',
                 membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
                 peerURL: 'peerURL\.blockchain\.ibm\.com',

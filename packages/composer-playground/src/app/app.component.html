@@ -2,8 +2,7 @@
     <nav class="indexnav">
         <div class="navcontent">
             <div class="navlogo">
-                <p><b>{{ composerBanner[0] }}</b> {{ composerBanner[1] }}</p>
-                <div class="tooltiptext">{{ composerBanner[0] }} {{ composerBanner[1] }}</div>
+                <p title="{{composerBanner[0]}}"><b>{{ composerBanner[0] }}</b></p>&nbsp;<p id="network-name" title="{{composerBanner[1]}}">{{ composerBanner[1] }}</p>
             </div>
             <div class="navmain" [ngClass]="{'rightonly' : !showHeaderLinks && !usingLocally }">
                 <ul *ngIf="showHeaderLinks" class="links navleft">

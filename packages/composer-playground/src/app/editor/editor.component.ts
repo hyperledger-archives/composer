@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from '../import/import.component';
+import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
@@ -52,11 +52,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     private editingPackage: boolean = false; // Is the package.json being edited?
     private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
-    private deployedPackageName; // This is the deployed BND's package name
     private deployedPackageVersion; // This is the deployed BND's package version
-    private deployedPackageDescription; // This is the deployed BND's package description
-
-    private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
@@ -117,10 +113,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     updatePackageInfo() {
         let metaData = this.clientService.getMetaData();
-        this.deployedPackageName = metaData.getName(); // Set Name
         this.deployedPackageVersion = metaData.getVersion(); // Set Version
-        this.deployedPackageDescription = metaData.getDescription(); // Set Description
-        this.inputPackageName = metaData.getName();
         this.inputPackageVersion = metaData.getVersion();
     }
 
@@ -138,7 +131,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     setCurrentFile(file) {
         this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
-        let always = (this.currentFile === null || file.readme || file.acl);
+        let always = (this.currentFile === null || file.readme || file.acl || file.query);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
             if (this.editingPackage) {
@@ -390,14 +383,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        const importModalRef = this.drawerService.open(ImportComponent);
-        // only want to update here not deploy
-        importModalRef.componentInstance.deployNetwork = false;
-
+        const importModalRef = this.drawerService.open(UpdateComponent);
         importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
-
-            importModalRef.close();
-
             if (result.deployed) {
                 this.updatePackageInfo();
                 this.updateFiles();
@@ -411,11 +398,12 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.setCurrentFile(currentFile);
                     this.alertService.successStatus$.next({
                         title: 'Deploy Successful',
-                        text: 'Business network imported deployed successfully',
+                        text: 'Business network deployed successfully',
                         icon: '#icon-deploy_24'
                     });
                 }
             } else {
+                importModalRef.close();
                 if (result.error) {
                     this.alertService.errorStatus$.next(result.error);
                 }
@@ -517,6 +505,14 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     toggleEditActive() {
         this.editActive = !this.editActive;
+        if (this.editActive && this.fileType(this.currentFile) === 'Readme') {
+            this.setCurrentFile({
+                package: true,
+                id: 'package',
+                displayID: 'package.json'
+            });
+            this.hideEdit();
+        }
     }
 
     /*
@@ -554,17 +550,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } else {
             this.fileNameError = 'Error: Invalid filename, file must be alpha-numeric with no spaces';
-        }
-    }
-
-    /*
-     * When user edits the package version (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageVersion() {
-        if (this.deployedPackageVersion !== this.inputPackageVersion) {
-            this.deployedPackageVersion = this.inputPackageVersion;
-
-            this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
         }
     }
 

@@ -21,8 +21,9 @@ import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular
 import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
+import { ConfigService } from './services/config.service';
 
-import { FileWallet, IdCard } from 'composer-common';
+import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
 
@@ -154,6 +155,7 @@ describe('AppComponent', () => {
     let mockIdentityCardService;
     let mockLocalStorageService;
     let mockAboutService;
+    let mockConfigService;
     let mockAdminConnection;
     let mockWindow;
 
@@ -177,6 +179,7 @@ describe('AppComponent', () => {
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
 
         mockAlertService = new MockAlertService();
@@ -203,7 +206,8 @@ describe('AppComponent', () => {
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
-                {provide: AboutService, useValue: mockAboutService}
+                {provide: AboutService, useValue: mockAboutService},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         })
 
@@ -492,14 +496,12 @@ describe('AppComponent', () => {
     });
 
     describe('queryParamsUpdated', () => {
-        let mockWallet;
         let mockOnBusy;
         let mockOnError;
         let mockOnTransactionEvent;
         let errorStatusSpy;
 
         beforeEach(async(() => {
-            mockWallet = sinon.createStubInstance(FileWallet);
             routerStub.navigate.returns(Promise.resolve(false));
 
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
@@ -510,7 +512,7 @@ describe('AppComponent', () => {
 
         it('should initialise playground and set use locally to true', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(Promise.resolve(false));
+            mockConfigService.isWebOnly.returns(false);
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -527,7 +529,7 @@ describe('AppComponent', () => {
 
         it('should initialise playground and set use locally to false', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(Promise.resolve(true));
+            mockConfigService.isWebOnly.returns(true);
 
             activatedRoute.testParams = {};
 
@@ -568,6 +570,50 @@ describe('AppComponent', () => {
             component['busyModalRef'] = null;
 
             component.onBusyStatus('message');
+
+            mockModal.open.should.not.have.been.called;
+        });
+
+        it('should not show if in web mode unless force', () => {
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: true});
+
+            mockModal.open.should.have.been.called;
+        });
+
+        it('should show with no card if forced', () => {
+            mockIdentityCardService.getCurrentIdentityCard.returns(null);
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: true});
+
+            mockModal.open.should.have.been.called;
+        });
+
+        it('should not show with no card', () => {
+            mockIdentityCardService.getCurrentIdentityCard.returns(null);
+            activatedRoute.testParams = {};
+
+            updateComponent();
+
+            mockOnBusy.restore();
+
+            component['busyModalRef'] = null;
+
+            component.onBusyStatus({message: 'message', force: false});
 
             mockModal.open.should.not.have.been.called;
         });

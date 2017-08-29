@@ -130,7 +130,7 @@ export class EditorFileComponent {
           if (queryFile) {
               this.editorContent = queryFile.getDefinitions();
               this.editorType = 'code';
-              this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'qry');
+              this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'query');
           } else {
               this.editorContent = null;
           }

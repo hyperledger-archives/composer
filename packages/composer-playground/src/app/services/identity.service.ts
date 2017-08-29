@@ -2,20 +2,21 @@ import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { BehaviorSubject, Observable } from 'rxjs/Rx';
 
-import { Logger } from 'composer-common';
+import { IdCard, Logger } from 'composer-common';
 import { IdentityCardService } from './identity-card.service';
-import { WalletService } from './wallet.service';
 
 @Injectable()
 export class IdentityService {
 
     private _currentIdentity: BehaviorSubject<string> = new BehaviorSubject(null);
+    private currentQualifiedProfileName: string;
+    private currentConnectionProfile: any;
+    private currentEnrollmentCredentials: { id, secret };
 
     // tslint:disable-next-line:member-ordering
     public readonly currentIdentity: Observable<string> = this._currentIdentity.asObservable();
 
-    constructor(private localStorageService: LocalStorageService,
-                private walletService: WalletService) {
+    constructor(private localStorageService: LocalStorageService) {
 
         Logger.setFunctionalLogger({
             // tslint:disable-next-line:no-empty
@@ -24,16 +25,24 @@ export class IdentityService {
         });
     }
 
-    getIdentities(connectionProfile: string): Promise<string[]> {
-        let wallet = this.walletService.getWallet(connectionProfile);
-        return wallet.list()
-        .then((identities) => {
-            return identities.sort();
-        });
+    setCurrentIdentity(qualifiedProfileName: string, card: IdCard) {
+        this.currentQualifiedProfileName = qualifiedProfileName;
+        this.currentConnectionProfile = card.getConnectionProfile();
+        this.currentEnrollmentCredentials = card.getEnrollmentCredentials();
+
+        this._currentIdentity.next(this.currentEnrollmentCredentials.id);
     }
 
-    setCurrentIdentity(identity: string) {
-        this._currentIdentity.next(identity);
+    getCurrentConnectionProfile(): any {
+        return this.currentConnectionProfile;
+    }
+
+    getCurrentQualifiedProfileName(): string {
+        return this.currentQualifiedProfileName;
+    }
+
+    getCurrentEnrollmentCredentials(): { id, secret } {
+        return this.currentEnrollmentCredentials;
     }
 
     setLoggedIn(loggedIn: boolean) {

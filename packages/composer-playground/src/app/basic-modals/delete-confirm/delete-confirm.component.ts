@@ -12,6 +12,7 @@ export class DeleteComponent implements OnInit {
 
     public fileType: string = null;
     public fileName: string = null;
+    public action: string = null;
 
     constructor(public activeModal: NgbActiveModal) {
     }

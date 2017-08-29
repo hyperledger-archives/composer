@@ -93,22 +93,46 @@ class ProxyConnectionManager extends ConnectionManager {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, connectionProfile, connectionOptions, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, certificate, privateKey);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, id, publicKey, privateKey, (error) => {
+                    this.socket.emit('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, id, certificate, privateKey, (error) => {
                         if (error) {
                             return reject(ProxyUtil.inflaterr(error));
                         }
                         LOG.exit(method);
                         resolve();
+                    });
+                });
+            });
+    }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        const method = 'exportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        return this.ensureConnected()
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/connectionManagerExportIdentity', connectionProfileName, connectionOptions, id, (error, credentials) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+                        LOG.exit(method, credentials);
+                        resolve(credentials);
                     });
                 });
             });
@@ -140,7 +164,7 @@ class ProxyConnectionManager extends ConnectionManager {
                                 connection.emit('events', events);
                             }
                         });
-                        LOG.exit(method);
+                        LOG.exit(method, connection);
                         resolve(connection);
                     });
                 });
