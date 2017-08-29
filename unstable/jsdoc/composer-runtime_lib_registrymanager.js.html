@@ -348,7 +348,7 @@ class RegistryManager extends EventEmitter {
                 // yes we can create an instance of this type; now add that to the sysregistries collection
                 // Note we haven't checked if we have update permission on the sysregristries collection
                 // but that is going a bit far really...
-                this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
+                return this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
             })
             .then(() => {
                 // create the collection that will hold the actual data in this registry
