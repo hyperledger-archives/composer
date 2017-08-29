@@ -70,10 +70,11 @@
     "composer-connector-embedded": "0.12.0",
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
+    "ldapjs": "^1.0.1",
     "license-check": "^1.1.5",
     "mocha": "^3.4.2",
     "nyc": "^11.1.0",
-    "passport-github2": "^0.1.10",
+    "passport-ldapauth": "^2.0.0",
     "proxyquire": "^1.7.11",
     "sinon": "^2.3.8",
     "sleep-promise": "^2.0.0"

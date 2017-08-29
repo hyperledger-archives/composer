@@ -5,5 +5,10 @@
     "participantPwd": "adminpw",
     "namespaces": "always",
     "port": 3000,
-    "security": true
+    "authentication": false,
+    "multiuser": false,
+    "websockets": true,
+    "tls": false,
+    "tlscert": "/path/to/cert.pem",
+    "tlskey": "/path/to/key.pem"
 }

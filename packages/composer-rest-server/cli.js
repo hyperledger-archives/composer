@@ -38,7 +38,8 @@ const yargs = require('yargs')
     .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
     .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
-    .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
+    .option('a', { alias: 'authentication', describe: 'Enable authentication for the REST API using Passport', type: 'boolean', default: process.env.COMPOSER_AUTHENTICATION || false })
+    .option('m', { alias: 'multiuser', describe: 'Enable multiple user and identity management using wallets (implies -a)', type: 'boolean', default: process.env.COMPOSER_MULTIUSER || false })
     .option('w', { alias: 'websockets', describe: 'Enable event publication over WebSockets', type: 'boolean', default: process.env.COMPOSER_WEBSOCKETS || true })
     .option('t', { alias: 'tls', describe: 'Enable TLS security for the REST API', type: 'boolean', default: process.env.COMPOSER_TLS || false })
     .option('c', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
@@ -76,7 +77,8 @@ if (interactive) {
                 participantId: answers.userid,
                 participantPwd: answers.secret,
                 namespaces: answers.namespaces,
-                security: answers.security,
+                authentication: answers.authentication,
+                multiuser: answers.multiuser,
                 websockets: answers.websockets,
                 tls: answers.tls,
                 tlscert: answers.tlscert,
@@ -91,7 +93,8 @@ if (interactive) {
                 '-s': 'participantPwd',
                 '-N': 'namespaces',
                 '-P': 'port',
-                '-S': 'security',
+                '-a': 'authentication',
+                '-m': 'multiuser',
                 '-w': 'websockets',
                 '-t': 'tls',
                 '-c': 'tlscert',
@@ -109,6 +112,12 @@ if (interactive) {
         });
 
 } else {
+
+    // if -m (multiuser) was specified, it implies -a (authentication)
+    if (yargs.m) {
+        yargs.a = true;
+    }
+
     // make sure we have args for all required parms otherwise error
     if (yargs.p === undefined || yargs.n === undefined || yargs.i === undefined || yargs.s === undefined) {
         promise = Promise.reject('Missing parameter. Please run composer-rest-server -h to see usage details');
@@ -120,7 +129,8 @@ if (interactive) {
             participantPwd: yargs.s,
             namespaces: yargs.N,
             port: yargs.P,
-            security: yargs.S,
+            authentication: yargs.a,
+            multiuser: yargs.m,
             websockets: yargs.w,
             tls: yargs.t,
             tlscert: yargs.c,

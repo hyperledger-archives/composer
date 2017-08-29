@@ -80,6 +80,7 @@ function createDataSource(app, composer) {
         participantId: composer.participantId,
         participantPwd: composer.participantPwd,
         namespaces: composer.namespaces,
+        multiuser: composer.multiuser,
         fs: composer.fs,
         wallet: composer.wallet
     };
