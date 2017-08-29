@@ -6,7 +6,7 @@ rule Issuer {
     participant(i): "org.acme.bond.Issuer"
     operation: ALL
     resource(a): "org.acme.bond.BondAsset"
-    condition: (a.bond.issuer.memberId === i.memberId) 
+    condition: (a.bond.issuer.memberId === i.memberId)
     action: ALLOW
 }
 
@@ -15,5 +15,13 @@ rule Default {
     participant: "org.acme.bond.*"
     operation: ALL
     resource: "org.acme.bond.*"
+    action: ALLOW
+}
+
+rule SystemACL {
+    description: "Allow read access"
+    participant: "org.acme.bond.*"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.*"
     action: ALLOW
 }

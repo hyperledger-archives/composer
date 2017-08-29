@@ -1099,12 +1099,13 @@ describe('EditorComponent', () => {
 
             let finishedImport = new BehaviorSubject<any>(true);
 
-            mockDrawer.open = sinon.stub().returns({
+            let drawerItem = {
                 componentInstance: {
                     finishedSampleImport: finishedImport
                 },
                 close: sinon.stub()
-            });
+            };
+            mockDrawer.open = sinon.stub().returns(drawerItem);
 
             component.openImportModal();
 
@@ -1114,7 +1115,7 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.not.have.been.called;
             mockUpdateFiles.should.not.have.been.called;
-
+            drawerItem.close.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
 
@@ -1124,12 +1125,13 @@ describe('EditorComponent', () => {
 
             let finishedImport = new BehaviorSubject<any>(true);
 
-            mockDrawer.open = sinon.stub().returns({
+            let drawerItem = {
                 componentInstance: {
                     finishedSampleImport: finishedImport
                 },
                 close: sinon.stub()
-            });
+            };
+            mockDrawer.open = sinon.stub().returns(drawerItem);
 
             component.openImportModal();
 
@@ -1139,7 +1141,7 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.not.have.been.called;
             mockUpdateFiles.should.not.have.been.called;
-
+            drawerItem.close.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
     });

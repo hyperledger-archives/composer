@@ -16,13 +16,13 @@
 
 module.exports = function (app) {
 
-    // Enable authentication if the security option has been specified.
+    // Enable authentication if the authentication option has been specified.
     const composer = app.get('composer');
     if (!composer) {
         return;
     }
-    const security = !!composer.security;
-    if (security) {
+    const authentication = !!composer.authentication;
+    if (authentication) {
         app.enableAuth();
     }
 

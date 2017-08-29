@@ -398,11 +398,12 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.setCurrentFile(currentFile);
                     this.alertService.successStatus$.next({
                         title: 'Deploy Successful',
-                        text: 'Business network imported deployed successfully',
+                        text: 'Business network deployed successfully',
                         icon: '#icon-deploy_24'
                     });
                 }
             } else {
+                importModalRef.close();
                 if (result.error) {
                     this.alertService.errorStatus$.next(result.error);
                 }
