@@ -80,7 +80,8 @@ describe('BusinessNetworkConnector', () => {
             connectionProfileName : 'MockProfileName',
             businessNetworkIdentifier : 'MockBusinessNetId',
             participantId : 'MockEnrollmentId',
-            participantPwd : 'MockEnrollmentPwd'
+            participantPwd : 'MockEnrollmentPwd',
+            multiuser: true
         };
 
         // create real instances
@@ -200,6 +201,13 @@ describe('BusinessNetworkConnector', () => {
     });
 
     describe('#getConnectionWrapper', () => {
+
+        it('should return the default connection wrapper if multiuser not specified', () => {
+            delete settings.multiuser;
+            testConnector = new BusinessNetworkConnector(settings);
+            testConnector.defaultConnectionWrapper = mockBusinessNetworkConnectionWrapper;
+            testConnector.getConnectionWrapper().should.equal(mockBusinessNetworkConnectionWrapper);
+        });
 
         it('should return the default connection wrapper if no options specified', () => {
             testConnector.getConnectionWrapper().should.equal(mockBusinessNetworkConnectionWrapper);
