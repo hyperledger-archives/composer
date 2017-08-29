@@ -61,4 +61,12 @@ export class IdentityCardComponent {
 
         return result ? result : ':)';
     }
+
+    getRoles(): string {
+        let adminRoles: string[] = this.identity.getRoles().filter((word) => word === 'PeerAdmin' || word === 'ChannelAdmin');
+
+        if (adminRoles.length > 0) {
+            return adminRoles.join(', ');
+        }
+    }
 }
