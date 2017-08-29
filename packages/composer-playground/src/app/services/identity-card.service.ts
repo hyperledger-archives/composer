@@ -15,8 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
-        name: 'admin',
-        businessNetwork: 'basic-sample-network',
+        name: 'PeerAdmin',
         enrollmentId: 'admin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
