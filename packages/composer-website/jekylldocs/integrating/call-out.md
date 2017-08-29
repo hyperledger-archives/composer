@@ -4,7 +4,7 @@ title: "Calling external REST services"
 category: start
 section: integrating
 status: experimental
-index-order: 607
+index-order: 608
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**Transaction processor functions can be used to call external REST services**](./call-out.html). This allows you to move complex computation off the blockchain."
 ---
