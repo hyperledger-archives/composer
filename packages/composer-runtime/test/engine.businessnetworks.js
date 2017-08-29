@@ -214,8 +214,6 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
-                    sinon.assert.calledOnce(mockRegistryManager.add);
-                    sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });

@@ -36,7 +36,7 @@ class TransactionRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
      * @param {Factory} factory The factory to use for this transaction registry.
      * @param {Serializer} serializer The Serializer to use for this transaction registry.
-     * @param {Boolean} systemRegistry True if system transaction regisitries should be included in the list. 
+     * @param {Boolean} systemRegistry True if system transaction regisitries should be included in the list.
      * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
      * instances representing the transaction registries.
      */
@@ -114,6 +114,31 @@ class TransactionRegistry extends Registry {
             .then(() => {
                 return new TransactionRegistry(id, name, securityContext, modelManager, factory, serializer);
             });
+    }
+
+    /**
+     * Determine whether an registry exists.
+     *
+     * @protected
+     * @param {SecurityContext} securityContext The user's security context.
+     * @param {string} id The unique identifier of the asset registry.
+     * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
+     * @param {Factory} factory The factory to use for this asset registry.
+     * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @return {Promise} A promise that will be resolved with a boolean indicating whether the asset registry exists
+     */
+    static transactionRegistryExists(securityContext, id, modelManager, factory, serializer) {
+        Util.securityCheck(securityContext);
+        if (!id) {
+            throw new Error('id not specified');
+        } else if (!modelManager) {
+            throw new Error('modelManager not specified');
+        } else if (!factory) {
+            throw new Error('factory not specified');
+        } else if (!serializer) {
+            throw new Error('serializer not specified');
+        }
+        return Registry.existsRegistry(securityContext, REGISTRY_TYPE, id);
     }
 
     /**

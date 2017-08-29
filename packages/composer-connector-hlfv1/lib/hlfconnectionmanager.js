@@ -23,9 +23,7 @@ const LOG = Logger.getLog('HLFConnectionManager');
 // global.hfc = {
 //     logger: {
 //         debug: () => {
-            
 //             const args = Array.prototype.slice.call(arguments);
-            
 //             const message = util.format.apply(util, args.map((arg) => {
 //                 if (typeof arg === 'function') {
 //                     return '<function>';

@@ -384,7 +384,6 @@ class Context {
                         return null;
                     }
                 }
-
                 // Throw the error.
                 LOG.error(method, error);
                 throw error;

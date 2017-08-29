@@ -924,7 +924,7 @@ class BusinessNetworkConnector extends Connector {
         debug('getAllTransactions', options);
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                return businessNetworkConnection.getTransactionRegistry();
+                return businessNetworkConnection.getTransactionRegistry('org.hyperledger.composer.system.AddParticipant');
             })
             .then((transactionRegistry) => {
                 return transactionRegistry.getAll();
@@ -1014,7 +1014,7 @@ class BusinessNetworkConnector extends Connector {
         debug('getTransactionByID', options);
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                return businessNetworkConnection.getTransactionRegistry();
+                return businessNetworkConnection.getTransactionRegistry('org.hyperledger.composer.system.AddParticipant');
             })
             .then((transactionRegistry) => {
                 return transactionRegistry.get(id);

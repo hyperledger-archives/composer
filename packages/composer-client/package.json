@@ -16,7 +16,8 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000"
+    "test": "node ./scripts/api-changelog.js && npm run mocha",
+    "mocha": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",

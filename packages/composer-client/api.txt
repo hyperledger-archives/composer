@@ -16,7 +16,9 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise getParticipantRegistry(string) 
    + Promise participantRegistryExists(string) 
    + Promise addParticipantRegistry(string,string) 
-   + Promise getTransactionRegistry() 
+   + Promise getTransactionRegistry(string) 
+   + Promise getAllTransactionRegistries(boolean) 
+   + Promise transactionRegistryExists(string) 
    + Promise getHistorian() 
    + Promise getIdentityRegistry() 
    + Promise connect(string,string,string,string,Object) 
@@ -45,7 +47,7 @@ class ParticipantRegistry extends Registry {
 class Query {
 }
 class Registry {
-   + Promise getAllRegistries(SecurityContext,string) 
+   + Promise getAllRegistries(SecurityContext,string,boolean) 
    + Promise getRegistry(SecurityContext,string,string) 
    + Promise existsRegistry(SecurityContext,string,string) 
    + Promise addRegistry(SecurityContext,string,string,string) 
@@ -65,7 +67,8 @@ class Registry {
    + Promise resolve(string) 
 }
 class TransactionRegistry extends Registry {
-   + Promise getAllTransactionRegistries(SecurityContext,ModelManager,Factory,Serializer) 
+   + Promise getAllTransactionRegistries(SecurityContext,ModelManager,Factory,Serializer,Boolean) 
    + Promise getTransactionRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
    + Promise addTransactionRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
+   + Promise transactionRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
 }

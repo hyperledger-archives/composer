@@ -106,7 +106,7 @@ describe('RegistryManager', () => {
             sinon.stub(registryManager, 'ensure').resolves();
             return registryManager.createDefaults()
                 .then(() => {
-                    sinon.assert.calledTwice(registryManager.ensure);
+                    sinon.assert.callCount(registryManager.ensure,12);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.HistorianRecord', 'Asset registry for org.hyperledger.composer.system.HistorianRecord', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
@@ -198,21 +198,13 @@ describe('RegistryManager', () => {
                 });
         });
 
-        it('should not create default transaction registries', () => {
-            modelManager.addModelFile(`
-            namespace org.doge
-            transaction Doge {
-            }`);
-            sinon.stub(registryManager, 'ensure').resolves();
-            return registryManager.createDefaults()
-                .then(() => {
-                    sinon.assert.neverCalledWith(registryManager.ensure, 'Transaction', sinon.match.any, sinon.match.any, sinon.match.any);
-                });
-        });
-
     });
 
     describe('#getAll', () => {
+
+
+
+
 
         it('should not fail if one of the registries is not permitted', () => {
             mockSystemRegistries.getAll.resolves([{
@@ -320,6 +312,104 @@ describe('RegistryManager', () => {
                         type: 'Asset',
                         id: 'cats',
                         name: 'The cats registry'
+                    }]);
+                });
+        });
+
+        it('should get all the registries (excluding system) of the specified type', () => {
+            mockSystemRegistries.getAll.resolves([{
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                system: 'true',
+                id: 'cats',
+                name: 'The cats registry'
+            }, {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            }]);
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            });
+            mockSystemRegistries.get.withArgs('Asset:cats').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                system: 'true',
+                id: 'cats',
+                name: 'The cats registry'
+            });
+
+            let mockCatsCollection = sinon.createStubInstance(DataCollection);
+            let mockDogesCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
+            mockDataService.getCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
+            return registryManager.getAll('Asset')
+                .then((registries) => {
+                    registries.should.have.lengthOf(1);
+                    registries.should.all.be.an.instanceOf(Registry);
+                    registries.should.containSubset([ {
+                        type: 'Asset',
+                        id: 'doges',
+                        name: 'The doges registry'
+                    }]);
+                });
+        });
+
+        it('should get all the registries (including system) of the specified type', () => {
+            mockSystemRegistries.getAll.resolves([{
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                system: 'true',
+                id: 'cats',
+                name: 'The cats registry'
+            }, {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            }]);
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            });
+            mockSystemRegistries.get.withArgs('Asset:cats').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'cats',
+                type: 'Asset',
+                system: 'true',
+                id: 'cats',
+                name: 'The cats registry'
+            });
+
+            let mockCatsCollection = sinon.createStubInstance(DataCollection);
+            let mockDogesCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
+            mockDataService.getCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
+            return registryManager.getAll('Asset',true)
+                .then((registries) => {
+                    registries.should.have.lengthOf(2);
+                    registries.should.all.be.an.instanceOf(Registry);
+                    registries.should.containSubset([{
+                        type: 'Asset',
+                        id: 'cats',
+                        name: 'The cats registry'
+                    }, {
+                        type: 'Asset',
+                        id: 'doges',
+                        name: 'The doges registry'
                     }]);
                 });
         });
