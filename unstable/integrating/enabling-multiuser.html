@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Enabling authentication for the REST server | Hyperledger Composer</title>
+    <title>Enabling multiple user mode for the REST server | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Enabling authentication for the REST server</p>
+          <p>Enabling multiple user mode for the REST server</p>
           </div>
 
           <nav class="context-nav">
@@ -196,76 +196,95 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="enabling-authentication-for-the-rest-server">Enabling authentication for the REST server</h1>
+              <h1 id="enabling-multiple-user-mode-for-the-rest-server">Enabling multiple user mode for the REST server</h1>
 
 <hr>
 
-<p>The REST server can be configured to authenticate clients. When this option is enabled, clients must authenticate to the REST server before they are permitted to call the REST API.</p>
-
-<h2 id="selecting-an-authentication-strategy">Selecting an authentication strategy</h2>
-
-<p>The REST server uses the open source <a href="http://passportjs.org">Passport</a> authentication middleware. Administrators of the REST server must select Passport strategies to authenticate clients. Multiple Passport strategies can be selected, allowing clients of the REST server to select a preferred authentication mechanism. Passport includes a wide range of strategies (300+ at the time of writing), including a mix of social media (Google, Facebook, Twitter) and enterprise (SAML, LDAP) strategies.</p>
-
-<p>The rest of this document will demonstrate how to use the <code>passport-github</code> strategy to authenticate users using their GitHub ID. Install the <code>passport-github</code> strategy by executing the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g passport-github
+<p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity <strong>alice1</strong> to digitally sign all transactions:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
 </code></pre></div>
-<h2 id="configuring-the-rest-server-to-use-an-authentication-strategy">Configuring the REST server to use an authentication strategy</h2>
+<p>This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.</p>
 
-<p>The REST server must be configured with a list of Passport strategies to use before REST API authentication can be enabled. This configuration includes both the names of the strategies to use and the individual configuration for each strategy.</p>
+<p>The REST server can be configured to multiple user mode. Multiple user mode permits clients of the REST server to provide their own Blockchain identities for digitally signing transactions. This enables the business network to differentiate between different clients of the REST server.</p>
 
-<p>In order to configure the <code>passport-github</code> strategy, we will need to register an OAuth application on GitHub and retrieve the client ID and client secret. Follow these steps to register an OAuth application on GitHub:</p>
+<p>Multiple user mode requires that REST API authentication is enabled, and will automatically enable REST API authentication if it is not explicitly specified. You must select and configure a Passport strategy for authenticating users. REST API authentication is required so that clients can be identified.</p>
 
-<ol>
-<li>Navigate to <a href="https://github.com">GitHub</a> and log in with your user ID and password.</li>
-<li>Click on your profile picture on the top right, and click on <strong>Settings</strong> from the drop down menu.</li>
-<li>Click on <strong>OAuth applications</strong> under <strong>Developer settings</strong> on the left hand bar.</li>
-<li>Click on <strong>Register a new application</strong>.</li>
-<li>Specify the following settings:
+<p>Once a client has authenticated to the REST API, that client can add Blockchain identities to a wallet. The wallet is private to that client, and is not accessible to other clients. When a client makes a request to the REST server, a Blockchain identity in the clients wallet is used to digitally sign all transactions made by that client.</p>
 
-<ul>
-<li>Application name: Composer</li>
-<li>Homepage: <a href="http://localhost:3000/">http://localhost:3000/</a></li>
-<li>Application description: OAuth application for Composer</li>
-<li>Authorization callback URL: <a href="http://localhost:3000/auth/github/callback">http://localhost:3000/auth/github/callback</a></li>
-</ul></li>
-<li>Click on <strong>Register application</strong>.</li>
-<li>Note down the values for <strong>Client ID</strong> and <strong>Client Secret</strong>.</li>
-</ol>
+<p>Please note that this feature requires that clients trust the REST server. This trust is required because this feature requires that the REST server stores the clients Blockchain identities, including the private keys. Therefore, it is strongly recommended that clients only use REST servers that are managed by a trusted party, such as an administrator within their organization.</p>
 
-<p>The configuration for the REST server should be specified using the environment variable <code>COMPOSER_PROVIDERS</code>. Set the configuration for the REST server by replacing the values of <code>REPLACE_WITH_CLIENT_ID</code> and <code>REPLACE_WITH_CLIENT_SECRET</code> with the values retrieved from step 7, and executing the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_PROVIDERS='{
-  "github": {
-    "provider": "github",
-    "module": "passport-github",
-    "clientID": "REPLACE_WITH_CLIENT_ID",
-    "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
-    "authPath": "/auth/github",
-    "callbackURL": "/auth/github/callback",
-    "successRedirect": "/",
-    "failureRedirect": "/"
-  }
-}'
-</code></pre></div>
-<h2 id="starting-the-rest-server-with-rest-api-authentication-enabled">Starting the REST server with REST API authentication enabled</h2>
+<h2 id="starting-the-rest-server-with-multiple-user-mode-enabled">Starting the REST server with multiple user mode enabled</h2>
 
-<p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-a true</code> argument to start the REST server with authentication enabled. Once authentication is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
+<p>You must configure the environment variable <code>COMPOSER_PROVIDERS</code> before continuing. For instructions on how to perform this task, read the following topic before continuing: <a href="./enabling-rest-authentication.html">Enabling authentication for the REST server</a></p>
+
+<p>You can use the <code>-m true</code> argument to start the REST server with multiple user mode enabled. Once multiple user mode is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
 
 <p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -a true
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -m true
 </code></pre></div>
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If authentication has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
+<p>The <code>-m true</code> argument automatically enables REST API authentication. You can alternatively supply both arguments, <code>-a true -m true</code>, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.</p>
 
-<h2 id="authenticating-to-the-rest-server-using-a-web-browser">Authenticating to the REST server using a web browser</h2>
+<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>No enrollment ID or enrollment secret has been provided</code> error message.</p>
 
-<p>This step is dependent on the configuration and behaviour of the Passport strategies being used by the REST server.</p>
+<p>If you see a <code>HTTP 401 Authorization Required</code> error message, you have not authenticated correctly to the REST API.</p>
+
+<h2 id="adding-a-blockchain-identity-to-the-default-wallet">Adding a Blockchain identity to the default wallet</h2>
+
+<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
+
+<p>Follow these steps to add a Blockchain identity to the default wallet:</p>
 
 <ol>
-<li>Authenticate to the REST server by navigating to the value of the <code>authPath</code> property specified in the environment variable <code>COMPOSER_PROVIDERS</code>. In the example above, this is <a href="http://localhost:3000/auth/github">http://localhost:3000/auth/github</a>.</li>
-<li>The REST server will redirect you to GitHub to perform the OAuth web server authentication flow. GitHub will ask you if you want to authorize the Composer application to access your account. Click the <strong>Authorize</strong> button.</li>
-<li>If successful, GitHub will redirect you back to the REST server.</li>
+<li>Navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</li>
+<li><p>List all of the authenticated clients wallets by expanding the <strong>Wallet</strong> category and calling the <code>GET /wallets</code> operation.
+The response from the operation should be similiar to the following:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Default wallet"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div>
+<p>Each wallet has a unique ID that will be used in subsequent REST API calls for interacting with the wallet. Note down the value of the <code>id</code> property for the wallet with the description <code>Default wallet</code>, in this example <code>1</code>.</p></li>
+<li><p>List the Blockchain identities in the default wallet by calling the <code>GET /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2.
+The response from the operation should be:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[]</span><span class="w">
+</span></code></pre></div>
+<p>This means that there are no Blockchain identities in the default wallet.</p></li>
+<li><p>Add the Blockchain identity to the default wallet by calling the <code>POST /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>data</code> parameter set to the following JSON payload (do not include the <code>id</code> property in the JSON payload):</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>The response from the operation should be similiar to the following:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>The Blockchain identity for <code>alice1</code> has now been added to the default wallet. Each Blockchain identity has a unique ID that will be used in subsequent REST API calls for interacting with the Blockchain identity. Note down the value of the <code>id</code> property for the Blockchain identity, in this example <code>2</code>.</p></li>
+<li><p>Set the Blockchain identity as the default Blockchain identity for the default wallet by calling the <code>POST /wallets/{id}/identities/{fk}/setDefault</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>fk</code> parameter set to the unique Blockchain identity ID noted from step 4.
+The response from the operation should be:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">no content
+</code></pre></div>
+<p>The Blockchain identity has now been set as the default Blockchain identity for the default wallet.</p></li>
 </ol>
 
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.</p>
+
+<p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.8.0"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader#alice@email.com"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<h2 id="final-notes">Final notes</h2>
+
+<p>When the REST server is started with multiple user mode enabled, all REST API requests made by clients use a Blockchain identity stored in the clients wallet. The Blockchain identity specified on the command line at startup is not used to service any requests; it is only used to initially connect to the business network and download the business network definition, which is required to generate the REST API. Therefore, the Blockchain identity specified on the command line only requires minimal permissions - the ability to connect, and the ability to download the business network definition - it does not need permission for any assets, participants, or transactions.</p>
+
+<p>All user information is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database. For more information, see <a href="./deploying-the-rest-server.html">Deploying the REST server</a>.</p>
 
             
           </section>

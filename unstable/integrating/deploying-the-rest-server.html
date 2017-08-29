@@ -128,7 +128,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
 <li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -286,14 +287,22 @@ ga('send', 'pageview');
 <p>For example:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_NAMESPACES=never
 </code></pre></div></li>
-<li><p><code>COMPOSER_SECURITY</code></p>
+<li><p><code>COMPOSER_AUTHENTICATION</code></p>
 
-<p>You can use the <code>COMPOSER_SECURITY</code> environment variable to specify if the REST server should enable REST API authentication or not. Valid values are <code>true</code> and <code>false</code>.</p>
+<p>You can use the <code>COMPOSER_AUTHENTICATION</code> environment variable to specify if the REST server should enable REST API authentication or not. Valid values are <code>true</code> and <code>false</code>.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_SECURITY=true
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_AUTHENTICATION=true
 </code></pre></div>
-<p>For more information, see <a href="./enabling-rest-authentication.html">Enabling REST API authentication for a business network</a>.</p></li>
+<p>For more information, see <a href="./enabling-rest-authentication.html">Enabling authentication for the REST server</a>.</p></li>
+<li><p><code>COMPOSER_MULTIUSER</code></p>
+
+<p>You can use the <code>COMPOSER_MULTIUSER</code> environment variable to specify if the REST server should enable multiple user mode or not. Valid values are <code>true</code> and <code>false</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_MULTIUSER=true
+</code></pre></div>
+<p>For more information, see <a href="./enabling-multiuser.html">Enabling multiple user mode for the REST server</a>.</p></li>
 <li><p><code>COMPOSER_DATASOURCES</code></p>
 
 <p>You can use the <code>COMPOSER_DATASOURCES</code> environment variable to specify the LoopBack data sources and the connection information required by the selected LoopBack connector.</p>
@@ -389,7 +398,8 @@ COMPOSER_BUSINESS_NETWORK=my-network
 COMPOSER_ENROLLMENT_ID=admin
 COMPOSER_ENROLLMENT_SECRET=adminpw
 COMPOSER_NAMESPACES=never
-COMPOSER_SECURITY=true
+COMPOSER_AUTHENTICATION=true
+COMPOSER_MULTIUSER=true
 COMPOSER_CONFIG='{
   "connectionProfiles": {
     "hlfv1": {
@@ -449,7 +459,8 @@ COMPOSER_PROVIDERS='{
     -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
     -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
     -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
-    -e COMPOSER_SECURITY=${COMPOSER_SECURITY} \
+    -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+    -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
     -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
     -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
     -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
@@ -468,7 +479,7 @@ COMPOSER_PROVIDERS='{
 
 <ol>
 <li><p>Pull the Docker Image for the REST Server:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">docker pull hyperledger/composer-rest-server 
+<div class="highlight"><pre><code class="language-" data-lang="">docker pull hyperledger/composer-rest-server
 </code></pre></div></li>
 <li><p>Create a new file named <code>envvars.txt</code>, with the following contents:
 (The values used below will typically work with a Test Fabric created from examples in this documentation, but the value of the <code>COMPOSER_BUSINESS_NETWORK</code> will need to be set correctly.)</p>
@@ -477,7 +488,8 @@ COMPOSER_BUSINESS_NETWORK=&lt;my-network&gt;
 COMPOSER_ENROLLMENT_ID=admin
 COMPOSER_ENROLLMENT_SECRET=adminpw
 COMPOSER_NAMESPACES=never
-COMPOSER_SECURITY=false
+COMPOSER_AUTHENTICATION=false
+COMPOSER_MULTIUSER=false
 COMPOSER_CONFIG='{
   "connectionProfiles": {
     "hlfv1": {
@@ -518,7 +530,8 @@ COMPOSER_CONFIG='{
     -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
     -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
     -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
-    -e COMPOSER_SECURITY=${COMPOSER_SECURITY} \
+    -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+    -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
     -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
     -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
     -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
