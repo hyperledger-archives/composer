@@ -74,3 +74,21 @@ This step is dependent on the configuration and behaviour of the Passport strate
 3. If successful, GitHub will redirect you back to the REST server.
 
 Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.
+
+## Authenticating to the REST server using an HTTP or REST client
+
+When a user authenticates to the REST server, a unique access token is generated and assigned to the authenticated user. When the user authenticates using a web browser, the access token is stored in a cookie in the local storage of the users web browser. When the authenticated user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated instead of reauthenticating the user.
+
+The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website. 
+
+In order to use the access token, the access token must first be retrieved using a web browser. When you authenticate to the REST server, the REST API explorer at http://localhost:3000/explorer/ will show the access token at the top of the page. By default the access token is hidden, but it can be displayed by clicking the `Show` button. The access token is a long alphanumeric string, for example: `e9M3CLDEEj8SDq0Bx1tkYAZucOTWbgdiWQGLnOxCe7K9GhTruqlet1h5jsw10YjJ`
+
+Once the access token has been retrieved, the access token can be passed into any HTTP or REST request to authenticate the HTTP or REST client. There are two options for passing the access token - using either a query string parameter, or an HTTP header. For both of the following examples, replace the string `xxxxx` with the value of the access token.
+
+Query string - add the `access_token` query string parameter to all HTTP or REST requests:
+
+    curl -v http://localhost:3000/api/system/ping?access_token=xxxxx
+
+HTTP header - add the `X-Access-Token` header to all HTTP or REST requests:
+
+    curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping

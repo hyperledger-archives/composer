@@ -96,7 +96,7 @@ describe('Authentication REST API unit tests', () => {
                 .post('/auth/ldap')
                 .send({ username: 'alice', password: 'invalid' })
                 .then((res) => {
-                    res.redirects.should.have.lengthOf(1);
+                    res.redirects.should.have.lengthOf(2);
                     res.redirects[0].should.match(/\/?failure=true$/);
                     res.req.should.not.have.cookie('access_token');
                 });
@@ -108,7 +108,7 @@ describe('Authentication REST API unit tests', () => {
                 .post('/auth/ldap')
                 .send({ username: 'alice', password: 'secret' })
                 .then((res) => {
-                    res.redirects.should.have.lengthOf(1);
+                    res.redirects.should.have.lengthOf(2);
                     res.redirects[0].should.match(/\/?success=true$/);
                     res.req.should.have.cookie('access_token');
                 });
