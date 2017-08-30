@@ -9,14 +9,7 @@ app-login {
         display: flex;
         padding: $space-large $space-large $space-medium $space-large;
         align-items: center;
-
-        h1.left-align {
-            flex: 1;
-        }
-
-        div.right-align {
-            margin-right: $space-medium;
-        }
+        justify-content: space-between;
     }
 
     section.main-view {
@@ -31,6 +24,13 @@ app-login {
         div.connection-profile {
             margin-top: $space-large;
             padding-left: $space-large;
+
+            .connection-profile-title {
+                display: flex;
+                margin-right: $space-large;
+                align-items: baseline;
+                justify-content: space-between;
+            }
 
             .identities {
                 display: flex;
@@ -94,6 +94,10 @@ app-login {
         overflow-y: auto;
 
         .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
             button {
                 .rotate {
                     transform: rotate(-180deg);

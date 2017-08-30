@@ -24,6 +24,7 @@ import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
 import { DrawerModule } from './common/drawer';
+import { TutorialLinkModule } from './common/tutorial-link';
 import { ImportModule } from './import/import.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
@@ -76,7 +77,8 @@ type StoreType = {
             storageType: 'localStorage'
         }),
         NgbModule.forRoot(),
-        DrawerModule.forRoot()
+        DrawerModule.forRoot(),
+        TutorialLinkModule
     ],
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
