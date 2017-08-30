@@ -145,19 +145,27 @@ For more information on access control files, check our [documentation](../refer
 
       This access control rule allows all participants to access all business network resources, and allows all users to have system access control privileges.
 
-## Step Six: Deploying the updated business network
+## Step Seven: Deploying the updated business network
 
 Now that we've created our model, script, and access control files, we need to deploy and test our model.
 
 Click **Update** to deploy our new model, script, and transaction script files.
 
-## Step Seven: Testing the business network definition
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
+</video>
+
+## Step Eight: Testing the business network definition
 
 Next, we need to test our business network by creating some participants (in this case _Traders_), creating an asset (a _Commodity_), and then using our _Trade_ transaction to change the ownership of the _Commodity_.
 
 Click the **Test** tab to get started.
 
-## Step Eight: Creating participants
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/test_tab_render.mp4" type="video/mp4" />
+</video>
+
+## Step Nine: Creating participants
 
 The first thing we should add to our business network is two participants.
 
@@ -189,7 +197,11 @@ The first thing we should add to our business network is two participants.
 
 Make sure that both participants exist in the _Trader_ view before moving on!
 
-## Step Nine: Creating an asset
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
+</video>
+
+## Step Ten: Creating an asset
 
 Now that we have two _Trader_ participants, we need something for them to trade. Creating an asset is very similar to creating a participant. The _Commodity_ we're creating will have an _owner_ property indicating that it belongs to the _Trader_ with the _tradeId_ of `TRADER1`.
 
@@ -209,7 +221,12 @@ Now that we have two _Trader_ participants, we need something for them to trade.
         ```
 3. After creating this asset, you should be able to see if in the **Commodity** tab.
 
-## Step Ten: Transferring the commodity between the participants
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_asset_render.mp4" type="video/mp4" />
+</video>
+
+
+## Step Eleven: Transferring the commodity between the participants
 
 Now that we have two _Traders_ and a _Commodity_ to trade between them, we can test our _Trade_ transaction.
 
@@ -237,6 +254,9 @@ To test the _Trade_ transaction:
 
 5. To view the full transaction history of our business network, click **All transactions** on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the _Trader_ participants and the _Commodity_ asset, are recorded as transactions, even though they're not defined as transactions in our business network model. These transactions are known as 'System Transactions' and are common to all business networks, and defined in the {{site.data.conrefs.composer_full}} Runtime.
 
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
+</video>
 
 ## What next?
 
