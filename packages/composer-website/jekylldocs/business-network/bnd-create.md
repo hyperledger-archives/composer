@@ -3,7 +3,7 @@ layout: default
 title: Create a Business Network Definition
 category: tasks
 section: business-network
-index-order: 402
+index-order: 502
 sidebar: sidebars/accordion-toc0.md
 excerpt: How to create a business network definition
 ---

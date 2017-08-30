@@ -90,9 +90,6 @@ describe('CreateIdentityCardComponent', () => {
 
     describe('#setConnectionProfile', () => {
         it('should be able to set default v1 profile', fakeAsync(() => {
-            let updateConnectionProfilesStub = sinon.stub(component, 'updateConnectionProfiles');
-            updateConnectionProfilesStub.returns(Promise.resolve({}));
-
             component.setConnectionProfile('_$v1');
 
             tick();
@@ -134,9 +131,6 @@ describe('CreateIdentityCardComponent', () => {
 
             component['connectionProfileNames'] = new Map<string, string>();
             component['connectionProfileNames'].set('selectMe', 'captainConga');
-
-            let retrieveConnectionProfileByNameStub = sinon.stub(component, 'retrieveConnectionProfileByName');
-            retrieveConnectionProfileByNameStub.returns(targetProfile);
 
             component.setConnectionProfile('selectMe');
 

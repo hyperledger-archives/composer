@@ -2,7 +2,7 @@
 layout: default
 title: Transaction Processor Functions
 section: reference
-index-order: 907
+index-order: 1007
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**A Hyperledger Composer business network must include one or more script files**](./js_scripts.html) to implement transaction logic. The transaction logic is automatically invoked by the runtime whenever the relavant transactions are submitted."
 ---

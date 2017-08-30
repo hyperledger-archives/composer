@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer CLI Commands
 section: reference
-index-order: 908
+index-order: 1008
 sidebar: sidebars/accordion-toc0.md
 excerpt: The [**list of all Hyperledger Composer CLI commands**](./commands.html) for performing multiple administrative, operational, and development tasks.
 ---

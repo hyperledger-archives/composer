@@ -3,7 +3,7 @@ layout: default
 title: Generating a REST API
 category: start
 section: integrating
-index-order: 601
+index-order: 701
 sidebar: sidebars/accordion-toc0.md
 excerpt: Hyperledger Composer includes a standalone [**Node.js process that exposes a business network as a REST API**](./getting-started-rest-api.html). The LoopBack framework is used to generate an Open API, described by a Swagger document.
 ---
