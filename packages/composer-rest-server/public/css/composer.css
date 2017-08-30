@@ -29,4 +29,33 @@
     .swagger-section #message-bar {
         min-height:20px;
     }
+
+    #access-token-container {
+        display: none;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    #access-token-container label {
+        font-family: 'helvetica neue', helvetica, arial, sans-serif !important;
+        font-weight: 700;
+        color: #999;
+        font-size: 1.3em;
+    }
+
+    #access-token-container input {
+        display: none;
+        margin: 10px 0px 10px 0px;
+        min-width: 500px;
+    }
+
+    #access-token-container p {
+        font-size: 90%;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .authorize-wrapper {
+        display: none;
+    }
 }
