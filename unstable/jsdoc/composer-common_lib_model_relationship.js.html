@@ -101,7 +101,7 @@
 'use strict';
 
 const Identifiable = require('./identifiable');
-const ModelUtils = require('../modelutil');
+const ResourceId = require('./resourceid');
 const Globalize = require('../globalize');
 
 /**
@@ -155,69 +155,32 @@ class Relationship extends Identifiable {
      * Contructs a Relationship instance from a URI representation (created using toURI).
      * @param {ModelManager} modelManager - the model manager to bind the relationship to
      * @param {String} uriAsString - the URI as a string, generated using Identifiable.toURI()
-     * @param {String} defaultNamespace - default namespace to use for backwards compatability (optional)
-     * @param {String} defaultType - default type to use for backwards compatability (optional)
+     * @param {String} [defaultNamespace] - default namespace to use for backwards compatability (optional)
+     * @param {String} [defaultType] - default type to use for backwards compatability (optional)
      * @return {Relationship} the relationship
      */
     static fromURI(modelManager, uriAsString, defaultNamespace, defaultType) {
+        const resourceId = ResourceId.fromURI(uriAsString, defaultNamespace, defaultType);
 
-        // parse the URI, we do it by hand because we know the format
-        const indexOfColon = uriAsString.indexOf(':');
-        let protocol = null;
-        let id = uriAsString;
-        let type = null;
-        let ns = null;
-        let resource = null;
-
-        // protocol
-        if(indexOfColon > 0) {
-            protocol = uriAsString.substring(0, indexOfColon);
-            uriAsString = uriAsString.substr(indexOfColon+1);
-        }
-
-        // id and resource
-        const indexOfHash = uriAsString.indexOf('#');
-        if(indexOfHash > 0) {
-            id = uriAsString.substr(indexOfHash+1);
-            resource = uriAsString.substring(0,indexOfHash);
-        }
-
-        // old style relationships do not have a schema
-        if (protocol !== 'resource') {
-            if (resource) {
-                ns = ModelUtils.getNamespace(resource);
-                type = ModelUtils.getShortName(resource);
-            } else {
-                ns = defaultNamespace;
-                type = defaultType;
-                id = uriAsString;
-            }
-        } else {
-            ns = ModelUtils.getNamespace(resource);
-            type = ModelUtils.getShortName(resource);
-        }
-
-        id = decodeURI(id);
-
-        let modelFile = modelManager.getModelFile(ns);
-        if(!modelFile) {
+        let modelFile = modelManager.getModelFile(resourceId.namespace);
+        if (!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newrelationship-notregisteredwithmm');
 
             throw new Error(formatter({
-                namespace: ns
+                namespace: resourceId.namespace
             }));
         }
 
-        if(!modelFile.isDefined(type)) {
+        if (!modelFile.isDefined(resourceId.type)) {
             let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
 
             throw new Error(formatter({
-                namespace: ns,
-                type: type
+                namespace: resourceId.namespace,
+                type: resourceId.type
             }));
         }
 
-        let relationship = new Relationship(modelManager,ns,type,id);
+        let relationship = new Relationship(modelManager, resourceId.namespace, resourceId.type, resourceId.id);
         return relationship;
     }
 }
