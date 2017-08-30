@@ -41,7 +41,7 @@ class EngineRegistries {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllRegistries', ['registryType','includeSystem']));
         }
         let registryType = args[0];
-        let includeSystem = args[1];
+        let includeSystem = (args[1] === 'true');
         return context.getRegistryManager().getAll(registryType,includeSystem)
             .then((result) => {
                 LOG.exit(method, result);

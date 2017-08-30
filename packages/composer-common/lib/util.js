@@ -55,8 +55,10 @@ class Util {
         } else if (!args) {
             throw new Error('args not specified');
         }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
+        args.forEach((arg,index) => {
+            if (typeof arg === 'boolean') {
+                args[index] = arg.toString();
+            } else if (typeof arg !== 'string') {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });

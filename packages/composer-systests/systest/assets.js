@@ -153,7 +153,7 @@ describe('Asset system tests', function () {
     it('should get all the asset registries', function () {
         return client
             .getAllAssetRegistries()
-            .then(function (assetRegistries) {
+            .then(function (assetRegistries) {               
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
                     {'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'},
