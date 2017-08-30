@@ -30,6 +30,10 @@ Next, we want to create a new business network from scratch. A business network 
 
 5. Now that our network is defined, click **Deploy**.
 
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
+</video>
+
 ## Step Three: Connecting to the business network
 
 Now that we've created and deployed the business network, you should see a new ID card called _admin_ for our business network _tutorial-network_ in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.
@@ -37,6 +41,10 @@ Now that we've created and deployed the business network, you should see a new I
 When connecting to an external blockchain, ID cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.
 
 To connect to our business network click **Connect now** under our ID card.
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_2.mp4" type="video/mp4" />
+</video>
 
 ## Step Four: Adding a model file
 
@@ -201,7 +209,7 @@ Make sure that both participants exist in the _Trader_ view before moving on!
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
 </video>
 
-## Step Ten: Creating an asset
+## Step Ten: Creating an asset
 
 Now that we have two _Trader_ participants, we need something for them to trade. Creating an asset is very similar to creating a participant. The _Commodity_ we're creating will have an _owner_ property indicating that it belongs to the _Trader_ with the _tradeId_ of `TRADER1`.
 
