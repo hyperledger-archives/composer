@@ -3,7 +3,7 @@ layout: default
 title: Developing Business Networks
 category: concepts
 section: business-network
-index-order: 400
+index-order: 500
 sidebar: sidebars/accordion-toc0.md
 excerpt: Overview of Developing Business Networks
 ---

@@ -5,7 +5,7 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: ID cards combine a connection profile, identity, and certificates to allow a connection to a business network in Hyperledger Composer Playground. ID cards can be [created, exported and imported](./id-cards-playground.html) from the **My Wallet** page in Hyperledger Composer Playground.
-index-order: 703
+index-order: 803
 ---
 
 

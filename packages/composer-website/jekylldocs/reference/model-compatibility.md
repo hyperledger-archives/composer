@@ -5,7 +5,7 @@ category: reference
 section: reference
 sidebar: sidebars/accordion-toc0.md
 excerpt: Composer models are expected to change and evolve over time. However some care and discipline must be applied when making model changes to ensure that existing instances are still valid with respect to the new model.
-index-order: 905
+index-order: 1005
 ---
 
 # Model Compatibility

@@ -3,7 +3,7 @@ layout: default
 title: Enabling authentication for the REST server
 category: start
 section: integrating
-index-order: 603
+index-order: 703
 sidebar: sidebars/accordion-toc0.md
 excerpt: By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By [**enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.**](./securing-the-rest-server.html)
 ---
@@ -92,3 +92,4 @@ Query string - add the `access_token` query string parameter to all HTTP or REST
 HTTP header - add the `X-Access-Token` header to all HTTP or REST requests:
 
     curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping
+=======

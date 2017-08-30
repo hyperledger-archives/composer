@@ -3,7 +3,7 @@ layout: default
 title: Publishing events from the REST server
 category: start
 section: integrating
-index-order: 602
+index-order: 702
 sidebar: sidebars/accordion-toc0.md
 excerpt: Hyperledger Composer includes a standalone [**Node.js process that exposes a business network as a REST API**](./getting-started-rest-api.html). The LoopBack framework is used to generate an Open API, described by a Swagger document.
 ---

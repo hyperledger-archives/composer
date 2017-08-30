@@ -3,7 +3,7 @@ layout: default
 title: Enabling multiple user mode for the REST server
 category: start
 section: integrating
-index-order: 604
+index-order: 704
 sidebar: sidebars/accordion-toc0.md
 excerpt: By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By [**enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.**](./securing-the-rest-server.html)
 ---

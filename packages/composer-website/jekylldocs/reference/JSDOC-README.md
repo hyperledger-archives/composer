@@ -5,7 +5,7 @@ section: reference
 exception: API
 sidebar: sidebars/accordion-toc0.md
 excerpt: The Client, Admin, and Runtime components of Hyperledger Composer contain [JavaScript APIs](../jsdoc/index.html) for application integration.
-index-order: 909
+index-order: 1009
 ---
 
 # Hyperledger Composer API
