@@ -3,7 +3,7 @@ layout: default
 title: Integrating Existing Systems
 category: concepts
 section: integrating
-index-order: 600
+index-order: 700
 sidebar: sidebars/accordion-toc0.md
 excerpt: How to create a new Connection Profile
 ---
