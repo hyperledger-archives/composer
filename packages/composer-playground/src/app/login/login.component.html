@@ -1,6 +1,6 @@
 <section *ngIf="!showSubScreen" class="header">
-    <h1 class="left-align">My Wallet</h1>
-    <div class="right-align" *ngIf="!showSubScreen">
+    <h1>My Wallet</h1>
+    <div *ngIf="!showSubScreen">
         <button *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import ID Card</span>
         </button>
@@ -11,8 +11,10 @@
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
-        <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' :
-            this.connectionProfileNames.get(connectionProfileRef) }}</h2>
+        <span class="connection-profile-title">
+            <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
+            <tutorial-link *ngIf="idCards.size == 1"></tutorial-link>
+        </span>
         <div class="identities">
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
@@ -28,7 +30,7 @@
                     <svg class="ibm-icon" aria-hidden="true">
                         <use xlink:href="#icon-Network_Create"></use>
                     </svg>
-                    <p>Deploy new business network</p>
+                    <p>Deploy a new business network</p>
                 </span>
             </button>
             <div class="connection-profile-card card-content" *ngIf="!canDeploy(connectionProfileRef)">
@@ -49,6 +51,7 @@
             </svg>
             <span>My Wallet</span>
         </button>
+        <tutorial-link *ngIf="showDeployNetwork"></tutorial-link>
     </div>
     <div *ngIf="showDeployNetwork">
         <deploy-business-network (finishedSampleImport)="finishedDeploying()"></deploy-business-network>
