@@ -40,6 +40,10 @@ When an identity is issued within Playground, there is an option to add the Iden
    - Click the **Test** tab, and click **Create New Participant**.
    - Complete the Participant defintion and click **Create New**.
 
+    <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+        <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_11.mp4" type="video/mp4" />
+        </video>
+
 3. Click the name of your identity in the upper right, and click **ID Registry** within the drop down.
 
 4. Click **+Issue New ID**.
@@ -52,6 +56,9 @@ When an identity is issued within Playground, there is an option to add the Iden
 
 The **My Wallet** page should now show the new ID Card.
 
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_22.mp4" type="video/mp4" />
+</video>
 
 ### Exporting an ID Card
 
@@ -73,6 +80,10 @@ It is possible to provide credentials to a user to enable them to create an ID C
  - click the **Test** tab, and click **Create New Participant**.
  - complete the Participant defintion and click **Create New**.
 
+    <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+    <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_3.mp4" type="video/mp4" />
+    </video>
+
 3. Click the name of your identity in the upper right, and click **ID Registry** within the drop down.
 
 4. Click **+Issue New ID**.
@@ -82,6 +93,10 @@ It is possible to provide credentials to a user to enable them to create an ID C
 6. Click **Create New**.
 
 7. Take note of the Enrollment ID and Secret that is displayed. It is essential to record this information before proceeding as it is this information that must be provided to a user to enable them to create their ID Card. Once you have recorded the Enrollment ID and Secret, click **OK**.
+
+    <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+    <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_4.mp4" type="video/mp4" />
+    </video>
 
 8. Provide the Enrollment ID and Secret to the user that you wish to connect via the generated Enrollment ID. In addition to the Enrollment ID and Secret, they will need to know the name of the business network for which their identity is valid and the Connection Profile that enables conection to the runtime on which the target business network is deployed.
 
