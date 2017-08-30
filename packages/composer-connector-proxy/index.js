@@ -15,3 +15,4 @@
 'use strict';
 
 module.exports = require('./lib/proxyconnectionmanager');
+module.exports.ProxyConnectionProfileStore = require('./lib/proxyconnectionprofilestore');

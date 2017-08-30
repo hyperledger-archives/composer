@@ -2,7 +2,7 @@
 layout: default
 title: Query Language
 section: reference
-index-order: 904
+index-order: 1004
 sidebar: sidebars/accordion-toc0.md
 excerpt: The [**Hyperledger Composer query language**](./query-language.html) defines queries to run and return data from business networks.
 ---

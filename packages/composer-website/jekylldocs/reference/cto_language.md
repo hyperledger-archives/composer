@@ -2,7 +2,7 @@
 layout: default
 title: Modeling Language
 section: reference
-index-order: 902
+index-order: 1002
 sidebar: sidebars/accordion-toc0.md
 excerpt: The [**Hyperledger Composer modeling language**](./cto_language.html) is an object-oriented language which defines the business network model containing assets, participants, and transactions.
 ---

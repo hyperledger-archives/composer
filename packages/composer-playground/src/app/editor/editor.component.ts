@@ -1,18 +1,27 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from './import/import.component';
+import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
+import { DrawerService } from '../common/drawer/drawer.service';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { EditorService } from './editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
+import {
+    ModelFile,
+    Script,
+    ScriptManager,
+    ModelManager,
+    AclManager,
+    AclFile,
+    QueryFile,
+    QueryManager
+} from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -43,11 +52,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     private editingPackage: boolean = false; // Is the package.json being edited?
     private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
-    private deployedPackageName; // This is the deployed BND's package name
     private deployedPackageVersion; // This is the deployed BND's package version
-    private deployedPackageDescription; // This is the deployed BND's package description
-
-    private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
@@ -59,15 +64,15 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
-                private initializationService: InitializationService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
-                private editorService: EditorService) {
+                private editorService: EditorService,
+                private drawerService: DrawerService) {
 
     }
 
     ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
+        return this.clientService.ensureConnected()
             .then(() => {
                 this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
                     .subscribe((noError) => {
@@ -96,6 +101,9 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     this.setInitialFile();
                 }
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
             });
     }
 
@@ -105,10 +113,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     updatePackageInfo() {
         let metaData = this.clientService.getMetaData();
-        this.deployedPackageName = metaData.getName(); // Set Name
         this.deployedPackageVersion = metaData.getVersion(); // Set Version
-        this.deployedPackageDescription = metaData.getDescription(); // Set Description
-        this.inputPackageName = metaData.getName();
         this.inputPackageVersion = metaData.getVersion();
     }
 
@@ -126,7 +131,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     setCurrentFile(file) {
         this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
-        let always = (this.currentFile === null || file.readme || file.acl);
+        let always = (this.currentFile === null || file.readme || file.acl || file.query);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
             if (this.editingPackage) {
@@ -378,26 +383,30 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openImportModal() {
-        this.modalService.open(ImportComponent).result.then((result) => {
-            this.updatePackageInfo();
-            this.updateFiles();
-            if (this.files.length) {
-                let currentFile = this.files.find((file) => {
-                    return file.readme;
-                });
-                if (!currentFile) {
-                    currentFile = this.files[0];
+        const importModalRef = this.drawerService.open(UpdateComponent);
+        importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
+            if (result.deployed) {
+                this.updatePackageInfo();
+                this.updateFiles();
+                if (this.files.length) {
+                    let currentFile = this.files.find((file) => {
+                        return file.readme;
+                    });
+                    if (!currentFile) {
+                        currentFile = this.files[0];
+                    }
+                    this.setCurrentFile(currentFile);
+                    this.alertService.successStatus$.next({
+                        title: 'Deploy Successful',
+                        text: 'Business network deployed successfully',
+                        icon: '#icon-deploy_24'
+                    });
                 }
-                this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next({
-                    title: 'Deploy Successful',
-                    text: 'Business network imported deployed successfully',
-                    icon: '#icon-deploy_24'
-                });
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
+            } else {
+                importModalRef.close();
+                if (result.error) {
+                    this.alertService.errorStatus$.next(result.error);
+                }
             }
         });
     }
@@ -459,7 +468,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.dirty = false;
                 this.deploying = false;
-                return this.clientService.refresh();
+                return this.clientService.refresh(this.clientService.getBusinessNetworkName());
             })
             .then(() => {
                 this.updatePackageInfo();
@@ -496,15 +505,13 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     toggleEditActive() {
         this.editActive = !this.editActive;
-    }
-
-    /*
-     * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageName() {
-        if (this.deployedPackageName !== this.inputPackageName) {
-            this.deployedPackageName = this.inputPackageName;
-            this.clientService.setBusinessNetworkName(this.deployedPackageName);
+        if (this.editActive && this.fileType(this.currentFile) === 'Readme') {
+            this.setCurrentFile({
+                package: true,
+                id: 'package',
+                displayID: 'package.json'
+            });
+            this.hideEdit();
         }
     }
 
@@ -543,17 +550,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } else {
             this.fileNameError = 'Error: Invalid filename, file must be alpha-numeric with no spaces';
-        }
-    }
-
-    /*
-     * When user edits the package version (in the input box), the package.json needs to be updated, and the BND needs to be updated
-     */
-    editPackageVersion() {
-        if (this.deployedPackageVersion !== this.inputPackageVersion) {
-            this.deployedPackageVersion = this.inputPackageVersion;
-
-            this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
         }
     }
 
@@ -686,13 +682,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                     file.invalid = false;
                 }
             } else if (file.query) {
-              let query = this.clientService.getQueryFile();
-              if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
-                  allValid = false;
-                  file.invalid = true;
-              } else {
-                  file.invalid = false;
-              }
+                let query = this.clientService.getQueryFile();
+                if (this.clientService.validateFile(file.id, query.getDefinitions(), 'query') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
+                }
             }
         }
         return allValid;

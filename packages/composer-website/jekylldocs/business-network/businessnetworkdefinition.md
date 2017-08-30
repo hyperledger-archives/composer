@@ -3,7 +3,7 @@ layout: default
 title: Business Network Definitions
 category: concepts
 section: business-network
-index-order: 401
+index-order: 501
 sidebar: sidebars/accordion-toc0.md
 excerpt: Overview of the Business Network Definition
 ---

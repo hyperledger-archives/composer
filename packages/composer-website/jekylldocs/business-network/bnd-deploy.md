@@ -3,7 +3,7 @@ layout: default
 title: Deploying and Updating Business Networks
 category: tasks
 section: business-network
-index-order: 403
+index-order: 503
 sidebar: sidebars/accordion-toc0.md
 excerpt: How to deploy or update Business Networks
 ---
@@ -32,7 +32,12 @@ Due to many breaking API changes between {{site.data.conrefs.hlf_full}} alpha 1 
 
 ### Deploying business networks using Playground locally
 
-When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.
+When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.
+
+Identities in playground are associated with ID cards, comprising a connection profile, identity metadata, and certificates.
+
+When deploying a business network using Playground locally, you must have at least one ID card with the `PeerAdmin` role and at least one ID card with the `ChannelAdmin` role. Each of these ID cards must contain the correct admin certificates.
+
 
 ### Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
 

@@ -15,9 +15,7 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-
 const ora = require('ora');
-
 
 /**
  * <p>

@@ -34,7 +34,7 @@ import { DrawerDismissReasons } from './drawer-dismiss-reasons';
         transform: 'translateX(0)'
       })),
       state('closed', style({
-        transform: 'translateX(438px)'
+        transform: 'translateX(575px)'
       })),
       transition('* => open', animate('.3s cubic-bezier(.5, .8, 0, 1)')),
       transition('* => closed', animate('.2s cubic-bezier(.5, .8, 0, 1)'))

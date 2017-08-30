@@ -189,6 +189,29 @@
             }
         }
 
+        &.action.circular {
+            border-radius: 50%;
+            width: 42px;
+            box-sizing: border-box;
+            padding-top: 1px;
+            height: 42px;
+
+            &:hover,
+            &:focus {
+                background-color: $fourth-highlight;
+                border-bottom: 2px solid transparent;
+            }
+
+            &[disabled], &[disabled]:hover, &[disabled]:focus {
+                background-color: transparent;
+                border-bottom: 2px solid transparent;
+
+                svg.ibm-icon {
+                    fill: $fifth-highlight;
+                }
+            }
+        }
+
         &.icon {
             background-color: transparent;
             min-width: 0;

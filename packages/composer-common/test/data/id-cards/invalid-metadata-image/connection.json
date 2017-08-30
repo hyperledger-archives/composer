@@ -1,0 +1,38 @@
+{
+    "type": "hlfv1",
+    "orderers": [
+        {
+            "url": "grpcs://",
+            "cert": "orderer1.crt"
+        },
+        {
+            "url": "grpcs://",
+            "cert": "orderer2.crt"
+        }
+    ],
+    "ca": {
+            "url": "https://",
+            "name": "",
+            "trustedRoots": "",
+            "verify": true
+    },
+    "peers": [
+        {
+            "requestURL": "grpcs://",
+            "eventURL": "grpcs://",
+            "cert": "peer1.crt"
+        },
+        {
+            "requestURL": "grpcs://",
+            "eventURL": "grpcs://",
+            "cert": "peer2.crt"
+        }
+    ],
+    "keyValStore": "/YOUR_HOME_DIR/.composer-credentials",
+    "channel": "composerchannel",
+    "mspID": "Org1MSP",
+    "timeout": 300,
+    "globalcert": "",
+    "maxSendSize": 10,
+    "maxRecvSize": 15
+}

@@ -21,7 +21,7 @@ const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
+const SYSTEM_MODELS = require('./systemmodel');
 
 /**
  * <p>
@@ -62,15 +62,22 @@ class ModelManager {
      * @private
      */
     addSystemModels() {
-        LOG.entry('addSystemModels');
+        const method = 'addSystemModels';
+        LOG.entry(method);
 
         // add the system model
-        LOG.info('info', SYSTEM_MODEL_CONTENTS);
-        let m = new ModelFile(this, SYSTEM_MODEL_CONTENTS);
-        m.validate();
-        this.modelFiles[m.getNamespace()] = m;
+        SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
+            LOG.info(method, SYSTEM_MODEL);
+            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName, true);
+            this.modelFiles[m.getNamespace()] = m;
+        });
 
-        LOG.exit('addSystemModels');
+        // now validate all the models
+        Object.keys(this.modelFiles).forEach((ns) => {
+            this.modelFiles[ns].validate();
+        });
+
+        LOG.exit(method);
     }
 
     /**
@@ -159,21 +166,21 @@ class ModelManager {
         LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
-            if (m.isSystemModelFile()){
-                throw new Error('System namespace can not be updated');
-            }
-            if (!this.modelFiles[m.getNamespace()]) {
+            let existing = this.modelFiles[m.getNamespace()];
+            if (!existing) {
                 throw new Error('model file does not exist');
+            } else if (existing.isSystemModelFile()) {
+                throw new Error('System namespace can not be updated');
             }
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
-            if (modelFile.isSystemModelFile()){
-                throw new Error('System namespace can not be updated');
-            }
-            if (!this.modelFiles[modelFile.getNamespace()]) {
+            let existing = this.modelFiles[modelFile.getNamespace()];
+            if (!existing) {
                 throw new Error('model file does not exist');
+            } else if (existing.isSystemModelFile()) {
+                throw new Error('System namespace can not be updated');
             }
             modelFile.validate();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
@@ -389,7 +396,13 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+        return this.getModelFiles()
+            .filter((modelFile) => {
+                return modelFile.isSystemModelFile();
+            })
+            .reduce((classDeclarations, modelFile) => {
+                return classDeclarations.concat(modelFile.getAllDeclarations());
+            }, [])
             .filter((classDeclaration) => {
                 return classDeclaration.isSystemCoreType();
             });

@@ -46,3 +46,16 @@ participant SampleParticipant identified by participantId {
   o Boolean booleanValue
   o SampleEnum enumValue
 }
+
+transaction SampleTransaction {
+  --> SampleAsset asset
+  --> SampleParticipant participant
+  o SampleConcept conceptValue
+  o String stringValue
+  o Double doubleValue
+  o Integer integerValue
+  o Long longValue
+  o DateTime dateTimeValue
+  o Boolean booleanValue
+  o SampleEnum enumValue
+}

@@ -15,7 +15,6 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ora = require('ora');
 const Pretty = require('prettyjson');
 
@@ -36,7 +35,7 @@ class List {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = List.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
 
@@ -90,15 +89,6 @@ class List {
             spinner.fail();
             throw error;
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

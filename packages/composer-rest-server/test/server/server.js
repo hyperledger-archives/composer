@@ -148,8 +148,8 @@ describe('server', () => {
             });
     });
 
-    it('should enable security if specified', () => {
-        composerConfig.security = true;
+    it('should enable authentication if specified', () => {
+        composerConfig.authentication = true;
         return server(composerConfig)
             .then((result) => {
                 result.app.should.exist;
@@ -176,26 +176,26 @@ describe('server', () => {
             });
     });
 
-    it('should enable security if specified with providers loaded from the environment', () => {
+    it('should enable authentication if specified with providers loaded from the environment', () => {
         process.env.COMPOSER_PROVIDERS = JSON.stringify({
-            'github-login': {
-                provider: 'github',
-                module: 'passport-github2',
-                clientID: '69e33e2302c923ebe3c5',
-                clientSecret: '2b8e4449a07b5e2dfbdc70a8e836388eb48c9e54',
-                callbackURL: '/auth/github/callback',
-                authPath: '/auth/github',
-                callbackPath: '/auth/github/callback',
-                successRedirect: '/auth/account',
-                failureRedirect: '/login',
-                scope: [
-                    'email'
-                ],
-                failureFlash: true,
-                display: 'GitHub'
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/',
+                authScheme: 'ldap',
+                server: {
+                    url: 'ldap://localhost:389',
+                    bindDN: 'cn=admin,dc=example,dc=org',
+                    bindCredentials: 'admin',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
             }
         });
-        composerConfig.security = true;
+        composerConfig.authentication = true;
         return server(composerConfig)
             .then((result) => {
                 result.app.should.exist;
@@ -205,7 +205,7 @@ describe('server', () => {
                 }).map((r) => {
                     return r.route.path;
                 });
-                routes.should.deep.equal(['/auth/github', '/auth/github/callback', '/auth/logout']);
+                routes.should.deep.equal(['/auth/ldap', '/auth/ldap/callback', '/auth/logout']);
             });
     });
 

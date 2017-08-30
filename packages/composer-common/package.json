@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.11.3",
+  "version": "0.12.0",
   "description": "Hyperledger Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
@@ -76,6 +76,7 @@
     "temp": "^0.8.3",
     "thenify": "^3.2.1",
     "thenify-all": "^1.6.0",
+    "uri-js": "^3.0.2",
     "uuid": "^3.0.1",
     "winston": "^2.3.1"
   },
@@ -117,7 +118,7 @@
     "check-coverage": true,
     "statements": 99,
     "branches": 96,
-    "functions": 98,
+    "functions": 99,
     "lines": 99
   }
 }
