@@ -122,6 +122,13 @@ class MockCreateIdentityCardComponent {
     public finishedCardCreation: EventEmitter<any> = new EventEmitter<any>();
 }
 
+@Component({
+    selector: 'tutorial-link',
+    template: ''
+})
+class MockTutorialLinkComponent {
+}
+
 describe(`LoginComponent`, () => {
 
     let component: LoginComponent;
@@ -166,6 +173,7 @@ describe(`LoginComponent`, () => {
                 MockIdentityCardComponent,
                 MockFooterComponent,
                 MockDeployComponent,
+                MockTutorialLinkComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
