@@ -288,7 +288,7 @@ describe('IdentityCardService', () => {
             tick();
 
             addIdentityCardSpy.should.have.been.calledThrice;
-            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getName().should.equal('PeerAdmin');
             service['idCards'].size.should.equal(3);
         })));
 
@@ -300,7 +300,7 @@ describe('IdentityCardService', () => {
 
             tick();
 
-            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getName().should.equal('PeerAdmin');
             service['idCards'].get(cardRefs[0]).getConnectionProfile().name.should.equal('$default');
             service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().id.should.equal('admin');
             service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().secret.should.equal('adminpw');

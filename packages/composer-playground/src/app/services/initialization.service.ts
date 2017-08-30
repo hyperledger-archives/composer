@@ -53,16 +53,6 @@ export class InitializationService {
                 }
                 return this.identityCardService.addInitialIdentityCards(idCards);
             })
-            .then((cardRefs: string[]) => {
-                // only need to check about initial sample if not logged in
-                if (!this.identityService.getLoggedIn() && cardRefs && cardRefs.length > 0) {
-                    return cardRefs.reduce((promise, cardRef) => {
-                        return promise.then(() => {
-                            return this.deployInitialSample(cardRef);
-                        });
-                    }, Promise.resolve());
-                }
-            })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.initialized = true;
@@ -75,12 +65,5 @@ export class InitializationService {
             });
 
         return this.initializingPromise;
-    }
-
-    deployInitialSample(defaultCardRef) {
-        return this.identityCardService.setCurrentIdentityCard(defaultCardRef)
-            .then(() => {
-                return this.clientService.deployInitialSample();
-            });
     }
 }
