@@ -5,7 +5,7 @@ category: tasks
 section: business-network
 sidebar: sidebars/accordion-toc0.md
 excerpt: Transaction processor functions can be used to [**implement participant-based access control**](../managing/current-participant.html) by checking the participant type and identifier.
-index-order: 408
+index-order: 508
 ---
 
 # Programmatic access control

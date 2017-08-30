@@ -3,7 +3,7 @@ layout: default
 title: Deploying and Updating Business Networks
 category: tasks
 section: business-network
-index-order: 403
+index-order: 503
 sidebar: sidebars/accordion-toc0.md
 excerpt: How to deploy or update Business Networks
 ---

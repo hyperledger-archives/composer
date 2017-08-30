@@ -15,8 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
-        name: 'admin',
-        businessNetwork: 'basic-sample-network',
+        name: 'PeerAdmin',
         enrollmentId: 'admin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
@@ -311,7 +310,7 @@ export class IdentityCardService {
         return wantedCards;
     }
 
-    private activateIdentityCard(cardRef): Promise<string | void> {
+    activateIdentityCard(cardRef): Promise<string | void> {
         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
 
         if (data && data.unused) {

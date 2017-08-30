@@ -122,10 +122,7 @@ describe('InitializationService', () => {
             result.should.deep.equal(Promise.resolve());
         })));
 
-        it('should initialize and deploy sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
-            mockCreateSample.returns(Promise.resolve());
-
+        it('should initialize', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             mockConfigService.loadConfig.returns(Promise.resolve({}));
 
             mockIdentityService.getLoggedIn.returns(false);
@@ -141,13 +138,9 @@ describe('InitializationService', () => {
 
             mockIdentityCardService.loadIdentityCards.should.have.been.called;
             mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
-            mockCreateSample.should.be.called;
         })));
 
-        it('should initialize and deploy sample with config data', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
-            mockCreateSample.returns(Promise.resolve());
-
+        it('should initialize with config data', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             mockConfigService.loadConfig.returns(Promise.resolve(mockConfig));
 
             mockIdentityService.getLoggedIn.returns(false);
@@ -163,28 +156,6 @@ describe('InitializationService', () => {
 
             mockIdentityCardService.loadIdentityCards.should.have.been.called;
             mockIdentityCardService.addInitialIdentityCards.should.have.been.calledWith([sinon.match.instanceOf(IdCard)]);
-            mockCreateSample.should.be.called;
-        })));
-
-        it('should initialize and not deploy sample as logged in', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
-            mockCreateSample.returns(Promise.resolve());
-
-            mockConfigService.loadConfig.returns(Promise.resolve({}));
-
-            mockIdentityService.getLoggedIn.returns(true);
-
-            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
-            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
-
-            service.initialize();
-
-            tick();
-            mockConfigService.loadConfig.should.be.called;
-
-            mockIdentityCardService.loadIdentityCards.should.have.been.called;
-            mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
-            mockCreateSample.should.not.have.been.called;
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -202,17 +173,4 @@ describe('InitializationService', () => {
             sinon.restore(mockConfigService.loadConfig);
         })));
     });
-
-    describe('deployInitialSample', () => {
-        it('should deploy the initial sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-
-            service.deployInitialSample('xxxx');
-
-            tick();
-
-            mockClientService.deployInitialSample.should.have.been.called;
-        })));
-    });
-})
-;
+});
