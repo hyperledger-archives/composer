@@ -66,7 +66,12 @@ export class LoginComponent implements OnInit {
 
             let newCardRefs = Array.from(cards.keys())
                 .map((cardRef) => {
-                    let connectionProfile = cards.get(cardRef).getConnectionProfile();
+                    let card = cards.get(cardRef);
+                    let connectionProfile = card.getConnectionProfile();
+                    if (connectionProfile.type === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
+                        return;
+                    }
+
                     let connectionProfileRef: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
                     if (!this.connectionProfileNames.has(connectionProfileRef)) {
                         this.connectionProfileNames.set(connectionProfileRef, connectionProfile.name);
@@ -76,6 +81,10 @@ export class LoginComponent implements OnInit {
                     return [connectionProfileRef, cardRef];
                 })
                 .reduce((prev, cur) => {
+                    if (!cur) {
+                        return prev;
+                    }
+
                     let curCardRefs: string[] = prev.get(cur[0]) || [];
                     let cardRef: string = <string> cur[1];
                     return prev.set(cur[0], [...curCardRefs, cardRef]);
@@ -86,10 +95,14 @@ export class LoginComponent implements OnInit {
             });
 
             this.idCardRefs = newCardRefs;
+            // sort connection profile names and make sure there is always
+            // a web connection profile at the start, even when there are
+            // no identity cards
             let unsortedConnectionProfiles = Array.from(this.connectionProfileNames.keys());
-            let indexOfWeb = unsortedConnectionProfiles.indexOf('web-$default');
-            let webProfile = unsortedConnectionProfiles[indexOfWeb];
-            unsortedConnectionProfiles.splice(indexOfWeb, 1);
+            let indexOfWebProfile = unsortedConnectionProfiles.indexOf('web-$default');
+            if (indexOfWebProfile > -1) {
+                unsortedConnectionProfiles.splice(indexOfWebProfile, 1);
+            }
             unsortedConnectionProfiles.sort((a: string, b: string): number => {
                 let aName = this.connectionProfileNames.get(a);
                 let bName = this.connectionProfileNames.get(b);
@@ -101,7 +114,7 @@ export class LoginComponent implements OnInit {
                     return 1;
                 }
             });
-            unsortedConnectionProfiles.unshift(webProfile);
+            unsortedConnectionProfiles.unshift('web-$default');
             this.connectionProfileRefs = unsortedConnectionProfiles;
 
         }).catch((error) => {

@@ -12,7 +12,7 @@
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
         <span class="connection-profile-title">
-            <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
+            <h2>Identities for {{this.connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
             <tutorial-link *ngIf="idCards.size == 1"></tutorial-link>
         </span>
         <div class="identities">
