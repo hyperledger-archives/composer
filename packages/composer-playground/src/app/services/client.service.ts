@@ -336,12 +336,12 @@ export class ClientService {
             });
     }
 
-    private getSavedBusinessNetworkName(identity: string): string {
+    getSavedBusinessNetworkName(identity: string): string {
         let key = `currentBusinessNetwork:${identity}`;
         return this.localStorageService.get<string>(key);
     }
 
-    private setSavedBusinessNetworkName(identity: string): void {
+    setSavedBusinessNetworkName(identity: string): void {
         let key = `currentBusinessNetwork:${identity}`;
         this.localStorageService.set(key, this.getBusinessNetworkName());
     }

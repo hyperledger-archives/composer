@@ -310,7 +310,7 @@ export class IdentityCardService {
         return wantedCards;
     }
 
-    private activateIdentityCard(cardRef): Promise<string | void> {
+    activateIdentityCard(cardRef): Promise<string | void> {
         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
 
         if (data && data.unused) {

@@ -252,7 +252,7 @@ export class LoginComponent implements OnInit {
             });
     }
 
-    private sortIdCards(a, b): number {
+    sortIdCards(a, b): number {
         let cardA = this.identityCardService.getIdentityCard(a);
         let cardB = this.identityCardService.getIdentityCard(b);
 
