@@ -125,7 +125,7 @@ export class IdentityComponent implements OnInit {
             .then((cardRef: string) => {
                 this.alertService.successStatus$.next({
                     title: 'ID Card added to wallet',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully added to your wallet',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
                     icon: '#icon-role_24'
                 });
             });
@@ -136,18 +136,18 @@ export class IdentityComponent implements OnInit {
         let connectionProfile = currentCard.getConnectionProfile();
         let businessNetworkName = currentCard.getBusinessNetworkName();
 
-        return this.identityCardService.createIdentityCard(identity.userID, businessNetworkName, identity.userID, identity.userSecret, connectionProfile)
+        return this.identityCardService.createIdentityCard(identity.userID, businessNetworkName, identity.userSecret, connectionProfile)
             .then((cardRef: string) => {
                 this.alertService.successStatus$.next({
                     title: 'ID Card added to wallet',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully added to your wallet',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
                     icon: '#icon-role_24'
                 });
             });
     }
 
     exportIdentity(card: IdCard): Promise<any> {
-        let fileName = card.getName() + '.card';
+        let fileName = card.getUserName() + '.card';
 
         return card.toArchive()
             .then((archiveData) => {
@@ -183,7 +183,7 @@ export class IdentityComponent implements OnInit {
 
     removeIdentity(cardRef: string): Promise<void> {
 
-        let userID = this.identityCards.get(cardRef).getName();
+        let userID = this.identityCards.get(cardRef).getUserName();
 
         // show confirm/delete dialog first before taking action
         const confirmModalRef = this.modalService.open(DeleteComponent);

@@ -243,7 +243,6 @@ export class ClientService {
         }
 
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
-        let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
@@ -251,7 +250,7 @@ export class ClientService {
         });
 
         let businessNetworkName: string;
-        let userId = enrollmentCredentials.id;
+        let userId = this.identityService.getCurrentUserName();
 
         if (!name) {
             try {
@@ -297,6 +296,7 @@ export class ClientService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const userName = this.identityService.getCurrentUserName();
 
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
@@ -305,7 +305,7 @@ export class ClientService {
 
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, enrollmentCredentials.id, enrollmentCredentials.secret);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, userName, enrollmentCredentials.secret);
             });
     }
 

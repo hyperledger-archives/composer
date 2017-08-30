@@ -49,7 +49,7 @@ describe(`IdentityComponent`, () => {
         mockCard = sinon.createStubInstance(IdCard);
         mockCard.getBusinessNetworkName.returns('myNetwork');
         mockCard.getConnectionProfile.returns({name: 'myProfile'});
-        mockCard.getName.returns('myName');
+        mockCard.getUserName.returns('myName');
 
         mockIDCards = new Map<string, IdCard>();
         mockIDCards.set('1234', mockCard);
