@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Securing the REST server using HTTPS and TLS | Hyperledger Composer</title>
+    <title>Using Playground | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Securing the REST server using HTTPS and TLS</p>
+          <p>Using Playground</p>
           </div>
 
           <nav class="context-nav">
@@ -201,42 +201,92 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="securing-the-rest-server-using-https-and-tls">Securing the REST server using HTTPS and TLS</h1>
+              <h1 id="using-playground">Using Playground</h1>
+
+<p>The Hyperledger Composer Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.</p>
+
+<p>If you are new to the Playground, we recommend that you follow the <a href="../tutorials/playground-guide.html">Playground Tutorial</a> that will guide you through the process of creating, deploying and testing a new blockchain business network.</p>
 
 <hr>
 
-<p>When deploying Hyperledger Composer REST server in a production environment, the REST server should be configured to be secured with HTTPS and TLS (Transport Layer Security). Once the REST server has been configured with HTTPS and TLS, all data transferred between the REST server and all of the REST clients is encrypted.</p>
+<h1 id="navigating-playground">Navigating Playground</h1>
 
-<p>You must provide both a certificate and a private key pair to configure the REST server. The REST server includes a sample certificate and private key pair that can be used to easily get going, but this configuration is only recommended for ease of use during initial development. Do not use the sample certificate and private key pair in a production environment.</p>
+<h2 id="landing-page">Landing Page</h2>
 
-<h2 id="enabling-https-and-tls-by-using-the-sample-certificate-and-private-key-pair">Enabling HTTPS and TLS by using the sample certificate and private key pair</h2>
+<p>The Wallet page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the Define page within the Editor.</p>
 
-<p>You can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>-t</code> argument to the command line:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t
-</code></pre></div>
-<p>Alternatively, you can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>COMPOSER_TLS</code> environment variable:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
-composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
-</code></pre></div>
-<p>When you have successfully enabled HTTPS and TLS, you will see that the output of the REST server specifies an <code>https://</code> URL instead of a <code>http://</code> URL:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: https://localhost:3000
-Browse your REST API at https://localhost:3000/explorer
-</code></pre></div>
-<p>This configuration is only recommended for ease of use during initial development. For a test, QA, or production deployment, you should provide your own certificate and private key to enable HTTPS and TLS.</p>
+<p><img src="./wallet-page.png" alt="wallet-page"></p>
 
-<h2 id="enabling-https-and-tls-by-providing-a-certificate-and-private-key-pair">Enabling HTTPS and TLS by providing a certificate and private key pair</h2>
+<p>The page options comprise:</p>
 
-<p>You can enable HTTPS and TLS by providing your own certificate and private key pair. The certificate and private key pair must be provided as two separate files in the PEM format. The files must be available on the file system of the system running the REST server, and the REST server must have read access to those files.</p>
+<ul>
+<li>Deploy new business network ‘card’. If this is your first time using Playground, or you wish to start a new network, you should press this button. When you press the button, you will begin the process of creating a new Business Network from scratch, or by using one of our provided samples as a base.</li>
+<li>ID Cards. An ID Card is what is used to connect to a blockchain Business Network. The card contains the identity, connection profile and the name of the target business network. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.</li>
+<li>Import ID Card. It is possible to import an ID Card from a .card file on your computer. To do so, simply browse to the file using your file explorer, or drag-and-drop the file into the designated area.</li>
+<li>Connect using credentials. If you have been provided with some credentials by an administrator, you can use this button to connect to the business network.</li>
+<li>Tutorial. By pressing this link you will be navigated to the Playground tutorial.</li>
+</ul>
 
-<p>You can configure the THE REST server to use your certificate and private key pair files by using the &#39;-c&#39; (certificate file) and &#39;-k&#39; (private key file) arguments to the command line:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t -c /tmp/cert.pem -k /tmp/key.pem
-</code></pre></div>
-<p>Alternatively, you can configure the THE REST server to use your certificate and private key pair files by using the <code>COMPOSER_TLS_CERTIFICATE</code> and <code>COMPOSER_TLS_KEY</code> environment variables:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
-export COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
-export COMPOSER_TLS_KEY=/tmp/key.pem
-composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
-</code></pre></div>
+<h2 id="editor-global-options">Editor Global Options</h2>
+
+<p>The Editor define and test pages contain a header that shares interaction options.</p>
+
+<p><img src="./editor-header.png" alt="editor-header"></p>
+
+<p>From left to right, the header contains:</p>
+
+<ul>
+<li>The name of the connection profile in use, and the Busines Network to which you are connected. In the above, it is Web and basic-sample-network respectively. </li>
+<li>Tabs that enable you to move between the Define and Test pages. </li>
+<li>A drop-down that is labelled with the current Identity, which enables you to work with the Identity Registry (for issuing identities) and to log out of the Business Network.</li>
+</ul>
+
+<h2 id="editor-define">Editor - Define</h2>
+
+<p>The Editor Define page is the page that is used to create, edit and update your Business Network. </p>
+
+<p><img src="./editor-define.png" alt="editor-define-page"></p>
+
+<p>The left hand side of the page contains:</p>
+
+<ul>
+<li>The Navigator, which displays all the files within your Business Network. By selecting a file within the list, it will be displayed in the central editor panel.</li>
+<li>Add File button, which enables you to add a new file to your Business Network definition.</li>
+<li>Update button, which updates the deployed Business Network to match that shown within the Editor.</li>
+<li>Import/Replace button, which enables you to replace the complete Business Network definition within the editor. You may chose to import a Business Network based on a set of samples, or Business Network Archive file from disc.</li>
+<li>Export button, which will export the Business Network definition within the Editor as a Business Network Archive (.bna) file.</li>
+</ul>
+
+<p>The central editor panel will display the currently selected file from the navigator. Using the editor, you can develop all aspects of your blockchain Business Network.</p>
+
+<h2 id="editor-test">Editor - Test</h2>
+
+<p>The Editor Test page is used to test the deployed Business Network through the creation of Participants, Assets and the submission of Transactions.</p>
+
+<p><img src="./editor-test.png" alt="editor-test-page"></p>
+
+<p>The left hand side of the page contains:</p>
+
+<ul>
+<li>Participant registry, which shows all Participants within the Business Network. Within this view it is possible to add a new Participant through the Create New Participant button shown on the upper menu, and update or remove existing Participants.</li>
+<li>Asset registry, which shows all Assets within the Business Network. Within this view it is possible to add a new Asset through the Create New Asset button shown on the upper menu, and update or remove existing Assets.</li>
+<li>Transaction registry, which shows Historian Records of Transactions that have occurred within the Business Network. </li>
+<li>Submit Transaction button, which enables the sumbission of a Transaction that is described within a script file of the Business Network definition.</li>
+</ul>
+
+<hr>
+
+<h1 id="playground-tasks">Playground Tasks</h1>
+
+<h3 id="id-cards">ID Cards</h3>
+
+<ul>
+<li><a href="./id-cards-playground.html#provide">Provide Access To Your Business Network With an ID Card</a></li>
+<li><a href="./id-cards-playground.html#gain">Gain Access To A Business Network with an ID Card</a></li>
+</ul>
+
+<hr>
+
             
           </section>
         </div>

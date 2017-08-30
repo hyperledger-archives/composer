@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Creating, Exporting, and Importing ID Cards | Hyperledger Composer</title>
+    <title>ID Cards | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Creating, Exporting, and Importing ID Cards</p>
+          <p>ID Cards</p>
           </div>
 
           <nav class="context-nav">
@@ -201,67 +201,127 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="creating-exporting-and-importing-id-cards">Creating, Exporting, and Importing ID Cards</h1>
+              <h1 id="id-cards">ID Cards</h1>
 
-<p>ID cards are represented by <code>.card</code> files containing a <code>metadata.JSON</code> file, a connection profile, and optional certificates.</p>
+<p>An ID Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain Business Network through a valid ID Card. An ID Card contains and Identity for a single Participant within a deployed business network. ID Cards are used in the Hyperledger Composer Playground to connect to deployed Business Networks. You can have multiple ID Cards for a single deployed Business Network, where those ID Cards belong to multiple Participants.</p>
 
-<p>ID cards can be used in the Hyperledger Composer Playground to manage identities for different business networks and connection profiles.</p>
+<p>ID Cards are grouped under a Connection Profile, and each card shows the business network that may be accessed using the displayed Identity via the <em>Connect now</em> option. An ID Card may be deleted or exported using the icons present on the card.</p>
+
+<p>Here is an ID Card that may be used to connect to the business network named &#39;my-business-network&#39; using the Identity &#39;New User&#39;</p>
+
+<p><img src="./id-card.png" alt="id-card"></p>
+
+<p>An ID Card can be created when an Identity is issued within the Playground. This ID Card can then be exported and shared with others, allowing them to connect to the business network using the issued identity. If a user is provided with a Enrollment ID and Secret by an administrator, which corresponds to a valid Identity within a business network, then an ID Card may be directly created in the Playground. It is also possible to manually create an ID Card.</p>
 
 <hr>
 
-<h2 id="creating-id-cards">Creating ID Cards</h2>
+<h2 id="providing-access-to-your-business-network-with-an-id-card"><a name="provide"></a>Providing Access To Your Business Network With an ID Card</h2>
 
-<p>ID cards can be created in the wallet screen, created from the component files, or created within a business network.</p>
+<p>Access to your Business Network is granted to another user through the provision of an ID Card. Once created, the ID Card may be exported and provided to the user for whom the card was created.</p>
 
-<p><em>Please note</em>: If cards are created from the wallet screen, or created from the component files, there must be a corresponding identity already created in the business network.</p>
+<p>There must be a Participant existing in the business network in order to bind an Identity required to create the ID Card.</p>
 
-<h3 id="creating-an-id-card-within-a-business-network">Creating an ID card within a business network</h3>
+<p>When an identity is issued within Playground, there is an option to add the Identity to your Wallet. By selecting this option an ID Card is created for the issued identity that is valid for the current business network. The ID Card will appear in your wallet once you log out of the current business network, and it is from this location where it may be exported to share with another user.</p>
 
-<ol>
-<li><p>From the <strong>My Wallet</strong> screen, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity with the permission to create new identities.</p></li>
-<li><p><em>Optional</em>: To create a participant to assign to the identity, click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</p></li>
-<li><p>Click the name of your identity in the upper right, and click <strong>ID Registry</strong>.</p></li>
-<li><p>Click <strong>Issue New ID</strong>.</p></li>
-<li><p>Choose an <strong>ID Name</strong>, and select a <strong>Participant</strong> to associate the new identity with.</p></li>
-<li><p>Click <strong>Create New</strong>.</p></li>
-<li><p>Click <strong>Add to My Wallet</strong>. Adding the ID card to your wallet allows you to use it to connect to the business network, or export it for someone else to use.</p></li>
-</ol>
-
-<p>The <strong>My Wallet</strong> screen should now show the new ID card.</p>
-
-<h3 id="creating-an-id-card-using-from-the-wallet">Creating an ID card using from the Wallet</h3>
-
-<p>An ID card can be created from the <strong>My Wallet</strong> page, however, a corresponding identity must already have been created in the business network. Creating an ID card from the <strong>My Wallet</strong> page requires that you use the same <em>User ID</em>, <em>User Secret</em> and the correct <em>Business network name</em> credentials as when the identity was created within the business network.</p>
-
-<p>To create an ID card from the <strong>My Wallet</strong> page:</p>
+<h3 id="creating-an-id-card">Creating an ID Card</h3>
 
 <ol>
-<li><p>After receiving a valid <em>User ID</em> and <em>User Secret</em>, click the <strong>Create ID Card</strong> button in the upper right of the <strong>My Wallet</strong> page.</p></li>
-<li><p>Select a connection profile and click <strong>Next</strong>.</p></li>
-<li><p>Enter the <em>User ID</em> and <em>User Secret</em> that were generated when the identity was created.</p></li>
-<li><p>Enter the correct <em>Business Network Name</em> and click <strong>Create</strong>.</p></li>
-</ol>
-
-<p>The ID card should now be displayed in the <strong>My Wallet</strong> page.</p>
-
-<h3 id="creating-an-id-card-from-component-files">Creating an ID card from component files</h3>
-
-<p>ID cards are composite files containing up to three elements:</p>
+<li><p>From the <strong>My Wallet</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p></li>
+<li><p>If required, create the participant to which you intend to assign the identity:</p>
 
 <ul>
-<li>A connection profile. (<code>.json</code>)</li>
-<li>A metadata file containing the data for the identity to use to connect to the business network. (<code>metadata.json</code>)</li>
+<li>Click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</li>
+<li>Complete the Participant defintion and click <strong>Create New</strong>.</li>
+</ul></li>
+<li><p>Click the name of your identity in the upper right, and click <strong>ID Registry</strong> within the drop down.</p></li>
+<li><p>Click <strong>+Issue New ID</strong>.</p></li>
+<li><p>Choose an <strong>ID Name</strong>, and input an existing <strong>Participant</strong> to associate the new identity with. A look-ahead service is provided to auto-complete on known Participants.</p></li>
+<li><p>Click <strong>Create New</strong>.</p></li>
+<li><p>Click <strong>Add to My Wallet</strong>. Adding the ID Card to your wallet allows you to use it to connect to the business network, or export it for someone else to use.</p></li>
+</ol>
+
+<p>The <strong>My Wallet</strong> page should now show the new ID Card.</p>
+
+<h3 id="exporting-an-id-card">Exporting an ID Card</h3>
+
+<p>ID Cards are exported from the <strong>My Wallet</strong> page in Playground, through interaction with the ID Card that you wish to export and is a one-step process.</p>
+
+<ul>
+<li>On the <strong>My Wallet</strong> page, click the <strong>Export</strong> icon on the ID Card you wish to export. The ID card should download as a <code>.card</code> file.</li>
+</ul>
+
+<p><em>Please note</em>: If you export an ID Card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and private key which are then used to identify Participants. Alternatively, if you export an ID card that has been used before, it will already contain the certificate and private key. For more information on Participants and Identities, please see our <a href="../managing/participantsandidentities.html">main documentation</a>.</p>
+
+<p><strong>Important</strong>: Exported identity cards should be handled with care since they contain unprotected credentials. We recommend that you only send identity cards that have been encrypted.</p>
+
+<h3 id="creating-id-card-credentials">Creating ID Card Credentials</h3>
+
+<p>It is possible to provide credentials to a user to enable them to create an ID Card and then use it to connect to the business network for which the credentials are valid. 
+1. From the <strong>My Wallet</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p>
+
+<ol>
+<li><p>If required, create the participant to which you intend to assign the identity:</p>
+
+<ul>
+<li>click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</li>
+<li>complete the Participant defintion and click <strong>Create New</strong>.</li>
+</ul></li>
+<li><p>Click the name of your identity in the upper right, and click <strong>ID Registry</strong> within the drop down.</p></li>
+<li><p>Click <strong>+Issue New ID</strong>.</p></li>
+<li><p>Choose an <strong>ID Name</strong>, and input an existing <strong>Participant</strong> to associate the new identity with. A look-ahead service is provided to auto-complete on known Participants.</p></li>
+<li><p>Click <strong>Create New</strong>.</p></li>
+<li><p>Take note of the Enrollment ID and Secret that is displayed. It is essential to record this information before proceeding as it is this information that must be provided to a user to enable them to create their ID Card. Once you have recorded the Enrollment ID and Secret, click <strong>OK</strong>.</p></li>
+<li><p>Provide the Enrollment ID and Secret to the user that you wish to connect via the generated Enrollment ID. In addition to the Enrollment ID and Secret, they will need to know the name of the business network for which their identity is valid and the Connection Profile that enables conection to the runtime on which the target business network is deployed.</p></li>
+</ol>
+
+<hr>
+
+<h2 id="gaining-access-to-a-business-network"><a name="gain"></a>Gaining Access To A Business Network</h2>
+
+<h3 id="importing-an-id-card">Importing an ID Card</h3>
+
+<p>Importing an ID Card allows you to connect to a deployed business network. </p>
+
+<ol>
+<li><p>On the <strong>My Wallet</strong> page, click <strong>Import ID card</strong> in the upper right.</p></li>
+<li><p>Drag and drop, or browse, to select an ID Card (<code>.card</code>) file to import. Click <strong>Import</strong>.</p></li>
+</ol>
+
+<p>The ID Card should now be visible in your wallet; you can now connect to the deployed Business Network.</p>
+
+<h3 id="connecting-with-credentials">Connecting with Credentials</h3>
+
+<p>An ID Card can be created from the <strong>My Wallet</strong> page, through knowledge of four items: a <em>Enrollment ID</em> and <em>Enrollment Secret</em>, generated by an admin of a business network; the <em>Business network name</em> for which the credentials are valid; the <em>Connection Profile</em> details for the runtime on which the target business network is deployed.</p>
+
+<p>To create an ID Card from the <strong>My Wallet</strong> page using credentials:</p>
+
+<ol>
+<li><p>After receiving all required credentials, click the <strong>Create ID Card</strong> button in the upper right of the <strong>My Wallet</strong> page.</p></li>
+<li><p>If you have previously connected to the deployed runtime, select it from the displayed list, click <strong>Next</strong> and proceed to step 4; otherwise select the radio option to connect to a new Blockchain and click <strong>Next</strong>.</p></li>
+<li><p>Specify the Connecntion Profile details that were provided to you and click <strong>Save</strong>.</p></li>
+<li><p>Enter the <em>Enrollment ID</em>, <em>Enrollment Secret</em> and <em>Business Network Name</em>, and click <strong>Create</strong>.</p></li>
+</ol>
+
+<p>The ID Card should now be displayed in the <strong>My Wallet</strong> page.</p>
+
+<h3 id="manually-creating-an-id-card">Manually Creating an ID Card</h3>
+
+<p>ID Cards are archive (<code>.zip</code>) files containing up to three elements:</p>
+
+<ul>
+<li>A Connection Profile. (<code>.json</code>)</li>
+<li>A metadata file containing the data for the Identity to use to connect to the Business Network. (<code>metadata.json</code>)</li>
 <li>An optional credentials directory containing a certificate and private key.</li>
 </ul>
 
-<p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>User Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID card is exported.</p>
+<p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>Enrollment Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID Card is exported.</p>
 
 <p>The metadata file should take the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
     </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PeerAdmin"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid ID card"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"businessNetwork"</span><span class="p">:</span><span class="w"> </span><span class="s2">"basic-sample-network"</span><span class="w">
-    </span><span class="s2">"enrollmentId"</span><span class="err">:</span><span class="w"> </span><span class="s2">"UserID"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"businessNetwork"</span><span class="p">:</span><span class="w"> </span><span class="s2">"basic-sample-network"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"enrollmentId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserID"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserSecret"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"images/conga.png"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
@@ -271,37 +331,9 @@ ga('send', 'pageview');
 </span></code></pre></div>
 <p>The <em>businessNetworkName</em>, <em>image</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
 
-<p>To create the ID card file, compress the connection profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>
+<p>To create the ID Card file, compress the Connection Profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>
 
-<p>This ID card can now be imported using the Hyperledger Composer Playground.</p>
-
-<hr>
-
-<h2 id="importing-and-exporting-id-cards">Importing and Exporting ID cards</h2>
-
-<p>Importing and exporting ID cards is the simplest way to grant access to other users of the business network in Playground. Valid ID cards must be created using one of the methods above, but can then be exported and sent to other users.</p>
-
-<h3 id="exporting-id-cards">Exporting ID Cards</h3>
-
-<ol>
-<li><p>To export an ID card create an identity by <a href="#creating-an-id-card-within-a-business-network">using a business network</a> and add the ID card to your wallet.</p></li>
-<li><p>On the <strong>My Wallet</strong> page, click the <strong>Export</strong> icon on the ID card you wish to export. The ID card should download as a <code>.card</code> file.</p></li>
-</ol>
-
-<p><em>Please note</em>: If you export an ID card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and public key which are then used to identify participants. Alternatively, if you export an ID card that has been used before, it will already contain the certificate and public key.</p>
-
-<p><strong>Important</strong>: Exported identity cards should be handled with care since they contain unprotected credentials. For example, you should never send identity cards via email or other unencrypted means of communication.</p>
-
-<h3 id="importing-id-cards">Importing ID Cards</h3>
-
-<p>Importing an ID card allows you to connect to a business network without creating a connection profile, identity, and certificates. Members of a business network can create ID cards and export them to give others access to a business network.</p>
-
-<ol>
-<li><p>On the <strong>My Wallet</strong> screen, click <strong>Import ID card</strong> in the upper right.</p></li>
-<li><p>Drag and drop, or browse, to select an ID card (<code>.card</code>) file to import. Click <strong>Import</strong>.</p></li>
-</ol>
-
-<p>The ID card should now be visible in your wallet.</p>
+<p>This ID Card can now be imported using the Hyperledger Composer Playground.</p>
 
             
           </section>
