@@ -236,7 +236,6 @@ describe('AppComponent', () => {
         let mockOnBusy;
         let mockOnError;
         let mockOnTransactionEvent;
-        let mockUpdateConnectionData;
         let mockQueryParamUpdated;
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
@@ -246,7 +245,6 @@ describe('AppComponent', () => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockUpdateConnectionData = sinon.stub(component, 'updateConnectionData');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');

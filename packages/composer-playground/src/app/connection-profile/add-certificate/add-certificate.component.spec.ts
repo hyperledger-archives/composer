@@ -304,7 +304,7 @@ describe('AddCertificateComponent', () => {
                 onerror: sinon.stub()
             };
 
-            mockFileRead = sinon.stub(window, 'FileReader');
+            mockFileRead = sinon.stub((<any> window), 'FileReader');
             mockFileRead.returns(mockFileReadObj);
         });
 
