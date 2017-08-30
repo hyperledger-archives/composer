@@ -158,27 +158,6 @@ describe('InitializationService', () => {
             mockIdentityCardService.addInitialIdentityCards.should.have.been.calledWith([sinon.match.instanceOf(IdCard)]);
         })));
 
-        it('should initialize and not deploy sample as logged in', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let mockCreateSample = sinon.stub(service, 'deployInitialSample');
-            mockCreateSample.returns(Promise.resolve());
-
-            mockConfigService.loadConfig.returns(Promise.resolve({}));
-
-            mockIdentityService.getLoggedIn.returns(true);
-
-            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
-            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
-
-            service.initialize();
-
-            tick();
-            mockConfigService.loadConfig.should.be.called;
-
-            mockIdentityCardService.loadIdentityCards.should.have.been.called;
-            mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
-            mockCreateSample.should.not.have.been.called;
-        })));
-
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
 
             mockConfigService.loadConfig.throws();
