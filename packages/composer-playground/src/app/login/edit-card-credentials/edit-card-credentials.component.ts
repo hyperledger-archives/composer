@@ -19,6 +19,8 @@ export class EditCardCredentialsComponent {
     private busNetName: string = null;
     private addInProgress: boolean = false;
     private useCerts: boolean = false;
+    private addedPublicCertificate: string;
+    private addedPrivateCertificate: string;
 
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
@@ -35,15 +37,27 @@ export class EditCardCredentialsComponent {
 
     validContents(): boolean {
         if (this.useCerts) {
-            return false;
-        } else if (!this.userId || this.userId.length === 0) {
-            return false;
-        } else if (!this.userSecret || this.userSecret.length === 0) {
-            return false;
-        } else if (this.addInProgress) {
-            return false;
-        } else if (!this.busNetName || this.busNetName.length === 0) {
-            return false;
+            if (!this.addedPublicCertificate || this.addedPublicCertificate.length === 0) {
+                return false;
+            } else if (!this.addedPrivateCertificate || this.addedPrivateCertificate.length === 0) {
+                return false;
+            } else if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            } else if (!this.busNetName || this.busNetName.length === 0) {
+                return false;
+            }
+        } else {
+            if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (!this.userSecret || this.userSecret.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            } else if (!this.busNetName || this.busNetName.length === 0) {
+                return false;
+            }
         }
 
         return true;
@@ -63,7 +77,10 @@ export class EditCardCredentialsComponent {
             title: 'Adding ID card',
             text: 'Adding ID card'
         });
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile)
+
+        let credentials = this.useCerts ? {certificate: this.addedPublicCertificate, privateKey: this.addedPrivateCertificate} : null;
+
+        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile, credentials)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({

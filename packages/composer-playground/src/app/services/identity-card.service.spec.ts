@@ -334,7 +334,7 @@ describe('IdentityCardService', () => {
             };
 
             let result;
-            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile).then((cardRef) => {
+            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile, null).then((cardRef) => {
                 result = cardRef;
             });
 
