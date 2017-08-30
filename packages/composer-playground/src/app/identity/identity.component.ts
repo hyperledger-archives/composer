@@ -119,7 +119,7 @@ export class IdentityComponent implements OnInit {
 
     removeIdentity(cardRef: string): Promise<void> {
 
-        let userID = this.identityCards.get(cardRef).getName();
+        let userID = this.identityCards.get(cardRef).getUserName();
 
         // show confirm/delete dialog first before taking action
         const confirmModalRef = this.modalService.open(DeleteComponent);

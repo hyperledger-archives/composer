@@ -46,8 +46,8 @@ class IdCard {
         const method = 'constructor';
         LOG.entry(method);
 
-        if (!(metadata && metadata.name)) {
-            throw Error('Required metadata field not found: name');
+        if (!(metadata && metadata.userName)) {
+            throw Error('Required metadata field not found: userName');
         }
         if (!(connectionProfile && connectionProfile.name)) {
             throw Error('Required connection field not found: name');
@@ -61,13 +61,14 @@ class IdCard {
     }
 
     /**
-     * Name of the card. This is typically used for display purposes, and is not a unique identifier.
+     * Name of the user identity associated with the card. This should be unique within the scope of a given
+     * business network and connection profile.
      * <p>
      * This is a mandatory field.
-     * @return {String} name of the card.
+     * @return {String} Name of the user identity.
      */
-    getName() {
-        return this.metadata.name;
+    getUserName() {
+        return this.metadata.userName;
     }
 
     /**
@@ -129,19 +130,12 @@ class IdCard {
      * enroll with a business network and obtain certificates.
      * <p>
      * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
-     * <em>{ id: String, secret: String }</em>.
+     * <em>{ secret: String }</em>.
      * @return {Object} enrollment credentials, or {@link null} if none exist.
      */
     getEnrollmentCredentials() {
-        let result = null;
-        const id = this.metadata.enrollmentId;
         const secret = this.metadata.enrollmentSecret;
-        if (id || secret) {
-            result = { };
-            result.id = id;
-            result.secret = secret;
-        }
-        return result;
+        return secret ? { secret: secret } : null;
     }
 
     /**

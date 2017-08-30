@@ -15,8 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
-        name: 'PeerAdmin',
-        enrollmentId: 'admin',
+        userName: 'PeerAdmin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
     },
@@ -88,7 +87,7 @@ export class IdentityCardService {
             })
             .then((exportedCredentials) => {
                 let metadata = {
-                    name: card.getName(),
+                    userName: card.getUserName(),
                     businessNetwork: card.getBusinessNetworkName(),
                     enrollmentId: card.getEnrollmentCredentials().id,
                     enrollmentSecret: card.getEnrollmentCredentials().secret
@@ -177,7 +176,7 @@ export class IdentityCardService {
 
     createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any): Promise<string> {
         let metadata = {
-            name: name,
+            userName: name,
             businessNetwork: businessNetworkName,
             enrollmentId: enrollmentId,
             enrollmentSecret: enrollmentSecret
@@ -278,7 +277,7 @@ export class IdentityCardService {
         let wantedCardRef: string;
         this.idCards.forEach((card: IdCard, key: string) => {
             let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
-            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getName()) {
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getUserName()) {
                 wantedCardRef = key;
             }
         });

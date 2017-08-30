@@ -80,7 +80,7 @@ describe('IdCard', function() {
     let credentialsCard;
 
     beforeEach(function() {
-        const minimalMetadata = { name: 'minimal'};
+        const minimalMetadata = { userName: 'minimal'};
         const minimalConnectionProfile = { name: 'minimal' };
 
         emptyCredentials = { };
@@ -121,17 +121,17 @@ describe('IdCard', function() {
             }).should.be.rejectedWith(/metadata.json/);
         });
 
-        it('should throw error on missing name field in metadata', function() {
-            return readIdCardAsync('missing-metadata-name').then((readBuffer) => {
+        it('should throw error on missing userName field in metadata', function() {
+            return readIdCardAsync('missing-metadata-username').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
-            }).should.be.rejectedWith(/name/);
+            }).should.be.rejectedWith(/userName/);
         });
 
-        it('should load name', function() {
+        it('should load userName', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
-                card.getName().should.equal('Conga');
+                card.getUserName().should.equal('conga');
             });
         });
 
@@ -199,8 +199,7 @@ describe('IdCard', function() {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
                 const credentials = card.getEnrollmentCredentials();
-                credentials.id.should.equal('conga');
-                credentials.secret.should.equal('super-secret-passphrase');
+                credentials.should.deep.equal({ secret: 'super-secret-passphrase' });
             });
         });
 
