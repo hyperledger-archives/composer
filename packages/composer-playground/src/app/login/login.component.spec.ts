@@ -224,31 +224,24 @@ describe(`LoginComponent`, () => {
     });
 
     describe('loadIdentityCards', () => {
-        let mockIdCard1;
-        let mockIdCard2;
-        let mockIdCard3;
-        let mockIdCard4;
-        let mockIdCard5;
-        let mockIdCards: Map<string, IdCard>;
-
-        beforeEach(() => {
-            mockIdCard1 = sinon.createStubInstance(IdCard);
+        it('should load identity cards and sort the profiles', fakeAsync(() => {
+            let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getName.returns('card1');
             mockIdCard1.getConnectionProfile.returns({name: 'myProfile1'});
-            mockIdCard2 = sinon.createStubInstance(IdCard);
+            let mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard2.getName.returns('card2');
             mockIdCard2.getConnectionProfile.returns({name: 'myProfile2'});
-            mockIdCard3 = sinon.createStubInstance(IdCard);
+            let mockIdCard3 = sinon.createStubInstance(IdCard);
             mockIdCard3.getName.returns('card3');
             mockIdCard3.getConnectionProfile.returns({name: 'myProfile1'});
-            mockIdCard4 = sinon.createStubInstance(IdCard);
-            mockIdCard4.getName.returns('web');
+            let mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getName.returns('card4');
             mockIdCard4.getConnectionProfile.returns({name: '$default'});
-            mockIdCard5 = sinon.createStubInstance(IdCard);
-            mockIdCard5.getName.returns('card4');
+            let mockIdCard5 = sinon.createStubInstance(IdCard);
+            mockIdCard5.getName.returns('card5');
             mockIdCard5.getConnectionProfile.returns({name: 'bobProfile'});
 
-            mockIdCards = new Map<string, IdCard>();
+            let mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef1', mockIdCard1);
             mockIdCards.set('myCardRef2', mockIdCard2);
             mockIdCards.set('myCardRef3', mockIdCard3);
@@ -259,9 +252,7 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'myProfile2'}).returns('xxx-myProfile2');
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'bobProfile'}).returns('xxx-bobProfile');
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: '$default'}).returns('web-$default');
-        });
 
-        it('should load identity cards and sort the profiles', fakeAsync(() => {
             mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
             mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef4']);
             let sortCards = sinon.stub(component, 'sortIdCards');
@@ -286,6 +277,37 @@ describe(`LoginComponent`, () => {
             component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef5']);
             component['idCardRefs'].get('web-$default').should.deep.equal(['myCardRef4']);
             component['indestructibleCards'].should.deep.equal(['myCardRef4']);
+        }));
+
+        it('should load identity cards and ensure there is always a web connection profile', fakeAsync(() => {
+            let mockIdCard1 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getName.returns('PeerAdmin');
+            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
+            let mockIdCard2 = sinon.createStubInstance(IdCard);
+            mockIdCard2.getName.returns('bob');
+            mockIdCard2.getConnectionProfile.returns({name: 'bobProfile'});
+
+            let mockIdCards = new Map<string, IdCard>();
+            mockIdCards.set('myCardRef1', mockIdCard1);
+            mockIdCards.set('myCardRef2', mockIdCard2);
+
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'bobProfile'}).returns('xxx-bobProfile');
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: '$default'}).returns('web-$default');
+
+            mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
+            mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef1']);
+            let sortCards = sinon.stub(component, 'sortIdCards');
+
+            component.loadIdentityCards();
+
+            tick();
+
+            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile']);
+            component['connectionProfileNames'].size.should.equal(1);
+            component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
+            component['idCardRefs'].size.should.equal(1);
+            component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef2']);
+            component['indestructibleCards'].should.deep.equal(['myCardRef1']);
         }));
 
         it('should handle error', fakeAsync(() => {
