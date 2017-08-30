@@ -195,7 +195,7 @@ module.exports = function (options) {
 
         {
           test: /\.js$/,
-          exclude: /(node_modules(?!\/(composer|yallist|jsonata))|bower_components)/,
+          exclude: /(node_modules(?!\/(composer|yallist|jsonata|uri-js))|bower_components)/,
           loader: 'babel-loader',
           query: {
             presets: [require.resolve('babel-preset-latest')]

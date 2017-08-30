@@ -125,6 +125,13 @@ describe('Relationship', function () {
             rel.getIdentifier().should.equal('123');
         });
 
+        it('legacy fully qualified identifier including tricky characters', function() {
+            const rel = Relationship.fromURI(modelManager, 'org.acme.l1.Person#1.2:3#4' );
+            rel.getNamespace().should.equal('org.acme.l1');
+            rel.getType().should.equal('Person');
+            rel.getIdentifier().should.equal('1.2:3#4');
+        });
+
         it('check that relationships can be created from a legacy identifier', function() {
             const rel = Relationship.fromURI(modelManager, '123', 'org.acme.l1', 'Person' );
             rel.getNamespace().should.equal('org.acme.l1');
@@ -144,5 +151,41 @@ describe('Relationship', function () {
             }).should.throw(/Cannot instantiate Type Unkown in namespace org.acme.l1/);
         });
 
+        it('should error on invalid URI scheme', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'banana:org.acme.l1.Person#123');
+            }).should.throw(/banana/);
+        });
+
+        it('should error on invalid URI content', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'resource://USER:PASSWORD@HOSTNAME:PORT/org.acme.l1.Person#123');
+            }).should.throw(/USER:PASSWORD@HOSTNAME:PORT/);
+        });
+
+        it('should error on missing namespace in URI', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'resource:Person#123');
+            }).should.throw();
+        });
+
+        it('should error on missing type in URI', function() {
+            (function () {
+                Relationship.fromURI(modelManager, 'resource:org.acme.l1.#123');
+            }).should.throw();
+        });
+
+        it('should error on missing ID', function() {
+            (function () {
+                Relationship.fromURI(modelManager, '', 'org.acme.l1', 'Person');
+            }).should.throw();
+        });
+    });
+
+    describe('#toString', function() {
+        it('should include the ID', function() {
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            relationship.toString().should.include('123');
+        });
     });
 });
