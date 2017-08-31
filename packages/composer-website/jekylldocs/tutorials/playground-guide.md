@@ -34,6 +34,7 @@ Next, we want to create a new business network from scratch. A business network 
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
 </video>
 
+
 ## Step Three: Connecting to the business network
 
 Now that we've created and deployed the business network, you should see a new ID card called _admin_ for our business network _tutorial-network_ in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.
@@ -60,7 +61,7 @@ For more information on our modeling language, check our [documentation](../refe
 
 3. Delete the lines of code in the model file and replace it with this:
 
-        ```
+
         /**
          * My commodity trading network
          */
@@ -81,7 +82,6 @@ For more information on our modeling language, check our [documentation](../refe
             --> Commodity commodity
             --> Trader newOwner
         }
-        ```
 
       This domain model defines a single asset type `Commodity` and single participant type `Trader` and a single transaction type `Trade` that is used to modify the owner of a commodity.
 
@@ -97,22 +97,21 @@ For more information on writing transaction processor functions, check our [docu
 
 3. Delete the lines of code in the script file and replace it with the following code:
 
-      ```
-      /**
-       * Track the trade of a commodity from one trader to another
-       * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
-       * @transaction
-       */
-      function tradeCommodity(trade) {
-          trade.commodity.owner = trade.newOwner;
-          return getAssetRegistry('org.acme.mynetwork.Commodity')
-              .then(function (assetRegistry) {
-                  return assetRegistry.update(trade.commodity);
-              });
-      }
-      ```
+        /**
+         * Track the trade of a commodity from one trader to another
+         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+         * @transaction
+         */
+        function tradeCommodity(trade) {
+            trade.commodity.owner = trade.newOwner;
+            return getAssetRegistry('org.acme.mynetwork.Commodity')
+                .then(function (assetRegistry) {
+                    return assetRegistry.update(trade.commodity);
+                });
+        }
 
-    This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
+
+      This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
 
 ## Step Six: Adding an access control file
@@ -130,7 +129,6 @@ For more information on access control files, check our [documentation](../refer
 
 3. Delete the lines of code in the access control file and replace it with the following code:
 
-        ```
         /**
          * Access control rules for mynetwork
          */
@@ -149,13 +147,12 @@ For more information on access control files, check our [documentation](../refer
           resource: "org.hyperledger.composer.system.**"
           action: ALLOW
         }
-        ```
 
       This access control rule allows all participants to access all business network resources, and allows all users to have system access control privileges.
 
 ## Step Seven: Deploying the updated business network
 
-Now that we've created our model, script, and access control files, we need to deploy and test our model.
+Now that we've created our model, script, and access control files, we need to deploy and test our business network.
 
 Click **Update** to deploy our new model, script, and transaction script files.
 
@@ -177,37 +174,36 @@ Click the **Test** tab to get started.
 
 The first thing we should add to our business network is two participants.
 
+
 1. Ensure that you have the **Trader** tab selected on the left, and click **Create New Participant** in the upper right.
 
 2. What you can see is the data structure of a _Trader_ participant. We want some easily recognizable data, so delete the code that's there and paste the following:
 
-        ```
         {
           "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER1",
           "firstName": "Jenny",
           "lastName": "Jones"
         }
-        ```
 
 3. Click **Create New** to create the participant.
 
 4. You should be able to see the new _Trader_ participant you've created. We need another _Trader_ to test our _Trade_ transaction though, so create another _Trader_, but this time, use the following data:
 
-        ```
         {
           "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER2",
           "firstName": "Amy",
           "lastName": "Williams"
         }
-        ```
 
 Make sure that both participants exist in the _Trader_ view before moving on!
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
 </video>
+
+
 
 ## Step Ten: Creating an asset
 
@@ -217,7 +213,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
 
 2. Delete the asset data and replace it with the following:
 
-        ```
+
         {
           "$class": "org.acme.mynetwork.Commodity",
           "tradingSymbol": "ABC",
@@ -226,8 +222,9 @@ Now that we have two _Trader_ participants, we need something for them to trade.
           "quantity": 72.297,
           "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
         }
-        ```
-3. After creating this asset, you should be able to see if in the **Commodity** tab.
+
+
+3. After creating this asset, you should be able to see it in the **Commodity** tab.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_asset_render.mp4" type="video/mp4" />
@@ -248,19 +245,18 @@ To test the _Trade_ transaction:
 
 3. Replace the transaction data with the following, or just change the details:
 
-        ```
         {
           "$class": "org.acme.mynetwork.Trade",
           "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
           "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
         }
-        ```
+
 
 4. Click **Submit**.
 
 5. To check that our asset has changed ownership from `TRADER1` to `TRADER2`, click the **Commodity** tab, and expand the data section for the asset. You should see that the owner is listed as `resource:org.acme.mynetwork.Trader#TRADER2`.
 
-5. To view the full transaction history of our business network, click **All transactions** on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the _Trader_ participants and the _Commodity_ asset, are recorded as transactions, even though they're not defined as transactions in our business network model. These transactions are known as 'System Transactions' and are common to all business networks, and defined in the {{site.data.conrefs.composer_full}} Runtime.
+6. To view the full transaction history of our business network, click **All Transactions** on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the _Trader_ participants and the _Commodity_ asset, are recorded as transactions, even though they're not defined as transactions in our business network model. These transactions are known as 'System Transactions' and are common to all business networks, and defined in the {{site.data.conrefs.composer_full}} Runtime.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
