@@ -18,7 +18,8 @@ If you are new to the Playground, we recommend that you follow the [Playground T
 # Navigating Playground
 
 ## Landing Page
-The Wallet page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the Define page within the Editor.
+
+The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
 ![wallet-page](./wallet-page.png)
 
@@ -31,6 +32,7 @@ The page options comprise:
 - Tutorial. By pressing this link you will be navigated to the Playground tutorial.
 
 ## Editor Global Options
+
 The Editor define and test pages contain a header that shares interaction options.
 
 ![editor-header](./editor-header.png)

@@ -30,6 +30,11 @@ Next, we want to create a new business network from scratch. A business network 
 
 5. Now that our network is defined, click **Deploy**.
 
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
+</video>
+
+
 ## Step Three: Connecting to the business network
 
 Now that we've created and deployed the business network, you should see a new ID card called _admin_ for our business network _tutorial-network_ in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.
@@ -37,6 +42,10 @@ Now that we've created and deployed the business network, you should see a new I
 When connecting to an external blockchain, ID cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.
 
 To connect to our business network click **Connect now** under our ID card.
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_2.mp4" type="video/mp4" />
+</video>
 
 ## Step Four: Adding a model file
 
@@ -74,7 +83,6 @@ For more information on our modeling language, check our [documentation](../refe
             --> Trader newOwner
         }
 
-
       This domain model defines a single asset type `Commodity` and single participant type `Trader` and a single transaction type `Trade` that is used to modify the owner of a commodity.
 
 ## Step Five: Adding a transaction processor script file
@@ -89,22 +97,21 @@ For more information on writing transaction processor functions, check our [docu
 
 3. Delete the lines of code in the script file and replace it with the following code:
 
+        /**
+         * Track the trade of a commodity from one trader to another
+         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+         * @transaction
+         */
+        function tradeCommodity(trade) {
+            trade.commodity.owner = trade.newOwner;
+            return getAssetRegistry('org.acme.mynetwork.Commodity')
+                .then(function (assetRegistry) {
+                    return assetRegistry.update(trade.commodity);
+                });
+        }
 
-      /**
-       * Track the trade of a commodity from one trader to another
-       * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
-       * @transaction
-       */
-      function tradeCommodity(trade) {
-          trade.commodity.owner = trade.newOwner;
-          return getAssetRegistry('org.acme.mynetwork.Commodity')
-              .then(function (assetRegistry) {
-                  return assetRegistry.update(trade.commodity);
-              });
-      }
 
-
-    This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
+      This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
 
 ## Step Six: Adding an access control file
@@ -167,6 +174,7 @@ Click the **Test** tab to get started.
 
 The first thing we should add to our business network is two participants.
 
+
 1. Ensure that you have the **Trader** tab selected on the left, and click **Create New Participant** in the upper right.
 
 2. What you can see is the data structure of a _Trader_ participant. We want some easily recognizable data, so delete the code that's there and paste the following:
@@ -195,13 +203,16 @@ Make sure that both participants exist in the _Trader_ view before moving on!
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
 </video>
 
-## Step Ten: Creating an asset
+
+
+## Step Ten: Creating an asset
 
 Now that we have two _Trader_ participants, we need something for them to trade. Creating an asset is very similar to creating a participant. The _Commodity_ we're creating will have an _owner_ property indicating that it belongs to the _Trader_ with the _tradeId_ of `TRADER1`.
 
 1. Click the **Commodity** tab under **Assets** and click **Create New Asset**.
 
 2. Delete the asset data and replace it with the following:
+
 
         {
           "$class": "org.acme.mynetwork.Commodity",
@@ -211,6 +222,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
           "quantity": 72.297,
           "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
         }
+
 
 3. After creating this asset, you should be able to see it in the **Commodity** tab.
 
