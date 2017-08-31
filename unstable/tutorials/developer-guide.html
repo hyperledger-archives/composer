@@ -239,7 +239,7 @@ ga('send', 'pageview');
 
 <h3 id="update-your-package-json-file">Update your package.json file</h3>
 
-<p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end. </p>
+<p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end.</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="s2">"name"</span><span class="err">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="err">,</span><span class="w">
   </span><span class="s2">"version"</span><span class="err">:</span><span class="w"> </span><span class="s2">"0.1.6"</span><span class="err">,</span><span class="w">
   </span><span class="s2">"description"</span><span class="err">:</span><span class="w"> </span><span class="s2">"My Commodity Trading network"</span><span class="err">,</span><span class="w">
@@ -301,7 +301,7 @@ transaction Trade {
 
 <p>Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
 
-<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
+<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
 
 <p>Now replace the entire contents of <code>sample.js</code> with the function below (including the license header info)</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
