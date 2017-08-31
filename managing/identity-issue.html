@@ -100,9 +100,14 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
 <li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -127,7 +132,9 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -138,11 +145,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -195,26 +203,15 @@ ga('send', 'pageview');
             
               <h1 id="issuing-a-new-identity-to-a-participant">Issuing a new identity to a participant</h1>
 
-<p>A new identity can be issued to a participant using either the API or the command line.
-Once a new identity has been issued, the identity can then be used by the participant
-to interact with the business network in the context of that participant.</p>
+<p>A new identity can be issued to a participant using either the API, the command line, or by using ID cards in the Hyperledger Composer Playground. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
 
-<p>When using Hyperledger Fabric, Hyperledger Composer issues new identities
-by using the Hyperledger Fabric certificate authority (CA) to register new enrolment certificates.
-The Hyperledger Fabric certificate authority generates an enrolment secret that can be given to
-the participant, who can then use the enrolment secret to request their enrolment certificate and
-private keys from the Hyperledger Fabric certificate authority.</p>
+<p>When using Hyperledger Fabric, Hyperledger Composer issues new identities by using the Hyperledger Fabric certificate authority (CA) to register new enrollment certificates. The Hyperledger Fabric certificate authority generates an enrollment secret that can be given to the participant, who can then use the enrollment secret to request their enrollment certificate and private keys from the Hyperledger Fabric certificate authority.</p>
 
 <h2 id="before-you-start">Before you start</h2>
 
-<p>Before you follow these steps, you must have added a participant to a participant
-registry. The <strong>issuer</strong> of a new identity (whether using command line or using the
-Javascript APIs below) must itself have &#39;issuer&#39; authority and as appropriate, ACLs
-that permit them to issue the identity (to be associated with the participant) in
-Hyperledger Composer.</p>
+<p>Before you follow these steps, you must have added a participant to a participant registry. The <strong>issuer</strong> of a new identity (whether using command line or using the Javascript APIs below) must itself have &#39;issuer&#39; authority and as appropriate, ACLs that permit them to issue the identity (to be associated with the participant) in Hyperledger Composer.</p>
 
-<p>The procedure below shows an example using the following model of a participant
-from the Digital Property sample Business Network Definition: <a href="https://www.npmjs.com/package/digitalproperty-network">digitalproperty-network</a></p>
+<p>The procedure below shows an example using the following model of a participant from the Digital Property sample Business Network Definition: <a href="https://www.npmjs.com/package/digitalproperty-network">digitalproperty-network</a></p>
 <div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
 
 participant Person identified by personId {
@@ -223,8 +220,7 @@ participant Person identified by personId {
   o String lastName
 }
 </code></pre></div>
-<p>The example assumes that an instance, <code>net.biz.digitalPropertyNetwork#mae@biznet.org</code>,
-of that participant has been created and placed into a participant registry.</p>
+<p>The example assumes that an instance, <code>net.biz.digitalPropertyNetwork#mae@biznet.org</code>, of that participant has been created and placed into a participant registry.</p>
 
 <h2 id="procedure">Procedure</h2>
 
@@ -254,7 +250,7 @@ of that participant has been created and placed into a participant registry.</p>
 <ul>
 <li>Command line</li>
 </ul>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity issue -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw -u maeid1 -a <span class="s2">"resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity issue -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw -u maeid1 -a <span class="s2">"net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
 </code></pre></div>
 <p>The enrollment secret will be printed to the console.</p>
 
@@ -285,8 +281,7 @@ of that participant has been created and placed into a participant registry.</p>
 </ul>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i maeid1 -s RJJmlOpvNVRV
 </code></pre></div>
-<p>The participant ID will be printed to the console, and should match the participant
-  ID that was specified in the <code>composer identity issue</code> command.</p>
+<p>The participant ID will be printed to the console, and should match the participant ID that was specified in the <code>composer identity issue</code> command.</p>
 
             
           </section>

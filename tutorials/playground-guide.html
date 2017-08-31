@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Playground Guide | Hyperledger Composer</title>
+    <title>Playground Tutorial | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Playground Guide</p>
+          <p>Playground Tutorial</p>
           </div>
 
           <nav class="context-nav">
@@ -100,9 +100,14 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
 <li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -127,7 +132,9 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -138,11 +145,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -195,23 +203,52 @@ ga('send', 'pageview');
             
               <h1 id="playground-tutorial">Playground Tutorial</h1>
 
-<hr>
+<p>In this step by step tutorial we&#39;ll walk through setting up a business network, defining our assets, participants and transactions, and testing our network by creating some participants and an asset, and submitting transactions to change the ownership of the asset from one to another.</p>
 
-<p>In this step by step tutorial we are going to walk-through setting up a business network definition, testing that business network definition by creating a couple of participants, an asset and submitting a transaction to transfer that asset to a different participant.</p>
+<h2 id="step-one-open-the-hyperledger-composer-playground">Step One: Open the Hyperledger Composer Playground</h2>
 
-<h2 id="step-1-open-the-hyperledger-composer-playground">Step 1: Open the Hyperledger Composer Playground</h2>
+<p>Open <a href="http://composer-playground.mybluemix.net" target="blank">Composer Playground</a>. You should see the <strong>My Wallet</strong> screen. The <strong>My Wallet</strong> page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don&#39;t worry about this too much for the time being, as we&#39;re going to create our own network.</p>
 
-<p>Open <a href="http://composer-playground.mybluemix.net" target="blank">Composer Playground</a>, by default the Basic Sample Network is imported.</p>
+<h2 id="step-two-creating-a-new-business-network">Step Two: Creating a new business network</h2>
 
-<p>If you have previously used Playground, be sure to clear your browser local storage by running <code>localStorage.clear()</code> in your browser Console.</p>
+<p>Next, we want to create a new business network from scratch. A business network has a couple of defining properties; a name, and an optional description. You can also choose to base a new business network on an existing template, or import your own template.</p>
 
-<h2 id="step-2-define-your-domain-model">Step 2: Define your Domain Model</h2>
+<ol>
+<li><p>Click <strong>Deploy a new business network</strong> under the Web Profile heading to get started.</p></li>
+<li><p>The new business network needs a name, let&#39;s call it <code>tutorial-network</code>.</p></li>
+<li><p>Optionally, you can put in a network description.</p></li>
+<li><p>Next we must select a business network to base ours on, because we want to build the network from scratch, click <strong>empty-business-network</strong>.</p></li>
+<li><p>Now that our network is defined, click <strong>Deploy</strong>.</p></li>
+</ol>
 
-<p>Open the file <strong>Model File</strong> from the left hand side navigation in Playground. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network.</p>
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
+</video>
 
-<p>As an example, we&#39;re going to replace the entire contents of the <strong>Model File</strong> with a simplistic model below to track the ownership of commodities on the blockchain.</p>
+<h2 id="step-three-connecting-to-the-business-network">Step Three: Connecting to the business network</h2>
 
-<p>This will create errors with other files, don&#39;t worry as we&#39;ll fix that!</p>
+<p>Now that we&#39;ve created and deployed the business network, you should see a new ID card called <em>admin</em> for our business network <em>tutorial-network</em> in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.</p>
+
+<p>When connecting to an external blockchain, ID cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.</p>
+
+<p>To connect to our business network click <strong>Connect now</strong> under our ID card.</p>
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/assets/img/tutorials/playground/vs_code_2.mp4" type="video/mp4" />
+</video>
+
+<h2 id="step-four-adding-a-model-file">Step Four: Adding a model file</h2>
+
+<p>As you can see, we&#39;re in the <strong>Define</strong> tab right now, this tab is where you create and edit the files that make up a business network definition, before deploying them and testing them using the <strong>Test</strong> tab.</p>
+
+<p>As we selected an empty business network template, we need to define our business network files. The first step is to add a model file. Model files define the assets, participants, transactions, and events in our business network.</p>
+
+<p>For more information on our modeling language, check our <a href="../reference/cto_language.html">documentation</a>.</p>
+
+<ol>
+<li><p>Click the <strong>Add a file</strong> button.</p></li>
+<li><p>Click the <strong>Model file</strong> and click <strong>Add</strong>.</p></li>
+<li><p>Delete the lines of code in the model file and replace it with this:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
@@ -233,15 +270,19 @@ transaction Trade {
     --&gt; Trader newOwner
 }
 </code></pre></div>
-<p>This domain model defines a single asset <code>Commodity</code> and single participant <code>Trader</code> and a single transaction <code>Trade</code> that is used to modify the owner of a commodity.</p>
+<p>This domain model defines a single asset type <code>Commodity</code> and single participant type <code>Trader</code> and a single transaction type <code>Trade</code> that is used to modify the owner of a commodity.</p></li>
+</ol>
 
-<p><em>Note: You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace and you can import types from one namespace into other namespaces.</em></p>
+<h2 id="step-five-adding-a-transaction-processor-script-file">Step Five: Adding a transaction processor script file</h2>
 
-<h2 id="step-3-define-transaction-processor-functions">Step 3: Define Transaction Processor Functions</h2>
+<p>Now that the domain model has been defined, we can define the transaction logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
 
-<p>Now that the domain model has been defined, we can define the business logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
+<p>For more information on writing transaction processor functions, check our <a href="../reference/js_scripts.html">documentation</a>.</p>
 
-<p>Open the file <strong>Script File</strong> from the left-hand side navigation and replace the entire contents of this with the function below.</p>
+<ol>
+<li><p>Click the <strong>Add a file</strong> button.</p></li>
+<li><p>Click the <strong>Script file</strong> and click <strong>Add</strong>.</p></li>
+<li><p>Delete the lines of code in the script file and replace it with the following code:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
@@ -255,13 +296,21 @@ function tradeCommodity(trade) {
         });
 }
 </code></pre></div>
-<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
+<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p></li>
+</ol>
 
-<p><em>Note: You can create as many JavaScript files as convenient for your business network definition. If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</em></p>
+<h2 id="step-six-adding-an-access-control-file">Step Six: Adding an access control file</h2>
 
-<h2 id="step-4-define-your-access-control-rules">Step 4: Define your Access Control Rules</h2>
+<p>Access control files define the access control rules for business networks. Our network is simple, so we just want some basic rules to allow us full access.</p>
 
-<p>Open the <strong>Access Control</strong> file that defines the access control rules for the business network definition and replace the entire contents with the rule below.</p>
+<p>While you can have multiple model or script files, you can only have one access control file in any business network.</p>
+
+<p>For more information on access control files, check our <a href="../reference/acl_language.html">documentation</a>.</p>
+
+<ol>
+<li><p>Click the <strong>Add a file</strong> button.</p></li>
+<li><p>Click the <strong>Access Control file</strong> and click <strong>Add</strong>.</p></li>
+<li><p>Delete the lines of code in the access control file and replace it with the following code:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * Access control rules for mynetwork
  */
@@ -281,49 +330,67 @@ rule SystemACL {
   action: ALLOW
 }
 </code></pre></div>
-<p>This access control simply allows all participants access to all resources.</p>
+<p>This access control rule allows all participants to access all business network resources, and allows all users to have system access control privileges.</p></li>
+</ol>
 
-<h2 id="step-5-deploy-changes">Step 5: Deploy changes</h2>
+<h2 id="step-seven-deploying-the-updated-business-network">Step Seven: Deploying the updated business network</h2>
 
-<p>Using the <strong>Deploy</strong> button in the left hand navigation we need to deploy our changes to the web browser.</p>
+<p>Now that we&#39;ve created our model, script, and access control files, we need to deploy and test our business network.</p>
+
+<p>Click <strong>Update</strong> to deploy our new model, script, and transaction script files.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
 </video>
 
-<h2 id="step-6-testing-our-business-network-definition">Step 6: Testing our Business Network Definition</h2>
+<h2 id="step-eight-testing-the-business-network-definition">Step Eight: Testing the business network definition</h2>
 
-<p>Navigate to the <strong>Test</strong> tab at the top to test our Business Network Definition</p>
+<p>Next, we need to test our business network by creating some participants (in this case <em>Traders</em>), creating an asset (a <em>Commodity</em>), and then using our <em>Trade</em> transaction to change the ownership of the <em>Commodity</em>.</p>
+
+<p>Click the <strong>Test</strong> tab to get started.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/test_tab_render.mp4" type="video/mp4" />
 </video>
 
-<h2 id="step-7-creating-two-traders">Step 7: Creating two Traders</h2>
+<h2 id="step-nine-creating-participants">Step Nine: Creating participants</h2>
 
-<p>Create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the <strong>Create New Participant</strong> button.</p>
+<p>The first thing we should add to our business network is two participants.</p>
+
+<ol>
+<li><p>Ensure that you have the <strong>Trader</strong> tab selected on the left, and click <strong>Create New Participant</strong> in the upper right.</p></li>
+<li><p>What you can see is the data structure of a <em>Trader</em> participant. We want some easily recognizable data, so delete the code that&#39;s there and paste the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div><div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+</span></code></pre></div></li>
+<li><p>Click <strong>Create New</strong> to create the participant.</p></li>
+<li><p>You should be able to see the new <em>Trader</em> participant you&#39;ve created. We need another <em>Trader</em> to test our <em>Trade</em> transaction though, so create another <em>Trader</em>, but this time, use the following data:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amy"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Williams"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+</span></code></pre></div></li>
+</ol>
+
+<p>Make sure that both participants exist in the <em>Trader</em> view before moving on!</p>
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
 </video>
 
-<p>After creating these two participants, you should now see them in the participant registry.</p>
+<h2 id="step-ten-creating-an-asset">Step Ten: Creating an asset</h2>
 
-<h2 id="step-8-creating-a-commodity">Step 8: Creating a commodity</h2>
+<p>Now that we have two <em>Trader</em> participants, we need something for them to trade. Creating an asset is very similar to creating a participant. The <em>Commodity</em> we&#39;re creating will have an <em>owner</em> property indicating that it belongs to the <em>Trader</em> with the <em>tradeId</em> of <code>TRADER1</code>.</p>
 
-<p>Create a new instance of a Commodity by navigating to the Commodity registry on the left and then click the <strong>Create New Asset</strong> button.</p>
+<ol>
+<li><p>Click the <strong>Commodity</strong> tab under <strong>Assets</strong> and click <strong>Create New Asset</strong>.</p></li>
+<li><p>Delete the asset data and replace it with the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ABC"</span><span class="p">,</span><span class="w">
@@ -332,43 +399,48 @@ rule SystemACL {
   </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">72.297</span><span class="p">,</span><span class="w">
   </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+</span></code></pre></div></li>
+<li><p>After creating this asset, you should be able to see it in the <strong>Commodity</strong> tab.</p></li>
+</ol>
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/create_new_asset_render.mp4" type="video/mp4" />
 </video>
 
-<p>After creating this asset, you should now see them in the asset registry.</p>
+<h2 id="step-eleven-transferring-the-commodity-between-the-participants">Step Eleven: Transferring the commodity between the participants</h2>
 
-<h2 id="step-9-transferring-that-commodity-between-the-traders">Step 9: Transferring that commodity between the traders</h2>
+<p>Now that we have two <em>Traders</em> and a <em>Commodity</em> to trade between them, we can test our <em>Trade</em> transaction.</p>
 
-<p>Next, submit a <code>Trade</code> transaction by clicking the <strong>Submit Transaction</strong> button, bottom left of the left hand navigation panel, to move the commodity from TRADER1 to TRADER2.</p>
+<p>Transactions are the basis of all change in a Hyperledger Composer business network, if you want to experiment with your own after this tutorial, try creating another business network from the <strong>My Wallet</strong> screen and using a more advanced business network template.</p>
+
+<p>To test the <em>Trade</em> transaction:</p>
+
+<ol>
+<li><p>Click the <strong>Submit Transaction</strong> button on the left.</p></li>
+<li><p>Ensure that the transaction type is <em>Trade</em>.</p></li>
+<li><p>Replace the transaction data with the following, or just change the details:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trade"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"commodity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Commodity#ABC"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"newOwner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+</span></code></pre></div></li>
+<li><p>Click <strong>Submit</strong>.</p></li>
+<li><p>To check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, click the <strong>Commodity</strong> tab, and expand the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
+<li><p>To view the full transaction history of our business network, click <strong>All Transactions</strong> on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the <em>Trader</em> participants and the <em>Commodity</em> asset, are recorded as transactions, even though they&#39;re not defined as transactions in our business network model. These transactions are known as &#39;System Transactions&#39; and are common to all business networks, and defined in the Hyperledger Composer Runtime.</p></li>
+</ol>
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
 </video>
 
-<p>After submitting this transaction, you should now see the transaction in the transaction registry.</p>
+<h2 id="what-next">What next?</h2>
 
-<p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
+<p>You&#39;ve completed the initial Hyperledger Composer Playground tutorial, you might want to either begin building your own business network using our other samples or templates.</p>
 
-<p>As a result, the owner of the commodity ABC should now be owned TRADER2 in the Asset Registry.</p>
+<p>You might want to try the <a href="../tutorials/developer-guide.html"><strong>Developer Tutorial</strong></a>, to get your local development environment setup, generate a REST API and a skeleton web application.</p>
 
-<p><img src="../assets/img/tutorials/developer/commodity_registry_after.png" alt="Commodity registry"></p>
-
-<!-- ## Recap!
-
-We defined the business network definition in the **Model File**, **Script File**, **Access Controls**, tested that business network definition by creating a couple of participants `TRADER1` `TRADER2`, an asset `ABC` and submitting a transaction  `Trade` to transfer that asset to a different participant. -->
-
-<h2 id="congratulations-youve-completed-the-playground-tutorial">Congratulations you&#39;ve completed the Playground tutorial!</h2>
-
-<p>Next, you might want to try the <a href="../tutorials/developer-guide.html"><strong>Developer Tutorial</strong></a>, to get your local development environment setup, generate a REST API and a skeleton web application.</p>
-
-<hr>
+<p>Or you can <a href="../installing/using-playground-locally.html">run Hyperledger Composer Playground locally</a> connected to a real instance of Hyperledger Fabric.</p>
 
             
           </section>

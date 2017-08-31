@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Enabling REST API authentication for a business network | Hyperledger Composer</title>
+    <title>Enabling authentication for the REST server | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Enabling REST API authentication for a business network</p>
+          <p>Enabling authentication for the REST server</p>
           </div>
 
           <nav class="context-nav">
@@ -100,9 +100,14 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
 <li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -127,7 +132,9 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -138,11 +145,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -193,18 +201,11 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="enabling-rest-api-authentication-for-a-business-network">Enabling REST API authentication for a business network</h1>
+              <h1 id="enabling-authentication-for-the-rest-server">Enabling authentication for the REST server</h1>
 
 <hr>
 
-<p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity <strong>alice1</strong> to digitally sign all transactions:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
-</code></pre></div>
-<p>This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.</p>
-
-<p>The REST server can be optionally configured to authenticate clients. Once authenticated, a client can add Blockchain identities to a wallet. The wallet is private to that client, and is not accessible to other clients. When a client makes a request to the REST server, a Blockchain identity in the clients wallet is used to digitally sign all transactions made by that client.</p>
-
-<p>Please note that this feature requires that clients trust the REST server. This trust is required because this feature requires that the REST server stores the clients Blockchain identities, including the private keys. Therefore, it is strongly recommended that clients only use REST servers that are managed by a trusted party, such as an administrator within their organization.</p>
+<p>The REST server can be configured to authenticate clients. When this option is enabled, clients must authenticate to the REST server before they are permitted to call the REST API.</p>
 
 <h2 id="selecting-an-authentication-strategy">Selecting an authentication strategy</h2>
 
@@ -252,14 +253,14 @@ ga('send', 'pageview');
 </code></pre></div>
 <h2 id="starting-the-rest-server-with-rest-api-authentication-enabled">Starting the REST server with REST API authentication enabled</h2>
 
-<p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-S true</code> argument to start the REST server with security enabled. Once security is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
+<p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-a true</code> argument to start the REST server with authentication enabled. Once authentication is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
 
 <p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -S true
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -a true
 </code></pre></div>
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If security has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
+<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If authentication has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
 
-<h2 id="authenticating-to-the-rest-server">Authenticating to the REST server</h2>
+<h2 id="authenticating-to-the-rest-server-using-a-web-browser">Authenticating to the REST server using a web browser</h2>
 
 <p>This step is dependent on the configuration and behaviour of the Passport strategies being used by the REST server.</p>
 
@@ -269,65 +270,25 @@ ga('send', 'pageview');
 <li>If successful, GitHub will redirect you back to the REST server.</li>
 </ol>
 
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should be rejected with an <code>No enrollment ID or enrollment secret has been provided</code> error message.</p>
-
-<h2 id="adding-a-blockchain-identity-to-the-default-wallet">Adding a Blockchain identity to the default wallet</h2>
-
-<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
-
-<p>Follow these steps to add a Blockchain identity to the default wallet:</p>
-
-<ol>
-<li>Navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</li>
-<li><p>List all of the authenticated clients wallets by expanding the <strong>Wallet</strong> category and calling the <code>GET /wallets</code> operation.
-The response from the operation should be similiar to the following:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Default wallet"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre></div>
-<p>Each wallet has a unique ID that will be used in subsequent REST API calls for interacting with the wallet. Note down the value of the <code>id</code> property for the wallet with the description <code>Default wallet</code>, in this example <code>1</code>.</p></li>
-<li><p>List the Blockchain identities in the default wallet by calling the <code>GET /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2.
-The response from the operation should be:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[]</span><span class="w">
-</span></code></pre></div>
-<p>This means that there are no Blockchain identities in the default wallet.</p></li>
-<li><p>Add the Blockchain identity to the default wallet by calling the <code>POST /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>data</code> parameter set to the following JSON payload (do not include the <code>id</code> property in the JSON payload):</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>The response from the operation should be similiar to the following:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>The Blockchain identity for <code>alice1</code> has now been added to the default wallet. Each Blockchain identity has a unique ID that will be used in subsequent REST API calls for interacting with the Blockchain identity. Note down the value of the <code>id</code> property for the Blockchain identity, in this example <code>2</code>.</p></li>
-<li><p>Set the Blockchain identity as the default Blockchain identity for the default wallet by calling the <code>POST /wallets/{id}/identities/{fk}/setDefault</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>fk</code> parameter set to the unique Blockchain identity ID noted from step 4.
-The response from the operation should be:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">no content
-</code></pre></div>
-<p>The Blockchain identity has now been set as the default Blockchain identity for the default wallet.</p></li>
-</ol>
-
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.</p>
 
-<p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.8.0"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader#alice@email.com"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<h2 id="final-notes">Final notes</h2>
+<h2 id="authenticating-to-the-rest-server-using-an-http-or-rest-client">Authenticating to the REST server using an HTTP or REST client</h2>
 
-<p>When the REST server is started with REST API authentication enabled, all REST API requests made by clients use a Blockchain identity stored in the clients wallet. The Blockchain identity specified on the command line at startup is not used to service any requests; it is only used to initially connect to the business network and download the business network definition, which is required to generate the REST API. Therefore, the Blockchain identity specified on the command line only requires minimal permissions - the ability to connect, and the ability to download the business network definition - it does not need permission for any assets, participants, or transactions.</p>
+<p>When a user authenticates to the REST server, a unique access token is generated and assigned to the authenticated user. When the user authenticates using a web browser, the access token is stored in a cookie in the local storage of the users web browser. When the authenticated user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated instead of reauthenticating the user.</p>
 
-<p>All user information is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database. For more information, see <a href="./deploying-the-rest-server.html">Deploying the REST server</a>.</p>
+<p>The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website. </p>
+
+<p>In order to use the access token, the access token must first be retrieved using a web browser. When you authenticate to the REST server, the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a> will show the access token at the top of the page. By default the access token is hidden, but it can be displayed by clicking the <code>Show</code> button. The access token is a long alphanumeric string, for example: <code>e9M3CLDEEj8SDq0Bx1tkYAZucOTWbgdiWQGLnOxCe7K9GhTruqlet1h5jsw10YjJ</code></p>
+
+<p>Once the access token has been retrieved, the access token can be passed into any HTTP or REST request to authenticate the HTTP or REST client. There are two options for passing the access token - using either a query string parameter, or an HTTP header. For both of the following examples, replace the string <code>xxxxx</code> with the value of the access token.</p>
+
+<p>Query string - add the <code>access_token</code> query string parameter to all HTTP or REST requests:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -v http://localhost:3000/api/system/ping?access_token=xxxxx
+</code></pre></div>
+<p>HTTP header - add the <code>X-Access-Token</code> header to all HTTP or REST requests:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping
+</code></pre></div>
+<p>=======</p>
 
             
           </section>

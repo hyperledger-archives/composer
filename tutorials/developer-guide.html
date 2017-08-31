@@ -100,9 +100,14 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
 <li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -127,7 +132,9 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -138,11 +145,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -231,7 +239,7 @@ ga('send', 'pageview');
 
 <h3 id="update-your-package-json-file">Update your package.json file</h3>
 
-<p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end. </p>
+<p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end.</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="s2">"name"</span><span class="err">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="err">,</span><span class="w">
   </span><span class="s2">"version"</span><span class="err">:</span><span class="w"> </span><span class="s2">"0.1.6"</span><span class="err">,</span><span class="w">
   </span><span class="s2">"description"</span><span class="err">:</span><span class="w"> </span><span class="s2">"My Commodity Trading network"</span><span class="err">,</span><span class="w">
@@ -293,7 +301,7 @@ transaction Trade {
 
 <p>Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
 
-<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
+<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
 
 <p>Now replace the entire contents of <code>sample.js</code> with the function below (including the license header info)</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
@@ -541,7 +549,7 @@ Feature: Sample
             | 1             | One         | London       | 1          | alice@email.com |
             | 2             | Two         | Paris        | 2          | bob@email.com   |
     Scenario: Bob can read all of the assets
-        When I use the identity alice1
+        When I use the identity bob1
         Then I should have the following assets of type org.acme.mynetwork.Commodity
             | tradingSymbol | description | mainExchange | quantity | owner           |
             | 1             | One         | London       | 1          | alice@email.com |

@@ -100,9 +100,14 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Guide</a></li>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
 <li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -127,7 +132,9 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
-<li><a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
 <li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
 <li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
@@ -138,11 +145,12 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
-<li><a href="../managing/updating-composer.html">Updating Hyperledger Composer</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
 <li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
 
@@ -200,7 +208,7 @@ ga('send', 'pageview');
 <p>The <code>composer network undeploy</code> command <strong>permanently disables a business network</strong>. Once a business network has been undeployed, it cannot be redeployed.</p>
 
 <p><strong>Please Note</strong>: When using the <code>undeploy</code> command with a business network running on Hyperledger Fabric v1.0, the business network remains running, but will become unresponsive. The business network <strong>cannot be redeployed or updated once the <code>undeploy</code> command has been issued.</strong> This is because the business network is already deployed, but has been set to be unresponsive.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -a &lt;business-network-archive&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -a &lt;business-network-archive&gt; -n &lt;connection-profile-name&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
 <p>Note that <strong>after undeploy the business network definition can no longer be used</strong>, however the docker container
 associated with the business network definition is still running. The docker container for the business network
@@ -215,7 +223,7 @@ definition must be explicitly stopped and removed if no longer needed.</p>
   --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -n digitalproperty-network -p hlfv1 -i PeerAdmin -s randomString
 Undeploying business network definition. This may take some seconds...
 Command completed successfully.
 </code></pre></div>
