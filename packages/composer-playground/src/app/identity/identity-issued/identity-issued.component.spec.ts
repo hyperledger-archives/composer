@@ -59,7 +59,7 @@ describe('IdentityIssuedComponent', () => {
 
             tick();
 
-            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledTwice;
+            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledThrice;
             mockCard.getConnectionProfile.should.have.been.called;
             mockCard.getBusinessNetworkName.should.have.been.called;
 
@@ -75,7 +75,7 @@ describe('IdentityIssuedComponent', () => {
 
             tick();
 
-            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledTwice;
+            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledThrice;
             mockCard.getConnectionProfile.should.have.been.called;
             mockCard.getBusinessNetworkName.should.have.been.called;
 

@@ -24,7 +24,7 @@ export class IdentityIssuedComponent {
     addToWallet(): Promise<void> {
         let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
         let businessNetworkName = this.identityCardService.getCurrentIdentityCard().getBusinessNetworkName();
-        let credentials = this.identityCardService.getCurrentIdentityCard().getCredentials();
+        let credentials = this.identityCardService.getCurrentIdentityCard();
 
         return this.identityCardService.createIdentityCard(this.userID, businessNetworkName, this.userID, this.userSecret, connectionProfile, credentials)
             .then(() => {

@@ -188,22 +188,22 @@ export class IdentityCardService {
         } else {
             metadata = {
                 name: name,
-                businessNetwork: businessNetworkName
+                businessNetwork: businessNetworkName,
+                enrollmentId: enrollmentId,
             };
         }
 
         let card: IdCard = new IdCard(metadata, connectionProfile);
 
         if (credentials) {
-            console.log('setting creds', credentials);
             card.setCredentials(credentials);
-            console.log(card);
+            return this.addIdentityCard(card);
+        } else {
+            return this.addIdentityCard(card);
         }
-        return this.addIdentityCard(card);
     }
 
     addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string> {
-        console.log('card --- ', card);
         let cardRef: string = uuid.v4();
         let data = {
             unused: true,

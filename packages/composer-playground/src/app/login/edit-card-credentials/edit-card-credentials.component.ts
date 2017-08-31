@@ -18,7 +18,7 @@ export class EditCardCredentialsComponent {
     private userSecret: string = null;
     private busNetName: string = null;
     private addInProgress: boolean = false;
-    private useCerts: boolean = false;
+    private useCerts: boolean = true;
     private addedPublicCertificate: string;
     private addedPrivateCertificate: string;
 
@@ -45,7 +45,7 @@ export class EditCardCredentialsComponent {
                 return false;
             } else if (this.addInProgress) {
                 return false;
-            } else if (!this.busNetName || this.busNetName.length === 0) {
+            } else if (!this.busNetName) {
                 return false;
             }
         } else {
@@ -55,7 +55,7 @@ export class EditCardCredentialsComponent {
                 return false;
             } else if (this.addInProgress) {
                 return false;
-            } else if (!this.busNetName || this.busNetName.length === 0) {
+            } else if (!this.busNetName) {
                 return false;
             }
         }

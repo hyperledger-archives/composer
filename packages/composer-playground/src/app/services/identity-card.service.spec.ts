@@ -327,15 +327,44 @@ describe('IdentityCardService', () => {
     });
 
     describe('#createIdentityCard', () => {
-        it('should create and store an identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        it('should create and store an identity card using enrollment ID and secret', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
+            let cardMock = sinon.createStubInstance(IdCard);
             let connectionProfile = {
                 name: 'hlfv1'
             };
 
-            let result;
-            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile, null).then((cardRef) => {
-                result = cardRef;
+            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile, null)
+                .then((cardRef) => {
+                    let myCard = service.getIdentityCard(cardRef);
+                    myCard.getCredentials().should.be.empty;
+            }).catch((error) => {
+                fail('test failed with error' + error);
+            });
+
+            tick();
+
+            service['idCards'].size.should.equal(1);
+            cardMock.setCredentials.should.not.have.been.called;
+            addIdentityCardSpy.should.have.been.called;
+        })));
+
+        it('should create and store an identity card using certificates', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
+            let connectionProfile = {
+                name: 'hlfv1'
+            };
+            let credentials = {
+                certificate: 'certificate',
+                privateKey: 'privateKey'
+            };
+
+            service.createIdentityCard('bcc', 'cashless-network', 'admin', null, connectionProfile, credentials)
+                .then((cardRef) => {
+                    let myCard = service.getIdentityCard(cardRef);
+                    myCard.getCredentials().should.deep.equal(credentials);
+            }).catch((error) => {
+                fail('test failed with error' + error);
             });
 
             tick();
