@@ -52,7 +52,7 @@ You should now have a folder called `my-network` (as the basis for our project) 
 
 ### Update your package.json file
 
-The metadata (name, version, description etc) for the business network definition is stored in the `package.json` file. Edit this file to change the name to `my-network`, the description to `My Commodity Trading network` and modify the `prepublish` script to change the name of the business network archive to `my-network.bna` at the end. 
+The metadata (name, version, description etc) for the business network definition is stored in the `package.json` file. Edit this file to change the name to `my-network`, the description to `My Commodity Trading network` and modify the `prepublish` script to change the name of the business network archive to `my-network.bna` at the end.
 
 
 ```json
@@ -124,7 +124,7 @@ The domain model defines a single asset (Commodity) and single participant (Trad
 
 Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.
 
-Open the file `lib/sample.js` in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the `@transaction` annotation, it will be automatically invoked when a transaction of the type defined by the `@param` annotation is submitted.
+Open the file `lib/sample.js` in the left-hand pane and inspect the contents (note that you can create many JavaScript files as convenient for your business network definition). If a JavaScript function has the `@transaction` annotation, it will be automatically invoked when a transaction of the type defined by the `@param` annotation is submitted.
 
 Now replace the entire contents of `sample.js` with the function below (including the license header info)
 
