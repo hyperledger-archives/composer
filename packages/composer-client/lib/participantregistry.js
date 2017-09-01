@@ -41,7 +41,7 @@ class ParticipantRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a list of {@link ParticipantRegistry}
      * instances representing the participant registries.
      */
-    static getAllParticipantRegistries(securityContext, modelManager, factory, serializer, bnc) {
+    static getAllParticipantRegistries(securityContext, modelManager, factory, serializer, bnc, includeSystem) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -50,7 +50,7 @@ class ParticipantRegistry extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
+        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE,includeSystem)
             .then((participantRegistries) => {
                 return participantRegistries.map((participantRegistry) => {
                     return new ParticipantRegistry(participantRegistry.id, participantRegistry.name, securityContext, modelManager, factory, serializer, bnc);

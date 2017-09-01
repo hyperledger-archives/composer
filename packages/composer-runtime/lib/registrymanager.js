@@ -32,12 +32,12 @@ const TYPE_MAP = {
 };
 
 // This is a list of non-abstract system types that we do not want registries created for.
-const VIRTUAL_TYPES = [
-    'AssetRegistry',
-    'ParticipantRegistry',
-    'TransactionRegistry',
-    'Network'
-];
+// const VIRTUAL_TYPES = [
+//     /*'AssetRegistry',
+//     'ParticipantRegistry',
+//     'TransactionRegistry',*/
+//     'Network'
+// ];
 
 /**
  * A class for managing and persisting registries.
@@ -62,6 +62,8 @@ class RegistryManager extends EventEmitter {
         this.accessController = accessController;
         this.sysregistries = sysregistries;
         this.factory = factory;
+
+        this.sysregistryCache = {};
     }
 
     /**
@@ -87,13 +89,63 @@ class RegistryManager extends EventEmitter {
     }
 
     /**
-     * Ensure that the default registries exist.
-     * @param {boolean} force if set to true, will add without checking for existence
+     * Create the default regsitries
+     * @param {Boolean} force if set to true, will add without checking for existence#
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
     createDefaults(force) {
-        const method = 'createDefaults';
+        return this.createSystemDefaults(force).then(() => { return this.createNetworkDefaults(force); });
+    }
+
+    /**
+     * Ensure that the default *network* registries exist.
+     * @param {boolean} force if set to true, will add without checking for existence
+     * @returns {Promise} A promise that is resolved once all default registries
+     * have been created, or rejected with an error.
+     */
+    createNetworkDefaults(force) {
+        const method = 'createNetworkDefaults';
+        LOG.entry(method, force);
+
+        return this.introspector.getClassDeclarations()
+            .filter((classDeclaration) => {
+                return !classDeclaration.isAbstract();
+            })
+            .filter((classDeclaration) => {
+                return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration) || (classDeclaration instanceof TransactionDeclaration);
+            })
+            .filter((classDeclaration) => {
+                //return !(classDeclaration.isSystemType() && VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1);
+                return !(classDeclaration.isSystemType());
+            })
+            .reduce((promise, classDeclaration) => {
+                return promise.then(() => {
+                    const type = classDeclaration.getSystemType();
+                    const fqn = classDeclaration.getFullyQualifiedName();
+                    const systemType  = classDeclaration.isSystemType();
+                    // console.log('Creating registry', type, fqn, systemType);
+                    LOG.debug(method, 'Creating registry', type, fqn, systemType);
+                    if (force) {
+                        return this.add(type, fqn, `${type} registry for ${fqn}`, true, systemType);
+                    } else {
+                        return this.ensure(type, fqn, `${type} registry for ${fqn}`, systemType);
+                    }
+                });
+            }, Promise.resolve())
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Ensure that the default *system* registries exist.
+     * @param {boolean} force if set to true, will add without checking for existence
+     * @returns {Promise} A promise that is resolved once all default registries
+     * have been created, or rejected with an error.
+     */
+    createSystemDefaults(force) {
+        const method = 'createSystemDefaults';
         LOG.entry(method, force);
         return this.introspector.getClassDeclarations()
             .filter((classDeclaration) => {
@@ -103,20 +155,24 @@ class RegistryManager extends EventEmitter {
                 return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration) || (classDeclaration instanceof TransactionDeclaration);
             })
             .filter((classDeclaration) => {
-                return !(classDeclaration.isSystemType() && VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1);
+                return (classDeclaration.isSystemType());
             })
             .reduce((promise, classDeclaration) => {
                 return promise.then(() => {
                     const type = classDeclaration.getSystemType();
                     const fqn = classDeclaration.getFullyQualifiedName();
                     const systemType  = classDeclaration.isSystemType();
+                    // console.log('Creating System registry', type, fqn, systemType);
                     LOG.debug(method, 'Creating registry', type, fqn, systemType);
                     if (force) {
                         return this.add(type, fqn, `${type} registry for ${fqn}`, true, systemType);
                     } else {
                         return this.ensure(type, fqn, `${type} registry for ${fqn}`, systemType);
                     }
-                });
+                }).then( (result)=>{
+                    // we need to cache these as the network registries will cause entries to appear here
+                    this.sysregistryCache[result.type+':'+result.id] = result;
+                } );
             }, Promise.resolve())
             .then(() => {
                 LOG.exit(method);
@@ -262,14 +318,24 @@ class RegistryManager extends EventEmitter {
         resource.name=name;
         resource.type=type;
         resource.system=!!system;
+
         return this.accessController.check(resource, 'CREATE')
             .then(() => {
                 // yes we can create an instance of this type; now add that to the sysregistries collection
                 // Note we haven't checked if we have update permission on the sysregristries collection
-                // but that is going a bit far really...
+                // but that is going a bit far really...resource.type+':org.hyperledger.composer.system.'+resource.type+'Registry'
                 return this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
-            })
-            .then(() => {
+
+            }).then( () => {
+                if (!resource.system){
+                    let srid='Asset:org.hyperledger.composer.system.'+resource.type+'Registry' ;
+                    // console.log('--->'+srid);
+                    return this.sysregistryCache[srid].add(resource);
+                } else {
+                    return;
+                }
+            } )
+            .then((result) => {
                 // create the collection that will hold the actual data in this registry
                 return this.dataService.createCollection(collectionID, force);
             })
@@ -296,7 +362,7 @@ class RegistryManager extends EventEmitter {
      * @param {string} name The name of the registry.
      * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Promise} A promise that is resolved when complete, or rejected
-     * with an error.
+     * with an error.Registry
      */
     ensure(type, id, name, system) {
         const method = 'ensure';

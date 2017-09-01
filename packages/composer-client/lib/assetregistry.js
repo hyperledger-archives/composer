@@ -41,7 +41,7 @@ class AssetRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a list of {@link AssetRegistry}
      * instances representing the asset registries.
      */
-    static getAllAssetRegistries(securityContext, modelManager, factory, serializer,bnc) {
+    static getAllAssetRegistries(securityContext, modelManager, factory, serializer,bnc,includeSystem) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -50,7 +50,7 @@ class AssetRegistry extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
+        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE,includeSystem)
             .then((assetRegistries) => {
                 return assetRegistries.map((assetRegistry) => {
                     return new AssetRegistry(assetRegistry.id, assetRegistry.name, securityContext, modelManager, factory, serializer, bnc);

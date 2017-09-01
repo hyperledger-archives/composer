@@ -16,6 +16,7 @@
 
 const Resource = require('composer-common').Resource;
 const Util = require('composer-common').Util;
+// const ModelUtil = require('composer-common').ModelUtil;
 
 /**
  * Class representing an Abstract Registry.
@@ -36,7 +37,7 @@ class Registry {
      * @return {Promise} A promise that will be resolved with an array of JSON
      * objects representing the registries.
      */
-    static getAllRegistries(securityContext, registryType,includeSystem) {
+    static getAllRegistries(securityContext, registryType, includeSystem) {
         Util.securityCheck(securityContext);
         includeSystem = includeSystem || false;
         if (!registryType) {
@@ -178,13 +179,14 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
+        // console.log('Adding resources; this is a :'+this.registryType+': registry with id :'+this.id+':');
         let txName = 'Add'+this.registryType;
+
+        // create the new system transaction to add the resources
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
-        // This code is retained as there was a suggesstion that the transaction should include
-        // a relationship to the registry not the type/id. Time ran out to get this implemented
-        // transaction.targetRegistry = this.factory.newRelationship(ModelUtil.getNamespace(this.id),this.registryType, this.id);
-        transaction.registryType = this.registryType;
-        transaction.registryId = this.id;
+
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
         transaction.resources = resources;
         return this.bnc.submitTransaction(transaction);
     }
@@ -218,8 +220,8 @@ class Registry {
         }
         let txName = 'Update'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
-        transaction.resources = resources;
-        transaction.registryType = this.registryType;
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
         transaction.registryId = this.id;
         return this.bnc.submitTransaction(transaction);
     }
@@ -254,8 +256,8 @@ class Registry {
         let txName = 'Remove'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
         transaction.resources = [];
-        transaction.registryType = this.registryType;
-        transaction.registryId = this.id;
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
 
         transaction.resourceIds = resources.map((resource) => {
             if (resource instanceof Resource) {

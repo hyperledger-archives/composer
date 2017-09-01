@@ -40,7 +40,7 @@ class TransactionRegistry extends Registry {
      * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
      * instances representing the transaction registries.
      */
-    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer,systemRegistry) {
+    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer,bnc,systemRegistry) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');

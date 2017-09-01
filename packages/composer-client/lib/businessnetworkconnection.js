@@ -112,13 +112,14 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(assetRegistries){
      *     // Retrieved Asset Registries
      * });
-     * @param {SecurityContext} securityContext - The user's security context
      * @return {Promise} - A promise that will be resolved with a list of existing
      * asset registries
+     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
      */
-    getAllAssetRegistries() {
+    getAllAssetRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        let sysReg = includeSystem || false;
+        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
     }
 
     /**
@@ -196,13 +197,15 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(participantRegistries){
      *     // Retrieved Participant Registries
      * });
-     * @param {SecurityContext} securityContext - The user's security context
+     *
      * @return {Promise} - A promise that will be resolved with a list of existing
      * participant registries
+     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
      */
-    getAllParticipantRegistries() {
+    getAllParticipantRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        let sysReg = includeSystem || false;
+        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
     }
 
     /**
