@@ -340,11 +340,11 @@ describe('System REST API unit tests', () => {
 
     });
 
-    describe('GET /transactions', () => {
+    describe('GET /historian', () => {
 
         it('should return all of the transactions', () => {
             return chai.request(app)
-                .get('/api/system/transactions')
+                .get('/api/system/historian')
                 .then((res) => {
                     // res.should.be.json;
                     // res.body.filter((tx) => {
@@ -361,11 +361,11 @@ describe('System REST API unit tests', () => {
 
     });
 
-    describe('GET /transactions/:id', () => {
+    describe('GET /historian/:id', () => {
 
         it('should return the specified transaction', () => {
             return chai.request(app)
-                .get('/api/system/transactions/' + transactionIds[0])
+                .get('/api/system/historian/' + transactionIds[0])
                 .then((res) => {
                     // res.should.be.json;
                     // const tx = res.body;
@@ -377,7 +377,7 @@ describe('System REST API unit tests', () => {
 
         it('should return a 404 if the specified transaction does not exist', () => {
             return chai.request(app)
-                .get('/api/system/transactions/LOL')
+                .get('/api/system/historian/LOL')
                 .catch((err) => {
                     err.response.should.have.status(404);
                 });

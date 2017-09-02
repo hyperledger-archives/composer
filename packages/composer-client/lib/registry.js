@@ -222,7 +222,7 @@ class Registry {
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
         // target registry is the registry that this the client 'shadow' of
         transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
-        transaction.registryId = this.id;
+        transaction.resources = resources;
         return this.bnc.submitTransaction(transaction);
     }
 

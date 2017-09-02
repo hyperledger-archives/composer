@@ -204,6 +204,21 @@ class EngineBusinessNetworks {
     }
 
     /**
+     * @param {Context} context The request context.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    resetBusinessNetwork_b(context, args) {
+
+        // force creation of defaults as we know the don't exist
+        // Create all other default registries.
+
+        let registryManager = context.getRegistryManager();
+        return registryManager.createDefaults(true);
+    }
+
+    /**
      * Reset the business network by clearing all data.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
@@ -218,15 +233,18 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resetBusinessNetwork', []));
         }
         let dataService = context.getDataService();
+
         return dataService.getCollection('$sysregistries')
             .then((sysregistries) => {
+
                 return sysregistries.getAll()
                     .then((registries) => {
-                        return registries.reduce((cur, next) => {
+                        return registries
+
+                        .reduce((cur, next) => {
                             return cur.then(() => {
                                 let registryType = next.type;
                                 let registryId = next.registryId;
-
                                 LOG.debug(method, 'Deleting collection', registryType, registryId);
                                 return dataService.deleteCollection(registryType + ':' + registryId)
                                     .then(() => {
@@ -237,14 +255,12 @@ class EngineBusinessNetworks {
                         }, Promise.resolve());
                     });
             })
-            .then(() => {
-
-                // Create all other default registries.
-                LOG.debug(method, 'Creating default registries');
-                let registryManager = context.getRegistryManager();
-
-                // force creation of defaults as we know the don't exist
-                return registryManager.createDefaults(true);
+            .then ( ()=> {
+                // // force creation of defaults as we know the don't exist
+                // // Create all other default registries.
+                // LOG.debug(method, 'Creating default registries');
+                // let registryManager = context.getRegistryManager();
+                // return registryManager.createDefaults(false);
 
             })
             .then(() => {

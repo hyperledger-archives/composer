@@ -32,12 +32,12 @@ const TYPE_MAP = {
 };
 
 // This is a list of non-abstract system types that we do not want registries created for.
-// const VIRTUAL_TYPES = [
-//     /*'AssetRegistry',
-//     'ParticipantRegistry',
-//     'TransactionRegistry',*/
-//     'Network'
-// ];
+const VIRTUAL_TYPES = [
+    /*'AssetRegistry',
+    'ParticipantRegistry',
+    'TransactionRegistry',*/
+    'Network'
+];
 
 /**
  * A class for managing and persisting registries.
@@ -147,6 +147,7 @@ class RegistryManager extends EventEmitter {
     createSystemDefaults(force) {
         const method = 'createSystemDefaults';
         LOG.entry(method, force);
+        this.dirty=true;
         return this.introspector.getClassDeclarations()
             .filter((classDeclaration) => {
                 return !classDeclaration.isAbstract();
@@ -155,7 +156,7 @@ class RegistryManager extends EventEmitter {
                 return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration) || (classDeclaration instanceof TransactionDeclaration);
             })
             .filter((classDeclaration) => {
-                return (classDeclaration.isSystemType());
+                return (classDeclaration.isSystemType() && !(VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1));
             })
             .reduce((promise, classDeclaration) => {
                 return promise.then(() => {
@@ -329,8 +330,13 @@ class RegistryManager extends EventEmitter {
             }).then( () => {
                 if (!resource.system){
                     let srid='Asset:org.hyperledger.composer.system.'+resource.type+'Registry' ;
-                    // console.log('--->'+srid);
-                    return this.sysregistryCache[srid].add(resource);
+                    let registry = this.sysregistryCache[srid];
+                    if (!registry){
+                        return this.get('Asset','org.hyperledger.composer.system.'+resource.type+'Registry')
+                        .then( (result) => { return result.add(resource);});
+                    } else {
+                        return registry.add(resource);
+                    }
                 } else {
                     return;
                 }

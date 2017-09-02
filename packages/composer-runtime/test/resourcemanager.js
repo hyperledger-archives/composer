@@ -23,7 +23,7 @@ const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
-
+const Resolver = require('../lib/resolver');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -40,6 +40,7 @@ describe('IdentityManager', () => {
     let mockRegistryManager;
     let mockRegistry;
     let modelManager;
+    let mockResolver;
     let factory;
 
 
@@ -52,6 +53,9 @@ describe('IdentityManager', () => {
         mockContext.getIdentityService.returns(mockIdentityService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
+        mockResolver  = sinon.createStubInstance(Resolver);
+        mockContext.getResolver.returns(mockResolver);
+        mockResolver.resolve.resolves( {type:'Asset',registryId: 'a.n.other.registry'});
 
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Asset', 'a.n.other.registry').resolves(mockRegistry);
@@ -76,9 +80,7 @@ describe('IdentityManager', () => {
         it('#addResources', () => {
             return resourceManager.addResources(mockApi,{registryType:'Asset',registryId: 'a.n.other.registry'})
             .then(()=>{
-
                 sinon.assert.calledWith(mockRegistryManager.get,'Asset', 'a.n.other.registry');
-
             });
 
         } );
@@ -86,7 +88,6 @@ describe('IdentityManager', () => {
         it('#updateResources', () => {
             return resourceManager.updateResources(mockApi,{registryType:'Asset',registryId: 'a.n.other.registry'})
             .then(()=>{
-
                 sinon.assert.calledWith(mockRegistryManager.get,'Asset', 'a.n.other.registry');
 
             });

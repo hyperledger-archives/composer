@@ -36,6 +36,7 @@ class TransactionRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
      * @param {Factory} factory The factory to use for this transaction registry.
      * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
      * @param {Boolean} systemRegistry True if system transaction regisitries should be included in the list.
      * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
      * instances representing the transaction registries.

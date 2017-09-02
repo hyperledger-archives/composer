@@ -748,7 +748,7 @@ class Context {
      * @return {RegistryManager} The registry manager.
      */
     getRegistryManager() {
-        if (!this.registryManager) {
+        if ( !this.registryManager) {
             // TODO: This method call is getting too long.
             this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController(), this.getSystemRegistries(),this.getFactory());
         }

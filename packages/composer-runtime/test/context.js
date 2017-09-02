@@ -980,6 +980,8 @@ describe('Context', () => {
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockFactory = sinon.createStubInstance(Factory);
             sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockResolver = sinon.createStubInstance(Resolver);
+            sinon.stub(context,'getResolver').returns(mockResolver);
             context.getResourceManager().should.be.an.instanceOf(ResourceManager);
         });
 

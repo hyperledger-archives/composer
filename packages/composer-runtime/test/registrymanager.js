@@ -43,6 +43,7 @@ describe('RegistryManager', () => {
     let mockAccessController;
     let mockSystemRegistries;
     let registryManager;
+    let mockRegistry;
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -53,7 +54,13 @@ describe('RegistryManager', () => {
         mockAccessController = sinon.createStubInstance(AccessController);
         mockSystemRegistries = sinon.createStubInstance(DataCollection);
         mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
+
+
         registryManager = new RegistryManager(mockDataService, introspector, serializer, mockAccessController, mockSystemRegistries, factory);
+
+        mockRegistry = sinon.createStubInstance(Registry);
+        mockRegistry.type='Asset';
+
     });
 
     describe('#constructor', () => {
@@ -101,17 +108,27 @@ describe('RegistryManager', () => {
     });
 
     describe('#createDefaults', () => {
+        it('should call both network and system default fns', () => {
+            sinon.stub(registryManager,'createNetworkDefaults').resolves();
+            sinon.stub(registryManager,'createSystemDefaults').resolves();
+            return registryManager.createDefaults()
+              .then(  () => {
+                  sinon.assert.calledOnce(registryManager.createNetworkDefaults);
+                  sinon.assert.calledOnce(registryManager.createSystemDefaults);
+              });
+
+        });
 
         it('should create default system registries for non-virtual types', () => {
-            sinon.stub(registryManager, 'ensure').resolves();
-            return registryManager.createDefaults()
+            sinon.stub(registryManager, 'ensure').resolves(mockRegistry);
+            return registryManager.createSystemDefaults()
                 .then(() => {
-                    sinon.assert.callCount(registryManager.ensure,12);
+                    sinon.assert.callCount(registryManager.ensure,15);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.HistorianRecord', 'Asset registry for org.hyperledger.composer.system.HistorianRecord', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
-                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
-                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.ParticipantRegistry', sinon.match.any, sinon.match.any);
-                    sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.TransactionRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.ParticipantRegistry', sinon.match.any, sinon.match.any);
+                    sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.TransactionRegistry', sinon.match.any, sinon.match.any);
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Network', sinon.match.any, sinon.match.any);
                 });
         });
@@ -122,8 +139,10 @@ describe('RegistryManager', () => {
             asset Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
-            return registryManager.createDefaults()
+
+
+            sinon.stub(registryManager, 'ensure').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true).resolves(mockRegistry);
+            return registryManager.createNetworkDefaults()
                 .then(() => {
                     sinon.assert.called(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge');
@@ -136,11 +155,22 @@ describe('RegistryManager', () => {
             asset Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'add').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true).resolves();
-            return registryManager.createDefaults(true)
+
+            sinon.stub(registryManager, 'add').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true).resolves(mockRegistry);
+            return registryManager.createNetworkDefaults(true)
                 .then(() => {
                     sinon.assert.called(registryManager.add);
                     sinon.assert.calledWith(registryManager.add, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge', true, false);
+                });
+        });
+
+        it('should forcibly create default system registries', () => {
+
+            sinon.stub(registryManager, 'add').resolves(mockRegistry);
+            return registryManager.createSystemDefaults(true)
+                .then(() => {
+                    sinon.assert.called(registryManager.add);
+                    sinon.assert.calledWith(registryManager.add, 'Asset', sinon.match.any, sinon.match.any, true,  sinon.match.any);
                 });
         });
 
@@ -150,8 +180,9 @@ describe('RegistryManager', () => {
             abstract asset Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'ensure').resolves();
-            return registryManager.createDefaults()
+
+            sinon.stub(registryManager, 'ensure').resolves(mockRegistry);
+            return registryManager.createNetworkDefaults()
                 .then(() => {
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Asset', 'org.doge.Doge', sinon.match.any, sinon.match.any);
                 });
@@ -163,8 +194,9 @@ describe('RegistryManager', () => {
             participant Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'ensure').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves();
-            return registryManager.createDefaults()
+            // let mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(registryManager, 'ensure').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves(mockRegistry);
+            return registryManager.createNetworkDefaults()
                 .then(() => {
                     sinon.assert.called(registryManager.ensure);
                     sinon.assert.calledWith(registryManager.ensure, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge');
@@ -177,8 +209,9 @@ describe('RegistryManager', () => {
             participant Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'add').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true).resolves();
-            return registryManager.createDefaults(true)
+            // let mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(registryManager, 'add').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true).resolves(mockRegistry);
+            return registryManager.createNetworkDefaults(true)
                 .then(() => {
                     sinon.assert.called(registryManager.add);
                     sinon.assert.calledWith(registryManager.add, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge', true, false);
@@ -191,8 +224,9 @@ describe('RegistryManager', () => {
             abstract participant Doge identified by dogeId {
                 o String dogeId
             }`);
-            sinon.stub(registryManager, 'ensure').resolves();
-            return registryManager.createDefaults()
+            // let mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(registryManager, 'ensure').resolves(mockRegistry);
+            return registryManager.createNetworkDefaults()
                 .then(() => {
                     sinon.assert.neverCalledWith(registryManager.ensure, 'Participant', 'org.doge.Doge', sinon.match.any, sinon.match.any);
                 });
@@ -201,10 +235,6 @@ describe('RegistryManager', () => {
     });
 
     describe('#getAll', () => {
-
-
-
-
 
         it('should not fail if one of the registries is not permitted', () => {
             mockSystemRegistries.getAll.resolves([{
@@ -479,6 +509,9 @@ describe('RegistryManager', () => {
             let mockEventHandler = sinon.stub();
             registryManager.on('registryadded', mockEventHandler);
             mockAccessController.check.resolves(true);
+            registryManager.sysregistryCache={};
+            registryManager.sysregistryCache['Asset:org.hyperledger.composer.system.AssetRegistry']=mockRegistry;
+            // sinon.stub(mockRegistry,'add').resolves();
             return registryManager.add('Asset', 'doges', 'The doges registry')
                 .then((registry) => {
                     sinon.assert.calledOnce(mockSystemRegistries.add);
@@ -506,12 +539,96 @@ describe('RegistryManager', () => {
                 });
         });
 
+        it('should add a new registry with the specified ID - when not on the deploy', () => {
+            mockSystemRegistries.add.withArgs('Asset:doges', {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                type: 'Asset',
+                registryId: 'doges',
+                name: 'The doges registry'
+            }).resolves();
+            let mockDogesCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
+            let mockEventHandler = sinon.stub();
+            registryManager.on('registryadded', mockEventHandler);
+            mockAccessController.check.resolves(true);
+            registryManager.sysregistryCache=undefined;
+            registryManager.sysregistryCache={};
+            sinon.stub(registryManager,'get').resolves(mockRegistry);
+            // sinon.stub(mockRegistry,'add').resolves();
+            return registryManager.add('Asset', 'doges', 'The doges registry')
+                .then((registry) => {
+                    sinon.assert.calledOnce(mockSystemRegistries.add);
+                    sinon.assert.calledWith(mockSystemRegistries.add, 'Asset:doges', {
+                        $class: 'org.hyperledger.composer.system.AssetRegistry',
+                        type: 'Asset',
+                        registryId: 'doges',
+                        name: 'The doges registry',
+                        system: false
+                    });
+                    sinon.assert.calledOnce(mockDataService.createCollection);
+                    sinon.assert.calledWith(mockDataService.createCollection, 'Asset:doges');
+                    registry.should.containSubset({
+                        type: 'Asset',
+                        id: 'doges',
+                        name: 'The doges registry'
+                    });
+                    sinon.assert.calledOnce(mockEventHandler);
+                    sinon.assert.calledWith(mockEventHandler, sinon.match({
+                        registry: sinon.match.instanceOf(Registry),
+                        registryType: 'Asset',
+                        registryId: 'doges',
+                        registryName: 'The doges registry'
+                    }));
+                });
+        });
 
+        it('should add a new system registry with the specified ID', () => {
+            mockSystemRegistries.add.withArgs('Asset:doges', {
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                type: 'Asset',
+                registryId: 'doges',
+                name: 'The doges registry'
+            }).resolves();
+            let mockDogesCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
+            let mockEventHandler = sinon.stub();
+            registryManager.on('registryadded', mockEventHandler);
+            mockAccessController.check.resolves(true);
+            registryManager.sysregistryCache={};
+            registryManager.sysregistryCache['Asset:org.hyperledger.composer.system.AssetRegistry']=mockRegistry;
+            // sinon.stub(mockRegistry,'add').resolves();
+            return registryManager.add('Asset', 'doges', 'The doges registry',false,true)
+                .then((registry) => {
+                    sinon.assert.calledOnce(mockSystemRegistries.add);
+                    sinon.assert.calledWith(mockSystemRegistries.add, 'Asset:doges', {
+                        $class: 'org.hyperledger.composer.system.AssetRegistry',
+                        type: 'Asset',
+                        registryId: 'doges',
+                        name: 'The doges registry',
+                        system: true
+                    });
+                    sinon.assert.calledOnce(mockDataService.createCollection);
+                    sinon.assert.calledWith(mockDataService.createCollection, 'Asset:doges');
+                    registry.should.containSubset({
+                        type: 'Asset',
+                        id: 'doges',
+                        name: 'The doges registry'
+                    });
+                    sinon.assert.calledOnce(mockEventHandler);
+                    sinon.assert.calledWith(mockEventHandler, sinon.match({
+                        registry: sinon.match.instanceOf(Registry),
+                        registryType: 'Asset',
+                        registryId: 'doges',
+                        registryName: 'The doges registry'
+                    }));
+                });
+        });
     });
 
     describe('#ensure', () => {
 
         it('should return an existing registry', () => {
+
             const mockRegistry = sinon.createStubInstance(Registry);
             sinon.stub(registryManager, 'get').withArgs('Asset', 'doges').resolves(mockRegistry);
             return registryManager.ensure('Asset', 'doges', 'The doges registry')

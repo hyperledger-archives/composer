@@ -38,6 +38,7 @@ class AssetRegistry extends Registry {
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
      * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
+     * @param {Boolean} includeSystem Should system registries be included? (optional, default to false)
      * @return {Promise} A promise that will be resolved with a list of {@link AssetRegistry}
      * instances representing the asset registries.
      */

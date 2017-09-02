@@ -62,7 +62,9 @@ class Util {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
-        return securityContext.getConnection().queryChainCode(securityContext, functionName, args);
+
+        return securityContext.getConnection().queryChainCode(securityContext, functionName, args)
+;
     }
 
     /**
@@ -85,7 +87,14 @@ class Util {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
-        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args);
+        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args).then ( (result) => {
+            if (functionName !== 'resetBusinessNetwork') {
+                return result;
+            } else {
+                return  securityContext.getConnection().invokeChainCode(securityContext, functionName+'_b', args);
+            }
+
+        });
     }
 
     /**

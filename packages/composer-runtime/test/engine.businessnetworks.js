@@ -214,6 +214,30 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
+                    // sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+                });
+        });
+
+        it('should delete all registries and resources', () => {
+            // let mockDataCollection = sinon.createStubInstance(DataCollection);
+            // mockDataCollection.getAll.resolves([{
+            //     type: 'Asset',
+            //     registryId: 'sheeps'
+            // }, {
+            //     type: 'Participants',
+            //     registryId: 'farmers'
+            // }]);
+            // mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            // mockDataService.deleteCollection.resolves();
+            // mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
+            // mockRegistryManager.add.withArgs('Transaction', 'default').resolves();
+            // mockRegistryManager.createDefaults.resolves();
+            return engine.invoke(mockContext, 'resetBusinessNetwork_b', [])
+                .then(() => {
+                    // sinon.assert.calledWith(mockDataService.deleteCollection, 'Asset:sheeps');
+                    // sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
+                    // sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
+                    // sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
