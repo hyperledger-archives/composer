@@ -12,7 +12,7 @@ excerpt: Overview of the Business Network Definition
 
 The Business Network Definition is a key concept of the {{site.data.conrefs.composer_full}} programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `composer-common` module and exported by both `composer-admin` and `composer-client`.
 
-![Business Network Definitions Diagram](../assets/img/BusinessNetworkFiles.svg)
+<img src="../assets/img/BusinessNetworkFiles.svg" style="border: none;" alt="Business Network Definitions Diagram">
 
 Business Network Definitions are composed of:
 
