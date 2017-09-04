@@ -16,7 +16,6 @@
 
 const Logger = require('composer-common').Logger;
 const util = require('util');
-
 const LOG = Logger.getLog('EngineTransactions');
 
 /**
@@ -78,6 +77,7 @@ class EngineTransactions {
                 const api = context.getApi();
                 return context.getTransactionHandlers().reduce((promise, transactionHandler) => {
                     return promise.then(() => {
+                        // let _nf =  transactionHandler.execute.bind(this);
                         return transactionHandler.execute(api, resolvedTransaction)
                             .then((count) => {
                                 totalCount += count;

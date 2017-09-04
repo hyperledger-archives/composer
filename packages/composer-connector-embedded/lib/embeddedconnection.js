@@ -229,12 +229,12 @@ class EmbeddedConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been updated, or rejected with an error.
      */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
-            });
-    }
+    // update(securityContext, businessNetworkDefinition) {
+    //     return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
+    //         .then((buffer) => {
+    //             return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
+    //         });
+    // }
 
     /**
      * Undeploy a business network definition.

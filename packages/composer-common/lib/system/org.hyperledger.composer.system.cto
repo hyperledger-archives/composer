@@ -166,3 +166,8 @@ transaction ActivateCurrentIdentity { }
 transaction RevokeIdentity {
     --> Identity identity
 }
+
+// --------------------------------------------------------------------------
+transaction UpdateBusinessNetwork {
+  o String businessNetworkArchive
+}

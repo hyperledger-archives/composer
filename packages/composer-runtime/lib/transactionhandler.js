@@ -15,7 +15,6 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-
 const LOG = Logger.getLog('TransactionHandler');
 
 /**
@@ -31,6 +30,7 @@ class TransactionHandler {
      */
     constructor() {
         this.handlers = {};
+        this.id=Math.random();
     }
 
     /**

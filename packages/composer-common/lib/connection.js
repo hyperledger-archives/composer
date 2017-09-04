@@ -17,6 +17,11 @@
 const ConnectionManager = require('./connectionmanager');
 const EventEmitter = require('events');
 
+// const Resource = require('composer-common').Resource;
+const Util = require('./util.js');
+const BusinessNetworkDefinition = require('./businessnetworkdefinition.js');
+const uuid = require('uuid');
+
 /**
  * Base class representing a connection to a business network.
  * @private
@@ -257,14 +262,69 @@ class Connection extends EventEmitter {
      * artifacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return new Promise((resolve, reject) => {
-            this._update(securityContext, businessNetworkDefinition, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
+        return this._updateTx(securityContext,businessNetworkDefinition);
+        // return new Promise((resolve, reject) => {
+        //     this._update(securityContext, businessNetworkDefinition, (error) => {
+        //         if (error) {
+        //             return reject(error);
+        //         }
+        //         return resolve();
+        //     });
+        // });
+    }
+
+    /**
+     * Updates an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {updateCallback} callback The callback function to call when complete.
+     */
+    _updateTx(securityContext, businessNetworkDefinition, callback) {
+       
+        // create the new transaction to update the network
+
+        if (!businessNetworkDefinition) {
+            throw new Error('business network definition not specified');
+        }
+       
+
+
+        
+        let currentDeployedNetwork;
+
+        return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+            // Serialize the business network.
+            return businessNetworkDefinition.toArchive();
+        })
+        .then((businessNetworkArchive) => {
+            // Send an update request to the chaincode.
+            // create the new system transaction to add the resources
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','UpdateBusinessNetwork');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+
+
+            transaction.businessNetworkArchive =  businessNetworkArchive.toString('base64');
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
+
+
     }
 
     /**

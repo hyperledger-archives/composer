@@ -112,7 +112,9 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    updateBusinessNetwork(context, args) {
+    updateBusinessNetwork(context, cache,transaction) {
+        // const Context = require('./context');
+        let args=[transaction.businessNetworkArchive];
         const method = 'updateBusinessNetwork';
         LOG.entry(method, context, args);
         if (args.length !== 1) {
@@ -147,28 +149,28 @@ class EngineBusinessNetworks {
             })
             .then((businessNetworkDefinition_) => {
 
-                // Cache the business network.
-                businessNetworkDefinition = businessNetworkDefinition_;
-                LOG.debug(method, 'Loaded business network definition, storing in cache');
-                Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+                // // Cache the business network.
+                // businessNetworkDefinition = businessNetworkDefinition_;
+                // LOG.debug(method, 'Loaded business network definition, storing in cache');
+                // Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
 
-                // Cache the compiled script bundle.
-                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+                // // Cache the compiled script bundle.
+                // compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                // LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                // Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
 
-                // Cache the compiled query bundle.
-                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-                LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-                Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
+                // // Cache the compiled query bundle.
+                // compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
+                // LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
+                // Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
 
-                // Cache the compiled ACL bundle.
-                compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-                LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-                Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
+                // // Cache the compiled ACL bundle.
+                // compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+                // LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
+                // Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
 
-                // Get the sysdata collection where the business network definition is stored.
-                LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
+                // // Get the sysdata collection where the business network definition is stored.
+                // LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
 
                 // Update the business network definition in the sysdata collection.
                 return sysdata.update('businessnetwork', {
@@ -201,21 +203,6 @@ class EngineBusinessNetworks {
             .then(() => {
                 LOG.exit(method);
             });
-    }
-
-    /**
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    resetBusinessNetwork_b(context, args) {
-
-        // force creation of defaults as we know the don't exist
-        // Create all other default registries.
-
-        let registryManager = context.getRegistryManager();
-        return registryManager.createDefaults(true);
     }
 
     /**
@@ -256,11 +243,11 @@ class EngineBusinessNetworks {
                     });
             })
             .then ( ()=> {
-                // // force creation of defaults as we know the don't exist
-                // // Create all other default registries.
-                // LOG.debug(method, 'Creating default registries');
-                // let registryManager = context.getRegistryManager();
-                // return registryManager.createDefaults(false);
+                // force creation of defaults as we know the don't exist
+                // Create all other default registries.
+                LOG.debug(method, 'Creating default registries');
+                let registryManager = context.getRegistryManager();
+                return registryManager.createDefaults(true);
 
             })
             .then(() => {

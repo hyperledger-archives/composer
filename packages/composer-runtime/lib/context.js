@@ -25,6 +25,7 @@ const QueryCompiler = require('./querycompiler');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
+const NetworkManager = require('./networkmanager');
 const Resolver = require('./resolver');
 const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
@@ -810,6 +811,17 @@ class Context {
         return this.resourceManager;
     }
 
+        /**
+     * Get the network manager.
+     * @return {NetworkManager} The network manager.
+     */
+    getNetworkManager() {
+        if (!this.networkManager) {
+            this.networkManager = new NetworkManager(this);
+        }
+        return this.networkManager;
+    }
+
     /**
      * Get the current participant.
      * @return {Resource} the current participant.
@@ -972,7 +984,7 @@ class Context {
      */
     getTransactionHandlers() {
         return [
-            this.getIdentityManager(),this.getResourceManager()
+            this.getIdentityManager(),this.getResourceManager(),this.getNetworkManager()
         ];
     }
 

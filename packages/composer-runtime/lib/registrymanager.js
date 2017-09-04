@@ -335,7 +335,7 @@ class RegistryManager extends EventEmitter {
                         return this.get('Asset','org.hyperledger.composer.system.'+resource.type+'Registry')
                         .then( (result) => { return result.add(resource);});
                     } else {
-                        return registry.add(resource);
+                        return registry.add(resource, {forceAdd : force});
                     }
                 } else {
                     return;

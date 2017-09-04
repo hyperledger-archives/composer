@@ -639,33 +639,33 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been updated, or rejected with an error.
      */
-    update(securityContext, businessNetworkDefinition) {
-        const method = 'update';
-        LOG.entry(method, securityContext, businessNetworkDefinition);
+    // update(securityContext, businessNetworkDefinition) {
+    //     const method = 'update';
+    //     LOG.entry(method, securityContext, businessNetworkDefinition);
 
-        // Check that a valid security context has been specified.
-        HLFUtil.securityCheck(securityContext);
+    //     // Check that a valid security context has been specified.
+    //     HLFUtil.securityCheck(securityContext);
 
-        // Validate all the arguments.
-        if (!businessNetworkDefinition) {
-            throw new Error('businessNetworkDefinition not specified');
-        }
+    //     // Validate all the arguments.
+    //     if (!businessNetworkDefinition) {
+    //         throw new Error('businessNetworkDefinition not specified');
+    //     }
 
-        // Serialize the business network.
-        return businessNetworkDefinition.toArchive()
-            .then((businessNetworkArchive) => {
-                // Send an update request to the chaincode.
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [businessNetworkArchive.toString('base64')]);
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying to update business network. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
-    }
+    //     // Serialize the business network.
+    //     return businessNetworkDefinition.toArchive()
+    //         .then((businessNetworkArchive) => {
+    //             // Send an update request to the chaincode.
+    //             return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [businessNetworkArchive.toString('base64')]);
+    //         })
+    //         .then(() => {
+    //             LOG.exit(method);
+    //         })
+    //         .catch((error) => {
+    //             const newError = new Error('Error trying to update business network. ' + error);
+    //             LOG.error(method, newError);
+    //             throw newError;
+    //         });
+    // }
 
     /**
      * Test ("ping") the connection to the business network.
