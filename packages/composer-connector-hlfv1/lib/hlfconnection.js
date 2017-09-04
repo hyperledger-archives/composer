@@ -654,10 +654,8 @@ class HLFConnection extends Connection {
         // Serialize the business network.
         return businessNetworkDefinition.toArchive()
             .then((businessNetworkArchive) => {
-
                 // Send an update request to the chaincode.
                 return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [businessNetworkArchive.toString('base64')]);
-
             })
             .then(() => {
                 LOG.exit(method);
