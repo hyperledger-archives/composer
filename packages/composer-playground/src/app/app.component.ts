@@ -191,7 +191,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    private openWelcomeModal() {
+    openWelcomeModal() {
         return this.checkVersion().then((success) => {
             if (success) {
                 this.modalService.open(WelcomeComponent);
@@ -201,11 +201,11 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    private openVersionModal() {
+    openVersionModal() {
         this.modalService.open(VersionCheckComponent);
     }
 
-    private checkVersion(): Promise<boolean> {
+    checkVersion(): Promise<boolean> {
         let currentPlaygroundVersion = this.getPlaygroundDetails();
 
         if (currentPlaygroundVersion === null) {
@@ -224,14 +224,14 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    private setPlaygroundDetails(): Promise<any> {
+    setPlaygroundDetails(): Promise<any> {
         let key = `playgroundVersion`;
         return this.aboutService.getVersions().then((versions) => {
             this.localStorageService.set(key, versions.playground.version);
         });
     }
 
-    private getPlaygroundDetails(): string {
+    getPlaygroundDetails(): string {
         let key = `playgroundVersion`;
         return this.localStorageService.get<string>(key);
     }

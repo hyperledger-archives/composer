@@ -9,16 +9,17 @@ excerpt: Playground is a web tool for defining and testing Hyperledger Composer 
 ---
 
 # Using Playground
-The Hyperledger Composer Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.
+The {{site.data.conrefs.composer_full}} Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.
 
-If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network.
+If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with ID cards.
 
 ---
 
 # Navigating Playground
 
 ## Landing Page
-The Wallet page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the Define page within the Editor.
+
+The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
 ![wallet-page](./wallet-page.png)
 
@@ -31,18 +32,19 @@ The page options comprise:
 - Tutorial. By pressing this link you will be navigated to the Playground tutorial.
 
 ## Editor Global Options
+
 The Editor define and test pages contain a header that shares interaction options.
 
 ![editor-header](./editor-header.png)
 
 From left to right, the header contains:
 
-- The name of the connection profile in use, and the Busines Network to which you are connected. In the above, it is Web and basic-sample-network respectively. 
-- Tabs that enable you to move between the Define and Test pages. 
+- The name of the connection profile in use, and the Busines Network to which you are connected. In the above, it is Web and basic-sample-network respectively.
+- Tabs that enable you to move between the Define and Test pages.
 - A drop-down that is labelled with the current Identity, which enables you to work with the Identity Registry (for issuing identities) and to log out of the Business Network.
 
 ## Editor - Define
-The Editor Define page is the page that is used to create, edit and update your Business Network. 
+The Editor Define page is the page that is used to create, edit and update your Business Network.
 
 ![editor-define-page](./editor-define.png)
 
@@ -65,7 +67,7 @@ The left hand side of the page contains:
 
 - Participant registry, which shows all Participants within the Business Network. Within this view it is possible to add a new Participant through the Create New Participant button shown on the upper menu, and update or remove existing Participants.
 - Asset registry, which shows all Assets within the Business Network. Within this view it is possible to add a new Asset through the Create New Asset button shown on the upper menu, and update or remove existing Assets.
-- Transaction registry, which shows Historian Records of Transactions that have occurred within the Business Network. 
+- Transaction registry, which shows Historian Records of Transactions that have occurred within the Business Network.
 - Submit Transaction button, which enables the sumbission of a Transaction that is described within a script file of the Business Network definition.
 
 ---
@@ -76,5 +78,3 @@ The left hand side of the page contains:
 * [Gain Access To A Business Network with an ID Card](./id-cards-playground.html#gain)
 
 ---
-
-

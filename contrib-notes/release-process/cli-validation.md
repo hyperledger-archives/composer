@@ -16,9 +16,10 @@ $ npm install -g composer-cli@unstable
 
 Stand up a local fabric:
 ```
-# Execute the following 4 steps, to stand up a runtime Fabric 
+# Execute the following 5 steps, to stand up a runtime Fabric 
 $ mkdir fabric-tools && cd fabric-tools
 $ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
+$ unzip fabric-dev-servers.zip
 $./startFabric.sh # will remove containers that exist previously including dev-* containers
 $./createComposerProfile.sh
 ```

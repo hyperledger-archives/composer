@@ -14,8 +14,8 @@
             <div class="description upper"><b>Select blockchain deployment</b></div>
             <div>
                 <form #optionForm="ngForm">
-                    <div class="create-route">
-                        <p>Create ID for a Blockchain you already use with Composer:</p>
+                    <div class="create-route" *ngIf="connectionProfileRefs.length>=2">
+                        <p>Create ID Card for a Blockchain you already use with Composer:</p>
                         <div class="file-types-list">
                             <div class="file-types-list-item" *ngFor="let profileRef of connectionProfileRefs | slice:1; let i=index">
                                     <input type="radio" id="{{ i }}" name="file-type"
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="create-route">
-                        <p>Or Create ID for Blockchain you have not connected to before:</p>
+                        <p>Create ID Card for Blockchain you have not connected to before:</p>
                         <div class="file-types-list">
                             <div class="file-types-list-item">
                                 <input type="radio" id="new-v1" name="file-type"
