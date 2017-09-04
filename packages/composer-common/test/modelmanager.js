@@ -239,7 +239,7 @@ describe('ModelManager', () => {
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
                 modelManager.addModelFiles([concertoModel, modelBase, farm2fork, modelBase]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw('modelmanager.js : addModelFiles() : namespace org.acme.base already exists');
         });
 
         it('should return an error for duplicate namespace from objects', () => {
@@ -250,7 +250,7 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([mf1,mf2]);
             (() => {
                 modelManager.addModelFiles([mf1]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw('modelmanager.js : addModelFiles() : namespace org.doge already exists');
         });
 
     });
