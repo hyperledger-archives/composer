@@ -138,14 +138,14 @@ class ModelManager {
         }
 
         if(m.isSystemModelFile()) {
-            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+            throw new Error('modelmanager.js : addModelFile() : Cannot add a model file with the reserved system namespace: ' + m.getNamespace() );
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
         } else {
-            throw new Error('namespace already exists');
+            throw new Error('modelmanager.js : addModelFile() : namespace already exists '+m.getNamespace());
         }
 
         return m;
@@ -168,9 +168,9 @@ class ModelManager {
             let m = new ModelFile(this, modelFile, fileName);
             let existing = this.modelFiles[m.getNamespace()];
             if (!existing) {
-                throw new Error('model file does not exist');
+                throw new Error('modelmanager.js : updateModelFile() : model file does not exist');
             } else if (existing.isSystemModelFile()) {
-                throw new Error('System namespace can not be updated');
+                throw new Error('modelmanager.js : updateModelFile() : System namespace can not be updated');
             }
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
@@ -178,9 +178,9 @@ class ModelManager {
         } else {
             let existing = this.modelFiles[modelFile.getNamespace()];
             if (!existing) {
-                throw new Error('model file does not exist');
+                throw new Error('modelmanager.js : updateModelFile() : model file does not exist');
             } else if (existing.isSystemModelFile()) {
-                throw new Error('System namespace can not be updated');
+                throw new Error('modelmanager.js : updateModelFile() : System namespace can not be updated');
             }
             modelFile.validate();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
@@ -195,9 +195,9 @@ class ModelManager {
      */
     deleteModelFile(namespace) {
         if (!this.modelFiles[namespace]) {
-            throw new Error('model file does not exist');
+            throw new Error('modelmanager.js : deleteModelFile() : model file does not exist for namespace '+namespace);
         } else if (namespace === ModelUtil.getSystemNamespace()) {
-            throw new Error('Cannot delete system namespace');
+            throw new Error('modelmanager.js : deleteModelFile() : Cannot delete system namespace '+namespace);
 
         }
         delete this.modelFiles[namespace];
@@ -231,25 +231,25 @@ class ModelManager {
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
                     if (m.isSystemModelFile()){
-                        throw new Error('System namespace can not be updated');
+                        throw new Error('modelmanager.js : addModelFiles() : System namespace can not be updated');
                     }
                     if (!this.modelFiles[m.getNamespace()]) {
                         this.modelFiles[m.getNamespace()] = m;
                         newModelFiles.push(m);
                     }
                     else {
-                        throw new Error('namespace already exists');
+                        throw new Error('modelmanager.js : addModelFiles() : namespace '+m.getNamespace()+' already exists');
                     }
                 } else {
                     if (modelFile.isSystemModelFile()){
-                        throw new Error('System namespace can not be updated');
+                        throw new Error('modelmanager.js : addModelFiles() : System namespace can not be updated');
                     }
                     if (!this.modelFiles[modelFile.getNamespace()]) {
                         this.modelFiles[modelFile.getNamespace()] = modelFile;
                         newModelFiles.push(modelFile);
                     }
                     else {
-                        throw new Error('namespace already exists');
+                        throw new Error('modelmanager.js : addModelFiles() : namespace '+modelFile.getNamespace()+' already exists');
                     }
                 }
             }
