@@ -121,7 +121,6 @@ class ConnectionProfileManager {
                                 break;
                             } catch (e) {
                                 LOG.info(METHOD,'No yet located the module ',e.message);
-                                console.log(e.message);
                                 // Continue to search the parent.
                             }
                             curmod = curmod.parent;
@@ -136,7 +135,6 @@ class ConnectionProfileManager {
                                 } catch (e) {
                                     // Search the next one.
                                     LOG.info(METHOD,e);
-                                    console.log(METHOD,e);
                                     return false;
                                 }
                             });
