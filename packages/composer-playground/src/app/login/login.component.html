@@ -13,7 +13,7 @@
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
         <span class="connection-profile-title">
             <h2>Identities for {{this.connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
-            <tutorial-link *ngIf="idCards.size == 1"></tutorial-link>
+            <tutorial-link *ngIf="this.connectionProfileRef === 'web-$default' && idCards.size == indestructibleCards.length"></tutorial-link>
         </span>
         <div class="identities">
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
