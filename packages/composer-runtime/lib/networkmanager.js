@@ -51,7 +51,7 @@ class NetworkManager extends TransactionHandler {
      * with an error.
      */
     updateBusinessNetwork(api, transaction) {
-       
+
         const method = 'updateBusinessNetwork';
         LOG.entry(method, transaction);
 

@@ -37,6 +37,7 @@ const QueryCompiler = require('../lib/querycompiler');
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
+const NetworkManager = require('../lib/networkmanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const ScriptCompiler = require('../lib/scriptcompiler');
@@ -1192,11 +1193,13 @@ describe('Context', () => {
         it('should return the compiled query bundle', () => {
             let mockIdentityManager = sinon.createStubInstance(IdentityManager);
             let mockResourceManager = sinon.createStubInstance(ResourceManager);
+            let mockNetworkManager = sinon.createStubInstance(NetworkManager);
             context.identityManager = mockIdentityManager;
             context.resourceManager = mockResourceManager;
-            context.getTransactionHandlers().should.have.lengthOf(2);
+            context.getTransactionHandlers().should.have.lengthOf(3);
             context.getTransactionHandlers().should.include(mockIdentityManager);
             context.getTransactionHandlers().should.include(mockResourceManager);
+            context.getTransactionHandlers().should.include(mockNetworkManager);
         });
 
     });

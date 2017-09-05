@@ -19,6 +19,7 @@
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-common.js",
     "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000 test/connection.js",
     "regenmodel": "node ./scripts/systemmodelgen.js"
   },
   "repository": {

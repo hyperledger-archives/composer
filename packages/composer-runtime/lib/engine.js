@@ -88,7 +88,6 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-       
         LOG.entry(method, context, fcn, args);
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.

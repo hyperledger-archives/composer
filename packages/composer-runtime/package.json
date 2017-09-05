@@ -19,7 +19,7 @@
     "postlint": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-runtime.js",
     "test": "nyc mocha --recursive -t 10000",
-    "mocha": "mocha --recursive -t 10000 test/registrymanager.js"
+    "mocha": "mocha --recursive -t 10000 test/networkmanager.js"
   },
   "repository": {
     "type": "git",

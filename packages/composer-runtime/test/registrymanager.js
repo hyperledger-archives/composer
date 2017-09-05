@@ -123,7 +123,7 @@ describe('RegistryManager', () => {
             sinon.stub(registryManager, 'ensure').resolves(mockRegistry);
             return registryManager.createSystemDefaults()
                 .then(() => {
-                    sinon.assert.callCount(registryManager.ensure,15);
+                    sinon.assert.callCount(registryManager.ensure,16);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.HistorianRecord', 'Asset registry for org.hyperledger.composer.system.HistorianRecord', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);

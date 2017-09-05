@@ -278,19 +278,15 @@ class Connection extends EventEmitter {
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @param {updateCallback} callback The callback function to call when complete.
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been updated, or rejected with an error.
      */
-    _updateTx(securityContext, businessNetworkDefinition, callback) {
-       
-        // create the new transaction to update the network
+    _updateTx(securityContext, businessNetworkDefinition) {
 
+        // create the new transaction to update the network
         if (!businessNetworkDefinition) {
             throw new Error('business network definition not specified');
         }
-       
-
-
-        
         let currentDeployedNetwork;
 
         return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
