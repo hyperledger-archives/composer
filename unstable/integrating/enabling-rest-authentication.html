@@ -276,7 +276,7 @@ ga('send', 'pageview');
 
 <p>When a user authenticates to the REST server, a unique access token is generated and assigned to the authenticated user. When the user authenticates using a web browser, the access token is stored in a cookie in the local storage of the users web browser. When the authenticated user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated instead of reauthenticating the user.</p>
 
-<p>The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website. </p>
+<p>The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website.</p>
 
 <p>In order to use the access token, the access token must first be retrieved using a web browser. When you authenticate to the REST server, the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a> will show the access token at the top of the page. By default the access token is hidden, but it can be displayed by clicking the <code>Show</code> button. The access token is a long alphanumeric string, for example: <code>e9M3CLDEEj8SDq0Bx1tkYAZucOTWbgdiWQGLnOxCe7K9GhTruqlet1h5jsw10YjJ</code></p>
 
