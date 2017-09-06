@@ -8,55 +8,70 @@
     </button>
   </header>
   <div class="modal-body">
+    <identity-card [identity]="newCard" [preview]="true"></identity-card>
 
-    <section class="id-option">
-      <header>
-        <dl>
-          <dt>Option 1</dt>
-          <dd>Send someone the new user ID and secret so that they can add it to their wallet</dd>
-        </dl>
-      </header>
+    <div class="new-card-options">
+      <ngb-accordion [closeOthers]="true" activeIds="option-1">
+          <ngb-panel id="option-1">
+            <ng-template ngbPanelTitle>
+              <svg class="bx--accordion__arrow" width="12" height="12" viewBox="0 0 8 12" fill-rule="evenodd">
+                <path d="M0 10.6L4.7 6 0 1.4 1.4 0l6.1 6-6.1 6z"></path>
+              </svg>
+              <span>Use it yourself</span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+                <p>Just add the ID card to your wallet to start using the new identity yourself</p>
+                <div class="actions">
+                  <button type="button" class="primary" (click)="addToWallet();">Add to wallet</button>
+                </div>
+            </ng-template>
+          </ngb-panel>
+          <ngb-panel id="option-2">
+              <ng-template ngbPanelTitle>
+                  <svg class="bx--accordion__arrow" width="12" height="12" viewBox="0 0 8 12" fill-rule="evenodd">
+                    <path d="M0 10.6L4.7 6 0 1.4 1.4 0l6.1 6-6.1 6z"></path>
+                  </svg>
+                  <span>Send it to someone else (Playground)</span>
+                </ng-template>
+            <ng-template ngbPanelContent>
+                <p>Another Playground user can import the ID card to their wallet to start using the new identity</p>
+                <div class="actions">
+                  <button type="button" class="primary" (click)="export();">Export ID card</button>
+                </div>
+            </ng-template>
+          </ngb-panel>
+          <ngb-panel id="option-3">
+              <ng-template ngbPanelTitle>
+                  <svg class="bx--accordion__arrow" width="12" height="12" viewBox="0 0 8 12" fill-rule="evenodd">
+                    <path d="M0 10.6L4.7 6 0 1.4 1.4 0l6.1 6-6.1 6z"></path>
+                  </svg>
+                  <span>Send it to someone else (Command line)</span>
+                </ng-template>
+              <ng-template ngbPanelContent>
+                  <p>A Composer command line user will need to enroll the new identity using the secret shown below</p>
+                  
+                  <dl class="enrollment-credentials">
+                    <dt>User ID</dt>
+                    <dd>{{userID}}</dd>
 
-      <div class="id-option-details">
-        <dl>
-          <div>
-            <dt>User ID</dt>
-            <dd>{{userID}}</dd>
-          </div>
+                    <dt>User Secret</dt>
+                    <dd>{{userSecret}}</dd>
+                  </dl>
 
-          <div class="id-secret">
-            <dt>User Secret</dt>
-            <dd>{{userSecret}}</dd>
-          </div>
-        </dl>
-      </div>
-    </section>
-
-    <section class="id-option">
-      <header>
-        <dl>
-          <dt>Option 2</dt>
-          <dd>Use it yourself</dd>
-        </dl>
-      </header>
-
-      <div class="id-option-details">
-        <button type="button" class="action" (click)="addToWallet();">+ Add to my Wallet</button>
-      </div>
-    </section>
-
+                  <div class="actions">
+                    <button type="button" class="primary" ngxClipboard [cbContent]="newIdentity" (cbOnSuccess)="activeModal.close()">Copy to clipboard</button>
+                  </div>
+              </ng-template>
+            </ngb-panel>
+        </ngb-accordion>
+    </div>
   </div>
   <footer>
     <p class="footer-text">
       <svg class="standard-icon" aria-hidden="true">
         <use xlink:href="#icon-warn_32"></use>
       </svg>
-      For security, this secret will only ever be shown once.
+      For security, new identities can only be enrolled once
     </p>
-    <button type="button" class="primary" (click)="activeModal.close();">
-      <div>
-        <span>Ok</span>
-      </div>
-    </button>
   </footer>
 </section>

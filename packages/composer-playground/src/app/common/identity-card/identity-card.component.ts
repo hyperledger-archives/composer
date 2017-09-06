@@ -19,6 +19,9 @@ export class IdentityCardComponent {
     preview: boolean = false;
 
     @Input()
+    showDismissIcon: boolean = false;
+
+    @Input()
     indestructible: boolean = false;
 
     @Output()
