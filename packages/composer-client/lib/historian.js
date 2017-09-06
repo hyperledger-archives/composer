@@ -20,7 +20,14 @@ const Util = require('composer-common').Util;
 const REGISTRY_TYPE = 'Asset';
 
 /**
- * The historian records the history of all business events on the blockchain.
+ * The Historian records the history of actions taken using Composer.
+ * It is a registry that stores HistorianRecords; each record is created in response
+ * to a transaction being executred.
+ *
+ * As well as the transactions that are defined in the Network model other actions such
+ * as adding assets are treated as transactions so are therefore recorded.
+ *
+ * Details of these are in the system model.
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
  * @class

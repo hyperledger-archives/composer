@@ -95,6 +95,7 @@ class ConnectionProfileManager {
     getConnectionManager(connectionProfile) {
         const METHOD = 'getConnectionManager';
         LOG.info(METHOD,'Looking up a connection manager for profile', connectionProfile);
+        let errorList = [];
 
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
@@ -120,7 +121,7 @@ class ConnectionProfileManager {
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
-                                console.log(e.message);
+                                errorList.push(e.message);
                                 LOG.info(METHOD,'No yet located the module ',e.message);
                                 // Continue to search the parent.
                             }
@@ -135,7 +136,7 @@ class ConnectionProfileManager {
                                     return true;
                                 } catch (e) {
                                     // Search the next one.
-                                    
+                                    errorList.push(e.message);
                                     LOG.info(METHOD,e);
                                     return false;
                                 }
@@ -149,6 +150,9 @@ class ConnectionProfileManager {
                         }
                     }
                 } catch (e) {
+                    errorList.push(e.message);
+
+
                     const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${e}`);
                     LOG.error(METHOD, newError);
                     throw newError;
