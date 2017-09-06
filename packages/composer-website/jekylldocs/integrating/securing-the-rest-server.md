@@ -5,7 +5,7 @@ category: start
 section: integrating
 index-order: 705
 sidebar: sidebars/accordion-toc0.md
-excerpt: By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By [**enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.**](./enabling-rest-authentication.html)
+excerpt: When deploying Hyperledger Composer REST server in a production environment, the REST server should be [**configured to be secured with HTTPS and TLS**](./securing-the-rest-server.html) (Transport Layer Security). Once the REST server has been configured with HTTPS and TLS, all data transferred between the REST server and all of the REST clients is encrypted.
 ---
 
 # Securing the REST server using HTTPS and TLS
