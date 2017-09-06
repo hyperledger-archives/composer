@@ -13,20 +13,21 @@ excerpt: Composer Archive Create CLI
 The `composer archive create` utility is used to create a business network archive from the contents of a directory.
 
 To create an archive from source flles (ie business network definition project files) present in the current 'working' directory:
-```
-composer archive create -a <business-network-archive>
 
+```bash
+composer archive create -a <business-network-archive>
 ```
+
 or
 
-to specify paths (to the source business network definition and specify a destination directory for the archive file (.bna file):
+to specify paths (to a source business network definition,  and a destination directory for the archive file (.bna file)):
 
-```
+```bash
 composer archive create --sourceType dir --sourceName <dirpath> -a digitalproperty-network.bna
-
 ```
 
 ### Options
+
 ```
 --help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
@@ -37,7 +38,7 @@ composer archive create --sourceType dir --sourceName <dirpath> -a digitalproper
 Only one of either inputDir or moduleName must be specified.
 ```
 
-## Example Output
+## Example Command and Output
 
 ```
 $ pwd
