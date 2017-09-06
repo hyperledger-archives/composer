@@ -206,7 +206,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer archive list</code> utility is used to verify the structure of a business network archive on disk and print metdata.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive list -a &lt;business-network-archive&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive list -a &lt;business-network-archive file&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">--help             Show help  [boolean]
@@ -214,12 +214,13 @@ ga('send', 'pageview');
   --archiveFile, -a  Business network archive file name.  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive list -a digitalPropertyNetwork.zip
-Listing Business Network Archive from digitalPropertyNetwork.zip
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive list -a digitalPropertyNetwork.bna
+Listing Business Network Archive from digitalPropertyNetwork.bna
 Identifier:digitalproperty-network@0.0.1
 Name:digitalproperty-network
 Version:0.0.1
-Command completed successfully.
+
+Command succeeded
 </code></pre></div>
             
           </section>

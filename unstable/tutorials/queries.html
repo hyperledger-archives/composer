@@ -205,9 +205,15 @@ ga('send', 'pageview');
 
 <p>In this tutorial, we will build on the &#39;Commodity Trading&#39; developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you&#39;ve done the tutorial, feel free to try out your own queries !</p>
 
-<p>Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in <code>queries.qry</code> from the <code>trade-network</code> sample network to get going - they are described in the file itself. In the main &#39;Commodity Trading&#39; Developer tutorial, we cloned the Composer <code>sample-networks</code> git repository, and created a new network &#39;my-network&#39; from <code>basic-sample-network</code> in the samples directory - this tutorial uses that network to get going.</p>
+<p>Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in <code>queries.qry</code> from the <code>trade-network</code> sample network to get going - they are described in the file itself. In the main &#39;Commodity Trading&#39; <a href="developer-guide.html">Developer-Tutorial</a>, we cloned the Composer <code>sample-networks</code> git repository, and created a new network &#39;my-network&#39; from <code>basic-sample-network</code> in the samples directory - this tutorial uses that network to get going.</p>
 
-<p>It is recommended to do the Developer Tutorial first, where the business network <code>my-network</code> has been deployed. (Alternatively, you can  if you wish, do this tutorial from &#39;scratch&#39; - just build a new &#39;my-network&#39; VSCode project (just like the Developer tutorial did) and edit your package.json accordingly / create the files (below) as you go along  - in this instance, remember to use <code>composer network deploy</code> (as a new network) to deploy the BNA file later on in this tutorial).</p>
+<p>It is recommended to do the <a href="developer-guide.html">Developer-Tutorial</a> first, where the business network <code>my-network</code> has first been deployed and setup steps are performed. Alternatively, you can  if you wish, do this tutorial from &#39;scratch&#39; but observe these following 3 steps:</p>
+
+<ol>
+<li>Build a new &#39;my-network&#39; VSCode project (as shown in the Developer tutorial where its based on the <code>basic-sample-network</code> project) </li>
+<li>Edit your package.json, once again changing the &#39;name&#39; field to <code>my-network</code>, the &#39;description&#39; to &#39;My Commodity Trading network&#39; and modify the &#39;prepublish&#39; script (at the end) to change the filename of the business network archive (.bna) - ie to &#39;my-network.bna&#39;</li>
+<li>Finally, you must use the <code>composer network deploy</code> command later on here (ie not &#39;composer network update&#39;) to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).</li>
+</ol>
 
 <h2 id="re-open-your-commodities-trading-my-network-project">Re-open your Commodities Trading &#39;my-network&#39; project</h2>
 
@@ -337,7 +343,7 @@ function removeHighQuantityCommodities(remove) {
 </code></pre></div>
 <p>The first function <code>tradeCommodity</code> will change the owner property on a commodity (with a new owner Participant) on an incoming Trade transaction and emit a Notification event to that effect. It then persists the modified Commodity back into the asset registry which is used to store Commodity instances.</p>
 
-<p>The second function will call a named query called &#39;selectCommoditiesWithHighQuantity&#39; (defined in <code>queries.qry</code>) which will return all Commodity asset records that have a quantity &gt; 60 ; emit an event ; and remove the Commodity from the AssetRegistry.</p>
+<p>The second function calls a named query &#39;selectCommoditiesWithHighQuantity&#39; (defined in <code>queries.qry</code>) which will return all Commodity asset records that have a quantity &gt; 60 ; emit an event ; and remove the Commodity from the AssetRegistry.</p>
 
 <p>Save your changes to <code>lib/sample.js</code></p>
 
@@ -405,12 +411,12 @@ rule SystemACL {
 
 <p>Due to the changes in our business network,  we need to re-generate the Business Network Archive (BNA) file for your newly updated business network definition. This new network will later be updated to the Composer runtime, and become the latest deployed network. From the previous tutorial, we have already done an <code>npm install</code> of our business network.</p>
 
-<p>Switch back to the terminal and from the <code>my-network</code> project directory,  type:</p>
+<p>Switch back to the terminal, then from the <code>my-network</code> project directory,  type:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">
 composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
 </code></pre></div>
-<p>(including the trailing &#39;.&#39; please note) - check that it creates this ok :</p>
+<p>The output should be similar to the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">
 Creating Business Network Archive
 
@@ -430,9 +436,9 @@ Command succeeded
 The `composer archive create` command has updated the file called `my-network.bna` in the `dist` folder.
 
 </code></pre></div>
-<h2 id="write-and-perform-unit-tests-to-include-queries">Write and Perform Unit Tests to include Queries</h2>
+<h2 id="write-and-perform-unit-tests-to-include-queries">Write and Perform Unit Tests, to include Queries</h2>
 
-<p>All code should have unit tests - even your business network logic!</p>
+<p>All code should have unit tests - even your business network logic (why, of course!)</p>
 
 <p>We are now going to add a simple unit test for the business network definition, testing the logic of our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of &#39;the blockchain&#39; in-memory in a Node.js process.</p>
 
@@ -757,7 +763,7 @@ Received event: org.acme.mynetwork.RemoveNotification#81252aa3b-ea2c-3143-be2b-a
 Feature: Sample
 
 </code></pre></div>
-<p>And the cucumber tests defined in the file <code>features/sample.feature</code> will produce the following output:</p>
+<p>And the cucumber tests defined in the file <code>features/sample.feature</code> will produce the following output (redacted):</p>
 
 <p><img src="../assets/img/tutorials/query/cucumber-output.png" alt="Cucumber test output"></p>
 
@@ -771,7 +777,7 @@ Feature: Sample
 
 <h2 id="deploy-the-updated-business-network-definition-to-the-runtime-fabric">Deploy the updated Business Network Definition to the runtime Fabric</h2>
 
-<p>We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file(suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. </p>
+<p>We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file (suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. (Remember: if you did not complete the Developer tutorial before this tutorial, use the command  <code>composer network deploy</code> and not <code>composer network update</code> )</p>
 
 <p>Switch to the terminal, change directory to the dist folder containing the <code>my-network.bna</code> file:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd dist
@@ -796,7 +802,7 @@ Command succeeded
 <p>You can test that it deployed OK:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 </code></pre></div>
-<h2 id="re-generate-the-rest-apis-for-the-updated-business-network">Re-generate the REST APIs for the updated Business Network</h2>
+<h2 id="regenerate-the-rest-apis-for-the-updated-business-network">Regenerate the REST APIs for the updated Business Network</h2>
 
 <p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network. </p>
 

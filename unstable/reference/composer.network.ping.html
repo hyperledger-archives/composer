@@ -219,12 +219,26 @@ an identity has been issued for the participant.</p>
   --enrollSecret, -s           The enrollment secret of the user  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n digitalproperty-network -p hlfv1 -i admin -s adminpw
-The connection to the network was successfully tested:
-  version = 0.10.0
-  participant = &lt;no participant found&gt;
-Command completed successfully.
+
+<p>Given:
+```
+composer identity issue -p hlfv1 -n &#39;digitalproperty-network&#39; -i admin -s adminpw -u fred -a &quot;resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890&quot;</p>
+
+<p>An identity was issued to the participant &#39;resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890&#39;
+The participant can now connect to the business network with the following details:
+  userID = fred
+  userSecret = lgBOchfiZRUU</p>
+<div class="highlight"><pre><code class="language-" data-lang="">The example of pinging the network, to test with the issued identity: 
 </code></pre></div>
+<p>composer network ping -n digitalproperty-network -p hlfv1 -i fred -s lgBOchfiZRUU </p>
+
+<p>The connection to the network was successfully tested: digitalproperty-network
+    version: 0.11.3-20170817015027
+    participant: net.biz.digitalPropertyNetwork.Person#PID:1234567890</p>
+
+<p>Command succeeded
+```</p>
+
             
           </section>
         </div>
