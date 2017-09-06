@@ -35,11 +35,17 @@ export class EditCardCredentialsComponent {
     validContents(): boolean {
         if (this.useCerts) {
             return false;
-        } else {
-            return ((this.userId !== null && this.userId.length !== 0 &&
-                     this.userSecret !== null && this.userSecret.length !== 0) ||
-                     this.addInProgress);
+        } else if (!this.userId || this.userId.length === 0) {
+            return false;
+        } else if (!this.userSecret || this.userSecret.length === 0) {
+            return false;
+        } else if (this.addInProgress) {
+            return false;
+        } else if (!this.busNetName || this.busNetName.length === 0) {
+            return false;
         }
+
+        return true;
     }
 
     addIdentityCard() {
@@ -49,21 +55,21 @@ export class EditCardCredentialsComponent {
             text: 'Adding ID card'
         });
         return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile)
-        .then(() => {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next({
-                title: 'ID Card Added',
-                text: 'The ID card was successfully added to My Wallet.',
-                icon: '#icon-role_24'
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({
+                    title: 'ID Card Added',
+                    text: 'The ID card was successfully added to My Wallet.',
+                    icon: '#icon-role_24'
+                });
+                this.addInProgress = false;
+                this.idCardAdded.emit(true);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+                this.addInProgress = false;
+                this.idCardAdded.emit(false);
             });
-            this.addInProgress = false;
-            this.idCardAdded.emit(true);
-        })
-        .catch((error) => {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(error);
-            this.addInProgress = false;
-            this.idCardAdded.emit(false);
-        });
     }
 }

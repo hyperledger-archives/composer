@@ -5,7 +5,7 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**An existing identity can be bound to a participant using either the API or the command line**](../managing/identity-issue.html). Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant."
-index-order: 704
+index-order: 805
 ---
 
 # Binding an existing identity to a participant

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';
@@ -14,8 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
-        name: 'admin',
-        businessNetwork: 'basic-sample-network',
+        name: 'PeerAdmin',
         enrollmentId: 'admin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
@@ -34,7 +34,10 @@ export class IdentityCardService {
 
     private idCards: Map<string, IdCard> = new Map<string, IdCard>();
 
-    constructor(private connectionProfileService: ConnectionProfileService,
+    private indestructibleCards: string[] = [];
+
+    constructor(private adminService: AdminService,
+                private connectionProfileService: ConnectionProfileService,
                 private identityService: IdentityService,
                 private identityCardStorageService: IdentityCardStorageService) {
         Logger.setFunctionalLogger({
@@ -52,20 +55,8 @@ export class IdentityCardService {
         return this.getIdentityCard(this.currentCard);
     }
 
-    getCurrentConnectionProfile(): any {
-        let card = this.getCurrentIdentityCard();
-
-        if (card) {
-            return card.getConnectionProfile();
-        }
-    }
-
-    getCurrentEnrollmentCredentials(): any {
-        let card = this.getCurrentIdentityCard();
-
-        if (card) {
-            return card.getEnrollmentCredentials();
-        }
+    getIndestructibleIdentityCards(): string[] {
+        return this.indestructibleCards;
     }
 
     getIdentityCardRefsWithProfileAndRole(qualifiedProfileName: string, role: string): string[] {
@@ -80,8 +71,41 @@ export class IdentityCardService {
         return cardRefs;
     }
 
+    getIdentityCardForExport(cardRef: string): Promise<IdCard> {
+        let card = this.idCards.get(cardRef);
+
+        return Promise.resolve()
+            .then(() => {
+                let data: any = this.identityCardStorageService.get(this.dataRef(cardRef)) || {};
+
+                if (!data.unused) {
+                    let connectionProfile = card.getConnectionProfile();
+                    let connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
+                    let enrollmentCredentials = card.getEnrollmentCredentials();
+
+                    return this.adminService.exportIdentity(connectionProfileRef, enrollmentCredentials.id);
+                }
+            })
+            .then((exportedCredentials) => {
+                let metadata = {
+                    name: card.getName(),
+                    businessNetwork: card.getBusinessNetworkName(),
+                    enrollmentId: card.getEnrollmentCredentials().id,
+                    enrollmentSecret: card.getEnrollmentCredentials().secret
+                };
+
+                let exportCard: IdCard = new IdCard(metadata, card.getConnectionProfile());
+                if (exportedCredentials) {
+                    exportCard.setCredentials(exportedCredentials);
+                }
+
+                return exportCard;
+            });
+    }
+
     loadIdentityCards(webOnly: boolean): Promise<number> {
         this.currentCard = null;
+        this.indestructibleCards = [];
 
         return new Promise((resolve, reject) => {
             this.idCards = this.identityCardStorageService
@@ -99,8 +123,13 @@ export class IdentityCardService {
                         let cardObject = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
                         cardObject.setCredentials(cardProperties.credentials);
                         let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
-                        if (data && data.current) {
-                            this.currentCard = cardRef;
+                        if (data) {
+                            if (data.current) {
+                                this.currentCard = cardRef;
+                            }
+                            if (data.indestructible) {
+                                this.indestructibleCards.push(cardRef);
+                            }
                         }
                         return [cardRef, cardObject];
                     }
@@ -113,12 +142,7 @@ export class IdentityCardService {
                 }, new Map<string, IdCard>());
 
             if (this.currentCard) {
-                let card: IdCard = this.getCurrentIdentityCard();
-                let enrollmentCredentials = card.getEnrollmentCredentials();
-
-                if (enrollmentCredentials && enrollmentCredentials.id) {
-                    this.identityService.setCurrentIdentity(enrollmentCredentials.id);
-                }
+                this.setCurrentIdentityCard(this.currentCard);
             }
 
             resolve(this.idCards.size);
@@ -141,7 +165,7 @@ export class IdentityCardService {
         initialCards.unshift(defaultCardObject);
 
         let addCardPromises: Promise<any>[] = initialCards.map((card, index) => {
-            return this.addIdentityCard(card).then((cardRef: string) => {
+            return this.addIdentityCard(card, true).then((cardRef: string) => {
                 return cardRef;
             });
         });
@@ -163,14 +187,30 @@ export class IdentityCardService {
         return this.addIdentityCard(card);
     }
 
-    addIdentityCard(card: IdCard): Promise<string> {
+    addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string> {
         let cardRef: string = uuid.v4();
+        let data = {
+            unused: true,
+            indestructible: indestructible
+        };
 
-        this.identityCardStorageService.set(cardRef, card);
-        this.identityCardStorageService.set(this.dataRef(cardRef), {unused: true});
-        this.idCards.set(cardRef, card);
+        return Promise.resolve()
+            .then(() => {
+                this.identityCardStorageService.set(cardRef, card);
+                this.identityCardStorageService.set(this.dataRef(cardRef), data);
+                this.idCards.set(cardRef, card);
+                if (indestructible) {
+                    this.indestructibleCards.push(cardRef);
+                }
 
-        return Promise.resolve(cardRef);
+                let credentials = card.getCredentials();
+                if (credentials && credentials.certificate && credentials.privateKey) {
+                    return this.activateIdentityCard(cardRef);
+                }
+            })
+            .then(() => {
+                return cardRef;
+            });
     }
 
     deleteIdentityCard(cardRef: string): Promise<void> {
@@ -197,13 +237,12 @@ export class IdentityCardService {
     }
 
     setCurrentIdentityCard(cardRef): Promise<IdCard> {
-        return Promise.resolve()
+        if (!this.idCards.has(cardRef)) {
+            return Promise.reject(new Error('Identity card does not exist'));
+        }
+
+        return this.activateIdentityCard(cardRef)
             .then(() => {
-                if (!
-                        this.idCards.has(cardRef)
-                ) {
-                    return Promise.reject(new Error('Identity card does not exist'));
-                }
                 let card: IdCard = this.idCards.get(cardRef);
 
                 let oldData: any = this.identityCardStorageService.get(this.dataRef(this.currentCard));
@@ -217,15 +256,9 @@ export class IdentityCardService {
                 newData.current = true;
                 this.identityCardStorageService.set(this.dataRef(cardRef), newData);
 
-                // Hmmm, suspicious... is the enrollement ID really the identity?!
-                let enrollmentCredentials = card.getEnrollmentCredentials();
-                if (!enrollmentCredentials) {
-                    return Promise.reject(new Error('Identity card does not contain an enrollment id'));
-                }
-
-                let enrollmentId = enrollmentCredentials.id;
-
-                this.identityService.setCurrentIdentity(enrollmentId);
+                let profile = card.getConnectionProfile();
+                let qpn = this.getQualifiedProfileName(profile);
+                this.identityService.setCurrentIdentity(qpn, card);
 
                 return Promise.resolve(card);
             });
@@ -277,24 +310,40 @@ export class IdentityCardService {
         return wantedCards;
     }
 
-    activateCurrentIdentityCard(): Promise<string | void> {
-        let data: any = this.identityCardStorageService.get(this.dataRef(this.currentCard));
+    activateIdentityCard(cardRef): Promise<string | void> {
+        let data: any = this.identityCardStorageService.get(this.dataRef(cardRef));
 
         if (data && data.unused) {
             delete data['unused'];
-            this.identityCardStorageService.set(this.dataRef(this.currentCard), data);
+            this.identityCardStorageService.set(this.dataRef(cardRef), data);
 
-            let card = this.idCards.get(this.currentCard);
+            let hasCredentials = false;
+            let card = this.idCards.get(cardRef);
             let connectionProfile = card.getConnectionProfile();
-            let connectionProfileName = this.getQualifiedProfileName(connectionProfile);
-
-            // Hmmm, suspicious... is the enrollement ID really the identity?!
+            let connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
             let enrollmentCredentials = card.getEnrollmentCredentials();
+            let credentials = card.getCredentials();
 
-            // Is this enough activation? What about the identity import thing?
-            return this.connectionProfileService.createProfile(connectionProfileName, connectionProfile).then(() => {
-                return this.currentCard;
-            });
+            if (credentials && credentials.certificate && credentials.privateKey) {
+                hasCredentials = true;
+
+                // don't want to keep credentials around after the card has been activated
+                card.setCredentials({});
+                this.identityCardStorageService.set(cardRef, card);
+                this.idCards.set(cardRef, card);
+            } else if (!enrollmentCredentials || !enrollmentCredentials.secret) {
+                return Promise.reject(new Error('No credentials or enrollment secret available. An identity card must contain either a certificate and private key, or an enrollment secret'));
+            }
+
+            return this.connectionProfileService.createProfile(connectionProfileRef, connectionProfile)
+                .then(() => {
+                    if (hasCredentials) {
+                        return this.adminService.importIdentity(connectionProfileRef, enrollmentCredentials.id, credentials.certificate, credentials.privateKey);
+                    }
+                })
+                .then(() => {
+                    return cardRef;
+                });
         }
 
         return Promise.resolve();

@@ -16,6 +16,9 @@
 
 module.exports = function(server) {
     let router = server.loopback.Router();
-    router.get('/', server.loopback.status());
+    router.get('/', (req, res, next) => {
+        res.redirect('/explorer/');
+    });
+    router.get('/status', server.loopback.status());
     server.use(router);
 };

@@ -14,7 +14,6 @@ import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { IdentityCardService } from '../services/identity-card.service';
 import { DeployComponent } from './deploy.component';
 
 import * as sinon from 'sinon';
@@ -82,7 +81,6 @@ describe('DeployComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
-    let mockIdentityCardService;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -90,7 +88,6 @@ describe('DeployComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
-        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -108,8 +105,7 @@ describe('DeployComponent', () => {
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: NgbModal, useValue: mockNgbModal},
-                {provide: IdentityCardService, useValue: mockIdentityCardService}],
+                {provide: NgbModal, useValue: mockNgbModal}],
         });
 
         sandbox = sinon.sandbox.create();
@@ -131,7 +127,6 @@ describe('DeployComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockIdentityCardService.getCurrentConnectionProfile.returns({name: 'myNetwork'});
             mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });

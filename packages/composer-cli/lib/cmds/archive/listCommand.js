@@ -20,7 +20,7 @@ module.exports.command = 'list [options]';
 module.exports.describe = 'Lists details of a Business Network Archive';
 module.exports.builder = function (yargs){
 
-    return yargs.option('archiveFile',{alias: 'a', required: false, describe: 'Business network archive file name.', type: 'string' });
+    return yargs.option('archiveFile',{alias: 'a', required: true, describe: 'Business network archive file name.', type: 'string' });
 };
 
 

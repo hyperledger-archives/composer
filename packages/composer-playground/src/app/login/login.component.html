@@ -1,6 +1,6 @@
 <section *ngIf="!showSubScreen" class="header">
-    <h1 class="left-align">My Wallet</h1>
-    <div class="right-align" *ngIf="!showSubScreen">
+    <h1>My Wallet</h1>
+    <div *ngIf="!showSubScreen">
         <button *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import ID Card</span>
         </button>
@@ -11,24 +11,35 @@
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
-        <h2>Identities for {{this.connectionProfileNames.get(connectionProfileRef) === '$default' ? 'Web Browser' :
-            this.connectionProfileNames.get(connectionProfileRef) }}
-            <div class="connection-profile-buttons">
-                <button id="deployButton" type="button" class="action circular"
-                        [disabled]="!canDeploy(connectionProfileRef)" (click)="deployNetwork(connectionProfileRef)">
-                    <svg class="ibm-icon vertical-top">
-                        <use xlink:href="#icon-deploy_24"></use>
-                    </svg>
-                </button>
-            </div>
-        </h2>
+        <span class="connection-profile-title">
+            <h2>Identities for {{this.connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
+            <tutorial-link *ngIf="this.connectionProfileRef === 'web-$default' && idCards.size == indestructibleCards.length"></tutorial-link>
+        </span>
         <div class="identities">
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
+                           [indestructible]="(indestructibleCards.indexOf(cardRef) > -1)"
                            (onConnect)="changeIdentity(cardRef)"
                            (onExport)="exportIdentity(cardRef)"
                            (onDelete)="removeIdentity(cardRef)">
             </identity-card>
+            <button type="button" class="connection-profile-card"
+                    *ngIf="canDeploy(connectionProfileRef)"
+                    (click)="deployNetwork(connectionProfileRef)">
+                <span class="card-content">
+                    <svg class="ibm-icon" aria-hidden="true">
+                        <use xlink:href="#icon-Network_Create"></use>
+                    </svg>
+                    <p>Deploy a new business network</p>
+                </span>
+            </button>
+            <div class="connection-profile-card card-content" *ngIf="!canDeploy(connectionProfileRef)">
+                <svg class="ibm-icon" aria-hidden="true">
+                    <use xlink:href="#icon-get-information_64"></use>
+                </svg>
+                <p>You must <a href="javascript:void(0);" (click)="importIdentity()">import</a> identity cards with the correct admin rights for deploying new business networks.</p>
+                <p><a href="https://hyperledger.github.io/composer/business-network/bnd-deploy.html" target="_blank">Learn more</a>.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -40,6 +51,7 @@
             </svg>
             <span>My Wallet</span>
         </button>
+        <tutorial-link *ngIf="showDeployNetwork"></tutorial-link>
     </div>
     <div *ngIf="showDeployNetwork">
         <deploy-business-network (finishedSampleImport)="finishedDeploying()"></deploy-business-network>

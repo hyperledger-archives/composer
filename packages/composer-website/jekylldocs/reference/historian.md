@@ -2,7 +2,7 @@
 layout: default
 title: Historian
 section: reference
-index-order: 911
+index-order: 1011
 sidebar: sidebars/accordion-toc0.md
 excerpt: The Hyperledger Composer Historian provides a registry that contains information about historical transactions
 ---
