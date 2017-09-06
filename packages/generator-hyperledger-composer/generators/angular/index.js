@@ -417,7 +417,6 @@ module.exports = yeoman.Base.extend({
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let assetDeclarations = modelFile.getAssetDeclarations();
-                //let enumDeclarations = modelFile.get
 
                 assetDeclarations
                 .filter((assetDeclaration) =>{
@@ -437,12 +436,15 @@ module.exports = yeoman.Base.extend({
                     assetProperties.forEach((property) => {
                         if (property.constructor.name === 'Field') {
                             if (property.isTypeEnum()) {
+                                // handle enumeration
                                 let enumValues = [];
+                                // compose array of enumeration values
                                 enumerations.forEach(enumeration => {
                                     if (enumeration.name === property.getType()) {
                                         enumValues = enumeration.properties;
                                     }
                                 });
+                                // add meta information to the field list
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType(),
@@ -451,7 +453,6 @@ module.exports = yeoman.Base.extend({
                                     enumValues,
                                 });
                             } else if (property.isPrimitive() || !property.isPrimitive()) {
-
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
