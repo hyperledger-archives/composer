@@ -18,7 +18,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 	private errorMessage;
 
   <% for(var x=0;x<currentAsset.properties.length;x++){ %>
-      <%= currentAsset.properties[x].name %> = new FormControl("", Validators.required);
+      <% if(currentAsset.properties[x].array === true && currentAsset.properties[x].enum === true){ %>
+          <%= currentAsset.properties[x].name %> = { value: [] };
+        <% }else{ %>
+          <%= currentAsset.properties[x].name %> = new FormControl("", Validators.required);
+        <% } %>
   <%}%>
 
 
@@ -60,6 +64,19 @@ export class <%= currentAsset.name %>Component implements OnInit {
             this.errorMessage = error;
         }
     });
+  }
+
+  changeArrayValue(name: string, value: any): void {
+    const index = this[name].value.indexOf(value);
+    if (index === -1) {
+      this[name].value.push(value);
+    } else {
+      this[name].value.splice(index, 1);
+    }
+  }
+
+  hasArrayValue(name: string, value: any): boolean {
+    return this[name].value.indexOf(value) !== -1;
   }
 
   addAsset(form: any): Promise<any> {
@@ -189,7 +206,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         if(result.<%=currentAsset.properties[x].name%>){
-          formObject.<%= currentAsset.properties[x].name %> = result.<%= currentAsset.properties[x].name %>;
+          <% if(currentAsset.properties[x].array === true){ %>
+            this.<%= currentAsset.properties[x].name %> = { value: result.<%= currentAsset.properties[x].name %> };
+          <% }else{ %>
+            formObject.<%= currentAsset.properties[x].name %> = result.<%= currentAsset.properties[x].name %>;
+          <% } %>
         }else{
           formObject.<%= currentAsset.properties[x].name %> = null;
         }

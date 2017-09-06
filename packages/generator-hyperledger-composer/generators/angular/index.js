@@ -21,6 +21,7 @@ let assetServiceNames = [];
 let assetComponentNames = [];
 let transactionList = [];
 let namespaceList;
+let enumerations;
 let introspector;
 let assetProperties;
 let destinationPath;
@@ -409,12 +410,14 @@ module.exports = yeoman.Base.extend({
 
             modelManager = introspector.getModelManager();
             namespaceList = modelManager.getNamespaces();
+            enumerations = modelManager.getEnumDeclarations();
 
             shell.mkdir('-p', destinationPath + '/src/assets/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let assetDeclarations = modelFile.getAssetDeclarations();
+                //let enumDeclarations = modelFile.get
 
                 assetDeclarations
                 .filter((assetDeclaration) =>{
@@ -433,7 +436,22 @@ module.exports = yeoman.Base.extend({
 
                     assetProperties.forEach((property) => {
                         if (property.constructor.name === 'Field') {
-                            if (property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()) {
+                            if (property.isTypeEnum()) {
+                                let enumValues = [];
+                                enumerations.forEach(enumeration => {
+                                    if (enumeration.name === property.getType()) {
+                                        enumValues = enumeration.properties;
+                                    }
+                                });
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType(),
+                                    'enum': true,
+                                    'array': property.array === true,
+                                    enumValues,
+                                });
+                            } else if (property.isPrimitive() || !property.isPrimitive()) {
+
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
