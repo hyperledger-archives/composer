@@ -18,7 +18,6 @@ The {{site.data.conrefs.composer_short}} Playground is a tool which provides a s
 
 Before beginning, you will need:
 
-* A GitHub account (if you want to import sample business networks from GitHub)
 * A supported browser i.e. any modern version of Chrome, Firefox or Safari
 
 ---
