@@ -56,7 +56,7 @@ elif [ "${SYSTEST}" = "e2e" ]; then
 elif [ "${SYSTEST}" != "" ]; then
 
     # Run the system tests.
-    ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
+    ${DIR}/packages/composer-systests/scripts/run-system-tests.sh | gnomon --real-time=false
 
 # We must be running unit tests.
 else

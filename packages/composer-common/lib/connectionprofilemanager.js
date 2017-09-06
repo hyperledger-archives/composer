@@ -120,6 +120,7 @@ class ConnectionProfileManager {
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
+                                console.log(e.message);
                                 LOG.info(METHOD,'No yet located the module ',e.message);
                                 // Continue to search the parent.
                             }
@@ -134,6 +135,7 @@ class ConnectionProfileManager {
                                     return true;
                                 } catch (e) {
                                     // Search the next one.
+                                    
                                     LOG.info(METHOD,e);
                                     return false;
                                 }
