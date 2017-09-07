@@ -1,0 +1,132 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+app-login {
+    width: 100vw;
+    background-color: $fourth-highlight;
+
+    section.header {
+        display: flex;
+        padding: $space-large $space-large $space-medium $space-large;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    section.main-view {
+        overflow-y: auto;
+        height: calc(100vh - 63px - 96px - 55px);
+        padding: $space-medium $space-large;
+
+        div.connection-profile:first-child {
+            margin-top: 0;
+        }
+
+        div.connection-profile {
+            margin-top: $space-large;
+            padding-left: $space-large;
+
+            .connection-profile-title {
+                display: flex;
+                margin-right: $space-large;
+                align-items: baseline;
+                justify-content: space-between;
+            }
+
+            .identities {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: $space-large;
+
+                .connection-profile-card {
+                    width: 275px;
+                    min-height: 325px;
+                    color: $fifth-highlight;
+                    background-color: $fourth-highlight;
+                }
+
+                button.connection-profile-card {
+                    border: 1px dashed $fifth-highlight;
+                    border-radius: 5px;
+                
+                    &:hover, &:focus {
+                        background-color: rgba(255,255,255,0.30);
+                    }
+                }
+
+                .card-content {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+
+                    a {
+                        color: $secondary-text;
+                        text-decoration: none;
+
+                        &:hover, &:focus {
+                            text-decoration: underline;
+                            outline: none;
+                        }
+                    }
+
+                    p {
+                        text-align: center;
+                    }
+
+                    svg {
+                        fill: $fifth-highlight;
+                        width: 60px;
+                        height: 55px;
+                    }
+                }
+
+                identity-card, .connection-profile-card {
+                    margin-left: $space-large;
+                    margin-bottom: $space-large;
+                }
+            }
+        }
+    }
+
+    section.sub-view {
+        padding: $space-large;
+        height: calc(100vh - 63px - 55px);
+        overflow-y: auto;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
+
+    section.edit-connection-profile {
+        padding: $space-large;
+        height: calc(100vh - 63px);
+        overflow-y: auto;
+
+        .header {
+            button {
+                .rotate {
+                    transform: rotate(-180deg);
+                }
+
+                span {
+                    margin-left: $space-smedium
+                }
+            }
+        }
+    }
+}
+
+

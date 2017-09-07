@@ -91,8 +91,7 @@ describe('EngineTransactions', () => {
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
         mockHistorian = sinon.createStubInstance(Registry);
-        mockRegistryManager.get.withArgs('Historian', 'HistorianRegistry').resolves(mockHistorian);
-
+        mockRegistryManager.get.withArgs('Asset', 'org.hyperledger.composer.system.HistorianRecord').resolves(mockHistorian);
         mockTransactionHandler1 = sinon.createStubInstance(TransactionHandler);
         mockTransactionHandler1.execute.resolves(0);
         mockTransactionHandler2 = sinon.createStubInstance(TransactionHandler);

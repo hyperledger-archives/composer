@@ -23,6 +23,8 @@ const uuid = require('uuid');
 // The issuer for all identities.
 const DEFAULT_ISSUER = createHash('sha256').update('org1').digest('hex');
 
+const IDENTITY_COLLECTION_ID = 'identities';
+
 /**
  * Base class representing a connection manager that establishes and manages
  * connections to one or more business networks.
@@ -46,14 +48,14 @@ class WebConnectionManager extends ConnectionManager {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
-        return this.dataService.ensureCollection('identities')
+    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
+        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
             .then((identities) => {
-                const bytes = publicKey
+                const bytes = certificate
                     .replace(/-----BEGIN CERTIFICATE-----/, '')
                     .replace(/-----END CERTIFICATE-----/, '')
                     .replace(/[\r\n]+/g, '');
@@ -65,10 +67,36 @@ class WebConnectionManager extends ConnectionManager {
                     name: id,
                     issuer: DEFAULT_ISSUER,
                     secret,
-                    certificate: publicKey,
+                    certificate: certificate,
+                    privateKey: privateKey,
                     imported: true
                 };
                 return identities.add(id, identity);
+            });
+    }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
+            .then((identities) => {
+                return identities.get(id);
+            })
+            .then((identity) => {
+                // Fake up a private key is none is present
+                const privateKey = identity.privateKey ||
+                    '-----BEGIN PRIVATE KEY-----\n' +
+                    Buffer.from(id).toString('base64') + '\n' +
+                    '-----END PRIVATE KEY-----\n';
+                return {
+                    certificate: identity.certificate,
+                    privateKey: privateKey
+                };
             });
     }
 

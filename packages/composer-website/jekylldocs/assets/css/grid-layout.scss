@@ -313,6 +313,10 @@ $callout: #FFD640;
             padding: 1rem;
             color: white;
             border-radius: 4px;
+
+            code {
+              padding-right: 35px;
+            }
           }
 
           code {

@@ -53,6 +53,7 @@ class IdCard {
    + String getBusinessNetworkName() 
    + Object getConnectionProfile() 
    + Object getCredentials() 
+   + void setCredentials(Object) 
    + Object getEnrollmentCredentials() 
    + String[] getRoles() 
    + Promise fromArchive() 

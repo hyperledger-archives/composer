@@ -1,10 +1,9 @@
-<div class="fileUpload">
   <input id="file-importer_input" type="file" (change)="onFileChange($event)">
   <div *ngIf="!expandInput">
     <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-upload_32"></use>
+      <use xlink:href="#icon-upload"></use>
     </svg>
-    Drop here to upload or <span class="underline">browse</span>
+      <span>Drop here to upload or <span class="underline">browse</span></span>
   </div>
   <div *ngIf="expandInput">
     <svg class="ibm-icon" aria-hidden="true">
@@ -13,4 +12,4 @@
     <div class="centre-text">Drop here to upload</div>
     <div class="max-file-size centre-text">Max file size {{(maxFileSize/1024)/1024}}mb</div>
   </div>
-</div>
+

@@ -22,6 +22,7 @@ const LOG = Logger.getLog('TransactionHandler');
  * A transaction handler class can bind transaction processor functions which are
  * then executed when the bound transaction type is submitted.
  * @abstract
+ * @protected
  */
 class TransactionHandler {
 

@@ -44,11 +44,6 @@ describe('RelationshipDeclaration', function () {
         modelManager = new ModelManager();
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
         mockClassDeclaration.getModelFile.returns(mockClassDeclaration);
-
-    });
-
-    afterEach(function () {
-        modelManager.clearModelFiles();
     });
 
     describe('#validate', function() {

@@ -97,13 +97,13 @@ class ConnectionManager {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @returns {Promise} a promise which resolves when the identity is imported
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey) {
+    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
         return new Promise((resolve, reject) => {
-            this._importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, (error) => {
+            this._importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -124,11 +124,11 @@ class ConnectionManager {
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @param {importIdentityCallback} callback The callback function to call when complete.
      */
-    _importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, callback) {
+    _importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         throw new Error('abstract function called');
     }
 
@@ -169,6 +169,44 @@ class ConnectionManager {
      * @param {requestIdentityCallback} callback The callback function to call when complete.
      */
     _requestIdentity(connectionProfile, connectionOptions, enrollmentID, enrollmentSecret, callback) {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName Name of the connection profile.
+     * @param {Object} connectionOptions connection options loaded from the profile.
+     * @param {String} id Name of the identity.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @abstract
+     */
+    exportIdentity(connectionProfileName, connectionOptions, id) {
+        return new Promise((resolve, reject) => {
+            this._exportIdentity(connectionProfileName, connectionOptions, id, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * @callback exportIdentityCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {Object} credentials Credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     */
+
+   /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @param {exportIdentityCallback} callback The callback function to call when complete.
+     * @abstract
+     */
+    _exportIdentity(connectionProfileName, connectionOptions, id, callback) {
         throw new Error('abstract function called');
     }
 

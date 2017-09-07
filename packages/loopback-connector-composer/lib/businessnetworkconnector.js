@@ -55,6 +55,7 @@ class BusinessNetworkConnector extends Connector {
         // Assign defaults for any optional properties.
         this.settings = settings;
         this.settings.namespaces = this.settings.namespaces || 'always';
+        this.settings.multiuser = !!this.settings.multiuser;
 
         // Create a new visitor for generating LoopBack models.
         this.visitor = new LoopbackVisitor(this.settings.namespaces === 'always');
@@ -84,8 +85,9 @@ class BusinessNetworkConnector extends Connector {
      */
     getConnectionWrapper(options) {
 
-        // If an accessToken has been specified, we are in "multi-user" mode.
-        if (options && options.accessToken) {
+        // If multiple user mode has been specified, and an accessToken has been specified,
+        // then handle the request by using a user specific connection.
+        if (this.settings.multiuser && options && options.accessToken) {
 
             // Check that the LoopBack application has supplied the required information.
             if (!options.enrollmentID || !options.enrollmentSecret) {

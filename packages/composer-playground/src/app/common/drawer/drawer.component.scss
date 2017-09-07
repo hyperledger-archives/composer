@@ -2,27 +2,30 @@
 @import '../../../assets/styles/base/_variables.scss';
 
 body.drawer-open {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 drawer {
-  bottom: 0;
-  outline: none;
-  box-shadow: -2px 0 5px -1px $black;
-  overflow: hidden;
-  padding: 0;
-  position: fixed;
-  right: 0;
-  top: 0;
-  transform: translateX(438px);
-  width: 438px;
-  z-index: 99999;
-
-  .drawer-container {
-    background: $white;
-    height: 100%;
-    position: absolute;
-    width: 438px;
+    bottom: 0;
+    outline: none;
+    box-shadow: -2px 0 5px -1px $black;
+    overflow: hidden;
+    padding: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transform: translateX(575px);
+    width: 575px;
     z-index: 9999;
-  }
+
+    .drawer-container {
+        background: $white;
+        height: 100%;
+        position: absolute;
+        width: 575px;
+        z-index: 9999;
+    }
+    .drawer-content {
+        height: 100%;
+    }
 }

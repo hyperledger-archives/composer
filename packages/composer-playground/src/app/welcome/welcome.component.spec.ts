@@ -4,11 +4,18 @@
 /* tslint:disable:max-classes-per-file */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { Component, DebugElement } from '@angular/core';
 
 import { WelcomeComponent } from './welcome.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import * as sinon from 'sinon';
+
+@Component({
+    selector: 'tutorial-link',
+    template: ''
+})
+class MockTutorialLinkComponent {
+}
 
 describe('WelcomeComponent', () => {
     let component: WelcomeComponent;
@@ -23,7 +30,7 @@ describe('WelcomeComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [WelcomeComponent],
+            declarations: [WelcomeComponent, MockTutorialLinkComponent],
             providers: [{provide: NgbActiveModal, useValue: ngbActiveModalMock}]
         })
         .compileComponents();

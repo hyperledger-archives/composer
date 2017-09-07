@@ -11,14 +11,180 @@
       height: 100%;
 
       .navlogo {
-        max-width: 20rem;
         min-width: 19rem;
+        max-width: 19rem;
         background-color: $first-highlight;
-        padding-left: 2rem;
-        padding-right: 2rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
         display: flex;
         align-items: center;
+        position: relative;
+        flex: 1;
+        p {
+            min-width: 2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
       }
+
+      .navlogo:hover .tooltiptext {
+        visibility: visible;
+        opacity: 0.8;
+      }
+
+      .navlogo .tooltiptext {
+        visibility: hidden;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 12px 12px;
+        border-radius: 6px;
+        position: absolute;
+        left: 5rem;
+        top : 3rem;
+      }
+
+      .navlogo .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%;
+        left: 10%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent black transparent;
+      }
+
+      .navmain {
+        display: flex;
+        justify-content: space-between;
+        flex: 1;
+
+        &.rightonly {
+          justify-content: flex-end;
+        }
+
+        .navleft {
+          margin-left: 2rem;
+        }
+
+        .navright {
+          justify-content: flex-end;
+          margin-right: 2rem;
+        }
+      }
+
+      .drop-select{
+            display: flex;
+            align-items: center;
+            max-width: 18rem;
+            color:$third-highlight;
+            background-color: $second-highlight;
+            border-bottom:  6px solid $first-highlight;
+
+            &.dropListActive {
+                border-bottom:  6px solid $white;
+            }
+
+            &.active, &:active, &:hover {
+                border-bottom:  6px solid $white;
+            }
+
+            .action{
+                color:$third-highlight;
+            }
+
+            .dropdown-toggle{
+                padding-top: 0.3rem;
+            }
+
+            .dropdown-item{
+                min-height: 61px;
+            }
+
+            .drop-select-item{
+                order: 1;
+                max-width: 18rem;
+
+                #content {
+                    color: $primary-text;
+
+                    &:hover {
+                        background:$fourth-highlight;
+                        color:$sixth-highlight;
+                    }
+                }
+
+                #footer {
+                    color:$white-2;
+                    background-color: $second-highlight;
+                    border-bottom-right-radius: 5px;
+                    border-bottom-left-radius: 5px;
+
+                    &:hover {
+                        background-color: $sixth-highlight;
+                    }
+                }
+            }
+
+            .dropdown {
+                display: flex;
+                background-color: $first-highlight;
+                max-width: 18rem;
+                min-height: 63px;
+                background-color: $first-highlight;
+                max-width: 18rem;
+                min-height: 63px;
+                padding-top: 6px;
+            }
+
+            .dropdown-menu {
+                border-left: transparent;
+                border-right: transparent;
+                border-bottom: transparent;
+                max-width: 18rem;
+                border-top: transparent;
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+                overflow-x: visible;
+                overflow-y: visible;
+
+                top : 4.5rem;
+                max-width: 18rem;
+
+                &:before{
+                    content:"";
+                    position: absolute;
+                    right: 3rem;
+                    top: -0.5rem;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 0.5rem 0.5rem 0.5rem;
+                    border-color: transparent transparent $third-highlight transparent;
+                    z-index:9999;
+                }
+
+                &:after{
+                    content:"";
+                    position: absolute;
+                    right: 3rem;
+                    top: -0.5rem;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 0.5rem 0.5rem 0.5rem;
+                    border-color: transparent transparent $third-highlight transparent;
+                    z-index:9999;
+                }
+            }
+
+            .dropdown-toggle::after{
+                color: $third-highlight;
+                content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOXB4IiBoZWlnaHQ9IjZweCIgdmlld0JveD0iMCAwIDkgNiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4NCiAgICA8ZGVmcz48L2RlZnM+DQogICAgPGcgaWQ9IkZsb3ciIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPg0KICAgICAgICA8ZyBpZD0iVGV4dC1FbnRyeS1GaWVsZHMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xNTkxLjAwMDAwMCwgLTEwNi4wMDAwMDApIiBmaWxsPSIjRkRGREZEIj4NCiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJTaGFwZS1Db3B5IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNTk1LjUwMDAwMCwgMTA5LjAwMDAwMCkgcm90YXRlKC05MC4wMDAwMDApIHRyYW5zbGF0ZSgtMTU5NS41MDAwMDAsIC0xMDkuMDAwMDAwKSAiIHBvaW50cz0iMTU5OC41IDExMiAxNTk1LjUgMTA5IDE1OTguNSAxMDYgMTU5NyAxMDQuNSAxNTkyLjUgMTA5IDE1OTcgMTEzLjUiPjwvcG9seWdvbj4NCiAgICAgICAgPC9nPg0KICAgIDwvZz4NCjwvc3ZnPg==);
+            }
+        }
 
       .links {
         display: flex;
@@ -77,16 +243,6 @@
             border-bottom: 0px;
             border-radius: 0px;
           }
-        }
-
-        &.navleft {
-          flex: 1;
-          margin-left: 2rem;
-        }
-
-        &.navright {
-          justify-content: flex-end;
-          margin-right: 2rem;
         }
       }
     }

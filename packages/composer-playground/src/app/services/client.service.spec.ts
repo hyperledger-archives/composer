@@ -13,10 +13,12 @@ let expect = chai.expect;
 
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
-import { ConnectionProfileService } from './connectionprofile.service';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, ConnectionProfileStore } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
+import { LocalStorageService } from 'angular-2-local-storage';
+import { ConnectionProfileStoreService } from './connectionprofilestore.service';
 
 describe('ClientService', () => {
 
@@ -24,14 +26,17 @@ describe('ClientService', () => {
 
     let adminMock;
     let alertMock;
-    let connectionProfileMock;
     let businessNetworkDefMock;
-    let identityMock;
+    let identityServiceMock;
+    let identityCardServiceMock;
     let businessNetworkConMock;
     let modelFileMock;
     let scriptFileMock;
     let aclFileMock;
     let queryFileMock;
+    let mockLocalStorage;
+    let connectionProfileStoreMock;
+    let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -39,23 +44,30 @@ describe('ClientService', () => {
         businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
         adminMock = sinon.createStubInstance(AdminService);
         alertMock = sinon.createStubInstance(AlertService);
-        connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
-        identityMock = sinon.createStubInstance(IdentityService);
+        identityServiceMock = sinon.createStubInstance(IdentityService);
+        identityCardServiceMock = sinon.createStubInstance(IdentityCardService);
         businessNetworkConMock = sinon.createStubInstance(BusinessNetworkConnection);
         modelFileMock = sinon.createStubInstance(ModelFile);
         scriptFileMock = sinon.createStubInstance(Script);
         aclFileMock = sinon.createStubInstance(AclFile);
         queryFileMock = sinon.createStubInstance(QueryFile);
+        mockLocalStorage = sinon.createStubInstance(LocalStorageService);
 
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
+
+        connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
+        connectionProfileStoreServiceMock = sinon.createStubInstance(ConnectionProfileStoreService);
+        connectionProfileStoreServiceMock.getConnectionProfileStore.returns(connectionProfileStoreMock);
 
         TestBed.configureTestingModule({
             providers: [ClientService,
                 {provide: AdminService, useValue: adminMock},
                 {provide: AlertService, useValue: alertMock},
-                {provide: ConnectionProfileService, useValue: connectionProfileMock},
-                {provide: IdentityService, useValue: identityMock}]
+                {provide: IdentityService, useValue: identityServiceMock},
+                {provide: IdentityCardService, useValue: identityCardServiceMock},
+                {provide: LocalStorageService, useValue: mockLocalStorage},
+                {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
     });
 
@@ -64,18 +76,18 @@ describe('ClientService', () => {
     });
 
     describe('getBusinessNetworkConnection', () => {
-        it('should get business network connection', inject([ClientService], (service: ClientService) => {
+        it('should get business network connection if set', inject([ClientService], (service: ClientService) => {
             service['businessNetworkConnection'] = businessNetworkConMock;
             let result = service.getBusinessNetworkConnection();
 
             result.should.deep.equal(businessNetworkConMock);
         }));
 
-        it('should create a new business network connection if none exist', inject([ClientService], (service: ClientService) => {
-            let mockCreate = sinon.stub(service, 'createBusinessNetworkConnection');
+        it('should create a new business network connection if not set', inject([ClientService], (service: ClientService) => {
             let result = service.getBusinessNetworkConnection();
 
-            mockCreate.should.have.been.called;
+            result.should.be.an.instanceOf(BusinessNetworkConnection);
+            (<any> result).connectionProfileStore.should.equal(connectionProfileStoreMock);
         }));
     });
 
@@ -669,8 +681,6 @@ describe('ClientService', () => {
     });
 
     describe('setBusinessNetwork...', () => {
-        let mockCreateBusinessNetwork;
-
         beforeEach(inject([ClientService], (service: ClientService) => {
             let modelManagerMock = {
                 getModelFiles: sinon.stub().returns([modelFileMock, modelFileMock]),
@@ -698,39 +708,18 @@ describe('ClientService', () => {
             businessNetworkDefMock.getQueryManager.returns(queryManagerMock);
 
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
-
-            mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
         }));
 
         it('should set business network readme', inject([ClientService], (service: ClientService) => {
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
 
             businessNetworkDefMock.getMetadata.returns({
-                getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({package: 'such data'}),
-                getName: sinon.stub().returns('my name')
+                setReadme: sinon.stub()
             });
 
             service.setBusinessNetworkReadme('my readme');
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {package: 'such data'}, 'my readme');
-            businessNetworkChangedSpy.should.have.been.calledWith(true);
-        }));
-
-        it('should set business network name', inject([ClientService], (service: ClientService) => {
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-
-            businessNetworkDefMock.getMetadata.returns({
-                getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({}),
-                getREADME: sinon.stub().returns('my readme')
-            });
-
-            service.setBusinessNetworkName('my name');
-
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {name: 'my name'}, 'my readme');
+            businessNetworkDefMock.setReadme.should.have.been.calledWith('my readme');
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
@@ -739,14 +728,13 @@ describe('ClientService', () => {
 
             businessNetworkDefMock.getMetadata.returns({
                 getName: sinon.stub().returns('my name'),
-                getDescription: sinon.stub().returns('my description'),
-                getPackageJson: sinon.stub().returns({}),
-                getREADME: sinon.stub().returns('my readme')
+                getPackageJson: sinon.stub().returns({version: '0.0'}),
+                setPackageJson: sinon.stub()
             });
 
-            service.setBusinessNetworkVersion('my version');
+            service.setBusinessNetworkVersion('new_version');
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {version: 'my version'}, 'my readme');
+            businessNetworkDefMock.setPackageJson.should.have.been.calledWith({version: 'new_version'});
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
@@ -754,15 +742,34 @@ describe('ClientService', () => {
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
 
             businessNetworkDefMock.getMetadata.returns({
-                getREADME: sinon.stub().returns('my readme')
+                getName: sinon.stub().returns('my name')
             });
 
             let packageJson = {name: 'my name', version: 'my version', description: 'my description'};
 
             service.setBusinessNetworkPackageJson(packageJson);
 
-            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', packageJson, 'my readme');
+            businessNetworkDefMock.setPackageJson.should.have.been.calledWith(packageJson);
             businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
+        it('should prevent setting the business network packageJson to change the BND name', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('my name')
+            });
+
+            let packageJson = {name: 'my different name', version: 'my version', description: 'my description'};
+
+            try {
+                service.setBusinessNetworkPackageJson(packageJson);
+                throw new Error('should not get here');
+            } catch (error) {
+                businessNetworkDefMock.setPackageJson.should.not.have.been.called;
+                businessNetworkChangedSpy.should.not.have.been.called;
+                error.toString().should.equal('Error: Unsupported attempt to update Business Network Name.');
+            }
         }));
     });
 
@@ -780,13 +787,32 @@ describe('ClientService', () => {
         }));
     });
 
+    describe('getBusinessNetworkDescription', () => {
+        it('should get the description', inject([ClientService], (service: ClientService) => {
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            businessNetworkDefMock.getMetadata.returns({
+                getDescription: sinon.stub().returns('my description')
+            });
+
+            let result = service.getBusinessNetworkDescription();
+
+            result.should.equal('my description');
+        }));
+    });
+
     describe('ensureConnected', () => {
+        beforeEach(() => {
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myId'});
+        });
+
         it('should return if connected when not forced', fakeAsync(inject([ClientService], (service: ClientService) => {
             service['isConnected'] = true;
 
-            service.ensureConnected(false);
+            service.ensureConnected();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.not.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
         })));
 
         it('should return if connecting', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -794,92 +820,127 @@ describe('ClientService', () => {
 
             service.ensureConnected();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.not.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.not.have.been.called;
         })));
 
-        it('should connect if not connected and deploy sample', fakeAsync(inject([ClientService], (service: ClientService) => {
-            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
-            adminMock.ensureConnected.returns(Promise.resolve());
+        it('should connect if not connected', fakeAsync(inject([ClientService], (service: ClientService) => {
+            adminMock.connect.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+            let setBusinessNetworkMock = sinon.stub(service, 'setSavedBusinessNetworkName');
+            let businessNetworkNameMock = sinon.stub(service, 'getBusinessNetworkName').returns('myNetwork');
 
-            adminMock.isInitialDeploy.returns(true);
-
-            let deployInitialSample = sinon.stub(service, 'deployInitialSample');
-
-            service.ensureConnected(false);
+            service.ensureConnected(null, false);
 
             tick();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
-            adminMock.ensureConnected.should.have.been.calledWith(false);
-            refreshMock.should.have.been.called;
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Establishing connection',
                 text: 'Using the connection profile myProfile'
             });
 
+            adminMock.connect.should.have.been.calledWith('myNetwork', false);
+
+            refreshMock.should.have.been.calledWith('myNetwork');
+
             alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            setBusinessNetworkMock.should.have.been.calledWith('myId');
 
             service['isConnected'].should.equal(true);
             should.not.exist(service['connectingPromise']);
-
-            deployInitialSample.should.have.been.called;
         })));
 
-        it('should connect if not connected and not deploy sample if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
-            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
-            adminMock.ensureConnected.returns(Promise.resolve());
+        it('should connect if not connected to specified business network', fakeAsync(inject([ClientService], (service: ClientService) => {
+            adminMock.connect.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+            let setBusinessNetworkMock = sinon.stub(service, 'setSavedBusinessNetworkName');
 
-            adminMock.isInitialDeploy.returns(false);
+            let businessNetworkNameMock = sinon.stub(service, 'getBusinessNetworkName');
 
-            let deployInitialSample = sinon.stub(service, 'deployInitialSample');
-
-            service.ensureConnected(false);
+            service.ensureConnected('myNetwork', false);
 
             tick();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
-            adminMock.ensureConnected.should.have.been.calledWith(false);
-            refreshMock.should.have.been.called;
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Establishing connection',
                 text: 'Using the connection profile myProfile'
             });
 
+            adminMock.connect.should.have.been.calledWith('myNetwork', false);
+
+            refreshMock.should.have.been.calledWith('myNetwork');
+
             alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            setBusinessNetworkMock.should.have.been.called;
+
+            businessNetworkNameMock.should.not.have.been.called;
 
             service['isConnected'].should.equal(true);
             should.not.exist(service['connectingPromise']);
+        })));
 
-            deployInitialSample.should.not.have.been.called;
+        it('should connect if not connected with business network from local storage', fakeAsync(inject([ClientService], (service: ClientService) => {
+            adminMock.connect.returns(Promise.resolve());
+            let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            let setBusinessNetworkMock = sinon.stub(service, 'setSavedBusinessNetworkName');
+            let getBusinessNetworkMock = sinon.stub(service, 'getSavedBusinessNetworkName').returns('myNetwork');
+
+            let businessNetworkNameMock = sinon.stub(service, 'getBusinessNetworkName').throws();
+
+            service.ensureConnected(null, false);
+
+            tick();
+
+            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
+
+            alertMock.busyStatus$.next.should.have.been.calledTwice;
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Establishing connection',
+                text: 'Using the connection profile myProfile'
+            });
+
+            getBusinessNetworkMock.should.have.been.calledWith('myId');
+
+            adminMock.connect.should.have.been.calledWith('myNetwork', false);
+
+            refreshMock.should.have.been.calledWith('myNetwork');
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            setBusinessNetworkMock.should.have.been.calledWith('myId');
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
         })));
 
         it('should send alert if error thrown', fakeAsync(inject([ClientService], (service: ClientService) => {
-            adminMock.ensureConnected.returns(Promise.resolve());
+            adminMock.connect.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
 
-            service.ensureConnected(false)
+            service.ensureConnected('myNetwork', false)
                 .then(() => {
                     throw new Error('should not get here');
                 })
                 .catch((error) => {
                     error.should.equal('forced error');
                     alertMock.busyStatus$.next.should.have.been.calledWith(null);
-                    alertMock.errorStatus$.next.should.have.been.called;
                 });
         })));
 
         it('should set connection variables if error thrown', fakeAsync(inject([ClientService], (service: ClientService) => {
-            adminMock.ensureConnected.returns(Promise.resolve());
+            adminMock.connect.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
             alertMock.errorStatus$ = {next: sinon.stub()};
 
-            service.ensureConnected(false)
+            service.ensureConnected('myNetwork', false)
                 .then(() => {
                     throw new Error('should not get here');
                 })
@@ -894,19 +955,23 @@ describe('ClientService', () => {
     });
 
     describe('refresh', () => {
+        beforeEach(() => {
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityServiceMock.getCurrentQualifiedProfileName.returns('xxx-myProfile');
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myUser', secret: 'mySecret'});
+        });
+
         it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
             let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
-            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
             businessNetworkConMock.disconnect.returns(Promise.resolve());
-            identityMock.getUserID.returns(Promise.resolve());
-            identityMock.getUserSecret.returns(Promise.resolve());
 
-            service.refresh();
+            service.refresh('myNetwork');
 
             tick();
 
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', 'mySecret');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
                 text: 'refreshing the connection to myProfile'
@@ -930,36 +995,10 @@ describe('ClientService', () => {
         })));
     });
 
-    describe('it should deployInitial sample', () => {
-        it('should deploy the initial sample', fakeAsync(inject([ClientService], (service: ClientService) => {
-            alertMock.busyStatus$ = {next: sinon.stub()};
-
-            let refreshMock = sinon.stub(service, 'refresh');
-            let resetMock = sinon.stub(service, 'reset');
-
-            let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({name: 'bob'}));
-
-            service.deployInitialSample();
-
-            alertMock.busyStatus$.next.should.have.been.calledWith({
-                title: 'Deploying Business Network',
-                text: 'deploying sample business network'
-            });
-
-            tick();
-
-            businessNetworkFromArchiveMock.should.have.been.called;
-
-            adminMock.update.should.have.been.calledWith({name: 'bob'});
-            refreshMock.should.have.been.called;
-            resetMock.should.have.been.called;
-        })));
-    });
-
     describe('issueIdentity', () => {
 
         it('should generate and return an identity using internally held state information', fakeAsync(inject([ClientService], (service: ClientService) => {
-            connectionProfileMock.getProfile.returns(Promise.resolve('bob'));
+            identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
             businessNetworkConMock.issueIdentity.returns(Promise.resolve({
                 participant: 'uniqueName',
                 userID: 'userId',
@@ -978,16 +1017,16 @@ describe('ClientService', () => {
 
             tick();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
             businessNetworkConnectionMock.should.have.been.called;
         })));
 
         it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(inject([ClientService], (service: ClientService) => {
-            connectionProfileMock.getProfile.returns(Promise.resolve({
+            identityServiceMock.getCurrentConnectionProfile.returns({
+                name: 'myProfile',
                 membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
                 peerURL: 'peerURL\.blockchain\.ibm\.com',
                 eventHubURL: 'eventURL\.blockchain\.ibm\.com'
-            }));
+            });
 
             businessNetworkConMock.issueIdentity.returns(Promise.resolve({
                 participant: 'uniqueName',
@@ -1008,7 +1047,6 @@ describe('ClientService', () => {
 
             tick();
 
-            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
             businessNetworkConnectionMock.should.have.been.called;
         })));
     });
@@ -1022,11 +1060,11 @@ describe('ClientService', () => {
                 revokeIdentity: sinon.stub().returns(Promise.resolve())
             });
 
-            service.revokeIdentity({fake : 'identity'});
+            service.revokeIdentity({fake: 'identity'});
 
             tick();
 
-            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake : 'identity'});
+            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake: 'identity'});
         })));
     });
 
@@ -1036,36 +1074,58 @@ describe('ClientService', () => {
             let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
-
-            // Call function
-            service.createNewBusinessNetwork(null, null, null, null, null);
-
-            // Check expected
-            alertMock.busyStatus$.next.should.have.been.calledWith(null);
-            alertMock.errorStatus$.next.should.have.been.called;
         }));
+    });
 
-        it('should not update the business network on failure', inject([ClientService], (service: ClientService) => {
-            // Set up mocks
-            let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').throws('forced error');
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+    describe('disconnect', () => {
+        it('should disconnect', inject([ClientService], (service: ClientService) => {
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            service.disconnect();
 
-            // Call function
-            service.createNewBusinessNetwork(null, null, null, null, null);
-
-            // Check expected
-            businessNetworkChangedSpy.should.not.have.been.called;
+            service['isConnected'].should.equal(false);
+            adminMock.disconnect.should.have.been.called;
+            businessNetworkConMock.disconnect.should.have.been.called;
         }));
+    });
 
-        it('should create a new business network and notify on success', inject([ClientService], (service: ClientService) => {
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            let filterSpy = sinon.spy(service, 'filterModelFiles');
+    describe('getSavedBusinessNetworkName', () => {
+        it('should get saved the business network name', inject([ClientService], (service: ClientService) => {
+            service['getSavedBusinessNetworkName']('bob');
+
+            mockLocalStorage.get.should.have.been.calledWith('currentBusinessNetwork:bob');
+        }));
+    });
+
+    describe('setSavedBusinessNetworkName', () => {
+        it('should save the business network name', inject([ClientService], (service: ClientService) => {
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetworkName').returns('myNetwork');
+            service['setSavedBusinessNetworkName']('bob');
+
+            mockLocalStorage.set.should.have.been.calledWith('currentBusinessNetwork:bob', 'myNetwork');
+        }));
+    });
+
+    describe('revokeIdentity', () => {
+        it('should call the revokeIdentity() function for the relevant BusinessNetworkConnection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
+                revokeIdentity: sinon.stub().returns(Promise.resolve())
+            });
+
+            service.revokeIdentity({fake: 'identity'});
+
+            tick();
+
+            mockGetBusinessNetwork().revokeIdentity.should.have.been.calledWith({fake: 'identity'});
+        })));
+    });
+
+    describe('#filterModelFiles', () => {
+        it('should filter passed model files', inject([ClientService], (service: ClientService) => {
 
             let mockFile0 = sinon.createStubInstance(ModelFile);
-            mockFile0.isSystemModelFile.returns(false);
+            mockFile0.isSystemModelFile.returns(true);
             let mockFile1 = sinon.createStubInstance(ModelFile);
-            mockFile1.isSystemModelFile.returns(false);
+            mockFile1.isSystemModelFile.returns(true);
             let mockFile2 = sinon.createStubInstance(ModelFile);
             mockFile2.isSystemModelFile.returns(false);
             let mockFile3 = sinon.createStubInstance(ModelFile);
@@ -1101,20 +1161,17 @@ describe('ClientService', () => {
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
 
             let mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+            mockFile3.isSystemModelFile.returns(true);
 
-            // Call function
-            service.createNewBusinessNetwork('myBND', '1.0', 'description', '{}', null);
+            let allFiles = [mockFile0, mockFile1, mockFile2, mockFile3];
 
-            // We filter system namespaces
-            filterSpy.should.have.been.calledWith([mockFile0, mockFile1, mockFile2, mockFile3, mockFile4]);
-            let filterReturn = filterSpy.returnValues[0];
-            filterReturn.should.deep.equal([mockFile0, mockFile1, mockFile2, mockFile3]);
+            let filteredFiles = service['filterModelFiles'](allFiles);
 
-            // We alert on success
-            businessNetworkChangedSpy.should.have.been.calledWith(true);
+            filteredFiles.length.should.be.equal(1);
         }));
 
     });
+
     describe('createQueryFile', () => {
         let mockBusinessNetwork;
 
@@ -1131,4 +1188,34 @@ describe('ClientService', () => {
 
     });
 
+    describe('resolveTransactionRelationship', () => {
+        let mockRegistry;
+
+        beforeEach(() => {
+            mockRegistry = {
+                get: sinon.stub().returns({$class: 'myTransaction'})
+            };
+
+            businessNetworkConMock.getTransactionRegistry.returns(Promise.resolve(mockRegistry));
+        });
+
+        it('should resolve the transaction relationship', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let getBusinessNetworkConStub = sinon.stub(service, 'getBusinessNetworkConnection');
+
+            let transaction = {
+                getIdentifier: sinon.stub().returns('1234')
+            };
+
+            getBusinessNetworkConStub.returns(businessNetworkConMock);
+
+            service.resolveTransactionRelationship(transaction).then((result) => {
+                result.should.deep.equal({$class: 'myTransaction'});
+            });
+
+            tick();
+
+            getBusinessNetworkConStub.should.have.been.called;
+            businessNetworkConMock.getTransactionRegistry.should.have.been.called;
+        })));
+    });
 });

@@ -14,7 +14,10 @@
 
 'use strict';
 
+const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const prompt = require('prompt');
 
 const fs = require('fs');
 const chai = require('chai');
@@ -127,4 +130,41 @@ describe('composer transaction cmdutils unit tests', () => {
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'value1'});
         });
     });
+
+    describe('#prompt', () => {
+
+        it('should prompt and return the result', () => {
+            sandbox.stub(prompt, 'get').yields(null, 'foobar');
+            return CmdUtil.prompt({ hello: 'world' })
+                .should.eventually.be.equal('foobar')
+                .then(() => {
+                    sinon.assert.calledOnce(prompt.get);
+                    sinon.assert.calledWith(prompt.get, [{ hello: 'world' }]);
+                });
+        });
+
+        it('should prompt and handle an error', () => {
+            sandbox.stub(prompt, 'get').yields(new Error('such error'));
+            return CmdUtil.prompt({ hello: 'world' })
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
+    describe('#createAdminConnection', () => {
+
+        it('should create a new admin connection', () => {
+            CmdUtil.createAdminConnection().should.be.an.instanceOf(AdminConnection);
+        });
+
+    });
+
+    describe('#createBusinessNetworkConnection', () => {
+
+        it('should create a new business network connection', () => {
+            CmdUtil.createBusinessNetworkConnection().should.be.an.instanceOf(BusinessNetworkConnection);
+        });
+
+    });
+
 });

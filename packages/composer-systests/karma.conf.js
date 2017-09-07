@@ -103,7 +103,10 @@ module.exports = function(config) {
         },
 
         client: {
-            captureConsole: true
+            captureConsole: true,
+            mocha: {
+                timeout: '0'
+            }
         },
 
         specReporter: {

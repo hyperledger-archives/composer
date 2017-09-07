@@ -62,6 +62,28 @@ describe('EditorFileComponent', () => {
         component.should.be.ok;
     });
 
+    it('should setup the mark down code config', () => {
+        let mockCm = {
+            foldCode: sinon.stub(),
+            getCursor: sinon.stub().returns('myCursor')
+        };
+        component['mdCodeConfig'].extraKeys['Ctrl-Q'](mockCm);
+
+        mockCm.getCursor.should.have.been.called;
+        mockCm.foldCode.should.have.been.calledWith('myCursor');
+    });
+
+    it('should setup the code config', () => {
+        let mockCm = {
+            foldCode: sinon.stub(),
+            getCursor: sinon.stub().returns('myCursor')
+        };
+        component['codeConfig'].extraKeys['Ctrl-Q'](mockCm);
+
+        mockCm.getCursor.should.have.been.called;
+        mockCm.foldCode.should.have.been.calledWith('myCursor');
+    });
+
     describe('set editorFile', () => {
 
         beforeEach(() => {
@@ -99,6 +121,20 @@ describe('EditorFileComponent', () => {
         it('should validate acl file content once set', () => {
             component.editorFile = {acl: true};
             mockClientService.validateFile.should.have.been.called;
+        });
+    });
+
+    describe('set previewReadmeActive', () => {
+        it('should set the preview boolean to true', () => {
+            component['_previewReadmeActive'] = false;
+            component.previewReadmeActive = true;
+            component['_previewReadmeActive'].should.be.true;
+        });
+
+        it('should set the preview boolean to false', () => {
+            component['_previewReadmeActive'] = true;
+            component.previewReadmeActive = false;
+            component['_previewReadmeActive'].should.be.false;
         });
     });
 
@@ -280,24 +316,17 @@ describe('EditorFileComponent', () => {
             should.not.exist(component['editorContent']);
         });
 
-        it('should not load any file', () => {
-            component['_editorFile'] = {};
+        it('should load no files', () => {
+            mockClientService.getScriptFile.returns(null);
+
+            component['_editorFile'] = {
+                id: 'script'
+            };
 
             component.loadFile();
 
             should.not.exist(component['editorContent']);
-            should.not.exist(component['editorType']);
         });
-
-        it('should set currentError to null', () => {
-            component['_editorFile'] = {};
-            component['currentError'] = 'Test error message';
-
-            component.loadFile();
-
-            should.not.exist(component['currentError']);
-        });
-
     });
 
     describe('setCurrentCode', () => {
@@ -402,6 +431,18 @@ describe('EditorFileComponent', () => {
 
             component['previewContent'].should.equal(`<p>my readme</p>\n`);
         });
+
+        it('should throw error if unknown file type', (() => {
+            component['_editorFile'] = {
+                bob: true,
+                id: 'bob'
+            };
+
+            component.setCurrentCode();
+
+            component['currentError'].should.equal('Error: unknown file type');
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(false);
+        }));
 
         it('should set current error on error', () => {
             mockClientService.updateFile.returns('some error');

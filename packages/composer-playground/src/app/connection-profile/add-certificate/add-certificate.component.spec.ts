@@ -8,7 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
-import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
+import { BusinessNetworkDefinition } from 'composer-admin';
 import { ModelManager, ScriptManager, Script } from 'composer-common';
 
 import { AddCertificateComponent } from './add-certificate.component';
@@ -23,10 +23,6 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 class MockAdminService {
-    getAdminConnection(): AdminConnection {
-        return new AdminConnection();
-    }
-
     ensureConnection(): Promise<any> {
         return new Promise((resolve, reject) => {
             resolve(true);
@@ -308,7 +304,7 @@ describe('AddCertificateComponent', () => {
                 onerror: sinon.stub()
             };
 
-            mockFileRead = sinon.stub(window, 'FileReader');
+            mockFileRead = sinon.stub((<any> window), 'FileReader');
             mockFileRead.returns(mockFileReadObj);
         });
 

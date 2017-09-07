@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
 
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
+import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
+import { ConfigService } from './config.service';
+import { IdCard } from 'composer-common';
 
 @Injectable()
 export class InitializationService {
@@ -16,9 +17,9 @@ export class InitializationService {
 
     constructor(private clientService: ClientService,
                 private alertService: AlertService,
-                private connectionProfileService: ConnectionProfileService,
-                private walletService: WalletService,
-                private http: Http) {
+                private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
+                private configService: ConfigService) {
     }
 
     initialize(): Promise<any> {
@@ -30,22 +31,30 @@ export class InitializationService {
 
         this.initializingPromise = Promise.resolve()
             .then(() => {
-                return this.loadConfig();
+                return this.configService.loadConfig();
             })
             .then((config) => {
+                let force = !this.identityService.getLoggedIn();
+                this.alertService.busyStatus$.next({
+                    title: 'Initializing Playground',
+                    force: force
+                });
                 this.config = config;
-                return this.createInitialProfiles();
+                return this.identityCardService.loadIdentityCards(this.configService.isWebOnly());
             })
             .then(() => {
-                return this.createInitialIdentities();
-            })
-            .then(() => {
-                if (this.config && this.config.defaultConnectionProfile) {
-                    this.connectionProfileService.setCurrentConnectionProfile(this.config.defaultConnectionProfile);
+                let idCards: IdCard[] = [];
+                if (this.config && this.config.cards) {
+                    this.config.cards.forEach((card) => {
+                        let newIdCard = new IdCard(card.metadata, card.connectionProfile);
+                        newIdCard.setCredentials(card.credentials);
+                        idCards.push(newIdCard);
+                    });
                 }
-                return this.clientService.ensureConnected();
+                return this.identityCardService.addInitialIdentityCards(idCards);
             })
             .then(() => {
+                this.alertService.busyStatus$.next(null);
                 this.initialized = true;
                 this.initializingPromise = null;
             })
@@ -56,66 +65,5 @@ export class InitializationService {
             });
 
         return this.initializingPromise;
-    }
-
-    loadConfig(): Promise<any> {
-        // Load the config data.
-        return this.http.get('/config.json')
-            .map((res: Response) => res.json())
-            .toPromise();
-    }
-
-    createInitialProfiles() {
-        return this.connectionProfileService.createDefaultProfile()
-            .then(() => {
-                // Create all of the connection profiles specified in the configuration.
-                let connectionProfiles = {};
-                if (this.config && this.config.connectionProfiles) {
-                    connectionProfiles = this.config.connectionProfiles;
-                }
-                const connectionProfileNames = Object.keys(connectionProfiles).sort();
-                return connectionProfileNames.reduce((result, connectionProfileName) => {
-                    return result.then(() => {
-                        console.log('Checking for connection profile', connectionProfileName);
-                        return this.connectionProfileService.getProfile(connectionProfileName)
-                            .catch((error) => {
-                                console.log('Connection profile does not exist, creating');
-                                return this.connectionProfileService.createProfile(connectionProfileName, connectionProfiles[connectionProfileName]);
-                            });
-                    });
-                }, Promise.resolve());
-            });
-    }
-
-    createInitialIdentities() {
-        let credentials = {};
-        if (this.config && this.config.credentials) {
-            credentials = this.config.credentials;
-        }
-        const connectionProfileNames = Object.keys(credentials).sort();
-        return connectionProfileNames.reduce((result, connectionProfileName) => {
-            return result.then(() => {
-                console.log('Creating credentials for connection profile', connectionProfileName);
-                return this.walletService.getWallet(connectionProfileName);
-            })
-                .then((wallet) => {
-                    const connectionProfileCredentials = credentials[connectionProfileName];
-                    const credentialNames = Object.keys(connectionProfileCredentials).sort();
-                    return credentialNames.reduce((result2, credentialName) => {
-                        return wallet.get(credentialName)
-                            .catch((error) => {
-                                console.log('Adding credential', credentialName);
-                                return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
-                            });
-                    }, Promise.resolve());
-                });
-        }, Promise.resolve());
-    }
-
-    isWebOnly(): boolean {
-        if (!this.config) {
-            return false;
-        }
-        return this.config.webonly;
     }
 }

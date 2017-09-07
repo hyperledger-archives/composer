@@ -20,6 +20,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
+const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Factory = require('composer-common').Factory;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdentityRegistry = require('../lib/identityregistry');
@@ -104,6 +105,13 @@ describe('BusinessNetworkConnection', () => {
     });
 
     describe('#constructor', () => {
+
+        it('should create a new instance with a specified connection profile store', () => {
+            const mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
+            businessNetworkConnection = new BusinessNetworkConnection({ connectionProfileStore: mockConnectionProfileStore });
+            should.equal(businessNetworkConnection.connection, null);
+            businessNetworkConnection.connectionProfileStore.should.equal(mockConnectionProfileStore);
+        });
 
         it('should create a new instance with a file system connection profile store', () => {
             businessNetworkConnection = new BusinessNetworkConnection();
@@ -548,45 +556,43 @@ describe('BusinessNetworkConnection', () => {
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
             let historian = sinon.createStubInstance(Historian);
-            sandbox.stub(Historian, 'getAllHistorians').resolves([historian]);
+            sandbox.stub(Historian, 'getHistorian').resolves(historian);
 
-                    // Invoke the function.
+            // Invoke the function.
             return businessNetworkConnection
-               .getHistorian()
-                        .then(() => {
-                            sinon.assert.calledOnce(stub);
-                        });
+                .getHistorian()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
 
         });
 
         it('should call the static helper method', () => {
 
-                    // Set up the mock.
+            // Set up the mock.
             let mockHistorian = sinon.createStubInstance(Historian);
-            let stub = sandbox.stub(Historian, 'getAllHistorians').resolves([mockHistorian]);
+            let stub = sandbox.stub(Historian, 'getHistorian').resolves(mockHistorian);
 
-                    // Invoke the function.
+            // Invoke the function.
             return businessNetworkConnection
-                        .getHistorian()
-                        .then((result) => {
-                            sinon.assert.calledOnce(stub);
-                            sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
-                            result.should.equal(mockHistorian);
-                        });
+                .getHistorian()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(mockHistorian);
+                });
 
         });
 
-
-
         it('should throw when the default transaction registry does not exist', () => {
 
-                    // Set up the mock.
-            sandbox.stub(Historian, 'getAllHistorians').resolves([]);
+            // Set up the mock.
+            sandbox.stub(Historian, 'getHistorian').resolves(null);
 
-                    // Invoke the function.
+            // Invoke the function.
             return businessNetworkConnection
-                        .getHistorian()
-                        .should.be.rejectedWith(/default transaction registry/);
+                .getHistorian()
+                .should.be.rejectedWith(/historian/);
 
         });
 
@@ -902,7 +908,7 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['HistorianRegistry', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
@@ -920,7 +926,7 @@ describe('BusinessNetworkConnection', () => {
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['HistorianRegistry', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -972,7 +978,7 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['HistorianRegistry', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -1309,7 +1315,7 @@ describe('BusinessNetworkConnection', () => {
             // Invoke the function.
             return businessNetworkConnection
                 .getIdentityRegistry()
-                .should.be.rejectedWith(/default identity registry/);
+                .should.be.rejectedWith(/identity registry/);
 
         });
     });

@@ -94,10 +94,19 @@ class Util {
                 default: 'always'
             },
             {
-                name: 'security',
+                name: 'authentication',
                 type: 'confirm',
-                message: 'Specify if you want the generated REST API to be secured:',
+                message: 'Specify if you want to enable authentication for the REST API using Passport:',
                 default: false
+            },
+            {
+                name: 'multiuser',
+                type: 'confirm',
+                message: 'Specify if you want to enable multiple user and identity management using wallets:',
+                default: false,
+                when: (answers) => {
+                    return answers.authentication;
+                }
             },
             {
                 name: 'websockets',

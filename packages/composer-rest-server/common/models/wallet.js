@@ -17,7 +17,21 @@
 module.exports = function (Wallet) {
 
     // Disable all undesired methods.
-    const whitelist = [ 'create', 'deleteById', 'find', 'findById', 'exists', 'replaceById' ];
+    const whitelist = [
+        'create',
+        'deleteById',
+        'find',
+        'findById',
+        'exists',
+        'replaceById',
+        'prototype.__get__identities',
+        'prototype.__findById__identities',
+        'prototype.__create__identities',
+        'prototype.__updateById__identities',
+        'prototype.__destroyById__identities',
+        'setDefaultWallet',
+        'setDefaultIdentity'
+    ];
     Wallet.sharedClass.methods().forEach((method) => {
         const name = (method.isStatic ? '' : 'prototype.') + method.name;
         if (whitelist.indexOf(name) === -1) {
