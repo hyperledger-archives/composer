@@ -8,11 +8,11 @@
                     <div class="flex-container">
                         <div class="flex">
                             <h3 [class.error]="file.invalid" *ngIf="file.package">Package Details</h3>
-                            <h3 [class.error]="file.invalid" *ngIf="file.model">Model File</h3>
-                            <h3 [class.error]="file.invalid" *ngIf="file.script">Script File</h3>
-                            <h3 [class.error]="file.invalid" *ngIf="file.acl">Access Control</h3>
-                            <h3 [class.error]="file.invalid" *ngIf="file.readme">About</h3>
-                            <h3 [class.error]="file.invalid" *ngIf="file.query">Query File</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.isModel()">Model File</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.isScript()">Script File</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.isAcl()">Access Control</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.isReadMe()">About</h3>
+                            <h3 [class.error]="file.invalid" *ngIf="file.isQuery()">Query File</h3>
                             <div [class.error]="file.invalid">{{file.displayID}}</div>
                         </div>
                         <div *ngIf="file.invalid" class="error_dot">
