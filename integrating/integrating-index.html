@@ -213,19 +213,19 @@ ga('send', 'pageview');
 
 <h3 id="publishing-events-from-the-rest-server">Publishing events from the REST server</h3>
 
-<p>Hyperledger Composer includes a standalone <a href="./getting-started-rest-api.html"><strong>Node.js process that exposes a business network as a REST API</strong></a>. The LoopBack framework is used to generate an Open API, described by a Swagger document.</p>
+<p>The REST server can be <a href="./publishing-events.html"><strong>configured to subscribe to business events</strong></a> that are emitted from a deployed business network, and publish those business events out to client applications.</p>
 
 <h3 id="enabling-authentication-for-the-rest-server">Enabling authentication for the REST server</h3>
 
-<p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By <a href="./securing-the-rest-server.html"><strong>enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.</strong></a></p>
+<p>The REST server can be <a href="./enabling-rest-authentication.html"><strong>configured to authenticate clients</strong></a>. When this option is enabled, clients must authenticate to the REST server before they are permitted to call the REST API.</p>
 
 <h3 id="enabling-multiple-user-mode-for-the-rest-server">Enabling multiple user mode for the REST server</h3>
 
-<p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By <a href="./securing-the-rest-server.html"><strong>enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.</strong></a></p>
+<p>The REST server can be <a href="./enabling-multiuser.html"><strong>configured to multiple user mode</strong></a>. Multiple user mode permits clients of the REST server to provide their own Blockchain identities for digitally signing transactions. This enables the business network to differentiate between different clients of the REST server.</p>
 
 <h3 id="securing-the-rest-server-using-https-and-tls">Securing the REST server using HTTPS and TLS</h3>
 
-<p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By <a href="./enabling-rest-authentication.html"><strong>enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.</strong></a></p>
+<p>When deploying Hyperledger Composer REST server in a production environment, the REST server should be <a href="./securing-the-rest-server.html"><strong>configured to be secured with HTTPS and TLS</strong></a> (Transport Layer Security). Once the REST server has been configured with HTTPS and TLS, all data transferred between the REST server and all of the REST clients is encrypted.</p>
 
 <h3 id="deploying-the-rest-server-for-a-business-network">Deploying the REST server for a business network</h3>
 
