@@ -163,11 +163,11 @@ class EngineTransactions {
         if (!participant){
             record.participantInvoking = null;
         } else {
-            record.participantInvoking = factory.newRelationship('org.hyperledger.composer.system','Participant',participant.getIdentifier());
+            record.participantInvoking = factory.newRelationship(participant.getNamespace(),participant.getType(),participant.getIdentifier());
         }
 
         // Get the transaction in question and also create a relationship
-        record.transactionInvoked = factory.newRelationship('org.hyperledger.composer.system','Transaction',transaction.getIdentifier());
+        record.transactionInvoked = factory.newRelationship(transaction.getNamespace(),transaction.getType(),transaction.getIdentifier());
         record.transactionTimestamp = transaction.timestamp;
         record.transactionType = transaction.getFullyQualifiedType();
 
@@ -189,7 +189,7 @@ class EngineTransactions {
         // TODO there is the issue with the Admin userid that will be resolved in due course
         let id = context.getIdentity();
         if (id){
-            record.identityUsed = factory.newRelationship('org.hyperledger.composer.system','Identity',id.getIdentifier());
+            record.identityUsed = factory.newRelationship(id.getNamespace(),id.getType(),id.getIdentifier());
         } else {
             LOG.debug(method, 'assuming admin userid again');
         }

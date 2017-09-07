@@ -149,6 +149,7 @@ class ConnectionProfileManager {
                             connectionManager = new(require(mod))(this);
                         }
                     }
+
                 } catch (e) {
                     errorList.push(e.message);
 

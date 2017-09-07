@@ -33,6 +33,7 @@ const TransactionDeclaration = require('composer-common').TransactionDeclaration
 const TransactionRegistry = require('./transactionregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
+const Registry = require('./registry');
 
 const LOG = Logger.getLog('BusinessNetworkConnection');
 
@@ -441,6 +442,33 @@ class BusinessNetworkConnection extends EventEmitter {
                 LOG.exit(method);
                 return this.businessNetwork;
             });
+    }
+
+    /**
+     * Given a fully qualified name, works out and looks up the regsitry that this resource will be found in.
+     * This only gives back the system default registry - it does not look in any application defined registry
+     *
+     * @param {String} fullyQualifiedName The fully qualififed name of the resources
+     * @return {Promise} resolved with the registry that this fqn could be found in by default
+     */
+    getRegistry(fullyQualifiedName) {
+        Util.securityCheck(this.securityContext);
+
+        let type = this.getModelManager().getType(fullyQualifiedName);
+        return Registry.getRegistry(this.securityContext, type, fullyQualifiedName)
+        .then((registry) => {
+            switch (type) {
+            case 'Transaction':
+                return new TransactionRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
+            case 'Asset':
+                return new AssetRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
+            case 'Participant':
+                return new ParticipantRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
+            default:
+                return Promise.reject('Unkown what type of registry this could be in');
+            }
+        });
+
     }
 
     /**
