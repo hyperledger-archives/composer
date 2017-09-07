@@ -32,23 +32,45 @@ composer network list -n <business-network-id>  -p <connectionProfileName> -i <e
 
 ```
 composer network list -n digitalproperty-network -p hlfv1 -i admin -s adminpw
-List business network digitalproperty-network
-name:        digitalproperty-network
-identifier:  digitalproperty-network@0.0.1
-description: Digital Property Network
-models:
+
+✔ List business network digitalproperty-network
+name:       digitalproperty-network
+models: 
+  - org.hyperledger.composer.system
   - net.biz.digitalPropertyNetwork
-scripts:
+scripts: 
   - lib/DigitalLandTitle.js
-registries:
-  net.biz.digitalPropertyNetwork.SalesAgreement:
-    id:           net.biz.digitalPropertyNetwork.SalesAgreement
-    name:         Asset registry for net.biz.digitalPropertyNetwork.SalesAgreement
-    registryType: Asset
-    assets:
-  net.biz.digitalPropertyNetwork.LandTitle:
+registries: 
+  net.biz.digitalPropertyNetwork.LandTitle: 
     id:           net.biz.digitalPropertyNetwork.LandTitle
     name:         Asset registry for net.biz.digitalPropertyNetwork.LandTitle
     registryType: Asset
-    assets:
+    assets: 
+      LID:1148: 
+        $class:      net.biz.digitalPropertyNetwork.LandTitle
+        titleId:     LID:1148
+        owner:       resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890
+        information: A nice house in the country
+        forSale:     true
+      LID:6789: 
+        $class:      net.biz.digitalPropertyNetwork.LandTitle
+        titleId:     LID:6789
+        owner:       resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890
+        information: A small flat in the city
+  net.biz.digitalPropertyNetwork.SalesAgreement: 
+    id:           net.biz.digitalPropertyNetwork.SalesAgreement
+    name:         Asset registry for net.biz.digitalPropertyNetwork.SalesAgreement
+    registryType: Asset
+  net.biz.digitalPropertyNetwork.Person: 
+    id:           net.biz.digitalPropertyNetwork.Person
+    name:         Participant registry for net.biz.digitalPropertyNetwork.Person
+    registryType: Participant
+    assets: 
+      PID:1234567890: 
+        $class:    net.biz.digitalPropertyNetwork.Person
+        personId:  PID:1234567890
+        firstName: Fred
+        lastName:  Bloggs
+
+Command succeeded
 ```
