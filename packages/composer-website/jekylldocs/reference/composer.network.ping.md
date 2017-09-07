@@ -30,10 +30,23 @@ composer network ping -n <business-network-name> -p <connection-profile-name> -i
 
 ## Example Output
 
+Given:
 ```
-composer network ping -n digitalproperty-network -p hlfv1 -i admin -s adminpw
-The connection to the network was successfully tested:
-  version = 0.10.0
-  participant = <no participant found>
-Command completed successfully.
+composer identity issue -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u fred -a "resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890"
+
+An identity was issued to the participant 'resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890'
+The participant can now connect to the business network with the following details:
+  userID = fred
+  userSecret = lgBOchfiZRUU
+
+```
+The example of pinging the network, to test with the issued identity: 
+```
+composer network ping -n digitalproperty-network -p hlfv1 -i fred -s lgBOchfiZRUU 
+
+The connection to the network was successfully tested: digitalproperty-network
+	version: 0.11.3-20170817015027
+	participant: net.biz.digitalPropertyNetwork.Person#PID:1234567890
+
+Command succeeded
 ```

@@ -49,6 +49,10 @@ export class IdentityComponent implements OnInit {
                 let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
                 let qpn: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
 
+                ids.sort((a, b) => {
+                    return a.name.localeCompare(b.name);
+                });
+
                 ids.forEach((id) => {
                     id.ref = this.identityCardService.getCardRefFromIdentity(id.name, this.businessNetworkName, qpn);
                 });

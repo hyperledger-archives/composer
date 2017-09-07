@@ -10,6 +10,9 @@ ARG VERSION=latest
 RUN npm install pm2 composer-rest-server@${VERSION} && \
     npm cache clean
 
+# Set PATH
+ENV PATH=$PATH:/node_modules/.bin/
+
 # Create the composer user ID.
 RUN useradd composer
 

@@ -26,7 +26,7 @@ Options:
 
 ## Description
 
-This will take the business network definition and create artifacts related to writing new applications.
+This will take the  Composer business network definition as input and create artifacts related to writing new applications.
 
 ## Options
 
@@ -46,6 +46,6 @@ Shows the version number
 
 ## Example Usage
 
-```
-composer generator create --archiveFile digitialPropertyNetwork.bna --format Go --outputDir ./dev/go-app
+```bash
+composer generator create --archiveFile digitalPropertyNetwork.bna --format Go --outputDir ./dev/go-app
 ```
