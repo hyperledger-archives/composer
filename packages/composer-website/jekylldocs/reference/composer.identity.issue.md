@@ -11,7 +11,7 @@ excerpt: Hyperledger Composer Identity Issue Command
 ---
 
 The `composer identity issue` command issues a new identity to a participant in a
-participant registry. See the task [Issuing a new identity to a participant](../managing/identity-issue.html)
+participant registry relating to a business network. See the task [Issuing a new identity to a participant](../managing/identity-issue.html)
 for a walkthrough of using this command or the API.
 
 ## Syntax
@@ -65,7 +65,7 @@ Example: `lennyid1`
 
 `--participantId, -a`
 
-The fully qualified identifier of the participant that the identity should be issued to.  
+The fully qualified identifier (in URI form) of the participant that the identity should be issued to.  
 Example: `resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org`
 
 `--issuer, -x`

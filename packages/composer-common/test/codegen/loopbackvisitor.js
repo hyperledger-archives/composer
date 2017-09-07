@@ -1154,6 +1154,17 @@ describe('LoopbackVisitor', () => {
                     ]);
                 });
 
+                it('should not generate a schema for an event with a single property', () => {
+                    const modelFile = new ModelFile(modelManager, `
+                    namespace org.acme
+                    event MyEvent {
+                        o String theValue
+                    }
+                    `);
+                    const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
+                    schemas.should.deep.equal([]);
+                });
+
             });
 
         });

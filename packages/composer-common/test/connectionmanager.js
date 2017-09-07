@@ -148,4 +148,36 @@ describe('ConnectionManager', () => {
 
     });
 
+    describe('#exportIdentity', function() {
+        const profileName = 'PROFILE_NAME';
+        const id = 'Eric';
+        const connectOptions = { connect: 'options' };
+
+        it('should call _exportIdentity and handle no error', () => {
+            sinon.stub(connectionManager, '_exportIdentity').yields(null);
+            return connectionManager.exportIdentity(profileName, connectOptions, id)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._exportIdentity, profileName, connectOptions, id);
+                });
+        });
+
+        it('should call _exportIdentity and handle an error', function() {
+            const errorText = 'ERROR_TEXT';
+            sinon.stub(connectionManager, '_exportIdentity').yields(new Error(errorText));
+            return connectionManager.exportIdentity(profileName, connectOptions, id)
+                .should.be.rejectedWith(new RegExp(errorText))
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._exportIdentity, profileName, connectOptions, id);
+                });
+        });
+    });
+
+    describe('#_exportIdentity', function() {
+        it('should throw as abstract', function() {
+            (() => {
+                connectionManager._exportIdentity('PROFILE_NAME', { connect: 'options' }, 'Eric');
+            }).should.throw();
+        });
+    });
+
 });

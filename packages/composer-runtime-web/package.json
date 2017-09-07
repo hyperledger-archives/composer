@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.11.3",
+  "version": "0.12.2",
   "description": "The web runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -61,9 +61,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.11.3",
-    "composer-runtime": "0.11.3",
-    "composer-runtime-pouchdb": "0.11.3",
+    "composer-common": "0.12.2",
+    "composer-runtime": "0.12.2",
+    "composer-runtime-pouchdb": "0.12.2",
     "pouchdb-adapter-idb": "~6.2.0",
     "pouchdb-adapter-websql": "~6.2.0",
     "uuid": "^3.0.1",

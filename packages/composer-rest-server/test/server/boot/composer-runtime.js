@@ -88,9 +88,9 @@ describe('composer-runtime boot script', () => {
         sinon.assert.notCalled(useSpy);
     });
 
-    it('should do nothing if composer security is not enabled', () => {
+    it('should do nothing if composer multiuser is not enabled', () => {
         composerConfig = {
-            security: false
+            multiuser: false
         };
         composerRuntime(app);
         sinon.assert.notCalled(useSpy);
@@ -98,7 +98,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests without any options', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -114,7 +114,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests without an access token', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -132,7 +132,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests with an access token for a user that does not exist', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -154,7 +154,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests with an access token for a user that does not have a default wallet', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -176,7 +176,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests with an access token for a user that has a default wallet that does not exist', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -201,7 +201,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests with an access token for a wallet that does not have a default identity', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -229,7 +229,7 @@ describe('composer-runtime boot script', () => {
 
     it('should ignore requests with an access token for a wallet that has a default identity that does not exist', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -257,7 +257,7 @@ describe('composer-runtime boot script', () => {
 
     it('should configure the options with the default wallet and default identity', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.
@@ -296,7 +296,7 @@ describe('composer-runtime boot script', () => {
 
     it('should handle any errors', () => {
         composerConfig = {
-            security: true
+            multiuser: true
         };
         composerRuntime(app);
         const fn = useSpy.args[0][0]; // First call, first argument.

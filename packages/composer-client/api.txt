@@ -6,7 +6,7 @@ class AssetRegistry extends Registry {
    + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class BusinessNetworkConnection extends EventEmitter {
-   + void constructor(Object,Object,boolean) 
+   + void constructor(Object,ConnectionProfileStore,Object) 
    + BusinessNetworkDefinition getBusinessNetwork() 
    + Promise getAllAssetRegistries(SecurityContext) 
    + Promise getAssetRegistry(string) 
@@ -30,9 +30,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise revokeIdentity() 
 }
 class Historian extends Registry {
-   + Promise getAllHistorians(SecurityContext,ModelManager,Factory,Serializer) 
-   + Promise getHistorian(SecurityContext,string,ModelManager,Factory,Serializer) 
-   + Promise addHistorian(SecurityContext,string,string,ModelManager,Factory,Serializer) 
+   + Promise getHistorian(SecurityContext,ModelManager,Factory,Serializer) 
 }
 class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 

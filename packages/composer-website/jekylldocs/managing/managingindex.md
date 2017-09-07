@@ -3,7 +3,7 @@ layout: default
 title: Managing a Deployed Business Network
 category: concepts
 section: managing
-index-order: 700
+index-order: 800
 sidebar: sidebars/accordion-toc0.md
 excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 ---

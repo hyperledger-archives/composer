@@ -1,0 +1,189 @@
+@import '../../assets/styles/base/colors';
+@import '../../assets/styles/base/variables';
+
+update-business-network {
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    header {
+        h3.sub-title {
+            padding: $space-medium 0;
+        }
+    }
+
+    div.scroll-view {
+        background-color: $white;
+        margin-right: 0;
+        flex: 1;
+        overflow-y: auto;
+
+        section.choose-network {
+            display: flex;
+
+            .information {
+
+                & > * {
+                    display: flex;
+                    align-items: baseline;
+
+                    & > * {
+                        flex-basis: 50%;
+                    }
+
+                    & > *:last-child {
+                        width: inherit;
+                    }
+                }
+
+                // description property
+                & > *:last-child {
+                    margin-top: $space-medium;
+
+                    & > * {
+                        vertical-align: middle;
+                        height: 100%;
+                    }
+                }
+            }
+
+            .sample-network-list-container {
+
+                background-color: $fourth-highlight;
+                padding: $space-large;
+
+                .sample-network-list {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    margin: $space-medium 0;
+
+                    file-importer.sample-network-list-item {
+                        &:hover {
+                            border: 1px dashed $second-highlight;
+                        }
+                    }
+
+                    .sample-network-list-item {
+                        background-color: $white;
+                        border: 2px solid $fourth-highlight;
+                        padding: $space-smedium;
+                        text-align: center;
+                        margin-right: $space-smedium;
+                        margin-bottom: $space-smedium;
+                        width: 150px;
+                        display: flex;
+                        flex-direction: column;
+                        position: relative;
+                        height: 150px;
+
+                        img {
+                            height: 50px;
+                            width: 90px;
+                            margin: 1.5rem 1.5rem auto;
+                        }
+
+                        svg {
+                            width: 80px;
+                            height: 50px;
+                            margin: 1.5rem 1.5rem auto;
+                        }
+
+                        &.file-importer {
+                            height: 150px;
+
+                            svg.ibm-icon {
+                                width: 80px;
+                                height: 50px;
+                                margin: 1rem auto;
+                            }
+
+                            span {
+                                display: inline-block;
+                            }
+                        }
+
+                        &.selected-network {
+                            border-color: $second-highlight;
+                        }
+
+                        &:hover {
+                            border-color: $second-highlight;
+                        }
+
+                        &.drag {
+                            border: 1px dashed $second-highlight;
+                        }
+
+                        button.close-dropped {
+                            position: absolute;
+                            top: -35px;
+                            right: -35px;
+
+                            svg {
+                                fill: $first-highlight;
+                                width: 20px;
+                                height: 20px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    section.chosen-network {
+        .replace-message {
+            background-color: $white;
+            padding: $space-large;
+        }
+
+        div.chosen-network-info {
+            display: flex;
+            background-color: $white;
+            padding: $space-large $space-large 0 $space-large;
+
+            .animated-image {
+                width: 125px;
+                height: 125px;
+            }
+
+            section {
+                &:first-child {
+                    padding-top: $space-large
+                }
+
+                &:last-child {
+                    padding-bottom: $space-large;
+                }
+
+                padding: $space-medium $space-large;
+                text-align: center;
+
+                .title {
+                    color: $secondary-text;
+                    text-transform: uppercase;
+                }
+
+                .network-info {
+                    color: $secondary-text;
+
+                    span {
+                        display: inline-block;
+                    }
+                }
+
+            }
+        }
+    }
+
+    div.deploy {
+        display: flex;
+        justify-content: flex-end;
+        padding: $space-large;
+        background-color: $white;
+        border-top: 1px solid $fourth-highlight;
+
+    }
+}

@@ -20,7 +20,6 @@ const RelationshipDeclaration = require('./relationshipdeclaration');
 const IllegalModelException = require('./illegalmodelexception');
 const Globalize = require('../globalize');
 const Introspector = require('./introspector');
-const ModelUtil = require('../modelutil');
 
 /**
  * ClassDeclaration defines the structure (model/schema) of composite data.
@@ -316,7 +315,7 @@ class ClassDeclaration {
      * @return {boolean} true if the class may be pointed to by a relationship
      */
     isSystemType() {
-        return ModelUtil.getSystemNamespace() === this.getNamespace();
+        return this.modelFile.isSystemModelFile();
     }
 
     /**

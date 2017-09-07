@@ -22,9 +22,10 @@ import { BasicModalsModule } from './basic-modals/basic-models.module';
 import { WelcomeComponent } from './welcome';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
-import { FooterComponent } from './footer';
 import { ServicesModule } from './services/services.module';
 import { DrawerModule } from './common/drawer';
+import { TutorialLinkModule } from './common/tutorial-link';
+import { ImportModule } from './import/import.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -66,6 +67,7 @@ type StoreType = {
     imports: [ // import Angular's modules
         AppRoutingModule,
         BasicModalsModule,
+        ImportModule,
         BrowserAnimationsModule,
         BrowserModule,
         HttpModule,
@@ -75,12 +77,13 @@ type StoreType = {
             storageType: 'localStorage'
         }),
         NgbModule.forRoot(),
-        DrawerModule.forRoot()
+        DrawerModule.forRoot(),
+        TutorialLinkModule
     ],
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
         APP_PROVIDERS,
-        {provide: APP_BASE_HREF, useValue: '/'},
+        {provide: APP_BASE_HREF, useValue: '/'}
     ]
 })
 export class AppModule {

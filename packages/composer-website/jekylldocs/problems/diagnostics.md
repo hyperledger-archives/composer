@@ -5,7 +5,7 @@ category: tasks
 sidebar: sidebars/accordion-toc0.md
 excerpt: Diagnosing Problems
 section: diagnostics
-index-order: 800
+index-order: 900
 ---
 
 # Diagnosing Problems

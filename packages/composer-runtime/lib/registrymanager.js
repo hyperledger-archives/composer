@@ -22,20 +22,20 @@ const Registry = require('./registry');
 
 const LOG = Logger.getLog('RegistryManager');
 
-// TODO: Address the use of these two arrays - indicative of something not correct.
+// Do not add additional types to these constants. All system types are assets.
 const TYPE_MAP = {
-    'Asset': 'AssetRegistry',
-    'Participant': 'ParticipantRegistry',
-    'Transaction': 'TransactionRegistry',
-    'Network': 'Network',
-    'Historian':'HistorianRegistry'
+    Asset: 'AssetRegistry',
+    Participant: 'ParticipantRegistry',
+    Transaction: 'TransactionRegistry',
+    Network: 'Network'
 };
+
+// This is a list of non-abstract system types that we do not want registries created for.
 const VIRTUAL_TYPES = [
     'AssetRegistry',
     'ParticipantRegistry',
     'TransactionRegistry',
-    'Network',
-    'HistorianRegistry'
+    'Network'
 ];
 
 /**
@@ -251,6 +251,7 @@ class RegistryManager extends EventEmitter {
      */
     add(type, id, name, force, system) {
         let collectionID = type + ':' + id;
+
         // form this up into a resource and check if we are able to create this.
         let resource = this.factory.newResource('org.hyperledger.composer.system',TYPE_MAP[type],id);
         resource.name=name;
@@ -261,7 +262,7 @@ class RegistryManager extends EventEmitter {
                 // yes we can create an instance of this type; now add that to the sysregistries collection
                 // Note we haven't checked if we have update permission on the sysregristries collection
                 // but that is going a bit far really...
-                this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
+                return this.sysregistries.add(collectionID, this.serializer.toJSON(resource), force);
             })
             .then(() => {
                 // create the collection that will hold the actual data in this registry
@@ -281,7 +282,6 @@ class RegistryManager extends EventEmitter {
                 });
                 return result;
             });
-
     }
 
     /**

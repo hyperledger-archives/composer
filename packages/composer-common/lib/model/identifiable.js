@@ -14,6 +14,7 @@
 
 'use strict';
 
+const ResourceId = require('./resourceid');
 const Typed = require('./typed');
 
 /**
@@ -24,7 +25,7 @@ const Typed = require('./typed');
  * @class
  * @memberof module:composer-common
  */
-class Identifiable extends Typed{
+class Identifiable extends Typed {
     /**
      * Create an instance.
      * <p>
@@ -103,7 +104,8 @@ class Identifiable extends Typed{
      * @return {String} the URI for the identifiable
      */
     toURI() {
-        const result = 'resource:' + this.getFullyQualifiedType() + '#' + encodeURI(this.getIdentifier());
+        const resourceId = new ResourceId(this.getNamespace(), this.getType(), this.getIdentifier());
+        const result = resourceId.toURI();
         //console.log( '***** URI for ' + this.toString() + ' is ' + result );
         return result;
     }

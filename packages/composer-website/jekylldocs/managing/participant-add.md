@@ -5,7 +5,7 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**Participants must be added to a business network**](../managing/participant-add.html) before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions."
-index-order: 702
+index-order: 802
 ---
 
 # Adding participants

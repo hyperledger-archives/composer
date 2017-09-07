@@ -18,14 +18,36 @@ $space-xsmall: 2px;
 $space-small: 4px;
 $space-smedium: 8px;
 $space-medium: 16px;
+$space-mlarge: 24px;
 $space-large: 32px;
 $space-xlarge: 64px;
 
+// Radius
+$radius-medium: 4px;
+
 // Animation
 @mixin transition($properties...) {
-  transition-property: $properties;
-  transition-duration: .5s;
-  transition-timing-function: ease;
+    transition-property: $properties;
+    transition-duration: .5s;
+    transition-timing-function: ease;
+}
+
+@mixin reset-text {
+    font-family: $font-stack;
+
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1.5;
+    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    white-space: normal;
+    line-break: auto;
 }
 
 $cubic-bezier: .3s cubic-bezier(.5, .8, 0, 1);

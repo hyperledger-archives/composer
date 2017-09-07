@@ -92,6 +92,7 @@ describe('composer start network CLI unit tests', function () {
 
             return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -119,6 +120,7 @@ describe('composer start network CLI unit tests', function () {
 
             return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -148,6 +150,7 @@ describe('composer start network CLI unit tests', function () {
 
             return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -176,6 +179,7 @@ describe('composer start network CLI unit tests', function () {
 
             return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -201,6 +205,7 @@ describe('composer start network CLI unit tests', function () {
 
             return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
@@ -212,10 +217,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, no startment secret, all other parms correctly specified.', function () {
-
-            let startmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves(startmentSecret);
+        it('Good path, no secret, all other parms correctly specified.', function () {
 
             let argv = {startId: 'WebAppAdmin'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -225,8 +227,9 @@ describe('composer start network CLI unit tests', function () {
 
             Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
 
-            return Start.handler(argv)
+            return StartCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);

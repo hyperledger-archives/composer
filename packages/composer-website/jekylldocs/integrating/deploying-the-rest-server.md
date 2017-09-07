@@ -3,7 +3,7 @@ layout: default
 title: Deploying the REST server for a business network
 category: start
 section: integrating
-index-order: 604
+index-order: 706
 sidebar: sidebars/accordion-toc0.md
 excerpt: By deploying a REST server for a business network, you can [**integrate existing systems and data with your Hyperledger Composer business network**](./deploying-the-rest-server.html), allowing you to create, update, or delete assets and participants, as well as get and submit transactions.
 ---
@@ -105,17 +105,27 @@ The REST server can be configured using environment variables, instead of supply
 
         COMPOSER_NAMESPACES=never
 
-7. `COMPOSER_SECURITY`
+7. `COMPOSER_AUTHENTICATION`
 
-    You can use the `COMPOSER_SECURITY` environment variable to specify if the REST server should enable REST API authentication or not. Valid values are `true` and `false`.
+    You can use the `COMPOSER_AUTHENTICATION` environment variable to specify if the REST server should enable REST API authentication or not. Valid values are `true` and `false`.
 
     For example:
 
-        COMPOSER_SECURITY=true
+        COMPOSER_AUTHENTICATION=true
 
-    For more information, see [Enabling REST API authentication for a business network](./enabling-rest-authentication.html).
+    For more information, see [Enabling authentication for the REST server](./enabling-rest-authentication.html).
 
-8. `COMPOSER_DATASOURCES`
+8. `COMPOSER_MULTIUSER`
+
+    You can use the `COMPOSER_MULTIUSER` environment variable to specify if the REST server should enable multiple user mode or not. Valid values are `true` and `false`.
+
+    For example:
+
+        COMPOSER_MULTIUSER=true
+
+    For more information, see [Enabling multiple user mode for the REST server](./enabling-multiuser.html).
+
+9. `COMPOSER_DATASOURCES`
 
     You can use the `COMPOSER_DATASOURCES` environment variable to specify the LoopBack data sources and the connection information required by the selected LoopBack connector.
 
@@ -129,7 +139,7 @@ The REST server can be configured using environment variables, instead of supply
           }
         }'
 
-9. `COMPOSER_PROVIDERS`
+10. `COMPOSER_PROVIDERS`
 
     You can use the `COMPOSER_PROVIDERS` environment variable to specify the Passport strategies that the REST server should use to authenticate clients of the REST API.
 
@@ -148,7 +158,7 @@ The REST server can be configured using environment variables, instead of supply
           }
         }'
 
-10. `COMPOSER_TLS`
+11. `COMPOSER_TLS`
 
     You can use the `COMPOSER_TLS` environment variable to specify if the REST server should enable HTTPS and TLS. Valid values are `true` and `false`.
 
@@ -158,7 +168,7 @@ The REST server can be configured using environment variables, instead of supply
 
     For more information, see [Securing the REST server using HTTPS and TLS](./securing-the-rest-server.html).
 
-11. `COMPOSER_TLS_CERTIFICATE`
+12. `COMPOSER_TLS_CERTIFICATE`
 
     You can use the `COMPOSER_TLS_CERTIFICATE` environment variable to specify the certificate file that the REST server should use when HTTPS and TLS are enabled.
 
@@ -166,7 +176,7 @@ The REST server can be configured using environment variables, instead of supply
 
         COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
 
-12. `COMPOSER_TLS_KEY`
+13. `COMPOSER_TLS_KEY`
 
     You can use the `COMPOSER_TLS_KEY` environment variable to specify the private key file that the REST server should use when HTTPS and TLS are enabled.
 
@@ -219,7 +229,8 @@ The examples are based on the business network that is deployed to Hyperledger F
         COMPOSER_ENROLLMENT_ID=admin
         COMPOSER_ENROLLMENT_SECRET=adminpw
         COMPOSER_NAMESPACES=never
-        COMPOSER_SECURITY=true
+        COMPOSER_AUTHENTICATION=true
+        COMPOSER_MULTIUSER=true
         COMPOSER_CONFIG='{
           "connectionProfiles": {
             "hlfv1": {
@@ -281,7 +292,8 @@ The examples are based on the business network that is deployed to Hyperledger F
             -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
             -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
             -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
-            -e COMPOSER_SECURITY=${COMPOSER_SECURITY} \
+            -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+            -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
             -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
             -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
             -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
@@ -291,3 +303,78 @@ The examples are based on the business network that is deployed to Hyperledger F
             myorg/my-composer-rest-server
 
 You should now be able to access the persistent and secured REST server using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
+
+
+## Run the REST server in a Docker Container - with no security (eg. Dev/Test)
+
+These steps will run the REST server in a Docker Container with no security, and therefore no need for persistence of identities.  Activity on the REST server will be in the context of the Admin user used to start the REST server.  Running the REST server in this way is generally good for experimentation and learning, but is not likely to be appropriate for production use.
+
+1. Pull the Docker Image for the REST Server:
+
+        docker pull hyperledger/composer-rest-server
+
+2. Create a new file named `envvars.txt`, with the following contents:
+(The values used below will typically work with a Test Fabric created from examples in this documentation, but the value of the `COMPOSER_BUSINESS_NETWORK` will need to be set correctly.)
+
+        COMPOSER_CONNECTION_PROFILE=hlfv1
+        COMPOSER_BUSINESS_NETWORK=<my-network>
+        COMPOSER_ENROLLMENT_ID=admin
+        COMPOSER_ENROLLMENT_SECRET=adminpw
+        COMPOSER_NAMESPACES=never
+        COMPOSER_AUTHENTICATION=false
+        COMPOSER_MULTIUSER=false
+        COMPOSER_CONFIG='{
+          "connectionProfiles": {
+            "hlfv1": {
+              "name": "hlfv1",
+              "description": "Hyperledger Fabric v1.0",
+              "type": "hlfv1",
+              "keyValStore": "/home/composer/.composer-credentials",
+              "timeout": 300,
+              "orderers": [
+                {
+                  "url": "grpc://orderer.example.com:7050"
+                }
+              ],
+              "channel": "composerchannel",
+              "mspID": "Org1MSP",
+              "ca": {
+                "url": "http://ca.org1.example.com:7054",
+                "name": "ca.org1.example.com"
+              },
+              "peers": [
+                {
+                  "requestURL": "grpc://peer0.org1.example.com:7051",
+                  "eventURL": "grpc://peer0.org1.example.com:7053"
+                }
+              ]
+            }
+          }
+        }'
+
+3. Load the environment variables:
+
+        source envvars.txt
+
+4. Start the Docker container:
+
+        docker run \
+            -d \
+            -e COMPOSER_CONNECTION_PROFILE=${COMPOSER_CONNECTION_PROFILE} \
+            -e COMPOSER_BUSINESS_NETWORK=${COMPOSER_BUSINESS_NETWORK} \
+            -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
+            -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
+            -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+            -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+            -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
+            -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
+            -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+            -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+            --name resttest \
+            --network composer_default \
+            -p 3000:3000 \
+            hyperledger/composer-rest-server
+
+You should now be able to access the persistent and secured REST server using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
+
+For the REST Server to work in this insecure mode, be sure that the environment variables ``COMPOSER_DATASOURCES`` and ``COMPOSER_PROVIDERS`` are not set to any value.  Also note the importance of the part of the docker run command ``--network composer_default`` which enables the REST Server to 'find' the various Fabric Servers.
