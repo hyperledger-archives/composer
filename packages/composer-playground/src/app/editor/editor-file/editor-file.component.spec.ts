@@ -62,6 +62,28 @@ describe('EditorFileComponent', () => {
         component.should.be.ok;
     });
 
+    it('should setup the mark down code config', () => {
+        let mockCm = {
+            foldCode: sinon.stub(),
+            getCursor: sinon.stub().returns('myCursor')
+        };
+        component['mdCodeConfig'].extraKeys['Ctrl-Q'](mockCm);
+
+        mockCm.getCursor.should.have.been.called;
+        mockCm.foldCode.should.have.been.calledWith('myCursor');
+    });
+
+    it('should setup the code config', () => {
+        let mockCm = {
+            foldCode: sinon.stub(),
+            getCursor: sinon.stub().returns('myCursor')
+        };
+        component['codeConfig'].extraKeys['Ctrl-Q'](mockCm);
+
+        mockCm.getCursor.should.have.been.called;
+        mockCm.foldCode.should.have.been.calledWith('myCursor');
+    });
+
     describe('set editorFile', () => {
 
         beforeEach(() => {
@@ -409,6 +431,18 @@ describe('EditorFileComponent', () => {
 
             component['previewContent'].should.equal(`<p>my readme</p>\n`);
         });
+
+        it('should throw error if unknown file type', (() => {
+            component['_editorFile'] = {
+                bob: true,
+                id: 'bob'
+            };
+
+            component.setCurrentCode();
+
+            component['currentError'].should.equal('Error: unknown file type');
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(false);
+        }));
 
         it('should set current error on error', () => {
             mockClientService.updateFile.returns('some error');
