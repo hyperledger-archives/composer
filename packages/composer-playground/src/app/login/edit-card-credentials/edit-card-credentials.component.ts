@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../basic-modals/alert.service';
 import { IdentityCardService } from '../../services/identity-card.service';
 
@@ -46,6 +47,14 @@ export class EditCardCredentialsComponent {
         }
 
         return true;
+    }
+
+    submitCard(event) {
+        if ( (event && event.keyCode !== 13) || !this.validContents()) {
+            return;
+        } else {
+            this.addIdentityCard();
+        }
     }
 
     addIdentityCard() {

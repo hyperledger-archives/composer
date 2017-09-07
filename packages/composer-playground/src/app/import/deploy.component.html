@@ -100,9 +100,9 @@
         </div>
         <div>
             <section>
-                <h3 *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <h3 *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <p>{{networkDescription ? networkDescription : 'Business network description will be previewed here when
+                <h3 class="network-desc" *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <h3 class="network-desc" *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName : 'Business Network Name'}}</h3>
+                <p class="network-desc">{{networkDescription ? networkDescription : 'Business network description will be previewed here when
                     entered in the basic information section.'}}</p>
             </section>
             <section>
