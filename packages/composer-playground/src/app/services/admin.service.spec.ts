@@ -38,7 +38,8 @@ describe('AdminService', () => {
         identityMock = sinon.createStubInstance(IdentityService);
         identityMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
         identityMock.getCurrentQualifiedProfileName.returns('qpn-myProfile');
-        identityMock.getCurrentEnrollmentCredentials.returns({id: 'myId', secret: 'mySecret'});
+        identityMock.getCurrentEnrollmentCredentials.returns({secret: 'mySecret'});
+        identityMock.getCurrentUserName.returns('myId');
         adminConnectionMock = sinon.createStubInstance(AdminConnection);
 
         alertMock.busyStatus$ = {

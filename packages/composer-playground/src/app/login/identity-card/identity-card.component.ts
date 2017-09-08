@@ -34,24 +34,24 @@ export class IdentityCardComponent {
     onExport: EventEmitter<string> = new EventEmitter<string>();
 
     connect() {
-        this.onConnect.emit(this.identity.getName());
+        this.onConnect.emit(this.identity.getUserName());
     }
 
     dismiss() {
-        this.onDismiss.emit(this.identity.getName());
+        this.onDismiss.emit(this.identity.getUserName());
     }
 
     delete() {
-        this.onDelete.emit(this.identity.getName());
+        this.onDelete.emit(this.identity.getUserName());
     }
 
     export() {
-        this.onExport.emit(this.identity.getName());
+        this.onExport.emit(this.identity.getUserName());
     }
 
     getInitials(): string {
         let result;
-        let userId = this.identity.getName();
+        let userId = this.identity.getUserName();
         let regexp = /^(\S)\S*\s*(\S?)/i;
         let matches = regexp.exec(userId);
 
