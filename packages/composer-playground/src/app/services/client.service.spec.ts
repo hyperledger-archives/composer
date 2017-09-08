@@ -75,6 +75,19 @@ describe('ClientService', () => {
         sandbox.restore();
     });
 
+    describe('createBusinessNetwork', () => {
+        it('should pass through and call createNewBusinessDefinition from common', inject([ClientService], (service: ClientService) => {
+            let name = 'myname';
+            let nameversion = 'myname@0.0.1';
+            let desc = 'my description';
+
+            let busNetDef = service.createBusinessNetwork(nameversion, desc, null, null);
+            busNetDef.getName().should.equal(name);
+            busNetDef.getDescription().should.equal(desc);
+            busNetDef.getVersion().should.equal('0.0.1');
+        }));
+    });
+
     describe('getBusinessNetworkConnection', () => {
         it('should get business network connection if set', inject([ClientService], (service: ClientService) => {
             service['businessNetworkConnection'] = businessNetworkConMock;

@@ -544,4 +544,15 @@ describe('AdminService', () => {
             adminConnectionMock.disconnect.should.have.been.called;
         })));
     });
+
+    describe('generateDefaultBusinessNetwork', () => {
+        it('should generate a new business definition', inject([AdminService], (service: AdminService) => {
+            sinon.restore(businessNetworkDefMock);
+
+            let defaultBusNet: BusinessNetworkDefinition = service.generateDefaultBusinessNetwork('name', 'desc');
+            defaultBusNet.getDescription().should.be.equal('desc');
+            defaultBusNet.getName().should.be.equal('name');
+            defaultBusNet.getVersion().should.be.equal('0.0.1');
+        }));
+    });
 });

@@ -29,7 +29,7 @@ describe('SampleBusinessNetworkService', () => {
     let clientMock;
     let aclFileMock;
     let alertMock;
-    let businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+    let businessNetworkMock;
     let sandbox;
     let identityCardMock;
 
@@ -40,6 +40,7 @@ describe('SampleBusinessNetworkService', () => {
         clientMock = sinon.createStubInstance(ClientService);
         aclFileMock = sinon.createStubInstance(AclFile);
         alertMock = sinon.createStubInstance(AlertService);
+        businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
 
         alertMock.busyStatus$ = {next: sinon.stub()};
 
@@ -57,6 +58,21 @@ describe('SampleBusinessNetworkService', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('createNewBusinessDefinition', () => {
+        it('should pass through and call createNewBusinessDefinition from common', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            sinon.restore(businessNetworkMock);
+
+            let name = 'myname';
+            let nameversion = 'myname@0.0.1';
+            let desc = 'my description';
+
+            let busNetDef = service.createNewBusinessDefinition(nameversion, desc, null, null);
+            busNetDef.getName().should.equal(name);
+            busNetDef.getDescription().should.equal(desc);
+            busNetDef.getVersion().should.equal('0.0.1');
+        }));
     });
 
     describe('getSampleList', () => {
@@ -268,6 +284,9 @@ describe('SampleBusinessNetworkService', () => {
 
             adminMock.connect.returns(Promise.resolve());
             adminMock.update.returns(Promise.reject('some error'));
+
+            let metaData = {getPackageJson: sinon.stub().returns({})};
+            businessNetworkMock.getMetadata.returns(metaData);
 
             service.updateBusinessNetwork(businessNetworkMock).then(() => {
                 throw('should not get here');
