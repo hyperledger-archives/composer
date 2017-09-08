@@ -21,7 +21,7 @@ If you are new to the Playground, we recommend that you follow the [Playground T
 
 The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
-![wallet-page](./wallet-page.png)
+![wallet-page](./images/wallet-page.png)
 
 From this page you can:
 
@@ -37,7 +37,7 @@ From this page you can:
 
 Once connected to a business network using an ID card, there are a number of options available whether you're looking at the **Define** tab, or the **Test** tab.
 
-![editor-header](./editor-header.png)
+![editor-header](./images/editor-header.png)
 
 - In the upper-left is the name of the connection profile you're using and the business network you're connected to. In the example above, the connection profile is called _Web_ and the business network name is _basic-sample-network_.
 - Links to the **Define** and **Test** tabs. In the **Define** tab, you can add, modify and delete the content of your business network, and in the **Test** tab you can create assets and participants that were defined in the **Define** tab, and test the functionality of your business network.
@@ -47,7 +47,7 @@ Once connected to a business network using an ID card, there are a number of opt
 
 The Define tab is used to create, edit and update your business network.
 
-![editor-define-page](./editor-define.png)
+![editor-define-page](./images/editor-define.png)
 
 On the left of the **Define** tab, you can see a list of all the files in your current business network definition. To examine the contents of a file, click on it, and it will appear in the editor view. New files can be added to your business network with the **Add a file** button. Model files, script files, access control files, and query files can be added to your business network.
 
@@ -57,7 +57,7 @@ Once you've added and modified the files for your business network definition, y
 
 The **Test** tab is used to test the deployed business network by using the asset types, participant types, and transactions which you defined in the **Define** tab.
 
-![editor-test-page](./editor-test.png)
+![editor-test-page](./images/editor-test.png)
 
 On the left of the **Test** tab, each participant type and asset type is listed. Clicking on a participant type, asset type, or **All transactions** will display a registry, showing all active instances of that type. For example, by clicking **SampleParticipant**, you can see a registry showing all _SampleParticipants_ that have been created. If it's the first time you've looked at the **Test** tab, your registries will be empty!
 

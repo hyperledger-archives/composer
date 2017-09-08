@@ -7,7 +7,7 @@ set -o pipefail
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
 
-pip install linkchecker requests==2.9.2
+pip install --user linkchecker requests==2.9.2
 linkchecker --version
 
 # Grab the parent (root) directory.
