@@ -471,7 +471,11 @@ describe('Historian', () => {
     });
 
     describe('Transaction invocations', () => {
-        it('Succesful transaction should have contents recorded', () => { });
+        it('Succesful transaction should have contents recorded', () => {
+
+            // submit a transaction
+
+        });
         it('Unsuccesful transaction should not cause issues', () => { });
     });
 

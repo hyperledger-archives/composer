@@ -575,10 +575,13 @@ class TestUtil {
         // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
             { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
-            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')}
+            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
+            { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
+            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
+
         ];
         const scriptFiles = [
-           // { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
+           { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
         ];
         let businessNetworkDefinition = new BusinessNetworkDefinition('common-network@0.0.1', 'The network for the access controls system tests');
         modelFiles.forEach((modelFile) => {
@@ -588,8 +591,8 @@ class TestUtil {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        // let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.acl'), 'utf8'));
-        // businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+        let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
+        businessNetworkDefinition.getAclManager().setAclFile(aclFile);
         return TestUtil.deploy(businessNetworkDefinition);
     }
 }
