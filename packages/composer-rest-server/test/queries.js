@@ -375,6 +375,16 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
+            it('should return all of the assets with a string type variable for a specified currency name', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondBeforeMaturity?maturity=2017-09-27T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
+                        ]);
+                    });
+            });
             it('should return a 404 if one of the variable type is unsupported', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByCurrencyAndUnsupportedType?currency=GBP&instrumentId[]=BobCorp')
