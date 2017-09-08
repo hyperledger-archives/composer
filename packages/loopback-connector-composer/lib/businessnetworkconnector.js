@@ -982,7 +982,6 @@ class BusinessNetworkConnector extends Connector {
                         queryParameters[param.name] = parseFloat(paramValue);
                         break;
                     case 'DateTime':
-                        queryParameters[param.name] = Date.parse(paramValue);
                         break;
                     case 'Boolean':
                         queryParameters[param.name] = (paramValue === 'true');
