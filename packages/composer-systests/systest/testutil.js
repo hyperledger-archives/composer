@@ -574,7 +574,8 @@ class TestUtil {
     static deployCommon() {
         // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
-            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')}
+            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
+            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')}
         ];
         const scriptFiles = [
            // { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
