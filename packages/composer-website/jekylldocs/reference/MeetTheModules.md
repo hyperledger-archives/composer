@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer npm Modules
 section: reference
 sidebar: sidebars/accordion-toc0.md
-index-order: 901
+index-order: 1001
 excerpt: "[**Hyperledger Composer contains a number of npm modules**](./MeetTheModules.html) which provide the APIs and command line tools necessary for developing a solution with Hyperledger Composer."
 ---
 

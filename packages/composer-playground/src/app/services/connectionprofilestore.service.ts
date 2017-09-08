@@ -1,25 +1,28 @@
 import { Injectable } from '@angular/core';
 
-import { ConnectionProfileStore } from 'composer-common';
+import { ConfigService } from './config.service';
+
+import { ConnectionProfileStore, FSConnectionProfileStore } from 'composer-common';
+import { PlaygroundConnectionProfileStore } from './playgroundconnectionprofilestore';
 /* tslint:disable:no-var-requires */
-const ProxyConnectionProfileStore = require('composer-connector-proxy').ProxyConnectionProfileStore;
+const fs = require('fs');
 
 @Injectable()
 export class ConnectionProfileStoreService {
 
     private connectionProfileStore: ConnectionProfileStore = null;
 
-    constructor() {
-        // The proxy connection manager defaults to http://localhost:15699,
-        // but that is not suitable for anything other than development.
-        if (ENV && ENV !== 'development') {
-            ProxyConnectionProfileStore.setConnectorServerURL(window.location.origin);
-        }
+    constructor(private configService: ConfigService) {
+
     }
 
     public getConnectionProfileStore(): ConnectionProfileStore {
         if (!this.connectionProfileStore) {
-            this.connectionProfileStore = new ProxyConnectionProfileStore();
+            if (this.configService.isWebOnly()) {
+                this.connectionProfileStore = new FSConnectionProfileStore(fs);
+            } else {
+                this.connectionProfileStore = new PlaygroundConnectionProfileStore();
+            }
         }
         return this.connectionProfileStore;
     }

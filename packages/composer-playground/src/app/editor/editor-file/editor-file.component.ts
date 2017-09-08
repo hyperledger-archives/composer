@@ -159,7 +159,10 @@ export class EditorFileComponent {
             } else if (this._editorFile.readme) {
                 type = 'readme';
                 this.previewContent = marked(this.editorContent);
+            } else {
+                throw new Error('unknown file type');
             }
+
             this.currentError = this.clientService.updateFile(this._editorFile.id, this.editorContent, type);
         } catch (e) {
             this.currentError = e.toString();

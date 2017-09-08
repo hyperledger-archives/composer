@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-embedded",
-  "version": "0.12.0",
+  "version": "0.12.2",
   "description": "The embedded client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -51,9 +51,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "0.12.0",
-    "composer-runtime": "0.12.0",
-    "composer-runtime-embedded": "0.12.0"
+    "composer-common": "0.12.2",
+    "composer-runtime": "0.12.2",
+    "composer-runtime-embedded": "0.12.2"
   },
   "nyc": {
     "exclude": [

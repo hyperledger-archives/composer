@@ -57,8 +57,8 @@ deploy-business-network {
                     }
                 }
 
-                input.ng-invalid {
-                    border-bottom: 2px solid $error-colour-1;
+                input {
+                    margin-bottom: 0;
                 }
             }
 
@@ -78,7 +78,7 @@ deploy-business-network {
 
                     .sample-network-list-item {
                         background-color: $white;
-                        border: 1px solid $fourth-highlight;
+                        border: 2px solid $fourth-highlight;
                         padding: $space-smedium;
                         text-align: center;
                         margin-right: $space-smedium;
@@ -88,15 +88,27 @@ deploy-business-network {
                         flex-direction: column;
                         justify-content: flex-end;
                         position: relative;
-                        height: 227px;
 
                         img {
-                            height: 150px;
-                            width: 132px;
+                            max-width: 120px;
+                            margin-left: auto;
+                            margin-top: 2rem;
+                            margin-right: auto;
+                            margin-bottom: auto;
+                            max-height: 70px;
+                        }
+
+                        svg {
+                            max-width: 120px;
+                            margin-left: auto;
+                            margin-top: 2rem;
+                            margin-right: auto;
+                            margin-bottom: auto;
+                            max-height: 70px;
                         }
 
                         &.file-importer {
-                            height: 227px;
+                            height: 182px;
 
                             svg.ibm-icon {
                                 width: 100px;
@@ -124,8 +136,8 @@ deploy-business-network {
 
                         button.close-dropped {
                             position: absolute;
-                            top: -16px;
-                            right: -12px;
+                            top: -44px;
+                            right: -11px;
 
                             svg {
                                 fill: $first-highlight;
@@ -187,6 +199,10 @@ deploy-business-network {
                     span {
                         display: inline-block;
                     }
+                }
+
+                .network-desc {
+                    word-wrap: break-word;
                 }
 
             }

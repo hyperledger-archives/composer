@@ -1,0 +1,24 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+tutorial-link {
+    p.secondary {
+        color: $secondary-text;
+        margin: 0;
+
+        a {
+            text-decoration: none;
+            color: $secondary-text;
+
+            &:hover, &:focus {
+                text-decoration: underline;
+                outline: none;
+            }
+        }
+
+        svg.large-icon {
+            margin-right: 0.25rem;
+            vertical-align: middle;
+        }
+    }
+}

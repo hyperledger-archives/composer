@@ -49,6 +49,10 @@ export class IdentityComponent implements OnInit {
                 let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
                 let qpn: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
 
+                ids.sort((a, b) => {
+                    return a.name.localeCompare(b.name);
+                });
+
                 ids.forEach((id) => {
                     id.ref = this.identityCardService.getCardRefFromIdentity(id.name, this.businessNetworkName, qpn);
                 });
@@ -173,6 +177,7 @@ export class IdentityComponent implements OnInit {
         confirmModalRef.componentInstance.fileName = identity.name;
         confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';
         confirmModalRef.componentInstance.confirmButtonText = 'Revoke';
+        confirmModalRef.componentInstance.action = 'revoke';
 
         return confirmModalRef.result
             .then((result) => {

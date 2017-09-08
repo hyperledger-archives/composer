@@ -14,6 +14,7 @@ import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
+import { ConfigService } from './services/config.service';
 import { ViewTransactionComponent } from './test/view-transaction';
 
 import { IdCard } from 'composer-common';
@@ -57,7 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 private alertService: AlertService,
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
-                private aboutService: AboutService) {
+                private aboutService: AboutService,
+                private configService: ConfigService) {
     }
 
     ngOnInit() {
@@ -128,38 +130,37 @@ export class AppComponent implements OnInit, OnDestroy {
         // Initialise playground
         return this.initializationService.initialize()
             .then(() => {
-                return this.initializationService.isWebOnly();
-            })
-            .then((webOnly) => {
-                if (webOnly) {
-                    this.usingLocally = false;
-                } else {
-                    this.usingLocally = true;
-                }
+                this.usingLocally = !this.configService.isWebOnly();
             });
     }
 
     onBusyStatus(busyStatus) {
-        let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-        if (card && busyStatus) {
-            let connectionProfileType = card.getConnectionProfile().type;
-            if ('web' === connectionProfileType && !busyStatus.force) {
-                // Don't show the modal for the web runtime, as it's too fast to care.
-                return;
-            }
-        } else if (!card && (!busyStatus || !busyStatus.force)) {
-            // if no card then only show if forced
+
+        // if we pass in null we must close regardless
+        if (this.busyModalRef && !busyStatus) {
+            this.busyModalRef.close();
+            this.busyModalRef = null;
             return;
         }
 
-        if (!this.busyModalRef && busyStatus) {
+        // if no busy status do nothing
+        if (!busyStatus) {
+            return;
+        }
+
+        if (busyStatus && !busyStatus.force) {
+            let card: IdCard = this.identityCardService.getCurrentIdentityCard();
+            if (!card || (card && card.getConnectionProfile().type === 'web')) {
+                // Don't show the modal for the web runtime, as it's too fast to care.
+                return;
+            }
+        }
+
+        if (!this.busyModalRef) {
             this.busyModalRef = this.modalService.open(BusyComponent);
             this.busyModalRef.componentInstance.busy = busyStatus;
-        } else if (this.busyModalRef && busyStatus) {
+        } else {
             this.busyModalRef.componentInstance.busy = busyStatus;
-        } else if (this.busyModalRef && !busyStatus) {
-            this.busyModalRef.close();
-            this.busyModalRef = null;
         }
     }
 
@@ -190,7 +191,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    private openWelcomeModal() {
+    openWelcomeModal() {
         return this.checkVersion().then((success) => {
             if (success) {
                 this.modalService.open(WelcomeComponent);
@@ -200,11 +201,11 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    private openVersionModal() {
+    openVersionModal() {
         this.modalService.open(VersionCheckComponent);
     }
 
-    private checkVersion(): Promise<boolean> {
+    checkVersion(): Promise<boolean> {
         let currentPlaygroundVersion = this.getPlaygroundDetails();
 
         if (currentPlaygroundVersion === null) {
@@ -223,14 +224,14 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    private setPlaygroundDetails(): Promise<any> {
+    setPlaygroundDetails(): Promise<any> {
         let key = `playgroundVersion`;
         return this.aboutService.getVersions().then((versions) => {
             this.localStorageService.set(key, versions.playground.version);
         });
     }
 
-    private getPlaygroundDetails(): string {
+    getPlaygroundDetails(): string {
         let key = `playgroundVersion`;
         return this.localStorageService.get<string>(key);
     }

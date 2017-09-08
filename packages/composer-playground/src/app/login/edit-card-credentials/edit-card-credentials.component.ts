@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../basic-modals/alert.service';
 import { IdentityCardService } from '../../services/identity-card.service';
 
@@ -17,7 +18,9 @@ export class EditCardCredentialsComponent {
     private userSecret: string = null;
     private busNetName: string = null;
     private addInProgress: boolean = false;
-    private useCerts: boolean = false;
+    private useCerts: boolean = true;
+    private addedPublicCertificate: string;
+    private addedPrivateCertificate: string;
 
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
@@ -34,11 +37,37 @@ export class EditCardCredentialsComponent {
 
     validContents(): boolean {
         if (this.useCerts) {
-            return false;
+            if (!this.addedPublicCertificate || this.addedPublicCertificate.length === 0) {
+                return false;
+            } else if (!this.addedPrivateCertificate || this.addedPrivateCertificate.length === 0) {
+                return false;
+            } else if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            } else if (!this.busNetName) {
+                return false;
+            }
         } else {
-            return ((this.userId !== null && this.userId.length !== 0 &&
-                     this.userSecret !== null && this.userSecret.length !== 0) ||
-                     this.addInProgress);
+            if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (!this.userSecret || this.userSecret.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            } else if (!this.busNetName) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    submitCard(event) {
+        if ( (event && event.keyCode !== 13) || !this.validContents()) {
+            return;
+        } else {
+            this.addIdentityCard();
         }
     }
 
@@ -48,22 +77,25 @@ export class EditCardCredentialsComponent {
             title: 'Adding ID card',
             text: 'Adding ID card'
         });
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile)
-        .then(() => {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next({
-                title: 'ID Card Added',
-                text: 'The ID card was successfully added to My Wallet.',
-                icon: '#icon-role_24'
+
+        let credentials = this.useCerts ? {certificate: this.addedPublicCertificate, privateKey: this.addedPrivateCertificate} : null;
+
+        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile, credentials)
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({
+                    title: 'ID Card Added',
+                    text: 'The ID card was successfully added to My Wallet.',
+                    icon: '#icon-role_24'
+                });
+                this.addInProgress = false;
+                this.idCardAdded.emit(true);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+                this.addInProgress = false;
+                this.idCardAdded.emit(false);
             });
-            this.addInProgress = false;
-            this.idCardAdded.emit(true);
-        })
-        .catch((error) => {
-            this.alertService.busyStatus$.next(null);
-            this.alertService.errorStatus$.next(error);
-            this.addInProgress = false;
-            this.idCardAdded.emit(false);
-        });
     }
 }

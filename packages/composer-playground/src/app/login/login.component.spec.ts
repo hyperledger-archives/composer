@@ -20,6 +20,7 @@ import { ConnectionProfileService } from '../services/connectionprofile.service'
 import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConfigService } from '../services/config.service';
 
 import { DrawerService } from '../common/drawer';
 import { IdCard } from 'composer-common';
@@ -103,6 +104,7 @@ class MockFooterComponent {
 })
 class MockIdentityCardComponent {
     @Input() identity: any;
+    @Input() indestructible: any;
 }
 
 @Component({
@@ -120,6 +122,13 @@ class MockCreateIdentityCardComponent {
     public finishedCardCreation: EventEmitter<any> = new EventEmitter<any>();
 }
 
+@Component({
+    selector: 'tutorial-link',
+    template: ''
+})
+class MockTutorialLinkComponent {
+}
+
 describe(`LoginComponent`, () => {
 
     let component: LoginComponent;
@@ -133,6 +142,7 @@ describe(`LoginComponent`, () => {
     let mockInitializationService;
     let routerStub;
     let mockAlertService;
+    let mockConfigService;
     let mockModal;
     let mockDrawer;
 
@@ -145,6 +155,7 @@ describe(`LoginComponent`, () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockAlertService = sinon.createStubInstance(AlertService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
 
@@ -162,6 +173,7 @@ describe(`LoginComponent`, () => {
                 MockIdentityCardComponent,
                 MockFooterComponent,
                 MockDeployComponent,
+                MockTutorialLinkComponent
             ],
             providers: [
                 {provide: IdentityService, useValue: mockIdentityService},
@@ -173,7 +185,8 @@ describe(`LoginComponent`, () => {
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: DrawerService, useValue: mockDrawer},
-                {provide: NgbModal, useValue: mockModal}
+                {provide: NgbModal, useValue: mockModal},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         });
 
@@ -199,59 +212,102 @@ describe(`LoginComponent`, () => {
 
         it('should check if playground is hosted or being used locally', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(true);
+            mockConfigService.isWebOnly.returns(true);
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
             component.ngOnInit();
 
             tick();
 
-            mockInitializationService.isWebOnly.should.have.been.called;
+            mockConfigService.isWebOnly.should.have.been.called;
             component['usingLocally'].should.be.false;
         }));
     });
 
     describe('loadIdentityCards', () => {
-        let mockIdCard1;
-        let mockIdCard2;
-        let mockIdCard3;
-        let mockIdCards: Map<string, IdCard>;
-
-        beforeEach(() => {
-            mockIdCard1 = sinon.createStubInstance(IdCard);
+        it('should load identity cards and sort the profiles', fakeAsync(() => {
+            let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getName.returns('card1');
             mockIdCard1.getConnectionProfile.returns({name: 'myProfile1'});
-            mockIdCard2 = sinon.createStubInstance(IdCard);
+            let mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard2.getName.returns('card2');
             mockIdCard2.getConnectionProfile.returns({name: 'myProfile2'});
-            mockIdCard3 = sinon.createStubInstance(IdCard);
+            let mockIdCard3 = sinon.createStubInstance(IdCard);
             mockIdCard3.getName.returns('card3');
             mockIdCard3.getConnectionProfile.returns({name: 'myProfile1'});
+            let mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getName.returns('card4');
+            mockIdCard4.getConnectionProfile.returns({name: '$default'});
+            let mockIdCard5 = sinon.createStubInstance(IdCard);
+            mockIdCard5.getName.returns('card5');
+            mockIdCard5.getConnectionProfile.returns({name: 'bobProfile'});
 
-            mockIdCards = new Map<string, IdCard>();
+            let mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef1', mockIdCard1);
             mockIdCards.set('myCardRef2', mockIdCard2);
             mockIdCards.set('myCardRef3', mockIdCard3);
+            mockIdCards.set('myCardRef4', mockIdCard4);
+            mockIdCards.set('myCardRef5', mockIdCard5);
 
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'myProfile1'}).returns('xxx-myProfile1');
             mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'myProfile2'}).returns('xxx-myProfile2');
-        });
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'bobProfile'}).returns('xxx-bobProfile');
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: '$default'}).returns('web-$default');
 
-        it('should load identity cards', fakeAsync(() => {
             mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
+            mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef4']);
+            let sortCards = sinon.stub(component, 'sortIdCards');
 
             component.loadIdentityCards();
 
             tick();
 
-            component['connectionProfileRefs'].should.deep.equal(['xxx-myProfile1', 'xxx-myProfile2']);
-            component['connectionProfileNames'].size.should.equal(2);
+            sortCards.should.have.been.called;
+
+            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2']);
+            component['connectionProfileNames'].size.should.equal(4);
             component['connectionProfileNames'].get('xxx-myProfile1').should.equal('myProfile1');
             component['connectionProfileNames'].get('xxx-myProfile2').should.equal('myProfile2');
-            component['idCardRefs'].size.should.equal(2);
+            component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
+            component['connectionProfileNames'].get('web-$default').should.equal('$default');
+            component['idCardRefs'].size.should.equal(4);
             component['idCardRefs'].get('xxx-myProfile1').length.should.equal(2);
             component['idCardRefs'].get('xxx-myProfile1').should.deep.equal(['myCardRef1', 'myCardRef3']);
             component['idCardRefs'].get('xxx-myProfile2').length.should.equal(1);
             component['idCardRefs'].get('xxx-myProfile2').should.deep.equal(['myCardRef2']);
+            component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef5']);
+            component['idCardRefs'].get('web-$default').should.deep.equal(['myCardRef4']);
+            component['indestructibleCards'].should.deep.equal(['myCardRef4']);
+        }));
+
+        it('should load identity cards and ensure there is always a web connection profile', fakeAsync(() => {
+            let mockIdCard1 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getName.returns('PeerAdmin');
+            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
+            let mockIdCard2 = sinon.createStubInstance(IdCard);
+            mockIdCard2.getName.returns('bob');
+            mockIdCard2.getConnectionProfile.returns({name: 'bobProfile'});
+
+            let mockIdCards = new Map<string, IdCard>();
+            mockIdCards.set('myCardRef1', mockIdCard1);
+            mockIdCards.set('myCardRef2', mockIdCard2);
+
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: 'bobProfile'}).returns('xxx-bobProfile');
+            mockIdentityCardService.getQualifiedProfileName.withArgs({name: '$default'}).returns('web-$default');
+
+            mockIdentityCardService.getIdentityCards.returns(Promise.resolve(mockIdCards));
+            mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef1']);
+            let sortCards = sinon.stub(component, 'sortIdCards');
+
+            component.loadIdentityCards();
+
+            tick();
+
+            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile']);
+            component['connectionProfileNames'].size.should.equal(1);
+            component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
+            component['idCardRefs'].size.should.equal(1);
+            component['idCardRefs'].get('xxx-bobProfile').should.deep.equal(['myCardRef2']);
+            component['indestructibleCards'].should.deep.equal(['myCardRef1']);
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -408,7 +464,6 @@ describe(`LoginComponent`, () => {
             component.removeIdentity('myCardRef');
             tick();
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.not.have.been.called;
         }));
@@ -423,7 +478,6 @@ describe(`LoginComponent`, () => {
             component.removeIdentity('myCardRef');
             tick();
 
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.not.have.been.called;
         }));
@@ -442,7 +496,7 @@ describe(`LoginComponent`, () => {
             // check services called
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
-            mockAlertService.busyStatus$.next.should.have.been.called;
+
             mockAlertService.successStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
@@ -459,7 +513,6 @@ describe(`LoginComponent`, () => {
             tick();
 
             // check services called
-            mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.not.have.been.called;
             loadIdentityCardsStub.should.not.have.been.called;
@@ -533,15 +586,12 @@ describe(`LoginComponent`, () => {
     describe('exportIdentity', () => {
         let sandbox = sinon.sandbox.create();
         let mockIdCard;
-        let mockIdCards: Map<string, IdCard>;
         let saveAsStub;
 
         beforeEach(() => {
             saveAsStub = sandbox.stub(fileSaver, 'saveAs');
             mockIdCard = sinon.createStubInstance(IdCard);
             mockIdCard.getName.returns('myCard');
-            mockIdCards = new Map<string, IdCard>();
-            mockIdCards.set('myCardRef', mockIdCard);
         });
 
         afterEach(() => {
@@ -549,8 +599,8 @@ describe(`LoginComponent`, () => {
         });
 
         it('should export an identity card', fakeAsync(() => {
+            mockIdentityCardService.getIdentityCardForExport.returns(Promise.resolve(mockIdCard));
             mockIdCard.toArchive.returns(Promise.resolve('card data'));
-            component['idCards'] = mockIdCards;
 
             component.exportIdentity('myCardRef');
             tick();
@@ -560,8 +610,8 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should handle errors', fakeAsync(() => {
+            mockIdentityCardService.getIdentityCardForExport.returns(Promise.resolve(mockIdCard));
             mockIdCard.toArchive.returns(Promise.reject('some error'));
-            component['idCards'] = mockIdCards;
 
             component.exportIdentity('myCardRef');
             tick();
@@ -605,6 +655,80 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+        });
+    });
+
+    describe('sortIdCards', () => {
+        let mockIdCard1;
+        let mockIdCard2;
+        let mockIdCard3;
+        let mockIdCard4;
+        let mockIdCard5;
+        let mockIdCard6;
+        let mockIdCard7;
+
+        let mockIdCards;
+
+        beforeEach(() => {
+            mockIdCard1 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getName.returns('card2');
+            mockIdCard1.getBusinessNetworkName.returns('my-network');
+            mockIdCard1.getRoles.returns(['PeerAdmin']);
+
+            mockIdCard2 = sinon.createStubInstance(IdCard);
+            mockIdCard2.getName.returns('card2');
+            mockIdCard2.getBusinessNetworkName.returns(null);
+            mockIdCard2.getRoles.returns(['PeerAdmin']);
+
+            mockIdCard3 = sinon.createStubInstance(IdCard);
+            mockIdCard3.getName.returns('card2');
+            mockIdCard3.getBusinessNetworkName.returns('my-alphabet-network');
+            mockIdCard3.getRoles.returns(['PeerAdmin']);
+
+            mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getName.returns('card1');
+            mockIdCard4.getBusinessNetworkName.returns(null);
+            mockIdCard4.getRoles.returns(['PeerAdmin']);
+
+            mockIdCard5 = sinon.createStubInstance(IdCard);
+            mockIdCard5.getName.returns('card3');
+            mockIdCard5.getBusinessNetworkName.returns(null);
+            mockIdCard5.getRoles.returns(null);
+
+            mockIdCard6 = sinon.createStubInstance(IdCard);
+            mockIdCard6.getName.returns('card1');
+            mockIdCard6.getBusinessNetworkName.returns('my-alphabet-network');
+            mockIdCard6.getRoles.returns(['PeerAdmin']);
+
+            mockIdCard7 = sinon.createStubInstance(IdCard);
+            mockIdCard7.getName.returns('card1');
+            mockIdCard7.getBusinessNetworkName.returns('my-alphabet-network');
+            mockIdCard7.getRoles.returns(null);
+
+            mockIdCards = new Map<string, IdCard>();
+            mockIdCards.set('myCardRef1', mockIdCard1);
+            mockIdCards.set('myCardRef2', mockIdCard2);
+            mockIdCards.set('myCardRef3', mockIdCard3);
+            mockIdCards.set('myCardRef4', mockIdCard4);
+            mockIdCards.set('myCardRef5', mockIdCard5);
+            mockIdCards.set('myCardRef6', mockIdCard6);
+            mockIdCards.set('myCardRef7', mockIdCard7);
+
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef1').returns(mockIdCard1);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef2').returns(mockIdCard2);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef3').returns(mockIdCard3);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef4').returns(mockIdCard4);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef5').returns(mockIdCard5);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef6').returns(mockIdCard6);
+            mockIdentityCardService.getIdentityCard.withArgs('myCardRef7').returns(mockIdCard7);
+        });
+
+        it('should sort the idCards', () => {
+            let cardRefs = Array.from(mockIdCards.keys());
+
+            cardRefs.sort(component['sortIdCards'].bind(component));
+
+            cardRefs.should.deep.equal(['myCardRef5', 'myCardRef2', 'myCardRef4', 'myCardRef7', 'myCardRef3', 'myCardRef6', 'myCardRef1']);
         });
     });
 });

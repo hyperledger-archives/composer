@@ -21,6 +21,7 @@ import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular
 import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
+import { ConfigService } from './services/config.service';
 
 import { IdCard } from 'composer-common';
 
@@ -154,6 +155,7 @@ describe('AppComponent', () => {
     let mockIdentityCardService;
     let mockLocalStorageService;
     let mockAboutService;
+    let mockConfigService;
     let mockAdminConnection;
     let mockWindow;
 
@@ -177,6 +179,7 @@ describe('AppComponent', () => {
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
 
         mockAlertService = new MockAlertService();
@@ -203,7 +206,8 @@ describe('AppComponent', () => {
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
-                {provide: AboutService, useValue: mockAboutService}
+                {provide: AboutService, useValue: mockAboutService},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         })
 
@@ -232,7 +236,6 @@ describe('AppComponent', () => {
         let mockOnBusy;
         let mockOnError;
         let mockOnTransactionEvent;
-        let mockUpdateConnectionData;
         let mockQueryParamUpdated;
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
@@ -242,7 +245,6 @@ describe('AppComponent', () => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockUpdateConnectionData = sinon.stub(component, 'updateConnectionData');
             mockQueryParamUpdated = sinon.stub(component, 'queryParamsUpdated');
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
@@ -508,7 +510,7 @@ describe('AppComponent', () => {
 
         it('should initialise playground and set use locally to true', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(Promise.resolve(false));
+            mockConfigService.isWebOnly.returns(false);
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -525,7 +527,7 @@ describe('AppComponent', () => {
 
         it('should initialise playground and set use locally to false', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
-            mockInitializationService.isWebOnly.returns(Promise.resolve(true));
+            mockConfigService.isWebOnly.returns(true);
 
             activatedRoute.testParams = {};
 
@@ -584,7 +586,7 @@ describe('AppComponent', () => {
             mockModal.open.should.have.been.called;
         });
 
-        it('should not show with no card unless force', () => {
+        it('should show with no card if forced', () => {
             mockIdentityCardService.getCurrentIdentityCard.returns(null);
             activatedRoute.testParams = {};
 

@@ -5,7 +5,7 @@ category: tasks
 sidebar: sidebars/accordion-toc0.md
 excerpt:
 section: diagnostics
-index-order: 801
+index-order: 901
 ---
 
 # Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground

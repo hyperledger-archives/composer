@@ -3,7 +3,7 @@ layout: default
 title: Developing Applications
 section: applications
 category: start
-index-order: 500
+index-order: 600
 sidebar: sidebars/accordion-toc0.md
 excerpt: Writing a node.js application
 ---

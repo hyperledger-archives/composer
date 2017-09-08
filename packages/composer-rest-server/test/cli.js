@@ -36,7 +36,7 @@ describe('composer-rest-server CLI unit tests', () => {
             enrollementId: 'admin',
             enrollementSecret: 'adminpw',
             namespaces: 'always',
-            security: false,
+            authentication: false,
             websockets: true,
             tls: false
         });
@@ -93,7 +93,8 @@ describe('composer-rest-server CLI unit tests', () => {
                 namespaces: 'always',
                 participantId: 'admin',
                 participantPwd: 'adminpw',
-                security: false,
+                authentication: false,
+                multiuser: undefined,
                 websockets: true,
                 tls: false,
                 tlscert: undefined,
@@ -132,7 +133,7 @@ describe('composer-rest-server CLI unit tests', () => {
         });
     });
 
-    it('should use the argumemts from yargs and start the server', () => {
+    it('should use the arguments from yargs and start the server', () => {
         let listen = sinon.stub();
         let get = sinon.stub();
         get.withArgs('port').returns(3000);
@@ -167,7 +168,108 @@ describe('composer-rest-server CLI unit tests', () => {
                 participantId: 'admin',
                 participantPwd: 'adminpw',
                 port: undefined,
-                security: false,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
+    it('should not enable multiuser if authentication specified', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-p', 'defaultProfile',
+            '-n', 'org-acme-biznet',
+            '-i', 'admin',
+            '-s', 'adminpw',
+            '-a'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                businessNetworkIdentifier: 'org-acme-biznet',
+                connectionProfileName: 'defaultProfile',
+                namespaces: 'always',
+                participantId: 'admin',
+                participantPwd: 'adminpw',
+                port: undefined,
+                authentication: true,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
+    it('should automatically enable authentication if multiuser specified', () => {
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-p', 'defaultProfile',
+            '-n', 'org-acme-biznet',
+            '-i', 'admin',
+            '-s', 'adminpw',
+            '-m'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                businessNetworkIdentifier: 'org-acme-biznet',
+                connectionProfileName: 'defaultProfile',
+                namespaces: 'always',
+                participantId: 'admin',
+                participantPwd: 'adminpw',
+                port: undefined,
+                authentication: true,
+                multiuser: true,
                 websockets: true,
                 tls: false,
                 tlscert: defaultTlsCertificate,

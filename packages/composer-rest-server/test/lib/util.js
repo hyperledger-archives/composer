@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['connectionProfileName', 'businessNetworkName', 'enrollementId', 'enrollementSecret', 'namespaces', 'security', 'websockets', 'tls', 'tlscert', 'tlskey']);
+                    names.should.deep.equal(['connectionProfileName', 'businessNetworkName', 'enrollementId', 'enrollementSecret', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
                 });
         });
 
@@ -97,6 +97,19 @@ describe('Util', () => {
                     });
                     question.validate('').should.match(/Please enter/);
                     question.validate('adminpw').should.be.true;
+                });
+        });
+
+        it('should only enable the multiuser question if TLS enabled', () => {
+            return Util.getConnectionSettings()
+                .then(() => {
+                    sinon.assert.calledOnce(inquirer.prompt);
+                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
+                    const question = questions.find((question) => {
+                        return question.name === 'multiuser';
+                    });
+                    question.when({ authentication: false }).should.be.false;
+                    question.when({ authentication: true }).should.be.true;
                 });
         });
 
