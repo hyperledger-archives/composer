@@ -17,12 +17,13 @@
 
 const uuid = require('uuid');
 const TestUtil = require('./testutil');
-
+const path = require('path');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 process.setMaxListeners(Infinity);
-
+const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
+const fs = require('fs');
 let client;
 
 let createAsset = (assetId) => {
@@ -106,10 +107,33 @@ let validateParticipant = (participant, participantId) => {
     participant.enumValues.should.deep.equal(['SUCH', 'MANY', 'MUCH']);
 };
 
+let deployCommon =  ()=> {
+    // In this systest we are fully specifying the model file with a fileName and content
+    const modelFiles = [
+        { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
+        { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
+        { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
+        { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
+
+    ];
+    const scriptFiles = [
+       { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
+    ];
+    let businessNetworkDefinition = new BusinessNetworkDefinition('common-network@0.0.1', 'The network for the access controls system tests');
+    modelFiles.forEach((modelFile) => {
+        businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
+    });
+    scriptFiles.forEach((scriptFile) => {
+        let scriptManager = businessNetworkDefinition.getScriptManager();
+        scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
+    });
+    let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
+    businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+    return TestUtil.deploy(businessNetworkDefinition);
+};
 
 
-
-describe('Historian', () => {
+describe.only('Historian', () => {
 
     describe('CRUD Asset', () => {
         it('should track updates for CREATE asset calls ', () => {
@@ -722,7 +746,7 @@ describe('Historian', () => {
 
     before(function () {
         // need factor this deployCommon out shortly.
-        return TestUtil.deployCommon()
+        return deployCommon()
             .then(() => {
                 return TestUtil.getClient()
                     .then((result) => {
@@ -739,6 +763,7 @@ describe('Historian', () => {
                 client = result;
             });
     });
+
 
 
 });

@@ -16,7 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
+
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
@@ -24,7 +24,7 @@ const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
 const Util = require('composer-common').Util;
-const fs = require('fs');
+
 
 let client;
 let forceDeploy = false;
@@ -571,30 +571,7 @@ class TestUtil {
     /** Deploy the common systest business network
      *  @return {Promise} - a promise that will be resolved when complete.
      */
-    static deployCommon() {
-        // In this systest we are fully specifying the model file with a fileName and content
-        const modelFiles = [
-            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
-            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
-            { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
-            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
 
-        ];
-        const scriptFiles = [
-           { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
-        ];
-        let businessNetworkDefinition = new BusinessNetworkDefinition('common-network@0.0.1', 'The network for the access controls system tests');
-        modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
-        });
-        scriptFiles.forEach((scriptFile) => {
-            let scriptManager = businessNetworkDefinition.getScriptManager();
-            scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
-        });
-        let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
-        businessNetworkDefinition.getAclManager().setAclFile(aclFile);
-        return TestUtil.deploy(businessNetworkDefinition);
-    }
 }
 
 module.exports = TestUtil;
