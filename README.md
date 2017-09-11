@@ -41,7 +41,7 @@ If you have a *question on using Hyperledger Composer*
   - [Stack Overflow](http://stackoverflow.com/questions/tagged/hyperledger-composer), where the question should be tagged with 'hyperledger-composer'.
 
 If you have found a defect or want to raise a feature requests
-  - All tracked on GitHub - please read [how to raise](./contrib-notes/raising-issues,md)
+  - All tracked on GitHub - please read [how to raise](./contrib-notes/raising-issues.md)
 
 If you want to contribute to the develop of Hyperledger Composer
   - Come introduce yourself on the contributors [RocketChat channel](https://chat.hyperledger.org/channel/composer-dev)
