@@ -310,11 +310,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return a 404 if query a double type vairable with a non-existing value', () => {
+            it('should return empty if query a double type vairable with a non-existing value', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondAboveAFaceAmount?faceAmount=10000')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
+                    .then((res) => {
+                        res.should.be.json;
+                        res.should.have.status(200);
+                        res.body.should.equal([]);
                     });
             });
             it('should return all of the assets with an enum type variable', () => {
@@ -328,11 +330,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return a 404 if query an enum type variable with a non-existing value', () => {
+            it('should return empty if query an enum type variable with a non-existing value', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByPaymentFrequencyPeriod?period=QUARTER')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
+                    .than((res) => {
+                        res.should.be.json;
+                        res.should.have.status(200);
+                        res.body.should.deep.equal([]);
                     });
             });
             it('should return all of the assets with an integer type variable above a specified multiplier', () => {
@@ -357,11 +361,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return a 404 if query an integer type vairable with a non-existing value', () => {
+            it('should return empty if query an integer type vairable with a non-existing value', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondAboveAPaymentFrequencyPeriodMultiplierValue?multiplier=8')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
+                    .then((res) => {
+                        res.should.be.json;
+                        res.should.have.status(200);
+                        res.should.deep.equal([]);
                     });
             });
             it('should return all of the assets with a string type variable for a specified currency name', () => {
