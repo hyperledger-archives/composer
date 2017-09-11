@@ -11,7 +11,6 @@ import { IdentityCardService } from '../../services/identity-card.service';
 import { AlertService } from '../../basic-modals/alert.service';
 
 describe('EditCardCredentialsComponent', () => {
-    let sandbox;
     let component: EditCardCredentialsComponent;
     let fixture: ComponentFixture<EditCardCredentialsComponent>;
 
@@ -37,17 +36,53 @@ describe('EditCardCredentialsComponent', () => {
         })
         .compileComponents();
 
-        sandbox = sinon.sandbox.create();
         fixture = TestBed.createComponent(EditCardCredentialsComponent);
         component = fixture.componentInstance;
     });
 
-    afterEach(() => {
-        sandbox.restore();
+    it('should be created', () => {
+        component.should.be.ok;
     });
 
-    it('should be created', () => {
-        expect(component).should.be.ok;
+    describe('#submitCard', () => {
+
+        let mockValidate;
+        let mockAddCard;
+        let event;
+
+        beforeEach(() => {
+            mockValidate = sinon.stub(component, 'validContents').returns(false);
+            mockAddCard = sinon.stub(component, 'addIdentityCard');
+            event = document.createEvent('Events');
+            event.initEvent('keydown"', true, true);
+            event.keyCode = 40;
+        });
+
+        it('should not call addCard if no event', () => {
+            component.submitCard(null);
+            mockAddCard.should.not.have.been.called;
+        });
+
+        it('should not call addCard if invalid key press', () => {
+            component.submitCard(event);
+            mockAddCard.should.not.have.been.called;
+        });
+
+        it('should not call addCard if form contents invalid', () => {
+            event.keyCode = 13;
+            component.submitCard(event);
+            mockValidate.should.have.been.called;
+            mockAddCard.should.not.have.been.called;
+        });
+
+        it('should call addCard if valid keypress and form contents are valid', () => {
+            event.keyCode = 13;
+            mockValidate.returns(true);
+            component.submitCard(event);
+            mockValidate.should.have.been.called;
+            mockAddCard.should.have.been.called;
+        });
+
     });
 
     describe('#addIdentityCard', () => {
@@ -57,6 +92,8 @@ describe('EditCardCredentialsComponent', () => {
             component['userSecret'] = 'suchSecret';
             component['busNetName'] = 'network';
             component['connectionProfile'] = { theProfile: 'muchProfile' };
+            component['addInProgress'] = false;
+            component['useCerts'] = false;
         });
 
         it('should set busy status upon entry', fakeAsync(() => {
@@ -109,6 +146,74 @@ describe('EditCardCredentialsComponent', () => {
         it('should not enable validation if trying to set certificates', () => {
             // Certs path
             component['useCerts'] = true;
+            component['validContents']().should.be.false;
+        });
+
+        it('should not validate if an add is in progress when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addInProgress'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('should not validate if the public certificate is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = null;
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the private certificate is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = null;
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the user ID is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = null;
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the business network name is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addInProgress'] = false;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = null;
+
+            component['validContents']().should.be.false;
+        });
+
+        it('should not validate if an add is in progress when specifying user ID/Secret', () => {
+            // Secret/ID path
+            component['useCerts'] = false;
+            component['addInProgress'] = true;
+            component['userId'] = 'myId';
+            component['userSecret'] = 'mySecret';
+            component['busNetName'] = 'myName';
+
             component['validContents']().should.be.false;
         });
 
