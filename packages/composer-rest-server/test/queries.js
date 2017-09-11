@@ -404,10 +404,14 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return a 404 if one of the variable type is unsupported', () => {
+            it('should return an empty if one of the variable type is unsupported', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByCurrencyAndUnsupportedType?currency=GBP&instrumentId[]=BobCorp')
-                    .then((res) =>{});
+                    .then((res) =>{
+                        res.should.be.json;
+                        res.should.have.status(200);
+                        res.body.should.deep.equal([]);
+                    });
             });
 
             it('should return all asset if the query specified variable is an array type', () => {
