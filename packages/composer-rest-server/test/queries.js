@@ -310,13 +310,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         ]);
                     });
             });
-            it('should return empty if query a double type vairable with a non-existing value', () => {
+            it('should return empty array if query a double type vairable with a non-existing value', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondAboveAFaceAmount?faceAmount=10000')
                     .then((res) => {
                         res.should.be.json;
                         res.should.have.status(200);
-                        res.body.should.equal([]);
+                        res.body.should.deep.equal([]);
                     });
             });
             it('should return all of the assets with an enum type variable', () => {
@@ -333,7 +333,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             it('should return empty if query an enum type variable with a non-existing value', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByPaymentFrequencyPeriod?period=QUARTER')
-                    .than((res) => {
+                    .then((res) => {
                         res.should.be.json;
                         res.should.have.status(200);
                         res.body.should.deep.equal([]);
@@ -367,7 +367,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .then((res) => {
                         res.should.be.json;
                         res.should.have.status(200);
-                        res.should.deep.equal([]);
+                        res.body.should.deep.equal([]);
                     });
             });
             it('should return all of the assets with a string type variable for a specified currency name', () => {
@@ -407,16 +407,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             it('should return a 404 if one of the variable type is unsupported', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByCurrencyAndUnsupportedType?currency=GBP&instrumentId[]=BobCorp')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
-                    });
+                    .then((res) =>{});
             });
 
-            it('should return a 404 if the query specified variable is an unsupported array type', () => {
+            it('should return all asset if the query specified variable is an array type', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByExchangeIdUnsupported?exchangeId[]=LDN')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
+                    .then((res) => {
+                        res.should.be.json;
+                        res.should.have.status(200);
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
                     });
             });
             it('should return an issuer with a member id', () => {
@@ -444,19 +446,11 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return chai.request(app)
                     .get('/api/queries/findTxnByTransactionType')
                     .then((res) => {
-                        console.log('res=' + res);
                         res.should.be.json;
                         res.should.not.be.null;
                         res.body.length.should.equal(2);
                         res.body[0].transactionType.should.equal('PublishBond');
                         res.body[1].transactionType.should.equal('PublishBond');
-                    });
-            });
-            it('should return a 404 if the specified asset does not exist', () => {
-                return chai.request(app)
-                    .get('/api/queries/findBondBeforeMaturity?maturity=2019-02-27T21:03:52.000Z')
-                    .catch((err) => {
-                        err.response.should.have.status(404);
                     });
             });
             it('should return a 404 if the specified query does not exist', () => {
