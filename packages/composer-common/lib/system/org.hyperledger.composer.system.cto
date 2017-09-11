@@ -108,8 +108,6 @@ asset HistorianRecord identified by transactionId {
 // System transactions that act on Registries of any type
 abstract transaction RegistryTransaction {
   --> Registry targetRegistry
-  // o String registryType
-  // o String registryId
 }
 
 abstract transaction AssetTransaction extends RegistryTransaction {

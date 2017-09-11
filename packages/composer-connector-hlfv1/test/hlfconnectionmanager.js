@@ -82,25 +82,21 @@ describe('HLFConnectionManager', () => {
         it('should insert a debug logger', () => {
             sandbox.stub(LOG, 'debug');
             global.hfc.logger.debug('hello %s', 'world');
-            // sinon.assert.calledOnce(LOG.debug);
         });
 
         it('should insert a info logger', () => {
             sandbox.stub(LOG, 'debug');
             global.hfc.logger.info('hello %s', 'world');
-            // sinon.assert.calledOnce(LOG.debug);
         });
 
         it('should insert a warn logger', () => {
             sandbox.stub(LOG, 'debug');
             global.hfc.logger.warn('hello %s', 'world');
-            // sinon.assert.calledOnce(LOG.debug);
         });
 
         it('should insert a error logger', () => {
             sandbox.stub(LOG, 'debug');
             global.hfc.logger.error('hello %s', 'world');
-            // sinon.assert.calledOnce(LOG.debug);
         });
 
     });

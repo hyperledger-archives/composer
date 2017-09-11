@@ -38,7 +38,7 @@ class ParticipantRegistry extends Registry {
      * @param {Factory} factory The factory to use for this participant registry.
      * @param {Serializer} serializer The Serializer to use for this participant registry.
      * @param {BusinessNetworkConnection} bnc BusinessNetworkConnection to use
-     * @param {Boolean} includeSystem Should system registries be included? (optional, default to false)
+     * @param {Boolean} [includeSystem] Should system registries be included? (optional, default to false)
      * @return {Promise} A promise that will be resolved with a list of {@link ParticipantRegistry}
      * instances representing the participant registries.
      */

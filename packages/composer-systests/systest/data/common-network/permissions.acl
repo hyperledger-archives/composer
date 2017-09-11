@@ -9,7 +9,7 @@ rule R1a {
 rule R1b {
     description: "Alice can access the historian but Bob can not"
     participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
-    operation: READ
+    operation: ALL
     resource: "org.hyperledger.composer.system.HistorianRecord"
     action: DENY
 }
@@ -34,32 +34,38 @@ rule BobreadyOnly {
     description: "Alice can access anything"
     participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
     operation: READ
-    resource: "org.hyperledger.composer.system.**"
+    resource: "org.hyperledger.composer.system.Network"
+    action: ALLOW
+}
+rule BobreadyOnly2 {
+    description: "Alice can access anything"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: READ
+    resource: "org.hyperledger.composer.system.AssetRegistry"
+    action: ALLOW
+}
+rule BobreadyOnly3 {
+    description: "Alice can access anything"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: READ
+    resource: "org.hyperledger.composer.system.ParticipantRegistry"
     action: ALLOW
 }
 
-rule temp1breadyOnly {
+rule CharlieReadOnly1 {
     description: "Alice can access anything"
     participant: "systest.accesscontrols.SampleParticipant#charlie@mailcorp.com"
     operation: READ
-    resource: "org.hyperledger.composer.system.**"
+    resource: "org.hyperledger.composer.system.Network"
     action: ALLOW
 }
 
-// rule CharlieReadOnly1 {
-//     description: "Alice can access anything"
-//     participant: "systest.accesscontrols.SampleParticipant#charlie@mailcorp.com"
-//     operation: READ
-//     resource: "org.hyperledger.composer.system.Network"
-//     action: ALLOW
-// }
-
-// rule CharlieReadOnly2 {
-//     description: "Alice can access anything"
-//     participant: "systest.accesscontrols.SampleParticipant#charlie@mailcorp.com"
-//     operation: READ
-//     resource: "org.hyperledger.composer.system.AssetRegistry#org.hyperledger.composer.system.HistorianRecord"
-//     action: ALLOW
-// }
+rule CharlieReadOnly2 {
+    description: "Alice can access anything"
+    participant: "systest.accesscontrols.SampleParticipant#charlie@mailcorp.com"
+    operation: READ
+    resource: "org.hyperledger.composer.system.AssetRegistry#org.hyperledger.composer.system.HistorianRecord"
+    action: ALLOW
+}
 
 

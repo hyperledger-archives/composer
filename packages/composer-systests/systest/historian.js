@@ -257,26 +257,18 @@ describe('Historian', () => {
                     rmAssetTransactionRegistry = result;
                     return historian.getAll();
                 }).then((result) => {
-
-
                     hrecords = result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.RemoveAsset';
                     });
                     hrecords.length.should.equal(1);
                     return client.getTransactionRegistry('org.hyperledger.composer.system.RemoveAsset');
                 }).then((result) => {
-                    //console.log(hrecords);
                     rmAssetTransactionRegistry = result;
                     return rmAssetTransactionRegistry.get(hrecords[0].transactionId);
                 }).then((result) => {
-                    //console.log(result);
-
-
                     result.resourceIds[0].should.equal('dogeAsset1');
                     return rmAssetTransactionRegistry.get('dogAsset1');
-
                 }).should.be.rejectedWith(/does not exist/);
-
 
         });
 
@@ -418,21 +410,15 @@ describe('Historian', () => {
                     rmParticipantTransactionRegistry = result;
                     return historian.getAll();
                 }).then((result) => {
-
-
                     hrecords = result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.RemoveParticipant';
                     });
                     hrecords.length.should.equal(1);
                     return client.getTransactionRegistry('org.hyperledger.composer.system.RemoveParticipant');
                 }).then((result) => {
-                    //console.log(hrecords);
                     rmParticipantTransactionRegistry = result;
                     return rmParticipantTransactionRegistry.get(hrecords[0].transactionId);
                 }).then((result) => {
-                    //console.log(result);
-
-
                     result.resourceIds[0].should.equal('dogeParticipant1');
                     return rmParticipantTransactionRegistry.get('dogParticipant1');
 
@@ -464,7 +450,7 @@ describe('Historian', () => {
     });
 
     describe('Transaction invocations', () => {
-        it('Succesful transaction should have contents recorded', () => {
+        it('Successful transaction should have contents recorded', () => {
             let factory = client.getBusinessNetwork().getFactory();
             let transaction = factory.newTransaction('systest.transactions', 'SimpleTransactionWithPrimitiveTypes');
             let historian, txRegistry;
@@ -495,7 +481,7 @@ describe('Historian', () => {
                 });
         });
 
-        it('Unsuccesful transaction should not cause issues', () => {
+        it('Unsuccessful transaction should not cause issues', () => {
 
             let factory = client.getBusinessNetwork().getFactory();
             let transaction = factory.newTransaction('systest.transactions', 'SimpleTransactionWithPrimitiveTypes');
@@ -522,11 +508,10 @@ describe('Historian', () => {
 
 
     describe('ACLs', () => {
-        let businessNetworkDefinition;
+
         let aliceClient, bobClient, charlieClient;
         let alice, bob, charlie;
-        let aliceAssetRegistry, bobAssetRegistry;
-        let aliceParticipantRegistry, bobParticipantRegistry;
+
         let aliceCar, bobCar;
 
         before(() => {
@@ -589,24 +574,6 @@ describe('Historian', () => {
                 })
                 .then((assetRegistry) => {
                     return assetRegistry.addAll([aliceCar, bobCar]);
-                })
-                .then(() => {
-                    return aliceClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
-                })
-                .then((assetRegistry) => {
-                    aliceAssetRegistry = assetRegistry;
-                    return bobClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
-                })
-                .then((assetRegistry) => {
-                    bobAssetRegistry = assetRegistry;
-                    return aliceClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
-                })
-                .then((participantRegistry) => {
-                    aliceParticipantRegistry = participantRegistry;
-                    return bobClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
-                })
-                .then((participantRegistry) => {
-                    bobParticipantRegistry = participantRegistry;
                 });
         });
         it('Check the issue identity calls are there', () => {
@@ -627,10 +594,30 @@ describe('Historian', () => {
                 });
         });
         it('Allow alice access to historian', () => {
-            return aliceClient.getHistorian();
+            let expectedTxTypes=['org.hyperledger.composer.system.AddAsset',
+                'org.hyperledger.composer.system.IssueIdentity',
+                'org.hyperledger.composer.system.ActivateCurrentIdentity',
+                'org.hyperledger.composer.system.IssueIdentity',
+                'org.hyperledger.composer.system.AddParticipant',
+                'org.hyperledger.composer.system.ActivateCurrentIdentity',
+                'org.hyperledger.composer.system.ActivateCurrentIdentity',
+                'org.hyperledger.composer.system.IssueIdentity',
+            ].sort();
+            return aliceClient.getHistorian()
+            .then((result) => {
+                return result.getAll();
+            }).then( (result)=>{
+                result.reduce((accumulator,value)=>{
+                    accumulator.push(value.transactionType);
+                    return accumulator; },[]).sort().should.deep.equal(expectedTxTypes);
+            } );
         });
         it('Deny bob alice access to historian', () => {
-            return bobClient.getHistorian();
+
+            return bobClient.getHistorian()
+                     .then((result) => {
+                         return result.getAll();
+                     }).then((result)=>{result.length.should.equal(0);});
         });
         it('Allow acces to historian regsitry, but not to transaction information', () => {
             let historian;
@@ -643,23 +630,16 @@ describe('Historian', () => {
                     return assetRegistry.add(asset);
                 })
                 .then(() => {
-                    return client.getHistorian();
+                    return charlieClient.getHistorian();
                 })
                 .then((result) => {
                     historian = result;
-                    console.log('Charlie getting all historian records');
                     return historian.getAll();
                 })
                 .then((result) => {
-
-                    let records = result.filter((e) => { e.transactionType === 'org.hyperledger.composer.system.AddAsset'; });
-                    console.log(records);
-                    // return charlieClient.getTransactionRegistry('org.hyperledger.composer.system.AddAsset').should.be.rejected();
+                    return charlieClient.getTransactionRegistry('org.hyperledger.composer.system.AddAsset').should.be.rejectedWith(/does not have \'READ\' access /);
                 });
-
             // add a new participant charlie, who can not access the relationships parts.
-
-
         });
         it('Allow acces to historian regsitry, but not to event information', () => { });
         it('Allow acces to historian regsitry, but not to participant or identity information', () => { });

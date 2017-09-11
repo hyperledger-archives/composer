@@ -113,7 +113,7 @@ class ConnectionProfileManager {
                     } else {
                         // Not registered using registerConnectionManager, we now
                         // need to search for the connector module in our module
-                        // and all of the parent modules (the ones who require'd
+                        // and all of the parent modules (the ones who required
                         // us) as we do not depend on any connector modules.
                         let curmod = module;
                         while (curmod) {
@@ -151,10 +151,13 @@ class ConnectionProfileManager {
                     }
 
                 } catch (e) {
+                    // takes the error list, and filters out duplicate lines
                     errorList.push(e.message);
+                    errorList.filter((element, index, self)=>{
+                        return index === self.indexOf(element);
+                    });
 
-
-                    const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${e}`);
+                    const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${errorList.join('-')}`);
                     LOG.error(METHOD, newError);
                     throw newError;
                 }

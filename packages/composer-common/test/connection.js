@@ -294,13 +294,13 @@ describe('Connection', () => {
             mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
-            // (() => {
+
             return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
             });
-            // }).should.resolve();
+
         });
 
     });

@@ -14,21 +14,14 @@
 
 'use strict';
 
-// const AclCompiler = require('../lib/aclcompiler');
-// const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-// const CompiledAclBundle = require('../lib/compiledaclbundle');
-// const CompiledQueryBundle = require('../lib/compiledquerybundle');
-// const CompiledScriptBundle = require('../lib/compiledscriptbundle');
+
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
-// const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
-// const ScriptCompiler = require('../lib/scriptcompiler');
-// const ScriptManager = require('composer-common').ScriptManager;
 const version = require('../package.json').version;
 const Serializer = require('composer-common').Serializer;
 const AccessController = require('../lib/accesscontroller');

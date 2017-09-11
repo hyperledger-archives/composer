@@ -16,7 +16,6 @@
 
 const Resource = require('composer-common').Resource;
 const Util = require('composer-common').Util;
-// const ModelUtil = require('composer-common').ModelUtil;
 
 /**
  * Class representing an Abstract Registry.
@@ -33,7 +32,7 @@ class Registry {
      * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {string} registryType The type of this registry.
-     * @param {boolean} includeSystem True if system regisitries should be included (optional default is false)
+     * @param {boolean} [includeSystem] True if system registries should be included (optional default is false)
      * @return {Promise} A promise that will be resolved with an array of JSON
      * objects representing the registries.
      */
@@ -138,7 +137,7 @@ class Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this registry.
      * @param {Factory} factory The factory to use for this registry.
      * @param {Serializer} serializer The Serializer to use for this registry.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
      * TODO: Rationalize the bnc with the other objects - as the bnc contains these other arguments
      */
     constructor(registryType, id, name, securityContext, modelManager, factory, serializer,bnc) {
@@ -179,7 +178,7 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
-        // console.log('Adding resources; this is a :'+this.registryType+': registry with id :'+this.id+':');
+
         let txName = 'Add'+this.registryType;
 
         // create the new system transaction to add the resources
@@ -348,7 +347,7 @@ class Registry {
      * The JSONata expression is applied to each resource in the registry, and
      * resources are returned if the JSONata expression returns a truthy value for that
      * resource.
-     *
+     * @deprecated this function will be removed
      * @param {string} expression The JSONata expression.
      * @return {Promise} A promise that will be resolved with an array of {@link
      * Resource} instances representing the assets that match the query.
@@ -377,6 +376,7 @@ class Registry {
      * purposes. You cannot use the {@link add} or {@link update} functions with
      * data returned by this function.
      *
+     * @deprecated this function will be removed
      * @param {string} expression The JSONata expression.
      * @return {Promise} A promise that will be resolved with an array of JavaScript
      * objects representing the resources and all of their resolved relationships.

@@ -33,6 +33,7 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('../lib/transactionregistry');
+const Registry = require('../lib/registry');
 const Historian = require('../lib/historian');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
@@ -247,6 +248,46 @@ describe('BusinessNetworkConnection', () => {
                     should.equal(businessNetworkConnection.connection, null);
                     sinon.assert.calledOnce(mockConnection.disconnect);
                 });
+        });
+
+    });
+
+    describe('#getRegistry',() => {
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves({});
+            // businessNetworkConnection.getModelManager.returns(modelManager);
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAssetRegistry('wowsuchregistry')
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should get an tx registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleTransaction');
+        });
+        it('should get an asset registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleAsset');
+        });
+        it('should get an participant registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleParticipant');
         });
 
     });

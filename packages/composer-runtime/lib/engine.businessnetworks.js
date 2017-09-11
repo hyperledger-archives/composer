@@ -14,8 +14,6 @@
 
 'use strict';
 
-// const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-// const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const util = require('util');
 
@@ -102,107 +100,6 @@ class EngineBusinessNetworks {
                 LOG.exit(method);
             });
     }
-
-
-    // /**
-    //  * Update the business network archive.
-    //  * @param {Context} context The request context.
-    //  * @param {string[]} args The arguments to pass to the chaincode function.
-    //  * @return {Promise} A promise that will be resolved when complete, or rejected
-    //  * with an error.
-    //  */
-    // updateBusinessNetwork(context, cache,transaction) {
-    //     // const Context = require('./context');
-    //     let args=[transaction.businessNetworkArchive];
-    //     const method = 'updateBusinessNetwork';
-    //     LOG.entry(method, context, args);
-    //     if (args.length !== 1) {
-    //         LOG.error(method, 'Invalid arguments', args);
-    //         throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive']));
-    //     }
-    //     let dataService = context.getDataService();
-    //     let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
-    //     let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
-    //     let sysdata, resource;
-    //     return dataService.getCollection('$sysdata')
-    //         .then((result) => {
-    //             sysdata = result;
-    //             return sysdata.get('metanetwork');
-    //         })
-    //         .then((result) => {
-    //             resource = context.getSerializer().fromJSON(result);
-    //             return context.getAccessController().check(resource, 'UPDATE');
-    //         })
-    //         // return Promise.resolve()
-    //         .then(() => {
-
-    //             // Load, validate, and hash the business network definition.
-    //             LOG.debug(method, 'Loading business network definition');
-    //             businessNetworkBase64 = args[0];
-    //             let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-    //             let sha256 = createHash('sha256');
-    //             businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
-    //             LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
-    //             return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-
-    //         })
-    //         .then((businessNetworkDefinition_) => {
-
-    //             // // Cache the business network.
-    //             // businessNetworkDefinition = businessNetworkDefinition_;
-    //             // LOG.debug(method, 'Loaded business network definition, storing in cache');
-    //             // Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
-
-    //             // // Cache the compiled script bundle.
-    //             // compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-    //             // LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-    //             // Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
-
-    //             // // Cache the compiled query bundle.
-    //             // compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-    //             // LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-    //             // Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
-
-    //             // // Cache the compiled ACL bundle.
-    //             // compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-    //             // LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-    //             // Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
-
-    //             // // Get the sysdata collection where the business network definition is stored.
-    //             // LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-
-    //             // Update the business network definition in the sysdata collection.
-    //             return sysdata.update('businessnetwork', {
-    //                 data: businessNetworkBase64,
-    //                 hash: businessNetworkHash
-    //             });
-
-    //         })
-    //         .then(() => {
-
-    //             // Reinitialize the context to reload the business network.
-    //             LOG.debug(method, 'Reinitializing context');
-    //             return context.initialize({
-    //                 businessNetworkDefinition: businessNetworkDefinition,
-    //                 compiledScriptBundle: compiledScriptBundle,
-    //                 compiledQueryBundle: compiledQueryBundle,
-    //                 compiledAclBundle: compiledAclBundle,
-    //                 reinitialize: true
-    //             });
-
-    //         })
-    //         .then(() => {
-
-    //             // Create all other default registries.
-    //             LOG.debug(method, 'Creating default registries');
-    //             let registryManager = context.getRegistryManager();
-    //             return registryManager.createDefaults();
-
-    //         })
-    //         .then(() => {
-    //             LOG.exit(method);
-    //         });
-    // }
 
     /**
      * Reset the business network by clearing all data.

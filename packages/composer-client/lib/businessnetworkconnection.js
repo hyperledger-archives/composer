@@ -115,7 +115,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * });
      * @return {Promise} - A promise that will be resolved with a list of existing
      * asset registries
-     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
+     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      */
     getAllAssetRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
@@ -201,7 +201,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *
      * @return {Promise} - A promise that will be resolved with a list of existing
      * participant registries
-     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
+     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      */
     getAllParticipantRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
@@ -279,7 +279,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getTransactionRegistry();
+     *     return businessNetworkDefinition.getTransactionRegistry('org.acme.exampleTransaction');
      * })
      * .then(function(transactionRegistry){
      *     // Retrieved transaction registry.
@@ -304,7 +304,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(transactionRegistries){
      *     // Retrieved transaction Registries
      * });
-     * @param {boolean} includeSystem if true the returned list will include the system transaction registries (optional, default to false)
+     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
     getAllTransactionRegistries(includeSystem) {
@@ -320,8 +320,8 @@ class BusinessNetworkConnection extends EventEmitter {
      * // Determine whether an transaction registry exists
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.transactionRegistryExists('businessNetworkIdentifier.registryId');
+     * .then(function(businessNetwork){
+     *     return businessNetwork.transactionRegistryExists('businessNetworkIdentifier.registryId');
      * })
      * .then(function(exists){
      *     // if (exists === true) {
@@ -403,8 +403,8 @@ class BusinessNetworkConnection extends EventEmitter {
      * });
      * @param {string} connectionProfile - The name of the connection profile
      * @param {string} businessNetwork - The identifier of the business network
-     * @param {string} enrollmentID the enrollment ID of the user
-     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {string} enrollmentID the enrolment ID of the user
+     * @param {string} enrollmentSecret the enrolment secret of the user
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
@@ -444,28 +444,35 @@ class BusinessNetworkConnection extends EventEmitter {
             });
     }
 
+
     /**
-     * Given a fully qualified name, works out and looks up the regsitry that this resource will be found in.
-     * This only gives back the system default registry - it does not look in any application defined registry
-     *
-     * @param {String} fullyQualifiedName The fully qualififed name of the resources
+     * Given a fully qualified name, works out and looks up the registry that this resource will be found in.
+     * This only gives back the default registry - it does not look in any application defined registry.
+     * @example
+     * // Locate the registry for a fully qualififed name
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetwork){
+     *     var sampleAssetRegistry = businessNetwork.getRegistry('org.acme.sampleAsset');
+     *     var sampleTransactionRegistry = businessNetwork.getRegistry('org.acme.sampleTransaction');
+     *      var sampleParticipantRegistry = businessNetwork.getRegistry('org.acme.sampleParticipant');
+     * });
+     * @param {String} fullyQualifiedName The fully qualified name of the resources
      * @return {Promise} resolved with the registry that this fqn could be found in by default
      */
     getRegistry(fullyQualifiedName) {
         Util.securityCheck(this.securityContext);
-
-        let type = this.getModelManager().getType(fullyQualifiedName);
+        let businessNetwork= this.getBusinessNetwork();
+        let type = businessNetwork.getModelManager().getType(fullyQualifiedName).getSystemType();
         return Registry.getRegistry(this.securityContext, type, fullyQualifiedName)
         .then((registry) => {
             switch (type) {
             case 'Transaction':
-                return new TransactionRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
+                return new TransactionRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
             case 'Asset':
-                return new AssetRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
+                return new AssetRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
             case 'Participant':
-                return new ParticipantRegistry(registry.id, registry.name, this.securityContext, this.getModelManager(), this.getFactory(), this.getSerializer());
-            default:
-                return Promise.reject('Unkown what type of registry this could be in');
+                return new ParticipantRegistry(registry.id, registry.name, this.securityContext,  businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
             }
         });
 
@@ -495,7 +502,7 @@ class BusinessNetworkConnection extends EventEmitter {
         return this.connection.disconnect()
             .then(() => {
                 this.connection.removeListener('events', () => {
-                    LOG.debug(method, 'removeLisener');
+                    LOG.debug(method, 'removeListener');
                 });
                 this.connection = null;
                 this.securityContext = null;
@@ -651,7 +658,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(){
      *     // Connection tested.
      * });
-     * @return {Promise} A promise that will be fufilled when the connection has
+     * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
     ping() {
@@ -678,7 +685,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the client node.js module.
      * @private
-     * @return {Promise} A promise that will be fufilled when the connection has
+     * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
     pingInner() {
@@ -695,7 +702,7 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Activate the current identity on the currently connected business network.
      * @private
-     * @return {Promise} A promise that will be fufilled when the connection has
+     * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
     activate() {

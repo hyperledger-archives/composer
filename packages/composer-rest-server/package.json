@@ -19,7 +19,7 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "test": "nyc mocha --recursive -t 10000",
-    "mocha": "mocha --recursive -t 10000 --bail"
+    "mocha": "mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",

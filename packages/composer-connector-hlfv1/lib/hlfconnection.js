@@ -632,42 +632,6 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    // update(securityContext, businessNetworkDefinition) {
-    //     const method = 'update';
-    //     LOG.entry(method, securityContext, businessNetworkDefinition);
-
-    //     // Check that a valid security context has been specified.
-    //     HLFUtil.securityCheck(securityContext);
-
-    //     // Validate all the arguments.
-    //     if (!businessNetworkDefinition) {
-    //         throw new Error('businessNetworkDefinition not specified');
-    //     }
-
-    //     // Serialize the business network.
-    //     return businessNetworkDefinition.toArchive()
-    //         .then((businessNetworkArchive) => {
-    //             // Send an update request to the chaincode.
-    //             return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [businessNetworkArchive.toString('base64')]);
-    //         })
-    //         .then(() => {
-    //             LOG.exit(method);
-    //         })
-    //         .catch((error) => {
-    //             const newError = new Error('Error trying to update business network. ' + error);
-    //             LOG.error(method, newError);
-    //             throw newError;
-    //         });
-    // }
-
-    /**
      * Test ("ping") the connection to the business network.
      * @param {HLFSecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the

@@ -77,7 +77,7 @@ class EngineTransactions {
                 const api = context.getApi();
                 return context.getTransactionHandlers().reduce((promise, transactionHandler) => {
                     return promise.then(() => {
-                        // let _nf =  transactionHandler.execute.bind(this);
+
                         return transactionHandler.execute(api, resolvedTransaction)
                             .then((count) => {
                                 totalCount += count;
@@ -94,6 +94,8 @@ class EngineTransactions {
                     .then((count) => {
                         totalCount += count;
                     });
+
+
 
             })
             .then(() => {

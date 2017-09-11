@@ -314,7 +314,6 @@ describe('Context', () => {
             mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
             context.function = 'submitTransaction';
             context.arguments = [
-                // '45ea5b75-cc00-40bb-afad-4952ad97d469',
                 JSON.stringify({ $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
             ];
             const error = new Error('such error');

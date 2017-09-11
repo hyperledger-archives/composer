@@ -33,9 +33,6 @@ const TYPE_MAP = {
 
 // This is a list of non-abstract system types that we do not want registries created for.
 const VIRTUAL_TYPES = [
-    /*'AssetRegistry',
-    'ParticipantRegistry',
-    'TransactionRegistry',*/
     'Network'
 ];
 

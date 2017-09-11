@@ -30,7 +30,6 @@ class TransactionHandler {
      */
     constructor() {
         this.handlers = {};
-        this.id=Math.random();
     }
 
     /**
