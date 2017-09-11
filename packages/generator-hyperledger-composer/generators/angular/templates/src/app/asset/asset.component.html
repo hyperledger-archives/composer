@@ -18,8 +18,9 @@
                   <label>
                     <input
                       <% if(currentAsset.properties[x].array === false){ %>
-                        formControlName="<%currentAsset.properties[x].name%>"
+                        formControlName="<%=currentAsset.properties[x].name%>"
                       <% } %>
+                      name="<%=currentAsset.properties[x].name%>"
                       value="<%=currentAsset.properties[x].enumValues[y].name%>"
                       type="<%=currentAsset.properties[x].array ? 'checkbox' : 'radio'%>"
                       <% if(currentAsset.properties[x].array){ %>
@@ -95,6 +96,7 @@
                             formControlName="<%=currentAsset.properties[x].name%>"
                             [ngModel]="<%=currentAsset.properties[x].name%>"
                           <% } %>
+                          name="<%=currentAsset.properties[x].name%>"
                           value="<%=currentAsset.properties[x].enumValues[y].name%>"
                           type="<%=currentAsset.properties[x].array ? 'checkbox' : 'radio'%>"
                           <% if(currentAsset.properties[x].array){ %>

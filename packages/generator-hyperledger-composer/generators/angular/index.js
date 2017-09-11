@@ -436,7 +436,7 @@ module.exports = yeoman.Base.extend({
                     assetProperties.forEach((property) => {
                         if (property.constructor.name === 'Field') {
                             if (property.isTypeEnum()) {
-                                // handle enumeration
+                                // handle enumerations
                                 let enumValues = [];
                                 // compose array of enumeration values
                                 enumerations.forEach(enumeration => {
@@ -453,6 +453,7 @@ module.exports = yeoman.Base.extend({
                                     enumValues,
                                 });
                             } else if (property.isPrimitive() || !property.isPrimitive()) {
+
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
