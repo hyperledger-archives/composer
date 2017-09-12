@@ -1,0 +1,126 @@
+/**
+ * AnimalTracking Domain Model and Business Logic
+ *
+ * Defines an Animal Movement compliance model.
+ * Based on DEFRA https://www.gov.uk/animal-movement-england
+ *
+ */
+
+namespace com.hyperledger.composer.animaltracking
+
+/**
+ * The types of animals that could be moved
+ */
+enum AnimalType {
+  o SHEEP_GOAT
+  o CATTLE
+  o PIG
+  o DEER_OTHER
+}
+
+/**
+ * The movement status for an animal
+ */
+enum MovementStatus {
+  o IN_FIELD
+  o IN_TRANSIT
+}
+
+
+
+/**
+ * The production type associated with an animal
+ */
+enum ProductionType {
+  o MEAT
+  o WOOL
+  o DAIRY
+  o BREEDING
+  o OTHER
+}
+
+/**
+ * A Farmer participant
+ */
+abstract participant User identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+/**
+ * A Farmer participant
+ */
+participant Farmer extends User {
+    o String address1
+    o String address2
+    o String county
+    o String postcode
+    --> Business business
+}
+
+/**
+ * A Regulator participant
+ */
+participant Regulator extends User {
+}
+
+/**
+ * A Field asset. A Field is related to a list of animals
+ */
+asset Field identified by cph {
+  o String cph
+  o String name
+  --> Business business
+}
+
+/**
+ * An Animal asset, which is related to a Field
+ */
+asset Animal identified by animalId {
+    o String animalId
+    o AnimalType species
+    o MovementStatus movementStatus
+    o ProductionType productionType
+    --> Field location optional
+    --> Farmer owner
+}
+
+/**
+ * A Business asset which is owned by a Farmer, is related to a list of fields
+ * and has a list of incoming animals.
+ */
+asset Business identified by sbi {
+     o String sbi
+     o String address1
+     o String address2
+     o String county
+     o String postcode
+     --> Farmer owner
+     --> Animal[] incomingAnimals optional
+}
+
+/**
+ * An abstract transaction type for animal movements
+ */
+abstract transaction AnimalMovement {
+
+  o String[] logs optional
+    --> Animal animal
+    --> Business from
+    --> Business to
+}
+
+/**
+ * A transaction type for an animal leaving a farm
+ */
+transaction AnimalMovementDeparture extends AnimalMovement {
+  --> Field fromField
+}
+
+/**
+ * A transaction type for an animal arriving at a field
+ */
+transaction AnimalMovementArrival extends AnimalMovement {
+  --> Field arrivalField
+}

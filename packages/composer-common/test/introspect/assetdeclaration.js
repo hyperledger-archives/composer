@@ -91,7 +91,7 @@ describe('AssetDeclaration', () => {
         //     mockModelFile.getType.returns(mockAssetDeclaration);
         //     asset.validate();
         //     sinon.assert.called(mockModelManager.getType);
-        //     sinon.assert.calledWith(mockModelManager.getType, 'com.ibm.elsewhere.BaseAsset');
+        //     sinon.assert.calledWith(mockModelManager.getType, 'com.hyperledger.elsewhere.BaseAsset');
         // });
 
         it('should throw when it fails to resolve an imported base asset', () => {
@@ -146,7 +146,7 @@ describe('AssetDeclaration', () => {
 
         it('should return the fully qualified super type', () => {
             let asset = loadLastAssetDeclaration('test/data/parser/assetdeclaration.json.cto');
-            asset.getSuperType().should.equal('com.ibm.testing.BaseAsset');
+            asset.getSuperType().should.equal('com.hyperledger.testing.BaseAsset');
         });
 
         it('should throw when the super type is missing', () => {

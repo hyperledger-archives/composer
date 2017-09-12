@@ -25,7 +25,7 @@ const ModelManager = require('../../../modelmanager');
 const BusinessNetworkDefinition = require('../../../businessnetworkdefinition');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
-const debug = require('debug')('concerto:jsonschemavisitor');
+const debug = require('debug')('composer:jsonschemavisitor');
 const util = require('util');
 
 /**

@@ -211,7 +211,7 @@ describe('ClassDeclaration', () => {
     describe('#getFullyQualifiedName', () => {
 
         it('should return the fully qualified name if function is in a namespace', () => {
-            mockModelFile.getNamespace.returns('com.ibm.testing');
+            mockModelFile.getNamespace.returns('com.hyperledger.testing');
             let clz = new ClassDeclaration(mockModelFile, {
                 id: {
                     name: 'suchName'
@@ -221,7 +221,7 @@ describe('ClassDeclaration', () => {
                     ]
                 }
             });
-            clz.getFullyQualifiedName().should.equal('com.ibm.testing.suchName');
+            clz.getFullyQualifiedName().should.equal('com.hyperledger.testing.suchName');
         });
 
     });

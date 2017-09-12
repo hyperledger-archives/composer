@@ -1,0 +1,28 @@
+{
+  "name": "fabric-dev-servers",
+  "version": "0.0.5",
+  "description": "Helper Scripts to start Hyperledger Fabric v1.0 for development/test purposes",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperledger/composer-tools.git"
+  },
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0",
+  "keywords": [
+    "hyperledger",
+    "blockchain",
+    "solutions"
+  ],
+  "dependencies": {
+  },
+  "scripts": {
+    "build-archives": "gulp --gulpfile .travis/gulp.js"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-gzip": "^1.4.0",
+    "gulp-tar": "^1.9.0",
+    "gulp-zip": "^4.0.0"
+  }
+}
