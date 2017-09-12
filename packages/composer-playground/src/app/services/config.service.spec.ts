@@ -105,7 +105,7 @@ describe('ConfigService', () => {
     describe('isWebOnly', () => {
         it('should throw if not initialized', fakeAsync(inject([ConfigService], (service: ConfigService) => {
             (() => {
-                service.getConfig();
+                service.isWebOnly();
             }).should.throw(/config has not been loaded/);
         })));
 

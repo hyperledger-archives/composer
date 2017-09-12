@@ -175,16 +175,32 @@ export class IdentityCardService {
         });
     }
 
-    createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any): Promise<string> {
-        let metadata = {
-            name: name,
-            businessNetwork: businessNetworkName,
-            enrollmentId: enrollmentId,
-            enrollmentSecret: enrollmentSecret
-        };
+    createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any, credentials: any): Promise<string> {
+        let metadata;
+
+        if (enrollmentId !== null && enrollmentSecret !== null) {
+            metadata = {
+                name: name,
+                businessNetwork: businessNetworkName,
+                enrollmentId: enrollmentId,
+                enrollmentSecret: enrollmentSecret
+            };
+        } else {
+            metadata = {
+                name: name,
+                businessNetwork: businessNetworkName,
+                enrollmentId: enrollmentId,
+            };
+        }
 
         let card: IdCard = new IdCard(metadata, connectionProfile);
-        return this.addIdentityCard(card);
+
+        if (credentials) {
+            card.setCredentials(credentials);
+            return this.addIdentityCard(card);
+        } else {
+            return this.addIdentityCard(card);
+        }
     }
 
     addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string> {
@@ -323,7 +339,7 @@ export class IdentityCardService {
             let connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
             let enrollmentCredentials = card.getEnrollmentCredentials();
             let credentials = card.getCredentials();
-
+            console.log('card --- ', card);
             if (credentials && credentials.certificate && credentials.privateKey) {
                 hasCredentials = true;
 

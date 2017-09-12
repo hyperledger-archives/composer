@@ -149,6 +149,74 @@ describe('EditCardCredentialsComponent', () => {
             component['validContents']().should.be.false;
         });
 
+        it('should not validate if an add is in progress when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addInProgress'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('should not validate if the public certificate is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = null;
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the private certificate is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = null;
+            component['userId'] = 'userID';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the user ID is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = null;
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if the business network name is empty when using certificates', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addInProgress'] = false;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = null;
+
+            component['validContents']().should.be.false;
+        });
+
+        it('should not validate if an add is in progress when specifying user ID/Secret', () => {
+            // Secret/ID path
+            component['useCerts'] = false;
+            component['addInProgress'] = true;
+            component['userId'] = 'myId';
+            component['userSecret'] = 'mySecret';
+            component['busNetName'] = 'myName';
+
+            component['validContents']().should.be.false;
+        });
+
         it('should not validate if a userID field is empty when specifying user ID/Secret', () => {
             // Secret/ID path
             component['useCerts'] = false;

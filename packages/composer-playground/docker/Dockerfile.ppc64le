@@ -7,11 +7,15 @@ ENV NPM_CONFIG_LOGLEVEL warn
 ARG VERSION=latest
 
 # Need to install extra dependencies for native modules.
-RUN npm install pm2 composer-playground@${VERSION} && \
+RUN npm install --unsafe --production -g pm2 composer-playground@${VERSION} && \
     npm cache clean
 
 # Create the composer user ID.
 RUN useradd composer
+
+# Change /home/composer ownership
+RUN mkdir -p /home/composer && \
+    chown composer:composer /home/composer
 
 # Run as the composer user ID.
 USER composer
