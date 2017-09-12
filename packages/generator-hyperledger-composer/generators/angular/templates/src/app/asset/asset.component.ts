@@ -18,7 +18,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 	private errorMessage;
 
   <% for(var x=0;x<currentAsset.properties.length;x++){ %>
-      <%= currentAsset.properties[x].name %> = new FormControl("", Validators.required);
+      <% if(currentAsset.properties[x].array === true && currentAsset.properties[x].enum === true){ %>
+          <%= currentAsset.properties[x].name %> = { value: [] };
+        <% }else{ %>
+          <%= currentAsset.properties[x].name %> = new FormControl("", Validators.required);
+        <% } %>
   <%}%>
 
 
@@ -62,8 +66,32 @@ export class <%= currentAsset.name %>Component implements OnInit {
     });
   }
 
-  addAsset(form: any): Promise<any> {
+	/**
+   * Event handler for changing the checked state of a checkbox (handles array enumeration values)
+   * @param {String} name - the name of the asset field to update
+   * @param {any} value - the enumeration value for which to toggle the checked state
+   */
+  changeArrayValue(name: string, value: any): void {
+    const index = this[name].value.indexOf(value);
+    if (index === -1) {
+      this[name].value.push(value);
+    } else {
+      this[name].value.splice(index, 1);
+    }
+  }
 
+	/**
+	 * Checkbox helper, determining whether an enumeration value should be selected or not (for array enumeration values
+   * only). This is used for checkboxes in the asset updateDialog.
+   * @param {String} name - the name of the asset field to check
+   * @param {any} value - the enumeration value to check for
+   * @return {Boolean} whether the specified asset field contains the provided value
+   */
+  hasArrayValue(name: string, value: any): boolean {
+    return this[name].value.indexOf(value) !== -1;
+  }
+
+  addAsset(form: any): Promise<any> {
     this.asset = {
       $class: "<%= namespace %>.<%= currentAsset.name %>",
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
@@ -189,7 +217,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         if(result.<%=currentAsset.properties[x].name%>){
-          formObject.<%= currentAsset.properties[x].name %> = result.<%= currentAsset.properties[x].name %>;
+          <% if(currentAsset.properties[x].array === true){ %>
+            this.<%= currentAsset.properties[x].name %> = { value: result.<%= currentAsset.properties[x].name %> };
+          <% }else{ %>
+            formObject.<%= currentAsset.properties[x].name %> = result.<%= currentAsset.properties[x].name %>;
+          <% } %>
         }else{
           formObject.<%= currentAsset.properties[x].name %> = null;
         }
