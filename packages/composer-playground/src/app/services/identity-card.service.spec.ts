@@ -334,7 +334,7 @@ describe('IdentityCardService', () => {
                 name: 'hlfv1'
             };
 
-            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile, null)
+            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile, null, [])
                 .then((cardRef) => {
                     let myCard = service.getIdentityCard(cardRef);
                     myCard.getCredentials().should.be.empty;
@@ -349,7 +349,7 @@ describe('IdentityCardService', () => {
             addIdentityCardSpy.should.have.been.called;
         })));
 
-        it('should create and store an identity card using certificates', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        it('should create and store an identity card using certificates and roles', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
             let connectionProfile = {
                 name: 'hlfv1'
@@ -359,10 +359,11 @@ describe('IdentityCardService', () => {
                 privateKey: 'privateKey'
             };
 
-            service.createIdentityCard('bcc', 'cashless-network', 'admin', null, connectionProfile, credentials)
+            service.createIdentityCard('bcc', 'cashless-network', 'admin', null, connectionProfile, credentials, ['PeerAdmin', 'ChannelAdmin'])
                 .then((cardRef) => {
                     let myCard = service.getIdentityCard(cardRef);
                     myCard.getCredentials().should.deep.equal(credentials);
+                    myCard.getRoles().should.deep.equal(['PeerAdmin', 'ChannelAdmin']);
             }).catch((error) => {
                 fail('test failed with error' + error);
             });

@@ -63,7 +63,7 @@ describe('IdentityIssuedComponent', () => {
             mockCard.getConnectionProfile.should.have.been.called;
             mockCard.getBusinessNetworkName.should.have.been.called;
 
-            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'});
+            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'}, sinon.match.any, []);
 
             mockActiveModal.close.should.have.been.called;
         }));
@@ -79,7 +79,7 @@ describe('IdentityIssuedComponent', () => {
             mockCard.getConnectionProfile.should.have.been.called;
             mockCard.getBusinessNetworkName.should.have.been.called;
 
-            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'});
+            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'}, sinon.match.any, []);
             mockActiveModal.dismiss.should.have.been.called;
         }));
     });

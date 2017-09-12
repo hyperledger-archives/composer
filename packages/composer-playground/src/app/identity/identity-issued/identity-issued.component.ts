@@ -26,7 +26,7 @@ export class IdentityIssuedComponent {
         let businessNetworkName = this.identityCardService.getCurrentIdentityCard().getBusinessNetworkName();
         let credentials = this.identityCardService.getCurrentIdentityCard();
 
-        return this.identityCardService.createIdentityCard(this.userID, businessNetworkName, this.userID, this.userSecret, connectionProfile, credentials)
+        return this.identityCardService.createIdentityCard(this.userID, businessNetworkName, this.userID, this.userSecret, connectionProfile, credentials, [])
             .then(() => {
                 this.activeModal.close();
             })
