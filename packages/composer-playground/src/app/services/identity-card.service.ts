@@ -175,7 +175,7 @@ export class IdentityCardService {
         });
     }
 
-    createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any, credentials: any): Promise<string> {
+    createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any, credentials: any, roles: string[]): Promise<string> {
         let metadata;
 
         if (enrollmentId !== null && enrollmentSecret !== null) {
@@ -192,6 +192,8 @@ export class IdentityCardService {
                 enrollmentId: enrollmentId,
             };
         }
+
+        metadata.roles = roles;
 
         let card: IdCard = new IdCard(metadata, connectionProfile);
 
