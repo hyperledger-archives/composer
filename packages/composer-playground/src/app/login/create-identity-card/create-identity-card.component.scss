@@ -23,7 +23,12 @@
   .profiles {
       display: flex;
       flex-direction: row;
-      margin-left: $space-medium;
+      padding-left: $space-medium;
+
+      &.section {
+          border-bottom: 1px solid $fourth-highlight;
+          margin-bottom: $space-medium;
+      }
 
       .description {
         margin-right: $space-xlarge;

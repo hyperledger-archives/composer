@@ -55,7 +55,7 @@ describe(`IdentityCardComponent`, () => {
 
     describe('#dismiss', () => {
         it('should emit dismiss event', (done) => {
-            component.preview = true;
+            component.showDismissIcon = true;
             component.identity = mockIdCard;
 
             component.onDismiss.subscribe((e) => {

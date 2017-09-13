@@ -19,7 +19,7 @@
     </div>
 
     <div class="current-card" *ngIf="identityCard">
-      <identity-card [identity]="identityCard" [preview]="true"
+      <identity-card [identity]="identityCard" [preview]="true" [showDismissIcon]="true"
                      (onDismiss)="removeFile()">
       </identity-card>
     </div>
