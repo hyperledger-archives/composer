@@ -389,6 +389,31 @@ describe(`RegistryComponent`, () => {
 
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
+
+        it('should handle escape', fakeAsync(() => {
+            mockClientService.resolveTransactionRelationship.returns(Promise.resolve({$class: 'myTransaction'}));
+
+            let componentInstance = {
+                transaction: {},
+                events: []
+            };
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: componentInstance,
+                result: Promise.reject(1)
+            });
+
+            let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};
+            component.viewTransactionData(mockTransaction);
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+            componentInstance.transaction.should.deep.equal({$class: 'myTransaction'});
+            componentInstance.events.should.deep.equal(['event 1']);
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
     });
 
     describe('updateTableScroll', () => {

@@ -136,7 +136,9 @@ export class RegistryComponent {
             transactionModalRef.componentInstance.events = transaction.eventsEmitted;
 
             transactionModalRef.result.catch((error) => {
-                this.alertService.errorStatus$.next(error);
+                if (error && error !== 1) {
+                    this.alertService.errorStatus$.next(error);
+                }
             });
         });
     }
