@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { IdentityService } from './identity.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileManager, Logger, BusinessNetworkDefinition } from 'composer-common';

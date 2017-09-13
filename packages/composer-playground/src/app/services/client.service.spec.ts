@@ -18,7 +18,7 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 describe('ClientService', () => {
 
