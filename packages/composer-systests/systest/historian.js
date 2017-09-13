@@ -108,7 +108,7 @@ let validateParticipant = (participant, participantId) => {
 };
 
 let deployCommon =  ()=> {
-    // In this systest we are fully specifying the model file with a fileName and content
+   
     const modelFiles = [
         { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
         { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
@@ -133,7 +133,7 @@ let deployCommon =  ()=> {
 };
 
 
-describe.only('Historian', () => {
+describe('Historian', () => {
 
     describe('CRUD Asset', () => {
         it('should track updates for CREATE asset calls ', () => {
@@ -452,15 +452,25 @@ describe.only('Historian', () => {
         });
     });
 
-    describe('CRUD Identity', () => {
-        it('should track updates for CREATE Identity calls ', () => { });
-        it('should track updates for RETRIEVE Identity calls ', () => { });
-        it('should track updates for UPDATE Identity calls ', () => { });
-        it('should track updates for DELETE Identity calls ', () => { });
-    });
-
     describe('CRUD Registry', () => {
-        it('should track updates for CREATE Registry calls ', () => { });
+        // it('should track updates for CREATE Registry calls ', () => {
+        //     let historian;
+        //     let factory = client.getBusinessNetwork().getFactory();
+        //     client.addAssetRegistry('regid','test registry')
+        //     .then(() => {
+        //         // get the historian
+        //         return client.getHistorian();
+        //     }).then((result) => {
+        //         historian = result;
+        //         return historian.getAll();
+        //     }).then( (result)=>{
+        //         result.forEach((e)=>{
+        //             console.log(e);
+        //         })
+        //     } );
+
+
+        //  });
         it('should track updates for RETRIEVE Registry calls ', () => { });
         it('should track updates for UPDATE Registry calls ', () => { });
         it('should track updates for DELETE Registry calls ', () => { });
@@ -665,10 +675,8 @@ describe.only('Historian', () => {
                 });
             // add a new participant charlie, who can not access the relationships parts.
         });
-        it('Allow acces to historian regsitry, but not to event information', () => { });
-        it('Allow acces to historian regsitry, but not to participant or identity information', () => { });
-    });
 
+    });
 
     describe('Query', () => {
         it('For a set of historian records, then select these base on the transaction timestamp', () => {
@@ -707,7 +715,7 @@ describe.only('Historian', () => {
                     hrecords = result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddAsset';
                     }).sort((a, b) => {
-                        // console.log(a.transactionTimestamp,b.transactionTimestamp);
+                        
                         let ats = new Date(a.transactionTimestamp);
                         let bts = new Date(b.transactionTimestamp);
                         if (ats < bts) {
@@ -718,8 +726,6 @@ describe.only('Historian', () => {
                         // a must be equal to b
                         return 0;
                     });
-
-                    // hrecords.forEach((e)=>{console.log(e.transactionTimestamp);});
 
                     let now = new Date(hrecords[1].transactionTimestamp);
 
@@ -734,13 +740,7 @@ describe.only('Historian', () => {
 
         });
 
-        it('For a given particpant track how what they have changed over time', () => { });
 
-        it('For a given identity track how what they have changed over time', () => { });
-
-        it('For a given regsitry track how what has affected over time', () => { });
-
-        it('For a given transaction track what it has been used for', () => { });
     });
 
 

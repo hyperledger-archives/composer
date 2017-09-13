@@ -30,7 +30,7 @@ chai.use(require('chai-as-promised'));
 
 process.setMaxListeners(Infinity);
 
-describe.only('Identity system tests', () => {
+describe('Identity system tests', () => {
 
     let businessNetworkDefinition;
     let client;
