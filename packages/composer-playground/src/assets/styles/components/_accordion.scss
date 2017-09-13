@@ -1,0 +1,42 @@
+.composer {
+  .card-header {
+    margin-bottom: $space-medium;
+
+    a {
+      padding: $space-small;
+      color: $primary-text;
+      font-family: $font-stack;
+      font-size: 1.15em; //should be 18px
+      font-weight: 300;
+      text-decoration: none;
+      vertical-align: middle;
+
+      &:hover,
+      &:focus {
+        outline: none;
+        background:$fourth-highlight;
+      }
+    }
+
+    svg {
+      height: 1.25rem;
+      width: 1.25rem;
+      padding: 0.25rem;
+      vertical-align: middle;
+    }
+
+    &.active {
+      margin-bottom: 0;
+
+      svg {
+        @include transition(all);
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .card-body {
+    padding-left: $space-medium;
+    margin-bottom: $space-large;
+  }
+}

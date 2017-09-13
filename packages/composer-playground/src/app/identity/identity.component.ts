@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 
 import { IssueIdentityComponent } from './issue-identity';
@@ -9,6 +9,8 @@ import { AlertService } from '../basic-modals/alert.service';
 import { ClientService } from '../services/client.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { IdCard } from 'composer-common';
+
+import { saveAs } from 'file-saver';
 
 @Component({
     selector: 'identity',
@@ -77,23 +79,81 @@ export class IdentityComponent implements OnInit {
     }
 
     issueNewId(): Promise<void> {
-        return this.modalService.open(IssueIdentityComponent).result.then((result) => {
-            if (result) {
-                const modalRef = this.modalService.open(IdentityIssuedComponent);
-                modalRef.componentInstance.userID = result.userID;
-                modalRef.componentInstance.userSecret = result.userSecret;
-
-                return modalRef.result;
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) { // someone hasn't pressed escape
-                this.alertService.errorStatus$.next(reason);
-            }
-        })
+        return this.modalService.open(IssueIdentityComponent).result
+            .then((result) => {
+                if (result) {
+                    let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
+                    if (connectionProfile.type === 'web') {
+                        return this.addIdentityToWallet(result);
+                    } else {
+                        return this.showNewId(result);
+                    }
+                }
+            })
+            .catch((reason) => {
+                if (reason && reason !== ModalDismissReasons.BACKDROP_CLICK && reason !== ModalDismissReasons.ESC) {
+                    this.alertService.errorStatus$.next(reason);
+                }
+            })
             .then(() => {
                 return this.loadAllIdentities();
-            }, (reason) => {
+            })
+            .catch((reason) => {
                 this.alertService.errorStatus$.next(reason);
+            });
+    }
+
+    showNewId(identity: {userID, userSecret}): Promise<any> {
+        const modalRef = this.modalService.open(IdentityIssuedComponent);
+        modalRef.componentInstance.userID = identity.userID;
+        modalRef.componentInstance.userSecret = identity.userSecret;
+
+        return modalRef.result
+            .then((result) => {
+                if (result) {
+                    if (result.choice === 'add') {
+                        return this.addCardToWallet(result.card);
+                    } else if (result.choice === 'export') {
+                        return this.exportIdentity(result.card);
+                    }
+                }
+            });
+    }
+
+    addCardToWallet(card: IdCard): Promise<any> {
+        return this.identityCardService.addIdentityCard(card)
+            .then((cardRef: string) => {
+                this.alertService.successStatus$.next({
+                    title: 'ID Card added to wallet',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully added to your wallet',
+                    icon: '#icon-role_24'
+                });
+            });
+    }
+
+    addIdentityToWallet(identity: {userID, userSecret}): Promise<any> {
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
+        let connectionProfile = currentCard.getConnectionProfile();
+        let businessNetworkName = currentCard.getBusinessNetworkName();
+
+        return this.identityCardService.createIdentityCard(identity.userID, businessNetworkName, identity.userID, identity.userSecret, connectionProfile)
+            .then((cardRef: string) => {
+                this.alertService.successStatus$.next({
+                    title: 'ID Card added to wallet',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully added to your wallet',
+                    icon: '#icon-role_24'
+                });
+            });
+    }
+
+    exportIdentity(card: IdCard): Promise<any> {
+        let fileName = card.getName() + '.card';
+
+        return card.toArchive()
+            .then((archiveData) => {
+                let file = new Blob([archiveData],
+                    {type: 'application/octet-stream'});
+                return saveAs(file, fileName);
             });
     }
 
@@ -161,7 +221,7 @@ export class IdentityComponent implements OnInit {
                 }
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal
-                if (reason && reason !== 1) {
+                if (reason && reason !== ModalDismissReasons.BACKDROP_CLICK && reason !== ModalDismissReasons.ESC) {
                     this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
@@ -217,7 +277,7 @@ export class IdentityComponent implements OnInit {
                 }
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal
-                if (reason && reason !== 1) {
+                if (reason && reason !== ModalDismissReasons.BACKDROP_CLICK && reason !== ModalDismissReasons.ESC) {
                     this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
