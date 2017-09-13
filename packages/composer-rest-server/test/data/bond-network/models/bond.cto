@@ -31,7 +31,7 @@ concept PaymentFrequency {
 }
 
 concept Bond {
-    o String[] instrumentId
+   o String[] instrumentId
     o String description optional
     o String currency optional
     o String[] exchangeId
@@ -40,6 +40,8 @@ concept Bond {
     o String seniority optional
     o CouponType couponType optional
     o Double couponRate optional
+    o Long dayCount optional
+    o Boolean isMatured optional
     o DateTime maturity
     o Double parValue
     o Double faceAmount
