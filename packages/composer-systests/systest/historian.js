@@ -452,37 +452,6 @@ describe('Historian', () => {
         });
     });
 
-    describe('CRUD Registry', () => {
-        // it('should track updates for CREATE Registry calls ', () => {
-        //     let historian;
-        //     let factory = client.getBusinessNetwork().getFactory();
-        //     client.addAssetRegistry('regid','test registry')
-        //     .then(() => {
-        //         // get the historian
-        //         return client.getHistorian();
-        //     }).then((result) => {
-        //         historian = result;
-        //         return historian.getAll();
-        //     }).then( (result)=>{
-        //         result.forEach((e)=>{
-        //             console.log(e);
-        //         })
-        //     } );
-
-
-        //  });
-        it('should track updates for RETRIEVE Registry calls ', () => { });
-        it('should track updates for UPDATE Registry calls ', () => { });
-        it('should track updates for DELETE Registry calls ', () => { });
-    });
-
-    describe('CRUD Network', () => {
-        it('should track updates for CREATE Network calls ', () => { });
-        it('should track updates for RETRIEVE Network calls ', () => { });
-        it('should track updates for UPDATE Network calls ', () => { });
-        it('should track updates for DELETE Network calls ', () => { });
-    });
-
     describe('Transaction invocations', () => {
         it('Successful transaction should have contents recorded', () => {
             let factory = client.getBusinessNetwork().getFactory();
