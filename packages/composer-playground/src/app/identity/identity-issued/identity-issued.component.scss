@@ -10,7 +10,7 @@ identity-issued-modal {
 
       .new-card-options {
         position: absolute;
-        margin-left: 275px; // the size of an ID card
+        left: 275 + $space-medium; // the size of an ID card + padding
         padding: 0 $space-medium $space-medium $space-medium;
 
         dl.enrollment-credentials {
