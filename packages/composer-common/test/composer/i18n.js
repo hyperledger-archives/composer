@@ -33,7 +33,7 @@ describe('Globalization', function() {
     describe('#check globalization library works', function() {
         it('numbered variables using Array', function() {
             const formatter = Globalize('en').messageFormatter('test-hello-array');
-            formatter([ 'Wolfgang', 'Amadeus', 'animaltracking' ]).should.equal('Hello, Wolfgang Amadeus animaltracking');
+            formatter([ 'Wolfgang', 'Amadeus', 'Mozart' ]).should.equal('Hello, Wolfgang Amadeus Mozart');
         });
 
         it('named variables using Object key-value pairs', function() {
@@ -41,8 +41,8 @@ describe('Globalization', function() {
             formatter({
                 first: 'Wolfgang',
                 middle: 'Amadeus',
-                last: 'animaltracking'
-            }).should.equal('Hello, Wolfgang Amadeus animaltracking');
+                last: 'Mozart'
+            }).should.equal('Hello, Wolfgang Amadeus Mozart');
         });
 
         it('repeated numbered variables using Array', function() {
@@ -67,20 +67,20 @@ describe('Globalization', function() {
             let formatter = Globalize.messageFormatter('hello');
 
             // Numbered variables using Array.
-            formatter([ 'Wolfgang', 'Amadeus', 'animaltracking' ]).should.equal('Hello, Wolfgang Amadeus animaltracking');
-            // > "Hello, Wolfgang Amadeus animaltracking"
+            formatter([ 'Wolfgang', 'Amadeus', 'Mozart' ]).should.equal('Hello, Wolfgang Amadeus Mozart');
+            // > "Hello, Wolfgang Amadeus Mozart"
 
             // Numbered variables using function arguments.
-            formatter( 'Wolfgang', 'Amadeus', 'animaltracking' ).should.equal('Hello, Wolfgang Amadeus animaltracking');
-            // > "Hello, Wolfgang Amadeus animaltracking"
+            formatter( 'Wolfgang', 'Amadeus', 'Mozart' ).should.equal('Hello, Wolfgang Amadeus Mozart');
+            // > "Hello, Wolfgang Amadeus Mozart"
 
             // Named variables using Object key-value pairs.
             formatter = Globalize( 'en' ).messageFormatter( 'hey' );
             formatter({
                 first: 'Wolfgang',
                 middle: 'Amadeus',
-                last: 'animaltracking'
-            }).should.equal('Hey, Wolfgang Amadeus animaltracking');
+                last: 'Mozart'
+            }).should.equal('Hey, Wolfgang Amadeus Mozart');
         });
     });
 
