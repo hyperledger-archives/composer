@@ -452,14 +452,14 @@ describe(`IdentityComponent`, () => {
     describe('addIdentityToWallet', () => {
         it('should add identity to wallet', fakeAsync(() => {
             mockIdentityCardService.getCurrentIdentityCard.returns(mockCard);
-            mockIdentityCardService.createIdentityCard.returns(Promise.resolve('cardref'));
+            mockIdentityCardService.createIdentityCard.resolves('cardref');
             mockIdentityCardService.getIdentityCard.returns(mockCard);
 
             component.addIdentityToWallet({userID: 'myName', userSecret: 'mySecret'});
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', 'myNetwork', 'myName', 'mySecret', {name: 'myProfile'});
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', 'myNetwork', 'mySecret', {name: 'myProfile'});
             mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card added to wallet',
