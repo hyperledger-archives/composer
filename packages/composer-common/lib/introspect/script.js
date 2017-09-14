@@ -30,19 +30,6 @@ const LOG = Logger.getLog('Script');
  */
 class Script {
 
-    /** to hex
-     * @param {str} String to format
-     * @return hex dump
-     */
-    toHex(str) {
-        let hex = '';
-        for(let i=0;i<str.length;i++) {
-            let s = str.charCodeAt(i).toString(16);
-            hex += (s.length===1 ? '0' : '')+ str.charCodeAt(i).toString(16)+ ' ';
-        }
-        return hex;
-    }
-
   /**
    * Create the Script.
    * <p>
@@ -66,7 +53,8 @@ class Script {
         try {
             parser = new JavaScriptParser(this.contents, false, 5,{});
         } catch (cause) {
-            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message+'\n'+data.errorStatement+'\n'+this.toHex(this.contents));
+            // consider adding a toHex method in the exception to put out the pure hex values of the file.
+            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message+'\n'+data.errorStatement);
             error.cause = cause;
             LOG.error('constructor', error.message, contents);
             throw error;

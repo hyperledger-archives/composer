@@ -108,7 +108,7 @@ let validateParticipant = (participant, participantId) => {
 };
 
 let deployCommon =  ()=> {
-   
+
     const modelFiles = [
         { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
         { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
@@ -715,7 +715,7 @@ describe('Historian', () => {
                     hrecords = result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddAsset';
                     }).sort((a, b) => {
-                        
+
                         let ats = new Date(a.transactionTimestamp);
                         let bts = new Date(b.transactionTimestamp);
                         if (ats < bts) {

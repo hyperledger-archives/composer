@@ -28,14 +28,7 @@ const acorn = require('acorn');
  * @memberof module:composer-common
  */
 class JavaScriptParser {
-    toHex(str) {
-        let hex = '';
-        for(let i=0;i<str.length;i++) {
-            let s = str.charCodeAt(i).toString(16);
-            hex += (s.length===1 ? '0' : '')+ str.charCodeAt(i).toString(16)+ ' ';
-        }
-        return hex;
-    }
+
   /**
    * Create a JavaScriptParser.
    *
@@ -43,7 +36,7 @@ class JavaScriptParser {
    * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
    * @param {number} [ecmaVersion] - the ECMAScript version to use
    */
-    constructor(fileContents, includePrivates, ecmaVersion,data) {
+    constructor(fileContents, includePrivates, ecmaVersion) {
         let comments = [];
         this.tokens = [];
 
@@ -57,7 +50,7 @@ class JavaScriptParser {
             // collect token locations
             locations: true,
             // locations: true,
-            plugins: {'mbw':true}
+            plugins: {'composereof':true}
         };
 
 
@@ -66,7 +59,7 @@ class JavaScriptParser {
         }
         // let parser = new Parser(options, fileContents);
         // let ast = parser.parse();
-        acorn.plugins.mbw=function(parser){
+        acorn.plugins.composereof=function(parser){
 
             parser.extend('parseTopLevel', function(nextMethod){
                 return function(node){
