@@ -471,33 +471,31 @@ npm install
             <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
             <span class="c1">// Get the asset registry.</span>
+            <span class="kd">let</span> <span class="nx">commodityRegistry</span><span class="p">;</span>
             <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Commodity'</span><span class="p">)</span>
                 <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
+                    <span class="nx">commodityRegistry</span> <span class="o">=</span> <span class="nx">assetRegistry</span><span class="p">;</span>
                     <span class="c1">// add the commodity to the asset registry.</span>
-                    <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">commodity</span><span class="p">)</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Trader'</span><span class="p">);</span>
-                        <span class="p">})</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="c1">// add the traders</span>
-                            <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">dan</span><span class="p">,</span> <span class="nx">simon</span><span class="p">]);</span>
-                        <span class="p">})</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="c1">// submit the transaction</span>
-                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
-                        <span class="p">})</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Commodity'</span><span class="p">);</span>
-                        <span class="p">})</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="c1">// re-get the commodity</span>
-                            <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-                        <span class="p">})</span>
-                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">newCommodity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                            <span class="c1">// the owner of the commodity should not be simon</span>
-                            <span class="nx">newCommodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-                        <span class="p">});</span>
+                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">commodity</span><span class="p">);</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Trader'</span><span class="p">);</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="c1">// add the traders</span>
+                    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">dan</span><span class="p">,</span> <span class="nx">simon</span><span class="p">]);</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="c1">// submit the transaction</span>
+                    <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="c1">// re-get the commodity</span>
+                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">newCommodity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="c1">// the owner of the commodity should now be simon</span>
+                    <span class="nx">newCommodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
                 <span class="p">});</span>
         <span class="p">});</span>
     <span class="p">});</span>
