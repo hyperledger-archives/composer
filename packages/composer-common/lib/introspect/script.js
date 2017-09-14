@@ -29,6 +29,20 @@ const LOG = Logger.getLog('Script');
  * @memberof module:composer-common
  */
 class Script {
+
+    /** to hex
+     * @param {str} String to format
+     * @return hex dump
+     */
+    toHex(str) {
+        let hex = '';
+        for(let i=0;i<str.length;i++) {
+            let s = str.charCodeAt(i).toString(16);
+            hex += (s.length===1 ? '0' : '')+ str.charCodeAt(i).toString(16)+ ' ';
+        }
+        return hex;
+    }
+
   /**
    * Create the Script.
    * <p>
@@ -47,12 +61,12 @@ class Script {
         if(!contents) {
             throw new Error('Empty script contents');
         }
-
+        let data = {errorStatement:''};
         let parser;
         try {
-            parser = new JavaScriptParser(this.contents, false, 5);
+            parser = new JavaScriptParser(this.contents, false, 5,{});
         } catch (cause) {
-            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message);
+            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message+'\n'+data.errorStatement+'\n'+this.toHex(this.contents));
             error.cause = cause;
             LOG.error('constructor', error.message, contents);
             throw error;

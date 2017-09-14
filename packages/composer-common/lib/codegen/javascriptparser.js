@@ -28,7 +28,14 @@ const acorn = require('acorn');
  * @memberof module:composer-common
  */
 class JavaScriptParser {
-
+    toHex(str) {
+        let hex = '';
+        for(let i=0;i<str.length;i++) {
+            let s = str.charCodeAt(i).toString(16);
+            hex += (s.length===1 ? '0' : '')+ str.charCodeAt(i).toString(16)+ ' ';
+        }
+        return hex;
+    }
   /**
    * Create a JavaScriptParser.
    *
@@ -36,7 +43,7 @@ class JavaScriptParser {
    * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
    * @param {number} [ecmaVersion] - the ECMAScript version to use
    */
-    constructor(fileContents, includePrivates, ecmaVersion) {
+    constructor(fileContents, includePrivates, ecmaVersion,data) {
         let comments = [];
         this.tokens = [];
 
@@ -48,15 +55,38 @@ class JavaScriptParser {
             // collect token ranges
             onToken: this.tokens,
             // collect token locations
-            locations: true
+            locations: true,
+            // locations: true,
+            plugins: {'mbw':true}
         };
+
 
         if (ecmaVersion) {
             options.ecmaVersion = ecmaVersion;
         }
+        // let parser = new Parser(options, fileContents);
+        // let ast = parser.parse();
+        acorn.plugins.mbw=function(parser){
 
+            parser.extend('parseTopLevel', function(nextMethod){
+                return function(node){
+                    let this$1 = this;
+
+                    let exports = {};
+                    if (!node.body) { node.body = []; }
+                    while (this.type.label!=='eof') {
+                        let stmt = this$1.parseStatement(true, true, exports);
+                        node.body.push(stmt);
+                    }
+                    this.next();
+                    if (this.options.ecmaVersion >= 6) {
+                        node.sourceType = this.options.sourceType;
+                    }
+                    return this.finishNode(node, 'Program');
+                };
+            });
+        };
         let ast = acorn.parse(fileContents, options);
-
         this.includes = [];
         this.classes = [];
         this.functions = [];
@@ -185,6 +215,7 @@ class JavaScriptParser {
                 }
             }
         }
+
     }
 
     /**
