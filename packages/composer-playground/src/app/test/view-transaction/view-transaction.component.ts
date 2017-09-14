@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -51,26 +50,19 @@ export class ViewTransactionComponent implements OnInit {
     };
 
     constructor(private clientService: ClientService,
-                private initializationService: InitializationService,
                 private activeModal: NgbActiveModal) {
     }
 
-    ngOnInit(): Promise<void> {
-        return this.initializationService.initialize()
-            .then(() => {
-                const serializer = this.clientService.getBusinessNetwork().getSerializer();
+    ngOnInit() {
+        const serializer = this.clientService.getBusinessNetwork().getSerializer();
 
-                let transactionObject = serializer.toJSON(this.transaction);
-                this.transactionString = JSON.stringify(transactionObject, null, ' ');
+        let transactionObject = serializer.toJSON(this.transaction);
+        this.transactionString = JSON.stringify(transactionObject, null, ' ');
 
-                for (let i = 0; i < this.events.length; i++) {
-                    this.eventObjects.push(serializer.toJSON(this.events[i]));
-                    this.eventStrings.push(JSON.stringify(this.eventObjects[i], null, ' '));
-                }
-            })
-            .catch((error) => {
-                this.activeModal.dismiss(error);
-            });
+        for (let i = 0; i < this.events.length; i++) {
+            this.eventObjects.push(serializer.toJSON(this.events[i]));
+            this.eventStrings.push(JSON.stringify(this.eventObjects[i], null, ' '));
+        }
     }
 
     selectEvent(ev, i) {
