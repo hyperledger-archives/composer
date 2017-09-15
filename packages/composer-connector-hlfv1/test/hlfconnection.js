@@ -266,6 +266,19 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
+        it('should handle being called twice', () => {
+            mockEventHub.isconnected.returns(true);
+            connection._connectToEventHubs();
+            return connection.disconnect()
+                .then(() => {
+                    mockEventHub.isconnected.returns(false);
+                    return connection.disconnect();
+                })
+                .then(() => {
+                    sinon.assert.calledOnce(mockEventHub.disconnect);
+                });
+        });
+
     });
 
     describe('#enroll', () => {

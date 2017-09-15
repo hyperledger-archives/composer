@@ -127,6 +127,11 @@ class HLFConnection extends Connection {
         const method = 'disconnect';
         LOG.entry(method);
 
+        if (this.exitListener) {
+            process.removeListener('exit', this.exitListener);
+            delete this.exitListener;
+        }
+
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
@@ -158,7 +163,7 @@ class HLFConnection extends Connection {
      * object representing the enrolled participant, or rejected with an error.
      */
     enroll(enrollmentID, enrollmentSecret) {
-        const method = 'registerAndEnroll';
+        const method = 'enroll';
         LOG.entry(method, enrollmentID);
 
         // Validate all the arguments.
@@ -187,6 +192,7 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
+                LOG.debug(method, 'loading channel configuration');
                 return this._initializeChannel();
             })
             .then(() => {
@@ -194,7 +200,7 @@ class HLFConnection extends Connection {
                 return user;
             })
             .catch((error) => {
-                const newError = new Error('Error trying to enroll user. ' + error);
+                const newError = new Error('Error trying to enroll user or load channel configuration. ' + error);
                 LOG.error(method, newError);
                 throw newError;
             });
@@ -227,7 +233,9 @@ class HLFConnection extends Connection {
             this.ccEvents[0] = ccEvent;
         }
 
-        process.on('exit', () => {
+        LOG.debug(method, 'register exit listener for connector');
+
+        this.exitListener = () => {
             this.eventHubs.forEach((eventHub, index) => {
                 if (eventHub.isconnected()) {
                     eventHub.disconnect();
@@ -238,7 +246,9 @@ class HLFConnection extends Connection {
                     this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
                 }
             });
-        });
+        };
+
+        process.on('exit', this.exitListener);
 
         LOG.exit(method);
     }
@@ -302,8 +312,6 @@ class HLFConnection extends Connection {
      * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
      * @returns {Promise} a promise for install completion
-     *
-     * @memberOf HLFConnection
      */
     install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
@@ -383,16 +391,18 @@ class HLFConnection extends Connection {
      * initialize the channel if it hasn't been done
      *
      * @returns {Promise} a promise that the channel is initialized
-     *
-     * @memberOf HLFConnection
      */
     _initializeChannel() {
+        const method = '_initializeChannel';
+        LOG.entry(method);
         if (!this.initialized) {
             return this.channel.initialize()
                 .then(() => {
+                    LOG.exit(method);
                     this.initialized = true;
                 });
         }
+        LOG.exit(method);
         return Promise.resolve();
     }
 
@@ -403,8 +413,6 @@ class HLFConnection extends Connection {
      * @param {any} businessNetwork the business network
      * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
      * @returns {Promise} a promise for instantiation completion
-     *
-     * @memberOf HLFConnection
      */
     start(securityContext, businessNetwork, startOptions) {
         const method = 'start';
@@ -418,6 +426,7 @@ class HLFConnection extends Connection {
         let finalTxId;
 
         // initialize the channel ready for instantiation
+        LOG.debug(method, 'loading the channel configuration');
         return this._initializeChannel()
             .then(() => {
                 // serialise the business network
@@ -458,7 +467,7 @@ class HLFConnection extends Connection {
                         throw newError;
                     }
                 }
-                LOG.debug('sending instantiate proposal', request);
+                LOG.debug(method, 'sending instantiate proposal', request);
                 return this.channel.sendInstantiateProposal(request);
             })
             .then((results) => {
@@ -520,6 +529,7 @@ class HLFConnection extends Connection {
             throw new Error('businessNetwork not specified');
         }
 
+        LOG.debug(method, 'installing composer chaincode runtime');
         return this.install(securityContext, businessNetwork.getName(), {ignoreCCInstalled: true})
             .then(() => {
                 // check to see if the chaincode is already instantiated
@@ -816,6 +826,7 @@ class HLFConnection extends Connection {
         let txId = this.client.newTransactionID();
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
+        LOG.debug(method, 'loading channel configuration');
         return this._initializeChannel()
             .then(() => {
 
@@ -1100,8 +1111,6 @@ class HLFConnection extends Connection {
                 LOG.error(method, newError);
                 throw newError;
             });
-
-
     }
 
 }
