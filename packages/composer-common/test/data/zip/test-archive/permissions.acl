@@ -1,7 +1,7 @@
 
 rule R1 {
     description: "Fred can DELETE the car ABC123"
-    participant: "concerto.MyParticipant#Fred"
+    participant: "composer.MyParticipant#Fred"
     operation: DELETE
     resource: "org.acme.Vehicle#ABC123"
     action: ALLOW

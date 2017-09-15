@@ -1,20 +1,20 @@
 query Q1 {
     description: "Select all Farmers"
-    statement: SELECT com.ibm.concerto.mozart.Farmer
+    statement: SELECT com.composer.Farmer
 } query Q2 { // test missing whitespace
     description: "Select all regulators"
-    statement: SELECT com.ibm.concerto.mozart.Regulator FROM mycustomer.Registry
+    statement: SELECT com.composer.Regulator FROM mycustomer.Registry
 }
 
 query Q3 {
     description: "Select all transactions"
-    statement: SELECT com.ibm.concerto.mozart.AnimalMovement
+    statement: SELECT com.composer.AnimalMovement
 }
 
 // single line comment
 query Q4 {
     description: "Select all Farmers called Dan" // inline comment
-    statement: SELECT com.ibm.concerto.mozart.Farmer WHERE (firstName=='Dan')
+    statement: SELECT com.composer.Farmer WHERE (firstName=='Dan')
 }
 
 /**
@@ -22,12 +22,12 @@ query Q4 {
  */ 
 query Q5 {
     description: "Select all Farmers called Dan Selman" // inline comment
-    statement: SELECT com.ibm.concerto.mozart.Farmer WHERE (firstName=='Dan' AND lastName=='Selman')
+    statement: SELECT com.composer.Farmer WHERE (firstName=='Dan' AND lastName=='Selman')
 }
 
 query Q6{
     description: "Select all farmers with first name called Dan by address property" 
     statement: 
-        SELECT com.ibm.concerto.mozart.Farmer
+        SELECT com.composer.Farmer
             WHERE ((age < 50 OR firstName != 'Dan') AND (address.city.postcode!='London'))
 }
