@@ -134,15 +134,38 @@ class JavaScriptParser {
             // collect token ranges
             onToken: this.tokens,
             // collect token locations
-            locations: true
+            locations: true,
+            // locations: true,
+            plugins: {'composereof':true}
         };
+
 
         if (ecmaVersion) {
             options.ecmaVersion = ecmaVersion;
         }
+        // let parser = new Parser(options, fileContents);
+        // let ast = parser.parse();
+        acorn.plugins.composereof=function(parser){
 
+            parser.extend('parseTopLevel', function(nextMethod){
+                return function(node){
+                    let this$1 = this;
+
+                    let exports = {};
+                    if (!node.body) { node.body = []; }
+                    while (this.type.label!=='eof') {
+                        let stmt = this$1.parseStatement(true, true, exports);
+                        node.body.push(stmt);
+                    }
+                    this.next();
+                    if (this.options.ecmaVersion >= 6) {
+                        node.sourceType = this.options.sourceType;
+                    }
+                    return this.finishNode(node, 'Program');
+                };
+            });
+        };
         let ast = acorn.parse(fileContents, options);
-
         this.includes = [];
         this.classes = [];
         this.functions = [];
@@ -271,6 +294,7 @@ class JavaScriptParser {
                 }
             }
         }
+
     }
 
     /**

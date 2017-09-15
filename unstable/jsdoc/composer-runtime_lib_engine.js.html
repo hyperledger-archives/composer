@@ -302,19 +302,10 @@ class Engine {
 
             })
             .then(() => {
-
-                // Create all the default registries for each asset and participant type.
+                // Create all the default registries for each asset, participant, and transaction type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
                 return registryManager.createDefaults();
-
-            })
-            .then(() => {
-
-                // Create the default transaction registry if it does not exist.
-                let registryManager = context.getRegistryManager();
-                return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');
-
             })
             .then(() => {
                 return context.transactionPrepare()
