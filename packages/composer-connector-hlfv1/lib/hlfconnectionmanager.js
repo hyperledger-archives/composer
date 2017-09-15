@@ -23,15 +23,17 @@ const LOG = Logger.getLog('HLFConnectionManager');
 global.hfc = {
     logger: {
         debug: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+            if (process.env.COMPOSER_INCLUDE_HFC_DEBUG) {
+                const args = Array.prototype.slice.call(arguments);
+                const message = util.format.apply(util, args.map((arg) => {
+                    if (typeof arg === 'function') {
+                        return '<function>';
+                    } else {
+                        return arg;
+                    }
+                }));
+                LOG.debug('fabric-client', message);
+            }
         },
         info: () => {
             const args = Array.prototype.slice.call(arguments);
@@ -103,7 +105,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @return {Orderer} A new orderer.
      */
     static createOrderer(ordererURL, opts) {
-        return new Orderer(ordererURL, opts);  //TODO: Change this
+        return new Orderer(ordererURL, opts);
     }
 
     /**

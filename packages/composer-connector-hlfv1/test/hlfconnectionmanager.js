@@ -37,9 +37,6 @@ const sinon = require('sinon');
 
 const fs = require('fs');
 
-const Logger = require('composer-common').Logger;
-const LOG = Logger.getLog('HLFConnectionManager');
-
 describe('HLFConnectionManager', () => {
 
 
@@ -74,35 +71,6 @@ describe('HLFConnectionManager', () => {
     afterEach(() => {
         Wallet.setWallet(null);
         sandbox.restore();
-    });
-
-
-    describe('global.hfc.logger', () => {
-
-        it('should insert a debug logger', () => {
-            sandbox.stub(LOG, 'debug');
-            global.hfc.logger.debug('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
-        });
-
-        it('should insert a info logger', () => {
-            sandbox.stub(LOG, 'debug');
-            global.hfc.logger.info('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
-        });
-
-        it('should insert a warn logger', () => {
-            sandbox.stub(LOG, 'debug');
-            global.hfc.logger.warn('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
-        });
-
-        it('should insert a error logger', () => {
-            sandbox.stub(LOG, 'debug');
-            global.hfc.logger.error('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
-        });
-
     });
 
     describe('#createClient', () => {
