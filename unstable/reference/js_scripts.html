@@ -213,7 +213,7 @@ ga('send', 'pageview');
 
 <h2 id="sample-script">Sample Script</h2>
 
-<p>The script below defines two transaction processor functions, called <code>onAnimalMovementDeparture</code> and <code>onAnimalMovementArrival</code>. Note that the model files within the <code>BusinessNetworkDefinition</code> must define the two transaction types <code>com.ibm.composer.mozart.AnimalMovementDeparture</code> and <code>com.ibm.composer.mozart.AnimalMovementArrival</code>.</p>
+<p>The script below defines two transaction processor functions, called <code>onAnimalMovementDeparture</code> and <code>onAnimalMovementArrival</code>. Note that the model files within the <code>BusinessNetworkDefinition</code> must define the two transaction types <code>com.hyperledger.composer.animaltracking.AnimalMovementDeparture</code> and <code>com.hyperledger.composer.animaltracking.AnimalMovementArrival</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    'use strict';
 
     /*eslint-disable no-unused-vars*/
@@ -221,7 +221,7 @@ ga('send', 'pageview');
 
     /**
     * A transaction processor for AnimalMovementDeparture
-    * @param  {com.ibm.composer.mozart.AnimalMovementDeparture} movementDeparture - the transaction to be processed
+    * @param  {com.hyperledger.composer.animaltracking.AnimalMovementDeparture} movementDeparture - the transaction to be processed
     * @transaction
     */
     function onAnimalMovementDeparture(movementDeparture) {
@@ -230,7 +230,7 @@ ga('send', 'pageview');
 
     /**
     * A transaction processor for AnimalMovementArrival
-    * @param  {com.ibm.composer.mozart.AnimalMovementArrival} movementArrival - the transaction to be processed
+    * @param  {com.hyperledger.composer.animaltracking.AnimalMovementArrival} movementArrival - the transaction to be processed
     * @transaction
     */
     function onAnimalMovementArrival(movementArrival) {
