@@ -31,6 +31,21 @@ issue-identity-modal {
       }
     }
 
+    .keyValue {
+        display: flex;
+
+        .key {
+            flex: 1;
+            font-weight: 700;
+        }
+
+        .value {
+            display: flex;
+            flex: 5;
+            flex-direction: column;
+        }
+    }
+
     svg {
       vertical-align: text-top;
     }
