@@ -346,8 +346,6 @@ class Resolver {
             classType = 'Participant';
         } else if (classDeclaration instanceof TransactionDeclaration) {
             classType = 'Transaction';
-            // Special case for this one!
-            registryId = 'default';
         } else {
             throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
         }

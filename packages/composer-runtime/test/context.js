@@ -37,6 +37,7 @@ const QueryCompiler = require('../lib/querycompiler');
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
+const NetworkManager = require('../lib/networkmanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const ScriptCompiler = require('../lib/scriptcompiler');
@@ -292,6 +293,11 @@ describe('Context', () => {
             mockParticipant = sinon.createStubInstance(Resource);
         });
 
+        it('should set/get identity', () => {
+            context.setIdentity(mockIdentity);
+            context.getIdentity().should.equal(mockIdentity);
+        });
+
         it('should get the identity, validate it, and get the participant', () => {
             mockIdentityManager.getIdentity.resolves(mockIdentity);
             mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
@@ -308,7 +314,6 @@ describe('Context', () => {
             mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
             context.function = 'submitTransaction';
             context.arguments = [
-                '45ea5b75-cc00-40bb-afad-4952ad97d469',
                 JSON.stringify({ $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
             ];
             const error = new Error('such error');
@@ -363,15 +368,20 @@ describe('Context', () => {
             const error = new Error('such error');
             error.activationRequired = true;
             mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-            let promise = Promise.resolve();
+            // let promise = Promise.resolve();
+            let promises=[];
+
             ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
                 mockIdentityService.getName.returns(admin);
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.be.rejectedWith(/such error/);
-                });
+                promises.push(context.loadCurrentParticipant());
             });
-            return promise;
+
+            return Promise.all(promises).catch(()=> {
+                promises[0].should.be.rejectedWith(/such error/);
+                promises[1].should.be.rejectedWith(/such error/);
+                promises[2].should.be.rejectedWith(/such error/);
+            });
+
         });
 
         it('should ignore any errors from looking up the identity for admin users', () => {
@@ -896,7 +906,6 @@ describe('Context', () => {
         });
 
     });
-
     describe('#getApi', () => {
 
         it('should return a new API', () => {
@@ -971,6 +980,8 @@ describe('Context', () => {
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockFactory = sinon.createStubInstance(Factory);
             sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockResolver = sinon.createStubInstance(Resolver);
+            sinon.stub(context,'getResolver').returns(mockResolver);
             context.getResourceManager().should.be.an.instanceOf(ResourceManager);
         });
 
@@ -1181,11 +1192,13 @@ describe('Context', () => {
         it('should return the compiled query bundle', () => {
             let mockIdentityManager = sinon.createStubInstance(IdentityManager);
             let mockResourceManager = sinon.createStubInstance(ResourceManager);
+            let mockNetworkManager = sinon.createStubInstance(NetworkManager);
             context.identityManager = mockIdentityManager;
             context.resourceManager = mockResourceManager;
-            context.getTransactionHandlers().should.have.lengthOf(2);
+            context.getTransactionHandlers().should.have.lengthOf(3);
             context.getTransactionHandlers().should.include(mockIdentityManager);
             context.getTransactionHandlers().should.include(mockResourceManager);
+            context.getTransactionHandlers().should.include(mockNetworkManager);
         });
 
     });

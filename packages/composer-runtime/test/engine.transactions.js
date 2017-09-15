@@ -60,6 +60,7 @@ describe('EngineTransactions', () => {
     let mockIdentityManager;
     let mockParticipant;
     let mockEventService;
+    let mockIdentity;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -89,7 +90,7 @@ describe('EngineTransactions', () => {
         mockCompiledScriptBundle.execute.resolves(0);
         mockContext.getCompiledScriptBundle.returns(mockCompiledScriptBundle);
         mockRegistry = sinon.createStubInstance(Registry);
-        mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+        mockRegistryManager.get.withArgs('Transaction', sinon.match.any).resolves(mockRegistry);
         mockHistorian = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Asset', 'org.hyperledger.composer.system.HistorianRecord').resolves(mockHistorian);
         mockTransactionHandler1 = sinon.createStubInstance(TransactionHandler);
@@ -105,7 +106,7 @@ describe('EngineTransactions', () => {
         mockIdentityManager = sinon.createStubInstance(IdentityManager);
         mockContext.getIdentityManager.returns(mockIdentityManager);
 
-        let mockIdentity = sinon.createStubInstance(Resource);
+        mockIdentity = sinon.createStubInstance(Resource);
         mockIdentity.getIdentifier.returns('1234');
         mockIdentityManager.getIdentity.resolves(mockIdentity);
         mockParticipant = sinon.createStubInstance(Resource);
@@ -120,7 +121,7 @@ describe('EngineTransactions', () => {
         let mockTransaction;
 
         beforeEach(() => {
-            fakeJSON = { fake: 'data' };
+            fakeJSON = { fake: 'data', $class :'org.acme.tx' };
             mockTransaction = sinon.createStubInstance(Resource);
             mockTransaction.$resolved = false;
             mockResolvedTransaction = sinon.createStubInstance(Resource);
@@ -131,17 +132,17 @@ describe('EngineTransactions', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'submitTransaction', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["registryId","serializedResource"\]"/);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["serializedResource"\]"/);
         });
 
         it('should throw if no handlers for the transaction', () => {
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .should.be.rejectedWith(/Could not find any functions to execute for transaction/);
         });
 
         it('should execute the transaction using a system handler', () => {
             mockTransactionHandler1.execute.resolves(1);
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
@@ -154,7 +155,7 @@ describe('EngineTransactions', () => {
         it('should execute the transaction using multiple system handlers', () => {
             mockTransactionHandler1.execute.resolves(1);
             mockTransactionHandler2.execute.resolves(1);
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
@@ -169,7 +170,7 @@ describe('EngineTransactions', () => {
 
         it('should execute the transaction using a user handler', () => {
             mockCompiledScriptBundle.execute.resolves(1);
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [ JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledScriptBundle.execute);
                     mockCompiledScriptBundle.execute.args[0][0].should.equal(mockApi);
@@ -183,7 +184,7 @@ describe('EngineTransactions', () => {
             mockTransactionHandler1.execute.resolves(1);
             mockTransactionHandler2.execute.resolves(1);
             mockCompiledScriptBundle.execute.resolves(1);
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
@@ -209,7 +210,7 @@ describe('EngineTransactions', () => {
             mockEventService.getEvents.returns([]);
 
 
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
@@ -219,7 +220,7 @@ describe('EngineTransactions', () => {
                 });
         });
 
-        it('Historian no evenets', () => {
+        it('Historian no events', () => {
             mockTransactionHandler1.execute.resolves(1);
             mockParticipant.getIdentifier.returns('fred');
 
@@ -229,7 +230,7 @@ describe('EngineTransactions', () => {
             mockEventService.getEvents.returns(null);
 
 
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
@@ -249,7 +250,27 @@ describe('EngineTransactions', () => {
             mockEventService.getEvents.returns([ {data:'really'}  ]);
             mockSerializer.fromJSON.returns({data:'jsonified'});
 
-            return engine.invoke(mockContext, 'submitTransaction', ['Transaction:default', JSON.stringify(fakeJSON)])
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
+                .then(() => {
+                    sinon.assert.calledOnce(mockTransactionHandler1.execute);
+                    mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);
+                    mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
+                    sinon.assert.calledOnce(mockRegistry.add);
+                    sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                });
+        });
+
+        it('should execute the transaction using a system handler (historian record other paths #2)', () => {
+            mockTransactionHandler1.execute.resolves(1);
+            mockParticipant.getIdentifier.returns('fred');
+
+            mockContext.getIdentity.returns(mockIdentity);
+            mockContext.getParticipant.returns(mockParticipant);
+            mockContext.getEventService.returns(mockEventService);
+            mockEventService.getEvents.returns([ {data:'really'}  ]);
+            mockSerializer.fromJSON.returns({data:'jsonified'});
+
+            return engine.invoke(mockContext, 'submitTransaction', [JSON.stringify(fakeJSON)])
                 .then(() => {
                     sinon.assert.calledOnce(mockTransactionHandler1.execute);
                     mockTransactionHandler1.execute.args[0][0].should.equal(mockApi);

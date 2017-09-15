@@ -188,26 +188,7 @@ describe('EmbeddedConnection', () => {
 
     });
 
-    describe('#update', () => {
 
-        it('should update the business network', () => {
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
-            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            sinon.stub(connection, 'invokeChainCode').resolves();
-            return connection.update(mockSecurityContext, mockBusinessNetwork)
-                .then(() => {
-                    sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, sinon.match.instanceOf(EmbeddedSecurityContext), 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ=']);
-                });
-        });
-
-    });
 
     describe('#undeploy', () => {
 

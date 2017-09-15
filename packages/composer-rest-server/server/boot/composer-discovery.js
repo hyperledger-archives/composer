@@ -160,8 +160,8 @@ function registerSystemMethods(app, dataSource) {
         registerIssueIdentityMethod,
         registerBindIdentityMethod,
         registerRevokeIdentityMethod,
-        registerGetAllTransactionsMethod,
-        registerGetTransactionByIDMethod
+        registerGetAllHistorianRecordsMethod,
+        registerGetHistorianRecordsByIDMethod
     ];
     registerMethods.forEach((registerMethod) => {
         registerMethod(app, dataSource, System, connector);
@@ -582,15 +582,15 @@ function registerRevokeIdentityMethod(app, dataSource, System, connector) {
  * @param {Object} System The System model class.
  * @param {Object} connector The LoopBack connector.
  */
-function registerGetAllTransactionsMethod(app, dataSource, System, connector) {
+function registerGetAllHistorianRecordsMethod(app, dataSource, System, connector) {
 
     // Define and register the method.
-    System.getAllTransactions = (options, callback) => {
-        connector.getAllTransactions(options, callback);
+    System.getAllHistorianRecords = (options, callback) => {
+        connector.getAllHistorianRecords(options, callback);
     };
     System.remoteMethod(
-        'getAllTransactions', {
-            description: 'Get all transactions from the transaction registry',
+        'getAllHistorianRecords', {
+            description: 'Get all Historian Records from the Historian',
             accepts: [{
                 arg: 'options',
                 type: 'object',
@@ -602,7 +602,7 @@ function registerGetAllTransactionsMethod(app, dataSource, System, connector) {
             },
             http: {
                 verb: 'get',
-                path: '/transactions'
+                path: '/historian'
             }
         }
     );
@@ -610,21 +610,21 @@ function registerGetAllTransactionsMethod(app, dataSource, System, connector) {
 }
 
 /**
- * Register the 'getTransactionByID' Composer system method.
+ * Register the 'getHistorianRecordByID' Composer system method.
  * @param {Object} app The LoopBack application.
  * @param {Object} dataSource The LoopBack data source.
  * @param {Object} System The System model class.
  * @param {Object} connector The LoopBack connector.
  */
-function registerGetTransactionByIDMethod(app, dataSource, System, connector) {
+function registerGetHistorianRecordsByIDMethod(app, dataSource, System, connector) {
 
     // Define and register the method.
-    System.getTransactionByID = (id, options, callback) => {
-        connector.getTransactionByID(id, options, callback);
+    System.getHistorianRecordByID = (id, options, callback) => {
+        connector.getHistorianRecordByID(id, options, callback);
     };
     System.remoteMethod(
-        'getTransactionByID', {
-            description: 'Get the specified transaction from the transaction registry',
+        'getHistorianRecordByID', {
+            description: 'Get the specified Historian Record from the Historian',
             accepts: [{
                 arg: 'id',
                 type: 'string',
@@ -643,7 +643,7 @@ function registerGetTransactionByIDMethod(app, dataSource, System, connector) {
             },
             http: {
                 verb: 'get',
-                path: '/transactions/:id'
+                path: '/historian/:id'
             }
         }
     );
@@ -734,7 +734,7 @@ function restrictModelMethods(modelSchema, model) {
     if (modelSchema.options.composer.type === 'concept') {
         whitelist = [ ];
     } else if (modelSchema.options.composer.type === 'transaction') {
-        whitelist = [ 'create' ];
+        whitelist = [ 'create' ,'find', 'findById'];
     } else {
         whitelist = [ 'create', 'deleteById', 'find', 'findById', 'exists', 'replaceById' ];
     }

@@ -89,7 +89,7 @@ describe('Registry', () => {
                     // Check that the query was made successfully.
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getAllRegistries', ['Doge']);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getAllRegistries', ['Doge',false]);
 
                     // Check that the asset registries were returned correctly.
                     result.should.deep.equal(registries);

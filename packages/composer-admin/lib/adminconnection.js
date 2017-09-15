@@ -436,7 +436,7 @@ class AdminConnection {
             transactionId: uuid.v4(),
             timestamp: new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', ['default', JSON.stringify(json)])
+        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
             .then(() => {
                 LOG.exit(method);
             });

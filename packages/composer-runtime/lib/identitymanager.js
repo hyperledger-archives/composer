@@ -17,7 +17,6 @@
 const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const TransactionHandler = require('./transactionhandler');
-
 const LOG = Logger.getLog('IdentityManager');
 
 

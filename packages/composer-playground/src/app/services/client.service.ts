@@ -345,8 +345,7 @@ export class ClientService {
 
     resolveTransactionRelationship(relationship): Promise<TransactionDeclaration> {
         let identifier = relationship.getIdentifier();
-
-        return this.getBusinessNetworkConnection().getTransactionRegistry()
+        return this.getBusinessNetworkConnection().getTransactionRegistry(relationship.transactionType)
             .then((transactionRegistry) => {
                 return transactionRegistry.get(identifier);
             })
