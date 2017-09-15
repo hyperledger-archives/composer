@@ -367,6 +367,16 @@ describe('TestComponent', () => {
     });
 
     describe('initializeEventListener', () => {
+        it('should initialize', () => {
+            mockBusinessNetworkConnection.listenerCount.returns(0);
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+
+            component.initializeEventListener();
+
+            mockBusinessNetworkConnection.listenerCount.should.have.been.called;
+            mockBusinessNetworkConnection.on.should.have.been.called;
+        });
+
         it('should not initialize if already initialized', () => {
             mockBusinessNetworkConnection.listenerCount.returns(1);
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
