@@ -1026,6 +1026,24 @@ describe('ClientService', () => {
                 text: 'refreshing the connection to myProfile'
             });
         })));
+
+        it('should diconnect and reconnect with no enrollment credentials', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+            identityServiceMock.getCurrentEnrollmentCredentials.returns(null);
+
+            service.refresh('myNetwork');
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', null);
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile'
+            });
+        })));
     });
 
     describe('getBusinessNetworkFromArchive', () => {

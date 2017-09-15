@@ -296,6 +296,7 @@ export class ClientService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
         const userName = this.identityService.getCurrentUserName();
 
         this.alertService.busyStatus$.next({
@@ -305,7 +306,7 @@ export class ClientService {
 
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, userName, enrollmentCredentials.secret);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, userName, enrollmentSecret);
             });
     }
 

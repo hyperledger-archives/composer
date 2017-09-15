@@ -58,6 +58,7 @@ export class AdminService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
         const userName = this.identityService.getCurrentUserName();
 
         this.alertService.busyStatus$.next({
@@ -71,7 +72,7 @@ export class AdminService {
             console.log('Connecting with connection profile %s with id %s', connectionProfileRef, userName);
         }
 
-        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentCredentials.secret, businessNetworkName)
+        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -100,6 +101,7 @@ export class AdminService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
         const userName = this.identityService.getCurrentUserName();
 
         return this.list()
@@ -119,7 +121,7 @@ export class AdminService {
                     force: true
                 });
 
-                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentCredentials.secret);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret);
             })
             .then(() => {
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
@@ -136,7 +138,7 @@ export class AdminService {
                 });
 
                 console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, userName);
-                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentCredentials.secret, name);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, name);
             })
             .then(() => {
                 return true;
