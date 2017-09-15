@@ -33,7 +33,7 @@ describe('ModelManager', () => {
 
     let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
     let farm2fork = fs.readFileSync('./test/data/model/farm2fork.cto', 'utf8');
-    let concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
+    let composerModel = fs.readFileSync('./test/data/model/composer.cto', 'utf8');
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
     let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
@@ -151,9 +151,9 @@ describe('ModelManager', () => {
         it('should add model files from strings', () => {
             farm2fork.should.not.be.null;
 
-            concertoModel.should.not.be.null;
+            composerModel.should.not.be.null;
 
-            let res = modelManager.addModelFiles([concertoModel, modelBase, farm2fork]);
+            let res = modelManager.addModelFiles([composerModel, modelBase, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             res.should.all.be.an.instanceOf(ModelFile);
             res.should.have.lengthOf(3);
@@ -175,7 +175,7 @@ describe('ModelManager', () => {
         it('should add to existing model files from strings', () => {
             modelManager.addModelFile(modelBase);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.addModelFiles([concertoModel, farm2fork]);
+            modelManager.addModelFiles([composerModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
         });
@@ -200,7 +200,7 @@ describe('ModelManager', () => {
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
 
             try {
-                modelManager.addModelFiles([concertoModel, 'invalid file']);
+                modelManager.addModelFiles([composerModel, 'invalid file']);
             }
             catch(err) {
                 // ignore
@@ -238,7 +238,7 @@ describe('ModelManager', () => {
 
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
-                modelManager.addModelFiles([concertoModel, modelBase, farm2fork, modelBase]);
+                modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase]);
             }).should.throw(/namespace already exists/);
         });
 

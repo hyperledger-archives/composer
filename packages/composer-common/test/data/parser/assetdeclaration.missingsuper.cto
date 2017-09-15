@@ -1,4 +1,4 @@
-namespace com.ibm.testing
+namespace com.hyperledger.testing
 
 asset TestAsset identified by assetId extends BaseAsset {
     o String assetId

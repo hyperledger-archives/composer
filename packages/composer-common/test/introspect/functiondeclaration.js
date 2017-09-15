@@ -26,8 +26,8 @@ describe('FunctionDeclaration', () => {
 
     const modelManager = new ModelManager();
     modelManager.addModelFile('namespace org.acme transaction TestTransaction {}');
-    let mozartModel = fs.readFileSync('test/data/model/mozart.cto', 'utf8');
-    modelManager.addModelFile(mozartModel, 'mozart.cto');
+    let animaltrackingModel = fs.readFileSync('test/data/model/animaltracking.cto', 'utf8');
+    modelManager.addModelFile(animaltrackingModel, 'animaltracking.cto');
 
     let loadFunctionDeclaration = (scriptFileName) => {
         let scriptText = fs.readFileSync(scriptFileName, 'utf8');
@@ -117,7 +117,7 @@ describe('FunctionDeclaration', () => {
     describe('#getDecorators', () => {
 
         it('should grab all decorators', () => {
-            let func = loadFunctionDeclaration('test/data/model/mozart.cto.js');
+            let func = loadFunctionDeclaration('test/data/model/animaltracking.cto.js');
             func.getDecorators().should.deep.equal(['param', 'transaction']);
         });
     });

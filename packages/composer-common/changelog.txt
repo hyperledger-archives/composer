@@ -141,10 +141,10 @@ Version 0.0.15 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-31
 - Added an automatic 'timestamp' property to transactions
 
 Version 0.0.14 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-27
-- Modified Concerto to extend EventEmitter
+- Modified composer to extend EventEmitter
 
 Version 0.0.13 {1ff98116f0b834387a85d49d50debc69} 2016-10-27
-- Added ping() method to Concerto
+- Added ping() method to composer
 
 Version 0.0.12 {d3861b7bd41ea2eae871d2783ab259e2} 2016-10-27
 - Added setIdentifier method to Identifiable.
