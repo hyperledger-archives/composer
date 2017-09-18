@@ -11,6 +11,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.12.0 {8d911dda46347a827f3575cb136954c8} 2017-08-29
+- added new apis to support registry per tx class
+
 Version 0.12.0 {8702f0ad86b15855ea14c28441ffff0f} 2017-08-21
 - added connectionProfileStore option to BusinessNetworkConnection constructor
 

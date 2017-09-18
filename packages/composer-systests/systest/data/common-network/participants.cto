@@ -1,0 +1,43 @@
+namespace systest.participants
+
+enum SimpleEnum {
+    o WOW
+    o SUCH
+    o MANY
+    o MUCH
+}
+
+participant SimpleParticipant identified by participantId {
+    o String participantId
+    o String stringValue
+    o String[] stringValues
+    o Double doubleValue
+    o Double[] doubleValues
+    o Integer integerValue
+    o Integer[] integerValues
+    o Long longValue
+    o Long[] longValues
+    o DateTime dateTimeValue
+    o DateTime[] dateTimeValues
+    o Boolean booleanValue
+    o Boolean[] booleanValues
+    o SimpleEnum enumValue
+    o SimpleEnum[] enumValues
+}
+
+participant SimpleParticipantContainer identified by participantId {
+    o String participantId
+    o SimpleParticipant simpleParticipant
+    o SimpleParticipant[] simpleParticipants
+}
+
+participant SimpleParticipantRelationshipContainer identified by participantId {
+    o String participantId
+    --> SimpleParticipant simpleParticipant
+    --> SimpleParticipant[] simpleParticipants
+}
+
+participant SimpleParticipantCircle identified by participantId {
+    o String participantId
+    --> SimpleParticipantCircle next
+}

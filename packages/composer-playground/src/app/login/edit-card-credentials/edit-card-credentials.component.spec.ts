@@ -118,7 +118,7 @@ describe('EditCardCredentialsComponent', () => {
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', 'bob', 'suchSecret', {theProfile: 'muchProfile'}, null, []);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', 'suchSecret', {theProfile: 'muchProfile'}, null, []);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',
@@ -145,7 +145,7 @@ describe('EditCardCredentialsComponent', () => {
                 privateKey: 'my-private-cert'
             };
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', 'bob', null, {theProfile: 'muchProfile'}, certs, []);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', null, {theProfile: 'muchProfile'}, certs, []);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',
@@ -166,7 +166,7 @@ describe('EditCardCredentialsComponent', () => {
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', null, 'bob', 'suchSecret', {theProfile: 'muchProfile'}, null, ['PeerAdmin', 'ChannelAdmin']);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', null, 'suchSecret', {theProfile: 'muchProfile'}, null, ['PeerAdmin', 'ChannelAdmin']);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',

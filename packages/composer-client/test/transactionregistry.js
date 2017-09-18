@@ -283,6 +283,67 @@ describe('TransactionRegistry', () => {
 
     });
 
+    describe('#transactionRegistryExists', () => {
+
+        it('should throw when id not specified', () => {
+            (() => {
+                TransactionRegistry.transactionRegistryExists(mockSecurityContext, null, mockModelManager, mockFactory, mockSerializer);
+            }).should.throw(/id not specified/);
+        });
+
+        it('should throw when modelManager not specified', () => {
+            (() => {
+                TransactionRegistry.transactionRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', null, mockFactory, mockSerializer);
+            }).should.throw(/modelManager not specified/);
+        });
+
+        it('should throw when factory not specified', () => {
+            (() => {
+                TransactionRegistry.transactionRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, null, mockSerializer);
+            }).should.throw(/factory not specified/);
+        });
+
+        it('should throw when serializer not specified', () => {
+            (() => {
+                TransactionRegistry.transactionRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, null);
+            }).should.throw(/serializer not specified/);
+        });
+
+        it('should invoke the chain-code and return whether an asset registry exists', () => {
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Registry, 'existsRegistry').resolves(true);
+
+            // Invoke the getAllAssetRegistries function.
+            return TransactionRegistry
+                .transactionRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, mockSerializer)
+                .then((exists) => {
+
+                    // Check that the registry was requested correctly.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Registry.existsRegistry);
+                    sinon.assert.calledWith(Registry.existsRegistry, mockSecurityContext, 'Transaction', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d');
+
+                    // Check that the existence was returned as true.
+                    exists.should.equal.true;
+                });
+
+        });
+
+        it('should handle an error from the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(Registry, 'existsRegistry').rejects(new Error('such error'));
+
+            // Invoke the getAllAssetRegistries function.
+            return TransactionRegistry
+                .transactionRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, mockSerializer)
+                .should.be.rejectedWith(/such error/);
+
+        });
+
+    });
+
     describe('#add', () => {
 
         it('should throw an unsupported operation when called', () => {

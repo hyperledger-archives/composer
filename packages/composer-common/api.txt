@@ -48,7 +48,7 @@ class FileWallet extends Wallet {
    + Promise remove(string) 
 }
 class IdCard {
-   + String getName() 
+   + String getUserName() 
    + String getDescription() 
    + String getBusinessNetworkName() 
    + Object getConnectionProfile() 

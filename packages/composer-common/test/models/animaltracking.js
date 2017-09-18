@@ -23,10 +23,10 @@ const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclar
 const Serializer = require('../../lib/serializer');
 const fs = require('fs');
 
-describe('Mozart Model', function(){
+describe('animaltracking Model', function(){
 
     let modelManager = null;
-    let mozartModel = null;
+    let animaltrackingModel = null;
     let modelFile = null;
     let serializer = null;
     let factory  = null;
@@ -35,11 +35,13 @@ describe('Mozart Model', function(){
         modelManager = new ModelManager();
         modelManager.should.not.be.null;
 
-        mozartModel = fs.readFileSync('./test/data/model/mozart.cto', 'utf8');
-        mozartModel.should.not.be.null;
-        modelManager.addModelFile(mozartModel, 'mozart.cto');
+        animaltrackingModel = fs.readFileSync('./test/data/model/animaltracking.cto', 'utf8');
+        animaltrackingModel.should.not.be.null;
+        modelManager.addModelFile(animaltrackingModel, 'animaltracking.cto');
+        console.log('no###');
+        console.log(modelManager.getNamespaces());
 
-        modelFile = modelManager.getModelFile('com.ibm.concerto.mozart');
+        modelFile = modelManager.getModelFile('com.hyperledger.composer.animaltracking');
         modelFile.should.not.be.null;
 
         factory = new Factory(modelManager);
@@ -50,23 +52,23 @@ describe('Mozart Model', function(){
         it('check field types', function() {
 
             // check the AnimalType enumeration
-            const animalType = modelFile.getType( 'com.ibm.concerto.mozart.AnimalType');
+            const animalType = modelFile.getType( 'com.hyperledger.composer.animaltracking.AnimalType');
             animalType.should.not.be.null;
             const fields = animalType.getOwnProperties();
             fields.length.should.equal(4);
 
             // check the Participant Farmer
-            const farmer = modelFile.getType('com.ibm.concerto.mozart.Farmer');
+            const farmer = modelFile.getType('com.hyperledger.composer.animaltracking.Farmer');
             farmer.should.not.be.null;
             farmer.getOwnProperties().length.should.equal(5);
 
             // check the asset Field
-            const fieldAsset = modelFile.getType('com.ibm.concerto.mozart.Field');
+            const fieldAsset = modelFile.getType('com.hyperledger.composer.animaltracking.Field');
             fieldAsset.should.not.be.null;
             const fieldAssetProperties = fieldAsset.getOwnProperties();
             fieldAssetProperties.length.should.equal(3);
 
-            const business = modelFile.getType('com.ibm.concerto.mozart.Business');
+            const business = modelFile.getType('com.hyperledger.composer.animaltracking.Business');
             business.should.not.be.null;
             business.getOwnProperties().length.should.equal(7);
 
@@ -79,11 +81,11 @@ describe('Mozart Model', function(){
         });
 
         it('create and serialize instance', function() {
-            const myField = factory.newResource('com.ibm.concerto.mozart', 'Field', 'MY_FIELD');
+            const myField = factory.newResource('com.hyperledger.composer.animaltracking', 'Field', 'MY_FIELD');
             myField.should.not.be.null;
             myField.cph.should.equal('MY_FIELD');
             myField.setPropertyValue('name', 'Big Field');
-            const businessRelationship = factory.newRelationship('com.ibm.concerto.mozart', 'Business', 'MY_BUSINESS');
+            const businessRelationship = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Business', 'MY_BUSINESS');
             myField.business = businessRelationship;
 
             // check that we can serialize
@@ -91,13 +93,13 @@ describe('Mozart Model', function(){
             jsonField.should.not.be.null;
 
             // create an animal
-            const myAnimal = factory.newResource('com.ibm.concerto.mozart', 'Animal', 'SHEEP_001');
+            const myAnimal = factory.newResource('com.hyperledger.composer.animaltracking', 'Animal', 'SHEEP_001');
             myAnimal.species = 'SHEEP_GOAT';
             myAnimal.movementStatus = 'IN_FIELD';
             myAnimal.productionType = 'MEAT';
             myAnimal.should.not.be.null;
-            myAnimal.location = factory.newRelationship('com.ibm.concerto.mozart', 'Field', 'MY_FIELD');
-            myAnimal.owner = factory.newRelationship('com.ibm.concerto.mozart', 'Farmer', 'FARMER_001');
+            myAnimal.location = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Field', 'MY_FIELD');
+            myAnimal.owner = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Farmer', 'FARMER_001');
 
             // check that we can serialize
             const jsonAnimal = serializer.toJSON(myAnimal);
@@ -111,25 +113,25 @@ describe('Mozart Model', function(){
             newAnimal.productionType.should.equal('MEAT');
 
             // check that relationships have been replaced by a Relationship class instance
-            newAnimal.location.getFullyQualifiedIdentifier().should.equal('com.ibm.concerto.mozart.Field#MY_FIELD');
+            newAnimal.location.getFullyQualifiedIdentifier().should.equal('com.hyperledger.composer.animaltracking.Field#MY_FIELD');
 
-            const myBusiness = factory.newResource('com.ibm.concerto.mozart', 'Business', 'MY_BUSINESS');
+            const myBusiness = factory.newResource('com.hyperledger.composer.animaltracking', 'Business', 'MY_BUSINESS');
             myBusiness.should.not.be.null;
             myBusiness.sbi.should.equal('MY_BUSINESS');
             myBusiness.setPropertyValue('postcode', 'SO225GB');
             myBusiness.address1 = 'Add1';
             myBusiness.address2 = 'Add2';
             myBusiness.county = 'Hampshire';
-            const ownerRelationship = factory.newRelationship('com.ibm.concerto.mozart', 'Farmer', 'FARMER_001');
+            const ownerRelationship = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Farmer', 'FARMER_001');
             myBusiness.owner = ownerRelationship;
 
-            const animalRelationship = factory.newRelationship('com.ibm.concerto.mozart', 'Animal', 'SHEEP_001');
+            const animalRelationship = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Animal', 'SHEEP_001');
             myBusiness.addArrayValue('incomingAnimals', animalRelationship);
             myBusiness.incomingAnimals.length.should.equal(1);
             (myBusiness.incomingAnimals[0] instanceof Relationship).should.be.true;
 
             // add a second relationship
-            const animalRelationship2 = factory.newRelationship('com.ibm.concerto.mozart', 'Animal', 'SHEEP_002');
+            const animalRelationship2 = factory.newRelationship('com.hyperledger.composer.animaltracking', 'Animal', 'SHEEP_002');
             myBusiness.addArrayValue('incomingAnimals', animalRelationship2);
             myBusiness.incomingAnimals.length.should.equal(2);
             (myBusiness.incomingAnimals[1] instanceof Relationship).should.be.true;

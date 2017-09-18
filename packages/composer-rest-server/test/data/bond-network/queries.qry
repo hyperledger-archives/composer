@@ -72,5 +72,5 @@ query findIssuerByName {
 }
 query findTxnByTransactionType {
     description: "Find all Transaction by transaction type"
-    statement: SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'PublishBond')
+    statement: SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.acme.bond.PublishBond')
 }

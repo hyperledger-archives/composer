@@ -226,19 +226,19 @@ describe(`LoginComponent`, () => {
     describe('loadIdentityCards', () => {
         it('should load identity cards and sort the profiles', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getName.returns('card1');
+            mockIdCard1.getUserName.returns('card1');
             mockIdCard1.getConnectionProfile.returns({name: 'myProfile1'});
             let mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getName.returns('card2');
+            mockIdCard2.getUserName.returns('card2');
             mockIdCard2.getConnectionProfile.returns({name: 'myProfile2'});
             let mockIdCard3 = sinon.createStubInstance(IdCard);
-            mockIdCard3.getName.returns('card3');
+            mockIdCard3.getUserName.returns('card3');
             mockIdCard3.getConnectionProfile.returns({name: 'myProfile1'});
             let mockIdCard4 = sinon.createStubInstance(IdCard);
-            mockIdCard4.getName.returns('card4');
+            mockIdCard4.getUserName.returns('card4');
             mockIdCard4.getConnectionProfile.returns({name: '$default'});
             let mockIdCard5 = sinon.createStubInstance(IdCard);
-            mockIdCard5.getName.returns('card5');
+            mockIdCard5.getUserName.returns('card5');
             mockIdCard5.getConnectionProfile.returns({name: 'bobProfile'});
 
             let mockIdCards = new Map<string, IdCard>();
@@ -281,10 +281,10 @@ describe(`LoginComponent`, () => {
 
         it('should load identity cards and ensure there is always a web connection profile', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getName.returns('PeerAdmin');
+            mockIdCard1.getUserName.returns('PeerAdmin');
             mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
             let mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getName.returns('bob');
+            mockIdCard2.getUserName.returns('bob');
             mockIdCard2.getConnectionProfile.returns({name: 'bobProfile'});
 
             let mockIdCards = new Map<string, IdCard>();
@@ -432,7 +432,7 @@ describe(`LoginComponent`, () => {
 
         beforeEach(() => {
             mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('myCard');
+            mockIdCard.getUserName.returns('myCard');
             mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef', mockIdCard);
 
@@ -591,7 +591,7 @@ describe(`LoginComponent`, () => {
         beforeEach(() => {
             saveAsStub = sandbox.stub(fileSaver, 'saveAs');
             mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('myCard');
+            mockIdCard.getUserName.returns('myCard');
         });
 
         afterEach(() => {
@@ -671,37 +671,37 @@ describe(`LoginComponent`, () => {
 
         beforeEach(() => {
             mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getName.returns('card2');
+            mockIdCard1.getUserName.returns('card2');
             mockIdCard1.getBusinessNetworkName.returns('my-network');
             mockIdCard1.getRoles.returns(['PeerAdmin']);
 
             mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getName.returns('card2');
+            mockIdCard2.getUserName.returns('card2');
             mockIdCard2.getBusinessNetworkName.returns(null);
             mockIdCard2.getRoles.returns(['PeerAdmin']);
 
             mockIdCard3 = sinon.createStubInstance(IdCard);
-            mockIdCard3.getName.returns('card2');
+            mockIdCard3.getUserName.returns('card2');
             mockIdCard3.getBusinessNetworkName.returns('my-alphabet-network');
             mockIdCard3.getRoles.returns(['PeerAdmin']);
 
             mockIdCard4 = sinon.createStubInstance(IdCard);
-            mockIdCard4.getName.returns('card1');
+            mockIdCard4.getUserName.returns('card1');
             mockIdCard4.getBusinessNetworkName.returns(null);
             mockIdCard4.getRoles.returns(['PeerAdmin']);
 
             mockIdCard5 = sinon.createStubInstance(IdCard);
-            mockIdCard5.getName.returns('card3');
+            mockIdCard5.getUserName.returns('card3');
             mockIdCard5.getBusinessNetworkName.returns(null);
             mockIdCard5.getRoles.returns(null);
 
             mockIdCard6 = sinon.createStubInstance(IdCard);
-            mockIdCard6.getName.returns('card1');
+            mockIdCard6.getUserName.returns('card1');
             mockIdCard6.getBusinessNetworkName.returns('my-alphabet-network');
             mockIdCard6.getRoles.returns(['PeerAdmin']);
 
             mockIdCard7 = sinon.createStubInstance(IdCard);
-            mockIdCard7.getName.returns('card1');
+            mockIdCard7.getUserName.returns('card1');
             mockIdCard7.getBusinessNetworkName.returns('my-alphabet-network');
             mockIdCard7.getRoles.returns(null);
 

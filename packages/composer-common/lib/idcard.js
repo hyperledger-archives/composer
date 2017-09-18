@@ -23,6 +23,8 @@ const CONNECTION_FILENAME = 'connection.json';
 const METADATA_FILENAME = 'metadata.json';
 const CREDENTIALS_DIRNAME = 'credentials';
 
+const CURRENT_VERSION = 1;
+
 /**
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
@@ -46,28 +48,32 @@ class IdCard {
         const method = 'constructor';
         LOG.entry(method);
 
-        if (!(metadata && metadata.name)) {
-            throw Error('Required metadata field not found: name');
+        if (!(metadata && metadata.userName)) {
+            throw new Error('Required metadata field not found: userName');
         }
         if (!(connectionProfile && connectionProfile.name)) {
-            throw Error('Required connection field not found: name');
+            throw new Error('Required connection field not found: name');
         }
-
-        this.metadata = metadata;
+        this.metadata = Object.assign({ version: CURRENT_VERSION }, metadata);
         this.connectionProfile = connectionProfile;
         this.credentials = { };
+
+        if (this.metadata.version !== CURRENT_VERSION) {
+            throw new Error(`Incompatible card version ${this.metadata.version}. Current version is ${CURRENT_VERSION}`);
+        }
 
         LOG.exit(method);
     }
 
     /**
-     * Name of the card. This is typically used for display purposes, and is not a unique identifier.
+     * Name of the user identity associated with the card. This should be unique within the scope of a given
+     * business network and connection profile.
      * <p>
      * This is a mandatory field.
-     * @return {String} name of the card.
+     * @return {String} Name of the user identity.
      */
-    getName() {
-        return this.metadata.name;
+    getUserName() {
+        return this.metadata.userName;
     }
 
     /**
@@ -129,27 +135,20 @@ class IdCard {
      * enroll with a business network and obtain certificates.
      * <p>
      * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
-     * <em>{ id: String, secret: String }</em>.
+     * <em>{ secret: String }</em>.
      * @return {Object} enrollment credentials, or {@link null} if none exist.
      */
     getEnrollmentCredentials() {
-        let result = null;
-        const id = this.metadata.enrollmentId;
         const secret = this.metadata.enrollmentSecret;
-        if (id || secret) {
-            result = { };
-            result.id = id;
-            result.secret = secret;
-        }
-        return result;
+        return secret ? { secret: secret } : null;
     }
 
     /**
      * Special roles for which this ID can be used, which can include:
      * <ul>
-     *   <li>peerAdmin</li>
-     *   <li>channelAdmin</li>
-     *   <li>issuer</li>
+     *   <li>PeerAdmin</li>
+     *   <li>ChannelAdmin</li>
+     *   <li>Issuer</li>
      * </ul>
      * @return {String[]} roles.
      */
@@ -218,6 +217,14 @@ class IdCard {
             loadDirectoryToObject(CREDENTIALS_DIRNAME, credentials);
 
             return promise.then(() => {
+                // First cut of ID cards did not have a version so migrate them to version 1
+                if (!metadata.version) {
+                    metadata.userName = metadata.enrollmentId;
+                    delete metadata.enrollmentId;
+                    delete metadata.name;
+                    metadata.version = 1;
+                }
+
                 const idCard = new IdCard(metadata, connection);
                 idCard.setCredentials(credentials);
                 LOG.exit(method, idCard.toString());

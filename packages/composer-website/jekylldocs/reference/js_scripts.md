@@ -19,7 +19,7 @@ Decorators within documentation comments are used to annotate the functions with
 
 ## Sample Script
 
-The script below defines two transaction processor functions, called `onAnimalMovementDeparture` and `onAnimalMovementArrival`. Note that the model files within the `BusinessNetworkDefinition` must define the two transaction types `com.ibm.composer.mozart.AnimalMovementDeparture` and `com.ibm.composer.mozart.AnimalMovementArrival`.
+The script below defines two transaction processor functions, called `onAnimalMovementDeparture` and `onAnimalMovementArrival`. Note that the model files within the `BusinessNetworkDefinition` must define the two transaction types `com.hyperledger.composer.animaltracking.AnimalMovementDeparture` and `com.hyperledger.composer.animaltracking.AnimalMovementArrival`.
 
         'use strict';
 
@@ -28,7 +28,7 @@ The script below defines two transaction processor functions, called `onAnimalMo
 
         /**
         * A transaction processor for AnimalMovementDeparture
-        * @param  {com.ibm.composer.mozart.AnimalMovementDeparture} movementDeparture - the transaction to be processed
+        * @param  {com.hyperledger.composer.animaltracking.AnimalMovementDeparture} movementDeparture - the transaction to be processed
         * @transaction
         */
         function onAnimalMovementDeparture(movementDeparture) {
@@ -37,7 +37,7 @@ The script below defines two transaction processor functions, called `onAnimalMo
 
         /**
         * A transaction processor for AnimalMovementArrival
-        * @param  {com.ibm.composer.mozart.AnimalMovementArrival} movementArrival - the transaction to be processed
+        * @param  {com.hyperledger.composer.animaltracking.AnimalMovementArrival} movementArrival - the transaction to be processed
         * @transaction
         */
         function onAnimalMovementArrival(movementArrival) {
