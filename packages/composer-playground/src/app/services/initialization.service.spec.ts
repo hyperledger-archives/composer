@@ -33,7 +33,7 @@ describe('InitializationService', () => {
         cards: [
             {
                 metadata: {
-                    name: 'PeerAdmin',
+                    userName: 'PeerAdmin',
                     enrollmentId: 'PeerAdmin',
                     enrollmentSecret: 'NOTUSED',
                     roles: [

@@ -58,6 +58,8 @@ export class AdminService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
+        const userName = this.identityService.getCurrentUserName();
 
         this.alertService.busyStatus$.next({
             title: businessNetworkName ? 'Connecting to Business Network ' + businessNetworkName : 'Connecting without a business network',
@@ -65,12 +67,12 @@ export class AdminService {
         });
 
         if (businessNetworkName) {
-            console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfileRef, enrollmentCredentials.id);
+            console.log('Connecting to business network %s with connection profile %s with id %s', businessNetworkName, connectionProfileRef, userName);
         } else {
-            console.log('Connecting with connection profile %s with id %s', connectionProfileRef, enrollmentCredentials.id);
+            console.log('Connecting with connection profile %s with id %s', connectionProfileRef, userName);
         }
 
-        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, businessNetworkName)
+        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -99,6 +101,8 @@ export class AdminService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
+        const userName = this.identityService.getCurrentUserName();
 
         return this.list()
             .then((businessNetworks) => {
@@ -117,7 +121,7 @@ export class AdminService {
                     force: true
                 });
 
-                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret);
             })
             .then(() => {
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
@@ -133,8 +137,8 @@ export class AdminService {
                     force: true
                 });
 
-                console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, enrollmentCredentials.id);
-                return this.getAdminConnection().connect(connectionProfileRef, enrollmentCredentials.id, enrollmentCredentials.secret, name);
+                console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, userName);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, name);
             })
             .then(() => {
                 return true;

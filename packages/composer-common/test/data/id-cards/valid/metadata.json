@@ -1,5 +1,6 @@
 {
-    "name": "Conga",
+    "userName": "conga",
+    "version": 1,
     "description": "A valid ID card",
     "businessNetwork": "org-acme-biznet",
     "image": "images/conga.png"
