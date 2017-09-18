@@ -77,6 +77,9 @@
                 $(this).text('Show');
             }
         });
+        $('#access-token-logout').click(function() {
+            window.location.href = '/auth/logout';
+        });
         $('#access-token-container').show();
         $('#access-token-value-hide').show();
     });
@@ -99,6 +102,7 @@
         <input id="access-token-value-hide" type="password" disabled></input>
         <input id="access-token-value-show" type="text" disabled></input>
         <button id="access-token-toggle">Show</button>
+        <button id="access-token-logout">Logout</button>
         <p>
         The access token displayed above can be used to authenticate to the REST API using a standard
         HTTP or REST client.<br>
