@@ -192,7 +192,7 @@ export class ResourceComponent implements OnInit {
         }
 
         function isTransaction() {
-            return client.getBusinessNetworkConnection().getTransactionRegistry();
+            return client.getBusinessNetworkConnection().getTransactionRegistry(id);
         }
 
         function isParticipant() {

@@ -95,8 +95,8 @@ describe('IdentityIssuedComponent', () => {
 
             tick();
 
-            component['newCard'].getName().should.equal('dan');
-            component['newCard'].getEnrollmentCredentials().should.deep.equal({id: 'dan', secret: 'wotnodolphin'});
+            component['newCard'].getUserName().should.equal('dan');
+            component['newCard'].getEnrollmentCredentials().should.deep.equal({secret: 'wotnodolphin'});
             component['newCard'].getBusinessNetworkName().should.equal('dan-net');
             component['newCard'].getConnectionProfile().should.deep.equal({name: 'dan-profile'});
         }));

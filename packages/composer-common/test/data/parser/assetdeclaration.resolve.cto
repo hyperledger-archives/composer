@@ -1,6 +1,6 @@
-namespace com.ibm.testing
+namespace com.hyperledger.testing
 
-import com.ibm.elsewhere.BaseAsset
+import com.hyperledger.elsewhere.BaseAsset
 
 asset TestAsset extends BaseAsset {
 

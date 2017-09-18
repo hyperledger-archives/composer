@@ -11,6 +11,11 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.12.3 {4258e987144410b121e40d2dd9801e87} 2017-09-12
+- Remove IdCard.getName function
+- Add IdCard.getUserName function
+- Change semantics of IdCard.getEnrollmentCredentials function
+
 Version 0.11.4 {6f0338e1a0a12cea4676d1093fd436ea} 2017-08-17
 - Add IdCard.setCredentials function
 
@@ -141,10 +146,10 @@ Version 0.0.15 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-31
 - Added an automatic 'timestamp' property to transactions
 
 Version 0.0.14 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-27
-- Modified Concerto to extend EventEmitter
+- Modified composer to extend EventEmitter
 
 Version 0.0.13 {1ff98116f0b834387a85d49d50debc69} 2016-10-27
-- Added ping() method to Concerto
+- Added ping() method to composer
 
 Version 0.0.12 {d3861b7bd41ea2eae871d2783ab259e2} 2016-10-27
 - Added setIdentifier method to Identifiable.

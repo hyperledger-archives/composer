@@ -36,13 +36,13 @@ describe('JavaVisitor', function(){
         it('should generate Java code', function() {
 
             const carleaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
-            const concertoModel = fs.readFileSync(path.resolve(__dirname, '../data/model/concerto.cto'), 'utf8');
+            const composerModel = fs.readFileSync(path.resolve(__dirname, '../data/model/composer.cto'), 'utf8');
 
             // create and populate the ModelManager with a model file
             let modelManager = new ModelManager();
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
-            modelManager.addModelFiles([carleaseModel,concertoModel], ['carlease.cto', 'concerto.cto']);
+            modelManager.addModelFiles([carleaseModel,composerModel], ['carlease.cto', 'composer.cto']);
             const introspector = new Introspector(modelManager);
             const classes = introspector.getClassDeclarations();
 

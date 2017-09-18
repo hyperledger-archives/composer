@@ -12,8 +12,8 @@ services:
         {
             "cards": [{
                     "metadata": {
-                        "name": "PeerAdmin",
-                        "enrollmentId": "PeerAdmin",
+                        "version": 1,
+                        "userName": "PeerAdmin",
                         "enrollmentSecret": "NOTUSED",
                         "roles": [
                             "PeerAdmin",

@@ -15,7 +15,7 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-const util = require('util');
+// const util = require('util');
 const fs = require('fs');
 
 const LOG = Logger.getLog('HLFConnectionManager');
@@ -23,52 +23,19 @@ const LOG = Logger.getLog('HLFConnectionManager');
 global.hfc = {
     logger: {
         debug: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+
         },
         info: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg.toString();
-                }
-            }));
-            LOG.debug('fabric-client', message);
+
         },
         warn: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+
         },
         error: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+
         }
     }
 };
-
 
 const Client = require('fabric-client');
 const FabricCAClientImpl = require('fabric-ca-client');
@@ -107,7 +74,7 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * parse the orderer definition
+     * parse thglobal.hfce orderer definition
      * @param {string|object} orderer The orderer definition
      * @param {number} timeout the request
      * @param {string} globalCert if provided use this unless cert is provided

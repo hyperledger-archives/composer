@@ -24,14 +24,14 @@
 
         "transactiondeclaration-getidentifierfieldname-noidentifyingfield": "Transactions do not have an identifying field.",
 
-        "concerto-connect-noconopts": "connectOptions not specified",
-        "concerto-connect-nokeyvalstore": "connectOptions.keyValStore not specified",
-        "concerto-connect-nomembersrvcurl": "connectOptions.membershipServicesURL not specified",
-        "concerto-connect-nopeerurl": "connectOptions.peerURL not specified",
-        "concerto-connect-noeventhuburl": "connectOptions.eventHubURL not specified",
-        "concerto-login-noenrollmentid": "enrollmentID not specified",
-        "concerto-login-noenrollmentsecret": "enrollmentSecret not specified",
-        "concerto-deploy-nosecuritycontext": "securityContext not specified",
+        "composer-connect-noconopts": "connectOptions not specified",
+        "composer-connect-nokeyvalstore": "connectOptions.keyValStore not specified",
+        "composer-connect-nomembersrvcurl": "connectOptions.membershipServicesURL not specified",
+        "composer-connect-nopeerurl": "connectOptions.peerURL not specified",
+        "composer-connect-noeventhuburl": "connectOptions.eventHubURL not specified",
+        "composer-login-noenrollmentid": "enrollmentID not specified",
+        "composer-login-noenrollmentsecret": "enrollmentSecret not specified",
+        "composer-deploy-nosecuritycontext": "securityContext not specified",
 
         "factory-newinstance-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
         "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",

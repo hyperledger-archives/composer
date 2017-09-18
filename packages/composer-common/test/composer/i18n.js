@@ -91,14 +91,14 @@ describe('Globalization', function() {
 
              // create and populate the ModelManager with a model file
             const modelManager = new ModelManager();
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
             modelManager.addModelFile(file,fileName);
 
-            let modelFile = modelManager.getModelFile('concerto');
-            modelFile.getNamespace().should.equal('concerto');
-            let classDeclaration = modelFile.getType('concerto.MyParticipant');
+            let modelFile = modelManager.getModelFile('composer');
+            modelFile.getNamespace().should.equal('composer');
+            let classDeclaration = modelFile.getType('composer.MyParticipant');
             classDeclaration.should.not.be.undefined;
 
             expect(function(){
@@ -145,7 +145,7 @@ describe('Globalization', function() {
                 // create and polulate the modelManager with a model file
                 const modelManager = new ModelManager();
 
-                let fileName = './test/concerto/models/classdeclaration/validate/foo-identifiernotproperty.cto';
+                let fileName = './test/composer/models/classdeclaration/validate/foo-identifiernotproperty.cto';
                 let invalidFile = fs.readFileSync(fileName, 'utf8');
                 invalidFile.should.not.be.null;
 
@@ -164,7 +164,7 @@ describe('Globalization', function() {
                 // create and polulate the modelManager with a model file
                 const modelManager = new ModelManager();
 
-                let fileName = './test/concerto/models/classdeclaration/validate/foo-identifiernotstring.cto';
+                let fileName = './test/composer/models/classdeclaration/validate/foo-identifiernotstring.cto';
                 let invalidFile = fs.readFileSync(fileName, 'utf8');
                 invalidFile.should.not.be.null;
                 expect(function() {
@@ -194,7 +194,7 @@ describe('Globalization', function() {
             // create and polulate the modelManager with a model file
             const modelManager = new ModelManager();
 
-            let fileName = './test/concerto/models/modelfile/resolvetype/foo-undecltype.cto';
+            let fileName = './test/composer/models/modelfile/resolvetype/foo-undecltype.cto';
             let invalidFile = fs.readFileSync(fileName, 'utf8');
             invalidFile.should.not.be.null;
             expect(function() {
@@ -247,7 +247,7 @@ describe('Globalization', function() {
 
                 const modelManager = new ModelManager();
 
-                let fileName = './test/concerto/models/factory/newinstance/foo-typenotdeclaredinns.cto';
+                let fileName = './test/composer/models/factory/newinstance/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
                 modelManager.addModelFile(file,fileName);
@@ -283,7 +283,7 @@ describe('Globalization', function() {
 
                 const modelManager = new ModelManager();
 
-                let fileName = './test/concerto/models/factory/newinstance/foo-typenotdeclaredinns.cto';
+                let fileName = './test/composer/models/factory/newinstance/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
                 modelManager.addModelFile(file,fileName);
@@ -319,7 +319,7 @@ describe('Globalization', function() {
 
                 const modelManager = new ModelManager();
 
-                let fileName = './test/concerto/models/factory/newrelationship/foo-typenotdeclaredinns.cto';
+                let fileName = './test/composer/models/factory/newrelationship/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
                 modelManager.addModelFile(file,fileName);

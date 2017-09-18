@@ -1726,35 +1726,7 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#update', () => {
-        beforeEach(() => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
-            connection._connectToEventHubs();
-        });
 
-        it('should throw if businessNetworkDefinition not specified', () => {
-            (() => {
-                connection.update(mockSecurityContext, null);
-            }).should.throw(/businessNetworkDefinition not specified/);
-        });
-
-        it('should invoke the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').resolves();
-            return connection.update(mockSecurityContext, mockBusinessNetwork)
-                .then(() => {
-                    sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ=']);
-                });
-        });
-
-        it('should handle errors invoking the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').rejects('such error');
-            return connection.update(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
 
     describe('#upgrade', () => {
 

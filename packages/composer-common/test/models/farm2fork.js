@@ -26,7 +26,7 @@ describe('Farm2Fork Model', function() {
             modelManager.should.not.be.null;
 
             // parse a model file from disk and add to the ModelManager
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);

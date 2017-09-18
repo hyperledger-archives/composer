@@ -366,7 +366,7 @@ describe('QueryCompiler', () => {
             result.should.deep.equal({
                 selector: {
                     $registryType: 'Transaction',
-                    $registryId: 'default',
+                    $registryId: 'org.acme.sample.SampleTransaction',
                     $class: 'org.acme.sample.SampleTransaction'
                 }
             });

@@ -453,8 +453,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         res.should.be.json;
                         res.should.not.be.null;
                         res.body.length.should.equal(2);
-                        res.body[0].transactionType.should.equal('PublishBond');
-                        res.body[1].transactionType.should.equal('PublishBond');
+                        res.body[0].transactionType.should.equal('org.acme.bond.PublishBond');
+                        res.body[1].transactionType.should.equal('org.acme.bond.PublishBond');
                     });
             });
             it('should return a 404 if the specified query does not exist', () => {

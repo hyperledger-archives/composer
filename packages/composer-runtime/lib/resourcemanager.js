@@ -34,6 +34,7 @@ class ResourceManager extends TransactionHandler {
         this.registryManager = context.getRegistryManager();
         this.factory = context.getFactory();
         this.serializer = context.getSerializer();
+        this.resolver = context.getResolver();
 
         LOG.info('<ResourceManager>', 'Binding in the tx names and impl');
         this.bind(
@@ -72,8 +73,13 @@ class ResourceManager extends TransactionHandler {
     addResources(api, transaction) {
         const method = 'addResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+
+        // resolve the relationship to the target registry -
+        // this currently gives us the resource, which then is converted into the registry instance
+        return this.resolver.resolve(transaction.targetRegistry)
+            .then( (result) => {
+                return this.registryManager.get(result.type, result.registryId);
+            })
             .then(registry => {
                 return registry.addAll(transaction.resources,{ convertResourcesToRelationships: true });
             });
@@ -90,8 +96,12 @@ class ResourceManager extends TransactionHandler {
         const method = 'updateResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
 
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+        // resolve the relationship to the target registry
+        // this currently gives us the resource, which then is converted into the registry instance
+        return this.resolver.resolve(transaction.targetRegistry)
+        .then( (result) => {
+            return this.registryManager.get(result.type, result.registryId);
+        })
             .then(registry => {
                 return registry.updateAll(transaction.resources,{ convertResourcesToRelationships: true });
             });
@@ -108,8 +118,12 @@ class ResourceManager extends TransactionHandler {
         const method = 'removeResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
 
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+        // resolve the relationship to the target registry
+        // this currently gives us the resource, which then is converted into the registry instance
+        return this.resolver.resolve(transaction.targetRegistry)
+        .then( (result) => {
+            return this.registryManager.get(result.type, result.registryId);
+        })
             .then(registry => {
                 return registry.removeAll(transaction.resourceIds,{ convertResourcesToRelationships: true });
             });
