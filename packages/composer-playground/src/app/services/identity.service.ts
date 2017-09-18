@@ -11,7 +11,8 @@ export class IdentityService {
     private _currentIdentity: BehaviorSubject<string> = new BehaviorSubject(null);
     private currentQualifiedProfileName: string;
     private currentConnectionProfile: any;
-    private currentEnrollmentCredentials: { id, secret };
+    private currentEnrollmentCredentials: { secret };
+    private currentUserName: string;
 
     // tslint:disable-next-line:member-ordering
     public readonly currentIdentity: Observable<string> = this._currentIdentity.asObservable();
@@ -29,8 +30,9 @@ export class IdentityService {
         this.currentQualifiedProfileName = qualifiedProfileName;
         this.currentConnectionProfile = card.getConnectionProfile();
         this.currentEnrollmentCredentials = card.getEnrollmentCredentials();
+        this.currentUserName = card.getUserName();
 
-        this._currentIdentity.next(this.currentEnrollmentCredentials.id);
+        this._currentIdentity.next(card.getUserName());
     }
 
     getCurrentConnectionProfile(): any {
@@ -41,8 +43,12 @@ export class IdentityService {
         return this.currentQualifiedProfileName;
     }
 
-    getCurrentEnrollmentCredentials(): { id, secret } {
+    getCurrentEnrollmentCredentials(): { secret } {
         return this.currentEnrollmentCredentials;
+    }
+
+    getCurrentUserName(): string {
+        return this.currentUserName;
     }
 
     setLoggedIn(loggedIn: boolean) {
