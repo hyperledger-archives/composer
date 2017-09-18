@@ -17,7 +17,7 @@
                 <div class="selected-border"
                      [ngClass]="{'selected-border--selected': cardRef === currentIdentity}"></div>
                 <div class="id">
-                    {{identityCards.get(cardRef).getName()}}
+                    {{identityCards.get(cardRef).getUserName()}}
                 </div>
                 <div class="flex" *ngIf="cardRef===currentIdentity">
                     IN USE

@@ -24,7 +24,7 @@ describe(`IdentityCardComponent`, () => {
         };
 
         mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getName.returns('pedantic-owl');
+        mockIdCard.getUserName.returns('pedantic-owl');
         mockIdCard.getBusinessNetworkName.returns('conga-network');
         mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
         mockIdCard.getRoles.returns([]);
@@ -101,7 +101,7 @@ describe(`IdentityCardComponent`, () => {
 
     describe('#getInitials', () => {
         it('should get one initial', () => {
-            mockIdCard.getName.returns('admin');
+            mockIdCard.getUserName.returns('admin');
             component.identity = mockIdCard;
 
             let result = component.getInitials();
@@ -110,7 +110,7 @@ describe(`IdentityCardComponent`, () => {
         });
 
         it('should get two initials', () => {
-            mockIdCard.getName.returns('pedantic owl');
+            mockIdCard.getUserName.returns('pedantic owl');
             component.identity = mockIdCard;
 
             let result = component.getInitials();
@@ -119,7 +119,7 @@ describe(`IdentityCardComponent`, () => {
         });
 
         it('should get maximum of two initials', () => {
-            mockIdCard.getName.returns('eat conga repeat');
+            mockIdCard.getUserName.returns('eat conga repeat');
             component.identity = mockIdCard;
 
             let result = component.getInitials();
@@ -128,7 +128,7 @@ describe(`IdentityCardComponent`, () => {
         });
 
         it('should get non-ascii \'initials\'', () => {
-            mockIdCard.getName.returns('黄 丽');
+            mockIdCard.getUserName.returns('黄 丽');
             component.identity = mockIdCard;
 
             let result = component.getInitials();
@@ -137,7 +137,7 @@ describe(`IdentityCardComponent`, () => {
         });
 
         it('should smile if there are no initials', () => {
-            mockIdCard.getName.returns(' ');
+            mockIdCard.getUserName.returns(' ');
             component.identity = mockIdCard;
 
             let result = component.getInitials();

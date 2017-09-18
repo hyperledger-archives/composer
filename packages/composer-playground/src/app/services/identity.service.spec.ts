@@ -23,51 +23,43 @@ describe('IdentityService', () => {
     });
 
     describe('setCurrentIdentity', () => {
-        it('should set current identity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+        let nextCurrentIdentitySpy;
+        const setupTest = (service: IdentityService) => {
             let idCardMock = sinon.createStubInstance(IdCard);
             idCardMock.getConnectionProfile.returns({name: 'hlfv1'});
-            idCardMock.getEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
-            let nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
+            idCardMock.getEnrollmentCredentials.returns({secret: 'adminpw'});
+            idCardMock.getUserName.returns('admin');
+            nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
 
             service.setCurrentIdentity('qpn-hlfv1', idCardMock);
 
             tick();
+        };
 
-            nextCurrentIdentitySpy.should.have.been.called;
-            service['currentQualifiedProfileName'].should.equal('qpn-hlfv1');
-            service['currentConnectionProfile'].should.deep.equal({name: 'hlfv1'});
-            service['currentEnrollmentCredentials'].should.deep.equal({id: 'admin', secret: 'adminpw'});
+        it('should update _currentIdentity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            nextCurrentIdentitySpy.should.have.been.calledWith('admin');
         })));
-    });
 
-    describe('getCurrentConnectionProfile', () => {
-        it('should get the current connection profile', inject([IdentityService], (service: IdentityService) => {
-            service['currentConnectionProfile'] = {name: 'hlfv1'};
+        it('should update qualified profile name', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentQualifiedProfileName().should.equal('qpn-hlfv1');
+        })));
 
-            let result = service.getCurrentConnectionProfile();
+        it('should update connection profile', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentConnectionProfile().should.deep.equal({name: 'hlfv1'});
+        })));
 
-            result.should.deep.equal({name: 'hlfv1'});
-        }));
-    });
+        it('should update enrollment credentials', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentEnrollmentCredentials().should.deep.equal({secret: 'adminpw'});
+        })));
 
-    describe('getCurrentQualifiedProfileName', () => {
-        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
-            service['currentQualifiedProfileName'] = 'qpn-hlfv1';
-
-            let result = service.getCurrentQualifiedProfileName();
-
-            result.should.equal('qpn-hlfv1');
-        }));
-    });
-
-    describe('getCurrentEnrollmentCredentials', () => {
-        it('should get the current qualified profile name', inject([IdentityService], (service: IdentityService) => {
-            service['currentEnrollmentCredentials'] = {id: 'admin', secret: 'adminpw'};
-
-            let result = service.getCurrentEnrollmentCredentials();
-
-            result.should.deep.equal({id: 'admin', secret: 'adminpw'});
-        }));
+        it('should update user name', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentUserName().should.equal('admin');
+        })));
     });
 
     describe('getLoggedIn', () => {
