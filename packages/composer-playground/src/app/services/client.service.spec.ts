@@ -858,7 +858,7 @@ describe('ClientService', () => {
     describe('ensureConnected', () => {
         beforeEach(() => {
             identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
-            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myId'});
+            identityServiceMock.getCurrentUserName.returns('myId');
         });
 
         it('should return if connected when not forced', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -886,8 +886,6 @@ describe('ClientService', () => {
             service.ensureConnected(null, false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -917,8 +915,6 @@ describe('ClientService', () => {
             service.ensureConnected('myNetwork', false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -952,8 +948,6 @@ describe('ClientService', () => {
             service.ensureConnected(null, false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -1012,7 +1006,8 @@ describe('ClientService', () => {
         beforeEach(() => {
             identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
             identityServiceMock.getCurrentQualifiedProfileName.returns('xxx-myProfile');
-            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myUser', secret: 'mySecret'});
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({secret: 'mySecret'});
+            identityServiceMock.getCurrentUserName.returns('myUser');
         });
 
         it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -1026,6 +1021,24 @@ describe('ClientService', () => {
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', 'mySecret');
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile'
+            });
+        })));
+
+        it('should diconnect and reconnect with no enrollment credentials', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+            identityServiceMock.getCurrentEnrollmentCredentials.returns(null);
+
+            service.refresh('myNetwork');
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', null);
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
                 text: 'refreshing the connection to myProfile'
