@@ -233,7 +233,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-34">line 34</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-36">line 36</a>
 			</li>
 		</ul>
 	</dd>
@@ -405,7 +405,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-167">line 167</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-166">line 166</a>
 			</li>
 		</ul>
 	</dd>
@@ -517,7 +517,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-86">line 86</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-92">line 92</a>
 			</li>
 		</ul>
 	</dd>
@@ -630,7 +630,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-96">line 96</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-102">line 102</a>
 			</li>
 		</ul>
 	</dd>
@@ -743,7 +743,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-107">line 107</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-113">line 113</a>
 			</li>
 		</ul>
 	</dd>
@@ -855,7 +855,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-77">line 77</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-83">line 83</a>
 			</li>
 		</ul>
 	</dd>
@@ -921,7 +921,7 @@
     
     <div class="description">
         <p>Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to<br>enroll with a business network and obtain certificates.</p>
-<p><p><br>For an ID/secret enrollment scheme, the credentials are expected to be of the form:<br><em>{ id: String, secret: String }</em>.</p>
+<p><p><br>For an ID/secret enrollment scheme, the credentials are expected to be of the form:<br><em>{ secret: String }</em>.</p>
     </div>
     
 
@@ -968,7 +968,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-135">line 135</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-141">line 141</a>
 			</li>
 		</ul>
 	</dd>
@@ -1025,7 +1025,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getName"><span class="type-signature"></span>getName()</h4>
+    <h4 class="name" id="getRoles"><span class="type-signature"></span>getRoles()</h4>
     
     
 </dt>
@@ -1033,7 +1033,120 @@
 
     
     <div class="description">
-        <p>Name of the card. This is typically used for display purposes, and is not a unique identifier.</p>
+        <p>Special roles for which this ID can be used, which can include:</p>
+<ul><br>  <li>PeerAdmin</li><br>  <li>ChannelAdmin</li><br>  <li>Issuer</li><br></ul>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-155">line 155</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>roles.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;String></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getUserName"><span class="type-signature"></span>getUserName()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Name of the user identity associated with the card. This should be unique within the scope of a given<br>business network and connection profile.</p>
 <p><p><br>This is a mandatory field.</p>
     </div>
     
@@ -1081,7 +1194,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-69">line 69</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-75">line 75</a>
 			</li>
 		</ul>
 	</dd>
@@ -1110,7 +1223,7 @@
     
             
 <div class="param-desc">
-    <p>name of the card.</p>
+    <p>Name of the user identity.</p>
 </div>
 
 
@@ -1122,119 +1235,6 @@
     <dd>
         
 <span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getRoles"><span class="type-signature"></span>getRoles()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Special roles for which this ID can be used, which can include:</p>
-<ul><br>  <li>peerAdmin</li><br>  <li>channelAdmin</li><br>  <li>issuer</li><br></ul>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-156">line 156</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>roles.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;String></span>
 
 
 
@@ -1357,7 +1357,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-118">line 118</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-124">line 124</a>
 			</li>
 		</ul>
 	</dd>
@@ -1570,7 +1570,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_idcard.js.html">composer-common/lib/idcard.js</a>,
-				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-238">line 238</a>
+				 <a href="composer-common_lib_idcard.js.html#sunlight-1-line-245">line 245</a>
 			</li>
 		</ul>
 	</dd>
