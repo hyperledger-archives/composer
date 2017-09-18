@@ -21,7 +21,11 @@ $callout: #FFD640;
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
   grid-template-rows: 20% 20% 20% 20% 20%;
-  overflow: auto;
+
+  // responsive button
+  // .toggle {
+  //     display: block ;
+  //   }
 
   // Scrollbar overrides
   // ::-webkit-scrollbar {
@@ -37,8 +41,15 @@ $callout: #FFD640;
     grid-column-start: 1;
     grid-column-end: 2;
     justify-items: start;
-    // overflow-y: scroll;
-      height: 100vh;
+    overflow-y: scroll;
+    height: 100vh;
+
+    // Scrollbar overrides
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;  // IE 10+
+
 
     .docs-pagenav-grid {
       padding-top: 5vh;
@@ -228,8 +239,12 @@ $callout: #FFD640;
     grid-column-start: 2;
     grid-column-end: 6;
     background-color: $third-highlight;
-    overflow-y: auto;
+    overflow-y: scroll;
     height: 100vh;
+
+    // ::-webkit-scrollbar {
+    //   display: initial;
+    // }
 
     .content-chunk {
       margin-left: 2rem;
@@ -453,7 +468,7 @@ $callout: #FFD640;
       .page-sidebar-grid {
         grid-column-start: 1;
         grid-column-end: 6;
-        // overflow-y: auto;
+        overflow-y: auto;
 
         // #off-canvas {
         //     position: fixed; /* or choose `absolute` depending on desired behavior*/
