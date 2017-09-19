@@ -24,6 +24,7 @@ const TestUtil = require('./testutil');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
+chai.use(require('chai-as-promised'));
 
 describe('Participant system tests', function () {
 
