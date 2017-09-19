@@ -271,22 +271,6 @@ module.exports = function (env) {
         }
       }),
 
-    ],
-
-    /*
-     * Include polyfills or mocks for various node stuff
-     * Description: Node configuration
-     *
-     * See: https://webpack.github.io/docs/configuration.html#node
-     */
-    node: {
-      global: true,
-      crypto: 'empty',
-      process: false,
-      module: false,
-      clearImmediate: false,
-      setImmediate: false
-    }
-
+    ]
   });
-}
+};

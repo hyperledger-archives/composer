@@ -15,7 +15,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ConnectionProfileStore } from 'composer-common';
 import { IdentityService } from './identity.service';
 import { AdminConnection } from 'composer-admin';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 describe('AdminService', () => {
 
