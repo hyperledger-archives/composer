@@ -107,7 +107,7 @@ class Util {
     */
     static createTransactionId(securityContext){
         Util.securityCheck(securityContext);
-        return securityContext.getConnection().createTransactionId()
+        return securityContext.getConnection().createTransactionId(securityContext)
         .then((id)=>{
             if (this.isNull(id)){
                 id = uuid.v4();
