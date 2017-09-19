@@ -18,8 +18,12 @@ const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const Connection = require('../lib/connection');
 const ConnectionManager = require('../lib/connectionmanager');
 const SecurityContext = require('../lib/securitycontext');
-
+const Util = require('../lib/util');
+const Serializer = require('../lib/serializer');
 const chai = require('chai');
+const Factory = require('../lib/factory');
+const Resource = require('../lib/model/resource');
+
 chai.should();
 chai.use(require('chai-as-promised'));
 
@@ -31,12 +35,19 @@ describe('Connection', () => {
     let mockSecurityContext;
     let mockBusinessNetworkDefinition;
     let connection;
+    let sandbox;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         connection = new Connection(mockConnectionManager, 'devFabric1', 'org.acme.Business');
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('#constructor', () => {
@@ -242,20 +253,54 @@ describe('Connection', () => {
     describe('#update', () => {
 
         it('should call _update and handle no error', () => {
-            sinon.stub(connection, '_update').yields(null);
+            sinon.stub(connection, '_updateTx').resolves();
             return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
                 .then(() => {
-                    sinon.assert.calledWith(connection._update, mockSecurityContext, mockBusinessNetworkDefinition);
+                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
                 });
         });
 
         it('should call _update and handle an error', () => {
-            sinon.stub(connection, '_update').yields(new Error('error'));
+            sinon.stub(connection, '_updateTx').rejects(new Error('error'));
             return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._update, mockSecurityContext, mockBusinessNetworkDefinition);
+                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
                 });
+        });
+
+    });
+
+    describe('#_updateTX', () => {
+
+        it('should throw as abstract method', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
+            .then(()=>{
+                sinon.assert.called(Util.invokeChainCode);
+                sinon.assert.called(Util.queryChainCode);
+            });
+
         });
 
     });

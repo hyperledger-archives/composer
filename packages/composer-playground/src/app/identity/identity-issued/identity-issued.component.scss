@@ -3,49 +3,41 @@
 
 identity-issued-modal {
   .identity-issued {
-    dt, dd {
-      display: inline;
-      margin: 0;
-    }
-
     .modal-body {
-      margin-left: 5rem;
-    }
+      display: flex;
+      flex-direction: row;
+      overflow-y: auto;
 
-    .id-option {
-      margin-bottom: 1.3rem;
+      .new-card-options {
+        position: absolute;
+        left: 275 + $space-medium; // the size of an ID card + padding
+        padding: 0 $space-medium $space-medium $space-medium;
 
-      header {
-        display: flex;
-        color: $primary-text;
+        dl.enrollment-credentials {
+          margin-left: $space-medium;
 
-        dl {
+          display: flex;
+          flex-flow: row wrap;
+
+          dt, dd {
+            margin: 0;
+            flex: 0 0 50%;
+          }
+
           dt {
-            position: absolute;
-            left: -4rem;
             font-weight: 700;
+            flex: 0 0 33%;
+          }
+
+          dd {
+            flex: 0 0 66%;
           }
         }
-      }
 
-      .id-option-details {
-        dl {
-          div {
-            display: flex;
-            margin-bottom: 1.3em;
-
-            &.id-secret {
-              font-weight: 700;
-            }
-
-            dt {
-              flex: 1;
-            }
-
-            dd {
-              flex: 5;
-            }
-          }
+        .actions {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: $space-medium;
         }
       }
     }

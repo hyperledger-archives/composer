@@ -13,12 +13,12 @@ let expect = chai.expect;
 
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, ConnectionProfileStore } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, ConnectionProfileStore, Util } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 describe('ClientService', () => {
 
@@ -73,6 +73,36 @@ describe('ClientService', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('createAclFile', () => {
+        let mockBusinessNetwork;
+
+        beforeEach(() => {
+            mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+        });
+
+        it('should create an ACL file', fakeAsync(inject([ClientService], (service: ClientService) => {
+            service['currentBusinessNetwork'] = mockBusinessNetwork;
+            let allRule = 'rule SystemACL {description: "System ACL to permit all access" participant: "org.hyperledger.composer.system.Participant" operation: ALL resource: "org.hyperledger.composer.system.**" action: ALLOW}';
+            let aclFile = service.createAclFile('permissions', allRule);
+            aclFile.should.be.instanceOf(AclFile);
+            mockBusinessNetwork.getModelManager.should.have.been.called;
+        })));
+
+    });
+
+    describe('createBusinessNetwork', () => {
+        it('should pass through and call createNewBusinessDefinition from common', inject([ClientService], (service: ClientService) => {
+            let name = 'myname';
+            let nameversion = 'myname@0.0.1';
+            let desc = 'my description';
+
+            let busNetDef = service.createBusinessNetwork(nameversion, desc, null, null);
+            busNetDef.getName().should.equal(name);
+            busNetDef.getDescription().should.equal(desc);
+            busNetDef.getVersion().should.equal('0.0.1');
+        }));
     });
 
     describe('getBusinessNetworkConnection', () => {
@@ -253,6 +283,16 @@ describe('ClientService', () => {
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
+        it('should update a readme file', inject([ClientService], (service: ClientService) => {
+            let mockSetReadme = sinon.stub(service, 'setBusinessNetworkReadme');
+
+            // call function
+            let result = service.updateFile('readme.md', 'read this', 'readme');
+
+            mockSetReadme.should.have.been.calledWith('read this');
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
         it('should not update a model file if invalid with a matching namespace', inject([ClientService], (service: ClientService) => {
 
             modelManagerMock = {
@@ -340,6 +380,11 @@ describe('ClientService', () => {
             result.should.equal('Error: The namespace collides with existing model namespace new-model');
             modelManagerMock.updateModelFile.should.not.have.been.called;
             businessNetworkChangedSpy.should.have.been.calledWith(false);
+        }));
+
+        it('should return error message if type is invalid', inject([ClientService], (service: ClientService) => {
+            let result = service.updateFile('bad.file', 'content of wombat type', 'wombat');
+            result.should.equal('Error: Attempted update of unknown file of type: wombat');
         }));
     });
 
@@ -489,6 +534,10 @@ describe('ClientService', () => {
             result.should.equal('invalid');
         }));
 
+        it('should return error message if type is invalid', inject([ClientService], (service: ClientService) => {
+            let result = service.validateFile('bad.file', 'content of wombat type', 'wombat');
+            result.should.equal('Error: Attempted validation of unknown file of type: wombat');
+        }));
     });
 
     describe('replaceFile', () => {
@@ -545,6 +594,11 @@ describe('ClientService', () => {
             scriptManagerMock.deleteScript.should.have.been.calledWith('oldId');
             businessNetworkChangedSpy.should.have.been.calledWith(true);
             should.not.exist(response);
+        }));
+
+        it('should return error message if type is invalid', inject([ClientService], (service: ClientService) => {
+            let result = service.replaceFile('oldId', 'newId', 'content', 'wombat');
+            result.should.equal('Error: Attempted replace of ununsupported file type: wombat');
         }));
     });
 
@@ -804,7 +858,7 @@ describe('ClientService', () => {
     describe('ensureConnected', () => {
         beforeEach(() => {
             identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
-            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myId'});
+            identityServiceMock.getCurrentUserName.returns('myId');
         });
 
         it('should return if connected when not forced', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -832,8 +886,6 @@ describe('ClientService', () => {
             service.ensureConnected(null, false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -863,8 +915,6 @@ describe('ClientService', () => {
             service.ensureConnected('myNetwork', false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -898,8 +948,6 @@ describe('ClientService', () => {
             service.ensureConnected(null, false);
 
             tick();
-
-            identityServiceMock.getCurrentEnrollmentCredentials.should.have.been.called;
 
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
@@ -958,7 +1006,8 @@ describe('ClientService', () => {
         beforeEach(() => {
             identityServiceMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
             identityServiceMock.getCurrentQualifiedProfileName.returns('xxx-myProfile');
-            identityServiceMock.getCurrentEnrollmentCredentials.returns({id: 'myUser', secret: 'mySecret'});
+            identityServiceMock.getCurrentEnrollmentCredentials.returns({secret: 'mySecret'});
+            identityServiceMock.getCurrentUserName.returns('myUser');
         });
 
         it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -972,6 +1021,24 @@ describe('ClientService', () => {
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', 'mySecret');
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile'
+            });
+        })));
+
+        it('should diconnect and reconnect with no enrollment credentials', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+            identityServiceMock.getCurrentEnrollmentCredentials.returns(null);
+
+            service.refresh('myNetwork');
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', null);
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
                 text: 'refreshing the connection to myProfile'
@@ -1053,9 +1120,6 @@ describe('ClientService', () => {
 
     describe('revokeIdentity', () => {
         it('should call the revokeIdentity() function for the relevant BusinessNetworkConnection', fakeAsync(inject([ClientService], (service: ClientService) => {
-
-            // (1).should.equal(1);
-
             let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
                 revokeIdentity: sinon.stub().returns(Promise.resolve())
             });
@@ -1085,6 +1149,17 @@ describe('ClientService', () => {
             service['isConnected'].should.equal(false);
             adminMock.disconnect.should.have.been.called;
             businessNetworkConMock.disconnect.should.have.been.called;
+        }));
+    });
+
+    describe('reset', () => {
+        it('should reset', inject([ClientService], (service: ClientService) => {
+            let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
+                securityContext: 'myContext'
+            });
+            let utilMock = sinon.stub(Util, 'invokeChainCode');
+            service.reset();
+            utilMock.should.have.been.calledWith('myContext', 'resetBusinessNetwork', []);
         }));
     });
 

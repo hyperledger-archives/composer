@@ -32,15 +32,17 @@ class Registry {
      * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {string} registryType The type of this registry.
+     * @param {boolean} [includeSystem] True if system registries should be included (optional default is false)
      * @return {Promise} A promise that will be resolved with an array of JSON
      * objects representing the registries.
      */
-    static getAllRegistries(securityContext, registryType) {
+    static getAllRegistries(securityContext, registryType, includeSystem) {
         Util.securityCheck(securityContext);
+        includeSystem = includeSystem || false;
         if (!registryType) {
             throw new Error('registryType not specified');
         }
-        return Util.queryChainCode(securityContext, 'getAllRegistries', [registryType])
+        return Util.queryChainCode(securityContext, 'getAllRegistries', [registryType,includeSystem])
             .then((buffer) => {
                 return JSON.parse(buffer.toString());
             });
@@ -135,7 +137,7 @@ class Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this registry.
      * @param {Factory} factory The factory to use for this registry.
      * @param {Serializer} serializer The Serializer to use for this registry.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
      * TODO: Rationalize the bnc with the other objects - as the bnc contains these other arguments
      */
     constructor(registryType, id, name, securityContext, modelManager, factory, serializer,bnc) {
@@ -176,13 +178,14 @@ class Registry {
         if (!resources) {
             throw new Error('resources not specified');
         }
+
         let txName = 'Add'+this.registryType;
+
+        // create the new system transaction to add the resources
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
-        // This code is retained as there was a suggesstion that the transaction should include
-        // a relationship to the registry not the type/id. Time ran out to get this implemented
-        // transaction.targetRegistry = this.factory.newRelationship(ModelUtil.getNamespace(this.id),this.registryType, this.id);
-        transaction.registryType = this.registryType;
-        transaction.registryId = this.id;
+
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
         transaction.resources = resources;
         return this.bnc.submitTransaction(transaction);
     }
@@ -216,9 +219,9 @@ class Registry {
         }
         let txName = 'Update'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
         transaction.resources = resources;
-        transaction.registryType = this.registryType;
-        transaction.registryId = this.id;
         return this.bnc.submitTransaction(transaction);
     }
 
@@ -252,8 +255,8 @@ class Registry {
         let txName = 'Remove'+this.registryType;
         const transaction = this.factory.newTransaction('org.hyperledger.composer.system',txName);
         transaction.resources = [];
-        transaction.registryType = this.registryType;
-        transaction.registryId = this.id;
+        // target registry is the registry that this the client 'shadow' of
+        transaction.targetRegistry = this.factory.newRelationship('org.hyperledger.composer.system',this.registryType+'Registry', this.id);
 
         transaction.resourceIds = resources.map((resource) => {
             if (resource instanceof Resource) {
@@ -344,7 +347,7 @@ class Registry {
      * The JSONata expression is applied to each resource in the registry, and
      * resources are returned if the JSONata expression returns a truthy value for that
      * resource.
-     *
+     * @deprecated this function will be removed
      * @param {string} expression The JSONata expression.
      * @return {Promise} A promise that will be resolved with an array of {@link
      * Resource} instances representing the assets that match the query.
@@ -373,6 +376,7 @@ class Registry {
      * purposes. You cannot use the {@link add} or {@link update} functions with
      * data returned by this function.
      *
+     * @deprecated this function will be removed
      * @param {string} expression The JSONata expression.
      * @return {Promise} A promise that will be resolved with an array of JavaScript
      * objects representing the resources and all of their resolved relationships.

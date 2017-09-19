@@ -15,8 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
-        name: 'PeerAdmin',
-        enrollmentId: 'admin',
+        userName: 'admin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
     },
@@ -72,29 +71,24 @@ export class IdentityCardService {
     }
 
     getIdentityCardForExport(cardRef: string): Promise<IdCard> {
-        let card = this.idCards.get(cardRef);
+        const card = this.idCards.get(cardRef);
 
         return Promise.resolve()
             .then(() => {
-                let data: any = this.identityCardStorageService.get(this.dataRef(cardRef)) || {};
+                const data: any = this.identityCardStorageService.get(this.dataRef(cardRef)) || {};
 
                 if (!data.unused) {
-                    let connectionProfile = card.getConnectionProfile();
-                    let connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
-                    let enrollmentCredentials = card.getEnrollmentCredentials();
+                    const connectionProfile = card.getConnectionProfile();
+                    const connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
+                    const userName = card.getUserName();
 
-                    return this.adminService.exportIdentity(connectionProfileRef, enrollmentCredentials.id);
+                    return this.adminService.exportIdentity(connectionProfileRef, userName);
                 }
             })
             .then((exportedCredentials) => {
-                let metadata = {
-                    name: card.getName(),
-                    businessNetwork: card.getBusinessNetworkName(),
-                    enrollmentId: card.getEnrollmentCredentials().id,
-                    enrollmentSecret: card.getEnrollmentCredentials().secret
-                };
-
-                let exportCard: IdCard = new IdCard(metadata, card.getConnectionProfile());
+                // Create a copy of the stored card so we can add credentials without changing the saved card
+                const exportCard: IdCard = Object.create(IdCard.prototype);
+                Object.assign(exportCard, card);
                 if (exportedCredentials) {
                     exportCard.setCredentials(exportedCredentials);
                 }
@@ -175,15 +169,26 @@ export class IdentityCardService {
         });
     }
 
-    createIdentityCard(name: string, businessNetworkName: string, enrollmentId: string, enrollmentSecret: string, connectionProfile: any): Promise<string> {
-        let metadata = {
-            name: name,
+    createIdentityCard(userName: string, businessNetworkName: string, enrollmentSecret: string, connectionProfile: any, credentials?: any, roles?: string[]): Promise<string> {
+        const metadata: any = {
+            userName: userName,
             businessNetwork: businessNetworkName,
-            enrollmentId: enrollmentId,
-            enrollmentSecret: enrollmentSecret
         };
 
+        if (enrollmentSecret !== null) {
+            metadata.enrollmentSecret = enrollmentSecret;
+        }
+
+        if (roles) {
+            metadata.roles = roles;
+        }
+
         let card: IdCard = new IdCard(metadata, connectionProfile);
+
+        if (credentials) {
+            card.setCredentials(credentials);
+        }
+
         return this.addIdentityCard(card);
     }
 
@@ -278,7 +283,7 @@ export class IdentityCardService {
         let wantedCardRef: string;
         this.idCards.forEach((card: IdCard, key: string) => {
             let qpn = this.getQualifiedProfileName(card.getConnectionProfile());
-            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getName()) {
+            if (qpn === qualifiedConnectionProfile && card.getBusinessNetworkName() === businessNetworkName && identityName === card.getUserName()) {
                 wantedCardRef = key;
             }
         });
@@ -323,7 +328,7 @@ export class IdentityCardService {
             let connectionProfileRef = this.getQualifiedProfileName(connectionProfile);
             let enrollmentCredentials = card.getEnrollmentCredentials();
             let credentials = card.getCredentials();
-
+            console.log('card --- ', card);
             if (credentials && credentials.certificate && credentials.privateKey) {
                 hasCredentials = true;
 
@@ -338,7 +343,7 @@ export class IdentityCardService {
             return this.connectionProfileService.createProfile(connectionProfileRef, connectionProfile)
                 .then(() => {
                     if (hasCredentials) {
-                        return this.adminService.importIdentity(connectionProfileRef, enrollmentCredentials.id, credentials.certificate, credentials.privateKey);
+                        return this.adminService.importIdentity(connectionProfileRef, card.getUserName(), credentials.certificate, credentials.privateKey);
                     }
                 })
                 .then(() => {

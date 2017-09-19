@@ -1,16 +1,76 @@
-query findBondByFaceAmount {
+query findBondAboveAFaceAmount {
     description: "Find all bonds with a face amount greater than _$faceAmount"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.faceAmount > _$faceAmount)
+}
+query findBondByFaceAmountNotAboveAValue {
+    description: "Find all bonds with a face amount not greater than _$faceAmount"
+    statement: SELECT org.acme.bond.BondAsset WHERE(_$faceAmount>=bond.faceAmount)
+}
+query findBondByDayCount {
+    description: "Find all bonds with a specific day count _$dayCount"
+    statement: SELECT org.acme.bond.BondAsset WHERE(bond.dayCount==_$dayCount)
+}
+query findBondAboveDayCount {
+    description: "Find all bonds with day count greater than _$dayCount"
+    statement: SELECT org.acme.bond.BondAsset WHERE(bond.dayCount>_$dayCount)
+}
+query findBondLessThanDayCount {
+    description: "Find all bonds with day count less than _$dayCount"
+    statement: SELECT org.acme.bond.BondAsset WHERE(bond.dayCount<_$dayCount)
 }
 query findBondByPaymentFrequencyPeriod {
     description: "Find all bonds with a payment frequecy period _$period"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.period == _$period)
 }
-query findBondByPaymentFrequencyPeriodMultiplier {
-    description: "Find all bonds with a payment frequecy period multiplier _$multiplier"
-    statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.periodMultiplier == _$multiplier)
+query findBondAboveAPaymentFrequencyPeriodMultiplierValue {
+    description: "Find all bonds with a payment frequecy period multiplier greater than _$multiplier"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.periodMultiplier > _$multiplier)
+}
+query findBondByPaymentFrequencyPeriodMultiplierNotAboveAValue {
+    description: "Find all bonds with a payment frequecy period multiplier not greater than _$multiplier"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.paymentFrequency.periodMultiplier <= _$multiplier)
+}
+query findBondByIsMatured {
+    description: "Find all bonds by isMatured _$isMatured"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.isMatured == _$isMatured)
+}
+query findBondBeforeMaturity {
+    description: "Find all bonds before a maturity _$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.maturity <= _$maturity)
+}
+query findBondAfterMaturity {
+    description: "Find all bonds after a maturity _$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.maturity > _$maturity)
+}
+query findBondByCurrency {
+    description: "Find all bonds by a specific currency _$currency"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency)
+}
+query findBondByIsMaturedBeforeMaturity {
+    description: "Find all bonds that are either matured or before a maturity _$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.isMatured == true OR bond.maturity < _$maturity)
+}
+query findBondByCurrencyAndDayCount {
+    description: "Find all bonds by a specific currency _$currency and the number days no more than a specified day"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency AND bond.dayCount <= _$dayCount)
+}
+query findBondByCurrencyAndUnsupportedType {
+    description: "Find all bonds by a specific currency _$currency and an instrumentId"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency AND bond.instrumentId <= _$instrumentId)
 }
 query findBondByExchangeIdUnsupported {
     description: "Find all bonds with a set of exchange id _$exchangeId is unsupported"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.exchangeId == _$exchangeId)
+}
+query findIssuerById {
+    description: "Find all issuer by memberId _$memberId"
+    statement: SELECT org.acme.bond.Issuer WHERE (memberId == _$memberId)
+}
+query findIssuerByName {
+    description: "Find all issuer by name _$name"
+    statement: SELECT org.acme.bond.Issuer WHERE (name == _$name)
+}
+query findTxnByTransactionType {
+    description: "Find all Transaction by transaction type"
+    statement: SELECT org.hyperledger.composer.system.HistorianRecord WHERE (transactionType == 'org.acme.bond.PublishBond')
 }

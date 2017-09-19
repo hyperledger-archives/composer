@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../basic-modals/alert.service';
 import { IdentityCardService } from '../../services/identity-card.service';
 
@@ -18,7 +17,12 @@ export class EditCardCredentialsComponent {
     private userSecret: string = null;
     private busNetName: string = null;
     private addInProgress: boolean = false;
-    private useCerts: boolean = false;
+    private useCerts: boolean = true;
+    private addedPublicCertificate: string;
+    private addedPrivateCertificate: string;
+    private useParticipantCard: boolean = true;
+    private peerAdmin: boolean = false;
+    private channelAdmin: boolean = false;
 
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
@@ -33,24 +37,46 @@ export class EditCardCredentialsComponent {
         this.useCerts = option;
     }
 
+    useParticipantCardType(option: boolean) {
+        this.useParticipantCard = option;
+    }
+
     validContents(): boolean {
         if (this.useCerts) {
-            return false;
-        } else if (!this.userId || this.userId.length === 0) {
-            return false;
-        } else if (!this.userSecret || this.userSecret.length === 0) {
-            return false;
-        } else if (this.addInProgress) {
-            return false;
-        } else if (!this.busNetName || this.busNetName.length === 0) {
-            return false;
+            if (!this.addedPublicCertificate || this.addedPublicCertificate.length === 0) {
+                return false;
+            } else if (!this.addedPrivateCertificate || this.addedPrivateCertificate.length === 0) {
+                return false;
+            } else if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            }
+        } else {
+            if (!this.userId || this.userId.length === 0) {
+                return false;
+            } else if (!this.userSecret || this.userSecret.length === 0) {
+                return false;
+            } else if (this.addInProgress) {
+                return false;
+            }
+        }
+
+        if (this.useParticipantCard) {
+            if (!this.busNetName) {
+                return false;
+            }
+        } else {
+            if (!this.peerAdmin && !this.channelAdmin) {
+                return false;
+            }
         }
 
         return true;
     }
 
     submitCard(event) {
-        if ( (event && event.keyCode !== 13) || !this.validContents()) {
+        if ((event && event.keyCode !== 13) || !this.validContents()) {
             return;
         } else {
             this.addIdentityCard();
@@ -63,7 +89,23 @@ export class EditCardCredentialsComponent {
             title: 'Adding ID card',
             text: 'Adding ID card'
         });
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile)
+
+        let credentials = this.useCerts ? {
+            certificate: this.addedPublicCertificate,
+            privateKey: this.addedPrivateCertificate
+        } : null;
+
+        let roles = [];
+
+        if (this.peerAdmin) {
+            roles.push('PeerAdmin');
+        }
+
+        if (this.channelAdmin) {
+            roles.push('ChannelAdmin');
+        }
+
+        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userSecret, this.connectionProfile, credentials, roles)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({

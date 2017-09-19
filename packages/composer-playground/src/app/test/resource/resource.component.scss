@@ -23,6 +23,11 @@ resource-modal {
             margin: 0 auto;
             word-wrap: break-word;
         }
+
+        .optional {
+            margin-top: $space-medium;
+        }
+
     }
 
     footer {

@@ -36,12 +36,13 @@ class EngineRegistries {
     getAllRegistries(context, args) {
         const method = 'getAllRegistries';
         LOG.entry(method, context, args);
-        if (args.length !== 1) {
+        if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllRegistries', ['registryType']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllRegistries', ['registryType','includeSystem']));
         }
         let registryType = args[0];
-        return context.getRegistryManager().getAll(registryType)
+        let includeSystem = (args[1] === 'true');
+        return context.getRegistryManager().getAll(registryType,includeSystem)
             .then((result) => {
                 LOG.exit(method, result);
                 return result;

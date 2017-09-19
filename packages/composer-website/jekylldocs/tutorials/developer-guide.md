@@ -309,33 +309,31 @@ describe('Commodity Trading', () => {
             commodity.owner.$identifier.should.equal(dan.$identifier);
 
             // Get the asset registry.
+            let commodityRegistry;
             return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
                 .then((assetRegistry) => {
-
+                    commodityRegistry = assetRegistry;
                     // add the commodity to the asset registry.
-                    return assetRegistry.add(commodity)
-                        .then(() => {
-                            return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
-                        })
-                        .then((participantRegistry) => {
-                            // add the traders
-                            return participantRegistry.addAll([dan, simon]);
-                        })
-                        .then(() => {
-                            // submit the transaction
-                            return businessNetworkConnection.submitTransaction(trade);
-                        })
-                        .then(() => {
-                            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
-                        })
-                        .then((assetRegistry) => {
-                            // re-get the commodity
-                            return assetRegistry.get(commodity.$identifier);
-                        })
-                        .then((newCommodity) => {
-                            // the owner of the commodity should not be simon
-                            newCommodity.owner.$identifier.should.equal(simon.$identifier);
-                        });
+                    return commodityRegistry.add(commodity);
+                })
+                .then(() => {
+                    return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
+                })
+                .then((participantRegistry) => {
+                    // add the traders
+                    return participantRegistry.addAll([dan, simon]);
+                })
+                .then(() => {
+                    // submit the transaction
+                    return businessNetworkConnection.submitTransaction(trade);
+                })
+                .then(() => {
+                    // re-get the commodity
+                    return commodityRegistry.get(commodity.$identifier);
+                })
+                .then((newCommodity) => {
+                    // the owner of the commodity should now be simon
+                    newCommodity.owner.$identifier.should.equal(simon.$identifier);
                 });
         });
     });

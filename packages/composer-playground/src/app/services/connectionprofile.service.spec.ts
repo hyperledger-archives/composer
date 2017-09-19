@@ -7,7 +7,7 @@ import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { AdminConnection } from 'composer-admin';
 import { ConnectionProfileStore } from 'composer-common';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 
