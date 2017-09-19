@@ -15,27 +15,32 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-// const util = require('util');
+const util = require('util');
 const fs = require('fs');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
 global.hfc = {
     logger: {
-        debug: () => {
-
+        debug: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.debug('fabric-client', message);
         },
-        info: () => {
-
+        info: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.info('fabric-client', message);
         },
-        warn: () => {
-
+        warn: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.warn('fabric-client', message);
         },
-        error: () => {
-
+        error: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.error('fabric-client', message);
         }
     }
 };
+
 
 const Client = require('fabric-client');
 const FabricCAClientImpl = require('fabric-ca-client');
@@ -70,11 +75,11 @@ class HLFConnectionManager extends ConnectionManager {
      * @return {Orderer} A new orderer.
      */
     static createOrderer(ordererURL, opts) {
-        return new Orderer(ordererURL, opts);  //TODO: Change this
+        return new Orderer(ordererURL, opts);
     }
 
     /**
-     * parse thglobal.hfce orderer definition
+     * parse the orderer definition
      * @param {string|object} orderer The orderer definition
      * @param {number} timeout the request
      * @param {string} globalCert if provided use this unless cert is provided

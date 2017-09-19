@@ -1,4 +1,5 @@
-import { ConnectionProfileStore, FSConnectionProfileStore } from 'composer-common';
+import { ConnectionProfileStore } from 'composer-common';
+import { BrowserConnectionProfileStore } from './browserconnectionprofilestore';
 /* tslint:disable:no-var-requires */
 const ProxyConnectionProfileStore = require('composer-connector-proxy').ProxyConnectionProfileStore;
 
@@ -22,7 +23,7 @@ export class PlaygroundConnectionProfileStore extends ConnectionProfileStore {
         if (ENV && ENV !== 'development') {
             ProxyConnectionProfileStore.setConnectorServerURL(window.location.origin);
         }
-        this.browserConnectionProfileStore = new FSConnectionProfileStore(fs);
+        this.browserConnectionProfileStore = new BrowserConnectionProfileStore();
         this.proxyConnectionProfileStore = new ProxyConnectionProfileStore();
     }
 
