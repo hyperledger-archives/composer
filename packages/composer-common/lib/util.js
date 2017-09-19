@@ -17,6 +17,7 @@
 const Globalize = require('./globalize');
 const SecurityContext = require('./securitycontext');
 const SecurityException = require('./securityexception');
+const uuid = require('uuid');
 
 /**
  * Internal Utility Class
@@ -98,6 +99,22 @@ class Util {
      */
     static isNull(obj) {
         return(typeof(obj) === 'undefined' || obj === null);
+    }
+
+   /** Obtain a UUID for use as a TransactionId
+     * @param {SecurityContext} securityContext - The user's security context
+     * @return {Object} Object representing the transaction Id to be used later when invoking chain code
+    */
+    static createTransactionId(securityContext){
+        Util.securityCheck(securityContext);
+        return securityContext.getConnection().createTransactionId()
+        .then((id)=>{
+            if (this.isNull(id)){
+                id = uuid.v4();
+            }
+            return id;
+        });
+
     }
 
 }

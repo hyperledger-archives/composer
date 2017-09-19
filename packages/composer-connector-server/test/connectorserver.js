@@ -124,7 +124,8 @@ describe('ConnectorServer', () => {
                 '/api/connectionStart',
                 '/api/connectionUndeploy',
                 '/api/connectionUpdate',
-                '/api/connectionManagerExportIdentity'
+                '/api/connectionManagerExportIdentity',
+                '/api/connectionCreateTransactionId'
             ].sort());
             mockSocket.on.args.forEach((args) => {
                 args[1].should.be.a('function');
@@ -1084,4 +1085,61 @@ describe('ConnectorServer', () => {
 
     });
 
+    describe('#connectionCreateTransactionId', () => {
+
+        beforeEach(() => {
+            connectorServer.connections[connectionID] = mockConnection;
+            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
+        });
+
+        it('should list', () => {
+            mockConnection.createTransactionId.withArgs(mockSecurityContext).resolves(['42']);
+            const cb = sinon.stub();
+            return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)
+                        .then(() => {
+                            sinon.assert.calledOnce(mockConnection.createTransactionId);
+                            sinon.assert.calledWith(mockConnection.createTransactionId, mockSecurityContext);
+                            sinon.assert.calledOnce(cb);
+                            sinon.assert.calledWith(cb, null, ['42']);
+                        });
+        });
+
+        it('should handle an invalid connection ID', () => {
+            const cb = sinon.stub();
+            return connectorServer.connectionCreateTransactionId(invalidID, securityContextID, cb)
+                        .then(() => {
+                            sinon.assert.calledOnce(cb);
+                            const serializedError = cb.args[0][0];
+                            serializedError.name.should.equal('Error');
+                            serializedError.message.should.match(/No connection found with ID/);
+                            serializedError.stack.should.be.a('string');
+                        });
+        });
+
+        it('should handle an invalid security context ID ID', () => {
+            const cb = sinon.stub();
+            return connectorServer.connectionCreateTransactionId(connectionID, invalidID, cb)
+                        .then(() => {
+                            sinon.assert.calledOnce(cb);
+                            const serializedError = cb.args[0][0];
+                            serializedError.name.should.equal('Error');
+                            serializedError.message.should.match(/No security context found with ID/);
+                            serializedError.stack.should.be.a('string');
+                        });
+        });
+
+        it('should handle list errors', () => {
+            mockConnection.createTransactionId.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)
+                        .then(() => {
+                            sinon.assert.calledOnce(cb);
+                            const serializedError = cb.args[0][0];
+                            serializedError.name.should.equal('Error');
+                            serializedError.message.should.equal('such error');
+                            serializedError.stack.should.be.a('string');
+                        });
+        });
+
+    });
 });

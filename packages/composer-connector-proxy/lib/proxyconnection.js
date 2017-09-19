@@ -280,6 +280,23 @@ class ProxyConnection extends Connection {
         });
     }
 
+    /**
+     * Create a new transaction id
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved with a generated user
+     * secret once the new identity has been created, or rejected with an error.
+     */
+    createTransactionId(securityContext){
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionCreateTransactionId', this.connectionID, securityContext.securityContextID, (error, result) => {
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                resolve(result);
+            });
+        });
+    }
+
 }
 
 module.exports = ProxyConnection;

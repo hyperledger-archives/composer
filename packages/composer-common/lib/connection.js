@@ -594,6 +594,35 @@ class Connection extends EventEmitter {
         throw new Error('abstract function called');
     }
 
+
+    /**
+     * Create a Transaction Id
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that will be resolved with a representation of the id
+     */
+    createTransactionId(securityContext) {
+        return new Promise((resolve, reject) => {
+            this._createTransactionId(securityContext, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * List all of the deployed business networks. The connection must
+     * be connected for this method to succeed.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {listCallback} callback The callback function to call when complete.
+     * @return {String} id string of the transaction id (or null which will prompt common to create one)
+     */
+    _createTransactionId(securityContext, callback) {
+        throw new Error('abstract function called');
+    }
+
 }
 
 module.exports = Connection;
