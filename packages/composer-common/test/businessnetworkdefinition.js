@@ -15,17 +15,24 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
+const ModelFile = require('../lib/introspect/modelfile');
 const fs = require('fs');
+const JSZip = require('jszip');
+let should = require('chai').should();
+const sinon = require('sinon');
+let sandbox;
 
-require('chai').should();
 describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
     beforeEach(() => {
+
         businessNetworkDefinition = new BusinessNetworkDefinition('id@1.0.0', 'description');
     });
 
-    afterEach(() => {});
+    afterEach(() => {
+
+    });
 
     describe('#identifier format checking', () => {
 
@@ -115,6 +122,12 @@ describe('BusinessNetworkDefinition', () => {
 
     describe('#archives', () => {
 
+        beforeEach( ()=>{
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach( ()=>{sandbox.restore();});
+
         it('should be able to correctly create a business network from a plain directory', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive').then(businessNetwork => {
@@ -139,6 +152,28 @@ describe('BusinessNetworkDefinition', () => {
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
+        });
+
+        it('should be able to correctly create a business network from a plain directory - with few bits missing.', () => {
+            let options = {dependencyGlob : '**',
+                modelFileGlob: '**/models/**/*.cto',
+                scriptGlob : '**/lib/**/*.js'};
+
+            sandbox.stub(fs,'readFileSync').withArgs('README.md',sinon.any).returns('This is not a test');
+
+            (() => {
+                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive',options);
+            }).should.throw(/Failed to find package.json/);
+
+        });
+
+        it('should be able to correctly create a business network from a plain directory - dependancies', () => {
+            sandbox.stub(fs,'fileExists').withArgs('README.md',sinon.any).returns('This is not a test');
+
+            (() => {
+                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive');
+            }).should.throw(/Failed to find package.json/);
+
         });
 
         it('should be able to detect model & logic files in folders with leading periods (.)', () => {
@@ -222,5 +257,57 @@ describe('BusinessNetworkDefinition', () => {
         });
 
 
+        it('should be able to store business network as a ZIP archive - missing readme', () => {
+            /*
+             We first need to read a ZIP and create a business network.
+             After we have done this, we'll be able to create a new ZIP with the contents of the business network.
+            */
+            let fileName = __dirname + '/data/zip/test-archive.zip';
+            let readFile = fs.readFileSync(fileName);
+
+            return JSZip.loadAsync(readFile).then((zip) => {
+                zip.remove('README.md');
+                zip.remove('permissions.acl');
+                zip.remove('queries.qry');
+                return zip.generateAsync({type:'nodebuffer'});
+            }).then((buffer) => {
+                return BusinessNetworkDefinition.fromArchive(buffer);
+            }).then((businessNetwork) => {
+                businessNetwork.should.be.BusinessNetworkDefinition;
+                businessNetwork.getIdentifier().should.equal('test-archive@0.0.1');
+                businessNetwork.getDescription().should.equal('A test business network.');
+                should.not.exist(businessNetwork.getMetadata().getREADME());
+                businessNetwork.modelManager.getModelFiles().filter((modelFile) => {
+                    return !modelFile.isSystemModelFile();
+                }).should.have.length(3);
+                businessNetwork.scriptManager.getScripts().should.have.length(2);
+
+                let mockModelFile = sinon.createStubInstance(ModelFile);
+                mockModelFile.isSystemModelFile.returns(false);
+
+                businessNetwork.modelManager.addModelFiles([mockModelFile]);
+                return businessNetwork.toArchive().then(buffer => {
+                    buffer.should.be.Buffer;
+                });
+            });
+
+        });
+
+        it('should be able to store business network as a ZIP archive - missing package.json', () => {
+            /*
+             We first need to read a ZIP and create a business network.
+             After we have done this, we'll be able to create a new ZIP with the contents of the business network.
+            */
+            let fileName = __dirname + '/data/zip/test-archive.zip';
+            let readFile = fs.readFileSync(fileName);
+
+            return JSZip.loadAsync(readFile).then((zip) => {
+                zip.remove('package.json');
+                return zip.generateAsync({type:'nodebuffer'});
+            }).then((buffer) => {
+                return BusinessNetworkDefinition.fromArchive(buffer);
+            }).should.be.rejectedWith(/package.json must exist/);
+
+        });
     });
 });
