@@ -978,7 +978,7 @@ class HLFConnection extends Connection {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
                     if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with cdoe ${code}`));
+                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
                     } else {
                         resolve();
                     }

@@ -477,8 +477,7 @@ describe('RegistryManager', () => {
     });
 
     describe('#exists', () => {
-
-        it('should determine the existence of a registry with the specified ID', () => {
+        it('should return true if the registry exists', () => {
             mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
@@ -490,6 +489,15 @@ describe('RegistryManager', () => {
             return registryManager.exists('Asset', 'doges')
                 .then((exists) => {
                     exists.should.equal.true;
+                });
+        });
+
+        it('should return false if the registry doesn\'t exist', () => {
+            mockAccessController.check.resolves(true);
+            mockSystemRegistries.exists.withArgs('Asset:doges').resolves(false);
+            return registryManager.exists('Asset', 'doges')
+                .then((exists) => {
+                    exists.should.equal.false;
                 });
         });
 
