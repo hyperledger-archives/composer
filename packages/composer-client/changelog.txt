@@ -11,6 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.13.0 {78ee149d0abd107c1e61efe48436c419} 2017-09-19
+- remove deprecated apis
 
 Version 0.12.0 {8d911dda46347a827f3575cb136954c8} 2017-08-29
 - added new apis to support registry per tx class
