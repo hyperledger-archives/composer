@@ -21,6 +21,10 @@ fi
   #exit 0;
 #fi
 
-# Use lerna bootstrap and not npm install; it's a lot faster in Travis.
+# Install node modules
+# Need to make sure we pick up the right version of yarn, not the
+# ancient version that travis helpfully includes!
+export PATH="$HOME/.yarn/bin:$PATH"
 cd ${DIR}
-lerna bootstrap 2>&1
+yarn --version
+yarn install --no-progress --non-interactive --frozen-lockfile 2>&1
