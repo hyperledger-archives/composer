@@ -50,7 +50,7 @@ describe('EngineLogging', () => {
         engine = new Engine(mockContainer);
     });
 
-    describe.only('#setLogLevel', () => {
+    describe('#setLogLevel', () => {
 
         it('should throw for wrong number of arguments', () => {
             let result = engine.invoke(mockContext, 'setLogLevel', ['wrong', 'args', 'count', 'here']);
@@ -93,7 +93,7 @@ describe('EngineLogging', () => {
         it('should handle setLogLevel with a rejected promise', () => {
             mockContext.getParticipant.returns(null);
             mockLoggingService.setLogLevel.rejects(new Error('some error'));
-            let result = engine.invoke(mockContext, 'setLogLevel', ['WARNING'])
+            let result = engine.invoke(mockContext, 'setLogLevel', ['WARNING']);
             result.should.be.rejectedWith(/some error/);
         });
 
