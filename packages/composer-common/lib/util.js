@@ -103,7 +103,7 @@ class Util {
 
    /** Obtain a UUID for use as a TransactionId
      * @param {SecurityContext} securityContext - The user's security context
-     * @return {Object} Object representing the transaction Id to be used later when invoking chain code
+     * @return {Promise}  resolved with a string representing the transaction Id to be used later when invoking chain code
     */
     static createTransactionId(securityContext){
         Util.securityCheck(securityContext);

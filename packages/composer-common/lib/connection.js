@@ -612,12 +612,17 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * List all of the deployed business networks. The connection must
-     * be connected for this method to succeed.
+     * @callback transactionIdCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {string} result Transaction id.
+     */
+
+    /**
+     * Create a transaction id
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {listCallback} callback The callback function to call when complete.
-     * @return {String} id string of the transaction id (or null which will prompt common to create one)
      */
     _createTransactionId(securityContext, callback) {
         throw new Error('abstract function called');
