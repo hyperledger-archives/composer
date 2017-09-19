@@ -205,14 +205,14 @@ You should see the following output similar to the following (versions/modules c
 
 ```bash
 
-  │ │ └─┬ strip-ansi@4.0.0 
-  │ │   └── ansi-regex@3.0.0 
-  │ ├── which-module@2.0.0 
-  │ ├── y18n@3.2.1 
-  │ └── yargs-parser@7.0.0 
-  └─┬ yargs-parser@5.0.0 
-    └── camelcase@3.0.0 
-$ 
+  │ │ └─┬ strip-ansi@4.0.0
+  │ │   └── ansi-regex@3.0.0
+  │ ├── which-module@2.0.0
+  │ ├── y18n@3.2.1
+  │ └── yargs-parser@7.0.0
+  └─┬ yargs-parser@5.0.0
+    └── camelcase@3.0.0
+$
 ```
 
 ## Write Unit Tests
@@ -523,7 +523,7 @@ composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 
 Note: the command `npm run prepublish` achieves the same thing (ie a command defined in our `package.json` file), but we wanted to show you the command sequence at this point in the tutorial and for your own projects, in time.
 
-The output of the archive command will look similar to this: 
+The output of the archive command will look similar to this:
 
 ```bash
 
@@ -544,7 +544,7 @@ Command succeeded
 
 The `composer archive create` command has created a file called `my-network.bna` in the `dist` folder.
 
-Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
+Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it. This automatically deploys the new business network.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
