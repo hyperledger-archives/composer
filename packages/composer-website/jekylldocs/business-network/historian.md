@@ -10,7 +10,7 @@ excerpt: The Hyperledger Composer Historian is a registry that is populated with
 
 # {{site.data.conrefs.composer_full}} Historian
 
-The {{site.data.conrefs.composer_full}} Historian is a specialized registry which records successful transactions, including the participants and identities that submitted them. The historian stores transactions as `HistorianRecord` assets, which are defined in the {{site.data.conrefs.composer_full}} system namespace.
+The {{site.data.conrefs.composer_full}} Historian is a specialised registry which records successful transactions, including the participants and identities that submitted them. The historian stores transactions as `HistorianRecord` assets, which are defined in the {{site.data.conrefs.composer_full}} system namespace.
 
 The historian registry is a {{site.data.conrefs.composer_full}} system-level entity. To refer to the historian registry as a resource for access control the historian must be referenced as: `org.hyperledger.composer.system.HistorianRecord`.
 
