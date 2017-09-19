@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "yarn": "1.1.0"
+  },
   "devDependencies": {
     "colors": "^1.1.2",
     "lerna": "^2.0.0",
@@ -14,7 +17,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npm run pkgcheck && npm run bootstrap",
-    "bootstrap": "git submodule init && git submodule update && lerna bootstrap",
+    "bootstrap": "git submodule init && git submodule update",
     "test": "lerna run test",
     "scanlicenses": "./scripts/scan-all-licenses.sh",
     "pkgcheck": "node ./scripts/pkgcheck.js",
@@ -31,5 +34,8 @@
     "solutions"
   ],
   "author": "Hyperledger Composer",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*"
+  ]
 }

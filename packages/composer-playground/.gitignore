@@ -34,6 +34,8 @@ Thumbs.db
 /node_modules
 /bower_components
 npm-debug.log
+package-lock.json
+/**/yarn.lock
 
 # Coverage #
 /coverage/
