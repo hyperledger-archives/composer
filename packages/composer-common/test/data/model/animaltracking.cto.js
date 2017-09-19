@@ -16,10 +16,11 @@
 
 /*eslint-disable no-unused-vars*/
 /*eslint-disable no-undef*/
+/*eslint-disable no-var*/
 
 /**
  * A transaction processor for AnimalMovementDeparture
- * @param  {com.ibm.concerto.mozart.AnimalMovementDeparture} movementDeparture
+ * @param  {com.hyperledger.composer.animaltracking.AnimalMovementDeparture} movementDeparture
  * - the transaction to be processed
  * @transaction
  */
@@ -33,7 +34,7 @@ function onAnimalMovementDeparture(movementDeparture) {
     movementDeparture.animal.movementStatus = 'IN_TRANSIT';
 
      // save the animal
-    let ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    var ar = getAssetRegistry('com.hyperledger.composer.animaltracking.Animal');
     ar.update(movementDeparture.animal);
 
      // add the animal to the incoming animals of the
@@ -46,13 +47,13 @@ function onAnimalMovementDeparture(movementDeparture) {
     }
 
      // save the business
-    let br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    var br = getAssetRegistry('com.hyperledger.composer.animaltracking.Business');
     br.update(movementDeparture.to);
 }
 
 /**
  * A transaction processor for AnimalMovementArrival
- * @param  {com.ibm.concerto.mozart.AnimalMovementArrival} movementArrival
+ * @param  {com.hyperledger.composer.animaltracking.AnimalMovementArrival} movementArrival
  * - the transaction to be processed
  * @transaction
  */
@@ -74,7 +75,7 @@ function onAnimalMovementArrival(movementArrival) {
     movementArrival.animal.location = movementArrival.arrivalField;
 
      // save the animal
-    let ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    var ar = getAssetRegistry('com.hyperledger.composer.animaltracking.Animal');
     ar.update(movementArrival.animal);
 
      // remove the animal from the incoming animals
@@ -89,7 +90,7 @@ function onAnimalMovementArrival(movementArrival) {
       });
 
       // save the business
-    let br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    var br = getAssetRegistry('com.hyperledger.composer.animaltracking.Business');
     br.update(movementArrival.to);
 }
 

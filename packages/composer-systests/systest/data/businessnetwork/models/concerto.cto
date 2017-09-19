@@ -1,10 +1,10 @@
 /*
- * Concerto Language File
+ * composer Language File
  *
- * The concerto namespace defines built-in types for building Blockchain
+ * The composer namespace defines built-in types for building Blockchain
  * based business networks. This file should not be modified.
  */
-namespace concerto
+namespace composer
 
 /**
  * MyParticipant defines an actor in a blockchain based business network

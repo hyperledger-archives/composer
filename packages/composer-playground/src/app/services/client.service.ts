@@ -6,7 +6,7 @@ import { AdminService } from './admin.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile, QueryFile, TransactionDeclaration } from 'composer-common';
@@ -110,17 +110,24 @@ export class ClientService {
 
     validateFile(id: string, content: any, type: string): string {
         try {
-            if (type === 'model') {
-                let modelFile = this.createModelFile(content, null);
-                this.getBusinessNetwork().getModelManager().validateModelFile(modelFile);
-            } else if (type === 'script') {
-                this.createScriptFile(id, 'JS', content);
-            } else if (type === 'acl') {
-                let aclFile = this.createAclFile(id, content);
-                aclFile.validate();
-            } else if (type === 'query') {
-                let queryFile = this.createQueryFile(id, content);
-                queryFile.validate();
+            switch (type) {
+                case 'model':
+                    let modelFile = this.createModelFile(content, null);
+                    this.getBusinessNetwork().getModelManager().validateModelFile(modelFile);
+                    break;
+                case 'script':
+                    this.createScriptFile(id, 'JS', content);
+                    break;
+                case 'acl':
+                    let aclFile = this.createAclFile(id, content);
+                    aclFile.validate();
+                    break;
+                case 'query':
+                    let queryFile = this.createQueryFile(id, content);
+                    queryFile.validate();
+                    break;
+                default:
+                    throw new Error('Attempted validation of unknown file of type: ' + type);
             }
             return null;
         } catch (e) {
@@ -130,34 +137,41 @@ export class ClientService {
 
     updateFile(id: string, content: any, type: string): string {
         try {
-            if (type === 'model') {
-                let modelManager = this.getBusinessNetwork().getModelManager();
-                let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = this.createModelFile(content, original.getName());
-                if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
-                    throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
-                }
-                if (id !== modelFile.getNamespace()) {
-                    // Then we are changing namespace and must delete old reference
-                    modelManager.addModelFile(modelFile);
-                    modelManager.deleteModelFile(id);
-                    this.namespaceChanged$.next(modelFile.getNamespace());
-                } else {
-                    modelManager.updateModelFile(modelFile);
-                }
-            } else if (type === 'script') {
-                let script = this.createScriptFile(id, 'JS', content);
-                this.getBusinessNetwork().getScriptManager().addScript(script);
-            } else if (type === 'acl') {
-                let aclFile = this.createAclFile(id, content);
-                this.getBusinessNetwork().getAclManager().setAclFile(aclFile);
-            } else if (type === 'query') {
-                let query = this.createQueryFile(id, content);
-                this.getBusinessNetwork().getQueryManager().setQueryFile(query);
-            } else if (type === 'readme') {
-                this.setBusinessNetworkReadme(content);
+            switch (type) {
+                case 'model':
+                    let modelManager = this.getBusinessNetwork().getModelManager();
+                    let original: ModelFile = modelManager.getModelFile(id);
+                    let modelFile = this.createModelFile(content, original.getName());
+                    if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
+                        throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
+                    }
+                    if (id !== modelFile.getNamespace()) {
+                        // Then we are changing namespace and must delete old reference
+                        modelManager.addModelFile(modelFile);
+                        modelManager.deleteModelFile(id);
+                        this.namespaceChanged$.next(modelFile.getNamespace());
+                    } else {
+                        modelManager.updateModelFile(modelFile);
+                    }
+                    break;
+                case 'script':
+                    let script = this.createScriptFile(id, 'JS', content);
+                    this.getBusinessNetwork().getScriptManager().addScript(script);
+                    break;
+                case 'acl':
+                    let aclFile = this.createAclFile(id, content);
+                    this.getBusinessNetwork().getAclManager().setAclFile(aclFile);
+                    break;
+                case 'query':
+                    let query = this.createQueryFile(id, content);
+                    this.getBusinessNetwork().getQueryManager().setQueryFile(query);
+                    break;
+                case 'readme':
+                    this.setBusinessNetworkReadme(content);
+                    break;
+                default:
+                    throw new Error('Attempted update of unknown file of type: ' + type);
             }
-
             this.businessNetworkChanged$.next(true);
             return null;
         } catch (e) {
@@ -168,15 +182,20 @@ export class ClientService {
 
     replaceFile(oldId: string, newId: string, content: any, type: string): string {
         try {
-            if (type === 'model') {
-                let modelFile = this.createModelFile(content, newId);
-                this.getBusinessNetwork().getModelManager().updateModelFile(modelFile, newId);
-                this.businessNetworkChanged$.next(true);
-            } else if (type === 'script') {
-                let script = this.createScriptFile(newId, 'JS', content);
-                this.getBusinessNetwork().getScriptManager().addScript(script);
-                this.getBusinessNetwork().getScriptManager().deleteScript(oldId);
-                this.businessNetworkChanged$.next(true);
+            switch (type) {
+                case 'model':
+                    let modelFile = this.createModelFile(content, newId);
+                    this.getBusinessNetwork().getModelManager().updateModelFile(modelFile, newId);
+                    this.businessNetworkChanged$.next(true);
+                    break;
+                case 'script':
+                    let script = this.createScriptFile(newId, 'JS', content);
+                    this.getBusinessNetwork().getScriptManager().addScript(script);
+                    this.getBusinessNetwork().getScriptManager().deleteScript(oldId);
+                    this.businessNetworkChanged$.next(true);
+                    break;
+                default:
+                    throw new Error('Attempted replace of ununsupported file type: ' + type);
             }
             return null;
         } catch (e) {
@@ -224,7 +243,6 @@ export class ClientService {
         }
 
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
-        let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
 
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
@@ -232,7 +250,7 @@ export class ClientService {
         });
 
         let businessNetworkName: string;
-        let userId = enrollmentCredentials.id;
+        let userId = this.identityService.getCurrentUserName();
 
         if (!name) {
             try {
@@ -278,6 +296,8 @@ export class ClientService {
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
         let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
         let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
+        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
+        const userName = this.identityService.getCurrentUserName();
 
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
@@ -286,7 +306,7 @@ export class ClientService {
 
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, enrollmentCredentials.id, enrollmentCredentials.secret);
+                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, userName, enrollmentSecret);
             });
     }
 
@@ -326,8 +346,7 @@ export class ClientService {
 
     resolveTransactionRelationship(relationship): Promise<TransactionDeclaration> {
         let identifier = relationship.getIdentifier();
-
-        return this.getBusinessNetworkConnection().getTransactionRegistry()
+        return this.getBusinessNetworkConnection().getTransactionRegistry(relationship.transactionType)
             .then((transactionRegistry) => {
                 return transactionRegistry.get(identifier);
             })

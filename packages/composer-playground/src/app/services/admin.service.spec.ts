@@ -15,7 +15,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ConnectionProfileStore } from 'composer-common';
 import { IdentityService } from './identity.service';
 import { AdminConnection } from 'composer-admin';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 describe('AdminService', () => {
 
@@ -38,7 +38,8 @@ describe('AdminService', () => {
         identityMock = sinon.createStubInstance(IdentityService);
         identityMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
         identityMock.getCurrentQualifiedProfileName.returns('qpn-myProfile');
-        identityMock.getCurrentEnrollmentCredentials.returns({id: 'myId', secret: 'mySecret'});
+        identityMock.getCurrentEnrollmentCredentials.returns({secret: 'mySecret'});
+        identityMock.getCurrentUserName.returns('myId');
         adminConnectionMock = sinon.createStubInstance(AdminConnection);
 
         alertMock.busyStatus$ = {
@@ -123,6 +124,27 @@ describe('AdminService', () => {
             mockGetAdminConnection.should.have.been.called;
 
             adminConnectionMock.connect.should.have.been.calledWith('qpn-myProfile', 'myId', 'mySecret', 'myNetwork');
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['isConnectingPromise']);
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
+        })));
+
+        it('should connect without enrollment credentials', fakeAsync(inject([AdminService], (service: AdminService) => {
+            adminConnectionMock.connect.returns(Promise.resolve());
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            identityMock.getCurrentEnrollmentCredentials.returns(null);
+
+            service.connect('myNetwork');
+
+            tick();
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Connecting to Business Network myNetwork',
+                text: 'using connection profile myProfile'
+            });
+
+            adminConnectionMock.connect.should.have.been.calledWith('qpn-myProfile', 'myId', null, 'myNetwork');
 
             service['isConnected'].should.equal(true);
             should.not.exist(service['isConnectingPromise']);
@@ -344,6 +366,54 @@ describe('AdminService', () => {
             adminConnectionMock.disconnect.should.have.been.called;
 
             adminConnectionMock.connect.should.have.been.calledWith('qpn-myProfile', 'myId', 'mySecret', 'myNetwork');
+
+            alertMock.busyStatus$.next.thirdCall.should.have.been.calledWith({
+                title: 'Connecting to Business Network myNetwork',
+                text: 'using connection profile myProfile',
+                force: true
+            });
+        })));
+
+        it('should create a new business network without enrollment credentials', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let stubList = sinon.stub(service, 'list').returns(Promise.resolve(['anotherNetwork']));
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            adminConnectionMock.connect.returns(Promise.resolve());
+            adminConnectionMock.disconnect.returns(Promise.resolve());
+            adminConnectionMock.deploy.returns(Promise.resolve());
+
+            identityMock.getCurrentConnectionProfile.returns({name: 'myProfile'});
+            identityMock.getCurrentEnrollmentCredentials.returns(null);
+
+            let stubGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
+
+            service.createNewBusinessNetwork('myNetwork', 'myDescription').then((result: boolean) => {
+                result.should.equal(true);
+            });
+
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Checking Business Network',
+                text: 'checking if myNetwork exists',
+                force: true
+            });
+
+            tick();
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith({
+                title: 'Creating Business Network',
+                text: 'creating business network myNetwork',
+                force: true
+            });
+
+            adminConnectionMock.connect.should.have.been.calledWith('qpn-myProfile', 'myId', null);
+
+            stubGenerateBusinessNetwork.should.have.been.calledWith('myNetwork', 'myDescription');
+
+            adminConnectionMock.deploy.should.have.been.calledWith({name: 'myNetwork'});
+
+            adminConnectionMock.disconnect.should.have.been.called;
+
+            adminConnectionMock.connect.should.have.been.calledWith('qpn-myProfile', 'myId', null, 'myNetwork');
 
             alertMock.busyStatus$.next.thirdCall.should.have.been.calledWith({
                 title: 'Connecting to Business Network myNetwork',

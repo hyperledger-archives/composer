@@ -1,11 +1,11 @@
 /*
  * Defines the Farm to Fork use case.
  *
- * Concerto Language File
+ * composer Language File
  */
 namespace org.acme
 
-import concerto.MyParticipant
+import composer.MyParticipant
 
 asset Animal identified by identifier {
     o String identifier

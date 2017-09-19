@@ -105,7 +105,7 @@ export class EditCardCredentialsComponent {
             roles.push('ChannelAdmin');
         }
 
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile, credentials, roles)
+        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userSecret, this.connectionProfile, credentials, roles)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({

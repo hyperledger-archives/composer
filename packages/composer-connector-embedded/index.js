@@ -22,7 +22,7 @@
  * Applications interact with the framework by instantiating the {@link Composer}
  * class.
  * </p>
- * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
+ * <p><a href="diagrams/composer.svg"><img src="diagrams/composer.svg" style="width:100%;"/></a></p>
  * @module composer
  */
 

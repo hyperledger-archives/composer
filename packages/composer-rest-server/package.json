@@ -1,6 +1,6 @@
 {
   "name": "composer-rest-server",
-  "version": "0.12.3",
+  "version": "0.13.0",
   "description": "Hyperledger Composer REST server that uses the Hyperledger Composer LoopBack connector",
   "engines": {
     "node": ">=6",
@@ -18,7 +18,8 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "nyc mocha --recursive -t 10000"
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
   "dependencies": {
     "body-parser": "^1.17.0",
     "clui": "^0.3.1",
-    "composer-common": "0.12.3",
+    "composer-common": "0.13.0",
     "compression": "^1.0.3",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -49,7 +50,7 @@
     "loopback-boot": "~2.25.0",
     "loopback-component-explorer": "^4.1.1",
     "loopback-component-passport": "^3.2.0",
-    "loopback-connector-composer": "0.12.3",
+    "loopback-connector-composer": "0.13.0",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
@@ -62,9 +63,9 @@
     "chai-as-promised": "^6.0.0",
     "chai-http": "^3.0.0",
     "clone": "^2.1.1",
-    "composer-admin": "0.12.3",
-    "composer-client": "0.12.3",
-    "composer-connector-embedded": "0.12.3",
+    "composer-admin": "0.13.0",
+    "composer-client": "0.13.0",
+    "composer-connector-embedded": "0.13.0",
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "ldapjs": "^1.0.1",

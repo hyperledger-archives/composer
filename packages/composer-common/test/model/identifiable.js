@@ -43,11 +43,11 @@ describe    ('Identifiable', function () {
 
     describe('#setIdentifier', () => {
         it('should be able to set identifier', function () {
-            modelManager.addModelFile(`namespace com.ibm.concerto.mozart
+            modelManager.addModelFile(`namespace com.composer
             participant Farmer identified by farmerId {
                 o String farmerId
             }`);
-            let id = new Identifiable(modelManager, 'com.ibm.concerto.mozart', 'Farmer', '123' );
+            let id = new Identifiable(modelManager, 'com.composer', 'Farmer', '123' );
             id.setIdentifier('321');
             id.getIdentifier().should.equal('321');
         });

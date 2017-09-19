@@ -1,0 +1,152 @@
+namespace systest.transactions
+
+enum SimpleEnum {
+    o WOW
+    o SUCH
+    o MANY
+    o MUCH
+}
+
+asset SimpleStringAsset identified by assetId {
+    o String assetId
+    o String stringValue
+}
+
+asset SimpleIntegerAsset identified by assetId {
+    o String assetId
+    o Integer integerValue
+}
+
+asset SimpleRelationshipAsset identified by assetId {
+    o String assetId
+    --> SimpleStringAsset stringAsset
+}
+
+asset SimpleRelationshipsAsset identified by assetId {
+    o String assetId
+    --> SimpleStringAsset[] stringAssets
+}
+
+transaction SimpleTransactionWithPrimitiveTypes {
+
+    o String stringValue
+    o Double doubleValue
+    o Integer integerValue
+    o Long longValue
+    o DateTime dateTimeValue
+    o Boolean booleanValue
+    o SimpleEnum enumValue
+}
+
+transaction SimpleTransactionWithPrimitiveTypeArrays  {
+
+    o String[] stringValues
+    o Double[] doubleValues
+    o Integer[] integerValues
+    o Long[] longValues
+    o DateTime[] dateTimeValues
+    o Boolean[] booleanValues
+    o SimpleEnum[] enumValues
+}
+
+transaction SimpleTransactionWithAssets  {
+
+    o SimpleStringAsset stringAsset
+    o SimpleIntegerAsset integerAsset
+}
+
+transaction SimpleTransactionWithAssetArrays  {
+
+    o SimpleStringAsset[] stringAssets
+    o SimpleIntegerAsset[] integerAssets
+}
+
+transaction SimpleTransactionWithAssetRelationships  {
+
+    --> SimpleStringAsset stringAsset
+    --> SimpleIntegerAsset integerAsset
+}
+
+transaction SimpleTransactionWithAssetRelationshipArrays  {
+
+    --> SimpleStringAsset[] stringAssets
+    --> SimpleIntegerAsset[] integerAssets
+}
+
+transaction GetAllAssetsFromAssetRegistryTransaction {
+
+}
+
+transaction GetAssetFromAssetRegistryTransaction  {
+
+}
+
+transaction AddAssetInTransactionToAssetRegistryTransaction  {
+
+    o SimpleStringAsset stringAsset
+}
+
+transaction AddAssetWithRelationshipInTransactionToAssetRegistryTransaction  {
+
+    o SimpleRelationshipAsset relationshipAsset
+}
+
+transaction AddNewAssetToAssetRegistryTransaction  {
+
+}
+
+transaction AddNewAssetWithRelationshipToAssetRegistryTransaction {
+
+}
+
+transaction UpdateAssetInTransactionInAssetRegistryTransaction  {
+
+    o SimpleStringAsset stringAsset
+}
+
+transaction UpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction {
+
+    o SimpleRelationshipAsset relationshipAsset
+}
+
+transaction UpdateNewAssetInAssetRegistryTransaction {
+
+}
+
+transaction UpdateNewAssetWithRelationshipToAssetRegistryTransaction  {
+
+}
+
+transaction RemoveAssetInTransactionInAssetRegistryTransaction  {
+
+    o SimpleStringAsset stringAsset
+}
+
+transaction RemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction  {
+
+    o SimpleRelationshipAsset relationshipAsset
+}
+
+transaction RemoveNewAssetInAssetRegistryTransaction  {
+
+}
+
+transaction RemoveNewAssetWithRelationshipInAssetRegistryTransaction  {
+
+}
+
+transaction SingleAnnotatedTransaction  {
+
+    o String stringValue
+}
+
+transaction MultipleAnnotatedTransaction  {
+
+    o String stringValue1
+    o String stringValue2
+}
+
+transaction TransactionUsingUtilityFunctions  {
+
+    o String stringValue
+}

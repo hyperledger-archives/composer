@@ -74,14 +74,16 @@ class DirectoryVisitor {
 }
 
 describe('IdCard', function() {
+    let minimalMetadata;
+    let minimalConnectionProfile;
     let emptyCredentials;
     let validCredentials;
     let minimalCard;
     let credentialsCard;
 
     beforeEach(function() {
-        const minimalMetadata = { name: 'minimal'};
-        const minimalConnectionProfile = { name: 'minimal' };
+        minimalMetadata = { userName: 'minimal' };
+        minimalConnectionProfile = { name: 'minimal' };
 
         emptyCredentials = { };
         validCredentials = {
@@ -92,6 +94,16 @@ describe('IdCard', function() {
         minimalCard = new IdCard(minimalMetadata, minimalConnectionProfile);
         credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
         credentialsCard.setCredentials(validCredentials);
+    });
+
+    describe('#constructor', function() {
+        it('should reject newer card versions', function() {
+            const metadata = minimalCard.metadata;
+            metadata.version++;
+            should.throw(() => {
+                new IdCard(metadata, minimalConnectionProfile);
+            }, new RegExp(metadata.version.toString(10)));
+        });
     });
 
     describe('#fromArchive', function() {
@@ -121,17 +133,17 @@ describe('IdCard', function() {
             }).should.be.rejectedWith(/metadata.json/);
         });
 
-        it('should throw error on missing name field in metadata', function() {
-            return readIdCardAsync('missing-metadata-name').then((readBuffer) => {
+        it('should throw error on missing userName field in metadata', function() {
+            return readIdCardAsync('missing-metadata-username').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
-            }).should.be.rejectedWith(/name/);
+            }).should.be.rejectedWith(/userName/);
         });
 
-        it('should load name', function() {
+        it('should load userName', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
-                card.getName().should.equal('Conga');
+                card.getUserName().should.equal('conga');
             });
         });
 
@@ -199,8 +211,7 @@ describe('IdCard', function() {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
                 const credentials = card.getEnrollmentCredentials();
-                credentials.id.should.equal('conga');
-                credentials.secret.should.equal('super-secret-passphrase');
+                credentials.should.deep.equal({ secret: 'super-secret-passphrase' });
             });
         });
 
@@ -217,7 +228,7 @@ describe('IdCard', function() {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
                 const roles = card.getRoles();
-                roles.should.have.members(['peerAdmin', 'channelAdmin', 'issuer']);
+                roles.should.have.members(['PeerAdmin', 'ChannelAdmin', 'Issuer']);
             });
         });
 
@@ -227,6 +238,16 @@ describe('IdCard', function() {
             }).then(card => {
                 const roles = card.getRoles();
                 roles.should.be.empty;
+            });
+        });
+
+        it('should migrate a version 0 card', function() {
+            return readIdCardAsync('valid-v0').then((readBuffer) => {
+                return IdCard.fromArchive(readBuffer);
+            }).then(card => {
+                card.getUserName().should.equal('conga');
+                should.not.exist(card.metadata.name);
+                should.not.exist(card.metadata.enrollmentId);
             });
         });
     });

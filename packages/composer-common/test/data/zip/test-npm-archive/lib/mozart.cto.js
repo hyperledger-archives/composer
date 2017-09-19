@@ -20,7 +20,7 @@
 
 /**
 * A transaction processor for AnimalMovementDeparture
-* @param  {com.ibm.concerto.mozart.AnimalMovementDeparture} movementDeparture - the transaction to be processed
+* @param  {com.composer.AnimalMovementDeparture} movementDeparture - the transaction to be processed
 */
 function onAnimalMovementDeparture(movementDeparture) {
     console.log('onAnimalMovementDeparture');
@@ -32,7 +32,7 @@ function onAnimalMovementDeparture(movementDeparture) {
     movementDeparture.animal.movementStatus = 'IN_TRANSIT';
 
      // save the animal
-    var ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    var ar = getAssetRegistry('com.composer.Animal');
     ar.update(movementDeparture.animal);
 
      // add the animal to the incoming animals of the
@@ -45,13 +45,13 @@ function onAnimalMovementDeparture(movementDeparture) {
     }
 
      // save the business
-    var br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    var br = getAssetRegistry('com.composer.Business');
     br.update(movementDeparture.to);
 }
 
 /**
 * A transaction processor for AnimalMovementArrival
-* @param  {com.ibm.concerto.mozart.AnimalMovementArrival} movementArrival - the transaction to be processed
+* @param  {com.composer.AnimalMovementArrival} movementArrival - the transaction to be processed
 */
 function onAnimalMovementArrival(movementArrival) {
     console.log('onAnimalMovementArrival');
@@ -71,7 +71,7 @@ function onAnimalMovementArrival(movementArrival) {
     movementArrival.animal.location = movementArrival.arrivalField;
 
      // save the animal
-    var ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    var ar = getAssetRegistry('com.composer.Animal');
     ar.update(movementArrival.animal);
 
      // remove the animal from the incoming animals
@@ -86,7 +86,7 @@ function onAnimalMovementArrival(movementArrival) {
       });
 
       // save the business
-    var br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    var br = getAssetRegistry('com.composer.Business');
     br.update(movementArrival.to);
 }
 

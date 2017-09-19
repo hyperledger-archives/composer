@@ -193,8 +193,6 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledAclBundle);
                     sinon.assert.calledWith(Context.cacheCompiledAclBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledOnce(mockRegistryManager.ensure);
-                    sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
@@ -239,7 +237,7 @@ describe('Engine', () => {
             mockContext.getAclCompiler.returns(mockAclCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
@@ -262,8 +260,6 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledOnce(mockRegistryManager.ensure);
-                    sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
