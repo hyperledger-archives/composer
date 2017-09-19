@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Managing a Deployed Business Network | Hyperledger Composer</title>
+    <title>Installing pre-requisites on Mac OS | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Managing a Deployed Business Network</p>
+          <p>Installing pre-requisites on Mac OS</p>
           </div>
 
           <nav class="context-nav">
@@ -202,50 +202,80 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="managing-your-hyperledger-composer-solution">Managing your Hyperledger Composer Solution</h1>
+              <h1 id="installing-the-pre-requisites-for-hyperledger-composer-on-mac-os-x">Installing the pre-requisites for Hyperledger Composer on Mac OS X</h1>
 
-<h3 id="connector-specific-information">Connector Specific Information</h3>
+<p>Follow these instructions to install the pre-requsities for installing Hyperledger Composer on a local Mac OS X machine. You need to install these tools <em>before</em> you attempt to install Hyperledger Composer.</p>
 
-<h3 id="participants-and-identities">Participants and identities</h3>
+<blockquote>
+<p>Note Mac OS X version <code>10.12.6</code> was used for these instructions. </p>
+</blockquote>
 
-<p>Participants and identities are core concepts of Hyperledger Composer. A participant is a member of business networks and might represent individuals or organizations. Participants have identity documents which can be validated to prove their identity. For more information, see <a href="../managing/participantsandidentities.html"><strong>participants and identities</strong></a>.</p>
+<h2 id="install-nvm-and-apple-xcode">Install nvm and Apple Xcode</h2>
 
-<h3 id="adding-participants">Adding participants</h3>
+<p>First install nvm (the Node version manager). nvm is a tool that allows you to easily install, update and switch between versions of Node.js.</p>
 
-<p><a href="../managing/participant-add.html"><strong>Participants must be added to a business network</strong></a> before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
+<p>Open the terminal (command line) by clicking on the magnifier in the menu bar at the top right of your screen. Type <code>terminal</code> and press enter.</p>
 
-<h3 id="creating-exporting-and-importing-id-cards">Creating, Exporting, and Importing ID Cards</h3>
+<p>In the terminal window paste the text below and press enter:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+</code></pre></div>
+<p>More information on this script and the Node install process is available <a href="https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/">here</a>.</p>
 
-<p>ID cards combine a connection profile, identity, and certificates to allow a connection to a business network in Hyperledger Composer Playground. ID cards can be <a href="./id-cards-playground.html">created, exported and imported</a> from the <strong>My Wallet</strong> page in Hyperledger Composer Playground.</p>
+<p>When you hit enter you should see the pop-up below, prompting you to install <code>git</code>. Press the <code>Get Xcode</code> button to install the full Apple Xcode IDE, including a C++ compiler, used to install native Node.js modules.</p>
 
-<h3 id="issuing-a-new-identity-to-a-participant">Issuing a new identity to a participant</h3>
+<p><img src="../installing/install_xcode.png" alt="Image of prompt to install xCode"></p>
 
-<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+<p>The download and install process for Xcode may take 20 minutes or more. Be patient!</p>
 
-<h3 id="binding-an-existing-identity-to-a-participant">Binding an existing identity to a participant</h3>
+<p>After the installation of Xcode has completed launch Xcode. Accept the license agreement. It will prompt you for your username and password and will install additional components.</p>
 
-<p><a href="../managing/identity-issue.html"><strong>An existing identity can be bound to a participant using either the API or the command line</strong></a>. Once an existing identity has been bound, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+<p>After Xcode finishes installing additional components and launches, simply quit Xcode.</p>
 
-<h3 id="listing-all-identities-in-a-business-network">Listing all identities in a business network</h3>
+<p>Switch back to the terminal and create your bash profile (stores user preferences for bash):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">touch .bash_profile
+</code></pre></div>
+<p>Then rerun the original curl command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+</code></pre></div>
+<p>Close the terminal and reopen it.</p>
 
-<p><a href="../managing/identity-issue.html"><strong>A new identity can be issued to a participant using either the API or the command line</strong></a>. Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+<p>Check that nvm is installed and is accessible:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm —-version
+</code></pre></div>
+<h2 id="install-node">Install Node</h2>
 
-<h3 id="revoking-an-identity-from-a-participant">Revoking an identity from a participant</h3>
+<p>Install the latest (long term support) version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm install --lts
+</code></pre></div>
+<p>Switch to the LTS version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm use --lts
+</code></pre></div>
+<p>Check that Node is installed:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">node --version 
+</code></pre></div>
+<h2 id="install-docker">Install Docker</h2>
 
-<p><a href="../managing/identity-revoke.html"><strong>An identity can be revoked from a participant using either the API or the command line</strong></a>. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.</p>
+<p>Follow the instructions here to install Docker for Max (stable):
+<a href="https://docs.docker.com/docker-for-mac/install/">https://docs.docker.com/docker-for-mac/install/</a></p>
 
-<h3 id="updating-the-hyperledger-composer-runtime">Updating the Hyperledger Composer Runtime</h3>
+<p>After running the installed Docker application you should have the whale icon in your menu bar, with a green “Docker is running” status.</p>
 
-<p>To <a href="./updating-composer.html">update Hyperledger Composer</a> to a new version, the Hyperledger Composer components must be uninstalled and reinstalled using npm.</p>
+<h2 id="install-vscode">Install VSCode</h2>
 
-<hr>
+<p>Install VSCode by visiting:
+<a href="https://code.visualstudio.com">https://code.visualstudio.com</a></p>
+
+<p>Press the “Download for Mac” button and copy the downloaded application into your Applications folder.</p>
+
+<h2 id="install-the-hyperledger-composer-extension-for-vscode">Install the Hyperledger Composer Extension for VSCode</h2>
+
+<p>Launch VSCode and then press the “Extensions” button on the vertical left toolbar.</p>
+
+<p>Type <code>composer</code> into the search bar and then press the <code>Install</code> button next to the <code>Hyperleger Composer</code> extension. Once the install completes you need to press the <code>Reload</code> button to activate the extension.</p>
 
 <h2 id="what-next">What next?</h2>
 
-<ul>
-<li>You might want to <a href="../integrating/integrating-index.html"><strong>integrate your existing systems</strong></a> with Hyperledger Composer using LoopBack.</li>
-<li>Applications which consume data from your business network can <a href="../applications/subscribing-to-events.html"><strong>subscribe to events</strong></a>.</li>
-</ul>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with installing the Hyperledger Composer npm modules, as described in <a href="../installing/development-tools.html">Step 1 here</a>.</p>
 
             
           </section>
