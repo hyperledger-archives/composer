@@ -15,6 +15,8 @@ Follow the instructions below to get the required {{site.data.conrefs.composer_f
 
 ## Before you begin
 
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+
 The following are prerequisites for installing the required development tools:
 
 ```
@@ -44,7 +46,7 @@ Next run the script - as this briefly uses sudo during its execution, you will b
 ./prereqs-ubuntu.sh
 ```
 
-To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+If you're running Mac OS X, you can follow the [installation guide for Mac OS X pre-requisites](../installing/prereqs-mac.html).
 
 ---
 
