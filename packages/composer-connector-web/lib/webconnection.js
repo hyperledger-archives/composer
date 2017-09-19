@@ -493,8 +493,7 @@ class WebConnection extends Connection {
      * Create a new transaction id
      * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @return {Promise} A promise that is resolved with a generated user
-     * secret once the new identity has been created, or rejected with an error.
+     * @return {Promise} A promise that is resolved with a transaction id
      */
     createTransactionId(securityContext){
         return Promise.resolve(null);

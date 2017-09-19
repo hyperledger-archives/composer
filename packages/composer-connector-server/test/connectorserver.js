@@ -1034,7 +1034,7 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should list', () => {
+        it('should list business networks', () => {
             mockConnection.list.withArgs(mockSecurityContext).resolves(['org-acme-biznet1', 'org-acme-biznet2']);
             const cb = sinon.stub();
             return connectorServer.connectionList(connectionID, securityContextID, cb)
@@ -1070,7 +1070,7 @@ describe('ConnectorServer', () => {
                 });
         });
 
-        it('should handle list errors', () => {
+        it('should handle  errors', () => {
             mockConnection.list.rejects(new Error('such error'));
             const cb = sinon.stub();
             return connectorServer.connectionList(connectionID, securityContextID, cb)
@@ -1092,7 +1092,7 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should list', () => {
+        it('should create a transaction id', () => {
             mockConnection.createTransactionId.withArgs(mockSecurityContext).resolves(['42']);
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)
@@ -1128,7 +1128,7 @@ describe('ConnectorServer', () => {
                         });
         });
 
-        it('should handle list errors', () => {
+        it('should handle errors when creating transaction id', () => {
             mockConnection.createTransactionId.rejects(new Error('such error'));
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)

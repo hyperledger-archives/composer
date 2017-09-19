@@ -1078,7 +1078,7 @@ class HLFConnection extends Connection {
    /**
      * Get a transaction id from the fabric client
      * @param {any} securityContext security context
-     * @return {Promise} A promise that is resolved when with a transaction id
+     * @return {Promise} A promise that is resolved with a transaction id
      */
     createTransactionId(){
         // Check that a valid security context has been specified.
