@@ -127,8 +127,8 @@ class EngineLogging {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'setLogLevel', ['newLogLevel']));
         }
         if (context.getParticipant() === null) {
-            this.getContainer().getLoggingService().setLogLevel(args[0]);
-            return Promise.resolve();
+            let promise = this.getContainer().getLoggingService().setLogLevel(args[0]);
+            return promise ? promise : Promise.resolve();
         }
         throw new Error('Authorization failure');
     }
