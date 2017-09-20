@@ -90,7 +90,7 @@ ga('send', 'pageview');
 <li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
 <li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
 </ul></li>
-<li><p><a href="../installing/installing-index.html">Installing Hyperledger Composer</a></p>
+<li><p><a href="../installing/installing-index.html">Installing</a></p>
 
 <ul>
 <li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
@@ -121,6 +121,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -171,7 +172,6 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
-<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -236,7 +236,7 @@ docker images -aq | xargs docker rmi -f
 
 <h2 id="deploying-business-networks-to-hyperledger-fabric-v1-0">Deploying business networks to Hyperledger Fabric v1.0</h2>
 
-<p>In Hyperledger Fabric v1.0 peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
+<p>In Hyperledger Fabric v1.0 peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, you must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
 
 <p>When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, <code>Admin</code> or <code>AdminPeer</code> are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
 
