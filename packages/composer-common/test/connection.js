@@ -536,4 +536,37 @@ describe('Connection', () => {
 
     });
 
+
+    describe('#createTransactionId', () => {
+
+        it('should call _createTransactionId and handle no error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(null,['5d5s6s78d7f6']);
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.eventually.be.deep.equal(['5d5s6s78d7f6'])
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+        it('should call _createTransactionId and handle an error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(new Error('error'));
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.be.rejectedWith(/error/)
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+    });
+
+    describe('#_createTransactionId', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                connection._createTransactionId(mockSecurityContext);
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
 });

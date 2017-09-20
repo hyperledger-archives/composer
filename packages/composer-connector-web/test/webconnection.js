@@ -81,6 +81,15 @@ describe('WebConnection', () => {
 
     });
 
+    describe('#createTransactionId', () => {
+        it('should just return null ', ()=>{
+            connection.createTransactionId(mockSecurityContext)
+            .then((result)=>{
+                should.be.equal(result,null);
+            });
+        });
+    });
+
     describe('#createEngine', () => {
 
         it('should create a new engine', () => {
