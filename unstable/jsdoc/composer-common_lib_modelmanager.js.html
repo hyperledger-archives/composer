@@ -284,9 +284,9 @@ class ModelManager {
             throw new Error('model file does not exist');
         } else if (namespace === ModelUtil.getSystemNamespace()) {
             throw new Error('Cannot delete system namespace');
-
+        } else {
+            delete this.modelFiles[namespace];
         }
-        delete this.modelFiles[namespace];
     }
 
     /**
