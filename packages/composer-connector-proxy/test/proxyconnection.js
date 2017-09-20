@@ -329,4 +329,23 @@ describe('ProxyConnection', () => {
 
     });
 
+    describe('#createTransactionId', () => {
+
+        it('should send a list call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionCreateTransactionId', connectionID, securityContextID, sinon.match.func).yields(null, ['32']);
+            return connection.createTransactionId(mockSecurityContext)
+                        .then((result) => {
+                            sinon.assert.calledOnce(mockSocket.emit);
+                            sinon.assert.calledWith(mockSocket.emit, '/api/connectionCreateTransactionId', connectionID, securityContextID, sinon.match.func);
+                            result.should.deep.equal(['32']);
+                        });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionCreateTransactionId', connectionID, securityContextID, sinon.match.func).yields(serializedError);
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.be.rejectedWith(TypeError, /such type error/);
+        });
+
+    });
 });
