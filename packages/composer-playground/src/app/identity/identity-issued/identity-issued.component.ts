@@ -33,6 +33,7 @@ export class IdentityIssuedComponent implements OnInit {
         let businessNetworkName = currentCard.getBusinessNetworkName();
 
         let newCardData = {
+            version: 1,
             userName: this.userID,
             enrollmentSecret: this.userSecret,
             businessNetwork: businessNetworkName

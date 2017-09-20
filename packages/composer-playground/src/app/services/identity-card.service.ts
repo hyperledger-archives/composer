@@ -15,6 +15,7 @@ const hash = require('object-hash');
 
 const defaultCardProperties = {
     metadata: {
+        version: 1,
         userName: 'admin',
         enrollmentSecret: 'adminpw',
         roles: ['PeerAdmin', 'ChannelAdmin'],
@@ -171,6 +172,7 @@ export class IdentityCardService {
 
     createIdentityCard(userName: string, businessNetworkName: string, enrollmentSecret: string, connectionProfile: any, credentials?: any, roles?: string[]): Promise<string> {
         const metadata: any = {
+            version: 1,
             userName: userName,
             businessNetwork: businessNetworkName,
         };
