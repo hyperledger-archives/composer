@@ -62,8 +62,6 @@ class Registry {
    + Promise getAll() 
    + Promise get(string) 
    + Promise exists(string) 
-   + Promise find(string) 
-   + Promise query(string) 
    + Promise resolveAll() 
    + Promise resolve(string) 
 }
