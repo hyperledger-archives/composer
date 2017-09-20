@@ -2491,4 +2491,20 @@ describe('HLFConnection', () => {
         });
     });
 
+    describe('#createTransactionID', ()=>{
+
+        beforeEach(() => {
+            mockChannel.initialize.resolves();
+        });
+
+        it('should create a transaction id', () => {
+            connection.initialized = true;
+
+            connection.createTransactionId().then((result) =>{
+                sinon.assert.calledOnce(mockClient.getTransactionID);
+                result.should.deep.equal('00000000-0000-0000-0000-000000000000');
+            });
+        });
+    });
+
 });

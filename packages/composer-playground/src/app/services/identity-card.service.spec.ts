@@ -93,12 +93,14 @@ describe('IdentityCardService', () => {
             mockAdminService.exportIdentity.withArgs(sinon.match.any, 'card2').resolves(credentials);
 
             idCard1 = new IdCard({
+                version: 1,
                 userName: 'card1',
                 businessNetworkName: 'assassin-network',
                 enrollmentSecret: 'adminpw'
             }, { name: 'hlfv1' });
 
             idCard2 = new IdCard({
+                version: 1,
                 userName: 'card2',
                 businessNetworkName: 'assassin-network',
                 enrollmentSecret: 'adminpw'

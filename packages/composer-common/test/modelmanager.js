@@ -88,6 +88,14 @@ describe('ModelManager', () => {
                 err.getFileLocation().start.offset.should.equal(err.getFileLocation().start.offset);
             }
         });
+
+        it('should cope with object as modelfile', ()=>{
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            modelManager.validateModelFile(mockModelFile);
+            sinon.assert.calledOnce(mockModelFile.validate);
+
+
+        });
     });
 
     describe('#addModelFile', () => {
@@ -371,8 +379,8 @@ describe('ModelManager', () => {
 
         it('should not be possible to delete a system model file', ()=>{
             (() => {
-                modelManager.deleteModelFile(mockSystemModelFile);
-            }).should.throw();
+                modelManager.deleteModelFile('org.hyperledger.composer.system');
+            }).should.throw(/Cannot delete system namespace/);
         });
 
     });
