@@ -99,7 +99,7 @@ describe('EmbeddedConnection', () => {
     describe('#createTransactionId', () => {
         it('should just return null ', ()=>{
             connection.createTransactionId(mockSecurityContext)
-            .then(result=>{
+            .then((result)=>{
                 should.be.equal(result,null);
             }
             );
