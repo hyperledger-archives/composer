@@ -221,6 +221,23 @@ describe('HLFConnection', () => {
             mockEventHub.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('events');
         });
 
+        it('should unregister the exit listener', () => {
+            let stubExit = sandbox.stub(process, 'on').withArgs('exit').yields();
+            let stubRemove = sandbox.stub(process, 'removeListener');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
+            connection._connectToEventHubs();
+            sinon.assert.calledOnce(stubExit);
+            let exitListener = stubExit.firstCall.args[0];
+
+            return connection.disconnect()
+                .then(() => {
+                    sinon.assert.calledOnce(stubRemove);
+                    sinon.assert.calledWith(stubRemove, exitListener);
+                });
+
+
+        });
+
         it('should not unregister any chaincode listeners if non were setup', () => {
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
             connection._connectToEventHubs();
@@ -264,6 +281,19 @@ describe('HLFConnection', () => {
             mockEventHub.isconnected.throws(new Error('such error'));
             return connection.disconnect()
                 .should.be.rejectedWith(/such error/);
+        });
+
+        it('should handle being called twice', () => {
+            mockEventHub.isconnected.returns(true);
+            connection._connectToEventHubs();
+            return connection.disconnect()
+                .then(() => {
+                    mockEventHub.isconnected.returns(false);
+                    return connection.disconnect();
+                })
+                .then(() => {
+                    sinon.assert.calledOnce(mockEventHub.disconnect);
+                });
         });
 
     });
@@ -2458,6 +2488,22 @@ describe('HLFConnection', () => {
                 .then(() => {
                     sinon.assert.notCalled(mockChannel.initialize);
                 });
+        });
+    });
+
+    describe('#createTransactionID', ()=>{
+
+        beforeEach(() => {
+            mockChannel.initialize.resolves();
+        });
+
+        it('should create a transaction id', () => {
+            connection.initialized = true;
+
+            connection.createTransactionId().then((result) =>{
+                sinon.assert.calledOnce(mockClient.getTransactionID);
+                result.should.deep.equal('00000000-0000-0000-0000-000000000000');
+            });
         });
     });
 

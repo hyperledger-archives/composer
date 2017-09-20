@@ -104,6 +104,12 @@ describe('IdCard', function() {
                 new IdCard(metadata, minimalConnectionProfile);
             }, new RegExp(metadata.version.toString(10)));
         });
+
+        it('should throw error on missing metadata', function() {
+            should.throw(() => {
+                new IdCard(null, minimalConnectionProfile);
+            }, /metadata/);
+        });
     });
 
     describe('#fromArchive', function() {

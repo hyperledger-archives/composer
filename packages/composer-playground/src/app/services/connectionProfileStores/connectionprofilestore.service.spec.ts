@@ -4,12 +4,12 @@
 /* tslint:disable:max-classes-per-file */
 
 import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
-import { ConfigService } from './config.service';
+import { ConfigService } from '../config.service';
 import { ConnectionProfileStoreService } from './connectionprofilestore.service';
-import { FSConnectionProfileStore } from 'composer-common';
 import { PlaygroundConnectionProfileStore } from './playgroundconnectionprofilestore';
 import * as sinon from 'sinon';
-import { expect } from 'chai';
+
+import { BrowserConnectionProfileStore } from './browserconnectionprofilestore';
 
 describe('ConnectionProfileStoreService', () => {
 
@@ -32,7 +32,7 @@ describe('ConnectionProfileStoreService', () => {
                     connectionProfileStoreService.should.be.ok;
                     mockConfigService.isWebOnly.returns(true);
                     const connectionProfileStore = connectionProfileStoreService.getConnectionProfileStore();
-                    connectionProfileStore.should.be.an.instanceOf(FSConnectionProfileStore);
+                    connectionProfileStore.should.be.an.instanceOf(BrowserConnectionProfileStore);
                 }
             ));
 
