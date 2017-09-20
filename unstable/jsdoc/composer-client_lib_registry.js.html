@@ -427,57 +427,6 @@ class Registry {
         });
     }
 
-
-    /**
-     * Find resources in the registry that match the specified JSONata expression.
-     * The JSONata expression is applied to each resource in the registry, and
-     * resources are returned if the JSONata expression returns a truthy value for that
-     * resource.
-     * @deprecated this function will be removed
-     * @param {string} expression The JSONata expression.
-     * @return {Promise} A promise that will be resolved with an array of {@link
-     * Resource} instances representing the assets that match the query.
-     */
-    find(expression) {
-        Util.securityCheck(this.securityContext);
-        if (!expression) {
-            throw new Error('expression not specified');
-        }
-        return Util.queryChainCode(this.securityContext, 'findResourcesInRegistry', [this.registryType, this.id, expression])
-            .then((buffer) => {
-                return JSON.parse(buffer.toString());
-            })
-            .then((resources) => {
-                return resources.map((resource) => {
-                    return this.serializer.fromJSON(resource);
-                });
-            });
-    }
-
-    /**
-     * Execute a query against all resources in the registry. The JSONata
-     * expression is applied to each resource in the registry, and the result
-     * of the JSONata expression is returned if the result is truthy. The result
-     * is a JavaScript object, and should only be used for visualization
-     * purposes. You cannot use the {@link add} or {@link update} functions with
-     * data returned by this function.
-     *
-     * @deprecated this function will be removed
-     * @param {string} expression The JSONata expression.
-     * @return {Promise} A promise that will be resolved with an array of JavaScript
-     * objects representing the resources and all of their resolved relationships.
-     */
-    query(expression) {
-        Util.securityCheck(this.securityContext);
-        if (!expression) {
-            throw new Error('expression not specified');
-        }
-        return Util.queryChainCode(this.securityContext, 'queryResourcesInRegistry', [this.registryType, this.id, expression])
-            .then((buffer) => {
-                return JSON.parse(buffer.toString());
-            });
-    }
-
     /**
      * Get all of the resources in the registry, and resolve all of their relationships
      * to other assets, participants, and transactions. The result is a JavaScript
