@@ -125,13 +125,13 @@ describe('ModelManager', () => {
         it('should not be possible to add a system model file', ()=>{
             (() => {
                 modelManager.addModelFile(mockSystemModelFile);
-            }).should.throw();
+            }).should.throw(/Cannot add a model file with the reserved system namspace/);
         });
 
         it('should not be possible to add a system model file (via string)', ()=>{
             (() => {
                 modelManager.addModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
-            }).should.throw();
+            }).should.throw(/Cannot add a model file with the reserved system namspace/);
         });
 
         it('should return error for duplicate namespaces for a string', () => {
@@ -242,6 +242,12 @@ describe('ModelManager', () => {
             (() => {
                 modelManager.addModelFiles([mockSystemModelFile]);
             }).should.throw();
+        });
+
+        it('should not be possible to add a system model file (via string)', ()=>{
+            (() => {
+                modelManager.addModelFiles(['namespace org.hyperledger.composer.system'],['fakesysnamespace.cto']);
+            }).should.throw(/Cannot add a model file with the reserved system namspace/);
         });
 
         it('should return an error for duplicate namespace from strings', () => {

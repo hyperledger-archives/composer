@@ -167,15 +167,6 @@ describe('BusinessNetworkDefinition', () => {
 
         });
 
-        it('should be able to correctly create a business network from a plain directory - dependancies', () => {
-            sandbox.stub(fs,'fileExists').withArgs('README.md',sinon.any).returns('This is not a test');
-
-            (() => {
-                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive');
-            }).should.throw(/Failed to find package.json/);
-
-        });
-
         it('should be able to detect model & logic files in folders with leading periods (.)', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive-dotfolders').then(businessNetwork => {

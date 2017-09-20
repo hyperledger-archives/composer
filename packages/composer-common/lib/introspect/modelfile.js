@@ -53,6 +53,8 @@ class ModelFile {
         this.fileName = 'UNKNOWN';
         this.systemModelFile = !!systemModelFile;
 
+        console.log(fileName+'='+this.systemModelFile);
+
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Composer model as a string as input.');
         }
