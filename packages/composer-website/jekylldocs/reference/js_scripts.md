@@ -17,6 +17,8 @@ Transaction processor functions are automatically invoked by the runtime when tr
 
 Decorators within documentation comments are used to annotate the functions with metadata required for runtime processing.
 
+Each transaction type has an associated registry storing the transactions.
+
 ## Sample Script
 
 The script below defines two transaction processor functions, called `onAnimalMovementDeparture` and `onAnimalMovementArrival`. Note that the model files within the `BusinessNetworkDefinition` must define the two transaction types `com.hyperledger.composer.animaltracking.AnimalMovementDeparture` and `com.hyperledger.composer.animaltracking.AnimalMovementArrival`.
