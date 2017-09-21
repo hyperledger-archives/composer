@@ -48,19 +48,36 @@ class IdCard {
         const method = 'constructor';
         LOG.entry(method);
 
-        if (!(metadata && metadata.userName)) {
+        if (!metadata) {
+            throw new Error('Missing metadata');
+        }
+
+        if (metadata.version || metadata.version === 0) {
+            // Migrate earlier versions using fall-through logic to migrate in single version steps
+            switch (metadata.version) {
+            case 0:
+                metadata.userName = metadata.enrollmentId;
+                delete metadata.enrollmentId;
+                delete metadata.name;
+                metadata.version = 1;
+            }
+
+            if (metadata.version !== CURRENT_VERSION) {
+                throw new Error(`Incompatible card version ${metadata.version}. Current version is ${CURRENT_VERSION}`);
+            }
+        } else {
+            metadata.version = CURRENT_VERSION;
+        }
+
+        if (!metadata.userName) {
             throw new Error('Required metadata field not found: userName');
         }
         if (!(connectionProfile && connectionProfile.name)) {
             throw new Error('Required connection field not found: name');
         }
-        this.metadata = Object.assign({ version: CURRENT_VERSION }, metadata);
+        this.metadata = metadata;
         this.connectionProfile = connectionProfile;
         this.credentials = { };
-
-        if (this.metadata.version !== CURRENT_VERSION) {
-            throw new Error(`Incompatible card version ${this.metadata.version}. Current version is ${CURRENT_VERSION}`);
-        }
 
         LOG.exit(method);
     }
@@ -196,6 +213,10 @@ class IdCard {
                 return metadataFile.async('string');
             }).then((metadataContent) => {
                 metadata = JSON.parse(metadataContent);
+                // First cut of ID cards did not have a version so call them version zero
+                if (!metadata.version) {
+                    metadata.version = 0;
+                }
             });
 
             const loadDirectoryToObject = function(directoryName, obj) {
@@ -217,14 +238,6 @@ class IdCard {
             loadDirectoryToObject(CREDENTIALS_DIRNAME, credentials);
 
             return promise.then(() => {
-                // First cut of ID cards did not have a version so migrate them to version 1
-                if (!metadata.version) {
-                    metadata.userName = metadata.enrollmentId;
-                    delete metadata.enrollmentId;
-                    delete metadata.name;
-                    metadata.version = 1;
-                }
-
                 const idCard = new IdCard(metadata, connection);
                 idCard.setCredentials(credentials);
                 LOG.exit(method, idCard.toString());

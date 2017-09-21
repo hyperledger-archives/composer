@@ -59,7 +59,7 @@ describe('composer archive create unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Deploy handler() method tests', function () {
+    describe('Create handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
