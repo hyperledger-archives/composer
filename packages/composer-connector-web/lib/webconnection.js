@@ -236,21 +236,6 @@ class WebConnection extends Connection {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
-            });
-    }
-
-    /**
      * Undeploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
