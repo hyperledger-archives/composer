@@ -1,17 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import {
-    FormGroup,
-    FormArray,
-    Validators,
-    FormBuilder
-} from '@angular/forms';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
-import { AddCertificateComponent } from './add-certificate/add-certificate.component.ts';
-import { ViewCertificateComponent } from './view-certificate/view-certificate.component.ts';
-import { saveAs } from 'file-saver';
+import { AddCertificateComponent } from './add-certificate/add-certificate.component';
+import { ViewCertificateComponent } from './view-certificate/view-certificate.component';
 import { AlertService } from '../basic-modals/alert.service';
+
+import * as clone from 'clone';
+
+import { has } from 'lodash';
 
 @Component({
     selector: 'connection-profile',
@@ -23,139 +20,110 @@ import { AlertService } from '../basic-modals/alert.service';
 })
 export class ConnectionProfileComponent {
 
-    public v1FormErrors = {
-        name: '',
-        peers: {},
-        orderers: {},
-        channel: '',
-        mspID: '',
-        ca: {},
-        keyValStore: '',
-        timeout: ''
-    };
+    @Input()
+    set connectionProfile(connectionProfile: any) {
+        if (connectionProfile) {
+            this.connectionProfileData = connectionProfile;
+        } else {
+            this.connectionProfileData = {};
 
-    public v1ValidationMessages = {
-        name: {
-            required: 'A connection profile name is required.',
-            pattern: 'A new connection profile cannot use the default name.'
-        },
-        peers: {
-            requestURL: {
-                required: 'Every Peer Request URL is required.'
-            },
-            eventURL: {
-                required: 'Every Peer Event URL is required.'
-            },
-            cert: {}
-        },
-        orderers: {
-            url: {
-                required: 'Every Orderer URL is required.'
-            },
-            cert: {}
-        },
-        channel: {
-            required: 'A Channel name is required.',
-        },
-        mspID: {
-            required: 'A MSP ID is required.',
-        },
-        ca: {
-            url: {
-                required: 'A Certificate Authority URL is required.'
-            }
-        },
-        keyValStore: {
-            required: 'A Key Value Store Directory Path is required.',
-        },
-        timeout: {
-            pattern: 'The Timeout (seconds) must be an integer.'
+            this.connectionProfileData['x-type'] = 'hlfv1';
         }
-    };
-
-    @Input() set connectionProfile(connectionProfile: any) {
-        this.connectionProfileData = connectionProfile;
-        if (this.connectionProfileData) {
-            this.startEditing();
-        }
+        this.startEditing();
     }
 
     @Output() profileUpdated = new EventEmitter<any>();
 
     private connectionProfileData = null;
-    private expandedSection = ['Basic Configuration'];
 
-    private v1Form: FormGroup;
+    private basic = {
+        name: null,
+        description: null,
+        version: '1.0.0',
+        organisation: 'Org1',
+        mspid: 'Org1MSP',
+        channel: 'composerchannel',
+        keyValStore: '/tmp/keyValStore'
+    };
 
-    constructor(private fb: FormBuilder,
-                private connectionProfileService: ConnectionProfileService,
+    private orderers = [];
+
+    private defaultOrderer = {
+        name: 'orderer.example.com',
+        url: 'grpcs://localhost:7050',
+        grpcOptions: {
+            sslTargetNameOverride: null
+        },
+        tlsCACerts: {
+            pem: null
+        }
+    };
+
+    private ordererTimeout = '3s';
+
+    private peers = [];
+    private defaultPeer = {
+        name: 'peer.example.com',
+        url: 'grpcs://localhost:7051',
+        eventUrl: 'grpcs://localhost:7053',
+        grpcOptions: {
+            sslTargetNameOverride: null
+        },
+        tlsCACerts: {
+            pem: null
+        }
+    };
+
+    private peerTimeOut = {
+        endorser: '3s',
+        eventHub: '3s',
+        eventReg: '3s'
+    };
+
+    private ca = <any> {
+        url: 'http://localhost:7054',
+        caName: null,
+        tlsCACerts: {
+            pem: null
+        }
+    };
+
+    constructor(private connectionProfileService: ConnectionProfileService,
                 private modalService: NgbModal,
                 private alertService: AlertService) {
     }
 
-    expandSection(sectionToExpand) {
-
-        if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
-            if (sectionToExpand === 'All') {
-                if (this.expandedSection.length === 2) {
-                    this.expandedSection = [];
-                } else {
-                    this.expandedSection = ['Basic Configuration', 'Advanced'];
-                }
-            } else {
-                let index = this.expandedSection.indexOf(sectionToExpand);
-                if (index > -1) {
-                    this.expandedSection = this.expandedSection.filter((item) => {
-                        return item !== sectionToExpand;
-                    });
-                } else {
-                    this.expandedSection.push(sectionToExpand);
-                }
-            }
-        } else {
-            throw new Error('Invalid connection profile type');
-        }
-    }
-
     startEditing() {
-        if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
+        if (this.connectionProfileData['x-type'] === 'hlfv1') {
+            this.basic.name = has(this.connectionProfileData, 'name') ? this.connectionProfileData.name : this.basic.name;
+            this.basic.description = has(this.connectionProfileData, 'description') ? this.connectionProfileData.description : this.basic.description;
+            this.basic.version = has(this.connectionProfileData, 'version') ? this.connectionProfileData.version : this.basic.version;
 
-            this.v1Form = this.fb.group({
-                name: [
-                    this.connectionProfileData ? this.connectionProfileData.name : '',
-                    [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]
-                ],
-                description: [this.connectionProfileData ? this.connectionProfileData.profile.description : ''],
-                type: [this.connectionProfileData ? this.connectionProfileData['x-type'] : 'hlfv1'],
-                orderers: this.fb.array(
-                    this.initOrderers()
-                ),
-                channel: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.channel : 'composerchannel',
-                    [Validators.required]
-                ],
-                mspID: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.mspID : 'Org1MSP',
-                    [Validators.required]
-                ],
-                ca: this.initCa(),
-                peers: this.fb.array(
-                    this.initPeers()
-                ),
-                keyValStore: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
-                    [Validators.required]
-                ],
-                // Is required and must be a number
-                timeout: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.timeout : 300,
-                    [Validators.pattern('[0-9]+')]
-                ]
-            });
+            this.basic.organisation = has(this.connectionProfileData, 'client.organisation') ? this.connectionProfileData.client.organisation : this.basic.organisation;
+            this.basic.mspid = has(this.connectionProfileData, 'organisations') ? this.connectionProfileData.organisations[Object.keys(this.connectionProfileData.organisations)[0]].mspid : this.basic.mspid;
+            this.basic.channel = has(this.connectionProfileData, 'channels') ? Object.keys(this.connectionProfileData.channels)[0] : this.basic.channel;
+            this.basic.keyValStore = has(this.connectionProfileData, 'client.credentialStore.path') ? this.connectionProfileData.client.credentialStore.path : this.basic.keyValStore;
 
-            this.v1Form.valueChanges.subscribe((data) => this.onValueChanged(data));
+            this.ordererTimeout = has(this.connectionProfileData, 'client.connection.timeout.orderer') ? this.connectionProfileData.client.connection.timeout.orderer : this.ordererTimeout;
+            this.peerTimeOut = has(this.connectionProfileData, 'client.connection.timeout.peer') ? this.connectionProfileData.client.connection.timeout.peer : this.peerTimeOut;
 
-            this.onValueChanged(); // (re)set validation messages now
+            if (has(this.connectionProfileData, 'orderers')) {
+                this.initOrderers();
+            } else {
+                let newOrderer = clone(this.defaultOrderer);
+                this.orderers.push(newOrderer);
+            }
+
+            if (has(this.connectionProfileData, 'peers')) {
+                this.initPeers();
+            } else {
+                let newPeer = clone(this.defaultPeer);
+                this.peers.push(newPeer);
+            }
+
+            if (has(this.connectionProfileData, 'certificateAuthorities')) {
+                this.initCa();
+            }
 
         } else {
             throw new Error('Unknown connection profile type');
@@ -163,157 +131,73 @@ export class ConnectionProfileComponent {
     }
 
     initCa() {
-        let caFormGroup;
-        if (this.connectionProfileData && this.connectionProfileData.profile && this.connectionProfileData.profile.ca) {
-            caFormGroup = this.fb.group({
-                url: [this.connectionProfileData.profile.ca.url, Validators.required],
-                name: [this.connectionProfileData.profile.ca.name]
-            });
-        } else {
-            caFormGroup = this.fb.group({
-                url: ['http://localhost:7054', Validators.required],
-                name: ['']
-            });
-        }
-        return caFormGroup;
+        let caSortOfName = Object.keys(this.connectionProfileData.certificateAuthorities)[0];
+
+        this.ca = this.connectionProfileData.certificateAuthorities[caSortOfName];
     }
 
     initOrderers() {
-        let someList = [];
-        if (this.connectionProfileData) {
-            for (let orderer in this.connectionProfileData.profile.orderers) {
-                let ordererFormGroup;
-                if (this.connectionProfileData.profile.orderers[orderer].hostnameOverride) {
-                    ordererFormGroup = this.fb.group({
-                        url: [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
-                        cert: [this.connectionProfileData.profile.orderers[orderer].cert],
-                        hostnameOverride: [this.connectionProfileData.profile.orderers[orderer].hostnameOverride],
-                    });
-                } else {
-                    ordererFormGroup = this.fb.group({
-                        url: [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
-                        cert: [this.connectionProfileData.profile.orderers[orderer].cert]
-                    });
-                }
-                someList.push(ordererFormGroup);
+        let allOrderers = this.connectionProfileData.orderers;
+
+        let allOrderersNames = Object.keys(allOrderers);
+
+        allOrderersNames.forEach((ordererName: string) => {
+            let newOrderer = allOrderers[ordererName];
+            newOrderer.name = ordererName;
+
+            if (has(allOrderers[ordererName], 'grpcOptions.ssl-target-name-override')) {
+                newOrderer.grpcOptions = {sslTargetNameOverride: allOrderers[ordererName].grpcOptions['ssl-target-name-override']};
+            } else {
+                newOrderer.grpcOptions = {};
             }
-            return someList;
-        } else {
-            someList.push(this.fb.group({
-                url: ['grpc://localhost:7050', Validators.required],
-                cert: ['']
-            }));
-            return someList;
-        }
+
+            this.orderers.push(newOrderer);
+        });
     }
 
     addOrderer() {
-        // add orderer to the list
-        const control = <FormArray> this.v1Form.controls['orderers'];
-        control.push(this.fb.group({
-            url: ['grpc://localhost:7050', Validators.required],
-            cert: ['']
-        }));
+        let num = this.orderers.length;
+        let newOrderer = clone(this.defaultOrderer);
+        newOrderer.name = 'orderer' + num + '.example.com';
+        // remove any added certs
+        delete newOrderer.tlsCACerts;
+
+        this.orderers.push(newOrderer);
     }
 
     removeOrderer(i: number) {
-        // remove orderer from the list
-        const controls = <FormArray> this.v1Form.controls['orderers'];
-        controls.removeAt(i);
+        this.orderers.splice(i, 1);
     }
 
     initPeers() {
-        let someList = [];
-        if (this.connectionProfileData) {
-            for (let peer in this.connectionProfileData.profile.peers) {
-                let peerFormGroup;
-                if (this.connectionProfileData.profile.peers[peer].hostnameOverride) {
-                    peerFormGroup = this.fb.group({
-                        requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
-                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
-                        cert: [this.connectionProfileData.profile.peers[peer].cert],
-                        hostnameOverride: [this.connectionProfileData.profile.peers[peer].hostnameOverride]
-                    });
-                } else {
-                    peerFormGroup = this.fb.group({
-                        requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
-                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
-                        cert: [this.connectionProfileData.profile.peers[peer].cert]
-                    });
-                }
-                someList.push(peerFormGroup);
+        let allPeers = this.connectionProfileData.peers;
+        let allPeersNames = Object.keys(allPeers);
+
+        allPeersNames.forEach((peerName: string) => {
+            let newPeer = allPeers[peerName];
+            newPeer.name = peerName;
+
+            if (has(allPeers[peerName], 'grpcOptions.ssl-target-name-override')) {
+                newPeer.grpcOptions = {sslTargetNameOverride: allPeers[peerName].grpcOptions['ssl-target-name-override']};
+            } else {
+                newPeer.grpcOptions = {};
             }
-            return someList;
-        } else {
-            someList.push(this.fb.group({
-                requestURL: ['grpc://localhost:7051', Validators.required],
-                eventURL: ['grpc://localhost:7053', Validators.required],
-                cert: ['']
-            }));
-            return someList;
-        }
+
+            this.peers.push(newPeer);
+        });
     }
 
     addPeer() {
-        const control = <FormArray> this.v1Form.controls['peers'];
-        control.push(this.fb.group({
-            requestURL: ['grpc://localhost:7051', Validators.required],
-            eventURL: ['grpc://localhost:7053', Validators.required],
-            cert: ['']
-        }));
+        let num = this.peers.length;
+        let newPeer = clone(this.defaultPeer);
+        newPeer.name = 'peer' + num + '.example.com';
+        // remove any added certs
+        delete newPeer.tlsCACerts;
+        this.peers.push(newPeer);
     }
 
     removePeer(i: number) {
-        // remove peer from the list
-        const control = <FormArray> this.v1Form.controls['peers'];
-        control.removeAt(i);
-    }
-
-    onValueChanged(data?: any) {
-        let form;
-        let formErrors;
-        let validationMessages;
-        if (!(this.connectionProfileData.profile['x-type'] === 'hlfv1')) {
-            throw new Error('Invalid connection profile type');
-        } else {
-            if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
-                if (!this.v1Form) {
-                    return;
-                }
-                form = this.v1Form;
-                formErrors = this.v1FormErrors;
-                validationMessages = this.v1ValidationMessages;
-            }
-
-            for (const field in formErrors) {
-                // clear previous error message (if any)
-                formErrors[field] = '';
-                const control = form.get(field);
-                if (!control.valid) {
-                    const messages = validationMessages[field];
-                    if (control.constructor.name === 'FormArray') {
-                        formErrors[field] = {};
-                        for (let attribute in control.controls[0].controls) {
-                            for (const key in control.controls[0].controls[attribute].errors) {
-                                formErrors[field][attribute] = messages[attribute][key];
-                            }
-                        }
-                    } else if (control.constructor.name === 'FormGroup') {
-                        formErrors[field] = {};
-                        // only used for ca currently so expects a single child to be invalid
-                        for (const attribute in control.controls) {
-                            for (const key in control.controls[attribute].errors) {
-                                formErrors[field][attribute] = messages[attribute][key];
-                            }
-                        }
-                    } else {
-                        for (const key in control.errors) {
-                            formErrors[field] += messages[key] + ' ';
-                        }
-                    }
-                }
-            }
-        }
+        this.peers.splice(i, 1);
     }
 
     stopEditing() {
@@ -325,56 +209,146 @@ export class ConnectionProfileComponent {
             return;
         }
 
-        let connectionProfile;
-        if (!(this.connectionProfileData.profile['x-type'] === 'hlf' || this.connectionProfileData.profile['x-type'] === 'hlfv1')) {
+        let connectionProfile = {
+            name: null,
+            description: null,
+            version: null,
+            client: null,
+            orderers: Object(),
+            peers: Object(),
+            channels: Object(),
+            certificateAuthorities: Object(),
+            organisations: Object()
+        };
+
+        if (!(this.connectionProfileData['x-type'] === 'hlfv1')) {
             throw new Error('Unknown profile type');
         } else {
-            connectionProfile = this.v1Form.value;
+            connectionProfile['x-type'] = this.connectionProfileData['x-type'];
+            connectionProfile.name = this.basic.name;
+            connectionProfile.description = this.basic.description;
+            connectionProfile.version = this.basic.version;
 
-            // Need to set this as user doesn't input profile type
-            connectionProfile['x-type'] = this.connectionProfileData.profile['x-type'];
+            connectionProfile.client = {
+                organisation: this.basic.organisation,
+                connection: {
+                    timeout: {
+                        peer: this.peerTimeOut,
+                        orderer: this.ordererTimeout
+                    }
+                },
+                credentialStore: {
+                    path: this.basic.keyValStore,
+                    cryptoStore: {
+                        path: this.basic.keyValStore
+                    },
+                }
+            };
+
+            this.orderers.forEach((orderer) => {
+                // no certificates so don't add the section
+                if (!has(orderer, 'tlsCACerts.pem')) {
+                    delete orderer.tlsCACerts;
+                }
+
+                connectionProfile.orderers[orderer.name] = orderer;
+
+                // need to edit the grpc property names as for some reason hyphens were a good idea
+                if (has(connectionProfile.orderers[orderer.name], 'grpcOptions.sslTargetNameOverride')) {
+                    connectionProfile.orderers[orderer.name].grpcOptions = {
+                        'ssl-target-name-override': connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride
+                    };
+
+                    delete connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride;
+                }
+
+                // remove the name property as it isn't need in this section of the connection profile
+                delete connectionProfile.orderers[orderer.name].name;
+            });
+
+            this.peers.forEach((peer) => {
+                // no certificates so don't add the section
+                if (!has(peer, 'tlsCACerts.pem')) {
+                    delete peer.tlsCACerts;
+                }
+
+                connectionProfile.peers[peer.name] = peer;
+
+                // need to edit the grpc property names as for some reason hyphens were a good idea
+                if (has(connectionProfile.peers[peer.name], 'grpcOptions.sslTargetNameOverride')) {
+                    connectionProfile.peers[peer.name].grpcOptions = {
+                        'ssl-target-name-override': connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride
+                    };
+
+                    delete connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride;
+                }
+
+                // remove the name property as it isn't need in this section of the connection profile
+                delete connectionProfile.peers[peer.name].name;
+
+            });
+
+            connectionProfile.channels[this.basic.channel] = {};
+            connectionProfile.channels[this.basic.channel].orderers = Object.keys(connectionProfile.orderers);
+
+            connectionProfile.channels[this.basic.channel].peers = {};
+
+            Object.keys(connectionProfile.peers).forEach((peerName) => {
+                connectionProfile.channels[this.basic.channel].peers[peerName] = {};
+            });
+
+            let caName = this.ca.caName ? this.ca.caName : 'ca-org1';
+
+            // no certificates so don't add the section
+            if (!has(this.ca, 'tlsCACerts.pem')) {
+                delete this.ca.tlsCACerts;
+            }
+
+            connectionProfile.certificateAuthorities[caName] = this.ca;
+
+            connectionProfile.organisations[this.basic.organisation] = {
+                mspid: this.basic.mspid,
+                peers: Object.keys(connectionProfile.peers),
+                certificateAuthorities: Object.keys(connectionProfile.certificateAuthorities)
+            };
+
             this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
-
-                // Need to set the profile back to its original form
-                let profileToSet = {
-                    name: connectionProfile.name,
-                    profile: connectionProfile,
-                    default: false
-                };
-
                 return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
                     let profiles = Object.keys(connectionProfiles).sort();
                     profiles.forEach((profile) => {
-                        if (profileToSet.name !== connectionProfiles[profile].name && connectionProfiles[profile].name === this.connectionProfileData.name) {
+                        if (connectionProfile.name !== connectionProfiles[profile].name && connectionProfiles[profile].name === this.connectionProfileData.name) {
                             return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
                         }
                     });
                 }).then(() => {
-                    this.connectionProfileData = profileToSet;
+                    this.connectionProfileData = connectionProfile;
                     this.profileUpdated.emit({updated: true, connectionProfile: this.connectionProfileData});
                 });
-
             });
         }
     }
 
     openAddCertificateModal(index, type) {
+        let cert;
         if (type === 'orderers') {
-            this.connectionProfileService.setCertificate(this.v1Form.controls['orderers']['controls'][index]['value']['cert']);
+            cert = this.orderers[index].tlsCACerts.pem;
         } else if (type === 'peers') {
-            this.connectionProfileService.setCertificate(this.v1Form.controls['peers']['controls'][index]['value']['cert']);
+            cert = this.peers[index].tlsCACerts.pem;
+        } else if (type === 'ca') {
+            cert = this.ca.tlsCACerts.pem;
         }
 
-        return this.modalService.open(AddCertificateComponent).result
+        let modelRef = this.modalService.open(AddCertificateComponent);
+        modelRef.componentInstance.cert = cert;
+
+        return modelRef.result
             .then((result) => {
                 if (type === 'orderers') {
-                    this.v1Form.controls['orderers']['controls'][index].patchValue({
-                        cert: result.cert
-                    });
+                    this.orderers[index].tlsCACerts.pem = result;
                 } else if (type === 'peers') {
-                    this.v1Form.controls['peers']['controls'][index].patchValue({
-                        cert: result.cert
-                    });
+                    this.peers[index].tlsCACerts.pem = result;
+                } else if (type === 'ca') {
+                    this.ca.tlsCACerts.pem = result;
                 } else {
                     throw new Error('Unrecognized type ' + type);
                 }

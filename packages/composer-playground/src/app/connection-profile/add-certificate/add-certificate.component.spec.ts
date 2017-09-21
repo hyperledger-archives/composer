@@ -55,19 +55,10 @@ class MockAlertService {
     public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
 }
 
-class MockConnectionProfileService {
-    getCertificate(): string {
-        return 'base_cert';
-    }
-}
-
 describe('AddCertificateComponent', () => {
     let sandbox;
     let component: AddCertificateComponent;
     let fixture: ComponentFixture<AddCertificateComponent>;
-    let mockBusinessNetwork;
-    let mockModelManager;
-    let mockScriptManager;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -80,7 +71,6 @@ describe('AddCertificateComponent', () => {
                 FormsModule
             ],
             providers: [
-                {provide: ConnectionProfileService, useClass: MockConnectionProfileService},
                 {provide: AdminService, useClass: MockAdminService},
                 {provide: AlertService, useClass: MockAlertService},
                 NgbActiveModal
@@ -91,12 +81,6 @@ describe('AddCertificateComponent', () => {
 
         fixture = TestBed.createComponent(AddCertificateComponent);
         component = fixture.componentInstance;
-
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        mockScriptManager = sinon.createStubInstance(ScriptManager);
-        mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetwork.getModelManager.returns(mockModelManager);
-        mockBusinessNetwork.getScriptManager.returns(mockScriptManager);
     });
 
     afterEach(() => {
@@ -126,163 +110,96 @@ describe('AddCertificateComponent', () => {
     });
 
     describe('#fileAccepted', () => {
-        it('should call this.createCertificate if valid file', async(() => {
+        it('should call this.createCertificate if valid file', fakeAsync(() => {
             let b = new Blob(['/**PEM File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.pem');
 
-            let createMock = sandbox.stub(component, 'createCertificate');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-            .returns(Promise.resolve('some data'));
+                .returns(Promise.resolve('some data'));
 
             // Call method
             component.fileAccepted(file);
-            // Check
-            createMock.called;
-        }));
 
-        it('should set this.expandInput=true if a valid file', fakeAsync(() => {
-            let b = new Blob(['/**PEM File*/'], {type: 'text/plain'});
-            let file = new File([b], 'newfile.pem');
-            let createMock = sandbox.stub(component, 'createCertificate');
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-            .returns(Promise.resolve('some data'));
-
-            // Call method
-            component.fileAccepted(file);
             tick();
 
-            // Check
-            component.expandInput.should.equal(true);
+            component.cert.should.equal('some data');
         }));
 
-        it('should call this.fileRejected when there is an error reading the file', () => {
+        it('should call this.fileRejected when there is an error reading the file', fakeAsync(() => {
 
             let b = new Blob(['/**PEM File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.pem');
 
             let createMock = sandbox.stub(component, 'fileRejected');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-            .returns(Promise.reject('some bad data'));
+                .returns(Promise.reject('some bad data'));
 
             component.fileAccepted(file);
-            createMock.called;
-        });
 
-        it('should throw when given incorrect file type', () => {
+            tick();
 
-            let b = new Blob(['/**PNG File*/'], {type: 'text/plain'});
-            let file = new File([b], 'newfile.png');
-
-            let createMock = sandbox.stub(component, 'fileRejected');
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-            .returns(Promise.resolve('some data'));
-
-            component.fileAccepted(file);
-            createMock.called;
-        });
+            createMock.should.have.been.called;
+        }));
     });
 
     describe('#fileRejected', () => {
-        it('should return an error status', async(() => {
+        it('should return an error status', () => {
             component.fileRejected('long reason to reject file');
 
             component['alertService'].errorStatus$.subscribe(
                 (message) => {
-                    expect(message).to.be.equal('long reason to reject file');
+                    message.should.equal('long reason to reject file');
                 }
             );
-        }));
-    });
-
-    describe('#createCertificate', () => {
-
-        it('should set the file type', () => {
-            let type = 'setFileType';
-            component.createCertificate(type, '');
-            component['fileType'].should.equal(type);
         });
-
-        it('should set the certificate string to the dataBuffer string content', async(() => {
-            let data = 'someData';
-            component.createCertificate('', data);
-            component['addedCertificate'].should.equal(data);
-        }));
-
     });
 
     describe('#addCertificate', () => {
-
-        let mockModal;
         let mockModalSpy;
 
         beforeEach(inject([NgbActiveModal], (activeModal: NgbActiveModal) => {
             mockModalSpy = sinon.spy(activeModal, 'close');
         }));
 
-        it('should call close the activeModal', async(() => {
+        it('should call close the activeModal', () => {
 
-            component['addedCertificate'] = 'MuchCertificate';
-
-            let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate'.replace(/[\\n\\r]/g, '');
+            component['cert'] = 'MuchCertificate';
 
             // call the method
             component.addCertificate();
 
-            mockModalSpy.should.have.been.called;
-        }));
+            mockModalSpy.should.have.been.calledWith('MuchCertificate');
+        });
 
-        it('should handle strings with encoded newlines (windows format 1) in certs correctly', async(() => {
+        it('should handle strings with encoded newlines (windows format 1) in certs correctly', () => {
 
-            component['addedCertificate'] = 'MuchCertificate\\r\\nFollowon\\r\\nFinal';
-
-            let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            component['cert'] = 'MuchCertificate\\r\\nFollowon\\r\\nFinal';
 
             // call the method
             component.addCertificate();
 
-            mockModalSpy.should.have.been.calledWith(additionalData);
-        }));
+            mockModalSpy.should.have.been.calledWith('MuchCertificate\nFollowon\nFinal');
+        });
 
-        it('should handle strings with encoded newlines (windows format 2) in certs correctly', async(() => {
+        it('should handle strings with encoded newlines (windows format 2) in certs correctly', () => {
 
-            component['addedCertificate'] = 'MuchCertificate\\n\\rFollowon\\n\\rFinal';
-
-            let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            component['cert'] = 'MuchCertificate\\n\\rFollowon\\n\\rFinal';
 
             // call the method
             component.addCertificate();
 
-            mockModalSpy.should.have.been.calledWith(additionalData);
-        }));
+            mockModalSpy.should.have.been.calledWith('MuchCertificate\nFollowon\nFinal');
+        });
 
-        it('should handle strings with encoded newlines (unix format) in certs correctly', async(() => {
+        it('should handle strings with encoded newlines (unix format) in certs correctly', () => {
 
-            component['addedCertificate'] = 'MuchCertificate\\nFollowon\\nFinal';
-
-            let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            component['cert'] = 'MuchCertificate\\nFollowon\\nFinal';
 
             // call the method
             component.addCertificate();
 
-            mockModalSpy.should.have.been.calledWith(additionalData);
-        }));
-
-        it('should return a constructed json object', async(() => {
-
-            component['addedCertificate'] = 'MuchCertificate';
-
-            let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate';
-
-            // call the method
-            component.addCertificate();
-
-            mockModalSpy.should.have.been.calledWith(additionalData);
-        }));
+            mockModalSpy.should.have.been.calledWith('MuchCertificate\nFollowon\nFinal');
+        });
     });
 
     describe('#getDataBuffer', () => {
@@ -316,21 +233,21 @@ describe('AddCertificateComponent', () => {
             let promise = component.getDataBuffer(file);
             mockFileReadObj.onload();
             return promise
-            .then((data) => {
-                data.toString().should.equal(content);
-            });
+                .then((data) => {
+                    data.toString().should.equal(content);
+                });
         });
 
         it('should give error in promise chain', () => {
             let promise = component.getDataBuffer(file);
             mockFileReadObj.onerror('error');
             return promise
-            .then((data) => {
-                data.should.be.null;
-            })
-            .catch((err) => {
-                err.should.equal('error');
-            });
+                .then((data) => {
+                    data.should.be.null;
+                })
+                .catch((err) => {
+                    err.should.equal('error');
+                });
         });
     });
 });
