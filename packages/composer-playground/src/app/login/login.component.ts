@@ -6,6 +6,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
+import { ConfigService } from '../services/config.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
     private connectionProfiles: Map<string, string>;
     private idCardRefs: Map<string, string[]>;
     private idCards: Map<string, IdCard>;
+    private indestructibleCards: string[];
     private showDeployNetwork: boolean = false;
     private editingConnectionProfile = null;
     private creatingIdCard: boolean = false;
@@ -41,14 +43,15 @@ export class LoginComponent implements OnInit {
                 private identityCardService: IdentityCardService,
                 private modalService: NgbModal,
                 private drawerService: DrawerService,
-                private alertService: AlertService) {
+                private alertService: AlertService,
+                private configService: ConfigService) {
 
     }
 
     ngOnInit(): Promise<void> {
         return this.initializationService.initialize()
             .then(() => {
-                this.usingLocally = !this.initializationService.isWebOnly();
+                this.usingLocally = !this.configService.isWebOnly();
 
                 return this.loadIdentityCards();
             });
@@ -56,13 +59,19 @@ export class LoginComponent implements OnInit {
 
     loadIdentityCards(): Promise<void> {
         return this.identityCardService.getIdentityCards().then((cards) => {
+            this.indestructibleCards = this.identityCardService.getIndestructibleIdentityCards();
             this.idCards = cards;
             this.connectionProfileNames = new Map<string, string>();
             this.connectionProfiles = new Map<string, string>();
 
             let newCardRefs = Array.from(cards.keys())
                 .map((cardRef) => {
-                    let connectionProfile = cards.get(cardRef).getConnectionProfile();
+                    let card = cards.get(cardRef);
+                    let connectionProfile = card.getConnectionProfile();
+                    if (connectionProfile.type === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
+                        return;
+                    }
+
                     let connectionProfileRef: string = this.identityCardService.getQualifiedProfileName(connectionProfile);
                     if (!this.connectionProfileNames.has(connectionProfileRef)) {
                         this.connectionProfileNames.set(connectionProfileRef, connectionProfile.name);
@@ -72,16 +81,28 @@ export class LoginComponent implements OnInit {
                     return [connectionProfileRef, cardRef];
                 })
                 .reduce((prev, cur) => {
+                    if (!cur) {
+                        return prev;
+                    }
+
                     let curCardRefs: string[] = prev.get(cur[0]) || [];
                     let cardRef: string = <string> cur[1];
                     return prev.set(cur[0], [...curCardRefs, cardRef]);
                 }, new Map<string, string[]>());
 
+            newCardRefs.forEach((cardRefs: string[], key: string) => {
+                cardRefs.sort(this.sortIdCards.bind(this));
+            });
+
             this.idCardRefs = newCardRefs;
+            // sort connection profile names and make sure there is always
+            // a web connection profile at the start, even when there are
+            // no identity cards
             let unsortedConnectionProfiles = Array.from(this.connectionProfileNames.keys());
-            let indexOfWeb = unsortedConnectionProfiles.indexOf('web-$default');
-            let webProfile = unsortedConnectionProfiles[indexOfWeb];
-            unsortedConnectionProfiles.splice(indexOfWeb, 1);
+            let indexOfWebProfile = unsortedConnectionProfiles.indexOf('web-$default');
+            if (indexOfWebProfile > -1) {
+                unsortedConnectionProfiles.splice(indexOfWebProfile, 1);
+            }
             unsortedConnectionProfiles.sort((a: string, b: string): number => {
                 let aName = this.connectionProfileNames.get(a);
                 let bName = this.connectionProfileNames.get(b);
@@ -93,7 +114,7 @@ export class LoginComponent implements OnInit {
                     return 1;
                 }
             });
-            unsortedConnectionProfiles.unshift(webProfile);
+            unsortedConnectionProfiles.unshift('web-$default');
             this.connectionProfileRefs = unsortedConnectionProfiles;
 
         }).catch((error) => {
@@ -182,7 +203,7 @@ export class LoginComponent implements OnInit {
         }).then((cardRef) => {
             this.alertService.successStatus$.next({
                 title: 'ID Card imported',
-                text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully imported',
+                text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully imported',
                 icon: '#icon-role_24'
             });
         }).then(() => {
@@ -193,19 +214,25 @@ export class LoginComponent implements OnInit {
     }
 
     exportIdentity(cardRef): Promise<any> {
-        let card = this.idCards.get(cardRef);
+        let fileName;
 
-        return card.toArchive().then((exportedData) => {
-            let file = new Blob([exportedData],
-                {type: 'application/octet-stream'});
-            saveAs(file, card.getName() + '.card');
-        }).catch((reason) => {
-            this.alertService.errorStatus$.next(reason);
-        });
+        return this.identityCardService.getIdentityCardForExport(cardRef)
+            .then((card) => {
+                fileName = card.getUserName() + '.card';
+                return card.toArchive();
+            })
+            .then((archiveData) => {
+                let file = new Blob([archiveData],
+                    {type: 'application/octet-stream'});
+                saveAs(file, fileName);
+            })
+            .catch((reason) => {
+                this.alertService.errorStatus$.next(reason);
+            });
     }
 
     removeIdentity(cardRef): void {
-        let userId: string = this.idCards.get(cardRef).getName();
+        let userId: string = this.idCards.get(cardRef).getUserName();
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
         confirmModalRef.componentInstance.fileName = userId;
@@ -217,14 +244,8 @@ export class LoginComponent implements OnInit {
         confirmModalRef.result
             .then((result) => {
                 if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Removing ID card',
-                        text: 'removing the ID card ' + userId
-                    });
-
                     this.identityCardService.deleteIdentityCard(cardRef)
                         .then(() => {
-                            this.alertService.busyStatus$.next(null);
                             this.alertService.successStatus$.next({
                                 title: 'ID Card Removed',
                                 text: 'The ID card was successfully removed from My Wallet.',
@@ -234,15 +255,66 @@ export class LoginComponent implements OnInit {
                             return this.loadIdentityCards();
                         })
                         .catch((error) => {
-                            this.alertService.busyStatus$.next(null);
                             this.alertService.errorStatus$.next(error);
                         });
                 }
             }, (reason) => {
                 if (reason && reason !== 1) {
-                    this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
             });
+    }
+
+    sortIdCards(a, b): number {
+        let cardA = this.identityCardService.getIdentityCard(a);
+        let cardB = this.identityCardService.getIdentityCard(b);
+
+        let aBusinessNetwork = cardA.getBusinessNetworkName();
+        let bBusinessNetwork = cardB.getBusinessNetworkName();
+        let aName = cardA.getUserName();
+        let bName = cardB.getUserName();
+        let aRoles = cardA.getRoles();
+        let bRoles = cardB.getRoles();
+
+        // sort by business network name
+        let result = this.sortBy(aBusinessNetwork, bBusinessNetwork);
+
+        if (result !== 0) {
+            return result;
+        }
+
+        // then by role
+        result = this.sortBy(aRoles, bRoles);
+        if (result !== 0) {
+            return result;
+        }
+
+        // then by name
+        result = this.sortBy(aName, bName);
+    }
+
+    private sortBy(aName, bName): number {
+        if (!aName && !bName) {
+            return 0;
+        }
+
+        if (!aName && bName) {
+            return -1;
+        }
+
+        if (aName && !bName) {
+            return 1;
+        }
+
+        if (aName < bName) {
+            return -1;
+        }
+
+        if (aName > bName) {
+            return 1;
+        }
+
+        // they are equal
+        return 0;
     }
 }

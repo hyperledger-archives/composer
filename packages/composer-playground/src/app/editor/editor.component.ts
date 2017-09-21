@@ -385,9 +385,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     openImportModal() {
         const importModalRef = this.drawerService.open(UpdateComponent);
         importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
-
-            importModalRef.close();
-
             if (result.deployed) {
                 this.updatePackageInfo();
                 this.updateFiles();
@@ -400,12 +397,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                     }
                     this.setCurrentFile(currentFile);
                     this.alertService.successStatus$.next({
-                        title: 'Deploy Successful',
-                        text: 'Business network imported deployed successfully',
+                        title: 'Import Successful',
+                        text: 'Business network imported successfully',
                         icon: '#icon-deploy_24'
                     });
                 }
             } else {
+                importModalRef.close();
                 if (result.error) {
                     this.alertService.errorStatus$.next(result.error);
                 }
@@ -456,8 +454,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     deploy(): Promise<any> {
         // Gets the definition for the currently deployed business network
         this.alertService.busyStatus$.next({
-            title: 'Deploying updated business network',
-            text: 'deploying ' + this.clientService.getBusinessNetworkName()
+            title: 'Updating updated business network',
+            text: 'updating ' + this.clientService.getBusinessNetworkName()
         });
         return Promise.resolve()
             .then(() => {
@@ -477,8 +475,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.updateFiles();
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
-                    title: 'Deploy Successful',
-                    text: 'Business Network Deployed Successfully',
+                    title: 'Update Successful',
+                    text: 'Business network updated successfully',
                     icon: '#icon-deploy_24'
                 });
                 if ((<any> window).usabilla_live) {
@@ -487,7 +485,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             })
             .catch((error) => {
                 this.deploying = false;
-                // if failed on deploy should go back to what had before deployed
+                // if failed on update should go back to what was there before
                 this.updatePackageInfo();
                 this.updateFiles();
                 this.alertService.busyStatus$.next(null);

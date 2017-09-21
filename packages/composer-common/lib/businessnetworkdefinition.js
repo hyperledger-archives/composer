@@ -307,7 +307,7 @@ class BusinessNetworkDefinition {
                 fileName = file.namespace + '.cto';
             } else {
                 let fileIdentifier = file.fileName;
-                fileName = fsPath.parse(fileIdentifier).base;
+                fileName = fsPath.basename(fileIdentifier);
             }
             zip.file('models/' + fileName, file.definitions, options);
         });
@@ -317,7 +317,7 @@ class BusinessNetworkDefinition {
         zip.file('lib/', null, Object.assign({}, options, { dir: true }));
         scriptFiles.forEach(function(file) {
             let fileIdentifier = file.identifier;
-            let fileName = fsPath.parse(fileIdentifier).base;
+            let fileName = fsPath.basename(fileIdentifier);
             zip.file('lib/' + fileName, file.contents, options);
         });
 

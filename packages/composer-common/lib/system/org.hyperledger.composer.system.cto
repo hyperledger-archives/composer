@@ -107,8 +107,7 @@ asset HistorianRecord identified by transactionId {
 // -----------------------------------------------------------------------------
 // System transactions that act on Registries of any type
 abstract transaction RegistryTransaction {
-  o String registryType
-  o String registryId
+  --> Registry targetRegistry
 }
 
 abstract transaction AssetTransaction extends RegistryTransaction {
@@ -164,4 +163,9 @@ transaction ActivateCurrentIdentity { }
 
 transaction RevokeIdentity {
     --> Identity identity
+}
+
+// --------------------------------------------------------------------------
+transaction UpdateBusinessNetwork {
+  o String businessNetworkArchive
 }

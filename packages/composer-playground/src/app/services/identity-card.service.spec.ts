@@ -5,6 +5,7 @@
 import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 
 import { IdCard } from 'composer-common';
+import { AdminService } from './admin.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
@@ -20,17 +21,20 @@ import { IdentityCardService } from './identity-card.service';
 
 describe('IdentityCardService', () => {
 
+    let mockAdminService;
     let mockIdentityCardStorageService;
     let mockConnectionProfileService;
     let mockIdentityService;
 
     beforeEach(() => {
+        mockAdminService = sinon.createStubInstance(AdminService);
         mockIdentityCardStorageService = sinon.createStubInstance(IdentityCardStorageService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockIdentityService = sinon.createStubInstance(IdentityService);
 
         TestBed.configureTestingModule({
             providers: [IdentityCardService,
+                {provide: AdminService, useValue: mockAdminService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardStorageService, useValue: mockIdentityCardStorageService}
@@ -41,12 +45,11 @@ describe('IdentityCardService', () => {
     describe('#getIdentityCard', () => {
         it('should get the specified identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('alice');
             let mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('test', mockIdCard);
             service['idCards'] = mockCardMap;
 
-            service.getIdentityCard('test').getName().should.equal('alice');
+            service.getIdentityCard('test').should.equal(mockIdCard);
         })));
 
         it('should not get an identity card if it does not exist', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -57,13 +60,12 @@ describe('IdentityCardService', () => {
     describe('#getCurrentIdentityCard', () => {
         it('should get the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('alice');
             let mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('test', mockIdCard);
             service['idCards'] = mockCardMap;
             service['currentCard'] = 'test';
 
-            service.getCurrentIdentityCard().getName().should.equal('alice');
+            service.getCurrentIdentityCard().should.equal(mockIdCard);
         })));
 
         it('should not get an identity card if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -71,51 +73,96 @@ describe('IdentityCardService', () => {
         })));
     });
 
-    describe('#getCurrentConnectionProfile', () => {
-        it('should get the connection profile of the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getConnectionProfile.returns({name: '$default'});
-            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
-            getCurrentIdentityCardStub.returns(mockIdCard);
+    describe('#getIndestructibleIdentityCards', () => {
+        it('should get an array of indestructible identity card refs', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            service['indestructibleCards'] = ['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'];
 
-            service.getCurrentConnectionProfile().name.should.equal('$default');
-        })));
-
-        it('should not get a connection profile if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
-            getCurrentIdentityCardStub.returns(undefined);
-
-            should.not.exist(service.getCurrentConnectionProfile());
+            service.getIndestructibleIdentityCards().should.deep.equal(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']);
         })));
     });
 
-    describe('#getCurrentEnrollmentCredentials', () => {
-        it('should get the enrollment credentials of the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getEnrollmentCredentials.returns({id: 'alice'});
-            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
-            getCurrentIdentityCardStub.returns(mockIdCard);
+    describe('#getIdentityCardForExport', () => {
+        let idCard1;
+        let idCard2;
+        let mockCardMap;
+        let credentials;
 
-            service.getCurrentEnrollmentCredentials().id.should.equal('alice');
+        beforeEach(() => {
+            credentials = { certificate: 'CERTIFICATE', privateKey: 'PRIVATE_KEY' };
+            mockAdminService.exportIdentity.withArgs(sinon.match.any, 'card1').resolves(credentials);
+            mockAdminService.exportIdentity.withArgs(sinon.match.any, 'card2').resolves(credentials);
+
+            idCard1 = new IdCard({
+                version: 1,
+                userName: 'card1',
+                businessNetworkName: 'assassin-network',
+                enrollmentSecret: 'adminpw'
+            }, { name: 'hlfv1' });
+
+            idCard2 = new IdCard({
+                version: 1,
+                userName: 'card2',
+                businessNetworkName: 'assassin-network',
+                enrollmentSecret: 'adminpw'
+            }, { name: 'hlfv1' });
+
+            mockCardMap = new Map<string, IdCard>();
+            mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', idCard1);
+            mockCardMap.set('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', idCard2);
+        });
+
+        it('should get an unused identity card without credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
+                unused: true
+            });
+            service['idCards'] = mockCardMap;
+
+            let result;
+            service.getIdentityCardForExport('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((card) => {
+                result = card;
+            });
+
+            tick();
+
+            mockAdminService.exportIdentity.should.not.have.been.called;
+            result.getUserName().should.equal(idCard1.getUserName());
+            result.getBusinessNetworkName().should.equal(idCard1.getBusinessNetworkName());
+            result.getEnrollmentCredentials().should.deep.equal(idCard1.getEnrollmentCredentials());
+            result.getConnectionProfile().should.deep.equal(idCard1.getConnectionProfile());
+            result.getCredentials().should.deep.equal({});
         })));
 
-        it('should not get enrollment credentials if there is no current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            let getCurrentIdentityCardStub = sinon.stub(service, 'getCurrentIdentityCard');
-            getCurrentIdentityCardStub.returns(undefined);
+        it('should get a used identity card with credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            service['idCards'] = mockCardMap;
 
-            should.not.exist(service.getCurrentEnrollmentCredentials());
+            let result;
+            service.getIdentityCardForExport('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((card) => {
+                result = card;
+            });
+
+            tick();
+
+            mockAdminService.exportIdentity.should.have.been.called;
+            result.getUserName().should.equal(idCard2.getUserName());
+            result.getBusinessNetworkName().should.equal(idCard2.getBusinessNetworkName());
+            result.getEnrollmentCredentials().should.deep.equal(idCard2.getEnrollmentCredentials());
+            result.getConnectionProfile().should.deep.equal(idCard2.getConnectionProfile());
+            result.getCredentials().should.deep.equal(credentials);
         })));
     });
 
     describe('#loadIdentityCards', () => {
         beforeEach(() => {
             mockIdentityCardStorageService.keys.returns(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd']);
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
-            mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"Mr Penguin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
-            mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"Eric","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"conga"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"Mr Penguin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"Eric","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"conga"},"credentials":null}'));
         });
 
         it('should load cards from local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
+            setCurrentIdentityCardStub.returns(Promise.resolve());
+
             let result: number;
             service['currentCard'] = 'someCardRef';
             service.loadIdentityCards(false).then((cardsLoaded) => {
@@ -127,6 +174,7 @@ describe('IdentityCardService', () => {
             result.should.equal(3);
             service['idCards'].size.should.equal(3);
             should.not.exist(service['currentCard']);
+            setCurrentIdentityCardStub.should.not.have.been.called;
         })));
 
         it('should only load cards with web connection profiles from local storage', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -174,7 +222,10 @@ describe('IdentityCardService', () => {
         })));
 
         it('should set the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"name":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
+            setCurrentIdentityCardStub.returns(Promise.resolve());
+
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
 
             service.loadIdentityCards(false);
@@ -182,18 +233,24 @@ describe('IdentityCardService', () => {
             tick();
 
             service['currentCard'].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
-            mockIdentityService.setCurrentIdentity.should.not.have.been.called;
+            setCurrentIdentityCardStub.should.have.been.called;
         })));
 
-        it('should set the current identity card and current identity', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
+        it('should keep track of indestructible identity cards', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
+            setCurrentIdentityCardStub.returns(Promise.resolve());
+
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"indestructible":true}'));
 
             service.loadIdentityCards(false);
 
             tick();
 
-            service['currentCard'].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
+            should.not.exist(service['currentCard']);
+            service['indestructibleCards'].length.should.equal(1);
+            service['indestructibleCards'][0].should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            setCurrentIdentityCardStub.should.not.have.been.called;
         })));
     });
 
@@ -201,7 +258,7 @@ describe('IdentityCardService', () => {
         it('should get identity cards', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let loadIdentityCardsSpy = sinon.spy(service, 'loadIdentityCards');
             let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('penguin');
+            mockIdCard.getUserName.returns('penguin');
             let mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('test', mockIdCard);
             service['idCards'] = mockCardMap;
@@ -214,7 +271,7 @@ describe('IdentityCardService', () => {
             tick();
 
             result.size.should.equal(1);
-            result.get('test').getName().should.equal('penguin');
+            result.get('test').getUserName().should.equal('penguin');
             loadIdentityCardsSpy.should.not.have.been.called;
         })));
     });
@@ -234,7 +291,7 @@ describe('IdentityCardService', () => {
             tick();
 
             addIdentityCardSpy.should.have.been.calledThrice;
-            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getUserName().should.equal('admin');
             service['idCards'].size.should.equal(3);
         })));
 
@@ -246,10 +303,9 @@ describe('IdentityCardService', () => {
 
             tick();
 
-            service['idCards'].get(cardRefs[0]).getName().should.equal('admin');
+            service['idCards'].get(cardRefs[0]).getUserName().should.equal('admin');
             service['idCards'].get(cardRefs[0]).getConnectionProfile().name.should.equal('$default');
-            service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().id.should.equal('admin');
-            service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().secret.should.equal('adminpw');
+            service['idCards'].get(cardRefs[0]).getEnrollmentCredentials().should.deep.equal({secret: 'adminpw'});
         })));
 
         it('should not add inital identity cards if there are any identity cards already', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -273,15 +329,45 @@ describe('IdentityCardService', () => {
     });
 
     describe('#createIdentityCard', () => {
-        it('should create and store an identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        it('should create and store an identity card using enrollment ID and secret', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
+            let cardMock = sinon.createStubInstance(IdCard);
             let connectionProfile = {
                 name: 'hlfv1'
             };
 
-            let result;
-            service.createIdentityCard('bcc', 'cashless-network', 'admin', 'adminpw', connectionProfile).then((cardRef) => {
-                result = cardRef;
+            service.createIdentityCard('admin', 'cashless-network', 'adminpw', connectionProfile, null, [])
+                .then((cardRef) => {
+                    let myCard = service.getIdentityCard(cardRef);
+                    myCard.getCredentials().should.be.empty;
+            }).catch((error) => {
+                fail('test failed with error' + error);
+            });
+
+            tick();
+
+            service['idCards'].size.should.equal(1);
+            cardMock.setCredentials.should.not.have.been.called;
+            addIdentityCardSpy.should.have.been.called;
+        })));
+
+        it('should create and store an identity card using certificates and roles', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let addIdentityCardSpy = sinon.spy(service, 'addIdentityCard');
+            let connectionProfile = {
+                name: 'hlfv1'
+            };
+            let credentials = {
+                certificate: 'certificate',
+                privateKey: 'privateKey'
+            };
+
+            service.createIdentityCard('admin', 'cashless-network', null, connectionProfile, credentials, ['PeerAdmin', 'ChannelAdmin'])
+                .then((cardRef) => {
+                    let myCard = service.getIdentityCard(cardRef);
+                    myCard.getCredentials().should.deep.equal(credentials);
+                    myCard.getRoles().should.deep.equal(['PeerAdmin', 'ChannelAdmin']);
+            }).catch((error) => {
+                fail('test failed with error' + error);
             });
 
             tick();
@@ -292,9 +378,10 @@ describe('IdentityCardService', () => {
     });
 
     describe('#addIdentityCard', () => {
-        it('should add an identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        it('should add an identity card without credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
             let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('bcc');
+            mockIdCard.getUserName.returns('bcc');
 
             let result;
             service.addIdentityCard(mockIdCard).then((cardRef) => {
@@ -304,30 +391,79 @@ describe('IdentityCardService', () => {
             tick();
 
             service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(0);
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith(result);
-            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true});
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: false});
+            activateIdentityCardStub.should.not.have.been.called;
+        })));
+
+        it('should add and activate an identity card with credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
+            activateIdentityCardStub.returns(Promise.resolve());
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getUserName.returns('bcc');
+            mockIdCard.getCredentials.returns({certificate: 'CERTIFICATE', privateKey: 'PRIVATE_KEY'});
+
+            let result;
+            service.addIdentityCard(mockIdCard).then((cardRef) => {
+                result = cardRef;
+            });
+
+            tick();
+
+            service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(0);
+            mockIdentityCardStorageService.set.should.have.been.calledTwice;
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result);
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: false});
+            activateIdentityCardStub.should.have.been.called;
+        })));
+
+        it('should add an indestructible identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getUserName.returns('bcc');
+
+            let result;
+            service.addIdentityCard(mockIdCard, true).then((cardRef) => {
+                result = cardRef;
+            });
+
+            tick();
+
+            service['idCards'].size.should.equal(1);
+            service['indestructibleCards'].length.should.equal(1);
+            service['indestructibleCards'][0].should.equal(result);
+            mockIdentityCardStorageService.set.should.have.been.calledTwice;
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result);
+            mockIdentityCardStorageService.set.should.have.been.calledWith(result + '-pd', {unused: true, indestructible: true});
         })));
     });
 
     describe('#deleteIdentityCard', () => {
-        it('should delete an identity card and remove from wallet', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+        const mockConnectionProfile = {
+            name: 'hlfv1'
+        };
+        let mockIdCard;
+
+        const setupTest = (service: IdentityCardService) => {
             mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
 
-            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
-
-            let mockConnectionProfile = {
-                name: 'hlfv1'
-            };
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('bcc');
+            mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getUserName.returns('alice');
             mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
             mockIdCard.getEnrollmentCredentials.returns({
-                id: 'alice'
+                secret: 'sauce'
             });
-            let mockCardMap = new Map<string, IdCard>();
+            const mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('test', mockIdCard);
             service['idCards'] = mockCardMap;
+        };
+
+        it('should delete an identity card and remove from wallet', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            setupTest(service);
+            sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
 
             service.deleteIdentityCard('test');
 
@@ -341,22 +477,8 @@ describe('IdentityCardService', () => {
         })));
 
         it('should delete an identity card and not remove if not in wallet', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
-
-            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
-
-            let mockConnectionProfile = {
-                name: 'hlfv1'
-            };
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('bcc');
-            mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
-            mockIdCard.getEnrollmentCredentials.returns({
-                id: 'alice'
-            });
-            let mockCardMap = new Map<string, IdCard>();
-            mockCardMap.set('test', mockIdCard);
-            service['idCards'] = mockCardMap;
+            setupTest(service);
+            sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
 
             service.deleteIdentityCard('test');
 
@@ -370,22 +492,8 @@ describe('IdentityCardService', () => {
         })));
 
         it('should delete an identity card but not delete connection profile', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
-
-            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(2);
-
-            let mockConnectionProfile = {
-                name: 'hlfv1'
-            };
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('bcc');
-            mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
-            mockIdCard.getEnrollmentCredentials.returns({
-                id: 'alice'
-            });
-            let mockCardMap = new Map<string, IdCard>();
-            mockCardMap.set('test', mockIdCard);
-            service['idCards'] = mockCardMap;
+            setupTest(service);
+            sinon.stub(service, 'getAllCardRefsForProfile').returns(2);
 
             service.deleteIdentityCard('test');
 
@@ -399,20 +507,9 @@ describe('IdentityCardService', () => {
         })));
 
         it('should delete an identity card that doesn\'t have an enrollment id', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
-
-            let allCardsForProfile = sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
-
-            let mockConnectionProfile = {
-                name: 'hlfv1'
-            };
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getName.returns('bcc');
-            mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
+            setupTest(service);
+            sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
             mockIdCard.getEnrollmentCredentials.returns(null);
-            let mockCardMap = new Map<string, IdCard>();
-            mockCardMap.set('test', mockIdCard);
-            service['idCards'] = mockCardMap;
 
             service.deleteIdentityCard('test');
 
@@ -464,6 +561,10 @@ describe('IdentityCardService', () => {
         });
 
         it('should set the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
+            let getQualifiedProfileNameStub = sinon.stub(service, 'getQualifiedProfileName');
+            getQualifiedProfileNameStub.returns('fqn');
+            activateIdentityCardStub.returns(Promise.resolve());
             service['idCards'] = mockCardMap;
 
             service.setCurrentIdentityCard('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
@@ -472,10 +573,14 @@ describe('IdentityCardService', () => {
 
             mockConnectionProfileService.createProfile.should.not.have.been.called;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {current: true});
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('fqn', mockIdCard1);
         })));
 
         it('should change the current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let activateIdentityCardStub = sinon.stub(service, 'activateIdentityCard');
+            let getQualifiedProfileNameStub = sinon.stub(service, 'getQualifiedProfileName');
+            getQualifiedProfileNameStub.returns('fqn');
+            activateIdentityCardStub.returns(Promise.resolve());
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
                 current: true
             });
@@ -491,7 +596,7 @@ describe('IdentityCardService', () => {
             mockIdentityCardStorageService.set.should.have.been.calledTwice;
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {current: true});
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('admin');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('fqn', mockIdCard2);
         })));
 
         it('should not set the current identity card to one that does not exist', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
@@ -506,101 +611,108 @@ describe('IdentityCardService', () => {
 
             result.message.should.equal('Identity card does not exist');
         })));
-
-        it('should give an error if no enrollment id', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            mockIdCard1.getEnrollmentCredentials.returns(null);
-            mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
-
-            service['idCards'] = mockCardMap;
-
-            service.setCurrentIdentityCard('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').catch((error) => {
-                error.message.should.equal('Identity card does not contain an enrollment id');
-            });
-
-            tick();
-
-            mockConnectionProfileService.createProfile.should.not.have.been.called;
-            mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {current: true});
-            mockIdentityService.setCurrentIdentity.should.not.have.been.called;
-        })));
     });
 
-    describe('activateCurrentIdentityCard', () => {
+    describe('activateIdentityCard', () => {
         let mockIdCard1;
         let mockIdCard2;
-        let mockConnectionProfile2;
+        let mockIdCard3;
         let mockCardMap;
 
         beforeEach(() => {
             mockConnectionProfileService.createProfile.returns(Promise.resolve());
 
             mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getEnrollmentCredentials.returns({id: 'admin', secret: 'adminpw'});
+            mockIdCard1.getUserName.returns('admin');
+            mockIdCard1.getEnrollmentCredentials.returns({secret: 'adminpw'});
             mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
 
-            mockConnectionProfile2 = {name: 'hlfv1'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getEnrollmentCredentials.returns({id: 'admin'});
-            mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
+            mockIdCard1.getUserName.returns('admin');
+            mockIdCard2.getEnrollmentCredentials.returns({ });
+            mockIdCard2.getCredentials.returns({certificate: 'CERTIFICATE', privateKey: 'PRIVATE_KEY'});
+            mockIdCard2.getConnectionProfile.returns({name: 'hlfv1'});
+
+            mockIdCard3 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getUserName.returns('admin');
+            mockIdCard3.getEnrollmentCredentials.returns({ });
+            mockIdCard3.getCredentials.returns({});
+            mockIdCard3.getConnectionProfile.returns({name: 'hlfv1'});
 
             mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
             mockCardMap.set('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard2);
+            mockCardMap.set('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard3);
         });
 
-        it('should activate an unused current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+        it('should activate an unused identity card with no credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            // service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
                 unused: true
             });
             service['idCards'] = mockCardMap;
 
-            service.activateCurrentIdentityCard().then((result: string) => {
+            service['activateIdentityCard']('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((result: string) => {
                 result.should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
             });
 
             tick();
 
+            mockAdminService.importIdentity.should.not.have.been.called;
             mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
             mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
         })));
 
-        it('should activate an unused current identity card (updating a connection profile)', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
+        it('should activate an unused identity card with credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            // service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
                 unused: true
             });
-
-            mockIdCard1.getEnrollmentCredentials.returns({id: 'admin'});
-            mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
-
             service['idCards'] = mockCardMap;
 
-            service.activateCurrentIdentityCard().then((result: string) => {
-                result.should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+            service['activateIdentityCard']('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((result: string) => {
+                result.should.equal('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
             });
 
             tick();
 
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('web-$default');
-            mockIdentityCardStorageService.set.should.have.been.calledWith('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
+            mockAdminService.importIdentity.should.have.been.called;
+            mockConnectionProfileService.createProfile.should.have.been.calledWith(sinon.match(/^.{40}-hlfv1$/));
+            mockIdentityCardStorageService.set.should.have.been.calledWith('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', {});
         })));
 
-        it('should activate a used current identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+        it('should not activate a used identity card', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns();
             service['idCards'] = mockCardMap;
 
-            service.activateCurrentIdentityCard().then((result) => {
+            service['activateIdentityCard']('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((result) => {
                 should.not.exist(result);
             });
 
             tick();
 
+            mockAdminService.importIdentity.should.not.have.been.called;
             mockConnectionProfileService.createProfile.should.not.have.been.called;
             mockIdentityCardStorageService.set.should.not.have.been.called;
         })));
 
+        it('should give an error when activating an identity card with no enrollment secret and no credentials', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns({
+                unused: true
+            });
+            service['idCards'] = mockCardMap;
+
+            service['activateIdentityCard']('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').then((result) => {
+                should.not.exist(result);
+            }).catch((reason) => {
+                reason.message.should.equal('No credentials or enrollment secret available. An identity card must contain either a certificate and private key, or an enrollment secret');
+            });
+
+            tick();
+
+            mockAdminService.importIdentity.should.not.have.been.called;
+            mockConnectionProfileService.createProfile.should.not.have.been.called;
+        })));
     });
 
     describe('getIdentityCardRefsWithProfileAndRole', () => {
@@ -615,19 +727,19 @@ describe('IdentityCardService', () => {
         beforeEach(() => {
             mockConnectionProfile1 = {name: 'myProfile'};
             mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getName.returns('card1');
+            mockIdCard1.getUserName.returns('card1');
             mockIdCard1.getConnectionProfile.returns(mockConnectionProfile1);
             mockIdCard1.getRoles.returns(['myRole']);
 
             mockConnectionProfile2 = {name: 'myOtherProfile'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getName.returns('card2');
+            mockIdCard2.getUserName.returns('card2');
             mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
             mockIdCard2.getRoles.returns(['myOtherRole']);
 
             mockConnectionProfile3 = {name: 'myProfile'};
             mockIdCard3 = sinon.createStubInstance(IdCard);
-            mockIdCard3.getName.returns('card3');
+            mockIdCard3.getUserName.returns('card3');
             mockIdCard3.getConnectionProfile.returns(mockConnectionProfile3);
             mockIdCard3.getRoles.returns(['myRole']);
 
@@ -714,28 +826,28 @@ describe('IdentityCardService', () => {
         beforeEach(() => {
             mockConnectionProfile1 = {name: 'myProfile'};
             mockIdCard1 = sinon.createStubInstance(IdCard);
-            mockIdCard1.getName.returns('myId');
+            mockIdCard1.getUserName.returns('myId');
             mockIdCard1.getBusinessNetworkName.returns('myNetwork');
             mockIdCard1.getConnectionProfile.returns(mockConnectionProfile1);
 
             // different id
             mockConnectionProfile2 = {name: 'myProfile'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getName.returns('myId2');
+            mockIdCard2.getUserName.returns('myId2');
             mockIdCard2.getBusinessNetworkName.returns('myNetwork');
             mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
 
             // different profile
             mockConnectionProfile3 = {name: 'myProfile2'};
             mockIdCard3 = sinon.createStubInstance(IdCard);
-            mockIdCard3.getName.returns('myId1');
+            mockIdCard3.getUserName.returns('myId1');
             mockIdCard3.getBusinessNetworkName.returns('myNetwork');
             mockIdCard3.getConnectionProfile.returns(mockConnectionProfile3);
 
             // different network
             mockConnectionProfile4 = {name: 'myProfile'};
             mockIdCard4 = sinon.createStubInstance(IdCard);
-            mockIdCard4.getName.returns('myId');
+            mockIdCard4.getUserName.returns('myId');
             mockIdCard4.getBusinessNetworkName.returns('myNetwork2');
             mockIdCard4.getConnectionProfile.returns(mockConnectionProfile4);
 

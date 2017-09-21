@@ -97,7 +97,7 @@ export class SampleBusinessNetworkService {
                 return this.clientService.reset();
             })
             .then(() => {
-                return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'admin', 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
+                return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
@@ -141,7 +141,7 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    private buildNetwork(businessNetworkName: string, businessNetworkDescription, packageJson, businessNetworkDefinition) {
+    buildNetwork(businessNetworkName: string, businessNetworkDescription, packageJson, businessNetworkDefinition) {
         let newNetwork = this.createNewBusinessDefinition(businessNetworkName, businessNetworkDescription, packageJson, businessNetworkDefinition.getMetadata().getREADME());
 
         let modelFiles = this.clientService.filterModelFiles(businessNetworkDefinition.getModelManager().getModelFiles());

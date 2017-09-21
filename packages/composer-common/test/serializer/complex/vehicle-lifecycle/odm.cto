@@ -15,7 +15,7 @@
 /**
  * ODM specific classes
  */
-namespace com.ibm.rules
+namespace com.hyperledger.rules
 
 asset RuleAppCurrentVersion identified by ruleAppName 
 {

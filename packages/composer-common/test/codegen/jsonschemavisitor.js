@@ -61,7 +61,7 @@ describe('JSONSchemaVisitor', () => {
 
         });
 
-        it('should generate JSON Schema v4 files for each type in the Concerto model', () => {
+        it('should generate JSON Schema v4 files for each type in the composer model', () => {
 
             // Visit all of the loaded model files.
             modelManager.accept(visitor, { fileWriter: mockFileWriter });

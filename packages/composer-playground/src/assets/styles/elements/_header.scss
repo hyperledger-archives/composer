@@ -19,10 +19,9 @@
         display: flex;
         align-items: center;
         position: relative;
-        min-width: 0;
         flex: 1;
         p {
-            min-width: 0;
+            min-width: 2rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

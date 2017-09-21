@@ -7,6 +7,8 @@ import { IdentityService } from './identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import * as sinon from 'sinon';
 
+import { IdCard } from 'composer-common';
+
 describe('IdentityService', () => {
 
     let mockLocalStorageService;
@@ -21,13 +23,42 @@ describe('IdentityService', () => {
     });
 
     describe('setCurrentIdentity', () => {
-        it('should set current identity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
-            let nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
-            service.setCurrentIdentity('identity1');
+        let nextCurrentIdentitySpy;
+        const setupTest = (service: IdentityService) => {
+            let idCardMock = sinon.createStubInstance(IdCard);
+            idCardMock.getConnectionProfile.returns({name: 'hlfv1'});
+            idCardMock.getEnrollmentCredentials.returns({secret: 'adminpw'});
+            idCardMock.getUserName.returns('admin');
+            nextCurrentIdentitySpy = sinon.stub(service['_currentIdentity'], 'next');
+
+            service.setCurrentIdentity('qpn-hlfv1', idCardMock);
 
             tick();
+        };
 
-            nextCurrentIdentitySpy.should.have.been.called;
+        it('should update _currentIdentity', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            nextCurrentIdentitySpy.should.have.been.calledWith('admin');
+        })));
+
+        it('should update qualified profile name', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentQualifiedProfileName().should.equal('qpn-hlfv1');
+        })));
+
+        it('should update connection profile', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentConnectionProfile().should.deep.equal({name: 'hlfv1'});
+        })));
+
+        it('should update enrollment credentials', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentEnrollmentCredentials().should.deep.equal({secret: 'adminpw'});
+        })));
+
+        it('should update user name', fakeAsync(inject([IdentityService], (service: IdentityService) => {
+            setupTest(service);
+            service.getCurrentUserName().should.equal('admin');
         })));
     });
 

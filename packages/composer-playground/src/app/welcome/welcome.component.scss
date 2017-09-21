@@ -11,11 +11,6 @@ welcome-modal {
       align-items: center;
       text-align: center;
 
-      svg {
-        width: 200px;
-        height: 200px;
-      }
-
       p {
         padding: 0 $space-xlarge;
       }
@@ -24,7 +19,12 @@ welcome-modal {
     footer {
       background-color: $white;
       justify-content: center;
+      flex-direction: column;
       padding-bottom: $space-large;
+
+      tutorial-link {
+        margin-top: $space-large;
+      }
     }
   }
 }

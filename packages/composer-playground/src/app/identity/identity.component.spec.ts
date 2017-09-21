@@ -15,6 +15,8 @@ import { IdentityCardService } from '../services/identity-card.service';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdCard } from 'composer-common';
 
+import * as fileSaver from 'file-saver';
+
 import * as chai from 'chai';
 
 import * as sinon from 'sinon';
@@ -47,7 +49,7 @@ describe(`IdentityComponent`, () => {
         mockCard = sinon.createStubInstance(IdCard);
         mockCard.getBusinessNetworkName.returns('myNetwork');
         mockCard.getConnectionProfile.returns({name: 'myProfile'});
-        mockCard.getName.returns('myName');
+        mockCard.getUserName.returns('myName');
 
         mockIDCards = new Map<string, IdCard>();
         mockIDCards.set('1234', mockCard);
@@ -178,34 +180,67 @@ describe(`IdentityComponent`, () => {
     });
 
     describe('issueNewId', () => {
+        let mockGetConnectionProfile;
+        let mockLoadAllIdentities;
+        let mockAddIdentityToWallet;
+        let mockShowNewId;
+
         beforeEach(() => {
             mockModal.open.reset();
-        });
 
-        it('should issue id', fakeAsync(() => {
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-            mockModal.open.onFirstCall().returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
+            mockGetConnectionProfile = sinon.stub();
+
+            mockIdentityCardService.getCurrentIdentityCard.returns({
+                getConnectionProfile: mockGetConnectionProfile
             });
 
-            mockModal.open.onSecondCall().returns({
-                componentInstance: {},
-                result: Promise.resolve()
+            mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
+            mockAddIdentityToWallet = sinon.stub(component, 'addIdentityToWallet');
+            mockShowNewId = sinon.stub(component, 'showNewId');
+        });
+
+        it('should show the new id', fakeAsync(() => {
+            mockGetConnectionProfile.returns({
+                type: 'hlfv1'
+            });
+
+            mockModal.open.returns({
+                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
             });
 
             component.issueNewId();
 
             tick();
 
+            mockAddIdentityToWallet.should.not.have.been.called;
+            mockShowNewId.should.have.been.called;
+            mockLoadAllIdentities.should.have.been.called;
+        }));
+
+        it('should add id to wallet when using the web profile', fakeAsync(() => {
+            mockGetConnectionProfile.returns({
+                type: 'web'
+            });
+
+            mockModal.open.returns({
+                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
+            });
+
+            component.issueNewId();
+
+            tick();
+
+            mockAddIdentityToWallet.should.have.been.called;
+            mockShowNewId.should.not.have.been.called;
             mockLoadAllIdentities.should.have.been.called;
         }));
 
         it('should handle error in id creation', fakeAsync(() => {
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            mockModal.open.onFirstCall().returns({
+            mockModal.open.returns({
                 result: Promise.reject('some error')
             });
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
 
             component.issueNewId();
 
@@ -213,17 +248,87 @@ describe(`IdentityComponent`, () => {
 
             mockModal.open.should.have.been.calledOnce;
 
-            mockAlertService.errorStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+
+            mockLoadAllIdentities.should.have.been.called;
+        }));
+
+        it('should handle error showing new identity', fakeAsync(() => {
+            mockGetConnectionProfile.returns({
+                type: 'hlfv1'
+            });
+
+            mockModal.open.returns({
+                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
+            });
+
+            mockShowNewId.rejects(new Error('show new id error'));
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+
+            component.issueNewId();
+
+            tick();
+
+            mockModal.open.should.have.been.calledOnce;
+
+            let expectedError = sinon.match(sinon.match.instanceOf(Error).and(sinon.match.has('message', 'show new id error')));
+            mockAlertService.errorStatus$.next.should.have.been.calledWith(expectedError);
+
+            mockLoadAllIdentities.should.have.been.called;
+        }));
+
+        it('should handle error adding identity to wallet', fakeAsync(() => {
+            mockGetConnectionProfile.returns({
+                type: 'web'
+            });
+
+            mockModal.open.returns({
+                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
+            });
+
+            mockAddIdentityToWallet.rejects(new Error('add identity to wallet error'));
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+
+            component.issueNewId();
+
+            tick();
+
+            mockModal.open.should.have.been.calledOnce;
+
+            let expectedError = sinon.match(sinon.match.instanceOf(Error).and(sinon.match.has('message', 'add identity to wallet error')));
+            mockAlertService.errorStatus$.next.should.have.been.calledWith(expectedError);
+
+            mockLoadAllIdentities.should.have.been.called;
+        }));
+
+        it('should handle error reloading identities', fakeAsync(() => {
+            mockModal.open.returns({
+                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
+            });
+
+            mockLoadAllIdentities.returns(Promise.reject('some error'));
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+
+            component.issueNewId();
+
+            tick();
+
+            mockModal.open.should.have.been.calledOnce;
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
 
             mockLoadAllIdentities.should.have.been.called;
         }));
 
         it('should handle escape being pressed', fakeAsync(() => {
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            mockModal.open.onFirstCall().returns({
+            mockModal.open.returns({
                 result: Promise.reject(1)
             });
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
 
             component.issueNewId();
 
@@ -236,33 +341,12 @@ describe(`IdentityComponent`, () => {
             mockLoadAllIdentities.should.have.been.called;
         }));
 
-        it('should handle id in id displaying', fakeAsync(() => {
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            mockModal.open.onFirstCall().returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            mockModal.open.onSecondCall().returns({
-                componentInstance: {},
-                result: Promise.reject('some error')
-            });
-
-            component.issueNewId();
-
-            tick();
-
-            mockLoadAllIdentities.should.not.have.been.called;
-
-            mockAlertService.errorStatus$.next.should.have.been.called;
-        }));
-
         it('should not issue identity if cancelled', fakeAsync(() => {
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            mockModal.open.onFirstCall().returns({
+            mockModal.open.returns({
                 result: Promise.resolve()
             });
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
 
             component.issueNewId();
 
@@ -271,6 +355,141 @@ describe(`IdentityComponent`, () => {
             mockAlertService.errorStatus$.next.should.not.have.been.called;
             mockLoadAllIdentities.should.have.been.called;
 
+        }));
+    });
+
+    describe('showNewId', () => {
+        let mockAddCardToWallet;
+        let mockExportIdentity;
+
+        beforeEach(() => {
+            mockModal.open.reset();
+
+            mockAddCardToWallet = sinon.stub(component, 'addCardToWallet');
+            mockExportIdentity = sinon.stub(component, 'exportIdentity');
+        });
+
+        it('should add card to wallet when add option selected', fakeAsync(() => {
+            mockModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({card: 'myCard', choice: 'add'})
+            });
+
+            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAddCardToWallet.should.have.been.calledWith('myCard');
+            mockExportIdentity.should.not.have.been.called;
+        }));
+
+        it('should export card when export option selected', fakeAsync(() => {
+            mockModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({card: 'myCard', choice: 'export'})
+            });
+
+            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAddCardToWallet.should.not.have.been.called;
+            mockExportIdentity.should.have.been.calledWith('myCard');
+        }));
+
+        it('should do nothing for other options', fakeAsync(() => {
+            mockModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({card: 'myCard', choice: 'other'})
+            });
+
+            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAddCardToWallet.should.not.have.been.called;
+            mockExportIdentity.should.not.have.been.called;
+        }));
+
+        it('should do nothing when closed', fakeAsync(() => {
+            mockModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve()
+            });
+
+            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
+
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAddCardToWallet.should.not.have.been.called;
+            mockExportIdentity.should.not.have.been.called;
+        }));
+    });
+
+    describe('addCardToWallet', () => {
+        it('should add idcard to wallet', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.resolve('cardref'));
+            mockIdentityCardService.getIdentityCard.returns(mockCard);
+
+            component.addCardToWallet(mockCard);
+
+            tick();
+
+            mockIdentityCardService.addIdentityCard.should.have.been.calledWith(mockCard);
+            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'ID Card added to wallet',
+                text: 'The ID card myName was successfully added to your wallet',
+                icon: '#icon-role_24'
+            });
+        }));
+    });
+
+    describe('addIdentityToWallet', () => {
+        it('should add identity to wallet', fakeAsync(() => {
+            mockIdentityCardService.getCurrentIdentityCard.returns(mockCard);
+            mockIdentityCardService.createIdentityCard.resolves('cardref');
+            mockIdentityCardService.getIdentityCard.returns(mockCard);
+
+            component.addIdentityToWallet({userID: 'myName', userSecret: 'mySecret'});
+
+            tick();
+
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', 'myNetwork', 'mySecret', {name: 'myProfile'});
+            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'ID Card added to wallet',
+                text: 'The ID card myName was successfully added to your wallet',
+                icon: '#icon-role_24'
+            });
+        }));
+    });
+
+    describe('exportIdentity', () => {
+        let sandbox = sinon.sandbox.create();
+        let saveAsStub;
+
+        beforeEach(() => {
+            saveAsStub = sandbox.stub(fileSaver, 'saveAs');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should export idcard', fakeAsync(() => {
+            mockCard.toArchive.returns(Promise.resolve('card data'));
+
+            component.exportIdentity(mockCard);
+
+            tick();
+
+            let expectedFile = new Blob(['card data'], {type: 'application/octet-stream'});
+            saveAsStub.should.have.been.calledWith(expectedFile, 'myName.card');
         }));
     });
 

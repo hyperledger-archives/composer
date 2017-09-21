@@ -55,6 +55,7 @@ class BusinessNetworkConnector extends Connector {
         // Assign defaults for any optional properties.
         this.settings = settings;
         this.settings.namespaces = this.settings.namespaces || 'always';
+        this.settings.multiuser = !!this.settings.multiuser;
 
         // Create a new visitor for generating LoopBack models.
         this.visitor = new LoopbackVisitor(this.settings.namespaces === 'always');
@@ -84,8 +85,9 @@ class BusinessNetworkConnector extends Connector {
      */
     getConnectionWrapper(options) {
 
-        // If an accessToken has been specified, we are in "multi-user" mode.
-        if (options && options.accessToken) {
+        // If multiple user mode has been specified, and an accessToken has been specified,
+        // then handle the request by using a user specific connection.
+        if (this.settings.multiuser && options && options.accessToken) {
 
             // Check that the LoopBack application has supplied the required information.
             if (!options.enrollmentID || !options.enrollmentSecret) {
@@ -259,6 +261,8 @@ class BusinessNetworkConnector extends Connector {
             return businessNetworkConnection.getAssetRegistry(modelName);
         } else if (classDeclaration instanceof ParticipantDeclaration) {
             return businessNetworkConnection.getParticipantRegistry(modelName);
+        } else if (classDeclaration instanceof TransactionDeclaration) {
+            return businessNetworkConnection.getTransactionRegistry(modelName);
         } else {
             return Promise.reject(new Error('No registry for specified model name'));
         }
@@ -913,28 +917,28 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Get all of the transactions from the transaction registry.
+     * Get all of the HistorianRecords from the Historian
      * @param {Object} options The LoopBack options.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    getAllTransactions(options, callback) {
-        debug('getAllTransactions', options);
+    getAllHistorianRecords(options, callback) {
+        debug('getAllHistorianRecords', options);
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                return businessNetworkConnection.getTransactionRegistry();
+                return businessNetworkConnection.getHistorian();
             })
-            .then((transactionRegistry) => {
-                return transactionRegistry.getAll();
+            .then((historian) => {
+                return historian.getAll();
             })
-            .then((transactions) => {
-                const result = transactions.map((transaction) => {
+            .then((records) => {
+                const result = records.map((transaction) => {
                     return this.serializer.toJSON(transaction);
                 });
                 callback(null, result);
             })
             .catch((error) => {
-                debug('getAllTransactions', 'error thrown doing getAllTransactions', error);
+                debug('getAllHistorianRecords', 'error thrown doing getAllHistorianRecords', error);
                 callback(error);
             });
     }
@@ -980,7 +984,7 @@ class BusinessNetworkConnector extends Connector {
                         queryParameters[param.name] = parseFloat(paramValue);
                         break;
                     case 'DateTime':
-                        queryParameters[param.name] = Date.parse(paramValue);
+                        queryParameters[param.name] = paramValue;
                         break;
                     case 'Boolean':
                         queryParameters[param.name] = (paramValue === 'true');
@@ -1002,27 +1006,27 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Get the transaction with the specified ID from the transaction registry.
+     * Get the Historian Record with the specified ID from the historian.
      * @param {string} id The ID for the transaction.
      * @param {Object} options The LoopBack options.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    getTransactionByID(id, options, callback) {
-        debug('getTransactionByID', options);
+    getHistorianRecordByID(id, options, callback) {
+        debug('getHistorianRecordByID', options);
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
-                return businessNetworkConnection.getTransactionRegistry();
+                return businessNetworkConnection.getHistorian();
             })
-            .then((transactionRegistry) => {
-                return transactionRegistry.get(id);
+            .then((historian) => {
+                return historian.get(id);
             })
             .then((transaction) => {
                 const result = this.serializer.toJSON(transaction);
                 callback(null, result);
             })
             .catch((error) => {
-                debug('getTransactionByID', 'error thrown doing getTransactionByID', error);
+                debug('getHistorianRecordByID', 'error thrown doing getHistorianRecordByID', error);
                 if (error.message.match(/does not exist/)) {
                     error.statusCode = error.status = 404;
                 }

@@ -188,7 +188,7 @@ class EmbeddedConnection extends Connection {
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
      * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
+     * artefacts have been deployed, or rejected with an error.
      */
     deploy(securityContext, businessNetwork, deployOptions) {
         return this.start(securityContext, businessNetwork, deployOptions);
@@ -200,7 +200,7 @@ class EmbeddedConnection extends Connection {
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
      * @param {Object} startOptions connector specific start options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed and started, or rejected with an error.
+     * artefacts have been deployed and started, or rejected with an error.
      */
     start(securityContext, businessNetwork, startOptions) {
         let container = EmbeddedConnection.createContainer();
@@ -222,27 +222,12 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
-            });
-    }
-
-    /**
      * Undeploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the business network to remove
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
+     * artefacts have been undeployed, or rejected with an error.
      */
     undeploy(securityContext, businessNetworkIdentifier) {
         EmbeddedConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
@@ -415,6 +400,17 @@ class EmbeddedConnection extends Connection {
             });
     }
 
+
+    /**
+     * Create a new transaction id
+     * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved with a generated user
+     * secret once the new identity has been created, or rejected with an error.
+     */
+    createTransactionId(securityContext){
+        return Promise.resolve(null);
+    }
 }
 
 module.exports = EmbeddedConnection;

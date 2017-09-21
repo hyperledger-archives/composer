@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installing Hyperledger Composer
+title: Installing
 category: tasks
 sidebar: sidebars/accordion-toc0.md
 section: installing

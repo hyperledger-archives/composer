@@ -41,17 +41,17 @@ describe('authentication boot script', () => {
         authentication(app);
     });
 
-    it('should do nothing if composer security is not enabled', () => {
+    it('should do nothing if composer authentication is not enabled', () => {
         composerConfig = {
-            security: false
+            authentication: false
         };
         authentication(app);
         sinon.assert.notCalled(app.enableAuth);
     });
 
-    it('should enable authentication if composer security is enabled', () => {
+    it('should enable authentication if composer authentication is enabled', () => {
         composerConfig = {
-            security: true
+            authentication: true
         };
         authentication(app);
         sinon.assert.calledOnce(app.enableAuth);

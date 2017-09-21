@@ -14,8 +14,8 @@ import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { IdentityCardService } from '../services/identity-card.service';
 import { UpdateComponent } from './update.component';
+import { ActiveDrawer } from '../common/drawer';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -82,7 +82,6 @@ describe('UpdateComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
-    let mockIdentityCardService;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -90,7 +89,6 @@ describe('UpdateComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
-        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -109,7 +107,7 @@ describe('UpdateComponent', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: NgbModal, useValue: mockNgbModal},
-                {provide: IdentityCardService, useValue: mockIdentityCardService}
+                ActiveDrawer
             ],
         });
 
@@ -132,7 +130,6 @@ describe('UpdateComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockIdentityCardService.getCurrentConnectionProfile.returns({name: 'myNetwork'});
             mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });
@@ -436,6 +433,26 @@ describe('UpdateComponent', () => {
             component['deployInProgress'].should.equal(false);
             finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: 'some error'});
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should close the tray', fakeAsync(() => {
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            let traySpy = sinon.spy(component['activeDrawer'], 'close');
+
+            mockNgbModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(false)
+            });
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false});
+            });
+
+            component.deploy();
+
+            tick();
+
+            traySpy.should.have.been.called;
         }));
     });
 

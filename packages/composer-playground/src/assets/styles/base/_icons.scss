@@ -26,6 +26,12 @@ svg.large-icon {
   fill: $primary-text;
 }
 
+svg.splash-icon {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  fill: $primary-text;
+}
 
 svg.blue-icon{
   fill: $second-highlight;

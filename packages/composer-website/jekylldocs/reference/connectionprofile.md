@@ -2,7 +2,7 @@
 layout: default
 title: Connection Profiles
 section: reference
-index-order: 906
+index-order: 1006
 sidebar: sidebars/accordion-toc0.md
 excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0.
 ---

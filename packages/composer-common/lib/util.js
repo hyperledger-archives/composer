@@ -17,6 +17,7 @@
 const Globalize = require('./globalize');
 const SecurityContext = require('./securitycontext');
 const SecurityException = require('./securityexception');
+const uuid = require('uuid');
 
 /**
  * Internal Utility Class
@@ -55,12 +56,16 @@ class Util {
         } else if (!args) {
             throw new Error('args not specified');
         }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
+        args.forEach((arg,index) => {
+            if (typeof arg === 'boolean') {
+                args[index] = arg.toString();
+            } else if (typeof arg !== 'string') {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
-        return securityContext.getConnection().queryChainCode(securityContext, functionName, args);
+
+        return securityContext.getConnection().queryChainCode(securityContext, functionName, args)
+;
     }
 
     /**
@@ -94,6 +99,22 @@ class Util {
      */
     static isNull(obj) {
         return(typeof(obj) === 'undefined' || obj === null);
+    }
+
+   /** Obtain a UUID for use as a TransactionId
+     * @param {SecurityContext} securityContext - The user's security context
+     * @return {Promise}  resolved with a string representing the transaction Id to be used later when invoking chain code
+    */
+    static createTransactionId(securityContext){
+        Util.securityCheck(securityContext);
+        return securityContext.getConnection().createTransactionId(securityContext)
+        .then((id)=>{
+            if (this.isNull(id)){
+                id = uuid.v4();
+            }
+            return id;
+        });
+
     }
 
 }

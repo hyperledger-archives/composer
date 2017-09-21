@@ -4,6 +4,9 @@
 set -ev
 set -o pipefail
 
+# Set ARCH
+ARCH=`uname -m`
+
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
@@ -39,11 +42,11 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:x86_64-1.0.1
-        docker pull hyperledger/fabric-ca:x86_64-1.0.1
-        docker pull hyperledger/fabric-ccenv:x86_64-1.0.1
-        docker pull hyperledger/fabric-orderer:x86_64-1.0.1
-        docker pull hyperledger/fabric-couchdb:x86_64-1.0.1
+        docker pull hyperledger/fabric-peer:$ARCH-1.0.1
+        docker pull hyperledger/fabric-ca:$ARCH-1.0.1
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.0.1
+        docker pull hyperledger/fabric-orderer:$ARCH-1.0.1
+        docker pull hyperledger/fabric-couchdb:$ARCH-1.0.1
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
@@ -59,9 +62,9 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     # Start any required Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
         echo Using docker file ${DOCKER_FILE}
-        docker-compose -f ${DOCKER_FILE} kill
-        docker-compose -f ${DOCKER_FILE} down
-        docker-compose -f ${DOCKER_FILE} up -d
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
     fi
 
     # configure v1 to run the tests
@@ -93,8 +96,8 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
-        docker-compose -f ${DOCKER_FILE} kill
-        docker-compose -f ${DOCKER_FILE} down
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
     fi
 
     # Delete any written configuration.

@@ -3,29 +3,78 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Component, Directive, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityIssuedComponent } from './identity-issued.component';
 import { IdentityCardService } from '../../services/identity-card.service';
 
+import { IdCard } from 'composer-common';
+
 import * as sinon from 'sinon';
+
+@Directive({
+    selector: '[ngxClipboard]'
+})
+class MockClipboardDirective {
+    @Input() cbContent: any;
+}
+
+@Component({
+    selector: 'ngb-accordion',
+    template: ''
+})
+class MockAccordionComponent {
+    @Input() closeOthers: boolean;
+}
+
+@Component({
+    selector: 'ngb-panel',
+    template: ''
+})
+class MockPanelComponent {
+}
+
+@Component({
+    selector: 'identity-card',
+    template: ''
+})
+class MockIdentityCardComponent {
+    @Input() identity: any;
+    @Input() preview: boolean;
+}
 
 describe('IdentityIssuedComponent', () => {
     let component: IdentityIssuedComponent;
     let fixture: ComponentFixture<IdentityIssuedComponent>;
 
     let mockActiveModal;
-    let mockIdentityCard;
+    let mockIdentityCardService;
+    let mockIdCard;
+    let mockConnectionProfile;
 
     beforeEach(() => {
         mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-        mockIdentityCard = sinon.createStubInstance(IdentityCardService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+        mockIdCard = sinon.createStubInstance(IdCard);
+        mockIdCard.getBusinessNetworkName.returns('dan-net');
+        mockConnectionProfile = {
+            name: 'dan-profile'
+        };
+        mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
+        mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
 
         TestBed.configureTestingModule({
-            declarations: [IdentityIssuedComponent],
+            declarations: [
+                IdentityIssuedComponent,
+                MockClipboardDirective,
+                MockAccordionComponent,
+                MockPanelComponent,
+                MockIdentityCardComponent
+            ],
             providers: [
                 {provide: NgbActiveModal, useValue: mockActiveModal},
-                {provide: IdentityCardService, useValue: mockIdentityCard},
+                {provide: IdentityCardService, useValue: mockIdentityCardService},
             ]
         });
 
@@ -37,50 +86,35 @@ describe('IdentityIssuedComponent', () => {
         component.should.be.ok;
     });
 
+    describe('ngOnInit', () => {
+        it('should', fakeAsync(() => {
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
+
+            component.ngOnInit();
+
+            tick();
+
+            component['newCard'].getUserName().should.equal('dan');
+            component['newCard'].getEnrollmentCredentials().should.deep.equal({secret: 'wotnodolphin'});
+            component['newCard'].getBusinessNetworkName().should.equal('dan-net');
+            component['newCard'].getConnectionProfile().should.deep.equal({name: 'dan-profile'});
+        }));
+    });
+
     describe('addToWallet', () => {
-        let mockCard;
+        it('should close the modal with the add to wallet option', () => {
+            component.addToWallet();
 
-        beforeEach(() => {
-            mockCard = {
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'}),
-                getBusinessNetworkName: sinon.stub().returns('myNetwork')
-            };
-
-            mockIdentityCard.getCurrentIdentityCard.returns(mockCard);
-
-            mockIdentityCard.createIdentityCard.returns(Promise.resolve());
-
-            component['userID'] = 'myId';
-            component['userSecret'] = 'mySecret';
+            mockActiveModal.close.should.have.been.calledWith({card: undefined, choice: 'add'});
         });
+    });
 
-        it('should add to wallet', fakeAsync(() => {
-            component.addToWallet();
+    describe('export', () => {
+        it('should close the modal with the export option', () => {
+            component.export();
 
-            tick();
-
-            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledTwice;
-            mockCard.getConnectionProfile.should.have.been.called;
-            mockCard.getBusinessNetworkName.should.have.been.called;
-
-            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'});
-
-            mockActiveModal.close.should.have.been.called;
-        }));
-
-        it('should handle error', fakeAsync(() => {
-            mockIdentityCard.createIdentityCard.returns(Promise.reject('some error'));
-
-            component.addToWallet();
-
-            tick();
-
-            mockIdentityCard.getCurrentIdentityCard.should.have.been.calledTwice;
-            mockCard.getConnectionProfile.should.have.been.called;
-            mockCard.getBusinessNetworkName.should.have.been.called;
-
-            mockIdentityCard.createIdentityCard.should.have.been.calledWith('myId', 'myNetwork', 'myId', 'mySecret', {name: 'myProfile'});
-            mockActiveModal.dismiss.should.have.been.called;
-        }));
+            mockActiveModal.close.should.have.been.calledWith({card: undefined, choice: 'export'});
+        });
     });
 });

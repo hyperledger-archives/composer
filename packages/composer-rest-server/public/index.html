@@ -35,6 +35,55 @@
         $('.accessTokenDisplay').text('Token Set.');
     });
   </script>
+
+  <!-- Display the access token. -->
+  <script type="text/javascript">
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    $(function() {
+        var access_token = getCookie('access_token');
+        if (!access_token) {
+            return;
+        }
+        var matches = access_token.match(/^s:(.+?)\./);
+        if (!matches) {
+            return;
+        }
+        access_token = matches[1];
+        $('#access-token-value-hide').val('****************************************************************');
+        $('#access-token-value-show').val(access_token);
+        $('#access-token-toggle').click(function() {
+            var text = $(this).text();
+            if (text === 'Show') {
+                $('#access-token-value-hide').hide();
+                $('#access-token-value-show').show();
+                $(this).text('Hide');
+            } else if (text === 'Hide') {
+                $('#access-token-value-hide').show();
+                $('#access-token-value-show').hide();
+                $(this).text('Show');
+            }
+        });
+        $('#access-token-logout').click(function() {
+            window.location.href = '/auth/logout';
+        });
+        $('#access-token-container').show();
+        $('#access-token-value-hide').show();
+    });
+  </script>
 </head>
 
 <body class="swagger-section standalone">
@@ -46,6 +95,20 @@
 
 <div class="contentWell">
     <div id="message-bar" class="swagger-ui-wrap">
+    </div>
+    <div id="access-token-container">
+        <label>Access token</label>
+        <br>
+        <input id="access-token-value-hide" type="password" disabled></input>
+        <input id="access-token-value-show" type="text" readonly></input>
+        <button id="access-token-toggle">Show</button>
+        <button id="access-token-logout">Logout</button>
+        <p>
+        The access token displayed above can be used to authenticate to the REST API using a standard
+        HTTP or REST client.<br>
+        You must specify the access token in the query string
+        (<code>?access_token=xxxxx</code>) or as an additional HTTP header (<code>X-Access-Token: xxxxx</code>).
+        </p>
     </div>
     <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
 </div>

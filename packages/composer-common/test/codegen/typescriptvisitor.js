@@ -23,6 +23,22 @@ const fs = require('fs');
 const path = require('path');
 const sinon = require('sinon');
 
+const initSampleNetworkModel = (mockFileWriter) => {
+    const carleaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
+    const composerModel = fs.readFileSync(path.resolve(__dirname, '../data/model/composer.cto'), 'utf8');
+
+    // create and populate the ModelManager with a model file
+    let modelManager = new ModelManager();
+    modelManager.should.not.be.null;
+    modelManager.clearModelFiles();
+    modelManager.addModelFiles([carleaseModel,composerModel], ['carlease.cto', 'composer.cto']);
+
+    let visitor = new TypescriptVisitor();
+    let parameters = {};
+    parameters.fileWriter = mockFileWriter;
+    modelManager.accept(visitor, parameters);
+};
+
 describe('TypescriptVisitor', function(){
 
     let mockFileWriter;
@@ -33,24 +49,18 @@ describe('TypescriptVisitor', function(){
 
     describe('#visit', function() {
         it('should generate Typescript code', function() {
+            initSampleNetworkModel(mockFileWriter);
 
-            const carleaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
-            const concertoModel = fs.readFileSync(path.resolve(__dirname, '../data/model/concerto.cto'), 'utf8');
-
-            // create and populate the ModelManager with a model file
-            let modelManager = new ModelManager();
-            modelManager.should.not.be.null;
-            modelManager.clearModelFiles();
-            modelManager.addModelFiles([carleaseModel,concertoModel], ['carlease.cto', 'concerto.cto']);
-
-            let visitor = new TypescriptVisitor();
-            let parameters = {};
-            parameters.fileWriter = mockFileWriter;
-            modelManager.accept(visitor, parameters);
-
-            // check 3 files where generated
-            sinon.assert.calledWith(mockFileWriter.openFile, 'concerto.ts');
+            // check 2 files where generated
+            sinon.assert.calledWith(mockFileWriter.openFile, 'composer.ts');
             sinon.assert.calledWith(mockFileWriter.openFile, 'org.acme.ts');
+        });
+
+        it('should generate an import statement referencing the imported namespace from a separate file', function() {
+            initSampleNetworkModel(mockFileWriter);
+
+            // check import was generated linking to the other file/namespace
+            sinon.assert.calledWith(mockFileWriter.writeLine, 0 , 'import {MyParticipant} from \'./composer\';');
         });
     });
 });
