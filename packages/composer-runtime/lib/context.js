@@ -22,7 +22,6 @@ const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
-const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
 const NetworkManager = require('./networkmanager');
@@ -147,7 +146,6 @@ class Context {
         this.registryManager = null;
         this.resolver = null;
         this.api = null;
-        this.queryExecutor = null;
         this.identityManager = null;
         this.participant = null;
         this.transaction = null;
@@ -590,7 +588,6 @@ class Context {
                     this.resolver = null;
                     this.resourceManager = null;
                     this.identityManager = null;
-                    this.queryExecutor = null;
                 }
                 return this.initializeInner();
             })
@@ -776,17 +773,6 @@ class Context {
             this.api = new Api(this);
         }
         return this.api;
-    }
-
-    /**
-     * Get the query executor.
-     * @return {QueryExecutor} The query executor.
-     */
-    getQueryExecutor() {
-        if (!this.queryExecutor) {
-            this.queryExecutor = new QueryExecutor(this.getResolver());
-        }
-        return this.queryExecutor;
     }
 
     /**

@@ -5,7 +5,7 @@ category: start
 section: installing
 sidebar: sidebars/accordion-toc0.md
 excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
-index-order: 203
+index-order: 204
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}
@@ -134,7 +134,7 @@ docker rmi $(docker images dev-* -q)
 
 ![](../assets/img/developer-tools-commands.png).
 
-This diagram explains the order in which the scripts can be run. 
+This diagram explains the order in which the scripts can be run.
 
 **Downloading Fabric**
 
