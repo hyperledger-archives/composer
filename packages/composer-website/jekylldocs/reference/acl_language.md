@@ -57,21 +57,21 @@ Network access is required to use the UPDATE or CREATE operation on registries, 
 
 #### Composer Identity
 
-**composer network import**
+**composer identity import**
 
 Network access is required to use the UPDATE operation on identity registries or the CREATE operation on identities.
 
-**composer network issue**
+**composer identity issue**
 
 Network access is required to use the UPDATE operation on identity registries or the CREATE operation on identities.
 
-**composer network revoke**
+**composer identity revoke**
 
 Network access is required to use the UPDATE operation on identity registries or the DELETE operation on identities.
 
 #### Composer Participant
 
-**composer network add**
+**composer participant add**
 
 Network access is required to use the CREATE operation on participants or the UPDATE operation on participant registries.
 

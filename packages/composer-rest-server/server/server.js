@@ -133,8 +133,18 @@ module.exports = function (composer) {
 
             // Add a GET handler for logging out.
             app.get('/auth/logout', function (req, res, next) {
-                req.logout();
-                res.redirect('/');
+                return Promise.resolve()
+                    .then(() => {
+                        if (req.accessToken) {
+                            return app.models.user.logout(req.accessToken.id);
+                        }
+                    })
+                    .then(() => {
+                        req.logout();
+                        res.clearCookie('access_token');
+                        res.clearCookie('userId');
+                        res.redirect('/');
+                    });
             });
 
         }
