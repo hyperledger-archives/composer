@@ -38,14 +38,18 @@ describe('ModelManager', () => {
     let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
     let mockSystemModelFile;
+    let sandbox;
 
     beforeEach(() => {
+
         modelManager = new ModelManager();
         mockSystemModelFile = sinon.createStubInstance(ModelFile);
         mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
         mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockSystemModelFile.isSystemModelFile.returns(true);
     });
+
+
 
     describe('#accept', () => {
 
@@ -99,6 +103,13 @@ describe('ModelManager', () => {
     });
 
     describe('#addModelFile', () => {
+        beforeEach(()=>{
+            sandbox=sinon.sandbox.create();
+        });
+
+        afterEach(()=>{
+            sandbox.restore();
+        });
 
         it('should add a model file from a string', () => {
             let res = modelManager.addModelFile(modelBase);
@@ -125,13 +136,13 @@ describe('ModelManager', () => {
         it('should not be possible to add a system model file', ()=>{
             (() => {
                 modelManager.addModelFile(mockSystemModelFile);
-            }).should.throw(/Cannot add a model file with the reserved system namspace/);
+            }).should.throw(/Cannot add a model file with the reserved system namespace/);
         });
 
         it('should not be possible to add a system model file (via string)', ()=>{
             (() => {
                 modelManager.addModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
-            }).should.throw(/Cannot add a model file with the reserved system namspace/);
+            }).should.throw(/Cannot add a model file with the reserved system namespace/);
         });
 
         it('should return error for duplicate namespaces for a string', () => {
@@ -155,7 +166,13 @@ describe('ModelManager', () => {
     });
 
     describe('#addModelFiles', () => {
+        beforeEach(()=>{
+            sandbox=sinon.sandbox.create();
+        });
 
+        afterEach(()=>{
+            sandbox.restore();
+        });
         it('should add model files from strings', () => {
             farm2fork.should.not.be.null;
 
@@ -247,7 +264,7 @@ describe('ModelManager', () => {
         it('should not be possible to add a system model file (via string)', ()=>{
             (() => {
                 modelManager.addModelFiles(['namespace org.hyperledger.composer.system'],['fakesysnamespace.cto']);
-            }).should.throw(/Cannot add a model file with the reserved system namspace/);
+            }).should.throw(/System namespace can not be updated/);
         });
 
         it('should return an error for duplicate namespace from strings', () => {
