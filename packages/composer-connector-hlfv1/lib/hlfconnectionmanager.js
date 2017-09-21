@@ -22,49 +22,21 @@ const LOG = Logger.getLog('HLFConnectionManager');
 
 global.hfc = {
     logger: {
-        debug: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
+        debug: (text, ...args) => {
+            let message = util.format(text, ...args);
             LOG.debug('fabric-client', message);
         },
-        info: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg.toString();
-                }
-            }));
-            LOG.debug('fabric-client', message);
+        info: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.info('fabric-client', message);
         },
-        warn: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+        warn: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.warn('fabric-client', message);
         },
-        error: () => {
-            const args = Array.prototype.slice.call(arguments);
-            const message = util.format.apply(util, args.map((arg) => {
-                if (typeof arg === 'function') {
-                    return '<function>';
-                } else {
-                    return arg;
-                }
-            }));
-            LOG.debug('fabric-client', message);
+        error: (text, ...args) => {
+            let message = util.format(text, ...args);
+            LOG.error('fabric-client', message);
         }
     }
 };
@@ -103,7 +75,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @return {Orderer} A new orderer.
      */
     static createOrderer(ordererURL, opts) {
-        return new Orderer(ordererURL, opts);  //TODO: Change this
+        return new Orderer(ordererURL, opts);
     }
 
     /**

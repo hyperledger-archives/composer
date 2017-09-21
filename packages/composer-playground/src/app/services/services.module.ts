@@ -5,7 +5,7 @@ import { AboutService } from './about.service';
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { IdentityCardStorageService } from './identity-card-storage.service';

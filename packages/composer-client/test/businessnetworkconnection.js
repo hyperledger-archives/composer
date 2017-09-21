@@ -33,6 +33,7 @@ const Resource = require('composer-common').Resource;
 const SecurityContext = require('composer-common').SecurityContext;
 const Serializer = require('composer-common').Serializer;
 const TransactionRegistry = require('../lib/transactionregistry');
+const Registry = require('../lib/registry');
 const Historian = require('../lib/historian');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
@@ -247,6 +248,46 @@ describe('BusinessNetworkConnection', () => {
                     should.equal(businessNetworkConnection.connection, null);
                     sinon.assert.calledOnce(mockConnection.disconnect);
                 });
+        });
+
+    });
+
+    describe('#getRegistry',() => {
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves({});
+            // businessNetworkConnection.getModelManager.returns(modelManager);
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAssetRegistry('wowsuchregistry')
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should get an tx registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleTransaction');
+        });
+        it('should get an asset registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleAsset');
+        });
+        it('should get an participant registry based on name',()=>{
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistry.id='id';
+            mockRegistry.name='name';
+            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            return businessNetworkConnection.getRegistry('org.acme.sample.SampleParticipant');
         });
 
     });
@@ -605,11 +646,11 @@ describe('BusinessNetworkConnection', () => {
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
             let transactionRegistry = sinon.createStubInstance(TransactionRegistry);
-            sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([transactionRegistry]);
+            sandbox.stub(TransactionRegistry, 'getTransactionRegistry').resolves(transactionRegistry);
 
             // Invoke the function.
             return businessNetworkConnection
-                .getTransactionRegistry()
+                .getTransactionRegistry('a-test-registry-id')
                 .then(() => {
                     sinon.assert.calledOnce(stub);
                 });
@@ -620,28 +661,105 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the mock.
             let mockTransactionRegistry = sinon.createStubInstance(TransactionRegistry);
-            let stub = sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([mockTransactionRegistry]);
+            let stub = sandbox.stub(TransactionRegistry, 'getTransactionRegistry').resolves(mockTransactionRegistry);
 
             // Invoke the function.
             return businessNetworkConnection
-                .getTransactionRegistry()
+                .getTransactionRegistry('a-test-registry-id')
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
-                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext),'a-test-registry-id', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(mockTransactionRegistry);
                 });
 
         });
 
-        it('should throw when the default transaction registry does not exist', () => {
+    });
+
+    describe('#transactionRegistryExists', () => {
+
+        it('should perform a security check', () => {
 
             // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(TransactionRegistry, 'transactionRegistryExists').resolves({});
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .transactionRegistryExists('wowsuchregistry')
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let stub = sandbox.stub(TransactionRegistry, 'transactionRegistryExists').resolves(true);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .transactionRegistryExists('wowsuchregistry')
+                .then((exists) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    exists.should.equal(true);
+                });
+
+        });
+
+    });
+
+
+    describe('#getAllTransactionRegistries', () => {
+
+        it('should perform a security check', () => {
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
 
             // Invoke the function.
             return businessNetworkConnection
-                .getTransactionRegistry()
-                .should.be.rejectedWith(/default transaction registry/);
+                .getAllTransactionRegistries()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let mockTransactionRegistry1 = sinon.createStubInstance(TransactionRegistry);
+            let mockTransactionRegistry2 = sinon.createStubInstance(TransactionRegistry);
+            let stub = sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([mockTransactionRegistry1, mockTransactionRegistry2]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAllTransactionRegistries()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer),businessNetworkConnection,false);
+                    result.should.have.lengthOf(2);
+                    result[0].should.equal(mockTransactionRegistry1);
+                    result[1].should.equal(mockTransactionRegistry2);
+                });
+
+        });
+
+        it('does transaction regisitry exist', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAllTransactionRegistries()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
 
         });
 
@@ -675,6 +793,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
             // Invoke the submitTransaction function.
             return businessNetworkConnection
@@ -686,7 +805,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
                 });
 
         });
@@ -708,7 +827,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -719,7 +838,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [ json]);
 
                 });
 
@@ -741,7 +860,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -752,7 +871,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
 
                 });
 
@@ -774,7 +893,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').rejects(new Error('such error'));
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -908,7 +1027,7 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .should.be.rejectedWith(/ACTIVATION NOT REQUIRED/);
@@ -926,7 +1045,7 @@ describe('BusinessNetworkConnection', () => {
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -978,7 +1097,7 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['default', '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', [ '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 

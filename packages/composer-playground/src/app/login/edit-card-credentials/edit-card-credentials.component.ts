@@ -20,6 +20,8 @@ export class EditCardCredentialsComponent {
     private useCerts: boolean = true;
     private addedPublicCertificate: string;
     private addedPrivateCertificate: string;
+    private formattedCert: string;
+    private formattedPrivateKey: string;
     private useParticipantCard: boolean = true;
     private peerAdmin: boolean = false;
     private channelAdmin: boolean = false;
@@ -90,9 +92,14 @@ export class EditCardCredentialsComponent {
             text: 'Adding ID card'
         });
 
+        if (this.useCerts) {
+            this.formattedCert = this.formatCert(this.addedPublicCertificate);
+            this.formattedPrivateKey = this.formatCert(this.addedPrivateCertificate);
+        }
+
         let credentials = this.useCerts ? {
-            certificate: this.addedPublicCertificate,
-            privateKey: this.addedPrivateCertificate
+            certificate: this.formattedCert,
+            privateKey: this.formattedPrivateKey
         } : null;
 
         let roles = [];
@@ -105,7 +112,7 @@ export class EditCardCredentialsComponent {
             roles.push('ChannelAdmin');
         }
 
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userId, this.userSecret, this.connectionProfile, credentials, roles)
+        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userSecret, this.connectionProfile, credentials, roles)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
@@ -123,4 +130,9 @@ export class EditCardCredentialsComponent {
                 this.idCardAdded.emit(false);
             });
     }
+
+    formatCert(unformatted: string) {
+        return  unformatted.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
+    }
+
 }

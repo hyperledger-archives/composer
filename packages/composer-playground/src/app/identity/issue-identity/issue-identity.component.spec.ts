@@ -114,7 +114,7 @@ describe('IssueIdentityComponent', () => {
             tick();
 
             // Check we load the participants
-            let expected = ['resource:org.doge.Doge#DOGE_1', 'resource:org.doge.Doge#DOGE_2'];
+            let expected = ['org.doge.Doge#DOGE_1', 'org.doge.Doge#DOGE_2'];
             component['participantFQIs'].should.deep.equal(expected);
 
         }));
@@ -191,7 +191,7 @@ describe('IssueIdentityComponent', () => {
 
     describe('#issueIdentity', () => {
 
-        it('should generate and return an identity using internally held state information', fakeAsync(() => {
+        it('should generate and return an identity using internally held state information with partially qualified name', fakeAsync(() => {
 
             mockClientService.issueIdentity.returns(Promise.resolve({
                 participant: 'uniqueName',
@@ -206,6 +206,38 @@ describe('IssueIdentityComponent', () => {
 
             tick();
 
+            // What was it called with
+            mockClientService.issueIdentity.should.have.been.calledWith('userId', 'resource:uniqueName', {issuer: false, affiliation: undefined});
+
+            // Did we return the expected result to the modal on close
+            let expected = {
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
+            };
+            mockActiveModal.close.should.be.calledWith(expected);
+
+        }));
+
+        it('should generate and return an identity using internally held state information with fully qualified name', fakeAsync(() => {
+
+            mockClientService.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
+            }));
+
+            component['participantFQI'] = 'resource:uniqueName';
+            component['userID'] = 'userId';
+
+            component['issueIdentity']();
+
+            tick();
+
+            // What was it called with
+            mockClientService.issueIdentity.should.have.been.calledWith('userId', 'resource:uniqueName', {issuer: false, affiliation: undefined});
+
+            // Did we return the expected result to the modal on close
             let expected = {
                 participant: 'uniqueName',
                 userID: 'userId',
@@ -217,12 +249,72 @@ describe('IssueIdentityComponent', () => {
 
         it('should dismiss modal and pass error on failure', fakeAsync(() => {
             mockClientService.issueIdentity.returns(Promise.reject('some error'));
+
+            component['participantFQI'] = 'uniqueName';
+
             component['issueIdentity']();
 
             tick();
             // Check we error
             mockActiveModal.dismiss.should.be.calledWith('some error');
         }));
+    });
+
+    describe('#isValidParticipant', () => {
+
+        it('should set valid if empty string', () => {
+            component['participantFQI'] = '';
+            component['isParticipant'] = false;
+
+            component.isValidParticipant();
+
+            component['isParticipant'].should.be.true;
+        });
+
+        it('should set valid if particpant exists when prepended with `resource:`', () => {
+            let p1 = new Resource('resource1');
+            let p2 = new Resource('resource2');
+            component['participants'].set('bob', p1);
+            component['participants'].set('sally', p2);
+
+            component['participantFQI'] = 'resource:bob';
+
+            component['isParticipant'] = false;
+
+            component.isValidParticipant();
+
+            component['isParticipant'].should.be.true;
+
+        });
+
+        it('should set valid if particpant exists when not prepended with `resource:`', () => {
+            let p1 = new Resource('resource1');
+            let p2 = new Resource('resource2');
+            component['participants'].set('bob', p1);
+            component['participants'].set('sally', p2);
+
+            component['participantFQI'] = 'sally';
+
+            component['isParticipant'] = false;
+
+            component.isValidParticipant();
+
+            component['isParticipant'].should.be.true;
+
+        });
+
+        it('should set invalid if not empty string and participant does not exist', () => {
+            component['participantFQI'] = 'not-person';
+            let mockGet = sinon.stub(component, 'getParticipant');
+            mockGet.returns(false);
+
+            component['isParticipant'] = true;
+
+            component.isValidParticipant();
+
+            component['isParticipant'].should.be.false;
+        });
+
     });
 
     describe('#getParticipant', () => {

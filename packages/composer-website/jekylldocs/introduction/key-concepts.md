@@ -80,6 +80,12 @@ Business networks may contain a set of access control rules. Access control rule
 
 ---
 
+### Historian registry
+
+The historian is a specialised registry which records successful transactions, including the participants and identities that submitted them. The historian stores transactions as `HistorianRecord` assets, which are defined in the {{site.data.conrefs.composer_full}} system namespace.
+
+---
+
 ## Where do I go from here?
 
 ---

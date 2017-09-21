@@ -221,6 +221,23 @@ describe('HLFConnection', () => {
             mockEventHub.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('events');
         });
 
+        it('should unregister the exit listener', () => {
+            let stubExit = sandbox.stub(process, 'on').withArgs('exit').yields();
+            let stubRemove = sandbox.stub(process, 'removeListener');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
+            connection._connectToEventHubs();
+            sinon.assert.calledOnce(stubExit);
+            let exitListener = stubExit.firstCall.args[0];
+
+            return connection.disconnect()
+                .then(() => {
+                    sinon.assert.calledOnce(stubRemove);
+                    sinon.assert.calledWith(stubRemove, exitListener);
+                });
+
+
+        });
+
         it('should not unregister any chaincode listeners if non were setup', () => {
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
             connection._connectToEventHubs();
@@ -264,6 +281,19 @@ describe('HLFConnection', () => {
             mockEventHub.isconnected.throws(new Error('such error'));
             return connection.disconnect()
                 .should.be.rejectedWith(/such error/);
+        });
+
+        it('should handle being called twice', () => {
+            mockEventHub.isconnected.returns(true);
+            connection._connectToEventHubs();
+            return connection.disconnect()
+                .then(() => {
+                    mockEventHub.isconnected.returns(false);
+                    return connection.disconnect();
+                })
+                .then(() => {
+                    sinon.assert.calledOnce(mockEventHub.disconnect);
+                });
         });
 
     });
@@ -1726,35 +1756,7 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#update', () => {
-        beforeEach(() => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
-            connection._connectToEventHubs();
-        });
 
-        it('should throw if businessNetworkDefinition not specified', () => {
-            (() => {
-                connection.update(mockSecurityContext, null);
-            }).should.throw(/businessNetworkDefinition not specified/);
-        });
-
-        it('should invoke the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').resolves();
-            return connection.update(mockSecurityContext, mockBusinessNetwork)
-                .then(() => {
-                    sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ=']);
-                });
-        });
-
-        it('should handle errors invoking the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').rejects('such error');
-            return connection.update(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
 
     describe('#upgrade', () => {
 
@@ -2486,6 +2488,22 @@ describe('HLFConnection', () => {
                 .then(() => {
                     sinon.assert.notCalled(mockChannel.initialize);
                 });
+        });
+    });
+
+    describe('#createTransactionID', ()=>{
+
+        beforeEach(() => {
+            mockChannel.initialize.resolves();
+        });
+
+        it('should create a transaction id', () => {
+            connection.initialized = true;
+
+            connection.createTransactionId().then((result) =>{
+                sinon.assert.calledOnce(mockClient.getTransactionID);
+                result.should.deep.equal('00000000-0000-0000-0000-000000000000');
+            });
         });
     });
 

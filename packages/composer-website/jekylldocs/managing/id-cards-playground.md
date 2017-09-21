@@ -63,31 +63,30 @@ The ID card should now be displayed in the **My Wallet** page.
 
 ID cards are composite files containing up to three elements:
 
-- A connection profile. (`.json`)
+- A connection profile. (`connection.json`)
 - A metadata file containing the data for the identity to use to connect to the business network. (`metadata.json`)
-- An optional credentials directory containing a certificate and private key.
+- An optional `credentials` directory containing a certificate and private key for the identity in files named `certificate` and `privateKey` respectively.
 
-_Please note_: If there is no credentials directory, the metadata file must contain the _User Secret_ property with the property name _enrollmentSecret_. If an _enrollmentSecret_ is specified, a credentials directory with certificates will be created and populated if the ID card is exported.
+_Please note_: If there is no `credentials` directory, the metadata file must contain the _enrollment secret_ required to obtain the credentials with the property name _enrollmentSecret_. If an _enrollmentSecret_ is specified and the ID card is used to connect to a business network, a credentials directory with certificates will be created and populated if the ID card is exported.
 
 The metadata file should take the following format:
 
 ```
 {
-    "name": "PeerAdmin",
-    "description": "A valid ID card",
+    "version": 1,
+    "userName": "alice",
+    "description": "Alice's identity for basic-sample-network",
     "businessNetwork": "basic-sample-network"
-    "enrollmentId": "UserID",
     "enrollmentSecret": "UserSecret",
-    "image": "images/conga.png",
     "roles": [
 
     ]
 }
 ```
 
-The _businessNetworkName_, _image_, _enrollmentSecret_, and _roles_ properties are optional. The available _roles_ are `PeerAdmin` and `ChannelAdmin`.
+The _businessNetworkName_, _description_, _enrollmentSecret_, and _roles_ properties are optional. The available _roles_ are `PeerAdmin` and `ChannelAdmin`.
 
-To create the ID card file, compress the connection profile, metadata file, and optionally a credentials directory, then modify the file type to `.card`.
+To create the ID card file, compress as a ZIP archive the connection profile, metadata file, and optionally a credentials directory, then modify the file type to `.card`.
 
 This ID card can now be imported using the {{site.data.conrefs.composer_full}} Playground.
 

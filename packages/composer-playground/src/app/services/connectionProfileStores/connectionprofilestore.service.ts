@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { ConfigService } from './config.service';
+import { ConfigService } from '../config.service';
 
-import { ConnectionProfileStore, FSConnectionProfileStore } from 'composer-common';
+import { ConnectionProfileStore } from 'composer-common';
 import { PlaygroundConnectionProfileStore } from './playgroundconnectionprofilestore';
+import { BrowserConnectionProfileStore } from './browserconnectionprofilestore';
 /* tslint:disable:no-var-requires */
 const fs = require('fs');
 
@@ -19,7 +20,7 @@ export class ConnectionProfileStoreService {
     public getConnectionProfileStore(): ConnectionProfileStore {
         if (!this.connectionProfileStore) {
             if (this.configService.isWebOnly()) {
-                this.connectionProfileStore = new FSConnectionProfileStore(fs);
+                this.connectionProfileStore = new BrowserConnectionProfileStore();
             } else {
                 this.connectionProfileStore = new PlaygroundConnectionProfileStore();
             }

@@ -16,11 +16,10 @@
 
 /*eslint-disable no-unused-vars*/
 /*eslint-disable no-undef*/
-/*eslint-disable no-var*/
 
 /**
  * A transaction processor for AnimalMovementDeparture
- * @param  {com.ibm.concerto.mozart.AnimalMovementDeparture} movementDeparture
+ * @param  {com.composer.AnimalMovementDeparture} movementDeparture
  * - the transaction to be processed
  * @transaction
  */
@@ -34,7 +33,7 @@ function onAnimalMovementDeparture(movementDeparture) {
     movementDeparture.animal.movementStatus = 'IN_TRANSIT';
 
      // save the animal
-    var ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    let ar = getAssetRegistry('com.composer.Animal');
     ar.update(movementDeparture.animal);
 
      // add the animal to the incoming animals of the
@@ -47,13 +46,13 @@ function onAnimalMovementDeparture(movementDeparture) {
     }
 
      // save the business
-    var br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    let br = getAssetRegistry('com.composer.Business');
     br.update(movementDeparture.to);
 }
 
 /**
  * A transaction processor for AnimalMovementArrival
- * @param  {com.ibm.concerto.mozart.AnimalMovementArrival} movementArrival
+ * @param  {com.composer.AnimalMovementArrival} movementArrival
  * - the transaction to be processed
  * @transaction
  */
@@ -75,7 +74,7 @@ function onAnimalMovementArrival(movementArrival) {
     movementArrival.animal.location = movementArrival.arrivalField;
 
      // save the animal
-    var ar = getAssetRegistry('com.ibm.concerto.mozart.Animal');
+    let ar = getAssetRegistry('com.composer.Animal');
     ar.update(movementArrival.animal);
 
      // remove the animal from the incoming animals
@@ -90,7 +89,7 @@ function onAnimalMovementArrival(movementArrival) {
       });
 
       // save the business
-    var br = getAssetRegistry('com.ibm.concerto.mozart.Business');
+    let br = getAssetRegistry('com.composer.Business');
     br.update(movementArrival.to);
 }
 

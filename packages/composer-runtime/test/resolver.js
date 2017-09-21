@@ -530,7 +530,7 @@ describe('Resolver', () => {
             // Create the parent relationship.
             let relationship = factory.newRelationship('org.doge', 'DogeTransaction', 'DOGE_1');
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+            mockRegistryManager.get.withArgs('Transaction', 'org.doge.DogeTransaction').resolves(mockRegistry);
             return resolver.getRegistryForRelationship(relationship)
                 .then((registry) => {
                     registry.should.equal(mockRegistry);

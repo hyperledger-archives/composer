@@ -95,6 +95,7 @@ class ConnectionProfileManager {
     getConnectionManager(connectionProfile) {
         const METHOD = 'getConnectionManager';
         LOG.info(METHOD,'Looking up a connection manager for profile', connectionProfile);
+        let errorList = [];
 
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
@@ -112,7 +113,7 @@ class ConnectionProfileManager {
                     } else {
                         // Not registered using registerConnectionManager, we now
                         // need to search for the connector module in our module
-                        // and all of the parent modules (the ones who require'd
+                        // and all of the parent modules (the ones who required
                         // us) as we do not depend on any connector modules.
                         let curmod = module;
                         while (curmod) {
@@ -120,6 +121,7 @@ class ConnectionProfileManager {
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
+                                errorList.push(e.message);
                                 LOG.info(METHOD,'No yet located the module ',e.message);
                                 // Continue to search the parent.
                             }
@@ -134,6 +136,7 @@ class ConnectionProfileManager {
                                     return true;
                                 } catch (e) {
                                     // Search the next one.
+                                    errorList.push(e.message);
                                     LOG.info(METHOD,e);
                                     return false;
                                 }
@@ -146,8 +149,15 @@ class ConnectionProfileManager {
                             connectionManager = new(require(mod))(this);
                         }
                     }
+
                 } catch (e) {
-                    const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${e}`);
+                    // takes the error list, and filters out duplicate lines
+                    errorList.push(e.message);
+                    errorList.filter((element, index, self)=>{
+                        return index === self.indexOf(element);
+                    });
+
+                    const newError = new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}". ${errorList.join('-')}`);
                     LOG.error(METHOD, newError);
                     throw newError;
                 }
