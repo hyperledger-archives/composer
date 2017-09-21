@@ -13,22 +13,23 @@
  */
 
 'use strict';
-const sinon = require('sinon');
+
+const cmd = require('../../lib/cmds/runtime.js');
+const yargs = require('yargs');
+require('chai').should();
 const chai = require('chai');
+const sinon = require('sinon');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
 
-
-describe('composer main cli fn', function () {
+describe('composer runtime cmd launcher unit tests', function () {
 
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
-        sandbox.stub(process, 'exit');
 
     });
 
@@ -36,13 +37,20 @@ describe('composer main cli fn', function () {
         sandbox.restore();
     });
 
-    describe('Main test', function () {
+    describe('cmd method tests', () => {
 
-        it('Good path', function () {
-            let version = require('../index.js').version;
-            version.should.not.be.null;
-
+        it('should have the correct command and description', function () {
+            cmd.command.should.include('runtime');
+            cmd.desc.should.include('runtime');
         });
+        it('should call yargs correctly', () => {
+            sandbox.stub(yargs, 'commandDir');
+            cmd.builder(yargs);
+            sinon.assert.calledOnce(yargs.commandDir);
+            sinon.assert.calledWith(yargs.commandDir, 'runtime');
+            cmd.handler();
+        });
+
     });
 
 });

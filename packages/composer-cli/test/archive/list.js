@@ -60,7 +60,7 @@ describe('composer archive list unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Deploy handler() method tests', function () {
+    describe('List handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
