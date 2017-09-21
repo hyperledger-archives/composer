@@ -67,6 +67,9 @@ npm install npm@latest -g
 # Ensure that CA certificates are installed
 sudo apt-get -y install apt-transport-https ca-certificates
 
+# Install firefox
+sudo apt-get -y install firefox
+
 # Add Docker repository key to APT keychain
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 

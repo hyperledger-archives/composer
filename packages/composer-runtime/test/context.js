@@ -34,7 +34,6 @@ const IdentityService = require('../lib/identityservice');
 const Introspector = require('composer-common').Introspector;
 const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
-const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
 const NetworkManager = require('../lib/networkmanager');
@@ -929,22 +928,6 @@ describe('Context', () => {
             let mockApi = sinon.createStubInstance(Api);
             context.api = mockApi;
             context.getApi().should.equal(mockApi);
-        });
-
-    });
-
-    describe('#getQueryExecutor', () => {
-
-        it('should return a new query executor', () => {
-            let mockResolver = sinon.createStubInstance(Resolver);
-            sinon.stub(context, 'getResolver').returns(mockResolver);
-            context.getQueryExecutor().should.be.an.instanceOf(QueryExecutor);
-        });
-
-        it('should return an existing query executor', () => {
-            let mockQueryExecutor = sinon.createStubInstance(QueryExecutor);
-            context.queryExecutor = mockQueryExecutor;
-            context.getQueryExecutor().should.equal(mockQueryExecutor);
         });
 
     });

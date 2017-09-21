@@ -154,7 +154,7 @@ For more information on access control files, check our [documentation](../refer
 
 Now that we've created our model, script, and access control files, we need to deploy and test our business network.
 
-Click **Update** to deploy our new model, script, and transaction script files.
+Click **Update** to deploy our new model, script, and access control files.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />

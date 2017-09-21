@@ -5,7 +5,7 @@ category: start
 sidebar: sidebars/accordion-toc0.md
 section: installing
 excerpt: To run the Playground locally with a local instance of Hyperledger Fabric, click [**Install Local Playground**](../installing/using-playground-locally.html) here or in the table of contents on the left.
-index-order: 202
+index-order: 203
 ---
 
 # Installing and running {{site.data.conrefs.composer_full}} Playground locally
@@ -44,7 +44,7 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
 
 ## Deploying business networks to {{site.data.conrefs.hlf_full}} v1.0
 
-In {{site.data.conrefs.hlf_full}} v1.0 peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
+In {{site.data.conrefs.hlf_full}} v1.0 peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, you must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
 
 When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text `admin`, for example, `PeerAdmin`, `myadmin`, `Admin` or `AdminPeer` are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
 
