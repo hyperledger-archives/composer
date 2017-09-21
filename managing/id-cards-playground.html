@@ -90,10 +90,11 @@ ga('send', 'pageview');
 <li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
 <li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
 </ul></li>
-<li><p><a href="../installing/installing-index.html">Installing Hyperledger Composer</a></p>
+<li><p><a href="../installing/installing-index.html">Installing</a></p>
 
 <ul>
 <li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
 <li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
 <li><a href="../installing/development-tools.html">Installing a development environment</a></li>
 </ul></li>
@@ -120,6 +121,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -170,7 +172,6 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
-<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -249,29 +250,28 @@ ga('send', 'pageview');
 <p>ID cards are composite files containing up to three elements:</p>
 
 <ul>
-<li>A connection profile. (<code>.json</code>)</li>
+<li>A connection profile. (<code>connection.json</code>)</li>
 <li>A metadata file containing the data for the identity to use to connect to the business network. (<code>metadata.json</code>)</li>
-<li>An optional credentials directory containing a certificate and private key.</li>
+<li>An optional <code>credentials</code> directory containing a certificate and private key for the identity in files named <code>certificate</code> and <code>privateKey</code> respectively.</li>
 </ul>
 
-<p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>User Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID card is exported.</p>
+<p><em>Please note</em>: If there is no <code>credentials</code> directory, the metadata file must contain the <em>enrollment secret</em> required to obtain the credentials with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified and the ID card is used to connect to a business network, a credentials directory with certificates will be created and populated if the ID card is exported.</p>
 
 <p>The metadata file should take the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PeerAdmin"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid ID card"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Alice's identity for basic-sample-network"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"businessNetwork"</span><span class="p">:</span><span class="w"> </span><span class="s2">"basic-sample-network"</span><span class="w">
-    </span><span class="s2">"enrollmentId"</span><span class="err">:</span><span class="w"> </span><span class="s2">"UserID"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserSecret"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"images/conga.png"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"enrollmentSecret"</span><span class="err">:</span><span class="w"> </span><span class="s2">"UserSecret"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
 
     </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>The <em>businessNetworkName</em>, <em>image</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
+<p>The <em>businessNetworkName</em>, <em>description</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
 
-<p>To create the ID card file, compress the connection profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>
+<p>To create the ID card file, compress as a ZIP archive the connection profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>
 
 <p>This ID card can now be imported using the Hyperledger Composer Playground.</p>
 

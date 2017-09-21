@@ -90,10 +90,11 @@ ga('send', 'pageview');
 <li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
 <li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
 </ul></li>
-<li><p><a href="../installing/installing-index.html">Installing Hyperledger Composer</a></p>
+<li><p><a href="../installing/installing-index.html">Installing</a></p>
 
 <ul>
 <li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
 <li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
 <li><a href="../installing/development-tools.html">Installing a development environment</a></li>
 </ul></li>
@@ -120,6 +121,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
 <li><a href="../business-network/query.html">Querying Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
 <li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
 
@@ -170,7 +172,6 @@ ga('send', 'pageview');
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
 <li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
-<li><a href="../reference/historian.html">Historian</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
 </ul>
@@ -370,14 +371,14 @@ npm install
 </code></pre></div>
 <p>You should see the following output similar to the following (versions/modules change below):</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">
-  │ │ └─┬ strip-ansi@4.0.0 
-  │ │   └── ansi-regex@3.0.0 
-  │ ├── which-module@2.0.0 
-  │ ├── y18n@3.2.1 
-  │ └── yargs-parser@7.0.0 
-  └─┬ yargs-parser@5.0.0 
-    └── camelcase@3.0.0 
-<span class="gp">$ </span>
+  │ │ └─┬ strip-ansi@4.0.0
+  │ │   └── ansi-regex@3.0.0
+  │ ├── which-module@2.0.0
+  │ ├── y18n@3.2.1
+  │ └── yargs-parser@7.0.0
+  └─┬ yargs-parser@5.0.0
+    └── camelcase@3.0.0
+<span class="err">$</span>
 </code></pre></div>
 <h2 id="write-unit-tests">Write Unit Tests</h2>
 
@@ -669,7 +670,7 @@ composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 </code></pre></div>
 <p>Note: the command <code>npm run prepublish</code> achieves the same thing (ie a command defined in our <code>package.json</code> file), but we wanted to show you the command sequence at this point in the tutorial and for your own projects, in time.</p>
 
-<p>The output of the archive command will look similar to this: </p>
+<p>The output of the archive command will look similar to this:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">
 Creating Business Network Archive
 
@@ -687,7 +688,7 @@ Command succeeded
 </code></pre></div>
 <p>The <code>composer archive create</code> command has created a file called <code>my-network.bna</code> in the <code>dist</code> folder.</p>
 
-<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current sample definition in Playground.</p>
+<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it. This automatically deploys the new business network.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />

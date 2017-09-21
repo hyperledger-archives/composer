@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Hyperledger Composer Historian | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-1', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+          <div class="docs-current-page-grid">
+          <p>Hyperledger Composer Historian</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html">Introduction</a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html">Installing</a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
+
+<ul>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
+
+<ul>
+<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
+</ul></li>
+<li><p><a href="../reference/reference-index.html">Reference</a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../jsdoc/index.html">API Documentation</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="hyperledger-composer-historian">Hyperledger Composer Historian</h1>
+
+<p>The Hyperledger Composer Historian is a specialised registry which records successful transactions, including the participants and identities that submitted them. The historian stores transactions as <code>HistorianRecord</code> assets, which are defined in the Hyperledger Composer system namespace.</p>
+
+<p>The historian registry is a Hyperledger Composer system-level entity. To refer to the historian registry as a resource for access control the historian must be referenced as: <code>org.hyperledger.composer.system.HistorianRecord</code>.</p>
+
+<p><strong>Please note:</strong> All participants must have the permission to create <code>HistorianRecord</code> assets. If a transaction is submitted by a participant who does not have the permission to create <code>HistorianRecord</code> assets, the transaction will fail. </p>
+
+<h2 id="historianrecord-assets">HistorianRecord assets</h2>
+
+<p>The historian registry stores successful transactions as <code>HistorianRecord</code> assets. Whenever a transaction successfully completes, a <code>HistorianRecord</code> asset is created and added to the historian registry. Record assets are defined in the system namespace, and have the following definition:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset HistorianRecord identified by transactionId {
+  o String      transactionId
+  o String      transactionType
+  --&gt; Transaction transactionInvoked
+  --&gt; Participant participantInvoking  optional
+  --&gt; Identity    identityUsed         optional
+  o Event[]       eventsEmitted        optional
+  o DateTime      transactionTimestamp
+}
+</code></pre></div>
+<ul>
+<li><code>transactionId</code> The transactionId of the transaction that caused the historian record to be created.</li>
+<li><code>String transactionType</code> The class of transaction that caused the historian record to be created.</li>
+<li><code>Transaction transactionInvoked</code> A relationship to the transaction which caused the historian record to be created.</li>
+<li><code>Participant participantInvoking</code> A relationship to the participant who submitted the transaction.</li>
+<li><code>Identity identityUsed</code> A relationship to the identity used to submit the transaction.</li>
+<li><code>Event[] eventsEmitted</code> An optional property containing any events which were emitted by the transaction.</li>
+<li><code>DateTime transactionTimestamp</code> The timestamp of the transaction which caused the historian record to be created.</li>
+</ul>
+
+<p>All historian record assets have relationships to the transaction that created them, the invoking participant of that transaction, and the identity used when the transaction was submitted. Applications that wish to obtain these attributes must resolve this relationship.</p>
+
+<h2 id="system-transactions">System transactions</h2>
+
+<p>Several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add historian records:</p>
+
+<ul>
+<li>Adding, removing and updating assets</li>
+<li>Adding, removing and updating participants</li>
+<li>Issuing, binding, activating and revoking identities</li>
+<li>Updating the business network definition</li>
+</ul>
+
+<h2 id="securing-historian-data">Securing historian data</h2>
+
+<p>As a registry, access to the historian data can be controlled with access control rules. However, as a system-level entity the resource name for the historian registry is always <code>org.hyperledger.composer.system.HistorianRecord</code>.</p>
+
+<p>The following access control rule allows members to only see historian data if it references transactions they submitted.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule historianAccess{
+  description: "Only allow members to read historian records referencing transactions they submitted."
+  participant(p): "org.example.member"
+  operation: READ
+  resource(r): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (r.participantInvoking.getIdentifier() == p.getIdentifier())
+  action: ALLOW
+
+}
+</code></pre></div>
+<h2 id="retrieving-historian-data">Retrieving historian data</h2>
+
+<p>Data from the historian registry can be retrieved using either an API call, or queries.</p>
+
+<h3 id="using-the-client-and-rest-apis-with-historian">Using the client and REST APIs with historian</h3>
+
+<p>Historian records can be returned using the <code>system/historian</code> and <code>system/historian/{id}</code> calls using the REST API.</p>
+
+<p>When using the REST API, a GET call of <code>system/historian</code> will return <em>ALL</em> historian data. This call should be used with care, the return is not limited and may result in large volumes of data being returned.</p>
+
+<p>A GET call of <code>system/historian/{id}</code> using the REST API will return the <code>HistorianRecord</code> asset specified.</p>
+
+<h3 id="querying-the-historian">Querying the Historian</h3>
+
+<p>Historian can be queried in the same manner as other registries. For example, a typical query to return all <code>HistorianRecord</code> assets would be as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    .then(() =&gt; {       
+        return businessNetworkConnection.getHistorian();
+    }).then((historian) =&gt; {
+        return historian.getAll();
+    }).then((historianRecords) =&gt; {        
+        console.log(prettyoutput(historianRecords));
+    })
+</code></pre></div>
+<p>As this is a &#39;getAll&#39; call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in the same way.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">  let now = new Date();
+  now.setMinutes(10);  // set the date to be time you want to query from
+
+  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
+                                                'WHERE (transactionTimestamp &gt; _$justnow)');   
+
+  return businessNetworkConnection.query(q1,{justnow:now});
+</code></pre></div>
+<p>More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">  // build the special query for historian records
+  let q1 = businessNetworkConnection.buildQuery(
+      `SELECT org.hyperledger.composer.system.HistorianRecord
+          WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
+  );      
+
+  return businessNetworkConnection.query(q1);
+
+</code></pre></div>
+<h2 id="what-next">What next?</h2>
+
+<ul>
+<li><a href="../business-network/query.html">Applying queries to a business network.</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting events from transactions.</a></li>
+<li><a href="../jsdoc/index.html">Hyperledger Composer API documentation.</a></li>
+</ul>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/assets/js/nav.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
