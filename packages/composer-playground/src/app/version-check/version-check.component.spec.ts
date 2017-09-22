@@ -4,11 +4,14 @@
 /* tslint:disable:max-classes-per-file */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { DebugElement, NgZone, EventEmitter } from '@angular/core';
 
 import { VersionCheckComponent } from './version-check.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
+
+import { IdentityCardStorageService } from '../services/identity-card-storage.service';
+
 import * as sinon from 'sinon';
 
 describe('VersionCheckComponent', () => {
@@ -17,28 +20,29 @@ describe('VersionCheckComponent', () => {
     let debug: DebugElement;
     let element: HTMLElement;
 
-    let storageBool: boolean;
-
     let ngbActiveModalMock = {
         close: sinon.stub(),
         dismiss: sinon.stub()
     };
 
-    let localStorageServiceMock = {
-        clearAll: () => {
-            return storageBool;
-        }
-    };
+    let localStorageServiceMock;
+    let identityCardStorageServiceMock;
 
     let reload;
 
     beforeEach(async(() => {
+        localStorageServiceMock = sinon.createStubInstance(LocalStorageService);
+        identityCardStorageServiceMock = sinon.createStubInstance(IdentityCardStorageService);
+
         TestBed.configureTestingModule({
             declarations: [VersionCheckComponent],
-            providers: [{provide: NgbActiveModal, useValue: ngbActiveModalMock},
-                {provide: LocalStorageService, useValue: localStorageServiceMock}]
-        })
-            .compileComponents();
+            providers: [
+                {provide: NgbActiveModal, useValue: ngbActiveModalMock},
+                {provide: NgZone, useValue: new NgZone({})},
+                {provide: LocalStorageService, useValue: localStorageServiceMock},
+                {provide: IdentityCardStorageService, useValue: identityCardStorageServiceMock}
+            ]
+        }).compileComponents();
     }));
 
     beforeEach(() => {
@@ -58,12 +62,26 @@ describe('VersionCheckComponent', () => {
         element.textContent.should.contain('Invalid version!');
     });
 
+    it('should clear all local storage', () => {
+        let runOutsideAngularStub = sinon.stub(fixture.ngZone, 'runOutsideAngular');
+        localStorageServiceMock.clearAll.returns(true);
+        identityCardStorageServiceMock.clearAll.returns(true);
+
+        component.clearLocalStorage();
+
+        localStorageServiceMock.clearAll.should.have.been.called;
+        identityCardStorageServiceMock.clearAll.should.have.been.called;
+        runOutsideAngularStub.should.have.been.called;
+    });
+
     it('should handle unsupported browser for clearLocalStorage', () => {
-        storageBool = false;
+        let runOutsideAngularStub = sinon.stub(fixture.ngZone, 'runOutsideAngular');
+        localStorageServiceMock.clearAll.returns(false);
 
         (() => {
             component.clearLocalStorage();
         }).should.throw(Error, 'Failed to clear local storage');
 
+        runOutsideAngularStub.should.not.have.been.called;
     });
 });
