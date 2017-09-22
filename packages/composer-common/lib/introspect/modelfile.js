@@ -43,15 +43,14 @@ class ModelFile {
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
      * @param {string} [fileName] - The optional filename for this modelfile
-     * @param {boolean} [systemModelFile] - True if this is a system model file, false otherwise.
      * @throws {IllegalModelException}
      */
-    constructor(modelManager, definitions, fileName, systemModelFile) {
+    constructor(modelManager, definitions, fileName) {
         this.modelManager = modelManager;
         this.declarations = [];
         this.imports = [];
         this.fileName = 'UNKNOWN';
-        this.systemModelFile = !!systemModelFile;
+
 
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Composer model as a string as input.');
@@ -76,6 +75,7 @@ class ModelFile {
         }
 
         this.namespace = this.ast.namespace;
+        this.systemModelFile = (this.namespace === ModelUtil.getSystemNamespace());
 
         if(this.ast.imports) {
             this.imports = this.ast.imports;
