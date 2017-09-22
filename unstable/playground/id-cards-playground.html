@@ -349,18 +349,18 @@ ga('send', 'pageview');
 <p><em>Please note</em>: If there is no credentials directory, the metadata file must contain the <em>Enrollment Secret</em> property with the property name <em>enrollmentSecret</em>. If an <em>enrollmentSecret</em> is specified, a credentials directory with certificates will be created and populated if the ID Card is exported.</p>
 
 <p>The metadata file should take the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PeerAdmin"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid ID card"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"businessNetwork"</span><span class="p">:</span><span class="w"> </span><span class="s2">"basic-sample-network"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"enrollmentId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserID"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserSecret"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"images/conga.png"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "PeerAdmin",
+    "description": "A valid ID card",
+    "businessNetwork": "basic-sample-network",
+    "enrollmentId": "UserID",
+    "enrollmentSecret": "UserSecret",
+    "image": "images/conga.png",
+    "roles": [
 
-    </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+    ]
+}
+</code></pre></div>
 <p>The <em>businessNetworkName</em>, <em>image</em>, <em>enrollmentSecret</em>, and <em>roles</em> properties are optional. The available <em>roles</em> are <code>PeerAdmin</code> and <code>ChannelAdmin</code>.</p>
 
 <p>To create the ID Card file, compress the Connection Profile, metadata file, and optionally a credentials directory, then modify the file type to <code>.card</code>.</p>

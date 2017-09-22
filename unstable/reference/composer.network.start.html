@@ -237,19 +237,19 @@ Options:
 <div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 </code></pre></div>
 <p>In this case, the endorsement policy file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="nt">"identities"</span><span class="p">:[</span><span class="err">...</span><span class="p">],</span><span class="w">
-    </span><span class="nt">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">}}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
+    "policy": {...}}
+</code></pre></div></li>
 <li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -O /path/to/file/options.json
 </code></pre></div>
 <p>In this case, the options file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">        </span><span class="p">{</span><span class="nt">"endorsementPolicy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"Identities"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span><span class="err">.</span><span class="w">
-            </span><span class="s2">"policy: {...}"</span><span class="w">
-          </span><span class="p">},</span><span class="w">
-          </span><span class="nt">"someOtherOption"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A Value"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].
+            "policy: {...}"
+          },
+          "someOtherOption": "A Value"
+        }
+</code></pre></div></li>
 </ul>
 
 <p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric node SDK documentation</a>.</p>

@@ -226,13 +226,13 @@ asset SampleAsset identified by assetId {
 }
 </code></pre></div>
 <p>An instance of the class:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.sample.SampleAsset"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"assetId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assetId:6463"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.sample.SampleParticipant#participantId:8091"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"secret plant frequently ruler"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.sample.SampleAsset",
+  "assetId": "assetId:6463",
+  "owner": "resource:org.acme.sample.SampleParticipant#participantId:8091",
+  "value": "secret plant frequently ruler"
+}
+</code></pre></div>
 <h2 id="evolution-of-namespaces">Evolution of Namespaces</h2>
 
 <p>A new class may be added to a namespace without breaking compatibility with pre-existing instances.</p>

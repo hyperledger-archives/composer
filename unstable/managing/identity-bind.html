@@ -243,21 +243,21 @@ of that participant has been created and placed into a participant registry.</p>
 <li>JavaScript API</li>
 </ul></li>
 </ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
   <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-  <span class="kd">let</span> <span class="nx">certificate</span> <span class="o">=</span> <span class="err">`</span><span class="o">-----</span><span class="nx">BEGIN</span> <span class="nx">CERTIFICATE</span><span class="o">-----</span>
-    <span class="nx">MIIB8DCCAZegAwIBAgIURanHh55fqrUecvHNHtcMKiHJRkwwCgYIKoZIzj0EAwIw</span>
-    <span class="nx">czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh</span>
-    <span class="nx">biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT</span>
-    <span class="nx">E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzI3MTc0MzAwWhcNMTgwNzI3MTc0</span>
-    <span class="nx">MzAwWjAQMQ4wDAYDVQQDEwVhZG1pbjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA</span>
-    <span class="nx">BAANIGFIrXXr5</span><span class="o">+</span><span class="nx">h0NfUNJhx5YFQ4w6r182eZYRhc9KvYQhYo5D0ZbecfR9sGX2b6</span>
-    <span class="mi">0</span><span class="nx">aW</span><span class="o">+</span><span class="nx">C7bUaXc6DU3pJSD4fNijbDBqMA4GA1UdDwEB</span><span class="o">/</span><span class="nx">wQEAwIHgDAMBgNVHRMBAf8E</span>
-    <span class="nx">AjAAMB0GA1UdDgQWBBRwuAyWrGlzVQFqRf0OqoTNuoq7QDArBgNVHSMEJDAigCAZ</span>
-    <span class="nx">q2WruwSAfa0S5MCpqqZknnCGjjq9AhejItieR</span><span class="o">+</span><span class="nx">GmrjAKBggqhkjOPQQDAgNHADBE</span>
-    <span class="nx">AiBcj</span><span class="o">/</span><span class="nx">JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx</span>
-    <span class="nx">rkM5DH3e5ECM7T</span><span class="o">+</span><span class="nx">T1Ovr</span><span class="o">+</span><span class="mi">1</span><span class="nx">AK6bs</span><span class="o">=</span>
-    <span class="o">-----</span><span class="nx">END</span> <span class="nx">CERTIFICATE</span><span class="o">-----</span><span class="err">`</span>
+  <span class="kd">let</span> <span class="nx">certificate</span> <span class="o">=</span> <span class="s2">`-----BEGIN CERTIFICATE-----
+    MIIB8DCCAZegAwIBAgIURanHh55fqrUecvHNHtcMKiHJRkwwCgYIKoZIzj0EAwIw
+    czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh
+    biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT
+    E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzI3MTc0MzAwWhcNMTgwNzI3MTc0
+    MzAwWjAQMQ4wDAYDVQQDEwVhZG1pbjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA
+    BAANIGFIrXXr5+h0NfUNJhx5YFQ4w6r182eZYRhc9KvYQhYo5D0ZbecfR9sGX2b6
+    0aW+C7bUaXc6DU3pJSD4fNijbDBqMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8E
+    AjAAMB0GA1UdDgQWBBRwuAyWrGlzVQFqRf0OqoTNuoq7QDArBgNVHSMEJDAigCAZ
+    q2WruwSAfa0S5MCpqqZknnCGjjq9AhejItieR+GmrjAKBggqhkjOPQQDAgNHADBE
+    AiBcj/JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx
+    rkM5DH3e5ECM7T+T1Ovr+1AK6bs=
+    -----END CERTIFICATE-----`</span>
   <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">)</span>
       <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
           <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">bindIdentity</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person#mae@biznet.org'</span><span class="p">,</span> <span class="nx">certificate</span><span class="p">)</span>
@@ -273,7 +273,7 @@ of that participant has been created and placed into a participant registry.</p>
 <ul>
 <li>Command line</li>
 </ul>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity <span class="nb">bind</span> -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw -c /tmp/cert.pem -a <span class="s2">"resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity <span class="nb">bind</span> <span class="nt">-p</span> hlfv1 <span class="nt">-n</span> <span class="s1">'digitalproperty-network'</span> <span class="nt">-i</span> admin <span class="nt">-s</span> adminpw <span class="nt">-c</span> /tmp/cert.pem <span class="nt">-a</span> <span class="s2">"resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
 </code></pre></div>
 <ol>
 <li>As the participant, test the connection to the business network
@@ -282,14 +282,14 @@ of that participant has been created and placed into a participant registry.</p>
 <li>JavaScript API</li>
 </ul></li>
 </ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
   <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
   <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'maeid1'</span><span class="p">,</span> <span class="s1">'RJJmlOpvNVRV'</span><span class="p">)</span>
       <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
           <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
       <span class="p">})</span>
       <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">participant</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">:</span> <span class="s1">'&lt;no participant found&gt;'</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`participant = </span><span class="p">${</span><span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">:</span> <span class="s1">'&lt;no participant found&gt;'</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
           <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
       <span class="p">})</span>
       <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -300,7 +300,7 @@ of that participant has been created and placed into a participant registry.</p>
 <ul>
 <li>Command line</li>
 </ul>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i maeid1 -s RJJmlOpvNVRV
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping <span class="nt">-p</span> hlfv1 <span class="nt">-n</span> <span class="s1">'digitalproperty-network'</span> <span class="nt">-i</span> maeid1 <span class="nt">-s</span> RJJmlOpvNVRV
 </code></pre></div>
 <p>The participant ID will be printed to the console, and should match the participant
   ID that was specified in the <code>composer identity bind</code> command.</p>

@@ -830,56 +830,56 @@ Browse your REST API at http://localhost:3000/explorer
 <p>Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.</p>
 
 <p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn: </p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">
-</span><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang="">
+{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER1",
+  "firstName": "Jenny",
+  "lastName": "Jones"
+}
 
-</span></code></pre></div>
+</code></pre></div>
 <p>then click &#39;Try it out&#39; to create the Participant. The &#39;Response Code&#39; (scroll down) should be 200 (SUCCESS)</p>
 
 <p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jack"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sock"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER2",
+  "firstName": "Jack",
+  "lastName": "Sock"
+}
+</code></pre></div>
 <p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER3"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rainer"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Valens"</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER3",
+  "firstName": "Rainer",
+  "lastName": "Valens"
+}
 
-</span></code></pre></div>
+</code></pre></div>
 <p><img src="../assets/img/tutorials/query/add-trader.png" alt="Trader 1 example - Participant"></p>
 
 <p>Now scroll up to the top and click on &#39;Commodity&#39; object in the REST Explorer. Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EMA"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Corn"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EURONEXT"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Commodity",
+  "tradingSymbol": "EMA",
+  "description": "Corn",
+  "mainExchange": "EURONEXT",
+  "quantity": 10,
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+}
+</code></pre></div>
 <p>and</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cocoa"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ICE"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Commodity",
+  "tradingSymbol": "CC",
+  "description": "Cocoa",
+  "mainExchange": "ICE",
+  "quantity": 80,
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER2"
+}
+</code></pre></div>
 <h2 id="perform-queries-using-the-commodity-trading-rest-api-explorer">Perform Queries using the Commodity Trading REST API Explorer</h2>
 
 <p>Now that we have some Assets and Participants, we can test out some queries using the generated Query REST operations.</p>
