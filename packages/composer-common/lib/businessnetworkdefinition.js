@@ -33,6 +33,25 @@ const Serializer = require('./serializer');
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 
+
+    /** define a help function that will filter out files
+     * that are inside a node_modules directory under the path
+     * we are processing
+     * @param {File} file to load
+     * @param {Path} basePath to search from
+     * @return {boolean} returns true/false
+     */
+const _isFileInNodeModuleDir = function (file, basePath) {
+    const method = 'isFileInNodeModuleDir';
+    let filePath = fsPath.parse(file);
+    let subPath = filePath.dir.substring(basePath.length);
+    let result = subPath.split(fsPath.sep).some((element) => {
+        return element === 'node_modules';
+    });
+
+    LOG.debug(method, file, result);
+    return result;
+};
 /**
  * <p>
  * A BusinessNetworkDefinition defines a set of Participants that exchange Assets by
@@ -332,21 +351,10 @@ class BusinessNetworkDefinition {
 
     }
 
-            // define a help function that will filter out files
-        // that are inside a node_modules directory under the path
-        // we are processing
-    static _isFileInNodeModuleDir(file, basePath) {
-        const method = 'isFileInNodeModuleDir';
-        let filePath = fsPath.parse(file);
-        let subPath = filePath.dir.substring(basePath.length);
-        let result = subPath.split(fsPath.sep).some((element) => {
-            return element === 'node_modules';
-        });
-
-        LOG.debug(method, file, result);
-        return result;
-    }
-
+    /** Load and parse the package.json
+     * @param {Path} path to load from
+     * @return {Object} parsed object
+     */
     static _getPackageJson(path){
         const method='_getPackageJson';
         // grab the package.json
@@ -366,10 +374,11 @@ class BusinessNetworkDefinition {
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
-     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     * @param {String[]} modelFiles find and add to this array modelFiles contents
+     * @param {String[]} modelFileNames finad and add to this array the modelFileNames
      */
-    static _processDependancies(jsonObject,path,options,modelFiles,modelFileNames){
-        const method='_processDependancies';
+    static _processDependencies(jsonObject,path,options,modelFiles,modelFileNames){
+        const method='_processDependencies';
         LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
         const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob, { dot: true }));
         LOG.debug(method, 'Matched dependencies', dependencies);
@@ -390,10 +399,10 @@ class BusinessNetworkDefinition {
 
             BusinessNetworkDefinition.processDirectory(dependencyPath, {
                 accepts: function(file) {
-                    return this._isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob, { dot: true });
+                    return _isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob, { dot: true });
                 },
                 acceptsDir: function(dir) {
-                    return !this._isFileInNodeModuleDir(dir, dependencyPath);
+                    return !_isFileInNodeModuleDir(dir, dependencyPath);
                 },
                 process: function(path,contents) {
                     modelFiles.push(contents);
@@ -416,20 +425,20 @@ class BusinessNetworkDefinition {
 
         const modelFiles = [];
         const modelFileNames = [];
-       // process each module dependency
-       // filtering using a glob on the module dependency name
+        // process each module dependency
+        // filtering using a glob on the module dependency name
         if(jsonObject.dependencies) {
-            this._processDependencies(jsonObject,options,modelFiles,modelFileNames);
+            this._processDependencies(jsonObject,path,options,modelFiles,modelFileNames);
         }
 
-       // find CTO files outside the npm install directory
+        // find CTO files outside the npm install directory
         //
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return this._isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob, { dot: true });
+                return _isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob, { dot: true });
             },
             acceptsDir: function(dir) {modelFileNames;
-                return !this._isFileInNodeModuleDir(dir, path);
+                return !_isFileInNodeModuleDir(dir, path);
             },
             process: function(path,contents) {
                 modelFiles.push(contents);
@@ -458,10 +467,10 @@ class BusinessNetworkDefinition {
         const scriptFiles = [];
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return this._isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob, { dot: true });
+                return _isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob, { dot: true });
             },
             acceptsDir: function(dir) {
-                return !this._isFileInNodeModuleDir(dir, path);
+                return !_isFileInNodeModuleDir(dir, path);
             },
             process: function(path,contents) {
                 let filePath = fsPath.parse(path);
@@ -592,10 +601,13 @@ class BusinessNetworkDefinition {
                 options.scriptGlob = '**/lib/**/*.js';
             }
 
-            let jsonObject = this._getPackageJson(path);
+            // resolve the path to remove relative paths so the globs make more sense
+            // and minimatch
+            path = fsPath.resolve(path);
 
-           // create the business network definition
-            const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, this._processReadMe(path));
+            let jsonObject = this._getPackageJson(path);
+            // create the business network definition
+            const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, this._processReadme(path));
 
             // search and find the cto files
             this._processModelFiles(jsonObject,path,options,businessNetwork);
