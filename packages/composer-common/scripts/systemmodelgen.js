@@ -31,7 +31,9 @@ let env = nunjucks.configure(templatePath,{autoescape:false});
 // get the template file
 const models = modelFiles.map((modelFile) => {
     const contents = fs.readFileSync(path.resolve(modelDirectory, modelFile), 'utf8');
+    let ns = modelFile.substr(0,modelFile.indexOf('.cto'));
     return {
+        namespace: ns,
         fileName: modelFile,
         contents: contents
     };
