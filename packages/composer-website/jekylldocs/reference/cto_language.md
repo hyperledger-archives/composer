@@ -23,7 +23,7 @@ A {{site.data.conrefs.composer_full}} CTO file is composed of the following elem
 
 Your organization namespace is defined in the namespace line of your model (`.cto`) file, and all resources created are implicitly part of this namespace.
 
-As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.
+As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.
 
 Represented as a `.cto` model file, the system namespace is as follows:
 
@@ -109,25 +109,25 @@ A resource definition has the following properties:
 
 ### Declarations of enumerated types
 
-Enumerated types are to define the potential content of properties of other resources. By using enumerated types, the expected content in a field can be restricted and controlled, reducing unexpected data. The following enumerated type declaration contains a list of roles.
+Enumerated types are used to specify a type that may have 1 or N possible values. The example below defines the ProductType enumeration, which may have the value `DAIRY` or `BEEF` or `VEGETABLES`.
 
 ```
 /**
 * An enumerated type
 */
-enum product {
+enum ProductType {
 o DAIRY
 o BEEF
 o VEGETABLES
 }
 ```
 
-When another resource is created, for example, a participant, a property of that resource can be defined to expect one of the enumerated types.
+When another resource is created, for example, a participant, a property of that resource can be defined in terms of an enumerated type.
 
 ```
 participant Farmer identified by farmerId {
     o String farmerId
-    o product primaryProduct
+    o ProductType primaryProduct
 ```
 
 
@@ -245,4 +245,32 @@ Use the `import` keyword with a fully-qualified type name to import a type from 
 ```
 import org.example.MyAsset
 import org.example2.*
+```
+
+## Decorators
+
+Resources and properties of resources may have decorators attached. Decorators are used to annotate a model with metadata. The example below adds the `foo` decorator to the Buyer participant, with "arg1' and 2 passed as arguments to the decorator.
+
+Similarly decorators can be attached to properties, relationships and enumerated values.
+
+```
+@foo("arg1", 2)
+participant Buyer extends Person {
+}
+```
+
+Resource definitions and properties may be decorated with 0 or more decorations. Note that only a single instance of a decorator is allowed on each element type. I.e. it is invalid to have the `@bar` decorator listed twice on the same element.
+
+## Decorator Arguments
+
+Decorators may have an arbitrary list of arguments (0 or more items). Argument values must be strings, numbers or booleans.
+
+## Decorator APIs
+
+Decorators are accessible at runtime via the ModelManager introspect APIs. This allows external tools and utilities to use the Composer Modelling Language (CTO) file format to describe a core model, while decorating it with sufficient metadata for their own purposes.
+
+The example below retrieves the 3rd argument to the foo decorator attached to the myField property of a class declaration:
+
+```
+const val = myField.getDecorator('foo').getArguments()[2];
 ```

@@ -68,7 +68,7 @@ class ModelManager {
         // add the system model
         SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
             LOG.info(method, SYSTEM_MODEL);
-            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName, true);
+            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName);
             this.modelFiles[m.getNamespace()] = m;
         });
 
@@ -138,7 +138,7 @@ class ModelManager {
         }
 
         if (m.isSystemModelFile()) {
-            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace());
+            throw new Error('Cannot add a model file with the reserved system namespace: ' + m.getNamespace());
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
@@ -466,6 +466,7 @@ class ModelManager {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
     }
+
 }
 
 module.exports = ModelManager;

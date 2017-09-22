@@ -28,10 +28,10 @@ $callout: #FFD640;
   //   }
 
   // Scrollbar overrides
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;  // IE 10+
+  // ::-webkit-scrollbar {
+  //   display: none;
+  // }
+  // -ms-overflow-style: none;  // IE 10+
 
   hr {
     display: none;
@@ -43,6 +43,13 @@ $callout: #FFD640;
     justify-items: start;
     overflow-y: scroll;
     height: 100vh;
+
+    // Scrollbar overrides
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;  // IE 10+
+
 
     .docs-pagenav-grid {
       padding-top: 5vh;
@@ -234,6 +241,10 @@ $callout: #FFD640;
     background-color: $third-highlight;
     overflow-y: scroll;
     height: 100vh;
+
+    // ::-webkit-scrollbar {
+    //   display: initial;
+    // }
 
     .content-chunk {
       margin-left: 2rem;
