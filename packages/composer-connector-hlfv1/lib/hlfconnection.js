@@ -763,10 +763,11 @@ class HLFConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {object} options Options that might be requried to for this connection
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode(securityContext, functionName, args, options) {
         const method = 'invokeChainCode';
         LOG.entry(method, securityContext, functionName, args);
 
@@ -785,13 +786,17 @@ class HLFConnection extends Connection {
             }
         });
 
-        let txId = this.client.newTransactionID();
+        let txId;
+        if (options && options.transactionId){
+            txId = options.transactionId;
+        } else {
+            txId = this.client.newTransactionID();
+        }
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
         LOG.debug(method, 'loading channel configuration');
         return this._initializeChannel()
             .then(() => {
-
 
                 // Submit the transaction to the endorsers.
                 const request = {
@@ -1083,7 +1088,7 @@ class HLFConnection extends Connection {
     createTransactionId(){
         // Check that a valid security context has been specified.
         let id = this.client.newTransactionID();
-        return Promise.resolve(id.getTransactionID());
+        return Promise.resolve({id:id,idStr:id.getTransactionID()});
     }
 
 }

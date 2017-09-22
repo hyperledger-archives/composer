@@ -73,22 +73,25 @@ class Util {
      * @param {SecurityContext} securityContext - The user's security context
      * @param {string} functionName - The name of the function to call.
      * @param {string[]} args - The arguments to pass to the function being called.
+     * @param {string} txId - Transaction Id to use
      * @return {Promise} - A promise that will be resolved with the value returned
      * by the chain-code function.
      */
-    static invokeChainCode(securityContext, functionName, args) {
+    static invokeChainCode(securityContext, functionName, args, options) {
         Util.securityCheck(securityContext);
         if (!functionName) {
             throw new Error('functionName not specified');
         } else if (!args) {
             throw new Error('args not specified');
         }
+        options = options || {};
         args.forEach((arg) => {
             if (typeof arg !== 'string') {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
-        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args);
+
+        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args, options);
     }
 
     /**
@@ -110,7 +113,9 @@ class Util {
         return securityContext.getConnection().createTransactionId(securityContext)
         .then((id)=>{
             if (this.isNull(id)){
-                id = uuid.v4();
+                let tempId = uuid.v4();
+                return {id:tempId, idStr:tempId};
+
             }
             return id;
         });
