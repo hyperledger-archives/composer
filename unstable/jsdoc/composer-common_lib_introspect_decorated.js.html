@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/property.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/introspect/decorated.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/property.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/introspect/decorated.js</h1>
     
 <section>
     <article>
@@ -100,187 +100,114 @@
 
 'use strict';
 
-const Decorated = require('./decorated');
-const ModelUtil = require('../modelutil');
+const Decorator = require('./decorator');
+const IllegalModelException = require('./illegalmodelexception');
+const Globalize = require('../globalize');
 
 /**
- * Property representing an attribute of a class declaration,
- * either a Field or a Relationship.
+ * Decorated defines a model element that may have decorators attached.
+ *
  * @private
+ * @abstract
  * @class
  * @memberof module:composer-common
  */
-class Property extends Decorated {
+class Decorated {
 
     /**
-     * Create a Property.
-     * @param {ClassDeclaration} parent - the owner of this property
-     * @param {Object} ast - The AST created by the parser
+     * Create a Decorated from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(parent, ast) {
-        super(ast);
-        this.parent = parent;
-        this.process();
+    constructor(ast) {
+        if(!ast) {
+            throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
+        }
+
+        this.ast = ast;
     }
 
     /**
-     * Returns the owner of this property
-     * @return {ClassDeclaration} the parent class declaration
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
      */
-    getParent() {
-        return this.parent;
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
     }
 
-     /**
+    /**
      * Process the AST and build the model
+     *
      * @throws {IllegalModelException}
      * @private
      */
     process() {
-        super.process();
+        this.decorators = [];
 
-        this.name = this.ast.id.name;
-        this.decorator = null;
-
-        if(!this.name) {
-            throw new Error('No name for type ' + this.ast );
-        }
-
-        if(this.ast.propertyType) {
-            this.type = this.ast.propertyType.name;
-        }
-        else {
-            this.type = null;
-        }
-        this.array = false;
-
-        if(this.ast.array) {
-            this.array = true;
-        }
-
-        if(this.ast.optional) {
-            this.optional = true;
-        }
-        else {
-            this.optional = false;
+        if(this.ast.decorators) {
+            for(let n=0; n &lt; this.ast.decorators.length; n++ ) {
+                let thing = this.ast.decorators[n];
+                this.decorators.push( new Decorator(this, thing) );
+            }
         }
     }
 
     /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
+     * Semantic validation of the structure of this decorated. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
      * @throws {IllegalModelException}
      * @private
      */
-    validate(classDecl) {
-        super.validate();
+    validate() {
 
-        if(this.type) {
-            classDecl.getModelFile().resolveType( 'property ' + this.getFullyQualifiedName(), this.type);
+        for(let n=0; n &lt; this.decorators.length; n++) {
+            let decorator = this.decorators[n];
+            decorator.validate();
+
+            // check we don't have this decorator twice
+            for(let i=n+1; i &lt; this.decorators.length; i++) {
+                let otherDecorator = this.decorators[i];
+                if(decorator.getName() === otherDecorator.getName()) {
+                    throw new IllegalModelException(`Duplicate decorator ${decorator.getName()}`,this.modelFile, this.ast.location);
+                }
+            }
         }
     }
 
     /**
-     * Returns the name of a property
-     * @return {string} the name of this field
+     * Returns the decorators for this class.
+     *
+     * @return {Decorator[]} the decorators for the class
      */
-    getName() {
-        return this.name;
+    getDecorators() {
+        return this.decorators;
     }
 
     /**
-     * Returns the type of a property
-     * @return {string} the type of this field
+     * Returns the decorator for this class with a given name.
+     * @param {string} name  - the name of the decorator
+     * @return {Decorator} the decorator attached to this class with the given name, or null if it does not exist.
      */
-    getType() {
-        return this.type;
-    }
-
-    /**
-     * Returns true if the field is optional
-     * @return {boolean} true if the field is optional
-     */
-    isOptional() {
-        return this.optional;
-    }
-
-    /**
-     * Returns the fully qualified type name of a property
-     * @return {string} the fully qualified type of this property
-     */
-    getFullyQualifiedTypeName() {
-        if(this.isPrimitive()) {
-            return this.type;
+    getDecorator(name) {
+        for(let n=0; n &lt; this.decorators.length; n++) {
+            let decorator = this.decorators[n];
+            if(decorator.getName() === name) {
+                return decorator;
+            }
         }
 
-        const parent = this.getParent();
-        if(!parent) {
-            throw new Error('Property ' + this.name + ' does not have a parent.');
-        }
-        const modelFile = parent.getModelFile();
-        if(!modelFile) {
-            throw new Error('Parent of property ' + this.name + ' does not have a ModelFile!');
-        }
-
-        const result = modelFile.getFullyQualifiedTypeName(this.type);
-        if(!result) {
-            throw new Error('Failed to find fully qualified type name for property ' + this.name + ' with type ' + this.type );
-        }
-
-        return result;
+        return null;
     }
-
-    /**
-     * Returns the fully name of a property (ns + class name + property name)
-     * @return {string} the fully qualified name of this property
-     */
-    getFullyQualifiedName() {
-        return this.getParent().getFullyQualifiedName() + '.' + this.getName();
-    }
-
-    /**
-     * Returns the namespace of the parent of this property
-     * @return {string} the namespace of the parent of this property
-     */
-    getNamespace() {
-        return this.getParent().getNamespace();
-    }
-
-    /**
-     * Returns true if the field is declared as an array type
-     * @return {boolean} true if the property is an array type
-     */
-    isArray() {
-        return this.array;
-    }
-
-
-    /**
-     * Returns true if the field is declared as an enumerated value
-     * @return {boolean} true if the property is an enumerated value
-     */
-    isTypeEnum() {
-        if(this.isPrimitive()) {
-            return false;
-        }
-        else {
-            const type = this.getParent().getModelFile().getType(this.getType());
-            return type.isEnum();
-        }
-    }
-
-    /**
-     *  Returns true if this property is a primitive type.
-     *@return {boolean} true if the property is a primitive type.
-     */
-    isPrimitive() {
-        return ModelUtil.isPrimitiveType(this.getType());
-    }
-
 }
 
-module.exports = Property;
+module.exports = Decorated;
 </pre>
     </article>
 </section>

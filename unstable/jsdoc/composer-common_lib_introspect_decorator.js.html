@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/property.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/introspect/decorator.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/property.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/introspect/decorator.js</h1>
     
 <section>
     <article>
@@ -100,33 +100,41 @@
 
 'use strict';
 
-const Decorated = require('./decorated');
-const ModelUtil = require('../modelutil');
-
 /**
- * Property representing an attribute of a class declaration,
- * either a Field or a Relationship.
+ * Decorator encapsulates a decorator (annotation) on a class or property.
  * @private
  * @class
  * @memberof module:composer-common
  */
-class Property extends Decorated {
+class Decorator {
 
     /**
-     * Create a Property.
-     * @param {ClassDeclaration} parent - the owner of this property
+     * Create a Decorator.
+     * @param {ClassDeclaration | Property} parent - the owner of this property
      * @param {Object} ast - The AST created by the parser
      * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
-        super(ast);
+        this.ast = ast;
         this.parent = parent;
+        this.arguments = null;
         this.process();
     }
 
     /**
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
+    }
+
+    /**
      * Returns the owner of this property
-     * @return {ClassDeclaration} the parent class declaration
+     * @return {ClassDeclaration|Property} the parent class or property declaration
      */
     getParent() {
         return this.parent;
@@ -138,149 +146,46 @@ class Property extends Decorated {
      * @private
      */
     process() {
-        super.process();
+        this.name = this.ast.name;
+        this.arguments = [];
 
-        this.name = this.ast.id.name;
-        this.decorator = null;
-
-        if(!this.name) {
-            throw new Error('No name for type ' + this.ast );
-        }
-
-        if(this.ast.propertyType) {
-            this.type = this.ast.propertyType.name;
-        }
-        else {
-            this.type = null;
-        }
-        this.array = false;
-
-        if(this.ast.array) {
-            this.array = true;
-        }
-
-        if(this.ast.optional) {
-            this.optional = true;
-        }
-        else {
-            this.optional = false;
+        if(this.ast.arguments) {
+            for(let n=0; n &lt; this.ast.arguments.list.length; n++ ) {
+                let thing = this.ast.arguments.list[n];
+                if(thing) {
+                    this.arguments.push( thing.value );
+                }
+            }
         }
     }
 
     /**
      * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
      * @throws {IllegalModelException}
      * @private
      */
-    validate(classDecl) {
-        super.validate();
-
-        if(this.type) {
-            classDecl.getModelFile().resolveType( 'property ' + this.getFullyQualifiedName(), this.type);
-        }
+    validate() {
     }
 
+
     /**
-     * Returns the name of a property
-     * @return {string} the name of this field
+     * Returns the name of a decorator
+     * @return {string} the name of this decorator
      */
     getName() {
         return this.name;
     }
 
-    /**
-     * Returns the type of a property
-     * @return {string} the type of this field
+     /**
+     * Returns the arguments for this decorator
+     * @return {object[]} the arguments for this decorator or null if it does not have any arguments
      */
-    getType() {
-        return this.type;
+    getArguments() {
+        return this.arguments;
     }
-
-    /**
-     * Returns true if the field is optional
-     * @return {boolean} true if the field is optional
-     */
-    isOptional() {
-        return this.optional;
-    }
-
-    /**
-     * Returns the fully qualified type name of a property
-     * @return {string} the fully qualified type of this property
-     */
-    getFullyQualifiedTypeName() {
-        if(this.isPrimitive()) {
-            return this.type;
-        }
-
-        const parent = this.getParent();
-        if(!parent) {
-            throw new Error('Property ' + this.name + ' does not have a parent.');
-        }
-        const modelFile = parent.getModelFile();
-        if(!modelFile) {
-            throw new Error('Parent of property ' + this.name + ' does not have a ModelFile!');
-        }
-
-        const result = modelFile.getFullyQualifiedTypeName(this.type);
-        if(!result) {
-            throw new Error('Failed to find fully qualified type name for property ' + this.name + ' with type ' + this.type );
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the fully name of a property (ns + class name + property name)
-     * @return {string} the fully qualified name of this property
-     */
-    getFullyQualifiedName() {
-        return this.getParent().getFullyQualifiedName() + '.' + this.getName();
-    }
-
-    /**
-     * Returns the namespace of the parent of this property
-     * @return {string} the namespace of the parent of this property
-     */
-    getNamespace() {
-        return this.getParent().getNamespace();
-    }
-
-    /**
-     * Returns true if the field is declared as an array type
-     * @return {boolean} true if the property is an array type
-     */
-    isArray() {
-        return this.array;
-    }
-
-
-    /**
-     * Returns true if the field is declared as an enumerated value
-     * @return {boolean} true if the property is an enumerated value
-     */
-    isTypeEnum() {
-        if(this.isPrimitive()) {
-            return false;
-        }
-        else {
-            const type = this.getParent().getModelFile().getType(this.getType());
-            return type.isEnum();
-        }
-    }
-
-    /**
-     *  Returns true if this property is a primitive type.
-     *@return {boolean} true if the property is a primitive type.
-     */
-    isPrimitive() {
-        return ModelUtil.isPrimitiveType(this.getType());
-    }
-
 }
 
-module.exports = Property;
+module.exports = Decorator;
 </pre>
     </article>
 </section>
