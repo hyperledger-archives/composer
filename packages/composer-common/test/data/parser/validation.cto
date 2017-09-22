@@ -1,0 +1,11 @@
+namespace classdeclation.validation
+
+asset A identified by id {
+  o String id
+}
+
+participant B extends A 
+{
+
+}
+

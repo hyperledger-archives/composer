@@ -76,10 +76,9 @@ The metadata file should take the following format:
     "version": 1,
     "userName": "alice",
     "description": "Alice's identity for basic-sample-network",
-    "businessNetwork": "basic-sample-network"
+    "businessNetwork": "basic-sample-network",
     "enrollmentSecret": "UserSecret",
     "roles": [
-
     ]
 }
 ```

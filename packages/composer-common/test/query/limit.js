@@ -78,11 +78,13 @@ describe('Limit', () => {
     });
 
     describe('#validate', () => {
-
-       // TODO no validation method implemented yet
-
+        let l = new Limit({},{});
+        l.validate();
     });
-
+    describe('#process', () => {
+        let l = new Limit({},{});
+        l.process();
+    });
     describe('#getAST', () => {
 
         it('should return the limit clause', () => {

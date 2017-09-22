@@ -146,27 +146,6 @@ class ProxyConnection extends Connection {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
-            .then((businessNetworkArchive) => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionUpdate', this.connectionID, securityContext.securityContextID, businessNetworkArchive.toString('base64'), (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        resolve();
-                    });
-                });
-            });
-    }
-
-    /**
      * Undeploy a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the business network to remove

@@ -189,6 +189,27 @@ describe('EditCardCredentialsComponent', () => {
         }));
     });
 
+    describe('#formatCert', () => {
+
+        it('should remove all instances of \n from a given certificate', () => {
+            let testCert = 'this is the\\n\\ntest cert';
+            let result = component.formatCert(testCert);
+            result.should.equal('this is the\n\ntest cert');
+        });
+
+        it('should remove all instances of \r\n from a given certificate', () => {
+            let testCert = 'this is the\\r\\ntest cert';
+            let result = component.formatCert(testCert);
+            result.should.equal('this is the\ntest cert');
+        });
+
+        it('should remove all instances of \n\r from a given certificate', () => {
+            let testCert = 'this is the\\n\\rtest cert';
+            let result = component.formatCert(testCert);
+            result.should.equal('this is the\ntest cert');
+        });
+    });
+
     describe('#validContents', () => {
 
         it('should not enable validation if trying to set certificates', () => {
