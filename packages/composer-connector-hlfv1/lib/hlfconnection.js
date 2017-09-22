@@ -978,7 +978,7 @@ class HLFConnection extends Connection {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
                     if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with cdoe ${code}`));
+                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
                     } else {
                         resolve();
                     }
@@ -1073,6 +1073,17 @@ class HLFConnection extends Connection {
                 LOG.error(method, newError);
                 throw newError;
             });
+    }
+
+   /**
+     * Get a transaction id from the fabric client
+     * @param {any} securityContext security context
+     * @return {Promise} A promise that is resolved with a transaction id
+     */
+    createTransactionId(){
+        // Check that a valid security context has been specified.
+        let id = this.client.newTransactionID();
+        return Promise.resolve(id.getTransactionID());
     }
 
 }

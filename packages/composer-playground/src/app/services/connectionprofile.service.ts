@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ConnectionProfileStoreService } from './connectionprofilestore.service';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 
 import { AdminConnection } from 'composer-admin';
 import { version } from '../../../package.json';

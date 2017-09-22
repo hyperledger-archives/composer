@@ -17,7 +17,7 @@
 const Logger = require('composer-common').Logger;
 const Relationship = require('composer-common').Relationship;
 
-const LOG = Logger.getLog('InvalidRelationship');
+const LOG = Logger.getLog('CallbackRelationship');
 
 /**
  * A callback relationship is a wrapper around a relationship.

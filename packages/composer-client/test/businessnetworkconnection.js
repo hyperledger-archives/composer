@@ -793,6 +793,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
 
             // Invoke the submitTransaction function.
             return businessNetworkConnection
@@ -826,7 +827,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -859,7 +860,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -892,7 +893,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').rejects(new Error('such error'));
-
+            sandbox.stub(Util, 'createTransactionId').resolves('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)

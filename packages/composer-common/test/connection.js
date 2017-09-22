@@ -273,7 +273,13 @@ describe('Connection', () => {
 
     describe('#_updateTX', () => {
 
-        it('should throw as abstract method', () => {
+        it('should reject if no network defn given',()=>{
+            (()=>{
+                connection._updateTx(mockSecurityContext,null);
+            }).should.throw(/business network definition not specified/);
+        });
+
+        it('should handle valid data', () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -294,6 +300,37 @@ describe('Connection', () => {
             mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
+
+            return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
+            .then(()=>{
+                sinon.assert.called(Util.invokeChainCode);
+                sinon.assert.called(Util.queryChainCode);
+            });
+
+        });
+
+        it('should handle valid data minus tx id and with a hardcoded timestamp', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp='the epoch';
 
             return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
             .then(()=>{
@@ -531,6 +568,39 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             (() => {
                 connection._list(mockSecurityContext);
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+
+    describe('#createTransactionId', () => {
+
+        it('should call _createTransactionId and handle no error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(null,['5d5s6s78d7f6']);
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.eventually.be.deep.equal(['5d5s6s78d7f6'])
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+        it('should call _createTransactionId and handle an error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(new Error('error'));
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.be.rejectedWith(/error/)
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+    });
+
+    describe('#_createTransactionId', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                connection._createTransactionId(mockSecurityContext);
             }).should.throw(/abstract function called/);
         });
 

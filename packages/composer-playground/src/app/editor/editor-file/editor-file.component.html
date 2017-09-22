@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div class="alert-area" role="alert" *ngIf="editorType !== 'readme' && !currentError">
+<div class="alert-area" role="alert" *ngIf="(editorType === 'code' || !_previewReadmeActive) && !currentError">
   <svg class="ibm-icon" aria-hidden="true">
     <use xlink:href="#icon-spell_check"></use>
   </svg>
