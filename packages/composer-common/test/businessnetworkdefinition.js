@@ -18,7 +18,10 @@ const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const ModelFile = require('../lib/introspect/modelfile');
 const fs = require('fs');
 const JSZip = require('jszip');
-let should = require('chai').should();
+
+const chai = require('chai');
+const should = chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 let sandbox;
 
@@ -55,6 +58,15 @@ describe('BusinessNetworkDefinition', () => {
     });
 
     describe('#accessors', () => {
+
+        it('visitor', (()=>{
+            let visitor = { visit: () =>{}};
+            let visitSpy = sinon.stub(visitor,'visit');
+            visitSpy.returns();
+
+            businessNetworkDefinition.accept(visitor,{});
+            sinon.assert.calledOnce(visitSpy);
+        }));
 
         it('should be able to get name', () => {
             businessNetworkDefinition.getName().should.equal('id');
@@ -120,7 +132,7 @@ describe('BusinessNetworkDefinition', () => {
         });
     });
 
-    describe('#archives', () => {
+    describe('#usingDirectories', () => {
 
         beforeEach( ()=>{
             sandbox = sinon.sandbox.create();
@@ -130,7 +142,12 @@ describe('BusinessNetworkDefinition', () => {
 
         it('should be able to correctly create a business network from a plain directory', () => {
 
-            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive').then(businessNetwork => {
+            let options = {};
+            options.dependencyGlob = '**';
+            options.modelFileGlob = '**/models/**/*.cto';
+            options.scriptGlob = '**/lib/**/*.js';
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive',options).then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
                 businessNetwork.getName().should.equal('test-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
@@ -144,7 +161,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.aclManager.getAclRules().should.have.length(4);
                 businessNetwork.queryManager.getQueries().should.have.length(6);
                 const intro = businessNetwork.getIntrospector();
-                // remove system types and make sure the 25 model types are presents
+                            // remove system types and make sure the 25 model types are presents
                 let classDecl = intro.getClassDeclarations().filter( (element) => {
                     return !element.isSystemType();
                 });
@@ -154,38 +171,37 @@ describe('BusinessNetworkDefinition', () => {
             });
         });
 
-        it('should be able to correctly create a business network from a plain directory - with few bits missing.', () => {
-            let options = {dependencyGlob : '**',
-                modelFileGlob: '**/models/**/*.cto',
-                scriptGlob : '**/lib/**/*.js'};
+        it('should be able to correctly create a business network from a plain directory - with README.md missing', () => {
+            let stub = sandbox.stub(fs,'readFileSync');
 
-            sandbox.stub(fs,'readFileSync').withArgs('README.md',sinon.match.any).returns('This is not a test');
+            stub.withArgs(sinon.match((r)=>{return r.endsWith('README.md');}),sinon.match.any).returns(undefined);
+            stub.callThrough();
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive');
+        });
 
-            (() => {
-                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive',options);
-            }).should.throw(/Failed to find package.json/);
+        it('should be able to correctly create a business network from a plain directory - with package.json missing', () => {
+            let stub = sandbox.stub(fs,'readFileSync');
 
+            stub.withArgs(sinon.match((r)=>{
+                return r.endsWith('package.json');
+            }),sinon.match.any).returns(null);
+
+            stub.callThrough();
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive')
+                  .should.be.eventually.rejectedWith(/Failed to find package.json/);
         });
 
         it('should be able to correctly create a business network from a plain directory - with acl/queries missing', () => {
-            let options = {dependencyGlob : '**',
-                modelFileGlob: '**/models/**/*.cto',
-                scriptGlob : '**/lib/**/*.js'};
-
             let stub = sandbox.stub(fs,'readFileSync');
 
-            // console.log(stub);
-            stub.withArgs(sinon.match('permissions.acl'),sinon.match.any).returns(null);
-            // stub.withArgs(sinon.match('queries'),sinon.match.any).returns(null);
+            stub.withArgs(sinon.match((r)=>{return r.endsWith('permissions.acl');}),sinon.match.any).returns(undefined);
+            stub.withArgs(sinon.match((r)=>{return r.endsWith('queries.qry');}),sinon.match.any).returns(undefined);
             stub.callThrough();
-
-            (() => {
-                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive',options);
-            });
-
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive');
         });
 
-        it('should be able to correctly create a business network from a plain directory - with dependency issues', () => {
+        it('should be able to correctly create a business network from a plain directory - with dependency issues #2', () => {
             let packageJSON= {
                 'name': 'test-archive',
                 'version': '0.0.1',
@@ -196,9 +212,27 @@ describe('BusinessNetworkDefinition', () => {
 
             sandbox.stub(JSON,'parse').returns(packageJSON);
 
-            (() => {
-                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive');
-            }).should.throw(/npm dependency path/);
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive')
+               .should.be.eventually.rejectedWith(/npm dependency path/);
+
+        });
+
+        it('should be able to correctly create a business network from a plain directory - with dependency issues #1', () => {
+            let packageJSON= {
+                'name': 'test-archive',
+                'version': '0.0.1',
+                'description': 'A test business network.',
+                'customKey': 'custom value',
+                'dependencies':['deps']
+            };
+
+            sandbox.stub(JSON,'parse').returns(packageJSON);
+
+            let stub = sandbox.stub(fs,'existsSync');
+            stub.onCall(2).returns(true);
+            stub.callThrough();
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive')
+               .should.be.eventually.rejectedWith(/no such file or directory/);
 
         });
 
@@ -212,9 +246,9 @@ describe('BusinessNetworkDefinition', () => {
 
             sandbox.stub(JSON,'parse').returns(packageJSON);
 
-            (() => {
-                BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/empty-archive');
-            }).should.throw(/Failed to find a model file/);
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/empty-archive')
+                .should.be.eventually.rejectedWith(/Failed to find a model file/);
 
         });
 
@@ -229,7 +263,7 @@ describe('BusinessNetworkDefinition', () => {
 
                 const intro = businessNetwork.getIntrospector();
 
-                // remove system types and make sure the 25 model types are presents
+                            // remove system types and make sure the 25 model types are presents
                 let classDecl = intro.getClassDeclarations().filter( (element) => {
                     return !element.isSystemType();
                 });
@@ -242,12 +276,12 @@ describe('BusinessNetworkDefinition', () => {
 
         it('should be able to correctly create a business network from a directory using npm dependencies', () => {
 
-            // we force an 'npm install' on the package.json
-            // No we don't - we can't do this in a unit test!
-            /*
-            let execSync = require('child_process').execSync;
-            execSync('cd ' + __dirname + '/data/zip/test-npm-archive' + ' && npm install',
-              function(error, stdout, stderr) {} ); */
+                        // we force an 'npm install' on the package.json
+                        // No we don't - we can't do this in a unit test!
+                        /*
+                        let execSync = require('child_process').execSync;
+                        execSync('cd ' + __dirname + '/data/zip/test-npm-archive' + ' && npm install',
+                          function(error, stdout, stderr) {} ); */
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-npm-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
@@ -262,7 +296,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.scriptManager.getScripts().should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                // remove system types and make sure the 25 model types are presents
+                            // remove system types and make sure the 25 model types are presents
                 let classDecl = intro.getClassDeclarations().filter( (element) => {
                     return !element.isSystemType();
                 });
@@ -275,7 +309,18 @@ describe('BusinessNetworkDefinition', () => {
             });
         });
 
-        it('should be able to store business network as a ZIP archive (using fromArchive and toArchive)', () => {
+
+    } );
+
+    describe('#usingArchives', () => {
+
+        beforeEach( ()=>{
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach( ()=>{sandbox.restore();});
+
+        it('using fromArchive and toArchive - good path all elements present', () => {
             /*
              We first need to read a ZIP and create a business network.
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
@@ -299,10 +344,11 @@ describe('BusinessNetworkDefinition', () => {
         });
 
 
-        it('should be able to store business network as a ZIP archive - missing readme', () => {
+        it('should be able to cope with missing readme,permissions and query files', () => {
             /*
              We first need to read a ZIP and create a business network.
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
+             after removing a few things
             */
             let fileName = __dirname + '/data/zip/test-archive.zip';
             let readFile = fs.readFileSync(fileName);
@@ -332,6 +378,24 @@ describe('BusinessNetworkDefinition', () => {
                     buffer.should.be.Buffer;
                 });
             });
+
+        });
+
+        it('should fail with missing package.json', () => {
+            /*
+             We first need to read a ZIP and create a business network.
+             After we have done this, we'll be able to create a new ZIP with the contents of the business network.
+             after removing a few things
+            */
+            let fileName = __dirname + '/data/zip/test-archive.zip';
+            let readFile = fs.readFileSync(fileName);
+
+            return JSZip.loadAsync(readFile).then((zip) => {
+                zip.remove('package.json');
+                return zip.generateAsync({type:'nodebuffer'});
+            }).then((buffer) => {
+                return BusinessNetworkDefinition.fromArchive(buffer);
+            }).should.be.eventually.rejectedWith(/package.json must exist/);
 
         });
 

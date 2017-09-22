@@ -15,7 +15,9 @@
 'use strict';
 
 const Logger = require('../../lib/log/logger');
-const Tree = require('../../lib/log//tree.js');
+const Tree = require('../../lib/log/tree.js');
+
+const WinstonInjector = require('../../lib/log/winstonInjector.js');
 
 const chai = require('chai');
 const should = chai.should();
@@ -378,6 +380,27 @@ describe('Logger', () => {
             actualLogger.log('foo', 'bar');
         });
 
+    });
+
+    describe('#WinstonInjector',()=>{
+        it('additional code paths ',()=>{
+            let config = {
+                'console': {
+                    'enabledLevel': 'info',
+                    'alwaysLevel': 'none'
+
+                },
+                'file': {
+
+                    'filename': 'trace_TIMESTAMP.log',
+                    'enabledLevel': 'debug',
+                    'alwaysLevel': 'error'
+                }};
+            let configElements = {debug: {things:'here'}};
+            WinstonInjector.getLogger(config,configElements);
+
+
+        });
     });
 
 });
