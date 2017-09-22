@@ -1,0 +1,199 @@
+/**
+ * Sample business network definition.
+ */
+namespace xx.yy.zz
+
+asset SomeTransmission identified by orderNumber {
+  o String orderNumber  //Some order number
+  --> Par2 aa
+  --> Par1 bb
+  o SomeTransmission[] messages
+}
+
+participant Par1 identified by code {
+  o String mmm
+  o String name
+  o String prefix
+  o String code
+  o Boolean bool1
+  o Boolean bool2
+  o Boolean bool3
+}
+
+participant SomeSss identified by sss {
+  o String sss
+  o String mmm
+  --> Par1 bb
+  --> Par1 rep2
+}
+
+participant Par2 identified by id {
+  o String id
+  o String name
+  o String address
+}
+
+transaction UpdateOrderTransaction {
+  o String orderId
+  --> Par2 aa
+  --> Par1 bb
+  o SomeTransmission transmission
+}
+
+event UpdateOrderEvent {
+  --> SomeTransmission transmission
+}
+
+asset Some identified by uuid {
+  o String uuid  //Unique identifier
+}
+
+asset AgencyOrder extends Some { 
+    o AXZHDR agyhdr 
+    o AXZDS1 agyds1
+    o AXZDS2 agyds2
+    o AXZDS3 agyds3
+    o AXZDS4 agyds4
+    o AXZSTD[] agystds
+    o AXZCOM[] agycoms
+    o AXZHIA[] agyhias
+    o BxblineTransmission[] bxblines
+    o AXZTLR agytlr
+}
+
+asset SomeRecord identified by uuid {
+  o String uuid       
+  o String id         
+  o Long orderNumber  //Some order number
+}
+
+asset SomeModifier extends SomeRecord { 
+    o Par2 tpar2
+    o Par1 tpar1       
+    o String dt       
+    o String sss    
+    o String cn         
+    o String rts        
+}
+
+asset SomePreviousSssModifier extends SomeModifier {
+  o String previousSssCallLetters 
+}
+
+asset SomeMultiple extends SomeRecord {
+  o String continuation 
+}
+
+asset SomeComment extends SomeMultiple {
+  o String comment 
+}
+
+
+asset AXZHDR extends SomePreviousSssModifier { 
+    o String version         //Some version number
+    o String routingCode
+    o String mdaCode
+    o String clientCode
+  o String prxOneCode
+  o String prxTwoCode
+  o String estimateNumber
+  o String startDate
+  o String endDate
+  o String cashOrTrade
+  o String scheduleType
+  o String scheduleStartDate
+    o Long billWeekStartDay
+    o String originalOrderNumber
+    o Long revisionNumber
+}
+
+asset AXZDS1 extends SomeRecord {
+    o String axyName
+    o String axyAddress
+}
+
+asset AXZDS2 extends SomeRecord {
+    o String clientName
+    o String estimateDescription
+  o String targetDmxx
+  o String[] extraDmxxs
+}
+
+asset AXZDS3 extends SomeRecord {
+    o String prxOneName
+    o String prxTwoName
+}
+
+asset AXZDS4 extends SomeRecord {
+    o String bxberCode
+    o String bxberName
+  o Long bxberTelephone
+  o String bxberExtension
+}
+
+asset AXZSTD extends SomeComment {
+}
+
+asset AXZCOM extends SomeComment {
+}
+
+asset AXZHIA extends SomeMultiple {
+  o String[] dates
+}
+
+asset AXZTLR extends SomeRecord {
+    o Long numberOfRecords
+    o Long totalOrderedSpx
+    o Long totalOrderedDollars
+}
+
+//Bxb record details
+asset BxblineTransmission identified by uuid{
+  o String uuid
+  o BXBHDR bxbhdr
+    o BXBDEM bxbdem
+    o BXBORB[] bxborbs
+    o BXBCOM[] bxbcoms
+    o BXBDTL[] bxbdtls
+}
+
+asset SomeBxbRecord extends SomeRecord {
+    o Long sequenceNumber
+    o String sbx
+    o Long sbxStartDay
+    o Long startTime
+    o Long endTime
+    o Long totalspxyLength
+    o String lengthInUnits
+    o Long cost
+    o String costQualifier
+    o Long prxOneTimeShare
+    o String pppName
+    o String scheduleType  
+}
+
+asset BXBHDR extends SomeBxbRecord {
+  o Long makegoodForBxbline
+}
+
+asset BXBDEM extends SomeRecord {
+  o Long[] demos
+}
+
+asset BXBORB extends SomeMultiple {
+  o String sbx
+    o Long sbxStartDay
+    o Long startTime
+    o Long endTime
+    o String pppName  
+}
+
+asset BXBCOM extends SomeComment {
+}
+
+asset BXBDTL extends SomeMultiple {
+  o Long cost
+    o String startDate
+    o Long numberOfWeeks
+    o Long spxPerWeek
+}
