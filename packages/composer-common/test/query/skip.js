@@ -74,9 +74,13 @@ describe('Skip', () => {
     });
 
     describe('#validate', () => {
+        const o = new Skip({},{});
+        o.validate();
+    });
 
-       // TODO no validation method implemented yet
-
+    describe('#process', () => {
+        const o = new Skip({},{});
+        o.process();
     });
 
     describe('#getAST', () => {

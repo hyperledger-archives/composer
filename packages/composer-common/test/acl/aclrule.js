@@ -102,6 +102,12 @@ describe('AclRule', () => {
             aclRule = new AclRule( aclFile, ast );
             aclRule.validate();
         });
+
+        it('should validate no predicate contents', () => {
+            aclRule = new AclRule( aclFile, ast );
+            aclRule.predicate=null;
+            aclRule.validate();
+        });
     });
 
     describe('#accept', () => {
