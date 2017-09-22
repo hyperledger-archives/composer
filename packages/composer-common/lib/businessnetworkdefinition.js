@@ -332,6 +332,208 @@ class BusinessNetworkDefinition {
 
     }
 
+            // define a help function that will filter out files
+        // that are inside a node_modules directory under the path
+        // we are processing
+    static _isFileInNodeModuleDir(file, basePath) {
+        const method = 'isFileInNodeModuleDir';
+        let filePath = fsPath.parse(file);
+        let subPath = filePath.dir.substring(basePath.length);
+        let result = subPath.split(fsPath.sep).some((element) => {
+            return element === 'node_modules';
+        });
+
+        LOG.debug(method, file, result);
+        return result;
+    }
+
+    static _getPackageJson(path){
+        const method='_getPackageJson';
+        // grab the package.json
+        let packageJsonContents = fs.readFileSync( fsPath.resolve(path, 'package.json'), ENCODING);
+        if(!packageJsonContents) {
+            throw new Error('Failed to find package.json');
+        }
+
+        LOG.debug(method, 'Loaded package.json', packageJsonContents);
+        // parse the package.json
+        return JSON.parse(packageJsonContents);
+    }
+
+    /**
+     * This is looking through the dependancies that are listed in the package.json.
+     *
+     * @param {Object} jsonObject the package.json object
+     * @param {Path} path the location that was specified
+     * @param {Object} options that include the globs
+     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     */
+    static _processDependancies(jsonObject,path,options,modelFiles,modelFileNames){
+        const method='_processDependancies';
+        LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
+        const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob, { dot: true }));
+        LOG.debug(method, 'Matched dependencies', dependencies);
+
+        for( let dep of dependencies) {
+        // find all the *.cto files under the npm install dependency path
+            let dependencyPath = fsPath.resolve(path, 'node_modules', dep);
+            LOG.debug(method, 'Checking dependency path', dependencyPath);
+            if (!fs.existsSync(dependencyPath)) {
+            // need to check to see if this is in a peer directory as well
+            //
+                LOG.debug(method,'trying different path '+path.replace(jsonObject.name,''));
+                dependencyPath = fsPath.resolve(path.replace(jsonObject.name,''),dep);
+                if(!fs.existsSync(dependencyPath)){
+                    throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                }
+            }
+
+            BusinessNetworkDefinition.processDirectory(dependencyPath, {
+                accepts: function(file) {
+                    return this._isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob, { dot: true });
+                },
+                acceptsDir: function(dir) {
+                    return !this._isFileInNodeModuleDir(dir, dependencyPath);
+                },
+                process: function(path,contents) {
+                    modelFiles.push(contents);
+                    modelFileNames.push(path);
+                    LOG.debug(method, 'Found model file', path);
+                }
+            });
+        }
+    }
+
+     /**
+     * Looks for the model files in the path, and sets on the business network.
+     * @param {Object} jsonObject the package.json object
+     * @param {Path} path the location that was specified
+     * @param {Object} options that include the globs
+     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     */
+    static _processModelFiles(jsonObject,path,options,businessNetwork){
+        const method='_processModelFiles';
+
+        const modelFiles = [];
+        const modelFileNames = [];
+       // process each module dependency
+       // filtering using a glob on the module dependency name
+        if(jsonObject.dependencies) {
+            this._processDependencies(jsonObject,options,modelFiles,modelFileNames);
+        }
+
+       // find CTO files outside the npm install directory
+        //
+        BusinessNetworkDefinition.processDirectory(path, {
+            accepts: function(file) {
+                return this._isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob, { dot: true });
+            },
+            acceptsDir: function(dir) {modelFileNames;
+                return !this._isFileInNodeModuleDir(dir, path);
+            },
+            process: function(path,contents) {
+                modelFiles.push(contents);
+                modelFileNames.push(path);
+                LOG.debug(method, 'Found model file', path);
+            }
+        });
+
+        if(modelFiles.length === 0) {
+            throw new Error('Failed to find a model file.');
+        }
+
+        businessNetwork.getModelManager().addModelFiles(modelFiles,modelFileNames);
+        LOG.debug(method, 'Added model files',  modelFiles.length);
+    }
+
+     /**
+     * Looks for the script files in the path, and sets on the business network.
+     * @param {Object} jsonObject the package.json object
+     * @param {Path} path the location that was specified
+     * @param {Object} options that include the globs
+     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     */
+    static _processScriptFiles(jsonObject,path,options,businessNetwork){
+        const method='_processScriptFiles';
+        const scriptFiles = [];
+        BusinessNetworkDefinition.processDirectory(path, {
+            accepts: function(file) {
+                return this._isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob, { dot: true });
+            },
+            acceptsDir: function(dir) {
+                return !this._isFileInNodeModuleDir(dir, path);
+            },
+            process: function(path,contents) {
+                let filePath = fsPath.parse(path);
+                const jsScript = businessNetwork.getScriptManager().createScript(path, filePath.ext.toLowerCase(), contents);
+                scriptFiles.push(jsScript);
+                LOG.debug(method, 'Found script file ', path);
+            }
+        });
+
+        for( let script of scriptFiles) {
+            businessNetwork.getScriptManager().addScript(script);
+        }
+
+        LOG.debug(method, 'Added script files', scriptFiles.length);
+    }
+
+    /**
+     * Looks for the permissions.acl file in the path, and sets on the business network.
+     * @param {Object} jsonObject the package.json object
+     * @param {Path} path the location that was specified
+     * @param {Object} options that include the globs
+     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     */
+    static _processPermissionsAcl(jsonObject,path,options,businessNetwork){
+        const method = '_processPermissionsAcl';
+        const aclPath = fsPath.resolve(path, 'permissions.acl');
+        if(fs.existsSync(aclPath)) {
+            let permissionsAclContents = fs.readFileSync( aclPath, ENCODING);
+            if(permissionsAclContents) {
+                LOG.debug(method, 'Loaded permissions.acl', permissionsAclContents);
+                const aclFile = new AclFile('permissions.acl', businessNetwork.getModelManager(), permissionsAclContents);
+                businessNetwork.getAclManager().setAclFile(aclFile);
+            }
+        }
+    }
+
+    /**
+     * Looks for the queries file in the path, and sets on the business network.
+     * @param {Object} jsonObject the package.json object
+     * @param {Path} path the location that was specified
+     * @param {Object} options that include the globs
+     * @param {BusinessNetworkDefinition} businessNetwork that is being created
+     */
+    static _processQueryFile(jsonObject,path,options,businessNetwork){
+        const method = '_processQueryFile';
+        const queryPath = fsPath.resolve(path, 'queries.qry');
+        if(fs.existsSync(queryPath)) {
+            let queryContents = fs.readFileSync( queryPath, ENCODING);
+            if(queryContents) {
+                LOG.debug(method, 'Loaded queries.qry', queryContents);
+                const queryFile = new QueryFile('queries.qry', businessNetwork.getModelManager(), queryContents);
+                businessNetwork.getQueryManager().setQueryFile(queryFile);
+            }
+        }
+    }
+
+    /**
+     * @param {String} path to search for the readme
+     * @return {String} contents of the readme, if any. defaults to null
+     */
+    static _processReadme(path){
+        const method = '_processReadme';
+        let readmeContents = null;
+        const readmePath = fsPath.resolve(path, 'README.md');
+        if(fs.existsSync(readmePath)) {
+            readmeContents = fs.readFileSync(readmePath, ENCODING);
+            if(readmeContents) {
+                LOG.debug(method, 'Loaded README.md', readmeContents);
+            }
+        }
+        return readmeContents;
+    }
     /**
      * Builds a BusinessNetworkDefintion from the contents of a directory.
      * The directory must include a package.json in the root (used to specify
@@ -374,180 +576,43 @@ class BusinessNetworkDefinition {
      * @return {Promise} a Promise to the instantiated business network
      */
     static fromDirectory(path, options) {
-        try {
-            if(!options) {
-                options = {};
-            }
+        const method = 'fromDirectory';
+        LOG.entry(method, path);
+
+        return Promise.resolve().then(()=> {
+            options = options || {};
 
             if(!options.dependencyGlob) {
                 options.dependencyGlob = '**';
             }
-
             if(!options.modelFileGlob) {
                 options.modelFileGlob = '**/models/**/*.cto';
             }
-
             if(!options.scriptGlob) {
                 options.scriptGlob = '**/lib/**/*.js';
             }
 
-            const method = 'fromDirectory';
-            LOG.entry(method, path);
+            let jsonObject = this._getPackageJson(path);
 
-         // grab the README.md
-            let readmeContents = null;
-            const readmePath = fsPath.resolve(path, 'README.md');
-            if(fs.existsSync(readmePath)) {
-                readmeContents = fs.readFileSync(readmePath, ENCODING);
-                if(readmeContents) {
-                    LOG.debug(method, 'Loaded README.md', readmeContents);
-                }
-            }
+           // create the business network definition
+            const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, this._processReadMe(path));
 
-        // grab the package.json
-            let packageJsonContents = fs.readFileSync( fsPath.resolve(path, 'package.json'), ENCODING);
+            // search and find the cto files
+            this._processModelFiles(jsonObject,path,options,businessNetwork);
 
-            if(!packageJsonContents) {
-                throw new Error('Failed to find package.json');
-            }
+            // find script files outside the npm install directory
+            this._processScriptFiles(jsonObject,path,options,businessNetwork);
 
-            LOG.debug(method, 'Loaded package.json', packageJsonContents);
+            // grab the permissions.acl
+            this._processPermissionsAcl(jsonObject,path,options,businessNetwork);
 
-        // parse the package.json
-            let jsonObject = JSON.parse(packageJsonContents);
-            let packageName = jsonObject.name;
-
-        // create the business network definition
-            const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, readmeContents);
-            const modelFiles = [];
-            const modelFileNames = [];
-
-        // define a help function that will filter out files
-        // that are inside a node_modules directory under the path
-        // we are processing
-            const isFileInNodeModuleDir = function(file, basePath) {
-                const method = 'isFileInNodeModuleDir';
-                let filePath = fsPath.parse(file);
-                let subPath = filePath.dir.substring(basePath.length);
-                let result = subPath.split(fsPath.sep).some((element) => {
-                    return element === 'node_modules';
-                });
-
-                LOG.debug(method, file, result);
-                return result;
-            };
-
-        // process each module dependency
-        // filtering using a glob on the module dependency name
-            if(jsonObject.dependencies) {
-                LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
-                const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob, { dot: true }));
-                LOG.debug(method, 'Matched dependencies', dependencies);
-
-                for( let dep of dependencies) {
-                // find all the *.cto files under the npm install dependency path
-                    let dependencyPath = fsPath.resolve(path, 'node_modules', dep);
-                    LOG.debug(method, 'Checking dependency path', dependencyPath);
-                    if (!fs.existsSync(dependencyPath)) {
-                    // need to check to see if this is in a peer directory as well
-                    //
-                        LOG.debug(method,'trying different path '+path.replace(packageName,''));
-                        dependencyPath = fsPath.resolve(path.replace(packageName,''),dep);
-                        if(!fs.existsSync(dependencyPath)){
-                            throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
-                        }
-                    }
-
-                    BusinessNetworkDefinition.processDirectory(dependencyPath, {
-                        accepts: function(file) {
-                            return isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob, { dot: true });
-                        },
-                        acceptsDir: function(dir) {
-                            return !isFileInNodeModuleDir(dir, dependencyPath);
-                        },
-                        process: function(path,contents) {
-                            modelFiles.push(contents);
-                            modelFileNames.push(path);
-                            LOG.debug(method, 'Found model file', path);
-                        }
-                    });
-                }
-            }
-
-        // find CTO files outside the npm install directory
-        //
-            BusinessNetworkDefinition.processDirectory(path, {
-                accepts: function(file) {
-                    return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob, { dot: true });
-                },
-                acceptsDir: function(dir) {
-                    return !isFileInNodeModuleDir(dir, path);
-                },
-                process: function(path,contents) {
-                    modelFiles.push(contents);
-                    modelFileNames.push(path);
-                    LOG.debug(method, 'Found model file', path);
-                }
-            });
-
-            businessNetwork.getModelManager().addModelFiles(modelFiles,modelFileNames);
-            LOG.debug(method, 'Added model files',  modelFiles.length);
-
-        // find script files outside the npm install directory
-            const scriptFiles = [];
-            BusinessNetworkDefinition.processDirectory(path, {
-                accepts: function(file) {
-                    return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob, { dot: true });
-                },
-                acceptsDir: function(dir) {
-                    return !isFileInNodeModuleDir(dir, path);
-                },
-                process: function(path,contents) {
-                    let filePath = fsPath.parse(path);
-                    const jsScript = businessNetwork.getScriptManager().createScript(path, filePath.ext.toLowerCase(), contents);
-                    scriptFiles.push(jsScript);
-                    LOG.debug(method, 'Found script file ', path);
-                }
-            });
-
-            if(modelFiles.length === 0) {
-                throw new Error('Failed to find a model file.');
-            }
-
-            for( let script of scriptFiles) {
-                businessNetwork.getScriptManager().addScript(script);
-            }
-
-            LOG.debug(method, 'Added script files', scriptFiles.length);
-
-        // grab the permissions.acl
-            const aclPath = fsPath.resolve(path, 'permissions.acl');
-            if(fs.existsSync(aclPath)) {
-                let permissionsAclContents = fs.readFileSync( aclPath, ENCODING);
-                if(permissionsAclContents) {
-                    LOG.debug(method, 'Loaded permissions.acl', permissionsAclContents);
-                    const aclFile = new AclFile('permissions.acl', businessNetwork.getModelManager(), permissionsAclContents);
-                    businessNetwork.getAclManager().setAclFile(aclFile);
-                }
-            }
-
-         // grab the queries.qry
-            const queryPath = fsPath.resolve(path, 'queries.qry');
-            if(fs.existsSync(queryPath)) {
-                let queryContents = fs.readFileSync( queryPath, ENCODING);
-                if(queryContents) {
-                    LOG.debug(method, 'Loaded queries.qry', queryContents);
-                    const queryFile = new QueryFile('queries.qry', businessNetwork.getModelManager(), queryContents);
-                    businessNetwork.getQueryManager().setQueryFile(queryFile);
-                }
-            }
+            // grab the queries.qry
+            this._processQueryFile(jsonObject,path,options,businessNetwork);
 
 
             LOG.exit(method, path);
-            return Promise.resolve(businessNetwork);
-        }catch(error){
-            return Promise.reject(error);
-        }
+            return businessNetwork;
+        });
     }
 
     /**
