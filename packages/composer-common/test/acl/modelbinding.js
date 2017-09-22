@@ -119,6 +119,14 @@ describe('ModelBinding', () => {
             }).should.throw(/Failed to find class org.acme.Missing/);
         });
 
+        it('should detect reference to missing namespace in the modelmanager', () => {
+            (() => {
+                modelBinding = new ModelBinding( aclRule, classAst );
+                sinon.stub(modelManager,'getModelFile').returns(false);
+                modelBinding.validate();
+            }).should.throw(/Failed to find namespace org.acme/);
+        });
+
         it('should detect reference to missing namespace', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missingNamespace );
@@ -139,6 +147,7 @@ describe('ModelBinding', () => {
                 modelBinding.validate();
             }).should.throw(/Failed to find namespace org.missing.Missing/);
         });
+
     });
 
     describe('#accept', () => {

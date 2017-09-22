@@ -31,6 +31,11 @@ describe('ParseException', function () {
             exc.should.be.an.instanceOf(BaseFileException);
         });
 
+        it('should cope without an filelocation', function () {
+            let exc = new ParseException('message', null);
+            exc.message.should.not.be.null;
+        });
+
         it('should have a message', function () {
             let exc = new ParseException('message', fileLocation);
             exc.message.should.match(/message Line 1 column 1/);
