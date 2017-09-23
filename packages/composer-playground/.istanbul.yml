@@ -8,5 +8,5 @@ check:
     global:
         statements: 99
         branches: 96.3
-        functions: 98.9
+        functions: 98.8
         lines: 99.3
