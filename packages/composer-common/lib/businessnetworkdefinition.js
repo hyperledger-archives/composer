@@ -37,6 +37,7 @@ const LOG = Logger.getLog('BusinessNetworkDefinition');
     /** define a help function that will filter out files
      * that are inside a node_modules directory under the path
      * we are processing
+     * @private
      * @param {File} file to load
      * @param {Path} basePath to search from
      * @return {boolean} returns true/false
@@ -352,6 +353,7 @@ class BusinessNetworkDefinition {
     }
 
     /** Load and parse the package.json
+     * @private
      * @param {Path} path to load from
      * @return {Object} parsed object
      */
@@ -370,7 +372,7 @@ class BusinessNetworkDefinition {
 
     /**
      * This is looking through the dependancies that are listed in the package.json.
-     *
+     * @private
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
@@ -415,6 +417,7 @@ class BusinessNetworkDefinition {
 
      /**
      * Looks for the model files in the path, and sets on the business network.
+     * @private
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
@@ -457,6 +460,7 @@ class BusinessNetworkDefinition {
 
      /**
      * Looks for the script files in the path, and sets on the business network.
+     * @private
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
@@ -489,6 +493,7 @@ class BusinessNetworkDefinition {
 
     /**
      * Looks for the permissions.acl file in the path, and sets on the business network.
+     * @private
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
@@ -509,6 +514,7 @@ class BusinessNetworkDefinition {
 
     /**
      * Looks for the queries file in the path, and sets on the business network.
+     * @private
      * @param {Object} jsonObject the package.json object
      * @param {Path} path the location that was specified
      * @param {Object} options that include the globs
@@ -528,6 +534,7 @@ class BusinessNetworkDefinition {
     }
 
     /**
+     * @private
      * @param {String} path to search for the readme
      * @return {String} contents of the readme, if any. defaults to null
      */
