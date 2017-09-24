@@ -27,6 +27,7 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const util = require('util');
+const FilterParser = require('./filterparser');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -279,9 +280,11 @@ class BusinessNetworkConnector extends Connector {
     all(lbModelName, filter, options, callback) {
         debug('all', lbModelName, filter, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
@@ -297,10 +300,11 @@ class BusinessNetworkConnector extends Connector {
                         throw new Error('The destroyAll operation without a where clause is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    if(!filter.where[identifierField]) {
-                        throw new Error('The specified filter does not match the identifier in the model');
+                    const queryString = FilterParser.parseFilter(filter, composerModelName);
+                    const query = networkConnection.buildQuery(queryString);
+                    if(!filter.where[identifierField] && (query === null || typeof query === 'undefined')) {
+                        throw new Error('The specified filter does not match the identifier or any property in the model');
                     }
-
                     // Check we have the right identifier for the object type
                     let objectId = filter.where[identifierField];
                     if(doResolve) {
@@ -310,12 +314,20 @@ class BusinessNetworkConnector extends Connector {
                                 return [ result ];
                             });
 
-                    } else {
+                    } else if(filter.where[identifierField]){
                         return registry.get(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
+                    } else {
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.map((res) =>{
+                                return this.serializer.toJSON(res);
+                            });
+                        });
                     }
                 } else if(doResolve) {
                     debug('no where filter, about to resolve on all');
