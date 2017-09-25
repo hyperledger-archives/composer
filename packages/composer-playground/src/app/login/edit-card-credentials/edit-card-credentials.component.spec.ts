@@ -2,18 +2,26 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+
 import * as sinon from 'sinon';
 
 import { EditCardCredentialsComponent } from './edit-card-credentials.component';
 import { IdentityCardService } from '../../services/identity-card.service';
 import { AlertService } from '../../basic-modals/alert.service';
+import { FileImporterComponent } from '../../common/file-importer';
+import { FileDragDropDirective } from '../../common/file-importer/file-drag-drop';
+
+import { BehaviorSubject, Subject } from 'rxjs/Rx';
+
+import { expect } from 'chai';
 
 describe('EditCardCredentialsComponent', () => {
     let component: EditCardCredentialsComponent;
     let fixture: ComponentFixture<EditCardCredentialsComponent>;
 
+    let sandbox;
     let mockActiveModal;
     let mockIdentityCardService;
     let mockAlertService;
@@ -26,9 +34,14 @@ describe('EditCardCredentialsComponent', () => {
         mockAlertService.busyStatus$ = {next: sinon.stub()};
         mockAlertService.errorStatus$ = {next: sinon.stub()};
 
+        sandbox = sinon.sandbox.create();
+
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditCardCredentialsComponent],
+            declarations: [
+                EditCardCredentialsComponent,
+                FileImporterComponent,
+                FileDragDropDirective],
             providers: [
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService}
@@ -441,4 +454,114 @@ describe('EditCardCredentialsComponent', () => {
             spy.should.have.been.calledWith(false);
         });
     });
+
+    describe('#getDataBuffer', () => {
+        let file;
+        let mockFileReadObj;
+        let mockBuffer;
+        let mockFileRead;
+        let content;
+
+        beforeEach(() => {
+            content = 'hello world';
+            let data = new Blob([content], {type: 'text/plain'});
+            file = new File([data], 'mock.bna');
+
+            mockFileReadObj = {
+                readAsArrayBuffer: sandbox.stub(),
+                result: content,
+                onload: sinon.stub(),
+                onerror: sinon.stub()
+            };
+
+            mockFileRead = sinon.stub((<any> window), 'FileReader');
+            mockFileRead.returns(mockFileReadObj);
+        });
+
+        afterEach(() => {
+            mockFileRead.restore();
+        });
+
+        it('should return data from a file', () => {
+            let promise = component.getDataBuffer(file);
+            mockFileReadObj.onload();
+            return promise
+            .then((data) => {
+                // Assertions
+                data.toString().should.equal(content);
+            });
+        });
+
+        it('should give error in promise chain', () => {
+            let promise = component.getDataBuffer(file);
+            mockFileReadObj.onerror('error');
+            return promise
+            .then((data) => {
+                // Assertions
+                data.should.be.null;
+            })
+            .catch((err) => {
+                // Assertions
+                err.should.equal('error');
+            });
+        });
+    });
+
+    fdescribe('#fileAccepted', () => {
+        it('should only accept PEM (.pem) files', fakeAsync(() => {
+            let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            component.fileAccepted(file);
+            tick();
+        }));
+
+        fit('should detect if the file is a certificate', fakeAsync(() => {
+            component['certType'] = 'C';
+
+            let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            component.fileAccepted(file);
+            tick();
+
+            // component['certFile'].should.be.equal('my formatted cert');
+            component['addedPublicCertificate'].should.equal('-----BEGIN CERTIFICATE-----');
+        }));
+
+        it('should detect if the file is a private key', fakeAsync(() => {
+            component['certType'] = 'P';
+
+            let b = new Blob(['-----BEGIN PRIVATE-----'], {type: 'text/plain'});
+            let file = new File([b], 'privateKey.pem');
+
+            component.fileAccepted(file);
+            tick();
+
+            component['privateFile'].should.be.equal('-----BEGIN PRIVATE-----');
+            component['addedPrivateCertificate'].should.be.equal('-----BEGIN PRIVATE-----');
+        }));
+
+        it('should reject any file that is not a PEM file', fakeAsync(() => {
+            let b = new Blob(['/**PNG File*/'], {type: 'text/plain'});
+            let file = new File([b], 'newfile.png');
+
+            let createMock = sandbox.stub(component, 'fileRejected');
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('some data'));
+
+            component.fileAccepted(file);
+            tick();
+
+            createMock.calledWith('Unexpected File Type: png');
+        }));
+    });
+
+    describe('#fileRejected', () => {
+        it('should return an error status', async(() => {
+            component.fileRejected('long reason to reject file');
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('long reason to reject file');
+        }));
+    });
+
 });
