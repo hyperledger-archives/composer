@@ -14,7 +14,7 @@
 
 'use strict';
 
-const randomWords = require('random-words');
+const loremIpsum = require('lorem-ipsum');
 
 /**
  * Factory providing static methods to create ValueGenerator instances.
@@ -114,7 +114,7 @@ class EmptyValueGenerator {
      * @return {Array} an array
      */
     getArray(valueSupplier) {
-        return [ ];
+        return [];
     }
 }
 
@@ -168,8 +168,16 @@ class SampleValueGenerator extends EmptyValueGenerator {
      * @return {string} a String value.
      */
     getString() {
-        return randomWords({min: 1, max: 5}).join(' ');
+
+        return loremIpsum({
+            count: 1                        // Number of words, sentences, or paragraphs to generate.
+            , units: 'sentences'            // Generate words, sentences, or paragraphs.
+            , sentenceLowerBound: 1         // Minimum words per sentence.
+            , sentenceUpperBound: 5         // Maximum words per sentence.
+
+        });
     }
+
 
     /**
      * Get a randomly selected enum value from the supplied array.
@@ -186,7 +194,7 @@ class SampleValueGenerator extends EmptyValueGenerator {
      * @return {Array} an array
      */
     getArray(valueSupplier) {
-        return [ valueSupplier() ];
+        return [valueSupplier()];
     }
 }
 

@@ -15,9 +15,10 @@ This short output shows how to install and update the package.json of the gettin
 ```bash
 $ npm install -g composer-cli@unstable
 
-# Execute the following 4 steps, to stand up a runtime Fabric 
+# Execute the following steps, to stand up a runtime Fabric 
 $ mkdir fabric-tools && cd fabric-tools
 $ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
+$ unzip fabric-dev-servers.zip
 $./startFabric.sh # will remove containers that exist previously including dev-* containers
 $./createComposerProfile.sh
 $ cd  # ie $HOME
@@ -31,10 +32,6 @@ $ npm run deployNetwork  # will/should install a docker container suffixed with 
 $ docker ps -a # check the container version after the business network name eg digitalproperty-network
 $ npm test # check the assets are bootstrapped / updated.
 ```
-
-## Sample Applications (vehicle lifecycle)
-The composer-sample-applications repository also contains the vehicle-lifecyle demo. This should be run on a clean VM using the one line install.
- - packages/vehicle-lifecyle contains the Readme to follow to perform the install.
 
 ## Sample Networks
 Following from testing of the digital-property-app, a similar operation should be performed targetting the composer-sample-networks repository.
@@ -51,14 +48,29 @@ $ npm install --tag=unstable
 $npm test
 ```
  
-## New Feature Testing
+## Vehicle Lifecycle Demo
+The composer-sample-applications repository also contains the vehicle-lifecyle demo. This should be run on a clean VM using the one line install.
 
-All new features added for the release, which will be named in the release notes outline, should be proven on the unstable build. At this point some exploratory testing needs to be investigated, in an attempt to break the delivered feature and/or knowingly drive it towards a state where features could be working from invalid information.
+From a fresh VM
+ - Create a new directory, eg `mkdir git`
+ - Navigate to directory and clone the composer-sample-applications `git clone https://github.com/hyperledger/composer-sample-applications.git`
+ - navigate to `composer-sample-applications/packages/vehicle-lifecycle`
+ - run `./build.sh`
+ - install the unstable version `cat installers/hlfv1/install-unstable.sh | bash`
+ -- this will take 'some' time
+ - after build web browser should open with pages for each aspect
 
-## Exploratory Testing
+Verification Stage (basic)
+ - Should be able to log into Playground
+ - Should be able to use rest server to post/get
+ - Node Red nodes should be shown with no errors
+ - VDA screen should be shown, with all links operating
+ - Dashboard should be visible, with all links working
+ - Ionic App should be accessible
 
-Different users will attempt different things, be starting from different points with different skill level. Options to consider
+Verification Stage (adv)
+ - Use the Ionic App to drive the vehicle lifecycle
+ - Log into Playground and inspect transactions via Historian, and all items in the registry
 
- - Add a new asset type to a model and a new transaction, or write a new model from a different business domain
- - Review the questions found in the week on StackOverflow & Rocket.Chat - how did the user get to the position they are in?
- - What new PRs have gone in this week - how could they deployed and used in the existing networks?
+Points to note:
+ - If you get lost, or don't know what to do, ask

@@ -109,6 +109,11 @@ describe('QueryManager', () => {
             qm.setQueryFile(queryFile);
             (qm.getQuery('xxxx') === null).should.be.true;
         });
+
+        it('should return null for unknown query', () => {
+            let qm = new QueryManager(modelManager);
+            (qm.getQuery('xxxx') === null).should.be.true;
+        });
     });
 
 });
