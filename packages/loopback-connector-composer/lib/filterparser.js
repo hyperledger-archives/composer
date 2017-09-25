@@ -39,7 +39,6 @@ class FilterParser {
         LOG.entry(method);
         LOG.exit(method);
     }
-
     /**
      * parse a filter string and convert the where conditions to be a composer query statement
      * examples of the where filter:
@@ -50,7 +49,7 @@ class FilterParser {
      * @param {Object} filter The filter being parsed.
      * @param {string} resourceType The type of the resource: asset or participant
      * @return {string} The result of filter parser, or null.
-     * @private
+     * @public
      */
     static parseFilter(filter, resourceType) {
         const method = 'parseFilter';
@@ -62,7 +61,9 @@ class FilterParser {
         if (filterKeys.indexOf('where') >= 0) {
             result = this.parseWhereCondition(filter.where);
             // if there is an op
-            result = 'SELECT ' + resourceType + ' WHERE' + result;
+            result = 'SELECT ' + resourceType + ' WHERE ' + result;
+        } else{
+            throw new Error('The filter does not contain the where key');
         }
         LOG.exit(method);
         return result;
@@ -72,7 +73,7 @@ class FilterParser {
      * @example the filter conditions
      * {"f1":"v1"} or {"f1":{"op":"v1"}} or
      * {"and|or":[{"f1":{"op":"v1"}}, {"f2":{"op":"v2"}}]}, or
-     * {"and|or":[{"and|or":[{"f1":{"op":"v1"}}, {"f2":{"op":"v2"}}], {"f3":{"op":"v3"}}]}},
+     * {'and|or':[{'and|or':[{'f1':{'op':'v1'}}, {'f2':{'op':'v2'}}]}, {'f3':{'op':'v3'}}]};
      * and so on with nested structures
      * @param {Object} whereObject  is a JSON object with the format as above examples
      * @return {string} a string condition (f1 == v1) or (f1 > v1) or recurively call this function, throw exceptions when the operators are not supported
@@ -81,52 +82,65 @@ class FilterParser {
     static parseWhereCondition(whereObject) {
         const method = 'parseWhereCondition';
         LOG.entry(method, JSON.stringify(whereObject));
+        if(typeof whereObject === 'undefined'|| whereObject === null){
+            throw new Error('The where object is not specified');
+        }
         const keys = Object.keys(whereObject);
         const combinationOperatorKeys = Object.keys(arrayCombinationOperators);
         if (keys.length === 0) {
-            throw new Error('There is no full where clause');
+            throw new Error('The where object is empty');
         } else if (keys.length === 1) {
+
+            if(keys[0].trim() ===''){
+                throw new Error('The where object key is invalid');
+            }
+
             let values = whereObject[keys[0]];
-            if(values !== null && values !== undefined ){
-                if (typeof values === 'string') {
-                    if(!values.startsWith('_$')){
-                        values = '\'' + values + '\'';
+            if( values === null || values === undefined){
+                throw new Error('The object value is invalid');
+            }
+
+            if (typeof values === 'string') {
+                if(!values.startsWith('_$')){
+                    values = '\'' + values + '\'';
+                }
+                const result = '(' + keys[0] + '==' + values + ')';
+                return result;
+            } else if (typeof values === 'number'){
+                const result = '(' + keys[0] + '==' + values + ')';
+                return result;
+            }
+            else if(typeof values === 'object' && !(values instanceof Array)) {
+                let op = Object.keys(values);
+                if (op.length === 1) {
+                    const opValue = values[op[0]];
+                    if(!operationmapKeys.includes(op[0])){
+                        throw new Error('The key ' + op[0] + ' operator is not supported by the Composer filter where');
                     }
-                    const result = '(' + keys[0] + '==' + values + ')';
-                    return result;
-                } else if (typeof values === 'number'){
-                    const result = '(' + keys[0] + '==' + values + ')';
+                    let queryOp = operationmap[op[0]];
+                    let result;
+                    if(queryOp ==='between'){
+                        // parse the first string format array object "[1, 10]" to an array
+                        let theValue = JSON.parse(opValue);
+                        result = '(' + keys[0] + '>=' + theValue[0] +' AND '+ keys[0] + '<=' + theValue[1] +')';
+                    }else{
+                        result = '(' + keys[0] + queryOp + opValue + ')';
+                    }
                     return result;
                 }
-                else if(typeof values === 'object' && !(values instanceof Array)) {
-                    let op = Object.keys(values);
-                    if (op.length === 1) {
-                        const opValue = values[op[0]];
-                        // let queryOp = this.findElementValueByKey(operationmap, op[0]);
-                        if(!operationmapKeys.includes(op[0])){
-                            throw new Error('The key ' + op[0] + 'operator is not supported by the Composer filter where.');
-                        }
-                        let queryOp = operationmap[op[0]];
-                        let result;
-                        if(queryOp ==='between'){
-                            // parse the first string format array object "[1, 10]" to an array
-                            let theValue = JSON.parse(opValue);
-                            result = '(' + keys[0] + '>=' + theValue[0] +' AND '+ keys[0] + '<=' + theValue[1] +')';
-                        }else{
-                            result = '(' + keys[0] + queryOp + opValue + ')';
-                        }
-                        return result;
-                    }
-                } else if (combinationOperatorKeys.includes(keys[0]) && (values instanceof Array)) {
-                    if (values.length === 2) {
-                        let result1 = this.parseWhereCondition(values[0]);
-                        let result2 = this.parseWhereCondition(values[1]);
-                        let combinationOp = arrayCombinationOperators[keys[0]];
-                        return '(' + result1 + combinationOp + result2 + ')';
-                    } else {
-                        throw new Error('The combination operator' + keys[0] + 'should have two conditions');
-                    }
+            } else if(values instanceof Array) {
+                if(!combinationOperatorKeys.includes(keys[0])){
+                    throw new Error('The combination operator: ' +keys[0] + ' is not supported by the Composer filter where');
                 }
+                if( values.length !==2){
+                    throw new Error('The combination operator: ' + keys[0] + ' should have two conditions');
+                }
+
+                let result1 = this.parseWhereCondition(values[0]);
+                let result2 = this.parseWhereCondition(values[1]);
+                let combinationOp = arrayCombinationOperators[keys[0]];
+                return '(' + result1 +' ' + combinationOp+' ' + result2 + ')';
+
             }
         }
     }
