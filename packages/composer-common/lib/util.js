@@ -73,7 +73,7 @@ class Util {
      * @param {SecurityContext} securityContext - The user's security context
      * @param {string} functionName - The name of the function to call.
      * @param {string[]} args - The arguments to pass to the function being called.
-     * @param {string} txId - Transaction Id to use
+     * @param {Object} options - Any options to use for the invocation
      * @return {Promise} - A promise that will be resolved with the value returned
      * by the chain-code function.
      */

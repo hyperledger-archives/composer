@@ -127,7 +127,6 @@ describe('Util', function () {
 
         it('call the connection to get a txid',function(){
             mockConnection.createTransactionId.resolves('42');
-            // let stub = sandbox.stub(Util, 'securityCheck');
             return Util
                 .createTransactionId(mockSecurityContext)
                 .should.eventually.be.equal('42');
@@ -139,7 +138,7 @@ describe('Util', function () {
             sandbox.stub(uuid, 'v4').returns('56');
             return Util
                 .createTransactionId(mockSecurityContext)
-                .should.eventually.be.equal('56');
+                .should.eventually.be.deep.equal({ id: '56', idStr: '56' });
         });
 
     });
