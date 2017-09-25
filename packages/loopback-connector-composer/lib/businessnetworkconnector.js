@@ -305,7 +305,7 @@ class BusinessNetworkConnector extends Connector {
                         const queryString = FilterParser.parseFilter(filter, composerModelName);
                         query = networkConnection.buildQuery(queryString);
                         if(query === null || typeof query === 'undefined') {
-                            throw new Error('The specified filter does not match the identifier or any property in the model');
+                            throw new Error('The specified filter:' + keys[0] + ' does not match the identifier or any property in the model');
                         }
                     }
                     // Check we have the right identifier for the object type

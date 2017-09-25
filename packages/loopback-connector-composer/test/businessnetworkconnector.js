@@ -50,6 +50,7 @@ describe('BusinessNetworkConnector', () => {
     }
     asset BaseAsset identified by theValue {
         o String theValue
+        o String theString optional
         o Integer theInteger optional
         o Boolean theBoolean optional
         o DateTime theDateTime optional
@@ -549,6 +550,27 @@ describe('BusinessNetworkConnector', () => {
                     result[0].theValue.should.equal('myId');
                 });
         });
+        it('should retrieve a specific Asset for a given string type property in a where clause', () => {
+            mockBusinessNetworkConnection.query.resolves([{theString :'mockString'}]);
+            mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
+            mockSerializer.toJSON.onFirstCall().returns({theString: 'myString'});
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}}, { test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.query);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, {id :'mockQuery'});
+                    result[0].theString.should.equal('myString');
+                });
+        });
 
         it('should retrieve a fully resolved specific Asset for a given id in a where clause', () => {
             mockAssetRegistry.resolve.resolves({theValue : 'mockId'});
@@ -652,7 +674,7 @@ describe('BusinessNetworkConnector', () => {
                     }
                     resolve(result);
                 });
-            }).should.be.rejectedWith(/The specified filter does not match the identifier in the model/);
+            }).should.be.rejectedWith(/The specified filter:theINvalidValue does not match the identifier or any property in the model/);
         });
 
 
@@ -2698,6 +2720,10 @@ describe('BusinessNetworkConnector', () => {
                     'description': 'The instance identifier for this type',
                     'id': true,
                     'required' : true,
+                    'type' : 'string'
+                },
+                'theString' : {
+                    'required' : false,
                     'type' : 'string'
                 },
                 'theInteger' : {
