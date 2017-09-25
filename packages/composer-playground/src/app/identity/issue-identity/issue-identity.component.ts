@@ -25,6 +25,8 @@ export class IssueIdentityComponent implements OnInit {
     private participantFQIs: string[] = [];
     private participants: Map<string, Resource> = new Map<string, Resource>();
     private issuer: boolean = false;
+    private isParticipant: boolean = true;
+    private noMatchingParticipant = 'Named Participant does not exist in Participant Registry.';
 
     constructor(private activeModal: NgbActiveModal,
                 private alertService: AlertService,
@@ -52,7 +54,7 @@ export class IssueIdentityComponent implements OnInit {
             })
             .then((allParticipants) => {
                 return Promise.all(allParticipants.map((registryParticipant) => {
-                    return this.participants.set('resource:' + registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
+                    return this.participants.set(registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
                 }));
             })
             .then(() => {
@@ -72,11 +74,11 @@ export class IssueIdentityComponent implements OnInit {
             .map((term) => term === '' ? []
                 : this.participantFQIs.filter((v) => new RegExp(term, 'gi').test(v)).slice(0, 10));
 
-    private issueIdentity(): void {
+    issueIdentity(): void {
         this.issueInProgress = true;
-
         let options = {issuer: this.issuer, affiliation: undefined};
-        this.clientService.issueIdentity(this.userID, this.participantFQI, options)
+        let participant = this.participantFQI.startsWith('resource:') ? this.participantFQI : 'resource:' + this.participantFQI;
+        this.clientService.issueIdentity(this.userID, participant, options)
             .then((identity) => {
                 this.issueInProgress = false;
                 this.activeModal.close(identity);
@@ -87,7 +89,16 @@ export class IssueIdentityComponent implements OnInit {
             });
     }
 
-    private getParticipant(fqi: string): any {
+    isValidParticipant() {
+        let participant = this.participantFQI.startsWith('resource:') ? this.participantFQI.slice(9) : this.participantFQI;
+        if (this.participantFQI === '' || this.getParticipant(participant)) {
+            this.isParticipant = true;
+        } else {
+            this.isParticipant = false;
+        }
+    }
+
+    getParticipant(fqi: string): any {
         return this.participants.get(fqi);
     }
 }

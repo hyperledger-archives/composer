@@ -10,25 +10,44 @@
 
 
           <% for(var x=0;x<currentAsset.properties.length;x++){ %>
-            <div class="form-group text-left">
+
+            <% if(currentAsset.properties[x].enum === true){ %>
               <label for="<%=currentAsset.properties[x].name%>"><%=currentAsset.properties[x].name%></label>
-
-              <% if(currentAsset.properties[x].type == 'Boolean'){ %>
-                <input formControlName="<%=currentAsset.properties[x].name%>" type="checkbox" class="form-control">
-              <%}else if(currentAsset.properties[x].type == 'Double'){%>
-                <input formControlName="<%=currentAsset.properties[x].name%>" type="number" step='any' class="form-control">
-              <%}else if(currentAsset.properties[x].type == 'Integer' || currentAsset.properties[x].type == 'Long'){%>
-                <input formControlName="<%=currentAsset.properties[x].name%>" type="number" class="form-control">
-              <%}else if(currentAsset.properties[x].type == 'String' || currentAsset.properties[x].type == 'DateTime'){%>%>
-                <input formControlName="<%=currentAsset.properties[x].name%>" type="text" class="form-control">
-              <%}else{%>
-                  <textarea formControlName="<%=currentAsset.properties[x].name%>" class="form-control" rows="3"></textarea>
-
-              <%}%>
-
-            </div>
+              <div class="checkbox">
+                <% for(var y=0;y<currentAsset.properties[x].enumValues.length;y++){ %>
+                  <label>
+                    <input
+                      <% if(currentAsset.properties[x].array === false){ %>
+                        formControlName="<%=currentAsset.properties[x].name%>"
+                      <% } %>
+                      name="<%=currentAsset.properties[x].name%>"
+                      value="<%=currentAsset.properties[x].enumValues[y].name%>"
+                      type="<%=currentAsset.properties[x].array ? 'checkbox' : 'radio'%>"
+                      <% if(currentAsset.properties[x].array){ %>
+                        (change)="changeArrayValue('<%=currentAsset.properties[x].name%>', '<%=currentAsset.properties[x].enumValues[y].name%>')"
+                      <% } %>
+                    />
+                    <%=currentAsset.properties[x].enumValues[y].name%>
+                  </label>
+                <%}%>
+              </div>
+            <%}else{%>
+              <div class="form-group text-left">
+                <label for="<%=currentAsset.properties[x].name%>"><%=currentAsset.properties[x].name%></label>
+                <% if(currentAsset.properties[x].type == 'Boolean'){ %>
+                  <input formControlName="<%=currentAsset.properties[x].name%>" type="checkbox" class="form-control">
+                <%}else if(currentAsset.properties[x].type == 'Double'){%>
+                  <input formControlName="<%=currentAsset.properties[x].name%>" type="number" step='any' class="form-control">
+                <%}else if(currentAsset.properties[x].type == 'Integer' || currentAsset.properties[x].type == 'Long'){%>
+                  <input formControlName="<%=currentAsset.properties[x].name%>" type="number" class="form-control">
+                <%}else if(currentAsset.properties[x].type == 'String' || currentAsset.properties[x].type == 'DateTime'){%>%>
+                  <input formControlName="<%=currentAsset.properties[x].name%>" type="text" class="form-control">
+                <%}else{%>
+                    <textarea formControlName="<%=currentAsset.properties[x].name%>" class="form-control" rows="3"></textarea>
+                <%}%>
+              </div>
+            <%}%>
           <%}%>
-
 
         </div>
         <div class="modal-footer">
@@ -67,7 +86,32 @@
               <%}else if(currentAsset.properties[x].type == 'String' || currentAsset.properties[x].type == 'DateTime'){%>%>
                 <input [ngModel]="<%=currentAsset.properties[x].name%>"formControlName="<%=currentAsset.properties[x].name%>" type="text" class="form-control">
               <%}else{%>
+                <% if(currentAsset.properties[x].enum === true){ %>
+                  <div class="row">
+                    <div class="col-xs-12 checkbox">
+                    <% for(var y=0;y<currentAsset.properties[x].enumValues.length;y++){ %>
+                      <label>
+                        <input
+                          <% if(currentAsset.properties[x].array === false){ %>
+                            formControlName="<%=currentAsset.properties[x].name%>"
+                            [ngModel]="<%=currentAsset.properties[x].name%>"
+                          <% } %>
+                          name="<%=currentAsset.properties[x].name%>"
+                          value="<%=currentAsset.properties[x].enumValues[y].name%>"
+                          type="<%=currentAsset.properties[x].array ? 'checkbox' : 'radio'%>"
+                          <% if(currentAsset.properties[x].array){ %>
+                            (change)="changeArrayValue('<%=currentAsset.properties[x].name%>', '<%=currentAsset.properties[x].enumValues[y].name%>')"
+                            [checked]="hasArrayValue('<%=currentAsset.properties[x].name%>', '<%=currentAsset.properties[x].enumValues[y].name%>')"
+                          <% } %>
+                        />
+                        <%=currentAsset.properties[x].enumValues[y].name%>
+                      </label>
+                    <%}%>
+                    </div>
+                  </div>
+                <%}else{%>
                   <textarea [ngModel]="<%=currentAsset.properties[x].name%>" formControlName="<%=currentAsset.properties[x].name%>" class="form-control" rows="3"></textarea>
+                <%}%>
               <%}%>
 
             </div>

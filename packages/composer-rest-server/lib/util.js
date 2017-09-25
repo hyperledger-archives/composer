@@ -34,51 +34,51 @@ class Util {
     static getConnectionSettings() {
         let questions = [
             {
-                name: 'profilename',
+                name: 'connectionProfileName',
                 type: 'input',
-                message: 'Enter your Fabric Connection Profile Name:',
+                message: 'Enter your Connection Profile Name:',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter the name of the Fabric Connection Profile you wish to use \n \
+                        return 'Please enter the name of the Connection Profile you wish to use \n \
                                 (hint: this is usually the name of the directory in $HOME containing the connection.json file)';
                     }
                 }
             },
             {
-                name: 'businessNetworkId',
+                name: 'businessNetworkName',
                 type: 'input',
-                message: 'Enter your Business Network Identifier :',
+                message: 'Enter your Business Network name :',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter your Business Network Identifier';
+                        return 'Please enter your Business Network name';
                     }
                 }
             },
             {
-                name: 'userid',
+                name: 'enrollementId',
                 type: 'input',
-                message: 'Enter your Fabric username :',
+                message: 'Enter your enrollement ID :',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter your Fabric username';
+                        return 'Please enter your enrollement ID';
                     }
                 }
             },
             {
-                name: 'secret',
+                name: 'enrollementSecret',
                 type: 'secret',
-                message: 'Enter your secret:',
+                message: 'Enter your enrollement secret :',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter your secret';
+                        return 'Please enter your enrollement secret';
                     }
                 }
             },

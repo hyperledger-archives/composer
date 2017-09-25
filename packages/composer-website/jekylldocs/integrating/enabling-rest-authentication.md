@@ -5,7 +5,7 @@ category: start
 section: integrating
 index-order: 703
 sidebar: sidebars/accordion-toc0.md
-excerpt: By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. By [**enabling authentication, the identity of the client can be used to digitally sign all transactions made by that client.**](./securing-the-rest-server.html)
+excerpt: The REST server can be [**configured to authenticate clients**](./enabling-rest-authentication.html). When this option is enabled, clients must authenticate to the REST server before they are permitted to call the REST API.
 ---
 
 # Enabling authentication for the REST server
@@ -79,7 +79,7 @@ Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attem
 
 When a user authenticates to the REST server, a unique access token is generated and assigned to the authenticated user. When the user authenticates using a web browser, the access token is stored in a cookie in the local storage of the users web browser. When the authenticated user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated instead of reauthenticating the user.
 
-The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website. 
+The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website.
 
 In order to use the access token, the access token must first be retrieved using a web browser. When you authenticate to the REST server, the REST API explorer at http://localhost:3000/explorer/ will show the access token at the top of the page. By default the access token is hidden, but it can be displayed by clicking the `Show` button. The access token is a long alphanumeric string, for example: `e9M3CLDEEj8SDq0Bx1tkYAZucOTWbgdiWQGLnOxCe7K9GhTruqlet1h5jsw10YjJ`
 

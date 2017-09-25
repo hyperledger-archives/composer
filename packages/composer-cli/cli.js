@@ -22,7 +22,6 @@ const yargs = require('yargs');
 
 
 const chalk = require('chalk');
-
 const version = 'v' +require('./package.json').version;
 
 let results = yargs

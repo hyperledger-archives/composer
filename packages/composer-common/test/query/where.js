@@ -17,6 +17,8 @@
 const Where = require('../../lib/query/where');
 const parser = require('../../lib/query/parser');
 const Select = require('../../lib/query/select');
+const Query = require('../../lib/query/query');
+const QueryFile = require('../../lib/query/queryfile');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -25,11 +27,21 @@ describe('Where', () => {
 
     let sandbox;
     let mockSelect;
+    let mockQuery;
+    let mockQueryFile;
 
     const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (prop == "value")', { startRule: 'SelectStatement' });
     beforeEach(() => {
+        let lcn = {start: {column: 1, line: 1}, end: {column: 1, line: 1}};
         sandbox = sinon.sandbox.create();
         mockSelect = sinon.createStubInstance(Select);
+        mockQuery = sinon.createStubInstance(Query);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockQueryFile.getIdentifier.returns('queryfile');
+        mockSelect.getQuery.returns(mockQuery);
+        mockSelect.getAST.returns({location:lcn});
+        mockQuery.getName.returns('fred');
+        mockQuery.getQueryFile.returns(mockQueryFile);
     });
 
     afterEach(() => {
@@ -79,5 +91,19 @@ describe('Where', () => {
             const w = new Where(mockSelect, selectWhere.where);
             w.getAST().type.should.equal('BinaryExpression');
         });
+    });
+
+    describe('#validate', () => {
+
+        it('error path',()=>{
+
+            const w = new Where(mockSelect, selectWhere.where);
+            let error =  new Error();
+            sinon.stub(error,'getShortMessage').returns(null);
+
+            sinon.stub(w,'visit').throws(new Error());
+            (()=>{w.validate();}).should.throw(/Invalid WHERE clause in query/);
+        });
+
     });
 });

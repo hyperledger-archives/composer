@@ -25,7 +25,7 @@ const ModelFile = require('../../../introspect/modelfile');
 const ModelManager = require('../../../modelmanager');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
-const debug = require('debug')('concerto:jsonschemavisitor');
+const debug = require('debug')('composer:loopbackvisitor');
 const util = require('util');
 
 /**
@@ -341,6 +341,10 @@ class LoopbackVisitor {
     visitClassDeclarationCommon(classDeclaration, parameters, jsonSchema) {
         debug('entering visitClassDeclarationCommon', classDeclaration.getName());
 
+        // remember that we have visited this fqn
+        // in case one of our properties is of the same type (issue #2193)
+        parameters[classDeclaration.getFullyQualifiedName()] = 'visited';
+
         // Add information from the class declaration into the composer section.
         if (jsonSchema.options && jsonSchema.options.composer) {
             jsonSchema.options.composer.namespace = classDeclaration.getNamespace();
@@ -369,9 +373,8 @@ class LoopbackVisitor {
         // Walk over all of the properties of this class and its super classes.
         classDeclaration.getProperties().forEach((property) => {
 
-            // Get the schema for the property.
+            // Get the schema for the property
             jsonSchema.properties[property.getName()] = property.accept(this, parameters);
-
         });
 
         // For transaction declarations, we need to change the model slightly.
@@ -491,8 +494,10 @@ class LoopbackVisitor {
             let type = field.getParent().getModelFile().getType(field.getType());
 
             // Visit it, but ignore the response.
-            type.accept(this, parameters);
-
+            // We do not visit types that have already been visited to prevent recursion (issue #2193)
+            if(!parameters[field.getFullyQualifiedTypeName()]) {
+                type.accept(this, parameters);
+            }
         }
 
         // Is the type an array?

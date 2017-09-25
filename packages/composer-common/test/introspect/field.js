@@ -92,4 +92,18 @@ describe('Field', () => {
 
     });
 
+    describe('#toString',()=>{
+        it('regular toString',()=>{
+            let f = new Field(mockClassDeclaration, {
+                id: {
+                    name: 'field',
+                }
+            });
+            let stub = sinon.stub(f,'getFullyQualifiedTypeName');
+            stub.returns('fqn');
+            f.toString().should.equal('Field {name=field, type=fqn, array=false, optional=false}');
+        });
+
+    });
+
 });

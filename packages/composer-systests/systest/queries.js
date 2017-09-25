@@ -182,7 +182,7 @@ describe('Query system tests', () => {
                 }, Promise.resolve());
             })
             .then(() => {
-                return client.getTransactionRegistry();
+                return client.getTransactionRegistry('systest.queries.SampleTransaction');
             })
             .then((transactionRegistry) => {
                 return transactionRegistry.getAll();

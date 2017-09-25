@@ -236,21 +236,6 @@ class WebConnection extends Connection {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
-            });
-    }
-
-    /**
      * Undeploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
@@ -489,6 +474,15 @@ class WebConnection extends Connection {
             });
     }
 
+    /**
+     * Create a new transaction id
+     * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved with a transaction id
+     */
+    createTransactionId(securityContext){
+        return Promise.resolve(null);
+    }
 }
 
 module.exports = WebConnection;

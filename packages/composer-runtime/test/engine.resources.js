@@ -18,7 +18,6 @@ const Container = require('../lib/container');
 const Context = require('../lib/context');
 const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
-const QueryExecutor = require('../lib/queryexecutor');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
@@ -37,7 +36,6 @@ describe('EngineResources', () => {
     let mockContainer;
     let mockLoggingService;
     let mockContext;
-    let mockQueryExecutor;
     let mockRegistry;
     let mockRegistryManager;
     let mockResolver;
@@ -63,8 +61,6 @@ describe('EngineResources', () => {
         mockContext.getSerializer.returns(mockSerializer);
         mockResolver = sinon.createStubInstance(Resolver);
         mockContext.getResolver.returns(mockResolver);
-        mockQueryExecutor = sinon.createStubInstance(QueryExecutor);
-        mockContext.getQueryExecutor.returns(mockQueryExecutor);
         engine = new Engine(mockContainer);
     });
 
@@ -204,66 +200,6 @@ describe('EngineResources', () => {
                         $class: 'org.doge.Doge',
                         assetId: 'doge1'
                     });
-                });
-        });
-
-    });
-
-    describe('#findResourcesInRegistry', () => {
-
-        it('should throw for invalid arguments', () => {
-            let result = engine.query(mockContext, 'findResourcesInRegistry', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "findResourcesInRegistry", expecting "\["registryType","registryId","expression"\]"/);
-        });
-
-        it('should return all of the resources for which the query returns a truthy value', () => {
-            let mockResource1 = sinon.createStubInstance(Resource);
-            let mockResource2 = sinon.createStubInstance(Resource);
-            let mockResource3 = sinon.createStubInstance(Resource);
-            let resources = [mockResource1, mockResource2, mockResource3];
-            mockRegistry.getAll.withArgs().resolves([mockResource1, mockResource2, mockResource3]);
-            mockQueryExecutor.queryAll.withArgs('some query string', resources).resolves([true, false, true]);
-            mockSerializer.toJSON.withArgs(mockResource1, { convertResourcesToRelationships: true }).onFirstCall().returns({
-                $class: 'org.doge.Doge',
-                assetId: 'doge1'
-            });
-            mockSerializer.toJSON.withArgs(mockResource3, { convertResourcesToRelationships: true }).onSecondCall().returns({
-                $class: 'org.doge.Doge',
-                assetId: 'doge3'
-            });
-            return engine.query(mockContext, 'findResourcesInRegistry', ['Asset', 'doges', 'some query string'])
-                .then((resources) => {
-                    sinon.assert.calledOnce(mockQueryExecutor.queryAll);
-                    resources.should.deep.equal([{
-                        $class: 'org.doge.Doge',
-                        assetId: 'doge1'
-                    }, {
-                        $class: 'org.doge.Doge',
-                        assetId: 'doge3'
-                    }]);
-                });
-        });
-
-    });
-
-    describe('#queryResourcesInRegistry', () => {
-
-        it('should throw for invalid arguments', () => {
-            let result = engine.query(mockContext, 'queryResourcesInRegistry', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "queryResourcesInRegistry", expecting "\["registryType","registryId","expression"\]"/);
-        });
-
-        it('should return all of the results for which the query returns a truthy value', () => {
-            let mockResource1 = sinon.createStubInstance(Resource);
-            let mockResource2 = sinon.createStubInstance(Resource);
-            let mockResource3 = sinon.createStubInstance(Resource);
-            let resources = [mockResource1, mockResource2, mockResource3];
-            mockRegistry.getAll.withArgs().resolves([mockResource1, mockResource2, mockResource3]);
-            mockQueryExecutor.queryAll.withArgs('some query string', resources).resolves([{ assetId: 'DOGE_1'}, false, [1, 2, 3]]);
-            return engine.query(mockContext, 'queryResourcesInRegistry', ['Asset', 'doges', 'some query string'])
-                .then((resources) => {
-                    sinon.assert.calledOnce(mockQueryExecutor.queryAll);
-                    resources.should.deep.equal([{ assetId: 'DOGE_1'}, [1, 2, 3]]);
                 });
         });
 

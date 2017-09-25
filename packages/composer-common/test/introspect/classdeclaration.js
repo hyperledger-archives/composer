@@ -204,6 +204,7 @@ describe('ClassDeclaration', () => {
                 }
             });
             clz.getName().should.equal('suchName');
+            clz.toString().should.equal('ClassDeclaration {id=undefined.suchName enum=false abstract=false}');
         });
 
     });
@@ -211,7 +212,7 @@ describe('ClassDeclaration', () => {
     describe('#getFullyQualifiedName', () => {
 
         it('should return the fully qualified name if function is in a namespace', () => {
-            mockModelFile.getNamespace.returns('com.ibm.testing');
+            mockModelFile.getNamespace.returns('com.hyperledger.testing');
             let clz = new ClassDeclaration(mockModelFile, {
                 id: {
                     name: 'suchName'
@@ -221,7 +222,7 @@ describe('ClassDeclaration', () => {
                     ]
                 }
             });
-            clz.getFullyQualifiedName().should.equal('com.ibm.testing.suchName');
+            clz.getFullyQualifiedName().should.equal('com.hyperledger.testing.suchName');
         });
 
     });
@@ -259,6 +260,37 @@ describe('ClassDeclaration', () => {
             const superclassName = baseclass.getSuperType();
             should.equal(superclassName,'org.hyperledger.composer.system.Participant');
         });
+
+        it('toString',()=>{
+            const baseclass = modelManager.getType('com.testing.parent.Base');
+            baseclass.toString().should.equal('ClassDeclaration {id=com.testing.parent.Base super=Participant enum=false abstract=true}');
+        });
+    });
+
+    describe('#getNested', function() {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.good.nested.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
+        it('get nested happy path', function() {
+            let extremeOuter = modelManager.getType('com.hyperledger.testing.ExtremeOuter');
+            should.exist(extremeOuter.getNestedProperty('outerAsset.innerAsset'));
+        });
+        it('get error with missing propertyname', function() {
+            let extremeOuter = modelManager.getType('com.hyperledger.testing.ExtremeOuter');
+            (()=>{extremeOuter.getNestedProperty('outerAsset.missing');}).should.throw(/Property missing does not exist on com.hyperledger.testing.Outer/);
+        });
+        it('get error with primitives', function() {
+            let extremeOuter = modelManager.getType('com.hyperledger.testing.ExtremeOuter');
+            (()=>{extremeOuter.getNestedProperty('outerAsset.int.innerAsset');}).should.throw(/Property int is a primitive or enum/);
+        });
     });
 
     describe('#getAssignableClassDeclarations', function() {
@@ -287,6 +319,39 @@ describe('ClassDeclaration', () => {
             const subclasses = baseclass.getAssignableClassDeclarations();
             const subclassNames = subclasses.map(classDef => classDef.getName());
             subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
+        });
+
+
+    });
+
+    describe('#validation', function() {
+        const modelFileNames = [
+            'test/data/parser/validation.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+
+        });
+
+        it('validation of super types',()=>{
+            (()=>{
+                modelManager = new ModelManager();
+                const modelFiles = loadModelFiles(modelFileNames, modelManager);
+                modelManager.addModelFiles(modelFiles);
+
+            }).should.throw(/cannot extend Asset/);
+
+        });
+
+        it('validation of super types',()=>{
+            (()=>{
+                modelManager = new ModelManager();
+                const modelFiles = loadModelFiles(modelFileNames, modelManager);
+                modelManager.addModelFiles(modelFiles);
+
+            }).should.throw(/cannot extend Asset/);
+
         });
     });
 

@@ -8,23 +8,22 @@
         </button>
     </div>
     <section class="modal-body">
-        <h2>In registry: <b>{{registryID}}</b></h2>
+        <h2>In registry: <b>{{registryId}}</b></h2>
         <section class="resource-container">
             <section class="resource-component">
                 <div>
                     <p class="resource-preview-text">JSON Data Preview</p>
                 </div>
                 <div class="scrollbar-padding">
-                  <codemirror name="codeMirror" [(ngModel)]="resourceDefinition" [config]="codeConfig"
-                              (ngModelChange)="onDefinitionChanged()"
-                              width="100%" height="100%" ngDefaultControl>
-                  </codemirror>
+                    <codemirror name="codeMirror" [(ngModel)]="resourceDefinition" [config]="codeConfig"
+                                (ngModelChange)="onDefinitionChanged()"
+                                width="100%" height="100%" ngDefaultControl>
+                    </codemirror>
                 </div>
-                <div>
-                    <label>Optional Properties
-                        <input type="checkbox" name="include-optional" value="true"
-                            [(ngModel)]="includeOptionalFields" (change)="generateResource(false)">
-                    </label>
+                <div class="optional">
+                    <input type="checkbox" name="include-optional" value="true" id="include-optional"
+                           [(ngModel)]="includeOptionalFields" (change)="generateResource(false)">
+                    <label for="include-optional" class="checkbox-label">Optional Properties </label>
                 </div>
                 <div class="resource-error-text" ng-if="definitionError!=null">
                     <p>{{definitionError}}</p>

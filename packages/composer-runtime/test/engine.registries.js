@@ -55,14 +55,14 @@ describe('EngineRegistries', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.query(mockContext, 'getAllRegistries', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "getAllRegistries", expecting "\["registryType"\]"/);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "getAllRegistries", expecting "\["registryType","includeSystem"\]"/);
         });
 
         it('should return all of the registries', () => {
             let mockRegistry1 = sinon.createStubInstance(Registry);
             let mockRegistry2 = sinon.createStubInstance(Registry);
             mockRegistryManager.getAll.withArgs('Asset').resolves([mockRegistry1, mockRegistry2]);
-            return engine.query(mockContext, 'getAllRegistries', ['Asset'])
+            return engine.query(mockContext, 'getAllRegistries', ['Asset','false'])
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);

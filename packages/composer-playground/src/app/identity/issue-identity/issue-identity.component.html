@@ -21,14 +21,19 @@
         <input required type="text" [(ngModel)]="userID" id="userID" name="userID" autocomplete="off">
       </div>
 
-      <div class="justified-input">
-        <label class="required" for="participantFQI">Participant<abbr title="required">*</abbr></label>
-        <input required type="text" [(ngModel)]="participantFQI" id="participantFQI" name="participantFQI" [ngbTypeahead]="search" [resultTemplate]="participantTypeaheadResult" autocomplete="off">
+      <div class="keyValue">
+        <label class="key" for="participantFQI">Participant<abbr title="required">*</abbr></label>
+        <div class="value">
+            <input [ngClass]="{'error-underline': !isParticipant}" required type="text" [(ngModel)]="participantFQI" id="participantFQI" name="participantFQI" [ngbTypeahead]="search" [resultTemplate]="participantTypeaheadResult" autocomplete="off" (ngModelChange)="isValidParticipant()">
+            <div *ngIf="!isParticipant" class="error-message" style="position: absolute; top: 165px;">
+                {{ noMatchingParticipant }}
+            </div>
+        </div>
       </div>
 
       <div>
         <input type="checkbox" [(ngModel)]="issuer" id="issuer" name="issuer">
-        <label for="issuer">Allow this ID to issue new IDs (
+        <label class="checkbox-label" for="issuer">Allow this ID to issue new IDs (
           <svg class="standard-icon" aria-hidden="true">
             <use xlink:href="#icon-relationship_16"></use>
           </svg>
@@ -43,7 +48,7 @@
     <button type="button" class="secondary" (click)="activeModal.close();">
       <span>Cancel</span>
     </button>
-    <button type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress">
+    <button type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress || !isParticipant">
       <div *ngIf="!issueInProgress">
         <span>Create New</span>
       </div>

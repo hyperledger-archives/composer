@@ -80,27 +80,35 @@ describe('HLFConnectionManager', () => {
     describe('global.hfc.logger', () => {
 
         it('should insert a debug logger', () => {
-            sandbox.stub(LOG, 'debug');
+            let logger = sandbox.stub(LOG, 'debug');
+            global.hfc.logger.debug('%s %s', 'hello', 'world');
             global.hfc.logger.debug('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
+            global.hfc.logger.debug('hello world');
+            sinon.assert.alwaysCalledWith(logger, 'fabric-client', 'hello world');
         });
 
         it('should insert a info logger', () => {
-            sandbox.stub(LOG, 'debug');
+            let logger = sandbox.stub(LOG, 'info');
+            global.hfc.logger.info('%s %s', 'hello', 'world');
             global.hfc.logger.info('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
+            global.hfc.logger.info('hello world');
+            sinon.assert.alwaysCalledWith(logger, 'fabric-client', 'hello world');
         });
 
         it('should insert a warn logger', () => {
-            sandbox.stub(LOG, 'debug');
+            let logger = sandbox.stub(LOG, 'warn');
+            global.hfc.logger.warn('%s %s', 'hello', 'world');
             global.hfc.logger.warn('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
+            global.hfc.logger.warn('hello world');
+            sinon.assert.alwaysCalledWith(logger, 'fabric-client', 'hello world');
         });
 
         it('should insert a error logger', () => {
-            sandbox.stub(LOG, 'debug');
+            let logger = sandbox.stub(LOG, 'error');
+            global.hfc.logger.error('%s %s', 'hello', 'world');
             global.hfc.logger.error('hello %s', 'world');
-            sinon.assert.calledOnce(LOG.debug);
+            global.hfc.logger.error('hello world');
+            sinon.assert.alwaysCalledWith(logger, 'fabric-client', 'hello world');
         });
 
     });

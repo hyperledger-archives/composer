@@ -1,0 +1,30 @@
+FROM ppc64le/node:6.11
+
+# Reset npm logging to default level.
+ENV NPM_CONFIG_LOGLEVEL warn
+
+# Install the latest version by default.
+ARG VERSION=latest
+
+# Need to install extra dependencies for native modules.
+RUN npm install --unsafe --production -g pm2 composer-rest-server@${VERSION} && \
+    npm cache clean
+
+# Create the composer user ID.
+RUN useradd composer
+
+# Change /home/composer ownership
+RUN mkdir -p /home/composer && \
+    chown composer:composer /home/composer
+
+# Run as the composer user ID.
+USER composer
+
+# Run in the composer users home directory.
+WORKDIR /home/composer
+
+# Run supervisor to start the application.
+CMD [ "pm2-docker", "composer-rest-server" ]
+
+# Expose port 3000.
+EXPOSE 3000

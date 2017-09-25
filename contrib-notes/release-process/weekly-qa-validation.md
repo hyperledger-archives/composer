@@ -18,7 +18,8 @@ __Assumption__ is that stories have been closed off properly
 
 ## Process
 
-We wish to validate three core aspects:
+# Core Aspects
+We wish to validate all core aspects:
  - [User guides](./guide-validation.md)
  - [Runtime](./runtime-validation.md)
  - [Playground](./playground-validation.md)
@@ -26,11 +27,36 @@ We wish to validate three core aspects:
 
 Each link above will provide a guide for validation purposes. It should be possible to follow the guides without reaching an error case. Upon completion of the above valiadtion guides, and in the presence of a clean build, we can progress to the release phase.
 
+# New Feature Testing
+All new features added for the release, which will be named in the release notes outline, should be proven on the unstable build. At this point some exploratory testing needs to be investigated, in an attempt to break the delivered feature and/or knowingly drive it towards a state where features could be working from invalid information.
+
+# Exploratory Testing
+Different users will attempt different things, be starting from different points with different skill level. Options to consider
+
+ - Add a new asset type to a model and a new transaction, or write a new model from a different business domain
+ - Review the questions found in the week on StackOverflow & Rocket.Chat - how did the user get to the position they are in?
+ - What new PRs have gone in this week - how could they deployed and used in the existing networks?
+
 ## The Release
 
 Once validation has passed, and the consensus is to cut a release, the [release process](./release-process.md) may be followed.
 
-If a major version bump is being performed, it will be necessary to update:
+If a major version bump is being performed, it is essential to update and release:
  - composer-sample-applications
  - composer-sample-networks
-For the runtime level change, and cut a release of the items listed above.
+ - composer-tools
+
+## Dependencies
+
+# Vehicle Lifecycle
+This pulls the latest versions of:
+ - Composer runtime
+ - Composer playground
+ - Composer tools
+
+Consequently a major version bump in Composer *requires* Composer-tools to support the latest major version.
+
+VLC builds from static files, that define the connection profile, IDCard that enables connection, deployed base network etc. Any breaking API changes in the runtime must be accounted for in the build files that generate the specification, otherwise it simply will not work and we will be very sad.
+
+#K8s
+Alike the VLC demo, the K8s sripts are based from the build of static files ... API changes must also be refelcted here.

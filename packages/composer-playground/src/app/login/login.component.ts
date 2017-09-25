@@ -203,7 +203,7 @@ export class LoginComponent implements OnInit {
         }).then((cardRef) => {
             this.alertService.successStatus$.next({
                 title: 'ID Card imported',
-                text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getName() + ' was successfully imported',
+                text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully imported',
                 icon: '#icon-role_24'
             });
         }).then(() => {
@@ -218,7 +218,7 @@ export class LoginComponent implements OnInit {
 
         return this.identityCardService.getIdentityCardForExport(cardRef)
             .then((card) => {
-                fileName = card.getName() + '.card';
+                fileName = card.getUserName() + '.card';
                 return card.toArchive();
             })
             .then((archiveData) => {
@@ -232,7 +232,7 @@ export class LoginComponent implements OnInit {
     }
 
     removeIdentity(cardRef): void {
-        let userId: string = this.idCards.get(cardRef).getName();
+        let userId: string = this.idCards.get(cardRef).getUserName();
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
         confirmModalRef.componentInstance.fileName = userId;
@@ -271,8 +271,8 @@ export class LoginComponent implements OnInit {
 
         let aBusinessNetwork = cardA.getBusinessNetworkName();
         let bBusinessNetwork = cardB.getBusinessNetworkName();
-        let aName = cardA.getName();
-        let bName = cardB.getName();
+        let aName = cardA.getUserName();
+        let bName = cardB.getUserName();
         let aRoles = cardA.getRoles();
         let bRoles = cardB.getRoles();
 

@@ -17,6 +17,10 @@
 const ConnectionManager = require('./connectionmanager');
 const EventEmitter = require('events');
 
+const Util = require('./util.js');
+const BusinessNetworkDefinition = require('./businessnetworkdefinition.js');
+const uuid = require('uuid');
+
 /**
  * Base class representing a connection to a business network.
  * @private
@@ -141,7 +145,7 @@ class Connection extends EventEmitter {
      * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
      * @param {Object} installOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been installed, or rejected with an error.
+     * artefacts have been installed, or rejected with an error.
      */
     install(securityContext, businessNetworkIdentifier, installOptions) {
         return new Promise((resolve, reject) => {
@@ -179,7 +183,7 @@ class Connection extends EventEmitter {
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
      * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been installed, or rejected with an error.
+     * artefacts have been installed, or rejected with an error.
      */
     start(securityContext, businessNetworkDefinition, startOptions) {
         return new Promise((resolve, reject) => {
@@ -203,7 +207,7 @@ class Connection extends EventEmitter {
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to start
-     * @param {Object} startOptions connector specific startment options
+     * @param {Object} startOptions connector specific statement options
      * @param {startCallback} callback The callback function to call when complete.
      */
     _start(securityContext, businessNetworkDefinition, startOptions, callback) {
@@ -217,7 +221,7 @@ class Connection extends EventEmitter {
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
      * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
+     * artefacts have been deployed, or rejected with an error.
      */
     deploy(securityContext, businessNetworkDefinition, deployOptions) {
         return new Promise((resolve, reject) => {
@@ -254,17 +258,60 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
+     * artefacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return new Promise((resolve, reject) => {
-            this._update(securityContext, businessNetworkDefinition, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
+        return this._updateTx(securityContext,businessNetworkDefinition);
+    }
+
+    /**
+     * Updates an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been updated, or rejected with an error.
+     */
+    _updateTx(securityContext, businessNetworkDefinition) {
+
+        // create the new transaction to update the network
+        if (!businessNetworkDefinition) {
+            throw new Error('business network definition not specified');
+        }
+        let currentDeployedNetwork;
+
+        return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+            // Serialize the business network.
+            return businessNetworkDefinition.toArchive();
+        })
+        .then((businessNetworkArchive) => {
+            // Send an update request to the chaincode.
+            // create the new system transaction to add the resources
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','UpdateBusinessNetwork');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+
+
+            transaction.businessNetworkArchive =  businessNetworkArchive.toString('base64');
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
+
+
     }
 
     /**
@@ -324,7 +371,7 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the business network to remove
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
+     * artefacts have been undeployed, or rejected with an error.
      */
     undeploy(securityContext, businessNetworkIdentifier) {
         return new Promise((resolve, reject) => {
@@ -544,6 +591,40 @@ class Connection extends EventEmitter {
      * @param {listCallback} callback The callback function to call when complete.
      */
     _list(securityContext, callback) {
+        throw new Error('abstract function called');
+    }
+
+
+    /**
+     * Create a Transaction Id
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that will be resolved with a representation of the id
+     */
+    createTransactionId(securityContext) {
+        return new Promise((resolve, reject) => {
+            this._createTransactionId(securityContext, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * @callback transactionIdCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {string} result Transaction id.
+     */
+
+    /**
+     * Create a transaction id
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {listCallback} callback The callback function to call when complete.
+     */
+    _createTransactionId(securityContext, callback) {
         throw new Error('abstract function called');
     }
 

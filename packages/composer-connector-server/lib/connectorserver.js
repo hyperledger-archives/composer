@@ -721,6 +721,43 @@ class ConnectorServer {
             });
     }
 
+    /**
+     * Handle a request from the client to create a transaction id
+     * @param {string} connectionID The connection ID.
+     * @param {string} securityContextID The security context ID.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionCreateTransactionId(connectionID, securityContextID, callback) {
+        const method = 'connectionCreateTransactionId';
+        LOG.entry(method, connectionID, securityContextID);
+        let connection = this.connections[connectionID];
+        if (!connection) {
+            let error = new Error(`No connection found with ID ${connectionID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let securityContext = this.securityContexts[securityContextID];
+        if (!securityContext) {
+            let error = new Error(`No security context found with ID ${securityContextID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        return connection.createTransactionId(securityContext)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
 }
 
 module.exports = ConnectorServer;

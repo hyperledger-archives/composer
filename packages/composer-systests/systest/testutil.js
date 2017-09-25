@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
@@ -23,6 +24,7 @@ const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
 const Util = require('composer-common').Util;
+
 
 let client;
 let forceDeploy = false;
@@ -125,7 +127,7 @@ class TestUtil {
     }
 
     /**
-     * Wait for the peer on the specified hostname and port to start listening
+     * Wait for the peer on the specified hostnabusinessNetworkDefinitionme and port to start listening
      * on the specified port.
      * @return {Promise} - a promise that will be resolved when the peer has
      * started listening on the specified port.
@@ -406,6 +408,7 @@ class TestUtil {
      * connected instance of {@link BusinessNetworkConnection}.
      */
     static getClient(network, enrollmentID, enrollmentSecret) {
+        network = network || 'common-network';
         let thisClient;
         return Promise.resolve()
         .then(() => {
@@ -560,8 +563,14 @@ class TestUtil {
         if (!securityContext) {
             return Promise.resolve();
         }
+
         return Util.invokeChainCode(client.securityContext, 'resetBusinessNetwork', []);
     }
+
+
+    /** Deploy the common systest business network
+     *  @return {Promise} - a promise that will be resolved when complete.
+     */
 
 }
 

@@ -92,6 +92,38 @@ describe('EventDeclaration', () => {
                 event.validate();
             }).should.throw(/Event is a reserved type name./);
         });
+
+        it('Give an event an id field',()=>{
+            let model = `
+            namespace com.test
+
+            event E identified by euid {
+                o String euid
+            }`;
+            const modelManager = new ModelManager();
+            (()=>{
+                modelManager.addModelFile(model, 'awesome.cto' );
+            })
+            .should.throw(/Event should not specify an identifying field/);
+
+        });
+
+        it('Check the system type',()=>{
+            let model = `
+            namespace com.test
+
+            event E {
+                o String euid
+            }`;
+            const modelManager = new ModelManager();
+            const modelFile = modelManager.addModelFile(model, 'awesome.cto' );
+
+            let ed = modelFile.getEventDeclaration('E');
+            let stub = sinon.stub(ed,'getSystemType');
+            stub.throws(new Error());
+            ed.validate();
+
+        });
     });
 
 

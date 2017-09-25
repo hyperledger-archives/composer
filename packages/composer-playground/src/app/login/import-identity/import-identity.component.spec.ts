@@ -67,6 +67,7 @@ class MockFileImporterDirective {
 class MockIdentityCardComponent {
     @Input() identity: any;
     @Input() preview: boolean;
+    @Input() showDismissIcon: boolean;
 }
 
 describe('ImportIdentityComponent', () => {

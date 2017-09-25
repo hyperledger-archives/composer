@@ -22,9 +22,9 @@ const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
-const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
+const NetworkManager = require('./networkmanager');
 const Resolver = require('./resolver');
 const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
@@ -146,7 +146,6 @@ class Context {
         this.registryManager = null;
         this.resolver = null;
         this.api = null;
-        this.queryExecutor = null;
         this.identityManager = null;
         this.participant = null;
         this.transaction = null;
@@ -334,6 +333,7 @@ class Context {
 
                 // Validate the identity.
                 try {
+                    this.setIdentity(identity);
                     this.getIdentityManager().validateIdentity(identity);
                 } catch (e) {
 
@@ -341,7 +341,7 @@ class Context {
                     let isActivation = false;
                     try {
                         if (this.getFunction() === 'submitTransaction') {
-                            const json = JSON.parse(this.getArguments()[1]);
+                            const json = JSON.parse(this.getArguments()[0]);
                             isActivation = json.$class === 'org.hyperledger.composer.system.ActivateCurrentIdentity';
                         }
                     } catch (e) {
@@ -361,6 +361,7 @@ class Context {
                     }
 
                 }
+
 
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);
@@ -382,7 +383,6 @@ class Context {
                         return null;
                     }
                 }
-
                 // Throw the error.
                 LOG.error(method, error);
                 throw error;
@@ -588,7 +588,6 @@ class Context {
                     this.resolver = null;
                     this.resourceManager = null;
                     this.identityManager = null;
-                    this.queryExecutor = null;
                 }
                 return this.initializeInner();
             })
@@ -747,7 +746,7 @@ class Context {
      * @return {RegistryManager} The registry manager.
      */
     getRegistryManager() {
-        if (!this.registryManager) {
+        if ( !this.registryManager) {
             // TODO: This method call is getting too long.
             this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController(), this.getSystemRegistries(),this.getFactory());
         }
@@ -777,17 +776,6 @@ class Context {
     }
 
     /**
-     * Get the query executor.
-     * @return {QueryExecutor} The query executor.
-     */
-    getQueryExecutor() {
-        if (!this.queryExecutor) {
-            this.queryExecutor = new QueryExecutor(this.getResolver());
-        }
-        return this.queryExecutor;
-    }
-
-    /**
      * Get the identity manager.
      * @return {IdentityManager} The identity manager.
      */
@@ -809,6 +797,17 @@ class Context {
         return this.resourceManager;
     }
 
+        /**
+     * Get the network manager.
+     * @return {NetworkManager} The network manager.
+     */
+    getNetworkManager() {
+        if (!this.networkManager) {
+            this.networkManager = new NetworkManager(this);
+        }
+        return this.networkManager;
+    }
+
     /**
      * Get the current participant.
      * @return {Resource} the current participant.
@@ -827,6 +826,26 @@ class Context {
         }
         this.participant = participant;
         this.getAccessController().setParticipant(participant);
+    }
+
+
+    /**
+     * Get the current identity.
+     * @return {Resource} the current identity.
+     */
+    getIdentity() {
+        return this.currentIdentity;
+    }
+
+    /**
+     * Set the current identity.
+     * @param {Resource} currentIdentity the current identity.
+     */
+    setIdentity(currentIdentity) {
+        if (this.currentIdentity) {
+            throw new Error('A current identity has already been specified');
+        }
+        this.currentIdentity = currentIdentity;
     }
 
     /**
@@ -951,7 +970,7 @@ class Context {
      */
     getTransactionHandlers() {
         return [
-            this.getIdentityManager(),this.getResourceManager()
+            this.getIdentityManager(),this.getResourceManager(),this.getNetworkManager()
         ];
     }
 

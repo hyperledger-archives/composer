@@ -89,7 +89,7 @@ describe('Registry', () => {
                     // Check that the query was made successfully.
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getAllRegistries', ['Doge']);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getAllRegistries', ['Doge',false]);
 
                     // Check that the asset registries were returned correctly.
                     result.should.deep.equal(registries);
@@ -665,126 +665,6 @@ describe('Registry', () => {
             // Invoke the add function.
             return registry
                 .exists('dogecar1')
-                .should.be.rejectedWith(/such error/);
-
-        });
-
-    });
-
-    describe('#find', () => {
-
-        it('should throw when expression not specified', () => {
-            (() => {
-                registry.find(null);
-            }).should.throw(/expression not specified/);
-        });
-
-        it('should query the chain-code', () => {
-
-            // Create the asset registry and other test data.
-            let asset1 = sinon.createStubInstance(Resource);
-            asset1.getIdentifier.returns('dogecar1');
-            mockSerializer.fromJSON.onFirstCall().returns(asset1);
-            let asset2 = sinon.createStubInstance(Resource);
-            asset2.getIdentifier.returns('dogecar2');
-            mockSerializer.fromJSON.onSecondCall().returns(asset2);
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
-                [
-                    {
-                        'id':'fake id',
-                    },
-                    {
-                        'id':'fake id 2'
-                    }
-                ]
-            )));
-
-            // Invoke the add function.
-            return registry
-                .find('assetId = \'fred\'')
-                .then((assets) => {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'findResourcesInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'assetId = \'fred\'']);
-
-                    // Check that the assets were returned successfully.
-                    assets.should.be.an('array');
-                    assets.should.have.lengthOf(2);
-                    assets.should.all.be.an.instanceOf(Resource);
-                    assets[0].getIdentifier().should.equal('dogecar1');
-                    assets[1].getIdentifier().should.equal('dogecar2');
-
-                });
-
-        });
-
-        it('should handle an error from the chain-code', () => {
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.rejects(new Error('such error'));
-
-            // Invoke the add function.
-            return registry
-                .find('assetId = \'fred\'')
-                .should.be.rejectedWith(/such error/);
-
-        });
-
-    });
-
-    describe('#query', () => {
-
-        it('should throw when expression not specified', () => {
-            (() => {
-                registry.query(null);
-            }).should.throw(/expression not specified/);
-        });
-
-        it('should query the chain-code', () => {
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
-                [
-                    {'$class':'org.doge.Doge', 'assetId':'dogecar1'},
-                    {'$class':'org.doge.Doge', 'assetId':'dogecar2'}
-                ]
-            )));
-
-            // Invoke the add function.
-            return registry
-                .query('assetId = \'fred\'')
-                .then((assets) => {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'queryResourcesInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'assetId = \'fred\'']);
-
-                    // Check that the assets were returned successfully.
-                    assets.should.be.an('array');
-                    assets.should.have.lengthOf(2);
-                    assets.should.all.not.be.an.instanceOf(Resource);
-                    assets[0].should.be.an('object');
-                    assets[1].should.be.an('object');
-                    assets[0].assetId.should.equal('dogecar1');
-                    assets[1].assetId.should.equal('dogecar2');
-
-                });
-
-        });
-
-        it('should handle an error from the chain-code', () => {
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.rejects(new Error('such error'));
-
-            // Invoke the add function.
-            return registry
-                .query('assetId = \'fred\'')
                 .should.be.rejectedWith(/such error/);
 
         });

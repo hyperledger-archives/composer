@@ -17,63 +17,58 @@ If you are new to the Playground, we recommend that you follow the [Playground T
 
 # Navigating Playground
 
-## Landing Page
+## The wallet page
 
-The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business networks. It is only possible to access a blockchain Business Network through a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
+The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
-![wallet-page](./wallet-page.png)
+![wallet-page](./images/wallet-page.png)
 
-The page options comprise:
+From this page you can:
 
-- Deploy new business network ‘card’. If this is your first time using Playground, or you wish to start a new network, you should press this button. When you press the button, you will begin the process of creating a new Business Network from scratch, or by using one of our provided samples as a base.
-- ID Cards. An ID Card is what is used to connect to a blockchain Business Network. The card contains the identity, connection profile and the name of the target business network. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.
-- Import ID Card. It is possible to import an ID Card from a .card file on your computer. To do so, simply browse to the file using your file explorer, or drag-and-drop the file into the designated area.
-- Connect using credentials. If you have been provided with some credentials by an administrator, you can use this button to connect to the business network.
-- Tutorial. By pressing this link you will be navigated to the Playground tutorial.
 
-## Editor Global Options
+- Connect to a business network. If you already have a deployed business network and an ID card created for it, you can click **Connect now** to connect to the business network.
+- Deploy a new business network. If this is your first time using Playground, or you wish to start a new network, deploying your own network is a great place to start. When creating a new business network, you can choose to base your business network definition on a sample network, or create your own network from scratch.
+- Interact with ID cards. ID cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.
+- Import ID cards. Importing an existing `.card` file from your computer is the simplest way to add an ID card to your wallet.
+- Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click **Connect using credentials** to enter them and generate an ID card.
+- Run through the Playground tutorial. If you don't know where to start, the Playground tutorial runs through creating a business network from scratch, and performing some basic operations.
 
-The Editor define and test pages contain a header that shares interaction options.
+## Business network options
 
-![editor-header](./editor-header.png)
+Once connected to a business network using an ID card, there are a number of options available whether you're looking at the **Define** tab, or the **Test** tab.
 
-From left to right, the header contains:
+![editor-header](./images/editor-header.png)
 
-- The name of the connection profile in use, and the Busines Network to which you are connected. In the above, it is Web and basic-sample-network respectively.
-- Tabs that enable you to move between the Define and Test pages.
-- A drop-down that is labelled with the current Identity, which enables you to work with the Identity Registry (for issuing identities) and to log out of the Business Network.
+- In the upper-left is the name of the connection profile you're using and the business network you're connected to. In the example above, the connection profile is called _Web_ and the business network name is _basic-sample-network_.
+- Links to the **Define** and **Test** tabs. In the **Define** tab, you can add, modify and delete the content of your business network, and in the **Test** tab you can create assets and participants that were defined in the **Define** tab, and test the functionality of your business network.
+- On the upper-right is a dropdown menu displaying the identity which is being used to connect to the business network. The dropdown contains a link to the **Identity Registry**, and the ability to log out of the business network, returning to the **My Wallet** screen.
 
-## Editor - Define
-The Editor Define page is the page that is used to create, edit and update your Business Network.
+## The Define tab
 
-![editor-define-page](./editor-define.png)
+The Define tab is used to create, edit and update your business network.
 
-The left hand side of the page contains:
+![editor-define-page](./images/editor-define.png)
 
-- The Navigator, which displays all the files within your Business Network. By selecting a file within the list, it will be displayed in the central editor panel.
-- Add File button, which enables you to add a new file to your Business Network definition.
-- Update button, which updates the deployed Business Network to match that shown within the Editor.
-- Import/Replace button, which enables you to replace the complete Business Network definition within the editor. You may chose to import a Business Network based on a set of samples, or Business Network Archive file from disc.
-- Export button, which will export the Business Network definition within the Editor as a Business Network Archive (.bna) file.
+On the left of the **Define** tab, you can see a list of all the files in your current business network definition. To examine the contents of a file, click on it, and it will appear in the editor view. New files can be added to your business network with the **Add a file** button. Model files, script files, access control files, and query files can be added to your business network.
 
-The central editor panel will display the currently selected file from the navigator. Using the editor, you can develop all aspects of your blockchain Business Network.
+Once you've added and modified the files for your business network definition, you can deploy the changes to your network with the **Update** button. After click **Update** you can experiment with your changes in the **Test** tab. The **Import/Replace** button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the **Export** button downloads your current business network as a business network archive `.bna` file.
 
-## Editor - Test
-The Editor Test page is used to test the deployed Business Network through the creation of Participants, Assets and the submission of Transactions.
+## The Test tab
 
-![editor-test-page](./editor-test.png)
+The **Test** tab is used to test the deployed business network by using the asset types, participant types, and transactions which you defined in the **Define** tab.
 
-The left hand side of the page contains:
+![editor-test-page](./images/editor-test.png)
 
-- Participant registry, which shows all Participants within the Business Network. Within this view it is possible to add a new Participant through the Create New Participant button shown on the upper menu, and update or remove existing Participants.
-- Asset registry, which shows all Assets within the Business Network. Within this view it is possible to add a new Asset through the Create New Asset button shown on the upper menu, and update or remove existing Assets.
-- Transaction registry, which shows Historian Records of Transactions that have occurred within the Business Network.
-- Submit Transaction button, which enables the sumbission of a Transaction that is described within a script file of the Business Network definition.
+On the left of the **Test** tab, each participant type and asset type is listed. Clicking on a participant type, asset type, or **All transactions** will display a registry, showing all active instances of that type. For example, by clicking **SampleParticipant**, you can see a registry showing all _SampleParticipants_ that have been created. If it's the first time you've looked at the **Test** tab, your registries will be empty!
+
+From within each registry, you can create the corresponding asset, participant, or submit the corresponding transaction.
+
+In the **All transactions** registry, also known as the Historian, you can see a record of each transaction that has taken place in your business network, including some transactions which are caused by system events, such as creating participants or assets. In the transaction registry, you can submit transactions, and then check that their effects have occurred by checking the resources that were changed.
 
 ---
 # Playground Tasks
 
-###ID Cards
+### ID Cards
 * [Provide Access To Your Business Network With an ID Card](./id-cards-playground.html#provide)
 * [Gain Access To A Business Network with an ID Card](./id-cards-playground.html#gain)
 

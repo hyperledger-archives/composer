@@ -68,7 +68,7 @@ class ModelManager {
         // add the system model
         SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
             LOG.info(method, SYSTEM_MODEL);
-            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName, true);
+            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName);
             this.modelFiles[m.getNamespace()] = m;
         });
 
@@ -126,7 +126,7 @@ class ModelManager {
      */
     addModelFile(modelFile, fileName) {
         const NAME = 'addModelFile';
-        LOG.info(NAME,'addModelFile',modelFile,fileName);
+        LOG.info(NAME, 'addModelFile', modelFile, fileName);
 
         let m = null;
 
@@ -137,8 +137,8 @@ class ModelManager {
             m = modelFile;
         }
 
-        if(m.isSystemModelFile()) {
-            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+        if (m.isSystemModelFile()) {
+            throw new Error('Cannot add a model file with the reserved system namespace: ' + m.getNamespace());
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
@@ -163,7 +163,7 @@ class ModelManager {
      */
     updateModelFile(modelFile, fileName) {
         const NAME = 'updateModelFile';
-        LOG.info(NAME,'updateModelFile',modelFile,fileName);
+        LOG.info(NAME, 'updateModelFile', modelFile, fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             let existing = this.modelFiles[m.getNamespace()];
@@ -198,9 +198,9 @@ class ModelManager {
             throw new Error('model file does not exist');
         } else if (namespace === ModelUtil.getSystemNamespace()) {
             throw new Error('Cannot delete system namespace');
-
+        } else {
+            delete this.modelFiles[namespace];
         }
-        delete this.modelFiles[namespace];
     }
 
     /**
@@ -213,7 +213,7 @@ class ModelManager {
      */
     addModelFiles(modelFiles, fileNames) {
         const NAME = 'addModelFiles';
-        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
+        LOG.entry(NAME, 'addModelFiles', modelFiles, fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -230,7 +230,7 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
-                    if (m.isSystemModelFile()){
+                    if (m.isSystemModelFile()) {
                         throw new Error('System namespace can not be updated');
                     }
                     if (!this.modelFiles[m.getNamespace()]) {
@@ -241,7 +241,7 @@ class ModelManager {
                         throw new Error('namespace already exists');
                     }
                 } else {
-                    if (modelFile.isSystemModelFile()){
+                    if (modelFile.isSystemModelFile()) {
                         throw new Error('System namespace can not be updated');
                     }
                     if (!this.modelFiles[modelFile.getNamespace()]) {
@@ -266,8 +266,8 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
-        } finally{
-            LOG.exit(NAME,newModelFiles);
+        } finally {
+            LOG.exit(NAME, newModelFiles);
         }
     }
 
@@ -357,7 +357,6 @@ class ModelManager {
     getNamespaces() {
         return Object.keys(this.modelFiles);
     }
-
     /**
      * Look up a type in all registered namespaces.
      *
@@ -467,6 +466,7 @@ class ModelManager {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
     }
+
 }
 
 module.exports = ModelManager;
