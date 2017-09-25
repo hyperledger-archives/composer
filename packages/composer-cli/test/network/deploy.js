@@ -228,7 +228,7 @@ describe('composer deploy network CLI unit tests', function () {
         it('Good path, no enrollment secret, all other parms correctly specified.', function () {
 
             let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves(enrollmentSecret);
+            sandbox.stub(CmdUtil, 'prompt').resolves({'enrollmentSecret':enrollmentSecret});
 
             let argv = {enrollId: 'WebAppAdmin'
                        ,archiveFile: 'testArchiveFile.zip'
