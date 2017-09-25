@@ -300,10 +300,13 @@ class BusinessNetworkConnector extends Connector {
                         throw new Error('The destroyAll operation without a where clause is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    const queryString = FilterParser.parseFilter(filter, composerModelName);
-                    const query = networkConnection.buildQuery(queryString);
-                    if(!filter.where[identifierField] && (query === null || typeof query === 'undefined')) {
-                        throw new Error('The specified filter does not match the identifier or any property in the model');
+                    let query = null;
+                    if(!filter.where[identifierField]){
+                        const queryString = FilterParser.parseFilter(filter, composerModelName);
+                        query = networkConnection.buildQuery(queryString);
+                        if(query === null || typeof query === 'undefined') {
+                            throw new Error('The specified filter does not match the identifier or any property in the model');
+                        }
                     }
                     // Check we have the right identifier for the object type
                     let objectId = filter.where[identifierField];

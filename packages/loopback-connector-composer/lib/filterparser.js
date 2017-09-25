@@ -123,6 +123,8 @@ class FilterParser {
                         let result2 = this.parseWhereCondition(values[1]);
                         let combinationOp = arrayCombinationOperators[keys[0]];
                         return '(' + result1 + combinationOp + result2 + ')';
+                    } else {
+                        throw new Error('The combination operator' + keys[0] + 'should have two conditions');
                     }
                 }
             }
