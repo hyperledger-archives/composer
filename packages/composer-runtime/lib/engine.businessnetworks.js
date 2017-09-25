@@ -116,28 +116,39 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resetBusinessNetwork', []));
         }
         let dataService = context.getDataService();
+        let sysregistries;
 
-        return dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-
-                return sysregistries.getAll()
-                    .then((registries) => {
-                        return registries
-
-                        .reduce((cur, next) => {
-                            return cur.then(() => {
-                                let registryType = next.type;
-                                let registryId = next.registryId;
-                                LOG.debug(method, 'Deleting collection', registryType, registryId);
-                                return dataService.deleteCollection(registryType + ':' + registryId)
+        // first thing is to check that the current participant has delete permission before resetting the network
+        return dataService.getCollection('$sysdata')
+        .then((sysdata) => {
+            return sysdata.get('metanetwork');
+        })
+        .then((result) => {
+            let resource = context.getSerializer().fromJSON(result);
+            return context.getAccessController().check(resource, 'DELETE');
+        })
+        .then(()=>{
+            return dataService.getCollection('$sysregistries');
+        })
+        .then((sysregistries_) => {
+            sysregistries = sysregistries_;
+            return sysregistries.getAll();
+        })
+        .then((registries) => {
+            return registries.reduce((cur, next) => {
+                return cur.then(() => {
+                    let registryType = next.type;
+                    let registryId = next.registryId;
+                    LOG.debug(method, 'Deleting collection', registryType, registryId);
+                    return dataService.deleteCollection(registryType + ':' + registryId)
                                     .then(() => {
                                         LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
                                         return sysregistries.remove(registryType + ':' + registryId);
                                     });
-                            });
-                        }, Promise.resolve());
-                    });
-            })
+                });
+            }, Promise.resolve());
+
+        })
             .then ( ()=> {
                 // force creation of defaults as we know the don't exist
                 // Create all other default registries.
