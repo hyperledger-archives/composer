@@ -136,7 +136,13 @@ describe('EngineBusinessNetworks', () => {
                 type: 'Participants',
                 registryId: 'farmers'
             }]);
+            let mockSysDataCollection = sinon.createStubInstance(DataCollection);
+            mockSysDataCollection.get.resolves([{
+                type: 'metanetwork',
+                registryId: 'sheeps'
+            }]);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockSysDataCollection);
             mockDataService.deleteCollection.resolves();
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default').resolves();
