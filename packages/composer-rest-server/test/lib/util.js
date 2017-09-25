@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['connectionProfileName', 'businessNetworkName', 'enrollementId', 'enrollementSecret', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
+                    names.should.deep.equal(['connectionProfileName', 'businessNetworkName', 'enrollmentId', 'enrollmentSecret', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
                 });
         });
 
@@ -80,7 +80,7 @@ describe('Util', () => {
                     sinon.assert.calledOnce(inquirer.prompt);
                     const questions = inquirer.prompt.args[0][0]; // First call, first argument.
                     const question = questions.find((question) => {
-                        return question.name === 'enrollementId';
+                        return question.name === 'enrollmentId';
                     });
                     question.validate('').should.match(/Please enter/);
                     question.validate('admin').should.be.true;
@@ -93,7 +93,7 @@ describe('Util', () => {
                     sinon.assert.calledOnce(inquirer.prompt);
                     const questions = inquirer.prompt.args[0][0]; // First call, first argument.
                     const question = questions.find((question) => {
-                        return question.name === 'enrollementSecret';
+                        return question.name === 'enrollmentSecret';
                     });
                     question.validate('').should.match(/Please enter/);
                     question.validate('adminpw').should.be.true;
