@@ -20,6 +20,8 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const resourceType = 'org.acme.base.TestAsset';
+let whereObject;
+let whereCondition;
 
 describe('FilterParser', () => {
     beforeEach(() => {
@@ -53,56 +55,69 @@ describe('FilterParser', () => {
 
     describe('#parseWhereCondition', () => {
         it('should return the string value of a where condition', () => {
-            const whereObject = {'f1':'v1'};
-            const whereCondition = '(f1==\'v1\')';
+            whereObject = {'f1':'v1'};
+            whereCondition = '(f1==\'v1\')';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
         it('should return an integer value of a where condition', () => {
-            const whereObject = {'f1':10};
-            const whereCondition = '(f1==10)';
+            whereObject = {'f1':10};
+            whereCondition = '(f1==10)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
         it('should return a where condition with a great than operator', () => {
-            const whereObject = {'f1':{'gt':'v1'}};
-            const whereCondition = '(f1>v1)';
+            whereObject = {'f1':{'gt':'v1'}};
+            whereCondition = '(f1>v1)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
-        it('should throw when a where condition with an unsupported operator', () => {
-            const whereObject = {'f1':{'unknown':'v1'}};
+        it('should throw when a where condition with a parameter', () => {
             (() => {
+                whereObject = {'f1':'_$param'};
+                FilterParser.parseWhereCondition(whereObject);
+            }).should.throw(/The filter where does not support a parameter/);
+        });
+
+        it('should throw when a where condition with an unsupported operator', () => {
+            (() => {
+                whereObject = {'f1':{'unknown':'v1'}};
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/The key unknown operator is not supported by the Composer filter where/);
         });
+        it('should throw when a field value has more than one keys', () => {
+            (() => {
+                whereObject = {'f1':{'lte':'v1', 'gt':'v2'}};
+                FilterParser.parseWhereCondition(whereObject);
+            }).should.throw(/An invalid operator for the object value/);
+        });
 
         it('should return when a where condition with a between operator', () => {
-            const whereObject = {'f1':{'between':'[1,10]'}};
-            const whereCondition = '(f1>=1 AND f1<=10)';
+            whereObject = {'f1':{'between':'[1,10]'}};
+            whereCondition = '(f1>=1 AND f1<=10)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
         it('should return when a where condition with a combination of the and operation', () => {
-            const whereObject = {'and':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
-            const whereCondition = '((f1<=v1) AND (f2!=v2))';
+            whereObject = {'and':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
+            whereCondition = '((f1<=v1) AND (f2!=v2))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
         it('should return when a where condition with a combination of the or operation', () => {
-            const whereObject = {'or':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
-            const whereCondition = '((f1<=v1) OR (f2!=v2))';
+            whereObject = {'or':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
+            whereCondition = '((f1<=v1) OR (f2!=v2))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
         it('should throw when a where condition with an unknown combination operator', () => {
-            const whereObject = {'unknown':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
+            whereObject = {'unknown':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
             (() => {
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/The combination operator: unknown is not supported by the Composer filter where/);
         });
 
         it('should throw when a where condition with a valid combination operator but with only one condiiton', () => {
-            const whereObject = {'and':[{'f1':{'lte':'v1'}}, ]};
+            whereObject = {'and':[{'f1':{'lte':'v1'}}, ]};
             (() => {
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/The combination operator: and should have two conditions/);
@@ -123,7 +138,7 @@ describe('FilterParser', () => {
         it('should throw when the where object has an empty key', () => {
             (() => {
                 FilterParser.parseWhereCondition({});
-            }).should.throw(/The where object is empty/);
+            }).should.throw(/The where object does not have one key/);
         });
         it('should throw when the where object key is undefind', () => {
             (() => {
@@ -141,7 +156,6 @@ describe('FilterParser', () => {
                 FilterParser.parseWhereCondition({'key1' : undefined});
             }).should.throw(/The object value is invalid/);
         });
-
     });
 
 });

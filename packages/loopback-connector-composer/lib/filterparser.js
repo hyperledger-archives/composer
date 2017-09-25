@@ -87,9 +87,7 @@ class FilterParser {
         }
         const keys = Object.keys(whereObject);
         const combinationOperatorKeys = Object.keys(arrayCombinationOperators);
-        if (keys.length === 0) {
-            throw new Error('The where object is empty');
-        } else if (keys.length === 1) {
+        if(keys.length === 1){
 
             if(keys[0].trim() ===''){
                 throw new Error('The where object key is invalid');
@@ -101,34 +99,37 @@ class FilterParser {
             }
 
             if (typeof values === 'string') {
-                if(!values.startsWith('_$')){
-                    values = '\'' + values + '\'';
+                if(values.startsWith('_$')){
+                    throw new Error('The filter where does not support a parameter');
                 }
+                values = '\''+ values +'\'';
                 const result = '(' + keys[0] + '==' + values + ')';
                 return result;
-            } else if (typeof values === 'number'){
+            } else if (typeof values === 'number' || typeof values === 'boolean'){
                 const result = '(' + keys[0] + '==' + values + ')';
                 return result;
             }
             else if(typeof values === 'object' && !(values instanceof Array)) {
                 let op = Object.keys(values);
-                if (op.length === 1) {
-                    const opValue = values[op[0]];
-                    if(!operationmapKeys.includes(op[0])){
-                        throw new Error('The key ' + op[0] + ' operator is not supported by the Composer filter where');
-                    }
-                    let queryOp = operationmap[op[0]];
-                    let result;
-                    if(queryOp ==='between'){
-                        // parse the first string format array object "[1, 10]" to an array
-                        let theValue = JSON.parse(opValue);
-                        result = '(' + keys[0] + '>=' + theValue[0] +' AND '+ keys[0] + '<=' + theValue[1] +')';
-                    }else{
-                        result = '(' + keys[0] + queryOp + opValue + ')';
-                    }
-                    return result;
+                if( typeof op ==='undefined' || op === null || op.length !== 1){
+                    throw new Error('An invalid operator for the object value');
                 }
-            } else if(values instanceof Array) {
+                const opValue = values[op[0]];
+                if(!operationmapKeys.includes(op[0])){
+                    throw new Error('The key ' + op[0] + ' operator is not supported by the Composer filter where');
+                }
+                let queryOp = operationmap[op[0]];
+                let result;
+                if(queryOp ==='between'){
+                    // parse the first string format array object "[1, 10]" to an array
+                    let theValue = JSON.parse(opValue);
+                    result = '(' + keys[0] + '>=' + theValue[0] +' AND '+ keys[0] + '<=' + theValue[1] +')';
+                }else{
+                    result = '(' + keys[0] + queryOp + opValue + ')';
+                }
+                return result;
+            } else{
+                //values are the instance of array
                 if(!combinationOperatorKeys.includes(keys[0])){
                     throw new Error('The combination operator: ' +keys[0] + ' is not supported by the Composer filter where');
                 }
@@ -140,8 +141,9 @@ class FilterParser {
                 let result2 = this.parseWhereCondition(values[1]);
                 let combinationOp = arrayCombinationOperators[keys[0]];
                 return '(' + result1 +' ' + combinationOp+' ' + result2 + ')';
-
             }
+        }else{
+            throw new Error('The where object does not have one key');
         }
     }
 }
