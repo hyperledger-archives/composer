@@ -33,8 +33,8 @@ describe('composer-rest-server CLI unit tests', () => {
         sandbox.stub(Util, 'getConnectionSettings').resolves({
             connectionProfileName: 'defaultProfile',
             businessNetworkName: 'org-acme-biznet',
-            enrollementId: 'admin',
-            enrollementSecret: 'adminpw',
+            enrollmentId: 'admin',
+            enrollmentSecret: 'adminpw',
             namespaces: 'always',
             authentication: false,
             websockets: true,
