@@ -70,7 +70,20 @@ Verification Stage (basic)
 
 Verification Stage (adv)
  - Use the Ionic App to drive the vehicle lifecycle
+ -- From the ionic app, define the car order and then select 'build'
+ -- From the manufcturing page, commence manufacture
+ -- From the VDA page, observe the chains being generated as the order progresses
  - Log into Playground and inspect transactions via Historian, and all items in the registry
 
 Points to note:
  - If you get lost, or don't know what to do, ask
+
+ ## K8 Scripts
+ This task requires obtaining and running of the K8 scripts, targetting a deploy environment, however, prior to this:
+  - The K8 scripts will need to be modified to target unstable images of all composer items
+
+Only after modifying the tags should you proceed with the script run.
+
+Once the scripts have run, log onto Playground and ensure that:
+ - You have access
+ - You can generate and share ID cards
