@@ -122,7 +122,8 @@ class FilterParser {
                 let result;
                 if(queryOp ==='between'){
                     // parse the first string format array object "[1, 10]" to an array
-                    let theValue = JSON.parse(opValue);
+                    let theStrValue = JSON.stringify(opValue);
+                    let theValue = JSON.parse(theStrValue);
                     result = '(' + keys[0] + '>=' + theValue[0] +' AND '+ keys[0] + '<=' + theValue[1] +')';
                 }else{
                     result = '(' + keys[0] + queryOp + opValue + ')';

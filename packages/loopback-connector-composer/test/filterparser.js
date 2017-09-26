@@ -93,7 +93,7 @@ describe('FilterParser', () => {
         });
 
         it('should return when a where condition with a between operator', () => {
-            whereObject = {'f1':{'between':'[1,10]'}};
+            whereObject = {'f1':{'between':[1,10]}};
             whereCondition = '(f1>=1 AND f1<=10)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
