@@ -59,26 +59,26 @@ class Util {
                 }
             },
             {
-                name: 'enrollementId',
+                name: 'enrollmentId',
                 type: 'input',
-                message: 'Enter your enrollement ID :',
+                message: 'Enter your enrollment ID :',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter your enrollement ID';
+                        return 'Please enter your enrollment ID';
                     }
                 }
             },
             {
-                name: 'enrollementSecret',
+                name: 'enrollmentSecret',
                 type: 'secret',
-                message: 'Enter your enrollement secret :',
+                message: 'Enter your enrollment secret :',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter your enrollement secret';
+                        return 'Please enter your enrollment secret';
                     }
                 }
             },
