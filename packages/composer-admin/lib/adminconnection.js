@@ -487,6 +487,33 @@ class AdminConnection {
     }
 
     /**
+     * Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
+     * must have been previously deployed.
+     *
+     * Note this will remove ALL the contents of the registries, both system and network defined
+     * Default registries will be re-created as well
+     *
+     * @example
+     * // Updates a Business Network Definition
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.reset(businessNetworkDefinition)
+     * .then(function(){
+     *     // Business network definition updated
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The new BusinessNetworkDefinition
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * updated.
+     */
+    reset(businessNetworkDefinition){
+        Util.securityCheck(this.securityContext);
+        return this.connection.reset(this.securityContext, businessNetworkDefinition);
+    }
+
+    /**
      * Upgrades an existing business network's composer runtime to a later level.
      * The connection must be connected specifying the business network identifier as part of the
      * connection for this method to succeed.

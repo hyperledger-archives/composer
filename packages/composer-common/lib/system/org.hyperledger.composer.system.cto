@@ -176,6 +176,9 @@ transaction StartBusinessNetwork {
     o Transaction[] bootstrapTransactions optional
 }
 
+transaction ResetBusinessNetwork {
+}
+
 transaction UpdateBusinessNetwork {
     o String businessNetworkArchive
 }

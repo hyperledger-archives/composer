@@ -44,7 +44,10 @@ class NetworkManager extends TransactionHandler {
             'org.hyperledger.composer.system.UpdateBusinessNetwork',
             this.updateBusinessNetwork
         );
-
+        this.bind(
+            'org.hyperledger.composer.system.ResetBusinessNetwork',
+            this.resetBusinessNetwork
+        );
     }
 
     /**
@@ -154,6 +157,53 @@ class NetworkManager extends TransactionHandler {
                 LOG.exit(method);
             });
 
+    }
+
+
+    /**
+     * Update the business network archive.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    resetBusinessNetwork(api, transaction) {
+        const method = 'resetBusinessNetwork';
+        LOG.entry(method, transaction);
+
+        let dataService = this.context.getDataService();
+        return dataService.getCollection('$sysregistries')
+            .then((sysregistries) => {
+
+                return sysregistries.getAll()
+                    .then((registries) => {
+                        return registries
+
+                        .reduce((cur, next) => {
+                            return cur.then(() => {
+                                let registryType = next.type;
+                                let registryId = next.registryId;
+                                LOG.debug(method, 'Deleting collection', registryType, registryId);
+                                return dataService.deleteCollection(registryType + ':' + registryId)
+                                    .then(() => {
+                                        LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
+                                        return sysregistries.remove(registryType + ':' + registryId);
+                                    });
+                            });
+                        }, Promise.resolve());
+                    });
+            })
+            .then ( ()=> {
+                // force creation of defaults as we know the don't exist
+                // Create all other default registries.
+                LOG.debug(method, 'Creating default registries');
+                let registryManager = context.getRegistryManager();
+                return registryManager.createDefaults(true);
+
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
 }

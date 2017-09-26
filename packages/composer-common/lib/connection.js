@@ -314,8 +314,58 @@ class Connection extends EventEmitter {
             let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
             return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
+    }
 
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
+     */
+    reset(securityContext, businessNetworkDefinition) {
+        return this._updateTx(securityContext,businessNetworkDefinition);
+    }
 
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
+     */
+    _resetTx(securityContext, businessNetworkDefinition) {
+
+        // create the new transaction to update the network
+        if (!businessNetworkDefinition) {
+            throw new Error('business network definition not specified');
+        }
+        let currentDeployedNetwork;
+
+        return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+            // Send an update request to the chaincode.
+            // create the new system transaction to add the resources
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            return Util.invokeChainCode(securityContext, 'submitTransaction', []);
+        });
     }
 
     /**
