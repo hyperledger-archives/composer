@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Update = require ('./lib/update.js');
+const Reset = require ('./lib/reset.js');
 
 module.exports.command = 'reset [options]';
 module.exports.describe = 'Resets a business network';
@@ -26,5 +26,5 @@ module.exports.builder = {
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Update.handler(argv);
+    return argv.thePromise = Reset.handler(argv);
 };

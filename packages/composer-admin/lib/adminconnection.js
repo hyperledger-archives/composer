@@ -504,13 +504,13 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The new BusinessNetworkDefinition
+     * @param {String} businessNetworkName - The BusinessNetworkName
      * @return {Promise} A promise that will be fufilled when the business network has been
      * updated.
      */
-    reset(businessNetworkDefinition){
+    reset(businessNetworkName){
         Util.securityCheck(this.securityContext);
-        return this.connection.reset(this.securityContext, businessNetworkDefinition);
+        return this.connection.reset(this.securityContext, businessNetworkName);
     }
 
     /**

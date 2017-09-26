@@ -197,7 +197,7 @@ class NetworkManager extends TransactionHandler {
                 // force creation of defaults as we know the don't exist
                 // Create all other default registries.
                 LOG.debug(method, 'Creating default registries');
-                let registryManager = context.getRegistryManager();
+                let registryManager = this.context.getRegistryManager();
                 return registryManager.createDefaults(true);
 
             })

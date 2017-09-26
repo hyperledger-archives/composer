@@ -320,26 +320,26 @@ class Connection extends EventEmitter {
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {String} businessNetworkIdentifier The identifier of the business network
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been reset, or rejected with an error.
      */
     reset(securityContext, businessNetworkDefinition) {
-        return this._updateTx(securityContext,businessNetworkDefinition);
+        return this._resetTx(securityContext,businessNetworkDefinition);
     }
 
     /**
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {String} businessNetworkIdentifier The identifier of the business network
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been reset, or rejected with an error.
      */
-    _resetTx(securityContext, businessNetworkDefinition) {
+    _resetTx(securityContext, businessNetworkIdentifier) {
 
         // create the new transaction to update the network
-        if (!businessNetworkDefinition) {
+        if (!businessNetworkIdentifier) {
             throw new Error('business network definition not specified');
         }
         let currentDeployedNetwork;
@@ -354,6 +354,11 @@ class Connection extends EventEmitter {
             currentDeployedNetwork = businessNetwork;
             // Send an update request to the chaincode.
             // create the new system transaction to add the resources
+
+            if (currentDeployedNetwork.getName() !== businessNetworkIdentifier){
+                throw new Error('Incorrect Business Network Identifier');
+            }
+
             let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
             let id = transaction.getIdentifier();
             if (id === null || id === undefined) {
@@ -364,7 +369,8 @@ class Connection extends EventEmitter {
             if (timestamp === null || timestamp === undefined) {
                 timestamp = transaction.timestamp = new Date();
             }
-            return Util.invokeChainCode(securityContext, 'submitTransaction', []);
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
     }
 

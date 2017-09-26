@@ -285,6 +285,19 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#reset', () => {
+
+        it('should be able to reset a composer runtime', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.reset('name')
+                    .then(() => {
+                        sinon.assert.calledOnce(mockConnection.reset);
+                        sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
+                    });
+        });
+    });
+
     describe('#deploy', () => {
 
         it('should be able to deploy a business network definition', () => {
