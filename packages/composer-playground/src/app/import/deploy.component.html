@@ -43,7 +43,10 @@
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
                          (click)="selectNetwork(sampleNetworks[1])">
-                        <img src="{{sampleNetworks[1].networkImage}}">
+                        <img *ngIf="sampleNetworks[1].networkImage" src="{{sampleNetworks[1].networkImage}}">
+                        <svg *ngIf="!sampleNetworks[1].networkImage">
+                            <use xlink:href="#icon-default-network"></use>
+                        </svg>
                         <div class="sample-network-name">{{sampleNetworks[1].name}}</div>
                     </div>
                     <div class="sample-network-list-item" [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}" (click)="selectNetwork(sampleNetworks[0])">
