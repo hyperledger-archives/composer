@@ -143,7 +143,6 @@ When assets, transactions, or participants involved in a transaction have a prop
 The following example includes nested relationships, the transaction has a relationship with an asset, which has a relationship with a participant, because all relationships are resolved, the `owner` property of the asset is resolved to the specific participant.
 
 Model file:
-
 ```
 namespace org.acme.sample
 
@@ -162,7 +161,6 @@ transaction SampleTransaction {
 ```
 
 Script file:
-
 ```
 /**
  * Sample transaction processor function.
@@ -189,7 +187,6 @@ Similarly to relationships, transaction processor functions will wait for promis
 In the example code below there are several promises, the transaction will not be completed until each promise has returned.
 
 Model file:
-
 ```
 namespace org.acme.sample
 
@@ -198,8 +195,7 @@ transaction SampleTransaction {
 }
 ```
 
-Script file:
-
+Script file (1):
 ```
 /**
  * Sample transaction processor function.
@@ -230,7 +226,6 @@ The {{site.data.conrefs.composer_full}} APIs can be called within transaction pr
 
 
 Model file:
-
 ```
 namespace org.acme.sample
 
@@ -246,7 +241,6 @@ transaction SampleTransaction {
 ```
 
 Script file:
-
 ```
 /**
  * Sample transaction processor function.
