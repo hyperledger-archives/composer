@@ -10,13 +10,13 @@ excerpt: "This guide will walk you through the steps required to create, then tr
 
 # Queries Tutorial using the Composer Query language and REST APIs
 
-In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries !
+In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you've done the tutorial, feel free to try out your own queries!
 
 Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in `queries.qry` from the `trade-network` sample network to get going - they are described in the file itself. In the main 'Commodity Trading' [Developer-Tutorial](developer-guide.html), we cloned the Composer `sample-networks` git repository, and created a new network 'my-network' from `basic-sample-network` in the samples directory - this tutorial uses that network to get going.
 
 It is recommended to do the [Developer-Tutorial](developer-guide.html) first, where the business network `my-network` has first been deployed and setup steps are performed. Alternatively, you can  if you wish, do this tutorial from 'scratch' but observe these following 3 steps:
 
-1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial where its based on the `basic-sample-network` project) 
+1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial where its based on the `basic-sample-network` project)
 2. Edit your package.json, once again changing the 'name' field to `my-network`, the 'description' to 'My Commodity Trading network' and modify the 'prepublish' script (at the end) to change the filename of the business network archive (.bna) - ie to 'my-network.bna'
 3. Finally, you must use the `composer network deploy` command later on here (ie not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
 
@@ -73,14 +73,14 @@ event RemoveNotification {
 }
 ```
 
-Save your changes to `models/sample.cto` 
+Save your changes to `models/sample.cto`
 
 
 ## Update Transaction logic to use Queries & Events
 
 Now that the domain model has been updated, we can write the additional business logic that gets executed when a transaction is submitted for processing. In this tutorial we have added events and queries to the business logic below.
 
-Open the file `lib/sample.js` in the left-hand pane and inspect the current logic. 
+Open the file `lib/sample.js` in the left-hand pane and inspect the current logic.
 
 Now select all the contents and delete it - replacing it with the entire code sample shown below:
 
@@ -658,7 +658,7 @@ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 ## Regenerate the REST APIs for the updated Business Network
 
-We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network. 
+We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network.
 
 Launch the Composer REST server by changing directory to the 'my-network' folder as shown below:
 
@@ -688,7 +688,7 @@ We should be able to see that the REST Endpoint called 'Query' has been added an
 
 Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.
 
-First, click on 'Trader' in the REST Explorer, then click on the 'POST' method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn: 
+First, click on 'Trader' in the REST Explorer, then click on the 'POST' method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:
 
 ```
 
@@ -765,15 +765,15 @@ Now that we have some Assets and Participants, we can test out some queries usin
 
 Now that we have 'data', we can try out some queries.
 
-The simplest REST query we can try out first is our named query 'selectCommodities'. 
+The simplest REST query we can try out first is our named query 'selectCommodities'.
 
 Expand the 'Queries' (REST Endpoint) and you will see the named queries we defined in our model.
 
-These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side. 
+These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side.
 
 ![Commodities: REST Endpoint](../assets/img/tutorials/query/commodity-rest-endpointhdr.png)
 
-Expand 'selectCommodities' and click the 'Try it Out' button. 
+Expand 'selectCommodities' and click the 'Try it Out' button.
 
 ![Setup REST query: select all Commodities](../assets/img/tutorials/query/query-select-commodities.png)
 
@@ -794,9 +794,9 @@ The results reveal that only those Commodities with an Exchange of 'EURONEXT' ar
 ![Query Results: Commodities by exchange](../assets/img/tutorials/query/queryresults-selectby-exchange.png)
 
 
-### Perform Transaction update using results from named Query 
+### Perform Transaction update using results from named Query
 
-Finally, you will recall we had defined a simple query that filters Commodities with a Quantity greater than 60 in our query file. Queries are very powerful, when used in transaction functions, as using queries allows transaction logic to set up the set of assets or participants to perform updates on, or for creating remove actions for example. 
+Finally, you will recall we had defined a simple query that filters Commodities with a Quantity greater than 60 in our query file. Queries are very powerful, when used in transaction functions, as using queries allows transaction logic to set up the set of assets or participants to perform updates on, or for creating remove actions for example.
 
 ![Recollect Query definition](../assets/img/tutorials/query/querydef-recall-high-qty-commodities.png)
 
@@ -840,6 +840,6 @@ Well done, you've now completed this tutorial and we hope you now have a much be
 
 ## Related Links
 
-[Developer-Tutorial](developer-guide.html)
-[Deploying a business network](../business-network/bnd-deploy.html)
-[Network deploy command](../reference/composer.network.deploy.html)
+- [Developer-Tutorial](developer-guide.html)
+- [Deploying a business network](../business-network/bnd-deploy.html)
+- [Network deploy command](../reference/composer.network.deploy.html)
