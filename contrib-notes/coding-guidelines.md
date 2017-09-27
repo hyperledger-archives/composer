@@ -108,7 +108,7 @@ Our current test suites make use of:
 Hyperledger Composer requires that all code added to the project is provided with unit tests. These tests operate inside a test framework called [mocha](https://mochajs.org/) which controls their execution. Mocha is triggered every time code is pushed to either a user's repository or the Hyperledger Composer repository.
 
 ### Unit Test Framework using Karma and Jasmine
-The default configuration is set to target the Chrome browser, and this is the target browser during the build process. Unit tests should rigorously test controller files and where appropriate inspect the view to ensure that mapped logic is operating as expected.
+The default configuration is set to target the Firefox browser, and this is the target browser during the build process. Unit tests should rigorously test controller files and where appropriate inspect the view to ensure that mapped logic is operating as expected.
 
 ### Simplify writing tests using the chai assertion library, chai-things and sinon
 

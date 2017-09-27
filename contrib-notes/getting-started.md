@@ -32,7 +32,7 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 - **Node.js  v6** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
     - Ubuntu: Simply installed [follow these notes](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions).
 
-- **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
+- **Firefox** Web test suites use **karma** to launch a browser, and consequently **Firefox** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
 
 ## Forking and Cloning the Hyperledger Composer Repository
 
