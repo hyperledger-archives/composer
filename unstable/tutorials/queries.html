@@ -204,14 +204,14 @@ ga('send', 'pageview');
             
               <h1 id="queries-tutorial-using-the-composer-query-language-and-rest-apis">Queries Tutorial using the Composer Query language and REST APIs</h1>
 
-<p>In this tutorial, we will build on the &#39;Commodity Trading&#39; developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you&#39;ve done the tutorial, feel free to try out your own queries !</p>
+<p>In this tutorial, we will build on the &#39;Commodity Trading&#39; developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you&#39;ve done the tutorial, feel free to try out your own queries!</p>
 
 <p>Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in <code>queries.qry</code> from the <code>trade-network</code> sample network to get going - they are described in the file itself. In the main &#39;Commodity Trading&#39; <a href="developer-guide.html">Developer-Tutorial</a>, we cloned the Composer <code>sample-networks</code> git repository, and created a new network &#39;my-network&#39; from <code>basic-sample-network</code> in the samples directory - this tutorial uses that network to get going.</p>
 
 <p>It is recommended to do the <a href="developer-guide.html">Developer-Tutorial</a> first, where the business network <code>my-network</code> has first been deployed and setup steps are performed. Alternatively, you can  if you wish, do this tutorial from &#39;scratch&#39; but observe these following 3 steps:</p>
 
 <ol>
-<li>Build a new &#39;my-network&#39; VSCode project (as shown in the Developer tutorial where its based on the <code>basic-sample-network</code> project) </li>
+<li>Build a new &#39;my-network&#39; VSCode project (as shown in the Developer tutorial where its based on the <code>basic-sample-network</code> project)</li>
 <li>Edit your package.json, once again changing the &#39;name&#39; field to <code>my-network</code>, the &#39;description&#39; to &#39;My Commodity Trading network&#39; and modify the &#39;prepublish&#39; script (at the end) to change the filename of the business network archive (.bna) - ie to &#39;my-network.bna&#39;</li>
 <li>Finally, you must use the <code>composer network deploy</code> command later on here (ie not &#39;composer network update&#39;) to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).</li>
 </ol>
@@ -264,13 +264,13 @@ event RemoveNotification {
     --&gt; Commodity commodity
 }
 </code></pre></div>
-<p>Save your changes to <code>models/sample.cto</code> </p>
+<p>Save your changes to <code>models/sample.cto</code></p>
 
 <h2 id="update-transaction-logic-to-use-queries-events">Update Transaction logic to use Queries &amp; Events</h2>
 
 <p>Now that the domain model has been updated, we can write the additional business logic that gets executed when a transaction is submitted for processing. In this tutorial we have added events and queries to the business logic below.</p>
 
-<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the current logic. </p>
+<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the current logic.</p>
 
 <p>Now select all the contents and delete it - replacing it with the entire code sample shown below:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/*
@@ -805,7 +805,7 @@ Command succeeded
 </code></pre></div>
 <h2 id="regenerate-the-rest-apis-for-the-updated-business-network">Regenerate the REST APIs for the updated Business Network</h2>
 
-<p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network. </p>
+<p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network.</p>
 
 <p>Launch the Composer REST server by changing directory to the &#39;my-network&#39; folder as shown below:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ..
@@ -829,7 +829,7 @@ Browse your REST API at http://localhost:3000/explorer
 
 <p>Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.</p>
 
-<p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn: </p>
+<p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">
 {
   "$class": "org.acme.mynetwork.Trader",
@@ -888,15 +888,15 @@ Browse your REST API at http://localhost:3000/explorer
 
 <p>Now that we have &#39;data&#39;, we can try out some queries.</p>
 
-<p>The simplest REST query we can try out first is our named query &#39;selectCommodities&#39;. </p>
+<p>The simplest REST query we can try out first is our named query &#39;selectCommodities&#39;.</p>
 
 <p>Expand the &#39;Queries&#39; (REST Endpoint) and you will see the named queries we defined in our model.</p>
 
-<p>These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side. </p>
+<p>These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side.</p>
 
 <p><img src="../assets/img/tutorials/query/commodity-rest-endpointhdr.png" alt="Commodities: REST Endpoint"></p>
 
-<p>Expand &#39;selectCommodities&#39; and click the &#39;Try it Out&#39; button. </p>
+<p>Expand &#39;selectCommodities&#39; and click the &#39;Try it Out&#39; button.</p>
 
 <p><img src="../assets/img/tutorials/query/query-select-commodities.png" alt="Setup REST query: select all Commodities"></p>
 
@@ -918,7 +918,7 @@ Browse your REST API at http://localhost:3000/explorer
 
 <h3 id="perform-transaction-update-using-results-from-named-query">Perform Transaction update using results from named Query</h3>
 
-<p>Finally, you will recall we had defined a simple query that filters Commodities with a Quantity greater than 60 in our query file. Queries are very powerful, when used in transaction functions, as using queries allows transaction logic to set up the set of assets or participants to perform updates on, or for creating remove actions for example. </p>
+<p>Finally, you will recall we had defined a simple query that filters Commodities with a Quantity greater than 60 in our query file. Queries are very powerful, when used in transaction functions, as using queries allows transaction logic to set up the set of assets or participants to perform updates on, or for creating remove actions for example.</p>
 
 <p><img src="../assets/img/tutorials/query/querydef-recall-high-qty-commodities.png" alt="Recollect Query definition"></p>
 
@@ -961,9 +961,11 @@ Browse your REST API at http://localhost:3000/explorer
 
 <h2 id="related-links">Related Links</h2>
 
-<p><a href="developer-guide.html">Developer-Tutorial</a>
-<a href="../business-network/bnd-deploy.html">Deploying a business network</a>
-<a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
+<ul>
+<li><a href="developer-guide.html">Developer-Tutorial</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying a business network</a></li>
+<li><a href="../reference/composer.network.deploy.html">Network deploy command</a></li>
+</ul>
 
             
           </section>

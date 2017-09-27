@@ -220,20 +220,9 @@ ga('send', 'pageview');
 
 <p>Your organization namespace is defined in the namespace line of your model (<code>.cto</code>) file, and all resources created are implicitly part of this namespace.</p>
 
-<p>As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.</p>
+<p>As well as defining new classes of asset, participant, event, and transaction, there is a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto">system namespace</a> which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.</p>
 
-<p>Represented as a <code>.cto</code> model file, the system namespace is as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    namespace org.hyperledger.composer.system
-    abstract asset Asset {  }
-    abstract participant Participant {   }
-    abstract transaction Transaction {
-      o DateTime timestamp
-    }
-    abstract event Event {
-      o DateTime timestamp
-    }
-</code></pre></div>
-<p>In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.</p>
+<p>In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp. The system namespace also includes definitions of registries, historian records, identities, and a number of system transactions.</p>
 
 <blockquote>
 <p>If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.</p>

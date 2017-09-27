@@ -214,48 +214,230 @@ ga('send', 'pageview');
 
 <p>Each transaction type has an associated registry storing the transactions.</p>
 
-<h2 id="sample-script">Sample Script</h2>
+<h2 id="transaction-processor-structure">Transaction processor structure</h2>
 
-<p>The script below defines two transaction processor functions, called <code>onAnimalMovementDeparture</code> and <code>onAnimalMovementArrival</code>. Note that the model files within the <code>BusinessNetworkDefinition</code> must define the two transaction types <code>com.hyperledger.composer.animaltracking.AnimalMovementDeparture</code> and <code>com.hyperledger.composer.animaltracking.AnimalMovementArrival</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    'use strict';
+<p>The structure of transaction processor functions includes decorators and metadata followed by a JavaScript function, both parts are required for a transaction processor function to work.</p>
 
-    /*eslint-disable no-unused-vars*/
-    /*eslint-disable no-undef*/
-
-    /**
-    * A transaction processor for AnimalMovementDeparture
-    * @param  {com.hyperledger.composer.animaltracking.AnimalMovementDeparture} movementDeparture - the transaction to be processed
-    * @transaction
-    */
-    function onAnimalMovementDeparture(movementDeparture) {
-        console.log('onAnimalMovementDeparture');
-    }
-
-    /**
-    * A transaction processor for AnimalMovementArrival
-    * @param  {com.hyperledger.composer.animaltracking.AnimalMovementArrival} movementArrival - the transaction to be processed
-    * @transaction
-    */
-    function onAnimalMovementArrival(movementArrival) {
-        console.log('onAnimalMovementArrival');
-    }
-
-    /*eslint-enable no-unused-vars*/
-    /*eslint-enable no-undef*/
-    }
+<p>The first line of comments above a transaction processor function contains a human readable description of what the transaction processor function does. The second line must include the <code>@param</code> tag to indicate the parameter definition. The <code>@param</code> tag is followed by the resource name of the transaction which triggers the transaction processor function, this takes the format of the namespace of the business network, followed by the transaction name. After the resource name, is the parameter name which will reference the resource, this parameter must be supplied to the JavaScript function as an argument. The third line must contain the <code>@transaction</code> tag, this tag identifies the code as a transaction processor function and is required.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+* A transaction processor function description
+* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @transaction
+*/
 </code></pre></div>
-<p>Transaction processor functions may use the APIs defined in the <code>composer-runtime</code> module to access asset registries to create/read/update/delete assets. The <code>getCurrentParticipant()</code> function may be called to determine the identity of the caller (identity used to submit a transaction for processing).</p>
+<p>After the comments is the JavaScript function which powers the transaction. The function can have any name, but must include the parameter name defined in the comment as an argument.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">function transactionProcessor(parameter-name) {
+  //Do some things.
+}
+</code></pre></div>
+<p>A complete transaction processor function as detailed above would take the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+* A transaction processor function description
+* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @transaction
+*/
+function transactionProcessor(parameter-name) {
+  //Do some things.
+}
+</code></pre></div>
+<h2 id="writing-a-transaction-processor-function">Writing a transaction processor function</h2>
 
-<h2 id="decorators">Decorators</h2>
+<p>A transaction processor function is the logical operation of a transaction defined in a model file. For example, a transaction processor function of a <code>Trade</code> transaction, might use JavaScript to change the <code>owner</code> property of an asset from one participant to another.</p>
 
-<p>JSDoc documentation comments are used to supply metadata about the purpose and
-parameters of the functions in the script.</p>
+<p>Here&#39;s an example from the <code>basic-sample-network</code>, the following <code>SampleAsset</code> definition includes a property called <code>value</code>, which is defined as a string. The <code>SampleTransaction</code> transaction requires a relationship to an asset, the asset to be changed, the new value of the <code>value</code> property must be supplied as part of the transaction as a property called <code>newValue</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset SampleAsset identified by assetId {
+  o String assetId
+  --&gt; SampleParticipant owner
+  o String value
+}
 
-<p>The standard <code>@param</code> decorator must be used to specify the types of parameters for functions.</p>
+transaction SampleTransaction {
+  --&gt; SampleAsset asset
+  o String newValue
+}
+</code></pre></div>
+<p>The transaction processor function relating to the <code>SampleTransaction</code> transaction is what makes the change both to the asset and to the registry where the asset is stored.</p>
 
-<p>The <code>@transaction</code> decorator is added to a function to indicate that it processes incoming transactions. Functions with the @transaction decorator must take a single transaction type parameter. The transaction type must be defined in the model files in the business network definition.</p>
+<p>The transaction processor function defines the <code>SampleTransaction</code> type as the associated transaction, and defines it as the parameter <code>tx</code>. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the <code>newValue</code> property in the transaction definition), updates the asset in the registry, and then emits an event.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+function sampleTransaction(tx) {
 
-<hr>
+    // Save the old value of the asset.
+    var oldValue = tx.asset.value;
+
+    // Update the asset with the new value.
+    tx.asset.value = tx.newValue;
+
+    // Get the asset registry for the asset.
+    return getAssetRegistry('org.acme.sample.SampleAsset')
+        .then(function (assetRegistry) {
+
+            // Update the asset in the asset registry.
+            return assetRegistry.update(tx.asset);
+
+        })
+        .then(function () {
+
+            // Emit an event for the modified asset.
+            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
+            event.asset = tx.asset;
+            event.oldValue = oldValue;
+            event.newValue = tx.newValue;
+            emit(event);
+
+        });
+
+}
+</code></pre></div>
+<h2 id="error-handling-in-transaction-processor-functions">Error handling in transaction processor functions</h2>
+
+<p>Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+function sampleTransaction(tx) {
+    // Do something.
+    throw new Error('example error');
+    // Execution stops at this point; the transaction fails and rolls back.
+    // Any updates made by the transaction processor function are discarded.
+    // Transaction processor functions are atomic; all changes are committed,
+    // or no changes are committed.
+}
+</code></pre></div>
+<p>Changes made by transactions are atomic, either the transaction is successful and all changes are applied, or the transaction fails and no changes are applied.</p>
+
+<h2 id="resolving-relationships-in-transactions">Resolving relationships in transactions</h2>
+
+<p>When assets, transactions, or participants involved in a transaction have a property which includes a relationship, the relationships are resolved automatically. All relationships, including nested relationships, are resolved before the transaction processor functions runs.</p>
+
+<p>The following example includes nested relationships, the transaction has a relationship with an asset, which has a relationship with a participant, because all relationships are resolved, the <code>owner</code> property of the asset is resolved to the specific participant.</p>
+
+<p>Model file:
+```
+namespace org.acme.sample</p>
+
+<p>participant SampleParticipant identified by participantId {
+  o String participantId
+}</p>
+
+<p>asset SampleAsset identified by assetId {
+  o String assetId
+  --&gt; SampleParticipant owner
+}</p>
+
+<p>transaction SampleTransaction {
+  --&gt; SampleAsset asset
+}
+```</p>
+
+<p>Script file:
+<code>
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+function sampleTransaction(tx) {
+    // The relationships in the transaction are automatically resolved.
+    // This means that the asset can be accessed in the transaction instance.
+    var asset = tx.asset;
+    // The relationships are fully or recursively resolved, so you can also
+    // access nested relationships. This means that you can also access the
+    // owner of the asset.
+    var owner = tx.asset.owner;
+}
+</code></p>
+
+<p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
+
+<h2 id="promise-returns-in-transaction-processor-functions">Promise returns in transaction processor functions</h2>
+
+<p>Similarly to relationships, transaction processor functions will wait for promises to be resolved before committing the transaction. If a promise is rejected, the transaction will fail.</p>
+
+<p>In the example code below there are several promises, the transaction will not be completed until each promise has returned.</p>
+
+<p>Model file:
+```
+namespace org.acme.sample</p>
+
+<p>transaction SampleTransaction {</p>
+
+<p>}
+```</p>
+
+<p>Script file (1):
+<code>
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+function sampleTransaction(tx) {
+    // Transaction processor functions can return promises; Composer will wait
+    // for the promise to be resolved before committing the transaction.
+    // Do something that returns a promise.
+    return Promise.resolve()
+        .then(function () {
+            // Do something else that returns a promise.
+            return Promise.resolve();
+        })
+        .then(function () {
+            // Do something else that returns a promise.
+            // This transaction is complete only when this
+            // promise is resolved.
+            return Promise.resolve();
+        });
+}
+</code></p>
+
+<h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
+
+<p>The Hyperledger Composer APIs can be called within transaction processor functions, in the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
+
+<p>Model file:
+```
+namespace org.acme.sample</p>
+
+<p>asset SampleAsset identified by assetId {
+  o String assetId
+  o String value
+}</p>
+
+<p>transaction SampleTransaction {
+  --&gt; SampleAsset asset
+  o String newValue
+}
+```</p>
+
+<p>Script file:
+<code>
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+function sampleTransaction(tx) {
+    // Update the value in the asset.
+    var asset = tx.asset;
+    asset.value = tx.newValue;
+    // Get the asset registry that stores the assets. Note that
+    // getAssetRegistry() returns a promise, so we have to return
+    // the promise so that Composer waits for it to be resolved.
+    return getAssetRegistry(&#39;org.acme.sample.SampleAsset&#39;)
+        .then(function (assetRegistry) {
+            // Update the asset in the asset registry. Again, note
+            // that update() returns a promise, so so we have to return
+            // the promise so that Composer waits for it to be resolved.
+            return assetRegistry.update(asset);
+        })
+}
+</code></p>
 
 <h2 id="what-next">What next?</h2>
 
