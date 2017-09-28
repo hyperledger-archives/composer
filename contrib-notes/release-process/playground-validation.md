@@ -75,7 +75,9 @@ This page is the main file editor page, where it is possible to edit resources. 
 Start with the basic sample network loaded
  - ReadMe should be default selected for view
     - No delete icon visible at top right of editor page
-    - Can see/edit BND name/version and complete package information
+    - Can click edit button to edit package json
+    - Check that you are not allowed to update the name
+    - Check that you can update other properties
  - Side navigation should be linked to the edit page.
     - Cycle through each file in the navigation menu. Upon selection of a file item, the content should be displayed in the main file-editor page.
  - Add a new model file, it should become the focal item and the empty contents should show in the editor page.
