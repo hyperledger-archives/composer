@@ -177,8 +177,14 @@ transaction StartBusinessNetwork {
 }
 
 transaction ResetBusinessNetwork {
+  
 }
 
 transaction UpdateBusinessNetwork {
-    o String businessNetworkArchive
+  o String businessNetworkArchive
 }
+
+transaction SetNetworkLoggingLevel {
+  o String newLogLevel
+}
+

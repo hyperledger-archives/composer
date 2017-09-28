@@ -250,6 +250,123 @@ describe('Connection', () => {
 
     });
 
+    describe('#reset', () => {
+
+        it('should call _update and handle no error', () => {
+            sinon.stub(connection, '_resetTx').resolves();
+            return connection.reset(mockSecurityContext, mockBusinessNetworkDefinition)
+                        .then(() => {
+                            sinon.assert.calledWith(connection._resetTx, mockSecurityContext, mockBusinessNetworkDefinition);
+                        });
+        });
+
+        it('should call _reset and handle an error', () => {
+            sinon.stub(connection, '_resetTx').rejects(new Error('error'));
+            return connection.reset(mockSecurityContext, mockBusinessNetworkDefinition)
+                        .should.be.rejectedWith(/error/)
+                        .then(() => {
+                            sinon.assert.calledWith(connection._resetTx, mockSecurityContext, mockBusinessNetworkDefinition);
+                        });
+        });
+
+    });
+
+    describe('#_resetTx', () => {
+
+        it('should throw an error when no name given', ()=>{
+            return connection._resetTx(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        });
+        it('should handle wrong network name data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection._resetTx(mockSecurityContext,'wrong-network')
+                    .should.eventually.be.rejectedWith(/Incorrect Business Network Identifier/);
+
+        });
+        it('should handle valid data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection._resetTx(mockSecurityContext,'acme-network')
+                    .then(()=>{
+                        sinon.assert.called(Util.invokeChainCode);
+                        sinon.assert.called(Util.queryChainCode);
+                    });
+
+        });
+
+        it('should handle valid data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp=new Date();
+
+            return connection._resetTx(mockSecurityContext,'acme-network')
+                    .then(()=>{
+                        sinon.assert.called(Util.invokeChainCode);
+                        sinon.assert.called(Util.queryChainCode);
+                    });
+
+        });
+
+    });
+
     describe('#update', () => {
 
         it('should call _update and handle no error', () => {

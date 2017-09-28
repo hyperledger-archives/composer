@@ -15,8 +15,11 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const InstallCmd = require('../../lib/cmds/runtime/installCommand.js');
+
+const ResetCMD = require('../../lib/cmds/network/resetCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const Reset = require('../../lib/cmds/network/lib/reset.js');
+const ora = require('ora');
 
 require('chai').should();
 
@@ -26,11 +29,10 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-const ora = require('ora');
 
 let mockAdminConnection;
 
-describe('composer install runtime CLI unit tests', function () {
+describe('composer reset network CLI unit tests', function () {
 
     let sandbox;
 
@@ -40,51 +42,65 @@ describe('composer install runtime CLI unit tests', function () {
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
-        mockAdminConnection.deploy.resolves();
-
+        mockAdminConnection.undeploy.resolves();
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
+
+
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    describe('Install handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+    describe('update command method tests', () => {
 
-            let argv = {installId: 'PeerAdmin'
-                       ,installSecret: 'Anything'
-                       ,businessNetworkName: 'org-acme-biznet'
-                       ,connectionProfileName: 'testProfile'};
-
-
-            return InstallCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.installId, argv.installSecret, null);
-                sinon.assert.calledOnce(mockAdminConnection.install);
-                sinon.assert.calledWith(mockAdminConnection.install, argv.businessNetworkName, {});
-            });
+        it('should contain update in the command and describe', () => {
+            ResetCMD.command.should.include('reset');
+            ResetCMD.describe.should.match(/Resets/);
         });
 
-        it('error path #1', ()=>{
+        it('should invoke the Update handler correctly', () => {
+            sandbox.stub(Reset, 'handler');
+            let argv = {};
+            ResetCMD.handler(argv);
+            sinon.assert.calledOnce(Reset.handler);
+            sinon.assert.calledWith(Reset.handler, argv);
+            argv.should.have.property('thePromise');
+        });
+
+
+    });
+
+    describe('test main reset logic', () =>{
+        it('main line code path', ()=>{
             let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
-            mockAdminConnection.connect.rejects(new Error('computer says no'));
-            return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
+            return Reset.handler(argv);
         });
 
+        it('no secret given', ()=>{
+            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin'};
+            sandbox.stub(CmdUtil, 'prompt').resolves({'enrollmentSecret':'adminpw'});
+
+            return Reset.handler(argv);
+
+        });
+        it('error path', ()=>{
+            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin'};
+            sandbox.stub(CmdUtil, 'prompt').rejects(new Error('computer says no'));
+
+            return Reset.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
         it('error path #2', ()=>{
             let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
-            mockAdminConnection.connect.rejects(new Error('computer says no'));
+            mockAdminConnection.reset.rejects(new Error('computer says no'));
             sandbox.stub(ora,'start').returns({});
             sandbox.stub(ora,'fail').returns();
 
-            return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+            return Reset.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
         });
     });

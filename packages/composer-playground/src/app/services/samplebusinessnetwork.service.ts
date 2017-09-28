@@ -154,7 +154,7 @@ export class SampleBusinessNetworkService {
                 return this.clientService.refresh(newNetwork.getName());
             })
             .then(() => {
-                return this.clientService.reset();
+                return this.adminService.reset(newNetwork.getName());
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);

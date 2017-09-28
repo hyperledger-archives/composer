@@ -11,6 +11,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.12.0 {35afffc2180e7bcbb760945b7f229087} 2017-08-21
+ - add a reset business network  api
+
 Version 0.12.0 {be483dc13bd46652cdfa59579783a515} 2017-08-21
 - added connectionProfileStore option to AdminConnection constructor
 - Add exportIdentity function to AdminConnection

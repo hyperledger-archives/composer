@@ -1174,17 +1174,6 @@ describe('ClientService', () => {
         }));
     });
 
-    describe('reset', () => {
-        it('should reset', inject([ClientService], (service: ClientService) => {
-            let mockGetBusinessNetwork = sinon.stub(service, 'getBusinessNetworkConnection').returns({
-                securityContext: 'myContext'
-            });
-            let utilMock = sinon.stub(Util, 'invokeChainCode');
-            service.reset();
-            utilMock.should.have.been.calledWith('myContext', 'resetBusinessNetwork', []);
-        }));
-    });
-
     describe('getSavedBusinessNetworkName', () => {
         it('should get saved the business network name', inject([ClientService], (service: ClientService) => {
             service['getSavedBusinessNetworkName']('bob');

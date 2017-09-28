@@ -77,6 +77,7 @@ describe('AdminConnection', () => {
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
         mockConnection.upgrade.resolves();
+        mockConnection.reset.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);

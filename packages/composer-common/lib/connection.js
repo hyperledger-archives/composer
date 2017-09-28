@@ -324,8 +324,8 @@ class Connection extends EventEmitter {
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been reset, or rejected with an error.
      */
-    reset(securityContext, businessNetworkDefinition) {
-        return this._resetTx(securityContext,businessNetworkDefinition);
+    reset(securityContext, businessNetworkIdentifier) {
+        return this._resetTx(securityContext,businessNetworkIdentifier);
     }
 
     /**
@@ -337,14 +337,16 @@ class Connection extends EventEmitter {
      * artefacts have been reset, or rejected with an error.
      */
     _resetTx(securityContext, businessNetworkIdentifier) {
-
-        // create the new transaction to update the network
-        if (!businessNetworkIdentifier) {
-            throw new Error('business network definition not specified');
-        }
         let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!businessNetworkIdentifier) {
+                throw new Error('business network identifier not specified');
+            }
 
-        return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
         .then((buffer) => {
             let businessNetworkJSON = JSON.parse(buffer.toString());
             let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
@@ -369,6 +371,61 @@ class Connection extends EventEmitter {
             if (timestamp === null || timestamp === undefined) {
                 timestamp = transaction.timestamp = new Date();
             }
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        });
+    }
+
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
+     */
+    setLogLevel(securityContext, loglevel) {
+        return this._setLogLevel(securityContext,loglevel);
+    }
+
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
+     */
+    _setLogLevel(securityContext, loglevel) {
+        let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!loglevel) {
+                throw new Error('Log Level not specified');
+            }
+
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            transaction.newLogLevel = loglevel;
             let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
             return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });

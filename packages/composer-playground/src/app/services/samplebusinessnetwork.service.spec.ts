@@ -314,7 +314,7 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.connect.should.have.been.calledWith('myNetwork', true);
             adminMock.update.should.have.been.called;
             clientMock.refresh.should.have.been.called;
-            clientMock.reset.should.have.been.called;
+            adminMock.reset.should.have.been.called;
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 

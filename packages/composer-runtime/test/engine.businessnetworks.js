@@ -120,7 +120,6 @@ describe('EngineBusinessNetworks', () => {
     });
 
 
-    describe('#resetBusinessNetwork', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'resetBusinessNetwork', ['no', 'args', 'supported']);

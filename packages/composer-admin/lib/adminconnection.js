@@ -98,6 +98,7 @@ class AdminConnection {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
+                this.businessNetworkIdentifier = businessNetworkIdentifier;
                 return connection.login(enrollmentID, enrollmentSecret);
             })
             .then((securityContext) => {
@@ -215,6 +216,7 @@ class AdminConnection {
         return this.connection.disconnect()
             .then(() => {
                 this.connection = null;
+                this.businessNetworkIdentifier = null;
                 this.securityContext = null;
             });
     }
@@ -454,13 +456,12 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * })
-     * @param {string} businessNetworkIdentifier - The identifier of the network to undeploy
      * @return {Promise} A promise that will be fufilled when the business network has been
      * undeployed.
      */
-    undeploy(businessNetworkIdentifier) {
+    undeploy() {
         Util.securityCheck(this.securityContext);
-        return this.connection.undeploy(this.securityContext, businessNetworkIdentifier);
+        return this.connection.undeploy(this.securityContext,this.businessNetworkIdentifier);
     }
 
     /**
@@ -504,13 +505,12 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
-     * @param {String} businessNetworkName - The BusinessNetworkName
      * @return {Promise} A promise that will be fufilled when the business network has been
      * updated.
      */
-    reset(businessNetworkName){
+    reset(){
         Util.securityCheck(this.securityContext);
-        return this.connection.reset(this.securityContext, businessNetworkName);
+        return this.connection.reset(this.securityContext);
     }
 
     /**
@@ -635,7 +635,7 @@ class AdminConnection {
      */
     setLogLevel(newLogLevel) {
         Util.securityCheck(this.securityContext);
-        return this.connection.invokeChainCode(this.securityContext, 'setLogLevel' , [newLogLevel]);
+        return this.connection.setLogLevel(this.securityContext, newLogLevel);
     }
 
     /**

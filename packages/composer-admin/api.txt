@@ -11,6 +11,7 @@ class AdminConnection {
    + Promise deploy(BusinessNetworkDefinition,Object) 
    + Promise undeploy(string) 
    + Promise update(BusinessNetworkDefinition) 
+   + Promise reset(String) 
    + Promise upgrade() 
    + Promise ping() 
    + Promise setLogLevel(any) 
