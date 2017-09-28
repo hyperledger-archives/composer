@@ -37,19 +37,12 @@ const sinon = require('sinon');
 
 describe('WebConnection', () => {
 
-    const identity = {
-        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
-        name: 'bob1',
-        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
-        secret: 'suchsecret',
-        certificate: ''
-    };
-
     let sandbox;
     let mockConnectionManager;
     let mockConnectionProfileManager;
     let mockConnectionProfileStore;
     let mockSecurityContext;
+    let identity;
     let connection;
 
     beforeEach(() => {
@@ -66,6 +59,17 @@ describe('WebConnection', () => {
         });
         mockConnectionProfileStore.save.resolves();
         mockSecurityContext = sinon.createStubInstance(WebSecurityContext);
+        identity = {
+            identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+            name: 'bob1',
+            issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+            secret: 'suchsecret',
+            certificate: '',
+            options: {
+                issuer: true
+            }
+        };
+        mockSecurityContext.getIdentity.returns(identity);
         connection = new WebConnection(mockConnectionManager, 'devFabric1', 'org.acme.business');
     });
 
@@ -368,7 +372,10 @@ describe('WebConnection', () => {
                         'YWRtaW4=',
                         '----- END CERTIFICATE -----'
                     ].join('\n').concat('\n'),
-                    imported: false
+                    imported: false,
+                    options: {
+                        issuer: true
+                    }
                 });
         });
 
@@ -464,10 +471,44 @@ describe('WebConnection', () => {
                         issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
                         name: 'doge',
                         secret: 'f892c30a',
-                        imported: false
+                        imported: false,
+                        options: { }
                     });
                     result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
                 });
+        });
+
+        it('should store a new identity along with additional options if it does not exists', () => {
+            sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
+            mockIdentitiesDataCollection.add.withArgs('doge').resolves();
+            return connection.createIdentity(mockSecurityContext, 'doge', { issuer: true })
+                .then((result) => {
+                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
+                        certificate: [
+                            '----- BEGIN CERTIFICATE -----',
+                            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
+                            '----- END CERTIFICATE -----'
+                        ].join('\n').concat('\n'),
+                        identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
+                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                        name: 'doge',
+                        secret: 'f892c30a',
+                        imported: false,
+                        options: {
+                            issuer: true
+                        }
+                    });
+                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
+                });
+        });
+
+        it('should throw if the current identity is not an issuer', () => {
+            identity.options.issuer = false;
+            (() => {
+                connection.createIdentity(mockSecurityContext, 'doge');
+            }).should.throw(/does not have permission to create a new identity/);
         });
 
     });
