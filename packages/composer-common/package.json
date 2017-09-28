@@ -19,7 +19,7 @@
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-common.js",
     "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 10000",
-    "mocha": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
     "regenmodel": "node ./scripts/systemmodelgen.js"
   },
   "repository": {
@@ -96,11 +96,6 @@
   "nyc": {
     "exclude": [
       "coverage/**",
-      "lib/codegen/*",
-      "lib/codegen/fromcto/golang/**",
-      "lib/codegen/fromcto/plantuml/**",
-      "lib/codegen/fromcto/typescript/**",
-      "lib/codegen/fromjs/**",
       "lib/tools/changelog.js",
       "lib/tools/plantumltoimage.js",
       "lib/introspect/parser.js",
