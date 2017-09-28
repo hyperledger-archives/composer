@@ -77,6 +77,7 @@
   "dependencies": {
     "@ng-bootstrap/ng-bootstrap": "1.0.0-beta.2",
     "cheerio": "^0.22.0",
+    "composer-admin": "0.13.1",
     "composer-common": "0.13.1",
     "composer-playground-api": "0.13.1",
     "express": "^4.15.2",
@@ -132,7 +133,6 @@
     "chai": "^3.5.0",
     "codelyzer": "^2.0.1",
     "codemirror": "5.26.0",
-    "composer-admin": "0.13.1",
     "composer-client": "0.13.1",
     "composer-connector-proxy": "0.13.1",
     "composer-connector-web": "0.13.1",

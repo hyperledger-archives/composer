@@ -15,6 +15,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 npm install -g npm@4 lerna@2 @alrra/travis-scripts asciify gnomon
 
+curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.1.0
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg
 echo "ABORT_CODE=0" >> ${DIR}/build.cfg

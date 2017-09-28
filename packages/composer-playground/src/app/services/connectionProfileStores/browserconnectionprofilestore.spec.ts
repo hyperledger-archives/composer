@@ -41,7 +41,7 @@ describe('BrowserConnectionProfileStore', () => {
                 .then(() => {
                     return connectionProfileStore.load('profileThree');
                 })
-                .then((result) => {
+                .then((result: any) => {
                     result.should.deep.equal({name: 'profileThree'});
                     done();
                 });

@@ -11,7 +11,7 @@ This directory ( composer/packages/composer-website ) hold the documentation for
 ./scripts/setup-jekyll.sh
 ```
 
-- Next step is to run or rerun the `lerna bootstrap` in the root of the composer repoistory.
+- Next step is to run or rerun the `yarn install` in the root of the composer repoistory.
 - Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template files.
 - Issue `npm run jeykllserve` and then go to the url that you get given at the end.
 - What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser).
@@ -63,7 +63,7 @@ _to write... note that a Java Runtime is required for the plantuml even though i
 
 3. `jsdoc.conf` is the configuration file - where to change footers and copyright etc.
 4. Note the output location which is important - also the `-R JSDOC-README.md`   this is the front page of the JSDOC tools.
-5. By using the lerna bootstrap it allows JSDocs to be correctly pointed to the current source code.
+5. By using the `yarn install` it allows JSDocs to be correctly pointed to the current source code.
 
 ##Jekyll Configuration
 The setup-jekyll.sh script is used in travis to setup jekyll. This can be used locally after Ruby installation
