@@ -213,7 +213,7 @@ ga('send', 'pageview');
 <p>If you&#39;re not familiar with Promise based development it&#39;s worth reviewing some of the tutorials online to get an idea.</p>
 
 <h2 id="modules-required">Modules required</h2>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 </code></pre></div>
 <p>For a Hyperledger Composer client application this is the only npm module required.</p>
 
@@ -221,8 +221,8 @@ ga('send', 'pageview');
 
 <p>A BusinessNetworkConnection instance is created and then used to connect to a runtime:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'connectionProfile'</span><span class="p">);</span>
-<span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'businessNetworkIdentifier'</span><span class="p">);</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'connectionProfile'</span><span class="p">);</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'businessNetworkIdentifier'</span><span class="p">);</span>
 </code></pre></div>
 <p>The first Hyperledger Composer API call that we are going to make here, is the connect() API, to establish the connection to the Hyperledger Composer runtime on the Hyperledger Fabric.
 This API returns a Promise to the businessNetworkDefinition if successful:</p>
@@ -317,7 +317,7 @@ participant Person identified by personId {
 <p>The transaction has two fields here, a trandsactionId, and a reference to the land title that should be submitted for sale. The first step is get access to the registry for the landtitle, and get back the specific land title we want to submit for sale.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">registry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'LID:1148'</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'LID:1148'</span><span class="p">);</span>
 <span class="p">})</span>
 </code></pre></div>
 <p>The getAssetRegistry call should now be looking a bit familiar, the get API is used to get a specific land title.

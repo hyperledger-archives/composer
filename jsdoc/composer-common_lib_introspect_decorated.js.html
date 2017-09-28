@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-runtime/lib/engine.resources.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/introspect/decorated.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-runtime/lib/engine.resources.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/introspect/decorated.js</h1>
     
 <section>
     <article>
@@ -100,190 +100,114 @@
 
 'use strict';
 
-const Logger = require('composer-common').Logger;
-const util = require('util');
-
-const LOG = Logger.getLog('EngineResources');
+const Decorator = require('./decorator');
+const IllegalModelException = require('./illegalmodelexception');
+const Globalize = require('../globalize');
 
 /**
- * The JavaScript engine responsible for processing chaincode commands.
- * @protected
- * @memberof module:composer-runtime
+ * Decorated defines a model element that may have decorators attached.
+ *
+ * @private
+ * @abstract
+ * @class
+ * @memberof module:composer-common
  */
-class EngineResources {
+class Decorated {
 
     /**
-     * Get all resources in the specified registry.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * Create a Decorated from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {string} ast - the AST created by the parser
+     * @throws {IllegalModelException}
      */
-    getAllResourcesInRegistry(context, args) {
-        const method = 'getAllResourcesInRegistry';
-        LOG.entry(method, context, args);
-        if (args.length !== 2) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllResourcesInRegistry', ['registryType', 'registryId']));
+    constructor(ast) {
+        if(!ast) {
+            throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
         }
-        let registryType = args[0];
-        let registryId = args[1];
-        return context.getRegistryManager().get(registryType, registryId)
-            .then((registryManager) => {
-                return registryManager.getAll();
-            })
-            .then((resources) => {
-                return resources.map((resource) => {
-                    return context.getSerializer().toJSON(resource);
-                });
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
+
+        this.ast = ast;
     }
 
     /**
-     * Get the specified resource in the specified registry.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
      */
-    getResourceInRegistry(context, args) {
-        const method = 'getResourceInRegistry';
-        LOG.entry(method, context, args);
-        if (args.length !== 3) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
-        }
-        let registryType = args[0];
-        let registryId = args[1];
-        let resourceId = args[2];
-        return context.getRegistryManager().get(registryType, registryId)
-            .then((registry) => {
-                return registry.get(resourceId);
-            })
-            .then((resource) => {
-                return context.getSerializer().toJSON(resource);
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
     }
 
     /**
-     * Determine whether the specified resource exists in the specified registry.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved with a boolean indicating whether
-     * the resource exists in the registry.
+     * Process the AST and build the model
+     *
+     * @throws {IllegalModelException}
+     * @private
      */
-    existsResourceInRegistry(context, args) {
-        const method = 'existsResourceInRegistry';
-        LOG.entry(method, context, args);
-        if (args.length !== 3) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'existsResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
+    process() {
+        this.decorators = [];
+
+        if(this.ast.decorators) {
+            for(let n=0; n &lt; this.ast.decorators.length; n++ ) {
+                let thing = this.ast.decorators[n];
+                this.decorators.push( new Decorator(this, thing) );
+            }
         }
-        let registryType = args[0];
-        let registryId = args[1];
-        let resourceId = args[2];
-        return context.getRegistryManager().get(registryType, registryId)
-            .then((registry) => {
-                return registry.exists(resourceId);
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
     }
 
     /**
-     * Get all resources in the specified registry, and recursively resolve all
-     * their relationships to other resources.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * Semantic validation of the structure of this decorated. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
+     * @throws {IllegalModelException}
+     * @private
      */
-    resolveAllResourcesInRegistry(context, args) {
-        const method = 'resolveAllResourcesInRegistry';
-        LOG.entry(method, context, args);
-        if (args.length !== 2) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveAllResourcesInRegistry', ['registryType', 'registryId']));
+    validate() {
+
+        for(let n=0; n &lt; this.decorators.length; n++) {
+            let decorator = this.decorators[n];
+            decorator.validate();
+
+            // check we don't have this decorator twice
+            for(let i=n+1; i &lt; this.decorators.length; i++) {
+                let otherDecorator = this.decorators[i];
+                if(decorator.getName() === otherDecorator.getName()) {
+                    throw new IllegalModelException(`Duplicate decorator ${decorator.getName()}`,this.modelFile, this.ast.location);
+                }
+            }
         }
-        let registryType = args[0];
-        let registryId = args[1];
-        return context.getRegistryManager().get(registryType, registryId)
-            .then((registryManager) => {
-                return registryManager.getAll();
-            })
-            .then((resources) => {
-                let resolver = context.getResolver();
-                return resources.reduce((result, resource) => {
-                    return result.then((resources) => {
-                        LOG.debug(method, 'Resolving resource', resource.getFullyQualifiedIdentifier());
-                        return resolver.resolve(resource)
-                            .then((resolved) => {
-                                resources.push(resolved);
-                                return resources;
-                            });
-                    });
-                }, Promise.resolve([]));
-            })
-            .then((resources) => {
-                return resources.map((resource) => {
-                    return context.getSerializer().toJSON(resource, { permitResourcesForRelationships: true });
-                });
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
     }
 
     /**
-     * Get the specified resource in the specified registry, and recursively resolve
-     * all its relationships to other resources.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * Returns the decorators for this class.
+     *
+     * @return {Decorator[]} the decorators for the class
      */
-    resolveResourceInRegistry(context, args) {
-        const method = 'resolveResourceInRegistry';
-        LOG.entry(method, context, args);
-        if (args.length !== 3) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
-        }
-        let registryType = args[0];
-        let registryId = args[1];
-        let resourceId = args[2];
-        return context.getRegistryManager().get(registryType, registryId)
-            .then((registry) => {
-                return registry.get(resourceId);
-            })
-            .then((resource) => {
-                let resolver = context.getResolver();
-                LOG.debug(method, 'Resolving resource', resource.getFullyQualifiedIdentifier());
-                return resolver.resolve(resource);
-            })
-            .then((resource) => {
-                return context.getSerializer().toJSON(resource, { permitResourcesForRelationships: true });
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
+    getDecorators() {
+        return this.decorators;
     }
 
+    /**
+     * Returns the decorator for this class with a given name.
+     * @param {string} name  - the name of the decorator
+     * @return {Decorator} the decorator attached to this class with the given name, or null if it does not exist.
+     */
+    getDecorator(name) {
+        for(let n=0; n &lt; this.decorators.length; n++) {
+            let decorator = this.decorators[n];
+            if(decorator.getName() === name) {
+                return decorator;
+            }
+        }
+
+        return null;
+    }
 }
 
-module.exports = EngineResources;
+module.exports = Decorated;
 </pre>
     </article>
 </section>

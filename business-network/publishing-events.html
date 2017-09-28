@@ -214,7 +214,7 @@ ga('send', 'pageview');
 
 <ol>
 <li><p>Events are defined in the model file (<code>.cto</code>) of your business network definition, in the same way as assets and participants. Events use the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">event BasicEvent identified by eventId {
+<div class="highlight"><pre><code class="language-" data-lang="">event BasicEvent {
 }
 </code></pre></div></li>
 <li><p>In order for the event to be published the transaction which creates the event must call three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> defined in a specified namespace. Then the required properties on the event must be set. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>

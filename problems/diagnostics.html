@@ -257,33 +257,33 @@ ga('send', 'pageview');
 <p>The Config module is used to locate information to control how the logs are produced.</p>
 
 <p>For example</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"gettingstarted"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-       </span><span class="nt">"participantId"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"WebAppAdmin"</span><span class="p">,</span><span class="w">
-       </span><span class="nt">"participantPwd"</span><span class="w"> </span><span class="p">:</span><span class="s2">"DJY27pEnl16d"</span><span class="p">,</span><span class="w">
-       </span><span class="nt">"businessNetworkIdentifier"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"digitalproperty-network"</span><span class="p">,</span><span class="w">
-       </span><span class="nt">"connectionProfile"</span><span class="w"> </span><span class="p">:</span><span class="s2">"defaultProfile"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="nt">"ComposerConfig"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-       </span><span class="nt">"debug"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-         </span><span class="nt">"logger"</span><span class="p">:</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span><span class="w">
-         </span><span class="nt">"config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-           </span><span class="nt">"console"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-             </span><span class="nt">"enabledLevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"info"</span><span class="p">,</span><span class="w">
-             </span><span class="nt">"alwaysLevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"none"</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "gettingstarted": {
+       "participantId" : "WebAppAdmin",
+       "participantPwd" :"DJY27pEnl16d",
+       "businessNetworkIdentifier" : "digitalproperty-network",
+       "connectionProfile" :"defaultProfile"
+    },
+    "ComposerConfig": {
+       "debug": {
+         "logger": "default",
+         "config": {
+           "console": {
+             "enabledLevel": "info",
+             "alwaysLevel": "none"
 
-           </span><span class="p">},</span><span class="w">
-           </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-             </span><span class="nt">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./trace_PID.log"</span><span class="p">,</span><span class="w">
-             </span><span class="nt">"enabledLevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silly"</span><span class="p">,</span><span class="w">
-             </span><span class="nt">"alwaysLevel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"info"</span><span class="w">
-           </span><span class="p">}</span><span class="w">
-         </span><span class="p">}</span><span class="w">
-       </span><span class="p">}</span><span class="w">
-      </span><span class="p">}</span><span class="w">
+           },
+           "file": {
+             "filename": "./trace_PID.log",
+             "enabledLevel": "silly",
+             "alwaysLevel": "info"
+           }
+         }
+       }
+      }
 
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+}
+</code></pre></div>
 <p>The first section is specific to the Getting Started application, the second <code>ComposerConfig</code> section is for the Hyperledger Composer.</p>
 
 <ul>
@@ -303,14 +303,14 @@ ga('send', 'pageview');
 <p>Each Business Network is deployed to it&#39;s own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened. <code>docker logs &lt;containerid&gt;</code> will show the logs but you need to know the container id.</p>
 
 <p>Firstly list the docker processes and look for the image name; this command will do this for you in one step</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">docker ps | cut -b 1-13,21-93
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">docker ps | cut <span class="nt">-b</span> 1-13,21-93
 CONTAINER ID IMAGE                                                                    
 f71e2a630d6a dev-vp0-9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7
 bb5db2ca4e6a hyperledger/fabric-peer                                                  
 3ec0e41c4898 hyperledger/fabric-membersrvc     
 </code></pre></div>
 <p>The hex value after the dev-vp0 is the &#39;chaincodeid&#39;. If you look in the connection profiles directory you&#39;ll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">cat ~/.composer-connection-profiles/defaultProfile/connection.json
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cat</span> ~/.composer-connection-profiles/defaultProfile/connection.json
 <span class="o">{</span>
     <span class="s2">"type"</span>: <span class="s2">"hlf"</span>,
     <span class="s2">"membershipServicesURL"</span>: <span class="s2">"grpc://localhost:7054"</span>,
@@ -323,7 +323,7 @@ bb5db2ca4e6a hyperledger/fabric-peer
         <span class="s2">"digitalproperty-network"</span>: <span class="s2">"e3ec656109284b63d5b7b1925454c9904e6c9c82b2053ed190d2f199e0fb0dad"</span>,
         <span class="s2">"carauction-network"</span>: <span class="s2">"9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7"</span>
     <span class="o">}</span>
-<span class="o">}</span>;
+<span class="o">}</span><span class="p">;</span>
 </code></pre></div>
 <p>By inspection, the ids match for the carauction-network therefore we know now which chaincode container is which.
 --&gt;</p>

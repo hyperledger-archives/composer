@@ -230,7 +230,7 @@ Otherwise the identity registry will be empty and you will not see any results.<
 <li>JavaScript API</li>
 </ul></li>
 </ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
   <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
   <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">)</span>
       <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -241,7 +241,7 @@ Otherwise the identity registry will be empty and you will not see any results.<
       <span class="p">})</span>
       <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">identities</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
           <span class="nx">identities</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">identity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">identityId</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">identity</span><span class="p">.</span><span class="nx">identityId</span><span class="p">},</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">identity</span><span class="p">.</span><span class="nx">name</span><span class="p">},</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">identity</span><span class="p">.</span><span class="nx">state</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`identityId = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">identityId</span><span class="p">}</span><span class="s2">, name = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2">, state = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">state</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
           <span class="p">});</span>
           <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
       <span class="p">})</span>
@@ -253,7 +253,7 @@ Otherwise the identity registry will be empty and you will not see any results.<
 <ul>
 <li>Command line</li>
 </ul>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity list -p hlfv1 -n <span class="s1">'digitalproperty-network'</span> -i admin -s adminpw
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity list <span class="nt">-p</span> hlfv1 <span class="nt">-n</span> <span class="s1">'digitalproperty-network'</span> <span class="nt">-i</span> admin <span class="nt">-s</span> adminpw
 </code></pre></div>
             
           </section>

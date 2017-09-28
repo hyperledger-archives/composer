@@ -361,22 +361,22 @@ rule SystemACL {
 <ol>
 <li><p>Ensure that you have the <strong>Trader</strong> tab selected on the left, and click <strong>Create New Participant</strong> in the upper right.</p></li>
 <li><p>What you can see is the data structure of a <em>Trader</em> participant. We want some easily recognizable data, so delete the code that&#39;s there and paste the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER1",
+  "firstName": "Jenny",
+  "lastName": "Jones"
+}
+</code></pre></div></li>
 <li><p>Click <strong>Create New</strong> to create the participant.</p></li>
 <li><p>You should be able to see the new <em>Trader</em> participant you&#39;ve created. We need another <em>Trader</em> to test our <em>Trade</em> transaction though, so create another <em>Trader</em>, but this time, use the following data:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amy"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Williams"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER2",
+  "firstName": "Amy",
+  "lastName": "Williams"
+}
+</code></pre></div></li>
 </ol>
 
 <p>Make sure that both participants exist in the <em>Trader</em> view before moving on!</p>
@@ -392,15 +392,15 @@ rule SystemACL {
 <ol>
 <li><p>Click the <strong>Commodity</strong> tab under <strong>Assets</strong> and click <strong>Create New Asset</strong>.</p></li>
 <li><p>Delete the asset data and replace it with the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ABC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Euronext"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">72.297</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Commodity",
+  "tradingSymbol": "ABC",
+  "description": "Test commodity",
+  "mainExchange": "Euronext",
+  "quantity": 72.297,
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+}
+</code></pre></div></li>
 <li><p>After creating this asset, you should be able to see it in the <strong>Commodity</strong> tab.</p></li>
 </ol>
 
@@ -420,12 +420,12 @@ rule SystemACL {
 <li><p>Click the <strong>Submit Transaction</strong> button on the left.</p></li>
 <li><p>Ensure that the transaction type is <em>Trade</em>.</p></li>
 <li><p>Replace the transaction data with the following, or just change the details:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trade"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"commodity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Commodity#ABC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"newOwner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trade",
+  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+}
+</code></pre></div></li>
 <li><p>Click <strong>Submit</strong>.</p></li>
 <li><p>To check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, click the <strong>Commodity</strong> tab, and expand the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
 <li><p>To view the full transaction history of our business network, click <strong>All Transactions</strong> on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the <em>Trader</em> participants and the <em>Commodity</em> asset, are recorded as transactions, even though they&#39;re not defined as transactions in our business network model. These transactions are known as &#39;System Transactions&#39; and are common to all business networks, and defined in the Hyperledger Composer Runtime.</p></li>

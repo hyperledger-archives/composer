@@ -246,8 +246,8 @@ ga('send', 'pageview');
 The response from the operation should be similiar to the following:</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Default wallet"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Default wallet"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre></div>
@@ -259,15 +259,15 @@ The response from the operation should be:</p>
 <p>This means that there are no Blockchain identities in the default wallet.</p></li>
 <li><p>Add the Blockchain identity to the default wallet by calling the <code>POST /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>data</code> parameter set to the following JSON payload (do not include the <code>id</code> property in the JSON payload):</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="w">
+  </span><span class="s2">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>The response from the operation should be similiar to the following:</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+  </span><span class="s2">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>The Blockchain identity for <code>alice1</code> has now been added to the default wallet. Each Blockchain identity has a unique ID that will be used in subsequent REST API calls for interacting with the Blockchain identity. Note down the value of the <code>id</code> property for the Blockchain identity, in this example <code>2</code>.</p></li>
@@ -281,11 +281,11 @@ The response from the operation should be:</p>
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.</p>
 
 <p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.8.0"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader#alice@email.com"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "version": "0.8.0",
+  "participant": "org.acme.mynetwork.Trader#alice@email.com"
+}
+</code></pre></div>
 <h2 id="final-notes">Final notes</h2>
 
 <p>When the REST server is started with multiple user mode enabled, all REST API requests made by clients use a Blockchain identity stored in the clients wallet. The Blockchain identity specified on the command line at startup is not used to service any requests; it is only used to initially connect to the business network and download the business network definition, which is required to generate the REST API. Therefore, the Blockchain identity specified on the command line only requires minimal permissions - the ability to connect, and the ability to download the business network definition - it does not need permission for any assets, participants, or transactions.</p>

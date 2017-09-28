@@ -241,23 +241,23 @@ ga('send', 'pageview');
 <h3 id="update-your-package-json-file">Update your package.json file</h3>
 
 <p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end.</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="s2">"name"</span><span class="err">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="err">,</span><span class="w">
-  </span><span class="s2">"version"</span><span class="err">:</span><span class="w"> </span><span class="s2">"0.1.6"</span><span class="err">,</span><span class="w">
-  </span><span class="s2">"description"</span><span class="err">:</span><span class="w"> </span><span class="s2">"My Commodity Trading network"</span><span class="err">,</span><span class="w">
-  </span><span class="s2">"networkImage"</span><span class="err">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg"</span><span class="err">,</span><span class="w">
-  </span><span class="s2">"networkImageanimated"</span><span class="err">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg"</span><span class="err">,</span><span class="w">
-  </span><span class="s2">"scripts"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist ; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.json"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"test-inner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha -t 0 --recursive &amp;&amp; cucumber-js"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"test-cover"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nyc npm run test-inner"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run test-inner"</span><span class="w">
-  </span><span class="p">}</span><span class="err">,</span><span class="w">
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1.6"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My Commodity Trading network"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"networkImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"networkImageanimated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist ; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.json"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"test-inner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha -t 0 --recursive &amp;&amp; cucumber-js"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"test-cover"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nyc npm run test-inner"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run test-inner"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
 </span></code></pre></div>
 <p>Save your changes to <code>package.json</code></p>
 
@@ -405,16 +405,16 @@ npm install
 
 <span class="s1">'use strict'</span><span class="p">;</span>
 
-<span class="kr">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
-<span class="kr">const</span> <span class="nx">BrowserFS</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'browserfs/dist/node/index'</span><span class="p">);</span>
-<span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
-<span class="kr">const</span> <span class="nx">BusinessNetworkDefinition</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-common'</span><span class="p">).</span><span class="nx">BusinessNetworkDefinition</span><span class="p">;</span>
-<span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">BrowserFS</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'browserfs/dist/node/index'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">BusinessNetworkDefinition</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-common'</span><span class="p">).</span><span class="nx">BusinessNetworkDefinition</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
 
 <span class="nx">require</span><span class="p">(</span><span class="s1">'chai'</span><span class="p">).</span><span class="nx">should</span><span class="p">();</span>
 
-<span class="kr">const</span> <span class="nx">bfs_fs</span> <span class="o">=</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">BFSRequire</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
-<span class="kr">const</span> <span class="nx">NS</span> <span class="o">=</span> <span class="s1">'org.acme.mynetwork'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">bfs_fs</span> <span class="o">=</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">BFSRequire</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">NS</span> <span class="o">=</span> <span class="s1">'org.acme.mynetwork'</span><span class="p">;</span>
 
 <span class="nx">describe</span><span class="p">(</span><span class="s1">'Commodity Trading'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
@@ -423,7 +423,7 @@ npm install
 
     <span class="nx">before</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
         <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">initialize</span><span class="p">(</span><span class="k">new</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">.</span><span class="nx">InMemory</span><span class="p">());</span>
-        <span class="kr">const</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
+        <span class="kd">const</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
         <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">createProfile</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="p">{</span>
             <span class="na">type</span><span class="p">:</span> <span class="s1">'embedded'</span>
         <span class="p">})</span>
@@ -445,26 +445,26 @@ npm install
     <span class="nx">describe</span><span class="p">(</span><span class="s1">'#tradeCommodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
         <span class="nx">it</span><span class="p">(</span><span class="s1">'should be able to trade a commodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-            <span class="kr">const</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getBusinessNetwork</span><span class="p">().</span><span class="nx">getFactory</span><span class="p">();</span>
+            <span class="kd">const</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getBusinessNetwork</span><span class="p">().</span><span class="nx">getFactory</span><span class="p">();</span>
 
             <span class="c1">// create the traders</span>
-            <span class="kr">const</span> <span class="nx">dan</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'dan@email.com'</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">dan</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'dan@email.com'</span><span class="p">);</span>
             <span class="nx">dan</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Dan'</span><span class="p">;</span>
             <span class="nx">dan</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Selman'</span><span class="p">;</span>
 
-            <span class="kr">const</span> <span class="nx">simon</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'simon@email.com'</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">simon</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'simon@email.com'</span><span class="p">);</span>
             <span class="nx">simon</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Simon'</span><span class="p">;</span>
             <span class="nx">simon</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Stone'</span><span class="p">;</span>
 
             <span class="c1">// create the commodity</span>
-            <span class="kr">const</span> <span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="s1">'EMA'</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="s1">'EMA'</span><span class="p">);</span>
             <span class="nx">commodity</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="s1">'Corn'</span><span class="p">;</span>
             <span class="nx">commodity</span><span class="p">.</span><span class="nx">mainExchange</span> <span class="o">=</span> <span class="s1">'Euronext'</span><span class="p">;</span>
             <span class="nx">commodity</span><span class="p">.</span><span class="nx">quantity</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
             <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
             <span class="c1">// create the trade transaction</span>
-            <span class="kr">const</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trade'</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trade'</span><span class="p">);</span>
             <span class="nx">trade</span><span class="p">.</span><span class="nx">newOwner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
             <span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
@@ -492,7 +492,7 @@ npm install
                 <span class="p">})</span>
                 <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
                     <span class="c1">// re-get the commodity</span>
-                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
                 <span class="p">})</span>
                 <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">newCommodity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
                     <span class="c1">// the owner of the commodity should now be simon</span>
@@ -698,43 +698,43 @@ Command succeeded
 
 <p>Next, navigate to the &quot;Test&quot; tab at the top and create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the &quot;Create New Participant&quot; button.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
-  <span class="s2">"$class"</span><span class="err">:</span> <span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span>
-  <span class="s2">"tradeId"</span><span class="err">:</span> <span class="s2">"TRADER1"</span><span class="p">,</span>
-  <span class="s2">"firstName"</span><span class="err">:</span> <span class="s2">"Jenny"</span><span class="p">,</span>
-  <span class="s2">"lastName"</span><span class="err">:</span> <span class="s2">"Jones"</span>
+  <span class="s2">"$class"</span><span class="p">:</span> <span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span>
+  <span class="s2">"tradeId"</span><span class="p">:</span> <span class="s2">"TRADER1"</span><span class="p">,</span>
+  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Jenny"</span><span class="p">,</span>
+  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Jones"</span>
 <span class="p">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amy"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Williams"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER2",
+  "firstName": "Amy",
+  "lastName": "Williams"
+}
+</code></pre></div>
 <p>The Participant registry with the two entries should look like this:</p>
 
 <p><img src="../assets/img/tutorials/developer/trader_registry.png" alt="Trader Participant Registry"></p>
 
 <p>Create a new instance of a Commodity (asset) by navigating to the Commodity registry on the left and then click the &quot;Create New Asset&quot; button. Create the commodity and assign the owner to be &#39;TRADER1&#39;.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ABC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test commodity"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Euronext"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">72.297</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Commodity",
+  "tradingSymbol": "ABC",
+  "description": "Test commodity",
+  "mainExchange": "Euronext",
+  "quantity": 72.297,
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+}
+</code></pre></div>
 <p>The Asset registry should look like this:</p>
 
 <p><img src="../assets/img/tutorials/developer/commodity_registry.png" alt="Commodity Registry"></p>
 
 <p>Next, submit a <code>Trade</code> transaction by clicking the &quot;Submit Transaction&quot; button, bottom left, to move the commodity from TRADER1 to TRADER2.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trade"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"commodity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Commodity#ABC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"newOwner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trade",
+  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+}
+</code></pre></div>
 <p>After processing, you should now see the transaction in the transaction registry.</p>
 
 <p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
@@ -811,13 +811,13 @@ Browse your REST API at http://localhost:3000/explorer
 <p><img src="../assets/img/tutorials/developer/lb_explorer.png" alt="LoopBack Explorer"></p>
 
 <p>First, use the <code>POST</code> method on Trader to create a new instance of a Trader - first select &#39;List Operations&#39; alongside the Trader to see the operations available.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.mynetwork.Trader",
+  "tradeId": "TRADER1",
+  "firstName": "Jenny",
+  "lastName": "Jones"
+}
+</code></pre></div>
 <p>Enter the values and then press the &quot;Try it Out&quot; button to submit. You should see an HTTP 200 response indicating that the Trader was successfully created and stored on the blockchain.</p>
 
 <p><img src="../assets/img/tutorials/developer/lb_create_trader.png" alt="Create trader"></p>
@@ -868,9 +868,11 @@ npm start
 
 <h2 id="related-links">Related Links</h2>
 
-<p><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a>
-<a href="../business-network/bnd-deploy.html">Deploying a business network</a>
-<a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying a business network</a></li>
+<li><a href="../reference/composer.network.deploy.html">Network deploy command</a></li>
+</ul>
 
             
           </section>
