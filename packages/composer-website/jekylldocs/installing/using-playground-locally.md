@@ -18,8 +18,9 @@ This tutorial will take you through how to install and run the {{site.data.conre
 
 In order to install {{site.data.conrefs.composer_full}} Playground, you need the following software installed:
 
-* Docker Engine 17.03 or greater
-* Docker Compose 1.8 or greater
+- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+- Docker Engine 17.03 or greater
+- Docker Compose 1.8 or greater
 
 *Please note:* If you've previously used {{site.data.conrefs.composer_full}} Playground locally or {{site.data.conrefs.hlf_full}} and wish to clear everything and start again, the following commands will delete any running containers and delete all downloaded images, (be careful if you're using other Docker images on your machine):
 

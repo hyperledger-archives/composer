@@ -19,16 +19,14 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
 
 The following are prerequisites for installing the required development tools:
 
-```
-Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
-Docker Engine: Version 17.03 or higher
-Docker-Compose: Version 1.8 or higher
-Node: 6.x (note version 7 is not supported)
-npm: v3.x or v5.x
-git: 2.9.x or higher
-Python: 2.7.x
-A code editor of your choice, we recommend VSCode.
-```
+- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+- Docker Engine: Version 17.03 or higher
+- Docker-Compose: Version 1.8 or higher
+- Node: 6.x (note versions 7 and higher are not supported)
+- npm: v3.x or v5.x
+- git: 2.9.x or higher
+- Python: 2.7.x
+- A code editor of your choice, we recommend VSCode.
 
 **Please do not install {{site.data.conrefs.composer_full}} as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues installation errors). {{site.data.conrefs.composer_full}} should be installed as non-privileged user.**
 

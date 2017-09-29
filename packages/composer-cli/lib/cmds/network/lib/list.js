@@ -138,6 +138,7 @@ class List {
                 spinner.fail();
             }
             console.log(List.getError(error));
+            throw error;
         });
     }
 

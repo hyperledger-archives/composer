@@ -77,13 +77,3 @@ Verification Stage (adv)
 
 Points to note:
  - If you get lost, or don't know what to do, ask
-
- ## K8 Scripts
- This task requires obtaining and running of the K8 scripts, targetting a deploy environment, however, prior to this:
-  - The K8 scripts will need to be modified to target unstable images of all composer items
-
-Only after modifying the tags should you proceed with the script run.
-
-Once the scripts have run, log onto Playground and ensure that:
- - You have access
- - You can generate and share ID cards

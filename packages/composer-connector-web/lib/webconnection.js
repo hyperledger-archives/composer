@@ -328,7 +328,10 @@ class WebConnection extends Connection {
                 issuer: DEFAULT_ISSUER,
                 secret: 'adminpw',
                 certificate,
-                imported: false
+                imported: false,
+                options: {
+                    issuer: true
+                }
             });
         }
         return this.getIdentities()
@@ -373,6 +376,10 @@ class WebConnection extends Connection {
      */
     createIdentity(securityContext, identityName, options) {
         let identities;
+        const currentIdentity = securityContext.getIdentity();
+        if (!currentIdentity.options.issuer) {
+            throw new Error(`The identity ${currentIdentity.name} does not have permission to create a new identity ${identityName}`);
+        }
         return this.getIdentities()
             .then((identities_) => {
                 identities = identities_;
@@ -402,7 +409,8 @@ class WebConnection extends Connection {
                     issuer: DEFAULT_ISSUER,
                     secret,
                     certificate,
-                    imported: false
+                    imported: false,
+                    options: options || {}
                 };
                 return identities.add(identityName, identity)
                     .then(() => {
