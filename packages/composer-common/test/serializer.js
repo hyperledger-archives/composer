@@ -21,7 +21,7 @@ const Resource = require('../lib/model/resource');
 const Serializer = require('../lib/serializer');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('Serializer', () => {
@@ -116,6 +116,13 @@ describe('Serializer', () => {
             });
         });
 
+        it('should throw validation errors if the validate flag is not specified', () => {
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            (() => {
+                serializer.toJSON(resource);
+            }).should.throw(/missing required field/);
+        });
+
         it('should throw validation errors if the validate flag is set to true', () => {
             let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             (() => {
@@ -206,6 +213,41 @@ describe('Serializer', () => {
             resource.timestamp.should.exist;
             resource.asset.should.be.an.instanceOf(Relationship);
             resource.newValue.should.equal('the value');
+        });
+
+        it('should throw validation errors if the validate flag is not specified', () => {
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            (() => {
+                serializer.fromJSON(json);
+            }).should.throw(/missing required field/);
+        });
+
+        it('should throw validation errors if the validate flag is set to true', () => {
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            (() => {
+                serializer.fromJSON(json, { validate: true });
+            }).should.throw(/missing required field/);
+        });
+
+        it('should not validate if the validate flag is set to false', () => {
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            let resource = serializer.fromJSON(json, { validate: false });
+            resource.should.be.an.instanceOf(Resource);
+            resource.assetId.should.equal('1');
+            resource.owner.should.be.an.instanceOf(Relationship);
+            should.equal(resource.value, undefined);
         });
 
     });
