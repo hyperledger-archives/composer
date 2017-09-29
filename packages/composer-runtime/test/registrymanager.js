@@ -242,18 +242,20 @@ describe('RegistryManager', () => {
                 registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             }]);
             mockSystemRegistries.get.rejects(false);
             return registryManager.getAll('Asset')
                 .then((registries) => {
-
+                    registries.should.have.lengthOf(0);
                 });
         });
 
@@ -263,27 +265,31 @@ describe('RegistryManager', () => {
                 registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             }]);
             mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             });
             mockSystemRegistries.get.withArgs('Asset:cats').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: false
             });
 
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
@@ -317,20 +323,23 @@ describe('RegistryManager', () => {
                 registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Participant',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             }]);
             mockSystemRegistries.get.withArgs('Asset:cats').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: false
             });
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
@@ -351,30 +360,32 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                system: 'true',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             }]);
             mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             });
             mockSystemRegistries.get.withArgs('Asset:cats').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                system: 'true',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: true
             });
 
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
@@ -398,30 +409,32 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                system: 'true',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             }]);
             mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
                 id: 'doges',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             });
             mockSystemRegistries.get.withArgs('Asset:cats').resolves({
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                system: 'true',
                 id: 'cats',
-                name: 'The cats registry'
+                name: 'The cats registry',
+                system: true
             });
 
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
@@ -453,7 +466,8 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             });
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
@@ -482,7 +496,8 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                name: 'The doges registry'
+                name: 'The doges registry',
+                system: false
             });
             mockSystemRegistries.exists.withArgs('Asset:doges').resolves(true);
             mockAccessController.check.resolves(true);
