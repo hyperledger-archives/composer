@@ -485,8 +485,8 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.setLogLevel('ERROR')
             .then(() => {
-                sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'setLogLevel', ['ERROR']);
+                sinon.assert.calledOnce(mockConnection.setLogLevel);
+                sinon.assert.calledWith(mockConnection.setLogLevel,mockSecurityContext, 'ERROR');
             });
         });
     });

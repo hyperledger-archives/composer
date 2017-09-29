@@ -32,6 +32,7 @@
         "composer-connect-nomembersrvcurl": "connectOptions.membershipServicesURL not specified",
         "composer-connect-nopeerurl": "connectOptions.peerURL not specified",
         "composer-connect-noeventhuburl": "connectOptions.eventHubURL not specified",
+        "composer-connect-notconnected": "Connection needs to be conneted. Call connect(..)",
         "composer-login-noenrollmentid": "enrollmentID not specified",
         "composer-login-noenrollmentsecret": "enrollmentSecret not specified",
         "composer-deploy-nosecuritycontext": "securityContext not specified",
