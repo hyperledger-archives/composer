@@ -481,12 +481,14 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} options Options for the invoking chaing code to use
+     * @param {Object} options.transactionId Transaction Id to use.
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode(securityContext, functionName, args, options) {
         return new Promise((resolve, reject) => {
-            this._invokeChainCode(securityContext, functionName, args, (error) => {
+            this._invokeChainCode(securityContext, functionName, args, options, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -507,9 +509,11 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} options options for the invoking chain code
+     * @param {Object} options.transactionId Transaction Id to use.
      * @param {invokeChainCodeCallback} callback The callback function to call when complete.
      */
-    _invokeChainCode(securityContext, functionName, args, callback) {
+    _invokeChainCode(securityContext, functionName, args, options, callback) {
         throw new Error('abstract function called');
     }
 

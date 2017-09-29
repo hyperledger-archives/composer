@@ -763,7 +763,8 @@ class HLFConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @param {object} options Options that might be requried to for this connection
+     * @param {Object} options options to pass to invoking chaincode
+     * @param {Object} options.transactionId Transaction Id to use.
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
