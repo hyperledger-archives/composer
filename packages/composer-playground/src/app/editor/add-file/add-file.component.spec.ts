@@ -8,8 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
-import { BusinessNetworkDefinition } from 'composer-admin';
-import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AclManager, AssetDeclaration, QueryFile, QueryManager } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, ModelManager, ScriptManager, Script, AclFile, AclManager, AssetDeclaration, QueryFile, QueryManager } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from '../../common/file-importer';

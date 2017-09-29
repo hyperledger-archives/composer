@@ -64,17 +64,19 @@ $ cd composer
 
 ## Installing Hyperledger Composer Prerequisites
 
-Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally so that their versions do not interfere with other projects you may be developing or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
+Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [yarn](https://yarnpkg.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally so that their versions do not interfere with other projects you may be developing or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
 
 ### Installing the npm Dependencies
 
-You must install [Lerna](https://lernajs.io) to build this multi-package repository:
+You must install [yarn](https://yarnpkg.com/) and [Lerna](https://lernajs.io) to build this multi-package repository:
 
     $ npm install -g lerna@2.0.0
 
-You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
+    $ curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.1.0
 
-    $ lerna bootstrap
+You must run yarn install from the root of the mono repository, so that all of the dependencies are installed and all of the packages are linked together:
+
+    $ yarn install
 
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
@@ -98,12 +100,23 @@ To clean the updates
 
     $ lerna clean
 
+### Adding new dependencies
 
-### Your development environment is ready!
+Use the yarn workspace command to add a new dependency to a package:
+
+    $ yarn workspace <package> add <dependency>
+
+For example:
+
+    $ yarn workspace composer-common add make-array
+
+Travis builds use the `--frozen-lockfile` yarn option, so if you don't use yarn to install dependencies, and you don't commit an updated _yarn.lock_ file, they will not be installed at build time.
+
+## Your development environment is ready!
 
 You are now ready to try out your local clone of the Hyperledger Composer project.
 
-## Testing your local environment
+### Testing your local environment
 
 To verify that your local environment is ready for development and to confirm later that the updates are good, run the built-in unit tests provided with the Hyperledger Composer project.
 
