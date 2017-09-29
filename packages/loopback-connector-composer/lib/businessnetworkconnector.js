@@ -297,18 +297,11 @@ class BusinessNetworkConnector extends Connector {
                 if(filterKeys.indexOf('where') >= 0) {
                     const keys = Object.keys(filter.where);
                     if (keys.length === 0) {
-                        throw new Error('The destroyAll operation without a where clause is not supported');
+                        throw new Error('The all operation without a where clause is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    let query = null;
-                    if(!filter.where[identifierField]){
-                        const queryString = FilterParser.parseFilter(filter, composerModelName);
-                        query = networkConnection.buildQuery(queryString);
-                        if(query === null || typeof query === 'undefined') {
-                            throw new Error('The specified filter:' + keys[0] + ' does not match the identifier or any property in the model');
-                        }
-                    }
-                    // Check we have the right identifier for the object type
+
+                    // Check if the filter is a simple ID query
                     let objectId = filter.where[identifierField];
                     if(doResolve) {
                         return registry.resolve(objectId)
@@ -317,13 +310,20 @@ class BusinessNetworkConnector extends Connector {
                                 return [ result ];
                             });
 
-                    } else if(filter.where[identifierField]){
+                    } else if(objectId){
                         return registry.get(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
                     } else {
+                        // if(!filter.where[identifierField]){
+                        const queryString = FilterParser.parseFilter(filter, composerModelName);
+                        const query = networkConnection.buildQuery(queryString);
+                        if(typeof query === 'undefined'|| query === null) {
+                            throw new Error('The specified filter:' + keys[0] + ' does not match the identifier or any property in the model');
+                        }
+                        // }
                         return networkConnection.query(query, {})
                         .then((result) => {
                             debug('Got Result:', result);
