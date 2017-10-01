@@ -3,7 +3,7 @@ import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
-import { Identity } from '../component/identity';
+import { Login } from '../component/login';
 import { Replace } from '../component/replace';
 import { AddFile } from '../component/add-file';
 import { EditorFile } from '../component/editor-file';
@@ -27,7 +27,6 @@ describe('Editor Define', (() => {
     // Important angular configuration and intial step passage to reach editor
     browser.waitForAngularEnabled(false);
     OperationsHelper.navigatePastWelcome();
-    Identity.connectViaNamedCard('admin');
   });
 
   afterAll(() =>  {

@@ -23,6 +23,11 @@ const argv = require('yargs')
         type: 'number',
         describe: 'The port to start composer on'
     })
+    .option('t', {
+        alias: 'test',
+        demand: false,
+        default: false
+    })
     .argv;
 
 const Logger = require('composer-common').Logger;
@@ -58,7 +63,7 @@ Logger.setFunctionalLogger({
     }
 });
 
-const app = require('composer-playground-api')(argv.port);
+const app = require('composer-playground-api')(argv.port, argv.test);
 const cheerio = require('cheerio');
 const express = require('express');
 const fs = require('fs');
