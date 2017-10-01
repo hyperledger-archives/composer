@@ -15,7 +15,7 @@ The `composer network undeploy` command **permanently disables a business networ
 **Please Note**: When using the `undeploy` command with a business network running on {{site.data.conrefs.hlf_full}} v1.0, the business network remains running, but will become unresponsive. The business network **cannot be redeployed or updated once the `undeploy` command has been issued.** This is because the business network is already deployed, but has been set to be unresponsive.
 
 ```
-composer network undeploy -a <business-network-archive> -n <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
+composer network undeploy -n <business-network-name> -p <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
 ```
 
 Note that **after undeploy the business network definition can no longer be used**, however the docker container
@@ -26,7 +26,7 @@ definition must be explicitly stopped and removed if no longer needed.
 ```
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
+  --businessNetworkName, -n    The business network name  [string] [required]
   --connectionProfileName, -p  The connection profile name  [string]
   --enrollId, -i               The enrollment ID of the user  [string] [required]
   --enrollSecret, -s           The enrollment secret of the user  [string]

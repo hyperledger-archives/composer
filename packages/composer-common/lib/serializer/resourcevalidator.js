@@ -147,7 +147,7 @@ class ResourceValidator {
                         ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
                     }
                     else {
-                        ResourceValidator.reportUndeclaredField(this.currentIdentifier, propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                        ResourceValidator.reportUndeclaredField(parameters.currentIdentifier, propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
                     }
                 }
             }
@@ -161,7 +161,7 @@ class ResourceValidator {
                 ResourceValidator.reportEmptyIdentifier(parameters.rootResourceIdentifier);
             }
 
-            this.currentIdentifier = obj.getFullyQualifiedIdentifier();
+            parameters.currentIdentifier = obj.getFullyQualifiedIdentifier();
         }
 
         // now validate each property
@@ -320,7 +320,7 @@ class ResourceValidator {
             }
             else {
                 if(field.getValidator() !== null) {
-                    field.getValidator().validate(this.currentIdentifier, obj);
+                    field.getValidator().validate(parameters.currentIdentifier, obj);
                 }
             }
         }

@@ -1267,7 +1267,7 @@ NamespaceToken    = "namespace"   !IdentifierPart
 AbstractToken     = "abstract"    !IdentifierPart
 ConceptToken      = "concept"     !IdentifierPart
 AssetToken        = "asset"       !IdentifierPart
-TransactionToken  = "transaction" !IdentifierPart 
+TransactionToken  = "transaction" !IdentifierPart
 EventToken        = "event"       !IdentifierPart
 ParticipantToken  = "participant" !IdentifierPart
 
@@ -1344,7 +1344,7 @@ DecoratorNumber =
         location: location()
       }
   }
-  
+
 DecoratorBoolean =
   b:$BooleanLiteral {
       return {
@@ -1353,7 +1353,7 @@ DecoratorBoolean =
         location: location()
       }
   }
-  
+
 DecoratorLiteral =
   DecoratorString
   / DecoratorBoolean
@@ -1378,7 +1378,7 @@ Decorator
             location: location()
           };
   }
-  
+
 Decorators
   = decorators:(d:Decorator __ {return d;})*
 
@@ -1493,7 +1493,7 @@ IntegerDefault
     }
 
 RealDefault
-   = "default" __ "=" __ def:SignedRealLiteral{
+   = "default" __ "=" __ def:$SignedRealLiteral{
       return def;
     }
 
