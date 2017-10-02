@@ -318,27 +318,24 @@ function sampleTransaction(tx) {
 
 <p>The following example includes nested relationships, the transaction has a relationship with an asset, which has a relationship with a participant, because all relationships are resolved, the <code>owner</code> property of the asset is resolved to the specific participant.</p>
 
-<p>Model file:
-```
-namespace org.acme.sample</p>
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
 
-<p>participant SampleParticipant identified by participantId {
+participant SampleParticipant identified by participantId {
   o String participantId
-}</p>
+}
 
-<p>asset SampleAsset identified by assetId {
+asset SampleAsset identified by assetId {
   o String assetId
   --&gt; SampleParticipant owner
-}</p>
+}
 
-<p>transaction SampleTransaction {
+transaction SampleTransaction {
   --&gt; SampleAsset asset
 }
-```</p>
-
-<p>Script file:
-<code>
-/**
+</code></pre></div>
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
@@ -352,8 +349,7 @@ function sampleTransaction(tx) {
     // owner of the asset.
     var owner = tx.asset.owner;
 }
-</code></p>
-
+</code></pre></div>
 <p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
 
 <h2 id="promise-returns-in-transaction-processor-functions">Promise returns in transaction processor functions</h2>
@@ -362,18 +358,15 @@ function sampleTransaction(tx) {
 
 <p>In the example code below there are several promises, the transaction will not be completed until each promise has returned.</p>
 
-<p>Model file:
-```
-namespace org.acme.sample</p>
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
 
-<p>transaction SampleTransaction {</p>
+transaction SampleTransaction {
 
-<p>}
-```</p>
-
-<p>Script file (1):
-<code>
-/**
+}
+</code></pre></div>
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
@@ -394,30 +387,26 @@ function sampleTransaction(tx) {
             return Promise.resolve();
         });
 }
-</code></p>
-
+</code></pre></div>
 <h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
 
 <p>The Hyperledger Composer APIs can be called within transaction processor functions, in the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
 
-<p>Model file:
-```
-namespace org.acme.sample</p>
+<p>Model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
 
-<p>asset SampleAsset identified by assetId {
+asset SampleAsset identified by assetId {
   o String assetId
   o String value
-}</p>
+}
 
-<p>transaction SampleTransaction {
+transaction SampleTransaction {
   --&gt; SampleAsset asset
   o String newValue
 }
-```</p>
-
-<p>Script file:
-<code>
-/**
+</code></pre></div>
+<p>Script file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
@@ -429,7 +418,7 @@ function sampleTransaction(tx) {
     // Get the asset registry that stores the assets. Note that
     // getAssetRegistry() returns a promise, so we have to return
     // the promise so that Composer waits for it to be resolved.
-    return getAssetRegistry(&#39;org.acme.sample.SampleAsset&#39;)
+    return getAssetRegistry('org.acme.sample.SampleAsset')
         .then(function (assetRegistry) {
             // Update the asset in the asset registry. Again, note
             // that update() returns a promise, so so we have to return
@@ -437,8 +426,7 @@ function sampleTransaction(tx) {
             return assetRegistry.update(asset);
         })
 }
-</code></p>
-
+</code></pre></div>
 <h2 id="what-next">What next?</h2>
 
 <p>Transaction processor functions can also be used to:</p>

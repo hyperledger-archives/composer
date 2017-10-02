@@ -247,47 +247,44 @@ ga('send', 'pageview');
 <ol>
 <li>A namespace defined by the namespace of its parent file. The namespace of a <code>.cto</code> file implicitly applies to all resources created in it.</li>
 <li><p>A name, for example <code>Vehicle</code>, and an identifying field, for example, <code>vin</code>. If the resource is an asset or participant, the name is followed by the identifying field, if the resource is an event or transaction, the identifying field is set automatically. In this example, the asset is named <code>Vehicle</code> and the identifying field is <code>vin</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * A vehicle asset.
  */
 asset Vehicle identified by vin {
   o String vin
 }
-```
 </code></pre></div></li>
 <li><p>An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * A car asset. A car is related to a list of parts
  */
 asset Car extends Vehicle {
   o String model
   --&gt; Part[] Parts
 }
-```
 </code></pre></div></li>
 <li><p>An optional &#39;abstract&#39; declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset <code>Vehicle</code> defined above should never be created, as there should be more specific asset classes defined to extend it.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
 * An abstract Vehicle asset.
 */
 abstract asset Vehicle identified by vin {
   o String vin
 }
-```
 </code></pre></div></li>
 <li><p>A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a <code>Car</code> asset has a <code>vin</code>, and a <code>model</code> property, both of which are strings.</p></li>
 <li><p>A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * A Field asset. A Field is related to a list of animals
- */
+
+<p>/**</p>
+
+<ul>
+<li>A Field asset. A Field is related to a list of animals
+*/
 asset Field identified by fieldId {
-  o String fieldId
-  o String name
-  --&gt; Animal[] animals
-}
-</code></pre></div></li>
+o String fieldId
+o String name
+--&gt; Animal[] animals
+}</li>
+</ul></li>
 </ol>
 
 <h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
