@@ -135,9 +135,9 @@
                 <div *ngIf="currentBusinessNetworkPromise | async as bn">
                     <p class="network-info">
                         <span>Contains:</span>
-                        {{bn.getModelManager().getParticipantDeclarations().length}} Participant Types,
-                        {{bn.getModelManager().getAssetDeclarations().length}} Asset Types, and
-                        {{bn.getModelManager().getTransactionDeclarations().length}} Transaction Types
+                        {{bn.participants.length}} Participant {{bn.participants.length == 1 ? "Type" : "Types"}},
+                        {{bn.assets.length}} Asset {{bn.assets.length == 1 ? "Type" : "Types"}}, and
+                        {{bn.transactions.length}} Transaction {{bn.transactions.length == 1 ? "Type" : "Types"}}
                     </p>
                 </div>
             </section>

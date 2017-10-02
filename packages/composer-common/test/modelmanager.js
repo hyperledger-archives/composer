@@ -22,6 +22,7 @@ const ParticipantDeclaration = require('../lib/introspect/participantdeclaration
 const EventDeclaration = require('../lib/introspect/eventdeclaration');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
+const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
 const fs = require('fs');
 
 const chai = require('chai');
@@ -434,54 +435,243 @@ describe('ModelManager', () => {
 
     });
 
-    describe('#getAssetDeclarations', () => {
+    describe('#getDeclarations', () => {
 
-        it('should return all of the asset declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getAssetDeclarations();
-            decls.should.all.be.an.instanceOf(AssetDeclaration);
+        const numberSystemAssets = 8;
+        const numberSystemEnums = 1;
+        const numberSystemParticipants = 2;
+        const numberSystemEvents = 1;
+        const numberSystemTransactions = 16;
+        const numberSystemConcepts = 0;
+
+        const numberModelBaseAssets = 5;
+        const numberModelBaseEnums = 1;
+        const numberModelBaseParticipants = 2;
+        const numberModelBaseEvents = 0;
+        const numberModelBaseTransactions = 3;
+        const numberModelBaseConcepts = 2;
+
+
+        describe('#getAssetDeclarations', () => {
+
+            it('should return all of the asset declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations();
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberSystemAssets+numberModelBaseAssets);
+            });
+
         });
 
-    });
+        describe('#getAssetDeclarationsWithParameterFalse', () => {
 
-    describe('#getEnumDeclarations', () => {
+            it('should return all of the asset declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations(false);
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberModelBaseAssets);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
 
-        it('should return all of the enum declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getEnumDeclarations();
-            decls.should.all.be.an.instanceOf(EnumDeclaration);
         });
 
-    });
+        describe('#getAssetDeclarationsWithParameterTrue', () => {
 
-    describe('#getParticipantDeclarations', () => {
+            it('should return all of the asset declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations(true);
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberSystemAssets+numberModelBaseAssets);
+            });
 
-        it('should return all of the participant declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getParticipantDeclarations();
-            decls.should.all.be.an.instanceOf(ParticipantDeclaration);
         });
 
-    });
+        describe('#getEnumDeclarations', () => {
 
-    describe('#getEventDeclarations', () => {
+            it('should return all of the enum declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations();
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberSystemEnums+numberModelBaseEnums);
+            });
 
-        it('should return all of the event declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getEventDeclarations();
-            decls.should.all.be.an.instanceOf(EventDeclaration);
         });
 
-    });
+        describe('#getEnumDeclarationsWithParameterFalse', () => {
 
-    describe('#getTransactionDeclarations', () => {
+            it('should return all of the enum declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations(false);
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberModelBaseEnums);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
 
-        it('should return all of the transaction declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getTransactionDeclarations();
-            decls.should.all.be.an.instanceOf(TransactionDeclaration);
         });
 
+        describe('#getEnumDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the enum declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations(true);
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberSystemEnums+numberModelBaseEnums);
+            });
+
+        });
+
+        describe('#getParticipantDeclarations', () => {
+
+            it('should return all of the participant declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations();
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberSystemParticipants+numberModelBaseParticipants);
+            });
+
+        });
+
+        describe('#getParticipantDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the participant declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations(false);
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberModelBaseParticipants);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getParticipantDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the participant declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations(true);
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberSystemParticipants+numberModelBaseParticipants);
+            });
+
+        });
+
+        describe('#getEventDeclarations', () => {
+
+            it('should return all of the event declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations();
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberSystemEvents+numberModelBaseEvents);
+            });
+
+        });
+
+        describe('#getEventDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the event declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations(false);
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberModelBaseEvents);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getEventDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the event declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations(true);
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberSystemEvents+numberModelBaseEvents);
+            });
+
+        });
+
+        describe('#getTransactionDeclarations', () => {
+
+            it('should return all of the transaction declarations', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations();
+                decls.length.should.equal(numberSystemTransactions+numberModelBaseTransactions);
+            });
+
+        });
+
+        describe('#getTransactionDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the transaction declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations(false);
+                decls.should.all.be.an.instanceOf(TransactionDeclaration);
+                decls.length.should.equal(numberModelBaseTransactions);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getTransactionDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the transaction declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations(true);
+                decls.should.all.be.an.instanceOf(TransactionDeclaration);
+                decls.length.should.equal(numberSystemTransactions+numberModelBaseTransactions);
+            });
+
+        });
+
+        describe('#getConceptDeclarations', () => {
+
+            it('should return all of the concept declarations', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations();
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberSystemConcepts+numberModelBaseConcepts);
+            });
+
+        });
+
+        describe('#getConceptDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the concept declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations(false);
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberModelBaseConcepts);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getConceptDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the concept declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations(true);
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberSystemConcepts+numberModelBaseConcepts);
+            });
+
+        });
     });
 
     describe('#resolveType', () => {
