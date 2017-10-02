@@ -154,7 +154,8 @@ class JavaScriptParser {
                 }
 
                 if(privateClass === false || includePrivates) {
-                    const clazz = { name: statement.id.name};
+                    d = d || [];
+                    const clazz = { name: statement.id.name , commentData : d  };
                     clazz.methods = [];
 
                     for(let n=0; n < statement.body.body.length; n++) {
@@ -184,6 +185,7 @@ class JavaScriptParser {
                                 throws = JavaScriptParser.getThrows(comment);
                                 example = JavaScriptParser.getExample(comment);
                             }
+                            commentData = commentData || [];
 
                             if(visibility === '+' || includePrivates) {
                                 const method = {
