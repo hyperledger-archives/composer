@@ -46,21 +46,21 @@
   "dependencies": {
     "composer-common": "0.13.2",
     "composer-connector-hlfv1": "0.13.2",
-    "serializerr": "^1.0.3",
-    "socket.io": "^1.7.3",
-    "uuid": "^3.0.1",
-    "yargs": "^8.0.1"
+    "serializerr": "1.0.3",
+    "socket.io": "1.7.3",
+    "uuid": "3.0.1",
+    "yargs": "8.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "3.5.0",
     "composer-connector-embedded": "0.13.2",
-    "eslint": "^3.17.1",
-    "jsdoc": "^3.4.3",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "nyc": "^11.1.0",
-    "proxyquire": "^1.7.11",
-    "sinon": "^2.3.8"
+    "eslint": "3.17.1",
+    "jsdoc": "3.4.3",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "proxyquire": "1.7.11",
+    "sinon": "2.3.8"
   },
   "nyc": {
     "exclude": [
