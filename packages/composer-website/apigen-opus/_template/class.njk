@@ -22,7 +22,7 @@ index-order: {{index}}
 ## Method Summary
 | Returns | Name | Description |
 | :--------  | :---- | :----------- |
-{% for method in methods | sort(attribute='name') %}| `{{method.returnType}}` | [{{method.name}}](#{{method.name | lower }}{% for args in method.methodArgs %}-{{args}}{% endfor %}) | {{method.description[0]}}  |
+{% for method in methods | sort(attribute='name') %}| `{{method.returnType}}` | [{{method.name}}](#{{method.name | lower }}{% for args in method.methodArgs %}-{{args | lower }}{% endfor %}) | {{method.description[0]}}  |
 {% endfor %}
 
 ## Method Details
@@ -30,7 +30,7 @@ index-order: {{index}}
 {% if method.name == 'constructor'%}
 ## new {{name}}() 
 {% else %}
-## {{method.name}}({% for args in method.methodArgs %}{{args}}{% if not loop.last %},{% endif %}{% endfor %}) 
+## {{method.name}}({% for args in method.methodArgs %}{{args | lower }}{% if not loop.last %},{% endif %}{% endfor %}) 
 {% endif %}
 
 
@@ -57,7 +57,7 @@ index-order: {{index}}
 
 
 ### Parameters
-{% if method.parameters -%}
+{% if method.parameters | length != 0 -%}
 | Name | Type | Optional | Description |
 | :-----------  | :----------- | :----------- | :----------- |
 {% for p in method.parameters -%}
@@ -67,5 +67,4 @@ index-order: {{index}}
 
 No parameters
 {% endif %}
-{% endfor %}  # method list
----
+{% endfor %} 
