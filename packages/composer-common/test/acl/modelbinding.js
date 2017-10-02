@@ -35,6 +35,7 @@ describe('ModelBinding', () => {
     const classAst = {'type':'Binding','qualifiedName':'org.acme.Car'};
     const classWithIdentifierAst = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':'ABC123'};
     const variableAst = {'type':'Identifier','name':'dan'};
+    const rootRecursiveNamespaceAst = {'type':'BindingRootRecursive','qualifiedName':'**'};
 
     const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':'ABC123'};
     const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing.*'};
@@ -92,6 +93,12 @@ describe('ModelBinding', () => {
             modelBinding = new ModelBinding( aclRule, classAst );
             modelBinding.validate();
             modelBinding.toString().should.equal('ModelBinding org.acme.Car');
+        });
+
+        it('should validate correct contents for a root recursive namespace reference', () => {
+            modelBinding = new ModelBinding( aclRule, rootRecursiveNamespaceAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding **');
         });
 
         it('should validate correct contents for a class reference with an identifier', () => {
