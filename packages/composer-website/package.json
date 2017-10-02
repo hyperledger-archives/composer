@@ -8,10 +8,11 @@
     "npm": ">=3"
   },
   "scripts": {
-    "doc": "npm run docpub && ./scripts/generate-uml.sh",
+    "doc": "npm run apiref && ./scripts/generate-uml.sh",
+    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.1.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
-    "jekyllserve": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
+    "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
     "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
     "changelog": "./scripts/changelog.sh",
@@ -36,9 +37,11 @@
     "composer-runtime": "0.13.2",
     "jsdoc": "^3.4.3",
     "node-plantuml": "^0.5.0",
-    "sanitize-html": "^1.14.1"
+    "sanitize-html": "^1.14.1",
+    "mkdirp": "^0.5.1"
   },
   "dependencies": {
+    "documentation": "^5.3.1",
     "github-changes": "^1.0.4",
     "jekyll": "^3.0.0-beta1"
   }
