@@ -11,15 +11,13 @@ export class OperationsHelper {
   static click(elm: ElementFinder) {
     browser.wait(ExpectedConditions.presenceOf(elm), 10000);
     browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
-    browser.wait(ExpectedConditions.elementToBeClickable(elm), 10000);
-    // Scroll into view
     browser.executeScript('arguments[0].scrollIntoView();', elm);
     return browser.wait(() => {
         return elm.click()
         .then(() => true)
         .catch(() => false);
-                        });
-                }
+    });
+  }
 
   // Retrieve text from an element
   static retriveTextFromElement(elm: ElementFinder) {
