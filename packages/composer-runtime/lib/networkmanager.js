@@ -48,6 +48,27 @@ class NetworkManager extends TransactionHandler {
             'org.hyperledger.composer.system.ResetBusinessNetwork',
             this.resetBusinessNetwork
         );
+        this.bind(
+            'org.hyperledger.composer.system.SetLogLevel',
+            this.setLogLevel
+        );
+    }
+
+    /**
+     * Set the log level for the runtime.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    setLogLevel(api, transaction) {
+        const method = 'setLogLevel';
+        LOG.entry(method, transaction);
+        if (this.context.getParticipant() === null) {
+            let promise = this.context.container.getLoggingService().setLogLevel(transaction.newLogLevel);
+            return promise ? promise : Promise.resolve();
+        }
+        throw new Error('Authorization failure');
     }
 
     /**

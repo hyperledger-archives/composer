@@ -184,7 +184,7 @@ transaction UpdateBusinessNetwork {
   o String businessNetworkArchive
 }
 
-transaction SetNetworkLoggingLevel {
+transaction SetLogLevel {
   o String newLogLevel
 }
 

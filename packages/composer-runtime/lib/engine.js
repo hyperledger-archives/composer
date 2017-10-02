@@ -228,7 +228,8 @@ class Engine {
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
                     compiledAclBundle: compiledAclBundle,
-                    sysregistries: sysregistries
+                    sysregistries: sysregistries,
+                    container: this.getContainer()
                 });
 
             })

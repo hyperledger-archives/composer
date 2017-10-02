@@ -27,27 +27,6 @@ const LOG = Logger.getLog('EngineLogging');
 class EngineLogging {
 
     /**
-     * Set the log level for the runtime.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    setLogLevel(context, args) {
-        const method = 'setLogLevel';
-        LOG.entry(method, context, args);
-        if (!args || args.length !== 1) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'setLogLevel', ['newLogLevel']));
-        }
-        if (context.getParticipant() === null) {
-            let promise = this.getContainer().getLoggingService().setLogLevel(args[0]);
-            return promise ? promise : Promise.resolve();
-        }
-        throw new Error('Authorization failure');
-    }
-
-    /**
      * Get the current log level of the runtime.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
