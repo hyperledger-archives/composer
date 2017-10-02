@@ -20,7 +20,7 @@ const program = require('commander');
 const PlantUMLGenerator = require('./fromjs/plantumlgenerator');
 const APISignatureGenerator = require('./fromjs/apisignaturegenerator');
 const JavaScriptParser = require('./javascriptparser');
-
+const JSONGenerator = require('./fromjs/jsongenerator');
 /**
  * Generates Plant UML files from Javascript source files
  *
@@ -46,6 +46,9 @@ case 'PlantUML':
     break;
 case 'APISignature':
     fileProcessor = new APISignatureGenerator();
+    break;
+case 'JSON':
+    fileProcessor = new JSONGenerator();
     break;
 }
 

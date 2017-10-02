@@ -41,7 +41,6 @@ const LOG = Logger.getLog('BusinessNetworkConnection');
  * Use this class to connect to and then interact with a deployed BusinessNetworkDefinition.
  * Use the AdminConnection class in the composer-admin module to deploy BusinessNetworksDefinitions.
  * @extends EventEmitter
- * @see See [EventEmitter]{@link module:composer-client.EventEmitter}
  * @class
  * @memberof module:composer-client
  */

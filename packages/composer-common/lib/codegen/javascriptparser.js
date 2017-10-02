@@ -148,13 +148,16 @@ class JavaScriptParser {
             } else if (statement.type === 'ClassDeclaration') {
                 let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
                 let privateClass = false;
+                let d;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
+                    d = doctrine.parse(comment, {unwrap: true, sloppy: true});
                     privateClass = JavaScriptParser.getVisibility(comment) === '-';
                 }
 
                 if(privateClass === false || includePrivates) {
-                    const clazz = { name: statement.id.name};
+                    d = d || [];
+                    const clazz = { name: statement.id.name , commentData : d  };
                     clazz.methods = [];
 
                     for(let n=0; n < statement.body.body.length; n++) {
@@ -175,8 +178,10 @@ class JavaScriptParser {
                             let throws = '';
                             let decorators = [];
                             let example = '';
+                            let commentData;
                             if(closestComment >= 0) {
                                 let comment = comments[closestComment].value;
+                                commentData = doctrine.parse(comment, {unwrap: true, sloppy: true});
                                 returnType = JavaScriptParser.getReturnType(comment);
                                 visibility = JavaScriptParser.getVisibility(comment);
                                 methodArgs = JavaScriptParser.getMethodArguments(comment);
@@ -184,7 +189,7 @@ class JavaScriptParser {
                                 throws = JavaScriptParser.getThrows(comment);
                                 example = JavaScriptParser.getExample(comment);
                             }
-
+                            commentData = commentData || [];
                             if(visibility === '+' || includePrivates) {
                                 const method = {
                                     visibility: visibility,
@@ -193,7 +198,8 @@ class JavaScriptParser {
                                     methodArgs: methodArgs,
                                     decorators: decorators,
                                     throws: throws,
-                                    example: example
+                                    example: example,
+                                    commentData : commentData
                                 };
                                 clazz.methods.push(method);
                             }
