@@ -13,6 +13,8 @@ The {{site.data.conrefs.composer_full}} Playground provides a user interface for
 
 If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with ID cards.
 
+**Please note**: If two or more users are using {{site.data.conrefs.composer_full}} Playground to connect to the same instance of {{site.data.conrefs.hlf_full}}, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.
+
 ---
 
 # Navigating Playground
@@ -52,6 +54,8 @@ The Define tab is used to create, edit and update your business network.
 On the left of the **Define** tab, you can see a list of all the files in your current business network definition. To examine the contents of a file, click on it, and it will appear in the editor view. New files can be added to your business network with the **Add a file** button. Model files, script files, access control files, and query files can be added to your business network.
 
 Once you've added and modified the files for your business network definition, you can deploy the changes to your network with the **Update** button. After click **Update** you can experiment with your changes in the **Test** tab. The **Import/Replace** button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the **Export** button downloads your current business network as a business network archive `.bna` file.
+
+**Please note**: If two or more users are using {{site.data.conrefs.composer_full}} Playground to connect to the same instance of {{site.data.conrefs.hlf_full}}, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.
 
 ## The Test tab
 

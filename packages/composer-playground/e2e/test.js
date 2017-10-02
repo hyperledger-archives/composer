@@ -6,7 +6,7 @@ const snowWhite = require('sleep');
 // paths are relative to that calling location (~/composer-playground)
 
 // Start the api server as a spawned child process
-let childAPI = spawn('node', ['../composer-playground-api/cli.js']);
+let childAPI = spawn('node', ['../composer-playground-api/cli.js -test']);
 
 // Start the target test server as a spawned child process
 let childServer = spawn('node', ['cli.js', '-p', '3001']);

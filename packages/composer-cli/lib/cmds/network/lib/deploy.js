@@ -73,7 +73,7 @@ class Deploy {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();

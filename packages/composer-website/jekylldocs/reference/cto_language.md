@@ -23,23 +23,9 @@ A {{site.data.conrefs.composer_full}} CTO file is composed of the following elem
 
 Your organization namespace is defined in the namespace line of your model (`.cto`) file, and all resources created are implicitly part of this namespace.
 
-As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.
+As well as defining new classes of asset, participant, event, and transaction, there is a [system namespace](https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto) which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.
 
-Represented as a `.cto` model file, the system namespace is as follows:
-
-```
-    namespace org.hyperledger.composer.system
-    abstract asset Asset {  }
-    abstract participant Participant {   }
-    abstract transaction Transaction {
-      o DateTime timestamp
-    }
-    abstract event Event {
-      o DateTime timestamp
-    }
-```
-
-In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.
+In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp. The system namespace also includes definitions of registries, historian records, identities, and a number of system transactions.
 
 >If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.
 

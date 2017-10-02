@@ -70,6 +70,9 @@ Verification Stage (basic)
 
 Verification Stage (adv)
  - Use the Ionic App to drive the vehicle lifecycle
+ -- From the ionic app, define the car order and then select 'build'
+ -- From the manufcturing page, commence manufacture
+ -- From the VDA page, observe the chains being generated as the order progresses
  - Log into Playground and inspect transactions via Historian, and all items in the registry
 
 Points to note:

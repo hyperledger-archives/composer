@@ -57,6 +57,3 @@ This pulls the latest versions of:
 Consequently a major version bump in Composer *requires* Composer-tools to support the latest major version.
 
 VLC builds from static files, that define the connection profile, IDCard that enables connection, deployed base network etc. Any breaking API changes in the runtime must be accounted for in the build files that generate the specification, otherwise it simply will not work and we will be very sad.
-
-#K8s
-Alike the VLC demo, the K8s sripts are based from the build of static files ... API changes must also be refelcted here.

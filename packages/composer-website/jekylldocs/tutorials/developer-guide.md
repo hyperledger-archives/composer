@@ -766,6 +766,6 @@ Well done, you've now completed this tutorial and we hope you now have a much be
 
 ## Related Links
 
-[Business Network Definition](../business-network/businessnetworkdefinition.html)
-[Deploying a business network](../business-network/bnd-deploy.html)
-[Network deploy command](../reference/composer.network.deploy.html)
+- [Business Network Definition](../business-network/businessnetworkdefinition.html)
+- [Deploying a business network](../business-network/bnd-deploy.html)
+- [Network deploy command](../reference/composer.network.deploy.html)

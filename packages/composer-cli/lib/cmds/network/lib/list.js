@@ -55,7 +55,7 @@ class List {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();
@@ -138,6 +138,7 @@ class List {
                 spinner.fail();
             }
             console.log(List.getError(error));
+            throw error;
         });
     }
 

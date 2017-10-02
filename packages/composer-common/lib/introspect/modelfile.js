@@ -249,8 +249,8 @@ class ModelFile {
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
-                if (modelFile) {
-                    return modelFile.isLocalType(type);
+                if (modelFile && modelFile.isLocalType(type)) {
+                    return true;
                 }
             }
         }

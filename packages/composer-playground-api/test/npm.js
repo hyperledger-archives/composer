@@ -23,6 +23,29 @@ const express = require('express');
 
 let tarParserResult = [];
 
+let testMode = false;
+
+let fs = {};
+
+fs.createReadStream = function (path) {
+    let data = Buffer.from('1234');
+
+    let entry = {
+        path : path,
+        on : sinon.stub().callsArgWith(1, data)
+    };
+
+    return {
+        pipe : function (tarParser) {
+            tarParserResult = tarParser.filter('bob.bna');
+
+            return {
+                on : sinon.stub().callsArgWith(1, entry)
+            };
+        }
+    };
+};
+
 /**
  *
  */
@@ -69,21 +92,22 @@ RegClient.prototype.get = function (url, options, callback) {
     };
 
     let getUnsortedSampleNames = {
-        objects : [{
-            package : {
-                name : 'cat',
+        objects : [
+            {
+                package : {
+                    name : 'cat',
+                }
+            },
+            {
+                package : {
+                    name : 'ant',
+                }
+            },
+            {
+                package : {
+                    name : 'bat',
+                }
             }
-        },
-        {
-            package : {
-                name : 'ant',
-            }
-        },
-        {
-            package : {
-                name : 'bat',
-            }
-        }
         ]
     };
 
@@ -97,7 +121,7 @@ RegClient.prototype.get = function (url, options, callback) {
                 description : 'bob package',
                 version : '1.0',
                 networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
-                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
+                networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -110,7 +134,7 @@ RegClient.prototype.get = function (url, options, callback) {
                 description : 'bob package',
                 version : '1.0',
                 networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
-                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
+                networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
                 dist : {
                     tarball : 'my tar'
                 }
@@ -155,7 +179,7 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'cat',
                 description : 'cat package',
                 networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
-                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
+                networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'
@@ -173,7 +197,7 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'ant',
                 description : 'ant package',
                 networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
-                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
+                networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'
@@ -191,7 +215,7 @@ RegClient.prototype.get = function (url, options, callback) {
                 name : 'bat',
                 description : 'bat package',
                 networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
-                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
+                networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
                 version : '1.0',
                 dist : {
                     tarball : 'my tar'
@@ -251,7 +275,7 @@ describe('npm routes', () => {
     let app;
 
     // Test against both a released and prerelease version of Composer.
-    ['0.9.0', '0.9.0-20170703172042'].forEach((composerVersion) => {
+    ['0.9.0', '0.9.0-20170703172042', 'testMode'].forEach((composerVersion) => {
 
         describe(`composerVersion[${composerVersion}]`, () => {
 
@@ -261,14 +285,19 @@ describe('npm routes', () => {
                     'composer-common/package.json' : {
                         version : composerVersion
                     },
-                    'npm-registry-client' : RegClient
+                    'npm-registry-client' : RegClient,
+                    'fs' : fs
                 };
 
                 app = express();
 
                 let router = proxyquire('../routes/npm', mock);
 
-                router(app);
+                if (composerVersion === 'testMode') {
+                    testMode = true;
+                }
+
+                router(app, testMode);
 
                 app.listen();
 
@@ -282,14 +311,21 @@ describe('npm routes', () => {
                             res.should.have.status(200);
                             res.should.be.json;
                             res.body.should.be.an('array');
-                            res.body.should.deep.equal([{
-                                name : 'bob',
-                                description : 'bob package',
-                                version : '1.0',
-                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
-                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
-                                tarball : 'my tar'
-                            }]);
+
+                            if (testMode) {
+                                res.body.should.deep.equal([{
+                                    name : 'basic-sample-network'
+                                }]);
+                            } else {
+                                res.body.should.deep.equal([{
+                                    name : 'bob',
+                                    description : 'bob package',
+                                    version : '1.0',
+                                    networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimage.svg',
+                                    networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/bob/networkimageanimated.svg',
+                                    tarball : 'my tar'
+                                }]);
+                            }
                         });
                 });
 
@@ -301,54 +337,71 @@ describe('npm routes', () => {
                             res.should.have.status(200);
                             res.should.be.json;
                             res.body.should.be.an('array');
-                            res.body.should.deep.equal([{
-                                name : 'ant',
-                                description : 'ant package',
-                                version : '1.0',
-                                tarball : 'my tar',
-                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
-                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
-                            }, {
-                                name : 'bat',
-                                description : 'bat package',
-                                version : '1.0',
-                                tarball : 'my tar',
-                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
-                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
-                            }, {
-                                name : 'cat',
-                                description : 'cat package',
-                                version : '1.0',
-                                tarball : 'my tar',
-                                networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
-                                networkImageanimated:  'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
-                            }]);
+
+                            if (testMode) {
+                                res.body.should.deep.equal([{
+                                    name : 'basic-sample-network'
+                                }]);
+                            } else {
+                                res.body.should.deep.equal([{
+                                    name : 'ant',
+                                    description : 'ant package',
+                                    version : '1.0',
+                                    tarball : 'my tar',
+                                    networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimage.svg',
+                                    networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/ant/networkimageanimated.svg',
+                                }, {
+                                    name : 'bat',
+                                    description : 'bat package',
+                                    version : '1.0',
+                                    tarball : 'my tar',
+                                    networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimage.svg',
+                                    networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/bat/networkimageanimated.svg',
+                                }, {
+                                    name : 'cat',
+                                    description : 'cat package',
+                                    version : '1.0',
+                                    tarball : 'my tar',
+                                    networkImage : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimage.svg',
+                                    networkImageanimated : 'https://hyperledger.github.io/composer-sample-networks/packages/cat/networkimageanimated.svg',
+                                }]);
+                            }
                         });
                 });
 
                 it('should handle error in getting list', () => {
-                    forceSearchFail = true;
-                    return chai.request(app)
-                        .get('/api/getSampleList')
-                        .then((res) => {
-                            throw new Error('should not have got here');
-                        })
-                        .catch((err) => {
-                            err.response.body.error.should.equal('some error');
-                        });
+                    //Not a valid test in test mode
+                    if (testMode) {
+                        return true;
+                    } else {
+                        forceSearchFail = true;
+                        return chai.request(app)
+                            .get('/api/getSampleList')
+                            .then((res) => {
+                                throw new Error('should not have got here');
+                            })
+                            .catch((err) => {
+                                err.response.body.error.should.equal('some error');
+                            });
+                    }
                 });
 
                 it('should handle error in getting metaData', () => {
-                    forceMetadataFail = true;
-                    return chai.request(app)
-                        .get('/api/getSampleList')
-                        .query({tarball : 'error'})
-                        .then((res) => {
-                            throw new Error('should not have got here');
-                        })
-                        .catch((err) => {
-                            err.response.body.error.should.equal('some error');
-                        });
+                    //Not a valid test in test mode
+                    if (testMode) {
+                        return true;
+                    } else {
+                        forceMetadataFail = true;
+                        return chai.request(app)
+                            .get('/api/getSampleList')
+                            .query({tarball : 'error'})
+                            .then((res) => {
+                                throw new Error('should not have got here');
+                            })
+                            .catch((err) => {
+                                err.response.body.error.should.equal('some error');
+                            });
+                    }
                 });
             });
 
@@ -369,15 +422,20 @@ describe('npm routes', () => {
                 });
 
                 it('should handle error', () => {
-                    return chai.request(app)
-                        .get('/api/downloadSample')
-                        .query({tarball : 'error'})
-                        .then((res) => {
-                            throw new Error('should not have got here');
-                        })
-                        .catch((err) => {
-                            err.response.body.error.should.equal('some error');
-                        });
+                    //Not a valid test in test mode
+                    if (testMode) {
+                        return true;
+                    } else {
+                        return chai.request(app)
+                            .get('/api/downloadSample')
+                            .query({tarball : 'error'})
+                            .then((res) => {
+                                throw new Error('should not have got here');
+                            })
+                            .catch((err) => {
+                                err.response.body.error.should.equal('some error');
+                            });
+                    }
                 });
             });
         });

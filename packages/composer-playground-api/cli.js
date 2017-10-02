@@ -28,6 +28,11 @@ const argv = require('yargs')
         type: 'number',
         describe: 'The port to start the connector server on'
     })
+    .option('t', {
+        alias: 'test',
+        demand: false,
+        default: false
+    })
     .argv;
 
 const Logger = require('composer-common').Logger;
@@ -68,7 +73,7 @@ Logger.setFunctionalLogger({
 const method = 'main';
 LOG.entry(method);
 
-const app = require('.')(argv.port);
+const app = require('.')(argv.port, argv.test);
 
 if (process.env.COMPOSER_CONFIG) {
     const config = JSON.parse(process.env.COMPOSER_CONFIG);

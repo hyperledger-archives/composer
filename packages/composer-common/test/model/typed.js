@@ -65,4 +65,38 @@ describe('Typed', () => {
 
     });
 
+    describe('#assignFieldDefaults', () => {
+
+        const defaultValues = {
+            'Boolean': true,
+            'String': 'foobar',
+            'DateTime': '2017-09-26T22:35:53.871Z',
+            'Double': 3.142,
+            'Integer': 32768,
+            'Long': 10485760
+        };
+
+        Object.keys(defaultValues).forEach((defaultValueType) => {
+
+            it(`should assign the default value for primitive type ${defaultValueType}`, () => {
+                const defaultValue = defaultValues[defaultValueType];
+                modelManager.addModelFile(`
+                namespace org.acme.defaults
+                asset DefaultAsset identified by assetId {
+                    o String assetId
+                    o ${defaultValueType} value default=${JSON.stringify(defaultValue)}
+                }`);
+                const typed = new Typed(modelManager, 'org.acme.defaults', 'DefaultAsset');
+                typed.assignFieldDefaults();
+                if (typed.value instanceof Date) {
+                    typed.value.toISOString().should.equal(defaultValue);
+                } else {
+                    typed.value.should.equal(defaultValue);
+                }
+            });
+
+        });
+
+    });
+
 });

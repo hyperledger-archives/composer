@@ -64,8 +64,8 @@ if (interactive) {
             const composer = {
                 connectionProfileName: answers.connectionProfileName,
                 businessNetworkIdentifier: answers.businessNetworkName,
-                participantId: answers.enrollementId,
-                participantPwd: answers.enrollementSecret,
+                participantId: answers.enrollmentId,
+                participantPwd: answers.enrollmentSecret,
                 namespaces: answers.namespaces,
                 authentication: answers.authentication,
                 multiuser: answers.multiuser,

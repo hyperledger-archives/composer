@@ -154,6 +154,10 @@ describe('ModelUtil', function () {
         it('should return false for a non-matching recursive wildcard', () => {
             ModelUtil.isMatchingType(type, 'org.ac.**').should.be.false;
         });
+
+        it('should return true for a root recursive wildcard match', () => {
+            ModelUtil.isMatchingType(type, '**').should.be.true;
+        });
     });
 
     describe('#getNamespace', function() {
