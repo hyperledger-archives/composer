@@ -82,6 +82,8 @@ class ModelUtil {
             // matching namespace
         } else if (ModelUtil.isRecursiveWildcardName(fqn) && (typeNS + '.').startsWith(ns + '.')) {
             // matching recursive namespace
+        } else if (ModelUtil.isRecursiveWildcardName(fqn) && !ns) {
+            // matching root recursive namespace
         } else {
             // does not match
             return false;
