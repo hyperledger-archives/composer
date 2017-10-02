@@ -2153,6 +2153,39 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should submit an invoke request to the chaincode - with the options giving the txid', () => {
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            let options = {transactionId : mockTransactionID};
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'],options)
+                .then((result) => {
+                    should.equal(result, undefined);
+                    sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+                    sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
+                        chaincodeId: 'org-acme-biznet',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        txId: mockTransactionID,
+                        fcn: 'myfunc',
+                        args: ['arg1', 'arg2']
+                    });
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+
         it('should throw if transaction proposals were not valid', () => {
             const proposalResponses = [];
             const proposal = { proposal: 'i do' };
