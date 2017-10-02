@@ -262,6 +262,12 @@ To test the _Trade_ transaction:
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
 </video>
 
+## Logging out of the business network
+
+Now that transactions have successfully run, we should log out of the business network, ending up at the **My Wallet** screen where we started.
+
+1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **Log Out**.
+
 ## What next?
 
 You've completed the initial {{site.data.conrefs.composer_full}} Playground tutorial, you might want to either begin building your own business network using our other samples or templates.
