@@ -317,13 +317,11 @@ class BusinessNetworkConnector extends Connector {
                                 return [ this.serializer.toJSON(result) ];
                             });
                     } else {
-                        // if(!filter.where[identifierField]){
                         const queryString = FilterParser.parseFilter(filter, composerModelName);
                         const query = networkConnection.buildQuery(queryString);
                         if(typeof query === 'undefined'|| query === null) {
                             throw new Error('The specified filter:' + keys[0] + ' does not match the identifier or any property in the model');
                         }
-                        // }
                         return networkConnection.query(query, {})
                         .then((result) => {
                             debug('Got Result:', result);
