@@ -6,6 +6,11 @@ markdown: 0
 <div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
+        <form action="{{ site.baseurl }}/search.html" method="get">
+          <label for="search-box">Search</label>
+          <input type="text" id="search-box" name="query">
+          <input type="submit" value="search">
+        </form>
         {% if page.sidebar %}
         <div class="page-sidebar-grid" id="off-canvas">
           <!-- <a class="toggle close" href="#">close</a> -->
