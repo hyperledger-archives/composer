@@ -302,8 +302,6 @@ class BusinessNetworkConnector extends Connector {
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
 
-                    // when an id is specified in the filter where and
-
                     // Check if the filter is a simple ID query
                     let objectId = filter.where[identifierField];
 
@@ -311,6 +309,11 @@ class BusinessNetworkConnector extends Connector {
                         if(typeof objectId === 'undefined'|| objectId === null) {
                             throw new Error('The filter field value is not specified');
                         }
+                        // ensure only support the id field
+                        if( nKeys !== 1 ){
+                            throw new Error('Only one id field should be supported here');
+                        }
+
                         return registry.resolve(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);

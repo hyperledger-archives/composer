@@ -640,6 +640,17 @@ describe('BusinessNetworkConnector', () => {
             }).should.be.rejectedWith(/The filter field value is not specified/);
         });
 
+        it('should handle an error when trying to retrieve a fully resolved specific Asset for a given existing id and another property in a where clause', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId', 'theOtherValue':'anything'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/Only one id field should be supported here/);
+        });
+
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
             mockAssetRegistry.get.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
