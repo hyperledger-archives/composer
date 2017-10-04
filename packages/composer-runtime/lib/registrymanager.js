@@ -51,7 +51,7 @@ class RegistryManager extends EventEmitter {
      * @param {DataCollection} sysregistries The system registries collection to use.
      * @param {Factory} factory The factory to create new resources
      */
-    constructor (dataService, introspector, serializer, accessController, sysregistries, factory) {
+    constructor(dataService, introspector, serializer, accessController, sysregistries, factory) {
         super();
         this.dataService = dataService;
         this.introspector = introspector;
@@ -75,7 +75,7 @@ class RegistryManager extends EventEmitter {
      * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Registry} The new registry instance.
      */
-    createRegistry (dataCollection, serializer, accessController, type, id, name, system) {
+    createRegistry(dataCollection, serializer, accessController, type, id, name, system) {
         let registry = new Registry(dataCollection, serializer, accessController, type, id, name, system);
         ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
             registry.on(event, (data) => {
@@ -91,7 +91,7 @@ class RegistryManager extends EventEmitter {
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
-    createDefaults (force) {
+    createDefaults(force) {
         return this.createSystemDefaults(force).then(() => {
             return this.createNetworkDefaults(force);
         });
@@ -103,7 +103,7 @@ class RegistryManager extends EventEmitter {
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
-    createNetworkDefaults (force) {
+    createNetworkDefaults(force) {
         const method = 'createNetworkDefaults';
         LOG.entry(method, force);
 
@@ -115,21 +115,21 @@ class RegistryManager extends EventEmitter {
                 return (classDeclaration instanceof AssetDeclaration) || (classDeclaration instanceof ParticipantDeclaration) || (classDeclaration instanceof TransactionDeclaration);
             })
             .filter((classDeclaration) => {
-                //return !(classDeclaration.isSystemType() && VIRTUAL_TYPES.indexOf(classDeclaration.getName()) > -1);
                 return !(classDeclaration.isSystemType());
             })
             .reduce((promise, classDeclaration) => {
                 return promise.then(() => {
                     const type = classDeclaration.getSystemType();
                     const fqn = classDeclaration.getFullyQualifiedName();
-                    const systemType = classDeclaration.isSystemType();
-                    // console.log('Creating registry', type, fqn, systemType);
-                    LOG.debug(method, 'Creating registry', type, fqn, systemType);
+                    LOG.debug(method, 'Creating registry', type, fqn);
                     if (force) {
-                        return this.add(type, fqn, `${type} registry for ${fqn}`, true, systemType);
+                        return this.add(type, fqn, `${type} registry for ${fqn}`, true);
                     } else {
-                        return this.ensure(type, fqn, `${type} registry for ${fqn}`, systemType);
+                        return this.ensure(type, fqn, `${type} registry for ${fqn}`);
                     }
+                }).then((result) => {
+                    // we need to cache these as the network registries will cause entries to appear here
+                    this.sysregistryCache[result.type + ':' + result.id] = result;
                 });
             }, Promise.resolve())
             .then(() => {
@@ -143,7 +143,7 @@ class RegistryManager extends EventEmitter {
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
-    createSystemDefaults (force) {
+    createSystemDefaults(force) {
         const method = 'createSystemDefaults';
         LOG.entry(method, force);
         this.dirty = true;
@@ -186,7 +186,7 @@ class RegistryManager extends EventEmitter {
      * @return {Promise} A promise that is resolved with an array of {@link Registry}
      * objects when complete, or rejected with an error.
      */
-    getAll (type, includeSystem) {
+    getAll(type, includeSystem) {
         const method = 'getAll';
         includeSystem = includeSystem || false;
         LOG.entry(method, type);
@@ -232,11 +232,18 @@ class RegistryManager extends EventEmitter {
      * @return {Promise} A promise that is resolved with a {@link Registry}
      * objects when complete, or rejected with an error.
      */
-    get (type, id) {
+    get(type, id) {
         let collectionID = type + ':' + id;
         let resource;
         let simpledata;
         LOG.entry('get', collectionID);
+
+        // During business network start/update, new registries may be created. Unfortunately we can't directly
+        // read them, so we look them up in the registry cache instead.
+        let registry = this.sysregistryCache[collectionID];
+        if (registry) {
+            return Promise.resolve(registry);
+        }
 
         // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
         return this.sysregistries.get(collectionID)
@@ -266,7 +273,7 @@ class RegistryManager extends EventEmitter {
      * @return {Promise} A promise that is resolved with a boolean indicating
      * whether the registry exists.
      */
-    exists (type, id) {
+    exists(type, id) {
         let collectionID = type + ':' + id;
         let resource;
 
@@ -319,7 +326,7 @@ class RegistryManager extends EventEmitter {
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
      */
-    add (type, id, name, force, system) {
+    add(type, id, name, force, system) {
         let collectionID = type + ':' + id;
 
         // form this up into a resource and check if we are able to create this.
@@ -380,7 +387,7 @@ class RegistryManager extends EventEmitter {
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.Registry
      */
-    ensure (type, id, name, system) {
+    ensure(type, id, name, system) {
         const method = 'ensure';
         LOG.entry(method, type, id, name, system);
         return this.get(type, id)
