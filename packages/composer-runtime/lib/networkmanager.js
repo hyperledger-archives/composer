@@ -37,10 +37,28 @@ class NetworkManager extends TransactionHandler {
 
         LOG.info('<ResourceManager>', 'Binding in the tx names and impl');
         this.bind(
+            'org.hyperledger.composer.system.StartBusinessNetwork',
+            this.startBusinessNetwork
+        );
+        this.bind(
             'org.hyperledger.composer.system.UpdateBusinessNetwork',
             this.updateBusinessNetwork
         );
 
+    }
+
+    /**
+     * Start the business network archive.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    startBusinessNetwork(api, transaction) {
+        const method = 'startBusinessNetwork';
+        LOG.entry(method, transaction);
+        LOG.exit(method);
+        return Promise.resolve();
     }
 
     /**
