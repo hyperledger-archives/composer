@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Querying and Filtering Business Network Data
+title: Using Filters and Queries with Business Network Data
 category: tasks
 section: business-network
 index-order: 507
@@ -14,9 +14,9 @@ Queries are used to return data about the blockchain world-state; for example, y
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0 embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
+Note: When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
 
-Filters are similar to queries, but use the LoopBack filter syntax, and must be sent using the {{site.data.conrefs.composer_full}} REST API. Currently, only the `WHERE` LoopBack filter is supported. The supported operators within `WHERE` are: **=**, **and**, **or**, **gt**, **gte**, **lt**, **lte**, **between**, **neq**. Filters are submitted using a `GET` call against an asset type or participant type, the filter is then supplied as a parameter. Filters return the results from the specified class, and will not return results from classes extending the specified class.
+Filters are similar to queries, but use the LoopBack filter syntax, and can only be sent using the {{site.data.conrefs.composer_full}} REST API. Currently, only the `WHERE` LoopBack filter is supported. The supported operators within `WHERE` are: **=**, **and**, **or**, **gt**, **gte**, **lt**, **lte**, **between**, **neq**. Filters are submitted using a `GET` call against an asset type, participant type, or transaction type; the filter is then supplied as a parameter. Filters return the results from the specified class, and will not return results from classes extending the specified class.
 
 ## Types of Queries
 
@@ -75,11 +75,18 @@ For example, if the current user sends a query that would return all assets, if 
 
 ## Using filters
 
-Filters can be submitted using the {{site.data.conrefs.composer_full}} REST API, and must use the [LoopBack syntax](https://loopback.io/doc/en/lb2/Where-filter.html). To submit a query, a **GET** REST call must be submitted against an asset type or participant type, with the filter supplied as a parameter.
+Filters can only be submitted using the {{site.data.conrefs.composer_full}} REST API, and must use the [LoopBack syntax](https://loopback.io/doc/en/lb2/Where-filter.html). To submit a query, a **GET** REST call must be submitted against an asset type, participant type, or transaction type with the filter supplied as a parameter. The supported data types for parameters to be filtered are _numbers_, _Boolean_, _DateTime_, and _strings_.
 
+*Please note*: Only the top level `WHERE` operator can have more than two operands.
 
 Currently, only the `WHERE` LoopBack filter is supported. The supported operators within `WHERE` are: **=**, **and**, **or**, **gt**, **gte**, **lt**, **lte**, **between**, **neq**. Filters can combine multiple operators, in the following example, an **and** operator is nested within an **or** operator.
 
 ```
-{"where":{"or":[{"and":[{"field1":"foo"},{"field2": "bar"}]},{"field3":"foobar"}]}}
+{"where":{"or":[{"and":[{"field1":"foo"},{"field2":"bar"}]},{"field3":"foobar"}]}}
+```
+
+The **between** operator returns values between the given range. It accepts numbers, datetime values, and strings. If supplied with strings, the **between** operator returns results between the supplied strings alphabetically. In the example below, the filter will return all resources where the driver property is alphabetically between _a_ and _c_, inclusively.
+
+```
+{"where":{"driver":{"between": ["a","c"]}}}
 ```
