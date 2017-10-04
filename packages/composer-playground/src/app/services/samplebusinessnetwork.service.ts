@@ -21,7 +21,7 @@ export class SampleBusinessNetworkService {
         return new BusinessNetworkDefinition(name, description, packageJson, readme);
     }
 
-    public getSampleList() {
+    public getSampleList(): Promise<any> {
         return this.http.get(PLAYGROUND_API + '/api/getSampleList')
             .toPromise()
             .then((response) => {
@@ -54,7 +54,7 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string): Promise<void> {
+    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string): Promise<string> {
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = networkName;
         packageJson.description = networkDescription;
@@ -69,7 +69,8 @@ export class SampleBusinessNetworkService {
         return this.adminService.connectWithoutNetwork(true)
             .then(() => {
                 this.alertService.busyStatus$.next({
-                    title: 'Installing Business Network'
+                    title: 'Installing Business Network',
+                    force: true
                 });
                 return this.adminService.install(newNetwork.getName());
             })
@@ -85,7 +86,8 @@ export class SampleBusinessNetworkService {
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
-                    title: 'Starting Business Network'
+                    title: 'Starting Business Network',
+                    force: true
                 });
 
                 return this.adminService.start(newNetwork);
@@ -99,8 +101,9 @@ export class SampleBusinessNetworkService {
             .then(() => {
                 return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
             })
-            .then(() => {
+            .then((cardRef: string) => {
                 this.alertService.busyStatus$.next(null);
+                return cardRef;
             })
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
