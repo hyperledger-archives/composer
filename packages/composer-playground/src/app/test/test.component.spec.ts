@@ -298,15 +298,11 @@ describe('TestComponent', () => {
             mockAlertService.successStatus$ = {next: sinon.stub()};
             mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
-            component['chosenRegistry'] = 'assetRegistry';
-            component['registries']['historian'] = 'historianRegistry';
-
             component.submitTransaction();
 
             tick();
 
-            component['chosenRegistry'].should.equal('historianRegistry');
-            component['registryReload'].should.equal(false);
+            component['registryReload'].should.equal(true);
 
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'Submit Transaction Successful',
@@ -323,15 +319,11 @@ describe('TestComponent', () => {
             mockAlertService.successStatus$ = {next: sinon.stub()};
             mockModal.open.returns({result: Promise.resolve(mockTransaction)});
 
-            component['chosenRegistry'] = 'assetRegistry';
-            component['registries']['historian'] = 'historianRegistry';
-
             component.submitTransaction();
 
             tick();
 
-            component['chosenRegistry'].should.equal('historianRegistry');
-            component['registryReload'].should.equal(false);
+            component['registryReload'].should.equal(true);
 
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'Submit Transaction Successful',
@@ -339,29 +331,6 @@ describe('TestComponent', () => {
                 icon: '#icon-transaction',
                 link: '1 event triggered',
                 linkCallback: sinon.match.func
-            });
-        }));
-
-        it('should update historian registry view', fakeAsync(() => {
-            mockAlertService.successStatus$ = {next: sinon.stub()};
-            mockModal.open.returns({result: Promise.resolve(mockTransaction)});
-
-            component['registries']['historian'] = 'historianRegistry';
-            component['chosenRegistry'] = 'historianRegistry';
-
-            component.submitTransaction();
-
-            tick();
-
-            component['chosenRegistry'].should.equal('historianRegistry');
-            component['registryReload'].should.equal(true);
-
-            mockAlertService.successStatus$.next.should.have.been.calledWith({
-                title: 'Submit Transaction Successful',
-                text: '<p>Transaction ID <b>1</b> was submitted</p>',
-                icon: '#icon-transaction',
-                link: null,
-                linkCallback: null
             });
         }));
     });
