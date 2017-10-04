@@ -123,6 +123,18 @@
             }
         }
 
+        .sample-section {
+            text-align: center;
+
+            .sample-icon {
+                padding-top: $space-medium;
+                svg {
+                    height: 70px;
+                    width: 70px;
+                }
+            }
+        }
+
         .actions {
             display: flex;
             justify-content: center;

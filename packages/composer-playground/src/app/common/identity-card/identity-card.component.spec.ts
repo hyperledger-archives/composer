@@ -1,3 +1,7 @@
+/* tslint:disable:no-unused-variable */
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -50,6 +54,25 @@ describe(`IdentityCardComponent`, () => {
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.connect'));
             button.nativeElement.click();
+        });
+    });
+
+    describe('deploySample', () => {
+        it('should emit the deploy sample event', (done) => {
+            let deploySampleSpy = sinon.spy(component, 'deploySample');
+            let deployEventSpy = sinon.spy(component.onDeploySample, 'emit');
+
+            component.onDeploySample.subscribe((data) => {
+                should.not.exist(data);
+                done();
+            });
+
+            fixture.detectChanges();
+            let button = fixture.debugElement.query(By.css('button.connect'));
+            button.nativeElement.click();
+
+            deploySampleSpy.should.have.been.called;
+            deployEventSpy.should.have.been.called;
         });
     });
 

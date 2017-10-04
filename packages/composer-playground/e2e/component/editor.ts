@@ -1,6 +1,7 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
+import { Constants } from '../utils/constants';
 
 let scrollMe = (target) => {
     target.scrollIntoView(true);
@@ -10,7 +11,7 @@ export class Editor {
 
   // Wait to appear
   static waitToAppear() {
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.main-view'))), 5000);
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.main-view'))), Constants.shortWait);
   }
 
   // Click AddFile button
@@ -72,7 +73,7 @@ export class Editor {
   static retrieveNavigatorActiveFiles() {
     return OperationsHelper.retriveMatchingElementsByCSS('.files', '.active', 0)
     .map((elm) => { browser.executeScript(scrollMe, elm);
-                    browser.wait(ExpectedConditions.visibilityOf(elm), 5000);
+                    browser.wait(ExpectedConditions.visibilityOf(elm), Constants.shortWait);
                     return elm.getText(); });
   }
 
