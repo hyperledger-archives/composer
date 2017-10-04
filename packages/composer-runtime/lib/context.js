@@ -870,6 +870,15 @@ class Context {
     }
 
     /**
+     * Clear the current transaction.
+     */
+    clearTransaction() {
+        this.transaction = null;
+        this.transactionLogger = null;
+        this.getAccessController().setTransaction(null);
+    }
+
+    /**
      * Get the access controller.
      * @return {AccessController} The access controller.
      */

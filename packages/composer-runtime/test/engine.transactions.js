@@ -149,6 +149,9 @@ describe('EngineTransactions', () => {
                     mockTransactionHandler1.execute.args[0][1].should.equal(mockResolvedTransaction);
                     sinon.assert.calledOnce(mockRegistry.add);
                     sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                    sinon.assert.calledOnce(mockContext.setTransaction);
+                    sinon.assert.calledWith(mockContext.setTransaction, mockTransaction);
+                    sinon.assert.calledOnce(mockContext.clearTransaction);
                 });
         });
 
@@ -177,6 +180,9 @@ describe('EngineTransactions', () => {
                     mockCompiledScriptBundle.execute.args[0][1].should.equal(mockResolvedTransaction);
                     sinon.assert.calledOnce(mockRegistry.add);
                     sinon.assert.calledWith(mockRegistry.add, mockTransaction);
+                    sinon.assert.calledOnce(mockContext.setTransaction);
+                    sinon.assert.calledWith(mockContext.setTransaction, mockTransaction);
+                    sinon.assert.calledOnce(mockContext.clearTransaction);
                 });
         });
 
@@ -220,7 +226,7 @@ describe('EngineTransactions', () => {
                 });
         });
 
-        it('Historian no events', () => {
+        it('should execute the transaction using a system handler (historian no events)', () => {
             mockTransactionHandler1.execute.resolves(1);
             mockParticipant.getIdentifier.returns('fred');
 

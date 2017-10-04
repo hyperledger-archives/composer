@@ -412,7 +412,7 @@ describe('Context', () => {
                 promises[0].should.be.rejectedWith(/such error/);
                 promises[1].should.be.rejectedWith(/such error/);
                 promises[2].should.be.rejectedWith(/such error/);
-    });
+            });
 
         });
 
@@ -1082,6 +1082,24 @@ describe('Context', () => {
             (() => {
                 context.setTransaction(mockTransaction);
             }).should.throw(/A current transaction has already been specified/);
+        });
+
+    });
+
+    describe('#clearTransaction', () => {
+
+        it('should clear the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockTransactionLogger = sinon.createStubInstance(TransactionLogger);
+            context.transaction = mockTransaction;
+            context.transactionLogger = mockTransactionLogger;
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.clearTransaction();
+            should.equal(context.transaction, null);
+            should.equal(context.transactionLogger, null);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, null);
         });
 
     });
