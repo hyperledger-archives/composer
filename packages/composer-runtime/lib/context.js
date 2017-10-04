@@ -361,7 +361,6 @@ class Context {
 
                 }
 
-
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);
 
@@ -564,24 +563,30 @@ class Context {
                 }
             })
             .then(() => {
-                if (options.function !== 'init') {
-                    LOG.debug(method, 'Loading current participant');
-                    return this.loadCurrentParticipant();
-                } else {
+                if (options.function === 'init') {
                     // No point loading the participant as no participants exist!
                     LOG.debug(method, 'Not loading current participant as processing deployment');
                     return null;
+                } else if (options.reinitialize) {
+                    // We don't want to change the participant in the middle of a update.
+                    LOG.debug(method, 'Reinitializing, not loading current participant');
+                    return null;
+                } else {
+                    LOG.debug(method, 'Loading current participant');
+                    return this.loadCurrentParticipant();
                 }
             })
             .then((participant) => {
-                if (!options.reinitialize) {
+                if (participant) {
                     LOG.debug(method, 'Setting current participant', participant);
                     this.setParticipant(participant);
                 } else {
                     // We don't want to change the participant in the middle of a update.
-                    LOG.debug(method, 'Reinitializing, not setting current participant', participant);
-                    // but other things that are dependant on data in the business network
-                    // definition do need to be reset
+                    LOG.debug(method, 'Deploying or reinitializing, not setting current participant');
+                }
+                if (options.reinitialize) {
+                    // If we are reinitializing, things that are dependant on data in the
+                    // business network definition do need to be reset
                     // TODO: Concerned about data migration when the model is changed.
                     this.registryManager = null;
                     this.resolver = null;
