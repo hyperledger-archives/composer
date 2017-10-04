@@ -175,6 +175,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         count.should.equal(0);
                     });
             });
+            it('should count all of the participants using the other peroperty', () => {
+                return app.models[prefix + 'Issuer'].count({ name: 'Bob' })
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+            it('should count all of the participants using the and|or operator', () => {
+                return app.models[prefix + 'Issuer'].count({'or':[{name: 'Bob'}, {name: 'Alice'}]})
+                    .then((count) => {
+                        count.should.equal(2);
+                    });
+            });
 
         });
 
