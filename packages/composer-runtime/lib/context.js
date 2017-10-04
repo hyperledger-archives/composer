@@ -24,7 +24,6 @@ const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
-const NetworkManager = require('./networkmanager');
 const Resolver = require('./resolver');
 const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
@@ -803,6 +802,7 @@ class Context {
      */
     getNetworkManager() {
         if (!this.networkManager) {
+            const NetworkManager = require('./networkmanager');
             this.networkManager = new NetworkManager(this);
         }
         return this.networkManager;

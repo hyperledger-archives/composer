@@ -14,13 +14,13 @@
 
 'use strict';
 
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Context = require('./context');
+const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const TransactionHandler = require('./transactionhandler');
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+
 const LOG = Logger.getLog('IdentityManager');
-const createHash = require('sha.js');
-
-
 
 /**
  * A class for managing networks.
@@ -51,16 +51,8 @@ class NetworkManager extends TransactionHandler {
      * with an error.
      */
     updateBusinessNetwork(api, transaction) {
-
         const method = 'updateBusinessNetwork';
         LOG.entry(method, transaction);
-
-        const Context = require('./context');
-        // if (args.length !== 1) {
-        //     LOG.error(method, 'Invalid arguments', args);
-        //     throw new Error('Inavblid arguements');
-        //     //util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive'])
-        // }
         let dataService = this.context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
