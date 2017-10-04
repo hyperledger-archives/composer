@@ -5,8 +5,6 @@ import { ConfigService } from '../config.service';
 import { ConnectionProfileStore } from 'composer-common';
 import { PlaygroundConnectionProfileStore } from './playgroundconnectionprofilestore';
 import { BrowserConnectionProfileStore } from './browserconnectionprofilestore';
-/* tslint:disable:no-var-requires */
-const fs = require('fs');
 
 @Injectable()
 export class ConnectionProfileStoreService {

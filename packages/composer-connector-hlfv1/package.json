@@ -45,6 +45,7 @@
     "fabric-ca-client": "^1.0.1",
     "fabric-client": "^1.0.1",
     "fs-extra": "^1.0.0",
+	"grpc": "1.6.0",
     "semver": "^5.3.0",
     "temp": "^0.8.3",
     "thenify-all": "^1.6.0",

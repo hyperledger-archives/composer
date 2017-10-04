@@ -3,8 +3,6 @@ import { BrowserConnectionProfileStore } from './browserconnectionprofilestore';
 /* tslint:disable:no-var-requires */
 const ProxyConnectionProfileStore = require('composer-connector-proxy').ProxyConnectionProfileStore;
 
-const fs = require('fs');
-
 /**
  * The playground connection profile store provides a combined view over a connection
  * profile store persisted in the web browser (for web connection profiles) and a

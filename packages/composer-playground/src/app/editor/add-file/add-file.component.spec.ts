@@ -23,8 +23,6 @@ import * as sinon from 'sinon';
 
 import { expect } from 'chai';
 
-const fs = require('fs');
-
 class MockAdminService {
     ensureConnection(): Promise<any> {
         return new Promise((resolve, reject) => {
