@@ -22,10 +22,6 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
 import 'jquery';
-// Bootstrap v4 currently requires window.Tether to exist.
-import * as Tether from 'tether';
-(<any> window).Tether = Tether;
-import 'bootstrap';
 
 if ('production' === ENV) {
     // Production
