@@ -300,7 +300,7 @@ module.exports = (app, testMode) => {
 
 
         if (testMode) {
-            let readStream = fs.createReadStream('basic-sample-network-0.1.9.tgz');
+            let readStream = fs.createReadStream(__dirname + '/../basic-sample-network-0.1.9.tgz');
 
             return downloadSample(readStream, res);
         }

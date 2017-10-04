@@ -49,4 +49,10 @@ out
 
 # Ignore temporary built installers.
 installers/*/install.sh
+<<<<<<< 4b6e003898216b4b101ca9793443d0072efd85a6
 jekylldocs/install*.sh
+=======
+jekylldocs/install*.sh
+jsondata/**
+jekylldocs/api-doc-inline/**/*
+>>>>>>> updates for unittests

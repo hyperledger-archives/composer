@@ -61,7 +61,7 @@ describe('JavascriptParser', () => {
             `;
 
             const parser = new JavascriptParser(contents);
-            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [] }]);
+            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [],commentData:[] }]);
         });
     });
 

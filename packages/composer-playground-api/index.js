@@ -35,7 +35,7 @@ const LOG = Logger.getLog('PlaygroundAPI');
  */
 function createServer (port, testMode) {
     const method = 'createServer';
-    LOG.entry(method, port);
+    LOG.entry(method, port, testMode);
 
     const app = Util.createApp();
 
@@ -59,6 +59,9 @@ function createServer (port, testMode) {
 
     server.listen(port);
     LOG.info(method, `Playground API started on port ${port}`);
+    if(testMode) {
+        LOG.info(method, 'Playground API started in test mode');
+    }
 
     LOG.exit(method, app);
     return app;
