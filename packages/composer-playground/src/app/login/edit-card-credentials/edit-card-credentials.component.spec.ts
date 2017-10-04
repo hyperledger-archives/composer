@@ -455,6 +455,20 @@ describe('EditCardCredentialsComponent', () => {
         });
     });
 
+    describe('#fileDetected', () => {
+        it('should change this.expandInput to true', () => {
+            component.fileDetected();
+            component.expandInput.should.equal(true);
+        });
+    });
+
+    describe('#fileLeft', () => {
+        it('should change this.expectedInput to false', () => {
+            component.fileLeft();
+            component.expandInput.should.equal(false);
+        });
+    });
+
     describe('#getDataBuffer', () => {
         let file;
         let mockFileReadObj;
@@ -507,7 +521,7 @@ describe('EditCardCredentialsComponent', () => {
         });
     });
 
-    fdescribe('#fileAccepted', () => {
+    describe('#fileAccepted', () => {
         it('should only accept PEM (.pem) files', fakeAsync(() => {
             let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
             let file = new File([b], 'certificate.pem');
@@ -516,30 +530,55 @@ describe('EditCardCredentialsComponent', () => {
             tick();
         }));
 
-        fit('should detect if the file is a certificate', fakeAsync(() => {
-            component['certType'] = 'C';
+        it('should detect if the file is a certificate', fakeAsync(() => {
+            component['certType'] = '-----BEGIN CERTIFICATE-----';
 
             let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
             let file = new File([b], 'certificate.pem');
 
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('-----BEGIN CERTIFICATE-----'));
+
+            let formatSpy = sinon.spy(component, 'setPublicCert');
+
             component.fileAccepted(file);
             tick();
 
-            // component['certFile'].should.be.equal('my formatted cert');
-            component['addedPublicCertificate'].should.equal('-----BEGIN CERTIFICATE-----');
+            formatSpy.called;
         }));
 
         it('should detect if the file is a private key', fakeAsync(() => {
-            component['certType'] = 'P';
+            component['certType'] = '-----BEGIN PRIVATE KEY-----';
 
             let b = new Blob(['-----BEGIN PRIVATE-----'], {type: 'text/plain'});
             let file = new File([b], 'privateKey.pem');
 
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('-----BEGIN PRIVATE KEY-----'));
+
+            let formatSpy = sinon.spy(component, 'setPrivateCert');
+
             component.fileAccepted(file);
             tick();
 
-            component['privateFile'].should.be.equal('-----BEGIN PRIVATE-----');
-            component['addedPrivateCertificate'].should.be.equal('-----BEGIN PRIVATE-----');
+            formatSpy.called;
+        }));
+
+        it('should detect if .pem file contents are not of the correct format', fakeAsync(() => {
+            component['certType'] = 'x';
+
+            let b = new Blob(['bad cert format'], {type: 'text/plain'});
+            let file = new File([b], 'privateKey.pem');
+
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('bad cert format'));
+
+            let formatSpy = sinon.spy(component, 'setPrivateCert');
+
+            component.fileAccepted(file);
+            tick();
+
+            formatSpy.called;
         }));
 
         it('should reject any file that is not a PEM file', fakeAsync(() => {
@@ -555,6 +594,20 @@ describe('EditCardCredentialsComponent', () => {
 
             createMock.calledWith('Unexpected File Type: png');
         }));
+    });
+
+    describe('#setPublicCert', () => {
+        it('should set the public certificate', () => {
+            component.setPublicCert('-----BEGIN CERTIFICATE-----');
+            component['addedPublicCertificate'].should.equal('-----BEGIN CERTIFICATE-----');
+        });
+    });
+
+    describe('#setPrivateCert', () => {
+        it('should set the private certificate', () => {
+            component.setPrivateCert('-----BEGIN PRIVATE KEY-----');
+            component['addedPrivateCertificate'].should.equal('-----BEGIN PRIVATE KEY-----');
+        });
     });
 
     describe('#fileRejected', () => {

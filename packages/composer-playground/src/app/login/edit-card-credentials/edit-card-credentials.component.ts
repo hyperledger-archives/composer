@@ -16,6 +16,8 @@ export class EditCardCredentialsComponent {
     maxFileSize: number = 5242880;
     supportedFileTypes: string[] = ['.pem'];
 
+    expandInput: boolean = false;
+
     private userId: string = null;
     private userSecret: string = null;
     private busNetName: string = null;
@@ -157,32 +159,50 @@ export class EditCardCredentialsComponent {
         });
     }
 
+    fileDetected() {
+        this.expandInput = true;
+    }
+
+    fileLeft() {
+        this.expandInput = false;
+    }
+
     fileAccepted(file: File) {
         this.fileType = file.name.substr(file.name.lastIndexOf('.') + 1);
         this.getDataBuffer(file)
         .then((data) => {
             switch (this.fileType) {
                 case 'pem':
-                    this.certType = data.toString().charAt(11);
-                    if (this.certType === 'C') {
-                        this.certFile = this.formatCert(data.toString());
-                        console.log('*&*&*&&*&', this.certFile);
-                        this.addedPublicCertificate = this.certFile;
-                    } else if (this.certType === 'P') {
-                        this.privateFile = this.formatCert(data.toString());
-                        this.addedPrivateCertificate = this.privateFile;
+                    this.expandInput = true;
+                    this.certType = data.toString().substring(0, 27);
+                    if (this.certType === '-----BEGIN CERTIFICATE-----') {
+                        this.setPublicCert(data.toString());
+                    } else if (this.certType === '-----BEGIN PRIVATE KEY-----') {
+                        this.setPrivateCert(data.toString());
+                    } else {
+                        throw new Error('Certificate content in unexpected format.');
                     }
                     break;
                 default:
                     throw new Error('Unexpected file type: ' + this.fileType);
             }
+            this.expandInput = false;
         })
         .catch((err) => {
             this.fileRejected(err);
         });
     }
 
+    setPublicCert(cert: string) {
+        this.addedPublicCertificate = this.formatCert(cert);
+    }
+
+    setPrivateCert(cert: string) {
+        this.addedPrivateCertificate = this.formatCert(cert);
+    }
+
     fileRejected(reason: string) {
+        this.expandInput = false;
         this.alertService.errorStatus$.next(reason);
     }
 
