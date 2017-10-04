@@ -151,7 +151,7 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(modelBase);
-            }).should.throw(/namespace already exists/);
+            }).should.throw();
         });
 
         it('should return error for duplicate namespaces from an object', () => {
@@ -160,7 +160,7 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(mf1);
-            }).should.throw(/namespace already exists/);
+            }).should.throw();
         });
 
     });
@@ -270,7 +270,7 @@ describe('ModelManager', () => {
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
                 modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw();
         });
 
         it('should return an error for duplicate namespace from objects', () => {
@@ -281,7 +281,7 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([mf1,mf2]);
             (() => {
                 modelManager.addModelFiles([mf1]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw();
         });
 
     });
