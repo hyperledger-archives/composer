@@ -684,4 +684,50 @@ describe('RegistryManager', () => {
 
     });
 
+    describe('#clear', () => {
+
+        it('should clear an existing registry', () => {
+            mockDataService.deleteCollection.withArgs('Asset:doges').resolves();
+            return registryManager.clear('Asset', 'doges')
+                .then(() => {
+                    sinon.assert.calledOnce(mockDataService.deleteCollection);
+                    sinon.assert.calledWith(mockDataService.deleteCollection, 'Asset:doges');
+                });
+        });
+
+    });
+
+    describe('#remove', () => {
+
+        beforeEach(() => {
+            sinon.stub(registryManager, 'clear').resolves();
+        });
+
+        it('should clear and remove an existing registry', () => {
+            const mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(registryManager, 'get').withArgs('Asset', 'org.hyperledger.composer.system.AssetRegistry').resolves(mockRegistry);
+            return registryManager.remove('Asset', 'doges')
+                .then(() => {
+                    sinon.assert.calledOnce(registryManager.clear);
+                    sinon.assert.calledWith(registryManager.clear, 'Asset', 'doges');
+                    sinon.assert.calledOnce(mockRegistry.remove);
+                    sinon.assert.calledWith(mockRegistry.remove, 'doges');
+                });
+        });
+
+        it('should clear and remove an existing cached registry', () => {
+            const mockRegistry = sinon.createStubInstance(Registry);
+            registryManager.sysregistryCache['Asset:org.hyperledger.composer.system.AssetRegistry'] = mockRegistry;
+            sinon.stub(registryManager, 'get').withArgs('Asset', 'org.hyperledger.composer.system.AssetRegistry').rejects(new Error('such error'));
+            return registryManager.remove('Asset', 'doges')
+                .then(() => {
+                    sinon.assert.calledOnce(registryManager.clear);
+                    sinon.assert.calledWith(registryManager.clear, 'Asset', 'doges');
+                    sinon.assert.calledOnce(mockRegistry.remove);
+                    sinon.assert.calledWith(mockRegistry.remove, 'doges');
+                });
+        });
+
+    });
+
 });

@@ -512,6 +512,7 @@ describe('Historian', () => {
 
     describe('ACLs', () => {
 
+        let existingHistorianIDs;
         let aliceClient, bobClient, charlieClient;
         let alice, bob, charlie;
 
@@ -547,7 +548,16 @@ describe('Historian', () => {
 
 
             let aliceIdentity = uuid.v4(), bobIdentity = uuid.v4(), charlieIdentity = uuid.v4();
-            return client.getParticipantRegistry('systest.accesscontrols.SampleParticipant')
+            return client.getHistorian()
+                .then((historian) => {
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
+                })
                 .then((participantRegistry) => {
                     return participantRegistry.addAll([alice, bob, charlie]);
                 })
@@ -610,9 +620,11 @@ describe('Historian', () => {
             .then((result) => {
                 return result.getAll();
             }).then( (result)=>{
-                result.reduce((accumulator,value)=>{
-                    accumulator.push(value.transactionType);
-                    return accumulator; },[]).sort().should.deep.equal(expectedTxTypes);
+                result.filter((value) => {
+                    return existingHistorianIDs.indexOf(value.getIdentifier()) === -1;
+                }).map((value)=>{
+                    return value.transactionType;
+                }).sort().should.deep.equal(expectedTxTypes);
             } );
         });
         it('Deny bob alice access to historian', () => {
@@ -650,11 +662,20 @@ describe('Historian', () => {
     describe('Query', () => {
         it('For a set of historian records, then select these base on the transaction timestamp', () => {
 
+            let existingHistorianIDs;
             let assetRegistry;
             let historian;
             let hrecords;
-            return client
-                .getAssetRegistry('systest.assets.SimpleAsset')
+            return client.getHistorian()
+                .then((historian) => {
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getAssetRegistry('systest.assets.SimpleAsset');
+                })
                 .then(function (result) {
                     assetRegistry = result;
                 })
@@ -682,6 +703,8 @@ describe('Historian', () => {
 
                     // there should be a create asset record for the 3 assets
                     hrecords = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    }).filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddAsset';
                     }).sort((a, b) => {
 

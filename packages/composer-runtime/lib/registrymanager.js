@@ -385,7 +385,7 @@ class RegistryManager extends EventEmitter {
      * @param {string} name The name of the registry.
      * @param {boolean} system True if the registry is for a system type, false otherwise.
      * @return {Promise} A promise that is resolved when complete, or rejected
-     * with an error.Registry
+     * with an error.
      */
     ensure(type, id, name, system) {
         const method = 'ensure';
@@ -398,6 +398,54 @@ class RegistryManager extends EventEmitter {
             .then((registry) => {
                 LOG.exit(method, registry);
                 return registry;
+            });
+    }
+
+    /**
+     * Clear the contents of the specified registry.
+     * @param {string} type The type of the registry.
+     * @param {string} id The ID of the registry.
+     * @return {Promise} A promise that is resolved when complete, or rejected
+     * with an error.
+     */
+    clear(type, id) {
+        const method = 'clear';
+        LOG.entry(method, type, id);
+        let collectionID = type + ':' + id;
+        return this.dataService.deleteCollection(collectionID)
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Remove the specified registry.
+     * @param {string} type The type of the registry.
+     * @param {string} id The ID of the registry.
+     * @return {Promise} A promise that is resolved when complete, or rejected
+     * with an error.
+     */
+    remove(type, id) {
+        const method = 'remove';
+        LOG.entry(method, type, id);
+        let collectionID = type + ':' + id;
+        return this.clear(type, id)
+            .then(() => {
+                let srid = 'Asset:org.hyperledger.composer.system.' + type + 'Registry';
+                let registry = this.sysregistryCache[srid];
+                if (!registry) {
+                    return this.get('Asset', 'org.hyperledger.composer.system.' + type + 'Registry');
+                }
+                return registry;
+            })
+            .then((registry) => {
+                return registry.remove(id);
+            })
+            .then(() => {
+                return this.sysregistries.remove(collectionID);
+            })
+            .then(() => {
+                LOG.exit(method);
             });
     }
 
