@@ -25,18 +25,8 @@ let whereCondition;
 
 describe('FilterParser', () => {
 
-    // const filter1 = {'f1':'v1'};
-    // const filter2 = {'f1':{'gt':'v1'}} ;
-    // const filter3 = {'and|or':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
-    // const filter4 =  {'and|or':[{'and|or':[{'f1':{'op':'v1'}}, {'f2':{'op':'v2'}}]}, {'f3':{'op':'v3'}}]};
-    // const queryString ={
-    //     filter1: 'SELECT org.acme.base.TestAsset WHERE (f1 == v1)',
-    //     filter2: 'SELECT org.acme.base.TestAsset WHERE (f1 <= v1)',
-    //     filter3: 'SELECT org.acme.base.TestAsset WHERE (f1 == v1)',
-    //     filter4: 'SELECT org.acme.base.TestAsset WHERE (f1 == v1)'
-    // };
-
     describe('#parseFilter', () => {
+
         it('should return the correct select statement', () => {
             const filter1 = {'where':{'f1':'v1'}};
             const queryString = 'SELECT org.acme.base.TestAsset WHERE (f1==\'v1\')';
@@ -51,6 +41,7 @@ describe('FilterParser', () => {
     });
 
     describe('#parseWhereCondition', () => {
+
         it('should return the string value of a where condition', () => {
             whereObject = {'f1':'v1'};
             whereCondition = '(f1==\'v1\')';
@@ -62,21 +53,25 @@ describe('FilterParser', () => {
             whereCondition = '(f1==10)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return a boolean value of a where condition', () => {
             whereObject = {'f1':true};
             whereCondition = '(f1==true)';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return a Datetime value of a where condition', () => {
             whereObject = {'f1':{'gt':'2017-09-26T14:43:48.444Z'}};
             whereCondition = '(f1>\'2017-09-26T14:43:48.444Z\')';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return a Datetime value of a where condition', () => {
             whereObject = {'f1':'2017-09-26T14:43:48.444Z'};
             whereCondition = '(f1==\'2017-09-26T14:43:48.444Z\')';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return a where condition with a great than operator', () => {
             whereObject = {'f1':{'gt':'v1'}};
             whereCondition = '(f1>\'v1\')';
@@ -96,6 +91,7 @@ describe('FilterParser', () => {
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/The key unknown operator is not supported by the Composer filter where/);
         });
+
         it('should throw when a field value has more than one keys', () => {
             (() => {
                 whereObject = {'f1':{'lte':'v1', 'gt':'v2'}};
@@ -121,6 +117,7 @@ describe('FilterParser', () => {
             whereCondition = '((f1<=\'v1\') AND (f2!=\'v2\'))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return when a where condition with a combination of the or operation', () => {
             whereObject = {'or':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
             whereCondition = '((f1<=\'v1\') OR (f2!=\'v2\'))';
@@ -138,17 +135,20 @@ describe('FilterParser', () => {
             whereCondition = '((f1==\'v1\') AND (f2==\'v2\'))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should return when a where top level condition has multiple properties with a mixture of operators', () => {
             whereObject = {'f1':'v1', 'f2':'v2', 'f3':{'lte':'v3'},};
             whereCondition = '((f1==\'v1\') AND (f2==\'v2\') AND (f3<=\'v3\'))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
+
         it('should throw when a where top level condition has multiple properties with non-primitive type of values', () => {
             whereObject = {'f1':'v1', 'f2':'v2', 'f3':[{'f4':{'lte':'v4'},'f5':'v5'}]};
             (() => {
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/Only support multiple properties with primitive type of values/);
         });
+
         it('should throw when a where condition with an unknown combination operator', () => {
             whereObject = {'unknown':[{'f1':{'lte':'v1'}}, {'f2':{'neq':'v2'}}]};
             (() => {
@@ -197,71 +197,87 @@ describe('FilterParser', () => {
             }).should.throw(/The value: undefined is invalid/);
         });
     });
+
     describe('#parsePropertyValue', () => {
 
         it('should return a Datetime value of a where condition with an explicit operator', () => {
             const result = '(f1<=\'2017-09-26T14:43:48.444Z\')';
             FilterParser.parsePropertyValue('f1', '<=', '2017-09-26T14:43:48.444Z').should.equal(result);
         });
+
         it('should return a Datetime value of a where condition with an implicit operator' , () => {
             const result = '(f1==\'2017-09-26T14:43:48.444Z\')';
             const dt = new Date('2017-09-26T14:43:48.444Z');
             FilterParser.parsePropertyValue('f1', '==', dt).should.equal(result);
         });
+
         it('should throw when the key is undefined', () => {
             (() => {FilterParser.parsePropertyValue(undefined, 'op', 'v1');
             }).should.throw(/A property name is invalid/);
         });
+
         it('should throw when the key is null', () => {
             (() => {FilterParser.parsePropertyValue(null, 'op', 'v1');
             }).should.throw(/A property name is invalid/);
         });
+
         it('should throw when the key is empty', () => {
             (() => {FilterParser.parsePropertyValue(' ', 'op', 'v1');
             }).should.throw(/A property name is invalid/);
         });
+
         it('should throw when the operator is undefined', () => {
             (() => {FilterParser.parsePropertyValue('f1', undefined, 'v1');
             }).should.throw(/The operator is invalid/);
         });
+
         it('should throw when the operator is null', () => {
             (() => {FilterParser.parsePropertyValue('f1', null, 'v1');
             }).should.throw(/The operator is invalid/);
         });
+
         it('should throw when the operator is empty', () => {
             (() => {FilterParser.parsePropertyValue('f1', ' ', 'v1');
             }).should.throw(/The operator is invalid/);
         });
+
         it('should throw when the value is undefined', () => {
             (() => {FilterParser.parsePropertyValue('f1', '===', undefined);
             }).should.throw(/The value is invalid/);
         });
+
         it('should throw when the value is null', () => {
             (() => {FilterParser.parsePropertyValue('f1', '>=', null);
             }).should.throw(/The value is invalid/);
         });
+
         it('should throw when the value type is an array', () => {
             (() => {FilterParser.parsePropertyValue('f1', '==', [1, 2, 3]);
             }).should.throw(/Unsupported primitive type value/);
         });
 
     });
+
     describe('#parseObjectValue',()=> {
+
         it('should return when a where condition with a between operator for numbers', () => {
             const keyObject = {'between':[2,10]};
             whereCondition = '((f1>=2) AND (f1<=10))';
             FilterParser.parseObjectValue('f1', keyObject).should.equal(whereCondition);
         });
+
         it('should return when a where condition with a between operator for strings', () => {
             const keyObject = {'between':['Alex','Emma']};
             whereCondition = '((f1>=\'Alex\') AND (f1<=\'Emma\'))';
             FilterParser.parseObjectValue('f1',keyObject).should.equal(whereCondition);
         });
+
         it('should return when a where condition with a between operator for strings', () => {
             const keyObject = {'between':['2017-09-26T14:43:48.444Z','2017-12-26T14:43:48.444Z']};
             whereCondition = '((f1>=\'2017-09-26T14:43:48.444Z\') AND (f1<=\'2017-12-26T14:43:48.444Z\'))';
             FilterParser.parseObjectValue('f1', keyObject).should.equal(whereCondition);
         });
+
         it('should throw when parse a property value that is not a primitive value', () => {
             (() => {FilterParser.parseObjectValue('f1', {'gt': [1, 2, 3]});
             }).should.throw(/The type of the operator value: object is not supported/);
@@ -272,11 +288,13 @@ describe('FilterParser', () => {
             }).should.throw(/Unsupported data type for the between operator/);
         });
     });
+
     describe('#isDateTime',()=> {
         const testDate = new Date('2017-09-26T14:43:48.444Z');
 
         FilterParser.isDateTime(testDate).should.be.true;
     });
+
     describe('#isPrimitiveTypeValue',()=> {
         const testDate = new Date('2017-09-26T14:43:48.444Z');
 

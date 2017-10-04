@@ -296,14 +296,22 @@ class BusinessNetworkConnector extends Connector {
 
                 if(filterKeys.indexOf('where') >= 0) {
                     const keys = Object.keys(filter.where);
-                    if (keys.length === 0) {
-                        throw new Error('The all operation without a where clause is not supported');
+                    const nKeys = keys.length;
+                    if (nKeys === 0) {
+                        throw new Error('The all operation without a full where clause is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
 
-                    // Check if the filter is a simple ID query
+                    // when an id is specified in the filter where and
+                    // if( nKeys === 1 && keys[0] === identifierField ){
+
+                        // Check if the filter is a simple ID query
                     let objectId = filter.where[identifierField];
+
                     if(doResolve) {
+                        if(typeof objectId === 'undefined'|| objectId === null) {
+                            throw new Error('The filter field value is not specified');
+                        }
                         return registry.resolve(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);
@@ -316,12 +324,10 @@ class BusinessNetworkConnector extends Connector {
                                 debug('Got Result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
-                    } else {
+                    }else{
+                        // perform filter query when id is not the first field
                         const queryString = FilterParser.parseFilter(filter, composerModelName);
                         const query = networkConnection.buildQuery(queryString);
-                        if(typeof query === 'undefined'|| query === null) {
-                            throw new Error('The specified filter:' + keys[0] + ' does not match the identifier or any property in the model');
-                        }
                         return networkConnection.query(query, {})
                         .then((result) => {
                             debug('Got Result:', result);
@@ -421,14 +427,17 @@ class BusinessNetworkConnector extends Connector {
     count(lbModelName, where, options, callback) {
         debug('count', lbModelName, where, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
                 const fields = Object.keys(where || {});
-                if (fields.length > 0) {
+                const numFields = fields.length;
+                if (numFields > 0) {
                     let idField = fields[0];
                     if(this.isValidId(composerModelName, idField)) {
                         // Just a basic existence check for now
@@ -437,7 +446,15 @@ class BusinessNetworkConnector extends Connector {
                                 return exists ? 1 : 0;
                             });
                     } else {
-                        throw new Error(idField+' is not valid for asset '+composerModelName);
+                        const queryConditions = FilterParser.parseWhereCondition(where, composerModelName);
+                        const queryString = 'SELECT ' + composerModelName + ' WHERE ' + queryConditions;
+                        const query = networkConnection.buildQuery(queryString);
+
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.length;
+                        });
                     }
                 } else {
                     return registry.getAll()
