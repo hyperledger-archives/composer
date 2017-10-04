@@ -16,6 +16,7 @@
 
 const StackComponents = require('../lib/stackcomponents.js');
 
+
 describe('StackComponents', () => {
 
     describe('#getCallerFileName',() => {

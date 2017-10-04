@@ -23,6 +23,7 @@ const StackComponents = require('./stackcomponents');
 const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODELS = require('./systemmodel');
 
+
 /**
  * <p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled

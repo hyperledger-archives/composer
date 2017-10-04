@@ -152,6 +152,7 @@ describe('ModelManager', () => {
             (() => {
                 modelManager.addModelFile(modelBase);
             }).should.throw();
+
         });
 
         it('should return error for duplicate namespaces from an object', () => {
