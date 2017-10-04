@@ -1,5 +1,5 @@
 <section *ngIf="!showSubScreen" class="header">
-    <h1>My Wallet</h1>
+    <h1>My Business Networks</h1>
     <div *ngIf="!showSubScreen">
         <button id="importIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import ID card</span>
@@ -12,10 +12,12 @@
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
         <span class="connection-profile-title">
-            <h2>Identity cards for {{this.connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
-            <tutorial-link *ngIf="this.connectionProfileRef === 'web-$default' && idCards.size == indestructibleCards.length"></tutorial-link>
+            <h2>Connection: {{connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
         </span>
         <div class="identities">
+            <identity-card *ngIf="connectionProfileRef === 'web-$default' && idCards.size === indestructibleCards.length"
+                           (onDeploySample)="deploySample(connectionProfileRef)">
+            </identity-card>
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
                            [indestructible]="(indestructibleCards.indexOf(cardRef) > -1)"

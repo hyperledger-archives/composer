@@ -7,7 +7,6 @@
 /* tslint:disable:member-ordering*/
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Input, Component, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -21,6 +20,8 @@ import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConfigService } from '../services/config.service';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { BusinessNetworkDefinition } from 'composer-common';
 
 import { DrawerService } from '../common/drawer';
 import { IdCard } from 'composer-common';
@@ -140,11 +141,13 @@ describe(`LoginComponent`, () => {
     let mockClientService;
     let mockConnectionProfileService;
     let mockInitializationService;
+    let mockSampleBusinessNetworkService;
     let routerStub;
     let mockAlertService;
     let mockConfigService;
     let mockModal;
     let mockDrawer;
+    let businessNetworkMock;
 
     beforeEach(() => {
 
@@ -154,10 +157,12 @@ describe(`LoginComponent`, () => {
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
+        mockSampleBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConfigService = sinon.createStubInstance(ConfigService);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
+        businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
 
         routerStub = new RouterStub();
 
@@ -183,6 +188,7 @@ describe(`LoginComponent`, () => {
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
+                {provide: SampleBusinessNetworkService, useValue: mockSampleBusinessNetworkService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: DrawerService, useValue: mockDrawer},
                 {provide: NgbModal, useValue: mockModal},
@@ -730,5 +736,26 @@ describe(`LoginComponent`, () => {
 
             cardRefs.should.deep.equal(['myCardRef5', 'myCardRef2', 'myCardRef4', 'myCardRef7', 'myCardRef3', 'myCardRef6', 'myCardRef1']);
         });
+    });
+
+    describe('deploySample', () => {
+        it('should deploy the sample network', fakeAsync(() => {
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
+            mockSampleBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'mySample'}]));
+            mockSampleBusinessNetworkService.getChosenSample.returns(Promise.resolve(businessNetworkMock));
+            mockSampleBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve('myNewCardRef'));
+            let changeIdentityStub = sinon.stub(component, 'changeIdentity');
+
+            component.deploySample('profileRef');
+
+            tick();
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('profileRef');
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
+            mockSampleBusinessNetworkService.getSampleList.should.have.been.called;
+            mockSampleBusinessNetworkService.getChosenSample.should.have.been.calledWith({name: 'mySample'});
+            mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'my-basic-sample', 'The Composer basic sample network');
+            changeIdentityStub.should.have.been.calledWith('myNewCardRef');
+        }));
     });
 });
