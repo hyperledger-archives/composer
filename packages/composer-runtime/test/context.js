@@ -276,6 +276,44 @@ describe('Context', () => {
 
     });
 
+    describe('#getIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should get the current identity', () => {
+            context.currentIdentity = mockIdentity;
+            context.getIdentity().should.equal(mockIdentity);
+        });
+
+    });
+
+    describe('#setIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should set the current identity', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+        });
+
+        it('should throw if a current identity has been set', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+            (() => {
+                context.setIdentity(mockIdentity);
+            }).should.throw(/A current identity has already been specified/);
+        });
+
+    });
+
     describe('#loadCurrentParticipant', () => {
 
         let mockIdentityManager;
@@ -290,11 +328,6 @@ describe('Context', () => {
             sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
             mockIdentity = sinon.createStubInstance(Resource);
             mockParticipant = sinon.createStubInstance(Resource);
-        });
-
-        it('should set/get identity', () => {
-            context.setIdentity(mockIdentity);
-            context.getIdentity().should.equal(mockIdentity);
         });
 
         it('should get the identity, validate it, and get the participant', () => {
@@ -379,7 +412,7 @@ describe('Context', () => {
                 promises[0].should.be.rejectedWith(/such error/);
                 promises[1].should.be.rejectedWith(/such error/);
                 promises[2].should.be.rejectedWith(/such error/);
-            });
+    });
 
         });
 
