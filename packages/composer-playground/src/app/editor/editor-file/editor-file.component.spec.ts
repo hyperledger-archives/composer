@@ -389,6 +389,7 @@ describe('EditorFileComponent', () => {
         it('should set package file', () => {
             component['_editorFile'] = {
                 package: true,
+                id: 'package'
             };
 
             component['editorContent'] = '{"name": "my network"}';
@@ -399,8 +400,7 @@ describe('EditorFileComponent', () => {
 
             component.setCurrentCode();
 
-            mockClientService.setBusinessNetworkPackageJson.should.have.been.calledWith({name: 'my network'});
-            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+            mockClientService.updateFile.should.have.been.calledWith('package', '{"name": "my network"}', 'package');
             should.not.exist(component['currentError']);
         });
 
@@ -473,9 +473,7 @@ describe('EditorFileComponent', () => {
 
             component.setCurrentCode();
 
-            mockClientService.setBusinessNetworkPackageJson.should.not.have.been.called;
-            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(false);
-            component['currentError'].should.equal('SyntaxError: Unexpected end of JSON input');
+            component['currentError'].should.equal('some error');
         });
     });
 
