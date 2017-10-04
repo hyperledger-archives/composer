@@ -303,9 +303,8 @@ class BusinessNetworkConnector extends Connector {
                     let identifierField = this.getClassIdentifier(composerModelName);
 
                     // when an id is specified in the filter where and
-                    // if( nKeys === 1 && keys[0] === identifierField ){
 
-                        // Check if the filter is a simple ID query
+                    // Check if the filter is a simple ID query
                     let objectId = filter.where[identifierField];
 
                     if(doResolve) {
@@ -438,8 +437,19 @@ class BusinessNetworkConnector extends Connector {
                 const fields = Object.keys(where || {});
                 const numFields = fields.length;
                 if (numFields > 0) {
-                    let idField = fields[0];
-                    if(this.isValidId(composerModelName, idField)) {
+                    // Check if the filter is a simple ID query
+                    let idField = null;
+                    let bFound = false;
+                    // find the valid id from the list of fields
+                    for( let i=0; i<numFields; i++){
+                        if(this.isValidId(composerModelName,fields[i])){
+                            idField = fields[i];
+                            bFound = true;
+                            break;
+                        }
+                    }
+                    // find the key in the list fields
+                    if(bFound) {
                         // Just a basic existence check for now
                         return registry.exists(where[idField])
                             .then((exists) => {
@@ -749,6 +759,9 @@ class BusinessNetworkConnector extends Connector {
                 }
                 idField = keys[0];
                 if(!this.isValidId(composerModelName, idField)) {
+
+                // using where object to query the object back:
+
                     throw new Error('The specified filter does not match the identifier in the model');
                 }
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
