@@ -170,10 +170,47 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
-<li><a href="../jsdoc/index.html">API Documentation</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html">Support</a></p></li>
+<li><p><a href="../api-doc-inline/api-doc-index.html">API Reference</a></p>
+
+<ul>
+<li><a href="../api-doc-inline/adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api-doc-inline/assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api-doc-inline/baseexception.html">BaseException (Common API)</a></li>
+<li><a href="../api-doc-inline/basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api-doc-inline/businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api-doc-inline/businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api-doc-inline/businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api-doc-inline/concept.html">Concept (Common API)</a></li>
+<li><a href="../api-doc-inline/consolelogger.html">ConsoleLogger ( API)</a></li>
+<li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
+<li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
+<li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
+<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
+<li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
+<li><a href="../api-doc-inline/introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api-doc-inline/invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
+<li><a href="../api-doc-inline/parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api-doc-inline/participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api-doc-inline/query.html">Query (Client API)</a></li>
+<li><a href="../api-doc-inline/registry.html">Registry (Client API)</a></li>
+<li><a href="../api-doc-inline/relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api-doc-inline/resource.html">Resource (Common API)</a></li>
+<li><a href="../api-doc-inline/securitycontext.html">SecurityContext (Common API)</a></li>
+<li><a href="../api-doc-inline/securityexception.html">SecurityException (Common API)</a></li>
+<li><a href="../api-doc-inline/serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api-doc-inline/transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api-doc-inline/typed.html">Typed (Common API)</a></li>
+<li><a href="../api-doc-inline/typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
+<li><a href="../api-doc-inline/validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api-doc-inline/validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api-doc-inline/validationexception.html">ValidationException (Common API)</a></li>
+<li><a href="../api-doc-inline/wallet.html">Wallet ( API)</a></li>
+</ul></li>
 </ul>
 
             
@@ -186,8 +223,6 @@ ga('send', 'pageview');
   <div class="footer-right-break">
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -247,47 +282,44 @@ ga('send', 'pageview');
 <ol>
 <li>A namespace defined by the namespace of its parent file. The namespace of a <code>.cto</code> file implicitly applies to all resources created in it.</li>
 <li><p>A name, for example <code>Vehicle</code>, and an identifying field, for example, <code>vin</code>. If the resource is an asset or participant, the name is followed by the identifying field, if the resource is an event or transaction, the identifying field is set automatically. In this example, the asset is named <code>Vehicle</code> and the identifying field is <code>vin</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * A vehicle asset.
  */
 asset Vehicle identified by vin {
   o String vin
 }
-```
 </code></pre></div></li>
 <li><p>An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * A car asset. A car is related to a list of parts
  */
 asset Car extends Vehicle {
   o String model
   --&gt; Part[] Parts
 }
-```
 </code></pre></div></li>
 <li><p>An optional &#39;abstract&#39; declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset <code>Vehicle</code> defined above should never be created, as there should be more specific asset classes defined to extend it.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
 * An abstract Vehicle asset.
 */
 abstract asset Vehicle identified by vin {
   o String vin
 }
-```
 </code></pre></div></li>
 <li><p>A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a <code>Car</code> asset has a <code>vin</code>, and a <code>model</code> property, both of which are strings.</p></li>
 <li><p>A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * A Field asset. A Field is related to a list of animals
- */
+
+<p>/**</p>
+
+<ul>
+<li>A Field asset. A Field is related to a list of animals
+*/
 asset Field identified by fieldId {
-  o String fieldId
-  o String name
-  --&gt; Animal[] animals
-}
-</code></pre></div></li>
+o String fieldId
+o String name
+--&gt; Animal[] animals
+}</li>
+</ul></li>
 </ol>
 
 <h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
