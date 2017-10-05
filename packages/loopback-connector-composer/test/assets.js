@@ -63,17 +63,17 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             exchangeId: [
                 'NYSE'
             ],
-            faceAmount: 1000,
+            faceAmount: 2000,
             instrumentId: [
                 'BobCorp'
             ],
-            issuer: 'resource:org.acme.bond.Issuer#1',
-            maturity: '2018-02-27T21:03:52.000Z',
+            issuer: 'resource:org.acme.bond.Issuer#2',
+            maturity: '2018-12-27T21:03:52.000Z',
             parValue: 1000,
             paymentFrequency: {
                 $class: 'org.acme.bond.PaymentFrequency',
-                period: 'MONTH',
-                periodMultiplier: 6
+                period: 'YEAR',
+                periodMultiplier: 12
             }
         }
     }, {
@@ -241,13 +241,40 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
             });
 
+            it('should count an existing asset using the other asset property', () => {
+                return app.models[prefix + 'BondAsset'].count({'bond.faceAmount': 1000 })
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+
+            it('should count an existing asset using the combination of the asset properties with the or operator', () => {
+                return app.models[prefix + 'BondAsset'].count({'or':[{'bond.faceAmount': 1000}, {'bond.paymentFrequency.period': 'YEAR'}]})
+                    .then((count) => {
+                        count.should.equal(2);
+                    });
+            });
+
+            it('should count an existing asset using the combination of the asset properties with the nested and|or operator', () => {
+                return app.models[prefix + 'BondAsset'].count({'and':[{'bond.issuer': 'resource:org.acme.bond.Issuer#1'},{'or':[{'bond.faceAmount': 1000}, {'bond.paymentFrequency.period': 'YEAR'}]}]})
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+
+            it('should count an existing asset using the range of the asset properties', () => {
+                return app.models[prefix + 'BondAsset'].count({'bond.maturity': {'between':['2018-02-27T21:03:52.000Z', '2018-12-27T21:03:52.000Z']}})
+                    .then((count) => {
+                        count.should.equal(2);
+                    });
+            });
+
             it('should count an non-existing asset using the asset ID', () => {
                 return app.models[prefix + 'BondAsset'].count({ ISINCode: 'ISIN_999' })
                     .then((count) => {
                         count.should.equal(0);
                     });
             });
-
         });
 
         describe(`#create namespaces[${namespaces}]`, () => {

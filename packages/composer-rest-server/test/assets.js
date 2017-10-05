@@ -61,21 +61,21 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             ISINCode: 'ISIN_2',
             bond: {
                 $class: 'org.acme.bond.Bond',
-                dayCountFraction: 'EOM',
+                dayCountFraction: 'EOY',
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 2000,
                 instrumentId: [
                     'BobCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
-                maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                issuer: 'resource:org.acme.bond.Issuer#2',
+                maturity: '2018-12-27T21:03:52.000Z',
+                parValue: 2000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
-                    period: 'MONTH',
-                    periodMultiplier: 6
+                    period: 'YEAR',
+                    periodMultiplier: 1
                 }
             }
         }, {
@@ -87,13 +87,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 3000,
                 instrumentId: [
                     'CharlieCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#1',
                 maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                parValue: 3000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
@@ -109,13 +109,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 4000,
                 instrumentId: [
                     'DogeCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#1',
                 maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                parValue: 4000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
@@ -182,6 +182,140 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         res.body.should.deep.equal([
                             assetData[0],
                             assetData[1],
+                        ]);
+                    });
+            });
+            it('should return the asset with a specified id', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1"}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the asset with a specified non-id property', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM"}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a specified non-id property in a different format', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter[where][bond.dayCountFraction]=EOM`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the asset with multiple specified non-id properties', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM", "bond.faceAmount":1000}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the asset with multiple specified non-id properties including a datetime', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM", "bond.maturity":"2018-02-27T21:03:52.000Z"}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a range of specified properties for a datetime value', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"between":["2018-02-27T21:03:52.000Z", "2018-12-27T21:03:52.000Z"]}}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a range of specified properties for a number value', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[1000, 1500]}}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a range of specified properties for a string value', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":{"between":["EOM", "EOY"]}}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a combination of the or operator with mutiple properties', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"EOM"}, {"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1]
+                        ]);
+                    });
+            });
+
+            it('should return the assets with a combination of the and operator with mutiple properties', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"bond.maturity":{"lt":"2018-12-27T21:03:52.000Z"}}]}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
+                        ]);
+                    });
+            });
+
+            it('should return a 500 if the and|or operator has more than three properties which is a limitation of pouchdb', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"bond.faceAmount":{"lt":2000}}, {"bond.paymentFrequency.period":"YEAR"}]}}`)
+                    .then(() => {
+                        throw new Error('should not get here');
+                    })
+                    .catch((err) => {
+                        err.response.should.have.status(500);
+                    });
+            });
+
+            it('should return the assets with a nested of the \'and\' and the \'or\' operator with mutiple properties', () => {
+                return chai.request(app)
+                    .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"or":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}]}}`)
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0]
                         ]);
                     });
             });

@@ -13,9 +13,11 @@ enum CouponType {
 participant Member identified by memberId {
   o String memberId
   o String name
+  o String lastName optional
 }
 
 participant Issuer extends Member {
+ 
 }
 
 enum PeriodEnum {
