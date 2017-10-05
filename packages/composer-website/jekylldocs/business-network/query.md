@@ -75,7 +75,11 @@ For example, if the current user sends a query that would return all assets, if 
 
 ## Using filters
 
-Filters can only be submitted using the {{site.data.conrefs.composer_full}} REST API, and must use the [LoopBack syntax](https://loopback.io/doc/en/lb2/Where-filter.html). To submit a query, a **GET** REST call must be submitted against an asset type, participant type, or transaction type with the filter supplied as a parameter. The supported data types for parameters to be filtered are _numbers_, _Boolean_, _DateTime_, and _strings_.
+Filters can only be submitted using the {{site.data.conrefs.composer_full}} REST API, and must use the [LoopBack syntax](https://loopback.io/doc/en/lb2/Where-filter.html). To submit a query, a **GET** REST call must be submitted against an asset type, participant type, or transaction type with the filter supplied as a parameter. The supported data types for parameters to be filtered are _numbers_, _Boolean_, _DateTime_, and _strings_. A basic filter takes the following format, where `op` indicates an operator:
+
+```
+{"where": {"field1": {"op":"value1"}}}
+```
 
 *Please note*: Only the top level `WHERE` operator can have more than two operands.
 
