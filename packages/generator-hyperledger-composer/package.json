@@ -17,9 +17,9 @@
   "dependencies": {
     "composer-client": "0.13.2",
     "composer-common": "0.13.2",
-    "shelljs": "^0.7.7",
-    "underscore.string": "^3.3.4",
-    "yeoman-generator": "^0.24.1"
+    "shelljs": "0.7.7",
+    "underscore.string": "3.3.4",
+    "yeoman-generator": "0.24.1"
   },
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@angular/cli": "^1.0.0-rc.0",
+    "@angular/cli": "1.0.0-rc.0",
     "composer-admin": "0.13.2",
     "composer-connector-embedded": "0.13.2",
-    "mocha": "^3.4.2",
-    "typings": "^2.1.0",
-    "yeoman-assert": "^3.0.0",
-    "yeoman-test": "^1.6.0"
+    "mocha": "3.4.2",
+    "typings": "2.1.0",
+    "yeoman-assert": "3.0.0",
+    "yeoman-test": "1.6.0"
   }
 }

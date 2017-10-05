@@ -28,15 +28,15 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.1",
-    "jsdoc": "^3.4.3",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "nyc": "^11.1.0",
-    "sinon": "^2.3.8",
-    "watchify": "^3.7.0"
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "eslint": "3.17.1",
+    "jsdoc": "3.4.3",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "sinon": "2.3.8",
+    "watchify": "3.7.0"
   },
   "license-check-config": {
     "src": [
@@ -53,13 +53,13 @@
   "dependencies": {
     "composer-common": "0.13.2",
     "composer-runtime": "0.13.2",
-    "debug": "^2.6.2",
-    "istanbul-lib-instrument": "^1.7.2",
-    "pouchdb-collate": "~6.2.0",
-    "pouchdb-core": "~6.2.0",
-    "pouchdb-find": "~6.2.0",
-    "request": "^2.81.0",
-    "uuid": "^3.0.1"
+    "debug": "2.6.2",
+    "istanbul-lib-instrument": "1.7.2",
+    "pouchdb-collate": "6.2.0",
+    "pouchdb-core": "6.2.0",
+    "pouchdb-find": "6.2.0",
+    "request": "2.81.0",
+    "uuid": "3.0.1"
   },
   "nyc": {
     "exclude": [
