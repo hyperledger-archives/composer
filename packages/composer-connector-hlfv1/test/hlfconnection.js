@@ -573,10 +573,16 @@ describe('HLFConnection', () => {
             connection._connectToEventHubs();
         });
 
-        it('should throw if businessNetwork not specified', () => {
+        it('should throw if businessNetworkIdentifier not specified', () => {
             (() => {
                 connection.start(mockSecurityContext, null);
-            }).should.throw(/businessNetwork not specified/);
+            }).should.throw(/businessNetworkIdentifier not specified/);
+        });
+
+        it('should throw if startTransaction not specified', () => {
+            (() => {
+                connection.start(mockSecurityContext, 'org-acme-biznet');
+            }).should.throw(/startTransaction not specified/);
         });
 
         // TODO: should extract out _waitForEvents
@@ -614,7 +620,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Failed to receive commit notification/)
                 .then(() => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
@@ -658,7 +664,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policy
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -668,7 +674,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : policy
                     });
 
@@ -700,7 +706,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policyString
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -710,7 +716,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : policy
                     });
 
@@ -742,7 +748,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -752,8 +758,47 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : JSON.parse(policyString)
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should start the business network and ignore unrecognized options', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the instantiate proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const deployOptions = {
+                foobar: true
+            };
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
+                .then(() => {
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['{"start":"json"}']
                     });
 
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
@@ -765,7 +810,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policyString
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -774,7 +819,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -784,7 +829,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.start(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -806,7 +851,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
@@ -816,42 +861,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}']
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should start the business network with debug level set', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the instantiate proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the orderer proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.start(mockSecurityContext, mockBusinessNetwork, {'logLevel': 'WARNING'})
-                .then(() => {
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{"logLevel":"WARNING"}']
+                        args: ['{"start":"json"}']
                     });
 
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
@@ -867,7 +877,7 @@ describe('HLFConnection', () => {
             connection._validateResponses.withArgs(instantiateResponses).throws(errorResp);
             // This is the event hub response.
             //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -889,7 +899,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
 
@@ -910,7 +920,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
@@ -1102,10 +1112,16 @@ describe('HLFConnection', () => {
             connection._connectToEventHubs();
         });
 
-        it('should throw if businessNetwork not specified', () => {
+        it('should throw if businessNetworkIdentifier not specified', () => {
             (() => {
                 connection.deploy(mockSecurityContext, null);
-            }).should.throw(/businessNetwork not specified/);
+            }).should.throw(/businessNetworkIdentifier not specified/);
+        });
+
+        it('should throw if deployTransaction not specified', () => {
+            (() => {
+                connection.deploy(mockSecurityContext, 'org-acme-biznet');
+            }).should.throw(/deployTransaction not specified/);
         });
 
         // TODO: should extract out _waitForEvents
@@ -1145,7 +1161,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Failed to receive commit notification/)
                 .then(() => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
@@ -1190,7 +1206,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policy
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1217,7 +1233,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : policy
                     });
 
@@ -1251,7 +1267,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policyString
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1278,7 +1294,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : policy
                     });
 
@@ -1312,7 +1328,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1339,7 +1355,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}'],
+                        args: ['{"start":"json"}'],
                         'endorsement-policy' : JSON.parse(policyString)
                     });
 
@@ -1364,7 +1380,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicy : policyString
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -1385,7 +1401,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -1408,7 +1424,7 @@ describe('HLFConnection', () => {
             const deployOptions = {
                 endorsementPolicyFile : '/path/to/options.json'
             };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, deployOptions)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
@@ -1433,7 +1449,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1460,67 +1476,12 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}']
+                        args: ['{"start":"json"}']
                     });
 
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
                 });
         });
-
-        it('should deploy the business network with debug level set', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork, {'logLevel': 'WARNING'})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        targets: [mockPeer]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{"logLevel":"WARNING"}']
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
 
         it('should instantiate the business network if it responds already installed', () => {
             sandbox.stub(global, 'setTimeout');
@@ -1544,7 +1505,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID.toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1571,7 +1532,7 @@ describe('HLFConnection', () => {
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         fcn: 'init',
-                        args: ['aGVsbG8gd29ybGQ=', '{}']
+                        args: ['{"start":"json"}']
                     });
 
                     sinon.assert.calledOnce(mockChannel.sendTransaction);
@@ -1612,7 +1573,7 @@ describe('HLFConnection', () => {
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
 
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
@@ -1646,7 +1607,7 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
             connection._validateResponses.withArgs(installResponses).throws(errorResp);
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Error something went completely wrong/);
         });
 
@@ -1667,7 +1628,7 @@ describe('HLFConnection', () => {
             connection._validateResponses.withArgs(instantiateResponses).throws(errorResp);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -1691,7 +1652,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
 
@@ -1714,7 +1675,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
