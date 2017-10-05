@@ -200,7 +200,7 @@ export class LoginComponent implements OnInit {
     importIdentity() {
         this.drawerService.open(ImportIdentityComponent).result.then((result) => {
             return this.identityCardService.addIdentityCard(result);
-        }).then((cardRef) => {
+        }).then((cardRef: string) => {
             this.alertService.successStatus$.next({
                 title: 'ID Card imported',
                 text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully imported',

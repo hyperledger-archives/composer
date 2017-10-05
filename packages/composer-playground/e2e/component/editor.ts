@@ -8,6 +8,11 @@ let scrollMe = (target) => {
 
 export class Editor {
 
+  // Wait to appear
+  static waitToAppear() {
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.main-view'))), 5000);
+  }
+
   // Click AddFile button
   static clickAddFile() {
       return OperationsHelper.click(element(by.id('editor_addfile')));

@@ -153,6 +153,11 @@ class ModelBinding {
         if (ModelUtil.isRecursiveWildcardName(this.qualifiedName)) {
             const namespaces = mm.getNamespaces();
 
+            // Check for recursive glob only
+            if (!ns) {
+                return;
+            }
+
             if (namespaces.findIndex(function (element, index, array) {
                 return (ns === element || element.startsWith(ns + '.'));
             })=== -1) {

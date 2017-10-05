@@ -47,18 +47,18 @@ A resource definition has the following properties:
 1. A namespace defined by the namespace of its parent file. The namespace of a `.cto` file implicitly applies to all resources created in it.
 2. A name, for example `Vehicle`, and an identifying field, for example, `vin`. If the resource is an asset or participant, the name is followed by the identifying field, if the resource is an event or transaction, the identifying field is set automatically. In this example, the asset is named `Vehicle` and the identifying field is `vin`.
 
-        ```
+
         /**
          * A vehicle asset.
          */
         asset Vehicle identified by vin {
           o String vin
         }
-        ```
+
 
 3. An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.
 
-        ```
+
         /**
          * A car asset. A car is related to a list of parts
          */
@@ -66,23 +66,23 @@ A resource definition has the following properties:
           o String model
           --> Part[] Parts
         }
-        ```
+
 
 4. An optional 'abstract' declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset `Vehicle` defined above should never be created, as there should be more specific asset classes defined to extend it.
 
-        ```
+
         /**
         * An abstract Vehicle asset.
         */
         abstract asset Vehicle identified by vin {
           o String vin
         }
-        ```
+
 
 5. A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a `Car` asset has a `vin`, and a `model` property, both of which are strings.
 6. A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.
 
-    ```
+
     /**
      * A Field asset. A Field is related to a list of animals
      */
@@ -91,7 +91,7 @@ A resource definition has the following properties:
       o String name
       --> Animal[] animals
     }
-    ```
+
 
 ### Declarations of enumerated types
 

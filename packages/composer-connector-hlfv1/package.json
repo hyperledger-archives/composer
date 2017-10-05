@@ -42,23 +42,24 @@
   "dependencies": {
     "composer-common": "0.13.2",
     "composer-runtime-hlfv1": "0.13.2",
-    "fabric-ca-client": "^1.0.1",
-    "fabric-client": "^1.0.1",
-    "fs-extra": "^1.0.0",
-    "semver": "^5.3.0",
-    "temp": "^0.8.3",
-    "thenify-all": "^1.6.0",
-    "uuid": "^3.0.1"
+    "fabric-ca-client": "1.0.1",
+    "fabric-client": "1.0.1",
+    "fs-extra": "1.0.0",
+	"grpc": "1.6.0",
+    "semver": "5.3.0",
+    "temp": "0.8.3",
+    "thenify-all": "1.6.0",
+    "uuid": "3.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.1",
-    "jsdoc": "^3.4.3",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "nyc": "^11.1.0",
-    "sinon": "^2.3.8"
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "eslint": "3.17.1",
+    "jsdoc": "3.4.3",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "sinon": "2.3.8"
   },
   "nyc": {
     "exclude": [

@@ -41,7 +41,6 @@ const LOG = Logger.getLog('BusinessNetworkConnection');
  * Use this class to connect to and then interact with a deployed BusinessNetworkDefinition.
  * Use the AdminConnection class in the composer-admin module to deploy BusinessNetworksDefinitions.
  * @extends EventEmitter
- * @see See [EventEmitter]{@link module:composer-client.EventEmitter}
  * @class
  * @memberof module:composer-client
  */
@@ -543,13 +542,13 @@ class BusinessNetworkConnection extends EventEmitter {
 
         return Util.createTransactionId(this.securityContext)
         .then ((id)=>{
-            transaction.setIdentifier(id);
+            transaction.setIdentifier(id.idStr);
             let timestamp = transaction.timestamp;
             if (timestamp === null || timestamp === undefined) {
                 timestamp = transaction.timestamp = new Date();
             }
             let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-            return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)]);
+            return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId:id.id});
         });
 
     }

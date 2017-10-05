@@ -83,6 +83,10 @@ asset Network identified by networkId {
   o String networkId
 }
 
+participant NetworkAdmin identified by participantId {
+    o String participantId
+}
+
 // -----------------------------------------------------------------------------
 // Historian
 
@@ -167,5 +171,5 @@ transaction RevokeIdentity {
 
 // --------------------------------------------------------------------------
 transaction UpdateBusinessNetwork {
-  o String businessNetworkArchive
+    o String businessNetworkArchive
 }

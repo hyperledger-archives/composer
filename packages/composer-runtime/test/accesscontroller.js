@@ -377,6 +377,12 @@ describe('AccessController', () => {
                 .should.be.true;
         });
 
+        it('should return true if the ACL rule specifies a matching root recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "**" action: ALLOW}');
+            controller.matchNoun(asset, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
         it('should return false if the ACL rule specifies a non-matching fully qualified identifier', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A5678" action: ALLOW}');
             controller.matchNoun(asset, aclManager.getAclRules()[0])
@@ -482,6 +488,12 @@ describe('AccessController', () => {
                 .should.be.true;
         });
 
+        it('should return true if the ACL rule specifies a matching root recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "**" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
         it('should return false if the ACL rule specifies a non-matching fully qualified identifier', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P1234" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             controller.matchParticipant(participant, aclManager.getAclRules()[0])
@@ -556,8 +568,14 @@ describe('AccessController', () => {
                 .should.be.true;
         });
 
-        it('should return true if the ACL rule specifies a matching recusive namespace', () => {
+        it('should return true if the ACL rule specifies a matching recursive namespace', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "org.acme.test.**" action: ALLOW}');
+            controller.matchTransaction(transaction, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return true if the ACL rule specifies a matching root recursive namespace', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" transaction: "**" action: ALLOW}');
             controller.matchTransaction(transaction, aclManager.getAclRules()[0])
                 .should.be.true;
         });
