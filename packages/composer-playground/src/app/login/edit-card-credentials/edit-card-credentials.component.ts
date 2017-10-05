@@ -13,6 +13,11 @@ export class EditCardCredentialsComponent {
     @Input() connectionProfile: any;
     @Output() idCardAdded = new EventEmitter<any>();
 
+    maxFileSize: number = 5242880;
+    supportedFileTypes: string[] = ['.pem'];
+
+    expandInput: boolean = false;
+
     private userId: string = null;
     private userSecret: string = null;
     private busNetName: string = null;
@@ -25,6 +30,10 @@ export class EditCardCredentialsComponent {
     private useParticipantCard: boolean = true;
     private peerAdmin: boolean = false;
     private channelAdmin: boolean = false;
+    private certFile: string;
+    private privateFile: string;
+    private fileType: string;
+    private certType: string;
 
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
@@ -133,6 +142,68 @@ export class EditCardCredentialsComponent {
 
     formatCert(unformatted: string) {
         return  unformatted.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
+    }
+
+    getDataBuffer(file: File) {
+        return new Promise((resolve, reject) => {
+            let fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+            fileReader.onload = () => {
+                let dataBuffer = Buffer.from(fileReader.result);
+                resolve(dataBuffer);
+            };
+
+            fileReader.onerror = (err) => {
+                reject(err);
+            };
+        });
+    }
+
+    fileDetected() {
+        this.expandInput = true;
+    }
+
+    fileLeft() {
+        this.expandInput = false;
+    }
+
+    fileAccepted(file: File) {
+        this.fileType = file.name.substr(file.name.lastIndexOf('.') + 1);
+        this.getDataBuffer(file)
+        .then((data) => {
+            switch (this.fileType) {
+                case 'pem':
+                    this.expandInput = true;
+                    this.certType = data.toString().substring(0, 27);
+                    if (this.certType === '-----BEGIN CERTIFICATE-----') {
+                        this.setPublicCert(data.toString());
+                    } else if (this.certType === '-----BEGIN PRIVATE KEY-----') {
+                        this.setPrivateCert(data.toString());
+                    } else {
+                        throw new Error('Certificate content in unexpected format.');
+                    }
+                    break;
+                default:
+                    throw new Error('Unexpected file type: ' + this.fileType);
+            }
+            this.expandInput = false;
+        })
+        .catch((err) => {
+            this.fileRejected(err);
+        });
+    }
+
+    setPublicCert(cert: string) {
+        this.addedPublicCertificate = this.formatCert(cert);
+    }
+
+    setPrivateCert(cert: string) {
+        this.addedPrivateCertificate = this.formatCert(cert);
+    }
+
+    fileRejected(reason: string) {
+        this.expandInput = false;
+        this.alertService.errorStatus$.next(reason);
     }
 
 }

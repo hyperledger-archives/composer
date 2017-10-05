@@ -37,7 +37,6 @@ export class FileImporterComponent {
         } else if (this.maxFileSize > 0 && this.maxFileSize < droppedFile.size) {
             this.fileRejected.emit('file ' + droppedFile.name + ' was too large');
         } else {
-
             this.fileAccepted.emit(droppedFile);
         }
     }
