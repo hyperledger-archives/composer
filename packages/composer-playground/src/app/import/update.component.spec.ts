@@ -209,6 +209,7 @@ describe('UpdateComponent', () => {
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             mockBusinessNetworkService.getChosenSample.returns(Promise.resolve({network: 'myNetwork'}));
             component.selectNetwork('bob');
 
@@ -216,14 +217,17 @@ describe('UpdateComponent', () => {
 
             component['chosenNetwork'];
             component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
         }));
 
         it('should select the empty network', () => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
             component.selectNetwork({name: 'empty-business-network'});
 
             empty.should.have.been.called;
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({name: 'empty-business-network'});
         });
     });
 
