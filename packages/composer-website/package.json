@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -31,14 +31,14 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "0.13.2",
-    "composer-client": "0.13.2",
-    "composer-common": "0.13.2",
-    "composer-runtime": "0.13.2",
+    "composer-admin": "0.13.3",
+    "composer-client": "0.13.3",
+    "composer-common": "0.13.3",
+    "composer-runtime": "0.13.3",
     "jsdoc": "3.4.3",
+    "mkdirp": "0.5.1",
     "node-plantuml": "0.5.0",
-    "sanitize-html": "1.14.1",
-    "mkdirp": "0.5.1"
+    "sanitize-html": "1.14.1"
   },
   "dependencies": {
     "documentation": "5.3.1",
