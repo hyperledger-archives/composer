@@ -302,9 +302,19 @@ describe('Historian', () => {
         it('should track updates for CREATE Participant calls ', () => {
             let participantRegistry, addParticipantTransactionRegistry;
             let historian;
+            let existingHistorianIDs;
             let hrecords;
-            return client
-                .getParticipantRegistry('systest.participants.SimpleParticipant')
+            return client.getHistorian()
+                .then((result) => {
+                    historian = result;
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getParticipantRegistry('systest.participants.SimpleParticipant');
+                })
                 .then(function (result) {
                     participantRegistry = result;
                 })
@@ -321,9 +331,6 @@ describe('Historian', () => {
                     return participantRegistry.add(participant);
                 })
                 .then(() => {
-                    return client.getHistorian();
-                }).then((result) => {
-                    historian = result;
                     return client.getTransactionRegistry('org.hyperledger.composer.system.AddParticipant');
                 }).then((result) => {
                     addParticipantTransactionRegistry = result;
@@ -332,6 +339,8 @@ describe('Historian', () => {
 
                     // there should be a create participant record for the 3 participants
                     hrecords = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    }).filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddParticipant';
                     });
                     hrecords.length.should.equal(3);
@@ -596,6 +605,10 @@ describe('Historian', () => {
                     historian = result;
                     return historian.getAll();
                 }).then((result) => {
+
+                    result = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    });
 
                     result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.IssueIdentity';

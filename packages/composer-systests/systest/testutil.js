@@ -452,6 +452,23 @@ class TestUtil {
     static deploy(businessNetworkDefinition, forceDeploy_) {
         const adminConnection = new AdminConnection();
         forceDeploy = forceDeploy_;
+        const bootstrapTransactions = [
+            {
+                $class: 'org.hyperledger.composer.system.AddParticipant',
+                resources: [
+                    {
+                        $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                        participantId: 'admin'
+                    }
+                ],
+                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+            },
+            {
+                $class: 'org.hyperledger.composer.system.IssueIdentity',
+                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                identityName: 'admin',
+            }
+        ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return Promise.resolve()
@@ -481,6 +498,7 @@ class TestUtil {
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, {
+                        bootstrapTransactions,
                         endorsementPolicy: {
                             identities: [
                                 {
@@ -517,7 +535,7 @@ class TestUtil {
             // Connect and deploy the network on the peers for org1.
             return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -530,7 +548,7 @@ class TestUtil {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
-                    return adminConnection.start(businessNetworkDefinition);
+                    return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -540,7 +558,7 @@ class TestUtil {
             // Connect and deploy the network.
             return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
