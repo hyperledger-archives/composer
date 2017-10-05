@@ -186,9 +186,6 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
 
-            clientMock.refresh.should.have.been.called;
-            clientMock.reset.should.have.been.called;
-
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 
