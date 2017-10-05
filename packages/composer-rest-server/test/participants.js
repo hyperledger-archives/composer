@@ -27,7 +27,6 @@ chai.use(require('chai-http'));
 const clone = require('clone');
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
-const util = require('util');
 
 ['always', 'never'].forEach((namespaces) => {
 
@@ -122,7 +121,6 @@ const util = require('util');
                 return chai.request(app)
                     .get(`/api/${prefix}Member?filter={"where": {"name": "Bob"}}`)
                     .then((res) => {
-                        console.log('the res = ' + util.inspect(res.body));
                         res.should.be.json;
                         res.body.should.deep.equal([
                             participantData[1]
@@ -145,7 +143,6 @@ const util = require('util');
                 return chai.request(app)
                     .get(`/api/${prefix}Member?filter={"where": {"lastName": "Chow"}}`)
                     .then((res) => {
-                        console.log('the res = ' + util.inspect(res.body));
                         res.should.be.json;
                         res.body.should.deep.equal([
                         ]);

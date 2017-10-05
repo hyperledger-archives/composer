@@ -124,6 +124,12 @@ describe('FilterParser', () => {
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
         });
 
+        it('should return when a where condition with a combination of the and|or operators in a nested structure ', () => {
+            whereObject = {'or':[{'f1':{'lte':'v1'}}, {'and':[{'f2':{'neq':'v2'}}, {'f3':{'neq':'v3'}}]}]};
+            whereCondition = '((f1<=\'v1\') OR ((f2!=\'v2\') AND (f3!=\'v3\')))';
+            FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
+        });
+
         it('should return when a where top level condition has multiple properties with operators', () => {
             whereObject = {'f1':{'lte':'v1'}, 'f2':{'neq':'v2'}};
             whereCondition = '((f1<=\'v1\') AND (f2!=\'v2\'))';
@@ -200,15 +206,30 @@ describe('FilterParser', () => {
 
     describe('#parsePropertyValue', () => {
 
-        it('should return a Datetime value of a where condition with an explicit operator', () => {
+        it('should be able to parse a datetime type value', () => {
             const result = '(f1<=\'2017-09-26T14:43:48.444Z\')';
             FilterParser.parsePropertyValue('f1', '<=', '2017-09-26T14:43:48.444Z').should.equal(result);
         });
 
-        it('should return a Datetime value of a where condition with an implicit operator' , () => {
+        it('should be able to parse a datetime type value with equality operator' , () => {
             const result = '(f1==\'2017-09-26T14:43:48.444Z\')';
             const dt = new Date('2017-09-26T14:43:48.444Z');
             FilterParser.parsePropertyValue('f1', '==', dt).should.equal(result);
+        });
+
+        it('should be able to parse a string type value', () => {
+            const result = '(f1<=\'v1\')';
+            FilterParser.parsePropertyValue('f1', '<=', 'v1').should.equal(result);
+        });
+
+        it('should be able to parse a number type value', () => {
+            const result = '(f1<=10.5)';
+            FilterParser.parsePropertyValue('f1', '<=', 10.5).should.equal(result);
+        });
+
+        it('should be able to parse a boolean type value', () => {
+            const result = '(f1==\'true\')';
+            FilterParser.parsePropertyValue('f1', '==','true').should.equal(result);
         });
 
         it('should throw when the key is undefined', () => {
