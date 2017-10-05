@@ -15,7 +15,7 @@
     left: 0;
     z-index: 100000;
     display: none;
-    overflow: hidden;
+    overflow: auto;
     outline: 0;
     &.fade .modal-dialog {
       @include transition(transform);
