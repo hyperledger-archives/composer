@@ -192,18 +192,18 @@ describe('Connection', () => {
 
         it('should call _start and handle no error', () => {
             sinon.stub(connection, '_start').yields(null);
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
         it('should call _start and handle an error', () => {
             sinon.stub(connection, '_start').yields(new Error('error'));
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
@@ -213,7 +213,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                connection._start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
             }).should.throw(/abstract function called/);
         });
 
@@ -223,18 +223,18 @@ describe('Connection', () => {
 
         it('should call _deploy and handle no error', () => {
             sinon.stub(connection, '_deploy').yields(null);
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' })
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
                 });
         });
 
         it('should call _deploy and handle an error', () => {
             sinon.stub(connection, '_deploy').yields(new Error('error'));
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' })
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
                 });
         });
 
@@ -244,7 +244,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                connection._deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
             }).should.throw(/abstract function called/);
         });
 

@@ -180,14 +180,15 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been installed, or rejected with an error.
      */
-    start(securityContext, businessNetworkDefinition, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         return new Promise((resolve, reject) => {
-            this._start(securityContext, businessNetworkDefinition, startOptions, (error) => {
+            this._start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -206,11 +207,12 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to start
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific statement options
      * @param {startCallback} callback The callback function to call when complete.
      */
-    _start(securityContext, businessNetworkDefinition, startOptions, callback) {
+    _start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, callback) {
         throw new Error('abstract function called');
     }
 
@@ -218,14 +220,15 @@ class Connection extends EventEmitter {
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetworkDefinition, deployOptions) {
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
         return new Promise((resolve, reject) => {
-            this._deploy(securityContext, businessNetworkDefinition, deployOptions, (error) => {
+            this._deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -244,11 +247,12 @@ class Connection extends EventEmitter {
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @param {deployCallback} callback The callback function to call when complete.
      */
-    _deploy(securityContext, businessNetworkDefinition, deployOptions, callback) {
+    _deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
         throw new Error('abstract function called');
     }
 

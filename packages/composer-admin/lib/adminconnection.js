@@ -246,6 +246,126 @@ class AdminConnection {
     }
 
     /**
+     * Get the current identity.
+     * @private
+     * @return {Promise} A promise that will be fufilled with the current identity.
+     */
+    _getCurrentIdentity() {
+        const method = '_getCurrentIdentity';
+        LOG.entry(method);
+        let identityName = this.securityContext.getUser();
+        LOG.debug(method, 'Current identity name', identityName);
+        return this.exportIdentity(this.connection.connectionProfile, identityName)
+            .then((identity) => {
+                LOG.exit(method, identity);
+                return identity;
+            });
+    }
+
+    /**
+     * Generate an array of bootstrap transactions for the business network.
+     * @private
+     * @param {Factory} factory The factory to use.
+     * @param {string} identityName The name of the current identity.
+     * @param {string} identityCertificate The certificate for the current identity.
+     * @return {Resource[]} An array of bootstrap transactions for the business network.
+     */
+    _generateBootstrapTransactions(factory, identityName, identityCertificate) {
+        const method = '_generateBootstrapTransactions';
+        LOG.entry(method);
+        const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
+        const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
+        const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
+        Object.assign(addParticipantTransaction, {
+            resources: [ participant ],
+            targetRegistry
+        });
+        LOG.debug(method, 'Created bootstrap transaction to add participant', addParticipantTransaction);
+        const bindIdentityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+        Object.assign(bindIdentityTransaction, {
+            participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+            certificate: identityCertificate
+        });
+        LOG.debug(method, 'Created bootstrap transaction to bind identity', bindIdentityTransaction);
+        const result = [
+            addParticipantTransaction,
+            bindIdentityTransaction
+        ];
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Build the JSON for the start transaction.
+     * @private
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
+     * @param {Object} [startOptions] The options for starting the business network.
+     * @return {Promise} A promise that will be fufilled with the JSON for the start transaction.
+     */
+    _buildStartTransaction(businessNetworkDefinition, startOptions = {}) {
+        const method = '_buildStartTransaction';
+        LOG.entry(method, businessNetworkDefinition, startOptions);
+
+        // Get the current identity - we may need it to bind the
+        // identity to a network admin participant.
+        let identityName, identityCertificate;
+        return this._getCurrentIdentity()
+            .then((identity) => {
+
+                // Extract the current identity name and certificate.
+                identityName = this.securityContext.getUser();
+                identityCertificate = identity.certificate;
+
+                    // Now serialize the business network archive.
+                return businessNetworkDefinition.toArchive();
+
+            })
+            .then((businessNetworkArchive) => {
+
+                // Create a new instance of a start transaction.
+                const factory = businessNetworkDefinition.getFactory();
+                const serializer = businessNetworkDefinition.getSerializer();
+                const startTransaction = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
+                const classDeclaration = startTransaction.getClassDeclaration();
+                startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
+
+                // If the user has not supplied any bootstrap transactions, then we need
+                // to add some:
+                // 1) Create a NetworkAdmin participant for the current identity.
+                // 2) Bind the current identity to the new NetworkAdmin participant.
+                if (!startOptions.bootstrapTransactions) {
+                    LOG.debug(method, 'No bootstrap transactions specified');
+                    startTransaction.bootstrapTransactions = this._generateBootstrapTransactions(factory, identityName, identityCertificate);
+                }
+
+                // Otherwise, parse all of the supplied bootstrap transactions.
+                if (startOptions.bootstrapTransactions) {
+                    startTransaction.bootstrapTransactions = startOptions.bootstrapTransactions.map((bootstrapTransactionJSON) => {
+                        return serializer.fromJSON(bootstrapTransactionJSON);
+                    });
+                    delete startOptions.bootstrapTransactions;
+                }
+
+                // Now handle the rest of the properties in the start options.
+                Object.keys(startOptions).forEach((key) => {
+                    LOG.debug(method, 'Checking start option', key);
+                    if (classDeclaration.getProperty(key)) {
+                        const value = startOptions[key];
+                        LOG.debug(method, 'Start option is a property of the start transaction', key, value);
+                        startTransaction[key] = value;
+                        delete startOptions[key];
+                    }
+                });
+
+                // Now we can start the business network.
+                const startTransactionJSON = serializer.toJSON(startTransaction);
+                LOG.exit(method, startTransactionJSON);
+                return startTransactionJSON;
+
+            });
+    }
+
+    /**
      * Starts a business network within the runtime previously installed to the Hyperledger Fabric with
      * the same name as the business network to be started. The connection must be connected for this
      * method to succeed.
@@ -261,15 +381,27 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
-     * @param {Object} startOptions connector specific start options
+     * @param {Object} [startOptions] connector specific start options
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    start(businessNetworkDefinition, startOptions) {
+    start(businessNetworkDefinition, startOptions = {}) {
+        const method = 'start';
+        LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
-        return this.connection.start(this.securityContext, businessNetworkDefinition, startOptions);
-    }
 
+        // Build the start transaction.
+        return this._buildStartTransaction(businessNetworkDefinition, startOptions)
+            .then((startTransactionJSON) => {
+
+                // Now we can start the business network.
+                return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
+
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
 
     /**
      * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
@@ -290,9 +422,22 @@ class AdminConnection {
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    deploy(businessNetworkDefinition, deployOptions) {
+    deploy(businessNetworkDefinition, deployOptions = {}) {
+        const method = 'deploy';
+        LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
-        return this.connection.deploy(this.securityContext, businessNetworkDefinition, deployOptions);
+
+        // Build the start transaction.
+        return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
+            .then((startTransactionJSON) => {
+
+                // Now we can deploy the business network.
+                return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
+
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
     /**
