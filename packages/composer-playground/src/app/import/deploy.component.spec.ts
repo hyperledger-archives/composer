@@ -15,12 +15,26 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeployComponent } from './deploy.component';
-import { ModelManager, BusinessNetworkDefinition, AssetDeclaration, ParticipantDeclaration, TransactionDeclaration } from 'composer-common';
+import {
+    ModelManager,
+    BusinessNetworkDefinition,
+    AssetDeclaration,
+    ParticipantDeclaration,
+    TransactionDeclaration
+} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 let should = chai.should();
+
+@Directive({
+    selector: 'credentials'
+})
+class MockCredentialsDirective {
+    @Output()
+    public credentials: EventEmitter<any> = new EventEmitter<any>();
+}
 
 @Directive({
     selector: '[fileDragDrop]'
@@ -110,7 +124,7 @@ describe('DeployComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective],
+            declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective, MockCredentialsDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
@@ -525,6 +539,112 @@ describe('DeployComponent', () => {
 
             component['networkName'].should.equal('');
             component['networkNameValid'].should.equal(true);
+        });
+    });
+
+    describe('updateCredentials', () => {
+        it('should set details to null if no event', () => {
+            component.updateCredentials(null);
+
+            should.not.exist(component['userId']);
+            should.not.exist(component['userSecret']);
+            should.not.exist(component['credentials']);
+        });
+
+        it('should set the userId and secret', () => {
+            let event = {userId: 'myUserId', secret: 'mySecret'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['userSecret'].should.equal('mySecret');
+
+            should.not.exist(component['credentials']);
+        });
+
+        it('should set the credentials', () => {
+            let event = {userId: 'myUserId', cert: 'myCert', key: 'myKey'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['credentials'].should.deep.equal({certificate: 'myCert', privateKey: 'myKey'});
+
+            should.not.exist(component['userSecret']);
+        });
+    });
+
+    describe('isInvalidDeploy', () => {
+        it('should set invalid if no network name', () => {
+            component['networkName'] = null;
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if network name invalid', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = false;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if deploy in progress', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = true;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if no userId', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = true;
+
+            component['userId'] = null;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set valid', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(false);
         });
     });
 });

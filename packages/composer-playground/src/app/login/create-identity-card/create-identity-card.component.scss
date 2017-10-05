@@ -58,6 +58,7 @@
               margin-top: $space-large;
               margin-bottom: $space-mlarge;
               flex-wrap: wrap;
+              position: relative;
 
               .file-types-list-item {
                     background-color: $white;
@@ -80,10 +81,6 @@
 
   section {
     font-size: 0.9em;
-
-    file-importer {
-      margin-top: $space-medium;
-    }
 
     span {
       color: $secondary-text;
