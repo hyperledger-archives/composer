@@ -16,8 +16,8 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const Docker = require('dockerode');
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
@@ -27,6 +27,7 @@ const Util = require('composer-common').Util;
 
 
 let client;
+let docker = new Docker();
 let forceDeploy = false;
 
 /**
@@ -566,6 +567,31 @@ class TestUtil {
         } else {
             throw new Error('I do not know what kind of deploy you want me to run!');
         }
+    }
+
+    /**
+     * Undeploy the specified business network definition.
+     * @param {BusinessNetworkDefiniton} businessNetworkDefinition - the business network definition.
+     * @return {Promise} - a promise that will be resolved when complete.
+     */
+    static undeploy(businessNetworkDefinition) {
+        if (!TestUtil.isHyperledgerFabricV1()) {
+            return Promise.resolve();
+        }
+        return docker.listContainers()
+            .then((containers) => {
+                const matchingContainers = containers.filter((container) => {
+                    return container.Image.match(/^dev-/);
+                }).map((container) => {
+                    return docker.getContainer(container.Id);
+                });
+                return matchingContainers.reduce((promise, matchingContainer) => {
+                    return promise.then(() => {
+                        console.log(`Stopping Docker container ${matchingContainer.id} ...`);
+                        return matchingContainer.stop();
+                    });
+                }, Promise.resolve());
+            });
     }
 
     /**

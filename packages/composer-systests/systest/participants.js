@@ -49,6 +49,10 @@ describe('Participant system tests', function () {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     let createParticipant = (participantId) => {
         let factory = client.getBusinessNetwork().getFactory();
         let participant = factory.newResource('systest.participants', 'SimpleParticipant', participantId);

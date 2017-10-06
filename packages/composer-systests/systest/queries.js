@@ -163,6 +163,10 @@ describe('Query system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     beforeEach(function () {
         return client.getAssetRegistry('systest.queries.SampleAsset')
             .then((assetRegistry) => {

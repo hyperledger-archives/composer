@@ -24,7 +24,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-
 describe('HTTP POST system tests', () => {
 
     let businessNetworkDefinition;
@@ -52,6 +51,10 @@ describe('HTTP POST system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     it('should update an asset with the the results of an HTTP POST. WARNING, running remote on Bluemix.', () => {
