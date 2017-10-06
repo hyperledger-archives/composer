@@ -91,12 +91,6 @@ export class SampleBusinessNetworkService {
                 return this.adminService.start(newNetwork);
             })
             .then(() => {
-                return this.clientService.refresh(newNetwork.getName());
-            })
-            .then(() => {
-                return this.clientService.reset();
-            })
-            .then(() => {
                 return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
             })
             .then(() => {

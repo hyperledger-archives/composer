@@ -103,7 +103,7 @@ module.exports = function(config) {
         },
 
         client: {
-            captureConsole: true,
+            captureConsole: !!process.env.DEBUG,
             mocha: {
                 timeout: '0'
             }

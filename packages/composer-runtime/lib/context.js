@@ -24,7 +24,6 @@ const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
-const NetworkManager = require('./networkmanager');
 const Resolver = require('./resolver');
 const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
@@ -362,7 +361,6 @@ class Context {
 
                 }
 
-
                 // Load the current participant.
                 return this.getIdentityManager().getParticipant(identity);
 
@@ -370,23 +368,6 @@ class Context {
             .then((participant) => {
                 LOG.exit(method, participant);
                 return participant;
-            })
-            .catch((error) => {
-                const name = this.getIdentityService().getName();
-                // Check for an admin user.
-                // TODO: this is temporary whilst we migrate to requiring all
-                // users to have identities that are mapped to participants.
-                if (!error.activationRequired) {
-
-                    if (name && name.match(/admin/i)) {
-                        LOG.exit(method, null);
-                        return null;
-                    }
-                }
-                // Throw the error.
-                LOG.error(method, error);
-                throw error;
-
             });
     }
 
@@ -565,24 +546,30 @@ class Context {
                 }
             })
             .then(() => {
-                if (options.function !== 'init') {
-                    LOG.debug(method, 'Loading current participant');
-                    return this.loadCurrentParticipant();
-                } else {
+                if (options.function === 'init') {
                     // No point loading the participant as no participants exist!
                     LOG.debug(method, 'Not loading current participant as processing deployment');
                     return null;
+                } else if (options.reinitialize) {
+                    // We don't want to change the participant in the middle of a update.
+                    LOG.debug(method, 'Reinitializing, not loading current participant');
+                    return null;
+                } else {
+                    LOG.debug(method, 'Loading current participant');
+                    return this.loadCurrentParticipant();
                 }
             })
             .then((participant) => {
-                if (!options.reinitialize) {
+                if (participant) {
                     LOG.debug(method, 'Setting current participant', participant);
                     this.setParticipant(participant);
                 } else {
                     // We don't want to change the participant in the middle of a update.
-                    LOG.debug(method, 'Reinitializing, not setting current participant', participant);
-                    // but other things that are dependant on data in the business network
-                    // definition do need to be reset
+                    LOG.debug(method, 'Deploying or reinitializing, not setting current participant');
+                }
+                if (options.reinitialize) {
+                    // If we are reinitializing, things that are dependant on data in the
+                    // business network definition do need to be reset
                     // TODO: Concerned about data migration when the model is changed.
                     this.registryManager = null;
                     this.resolver = null;
@@ -803,6 +790,7 @@ class Context {
      */
     getNetworkManager() {
         if (!this.networkManager) {
+            const NetworkManager = require('./networkmanager');
             this.networkManager = new NetworkManager(this);
         }
         return this.networkManager;
@@ -867,6 +855,15 @@ class Context {
         this.transaction = transaction;
         this.transactionLogger = new TransactionLogger(this.transaction, this.getRegistryManager(), this.getSerializer());
         this.getAccessController().setTransaction(transaction);
+    }
+
+    /**
+     * Clear the current transaction.
+     */
+    clearTransaction() {
+        this.transaction = null;
+        this.transactionLogger = null;
+        this.getAccessController().setTransaction(null);
     }
 
     /**

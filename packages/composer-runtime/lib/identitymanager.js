@@ -97,7 +97,7 @@ class IdentityManager extends TransactionHandler {
 
                 // If it still doesn't exist, throw!
                 if (!exists) {
-                    const error = new Error('The current identity has not been registered:'+identityName);
+                    const error = new Error('The current identity has not been registered: '+identityName);
                     error.identityName=identityName;
                     LOG.error(method, error);
                     throw error;
