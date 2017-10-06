@@ -333,9 +333,10 @@ class AdminConnection {
                 // to add some:
                 // 1) Create a NetworkAdmin participant for the current identity.
                 // 2) Bind the current identity to the new NetworkAdmin participant.
-                if (!startOptions.bootstrapTransactions) {
+                if (!startOptions.bootstrapTransactions || startOptions.bootstrapTransactions.length === 0) {
                     LOG.debug(method, 'No bootstrap transactions specified');
                     startTransaction.bootstrapTransactions = this._generateBootstrapTransactions(factory, identityName, identityCertificate);
+                    delete startOptions.bootstrapTransactions;
                 }
 
                 // Otherwise, parse all of the supplied bootstrap transactions.

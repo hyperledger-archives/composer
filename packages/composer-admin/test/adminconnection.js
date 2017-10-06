@@ -621,8 +621,41 @@ describe('AdminConnection', () => {
             sandbox.stub(uuid, 'v4').returns('47bc3a67-5599-4460-9745-6a291df4f879');
         });
 
-        it('should build the start transaction', () => {
+        it('should build the start transaction if no bootstrap transactions specified', () => {
             return adminConnection._buildStartTransaction(businessNetworkDefinition)
+                .then((startTransactionJSON) => {
+                    startTransactionJSON.should.deep.equal({
+                        $class: 'org.hyperledger.composer.system.StartBusinessNetwork',
+                        bootstrapTransactions: [
+                            {
+                                $class: 'org.hyperledger.composer.system.AddParticipant',
+                                resources: [
+                                    {
+                                        $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                                        participantId: 'admin'
+                                    }
+                                ],
+                                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                                timestamp: '1970-01-01T00:00:00.000Z',
+                                transactionId: '47bc3a67-5599-4460-9745-6a291df4f879'
+                            },
+                            {
+                                $class: 'org.hyperledger.composer.system.BindIdentity',
+                                certificate: 'such cert',
+                                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                                timestamp: '1970-01-01T00:00:00.000Z',
+                                transactionId: '47bc3a67-5599-4460-9745-6a291df4f879'
+                            }
+                        ],
+                        businessNetworkArchive: 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        timestamp: '1970-01-01T00:00:00.000Z',
+                        transactionId: '47bc3a67-5599-4460-9745-6a291df4f879'
+                    });
+                });
+        });
+
+        it('should build the start transaction if empty bootstrap transactions specified', () => {
+            return adminConnection._buildStartTransaction(businessNetworkDefinition, { bootstrapTransactions: [] })
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
                         $class: 'org.hyperledger.composer.system.StartBusinessNetwork',
