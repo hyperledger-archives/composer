@@ -180,6 +180,7 @@ describe('TransactionComponent', () => {
     describe('#generateTransactionDeclaration', () => {
         let mockModelFile;
         beforeEach(() => {
+            component['updateExistingJSON'] = sandbox.stub();
             mockModelFile = sinon.createStubInstance(ModelFile);
             mockModelFile.getNamespace.returns('com.test');
         });
@@ -207,6 +208,7 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
         });
 
         it('should generate valid transaction definition with false', () => {
@@ -232,6 +234,7 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
         });
 
         it('should generate valid transaction definition with true', () => {
@@ -257,6 +260,29 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
+        });
+
+        it('should generate a valid transactions when existing data exists adding extra data and preserving previous field values', () => {
+            mockSerializer.toJSON.returns({$class: '', someField: '', optionalField: 'optional value'});
+            mockTransaction.getIdentifierFieldName.returns('transactionId');
+            mockTransaction.getModelFile.returns(mockModelFile);
+            mockTransaction.validate = sandbox.stub();
+            component['selectedTransaction'] = mockTransaction;
+
+            component['resourceDefinition'] = JSON.stringify({$class: 'com.org', someField: 'some value'});
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateTransactionDeclaration']();
+
+            // We use the following internal calls
+            mockFactory.newTransaction.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.be.calledWith({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+
         });
 
         it('should remove hidden transactions', () => {
@@ -309,6 +335,29 @@ describe('TransactionComponent', () => {
 
             // should be in error state
             should.exist(component['definitionError']);
+        });
+    });
+
+    describe('#updateExistingJSON', () => {
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and ignoring fields from the first that do not exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value', anotherField: 'another field'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+            result.should.not.have.property('anotherField');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second including individual values in fields of sub objects', () => {
+            let spy = sinon.spy(component['updateExistingJSON']);
+            let result = component['updateExistingJSON']({objectField: {subProperty: 'value to keep'}}, {objectField: {subProperty: 'value to discard', optionalSubProperty: 'value that exists in second object not first'}});
+            result.should.deep.equal({objectField: {subProperty: 'value to keep', optionalSubProperty: 'value that exists in second object not first'}});
         });
     });
 

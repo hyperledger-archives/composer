@@ -132,17 +132,36 @@ export class TransactionComponent implements OnInit {
             generateParameters);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         try {
-            let json = serializer.toJSON(resource);
+            let replacementJSON = serializer.toJSON(resource);
+            let existingJSON = JSON.parse(this.resourceDefinition);
             // remove hidden items from json
             this.hiddenTransactionItems.forEach((value, key) => {
-                delete json[key];
+                delete replacementJSON[key];
             });
-            this.resourceDefinition = JSON.stringify(json, null, 2);
+            if (existingJSON && !withSampleData) {
+                this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
+            } else {
+                // Initial popup, no previous data to protect
+                this.resourceDefinition = JSON.stringify(replacementJSON, null, 2);
+            }
             this.onDefinitionChanged();
         } catch (error) {
             // We can't generate a sample instance for some reason.
             this.definitionError = error.toString();
         }
+    }
+
+    private updateExistingJSON(previousJSON, toUpdateWithJSON): object {
+        for (let key in toUpdateWithJSON) {
+            if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
+                if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
+                    toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
+                } else {
+                    toUpdateWithJSON[key] = previousJSON[key];
+                }
+            }
+        }
+        return toUpdateWithJSON;
     }
 
     /**
