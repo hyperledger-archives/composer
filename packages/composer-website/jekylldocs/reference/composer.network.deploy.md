@@ -10,7 +10,8 @@ excerpt: Composer Network Deploy CLI
 
 ---
 
-The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 runtime.
+The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 network.
+Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 ```
 composer network deploy -a <business-network-archive> -p <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
@@ -18,21 +19,27 @@ composer network deploy -a <business-network-archive> -p <connection-profile-nam
 
 ### Options
 ```
---help                       Show help  [boolean]
---version, -v                Show version number  [boolean]
---archiveFile, -a            The business network archive file name  [string] [required]
---connectionProfileName, -p  The connection profile name  [string]
---enrollId, -i               The enrollment ID of the user  [string] [required]
---loglevel, -l               The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
---option, -o                 Options that are specific specific to a connection. Multiple options are specified by repeating this option  [string]
---optionsFile, -O            A file containing options that are specific to connection  [string]
---enrollSecret, -s           The enrollment secret of the user  [string]
+composer network deploy [options]
+
+Options:
+  --help                             Show help  [boolean]
+  -v, --version                      Show version number  [boolean]
+  --archiveFile, -a                  The business network archive file name  [string] [required]
+  --connectionProfileName, -p        The connection profile name  [string] [required]
+  --enrollId, -i                     The enrollment ID of the user  [string] [required]
+  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O                  A file containing options that are specific to connection  [string]
+  --enrollSecret, -s                 The enrollment secret of the user  [string]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string]
+  --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
 ```
 
 ## Example Output
 
 ```
-composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString
+composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
 
 Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:
@@ -71,4 +78,4 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 				  "someOtherOption": "A Value"
 				}
 
-For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
+For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} Node.js SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
