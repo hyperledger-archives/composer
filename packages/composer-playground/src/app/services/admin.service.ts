@@ -187,8 +187,9 @@ export class AdminService {
         return this.getAdminConnection().install(businessNetworkDefinitionName);
     }
 
-    public start(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().start(businessNetworkDefinition);
+    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<void> {
+        // Cast to <any> as TypeScript does not know about default parameters :-(
+        return (<any> this.getAdminConnection()).start(businessNetworkDefinition, startOptions);
     }
 
     public importIdentity(connectionProfileName: string, id: string, certificate: string, privateKey: string): Promise<void> {
