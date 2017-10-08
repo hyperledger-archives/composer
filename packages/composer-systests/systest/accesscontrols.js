@@ -65,6 +65,10 @@ describe('Access control system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     beforeEach(() => {
         let factory = client.getBusinessNetwork().getFactory();
         alice = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');

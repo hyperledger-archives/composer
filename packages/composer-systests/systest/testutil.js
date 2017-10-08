@@ -16,8 +16,8 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const Docker = require('dockerode');
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
@@ -27,6 +27,7 @@ const Util = require('composer-common').Util;
 
 
 let client;
+let docker = new Docker();
 let forceDeploy = false;
 
 /**
@@ -452,6 +453,23 @@ class TestUtil {
     static deploy(businessNetworkDefinition, forceDeploy_) {
         const adminConnection = new AdminConnection();
         forceDeploy = forceDeploy_;
+        const bootstrapTransactions = [
+            {
+                $class: 'org.hyperledger.composer.system.AddParticipant',
+                resources: [
+                    {
+                        $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                        participantId: 'admin'
+                    }
+                ],
+                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+            },
+            {
+                $class: 'org.hyperledger.composer.system.IssueIdentity',
+                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                identityName: 'admin',
+            }
+        ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return Promise.resolve()
@@ -481,6 +499,7 @@ class TestUtil {
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, {
+                        bootstrapTransactions,
                         endorsementPolicy: {
                             identities: [
                                 {
@@ -517,7 +536,7 @@ class TestUtil {
             // Connect and deploy the network on the peers for org1.
             return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -530,7 +549,7 @@ class TestUtil {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
-                    return adminConnection.start(businessNetworkDefinition);
+                    return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -540,7 +559,7 @@ class TestUtil {
             // Connect and deploy the network.
             return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -548,6 +567,31 @@ class TestUtil {
         } else {
             throw new Error('I do not know what kind of deploy you want me to run!');
         }
+    }
+
+    /**
+     * Undeploy the specified business network definition.
+     * @param {BusinessNetworkDefiniton} businessNetworkDefinition - the business network definition.
+     * @return {Promise} - a promise that will be resolved when complete.
+     */
+    static undeploy(businessNetworkDefinition) {
+        if (!TestUtil.isHyperledgerFabricV1()) {
+            return Promise.resolve();
+        }
+        return docker.listContainers()
+            .then((containers) => {
+                const matchingContainers = containers.filter((container) => {
+                    return container.Image.match(/^dev-/);
+                }).map((container) => {
+                    return docker.getContainer(container.Id);
+                });
+                return matchingContainers.reduce((promise, matchingContainer) => {
+                    return promise.then(() => {
+                        console.log(`Stopping Docker container ${matchingContainer.id} ...`);
+                        return matchingContainer.stop();
+                    });
+                }, Promise.resolve());
+            });
     }
 
     /**

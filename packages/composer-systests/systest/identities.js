@@ -61,6 +61,10 @@ describe('Identity system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     beforeEach(() => {
         let factory = client.getBusinessNetwork().getFactory();
         participant = factory.newResource('systest.identities', 'SampleParticipant', 'bob@uk.ibm.com');

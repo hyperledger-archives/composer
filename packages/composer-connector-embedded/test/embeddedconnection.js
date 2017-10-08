@@ -14,7 +14,6 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const Context = require('composer-runtime').Context;
@@ -156,11 +155,10 @@ describe('EmbeddedConnection', () => {
     describe('#deploy', ()  => {
         it('should just call start', () => {
             sinon.stub(connection, 'start').resolves();
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' })
                 .then(() => {
                     sinon.assert.calledOnce(connection.start);
-                    sinon.assert.calledWith(connection.start, mockSecurityContext, mockBusinessNetwork);
+                    sinon.assert.calledWith(connection.start, mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' });
                 });
         });
     });
@@ -168,9 +166,6 @@ describe('EmbeddedConnection', () => {
     describe('#start', () => {
 
         it('should call the init engine method, ping, and store the chaincode ID', () => {
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
-            mockBusinessNetwork.getName.returns('testnetwork');
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
             mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             mockSecurityContext.getIdentity.returns(identity);
@@ -180,17 +175,14 @@ describe('EmbeddedConnection', () => {
             sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.start(mockSecurityContext, mockBusinessNetwork)
+            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' })
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
                         context.should.be.an.instanceOf(Context);
                         context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
                         return true;
-                    }), 'init', ['aGVsbG8gd29ybGQ=', '{}']);
-                    sinon.assert.calledOnce(connection.ping);
-                    sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
-                    sinon.assert.calledWith(mockSecurityContext.setChaincodeID, '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+                    }), 'init', ['{"start":"json"}']);
                     EmbeddedConnection.getBusinessNetwork('testnetwork', 'devFabric1').should.equal('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
                     EmbeddedConnection.getChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f').should.deep.equal({
                         uuid: '6eeb8858-eced-4a32-b1cd-2491f1e3718f',
@@ -321,6 +313,22 @@ describe('EmbeddedConnection', () => {
 
     describe('#getIdentity', () => {
 
+        const adminIdentity = {
+            identifier: '',
+            name: 'admin',
+            issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+            secret: 'adminpw',
+            certificate: [
+                '-----BEGIN CERTIFICATE-----',
+                'YWRtaW4=',
+                '-----END CERTIFICATE-----'
+            ].join('\n').concat('\n'),
+            imported: false,
+            options: {
+                issuer: true
+            }
+        };
+
         let mockIdentitiesDataCollection;
 
         beforeEach(() => {
@@ -328,29 +336,66 @@ describe('EmbeddedConnection', () => {
             sinon.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
         });
 
-        it('should return the hardcoded admin identity', () => {
+        it('should create the hardcoded admin identity if it does not exist', () => {
+            mockIdentitiesDataCollection.get.withArgs('admin').rejects(new Error('such error'));
+            sinon.stub(connection, '_createAdminIdentity').resolves(adminIdentity);
             return connection.getIdentity('admin')
-                .should.eventually.be.deep.equal({
-                    identifier: '',
-                    name: 'admin',
-                    issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                    secret: 'adminpw',
-                    certificate: [
-                        '----- BEGIN CERTIFICATE -----',
-                        'YWRtaW4=',
-                        '----- END CERTIFICATE -----'
-                    ].join('\n').concat('\n'),
-                    imported: false,
-                    options: {
-                        issuer: true
-                    }
-                });
+                .should.eventually.be.deep.equal(adminIdentity);
+        });
+
+        it('should return the hardcoded admin identity if it already exists', () => {
+            mockIdentitiesDataCollection.get.withArgs('admin').resolves(adminIdentity);
+            sinon.stub(connection, '_createAdminIdentity').rejects(new Error('such error'));
+            return connection.getIdentity('admin')
+                .should.eventually.be.deep.equal(adminIdentity);
         });
 
         it('should return the specified identity', () => {
             mockIdentitiesDataCollection.get.withArgs('bob1').resolves(identity);
             return connection.getIdentity('bob1')
                .should.eventually.be.equal(identity);
+        });
+
+        it('should rethrow an identity error if not for admin', () => {
+            mockIdentitiesDataCollection.get.withArgs('bob1').rejects(new Error('such error'));
+            return connection.getIdentity('bob1')
+                .should.be.rejectedWith(/such error/);
+        });
+
+    });
+
+    describe('#_createAdminIdentity', () => {
+
+        const adminIdentity = {
+            certificate: [
+                '-----BEGIN CERTIFICATE-----',
+                'YWRtaW4=',
+                '-----END CERTIFICATE-----'
+            ].join('\n').concat('\n'),
+            identifier: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+            issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+            name: 'admin',
+            secret: 'adminpw',
+            imported: false,
+            options: {
+                issuer: true
+            }
+        };
+
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sandbox.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('should store a new identity if it does not exists', () => {
+            return connection._createAdminIdentity()
+                .then((result) => {
+                    sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'admin', adminIdentity);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', adminIdentity);
+                });
         });
 
     });
@@ -428,12 +473,25 @@ describe('EmbeddedConnection', () => {
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
             return connection.createIdentity(mockSecurityContext, 'doge')
                .then((result) => {
-                   sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
+                   sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
                        certificate: [
-                           '----- BEGIN CERTIFICATE -----',
+                           '-----BEGIN CERTIFICATE-----',
                            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
-                           '----- END CERTIFICATE -----'
+                           '-----END CERTIFICATE-----'
+                       ].join('\n').concat('\n'),
+                       identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
+                       issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                       name: 'doge',
+                       secret: 'f892c30a',
+                       imported: false,
+                       options: { }
+                   });
+                   sinon.assert.calledWith(mockIdentitiesDataCollection.add, '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799', {
+                       certificate: [
+                           '-----BEGIN CERTIFICATE-----',
+                           'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
+                           '-----END CERTIFICATE-----'
                        ].join('\n').concat('\n'),
                        identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
@@ -452,12 +510,27 @@ describe('EmbeddedConnection', () => {
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
             return connection.createIdentity(mockSecurityContext, 'doge', { issuer: true })
                 .then((result) => {
-                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
+                    sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
                     sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
                         certificate: [
-                            '----- BEGIN CERTIFICATE -----',
+                            '-----BEGIN CERTIFICATE-----',
                             'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
-                            '----- END CERTIFICATE -----'
+                            '-----END CERTIFICATE-----'
+                        ].join('\n').concat('\n'),
+                        identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
+                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                        name: 'doge',
+                        secret: 'f892c30a',
+                        imported: false,
+                        options: {
+                            issuer: true
+                        }
+                    });
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799', {
+                        certificate: [
+                            '-----BEGIN CERTIFICATE-----',
+                            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
+                            '-----END CERTIFICATE-----'
                         ].join('\n').concat('\n'),
                         identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
                         issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',

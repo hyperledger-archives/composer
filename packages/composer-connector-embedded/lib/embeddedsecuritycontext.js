@@ -33,6 +33,14 @@ class EmbeddedSecurityContext extends SecurityContext {
     }
 
     /**
+     * Get the current username.
+     * @return {string} The username
+     */
+    getUser() {
+        return this.identity.name;
+    }
+
+    /**
      * Get the current identity.
      * @return {string} The current identity.
      */

@@ -56,6 +56,10 @@ describe('Event system tests', function () {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     let validateEvent = (event, index) => {
         event.getIdentifier().should.have.string(`#${index}`);
         if (event.$type.match(/SimpleEvent/)) {

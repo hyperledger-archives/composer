@@ -187,7 +187,7 @@ describe('System REST API unit tests', () => {
                     res.should.be.json;
                     res.body.should.deep.equal({
                         version: version,
-                        participant: null
+                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin'
                     });
                 });
         });
@@ -204,8 +204,9 @@ describe('System REST API unit tests', () => {
                     const identities = res.body.sort((a, b) => {
                         return a.name.localeCompare(b.name);
                     });
-                    identities[0].name.should.equal('alice1');
-                    identities[1].name.should.equal('bob1');
+                    identities[0].name.should.equal('admin');
+                    identities[1].name.should.equal('alice1');
+                    identities[2].name.should.equal('bob1');
                 });
         });
 
@@ -215,7 +216,7 @@ describe('System REST API unit tests', () => {
 
         it('should return the specified identity', () => {
             return chai.request(app)
-                .get('/api/system/identities/' + identityIds[0])
+                .get('/api/system/identities/' + identityIds[1])
                 .then((res) => {
                     res.should.be.json;
                     const identity = res.body;

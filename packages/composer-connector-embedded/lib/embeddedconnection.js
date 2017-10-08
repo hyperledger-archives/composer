@@ -185,40 +185,34 @@ class EmbeddedConnection extends Connection {
      * Deploy a business network. For the embedded connector this just translates to
      * a start request as no install is required.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
-        return this.start(securityContext, businessNetwork, deployOptions);
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
+        return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
     }
 
     /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific start options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been deployed and started, or rejected with an error.
      */
-    start(securityContext, businessNetwork, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         let container = EmbeddedConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeUUID = container.getUUID();
         let engine = EmbeddedConnection.createEngine(container);
-        EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
+        EmbeddedConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
         let context = new EmbeddedContext(engine, identity, this);
-        return businessNetwork.toArchive({ date: new Date(545184000000) })
-            .then((businessNetworkArchive) => {
-                const initArgs = {};
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
-            })
-            .then(() => {
-                securityContext.setChaincodeID(chaincodeUUID);
-                return this.ping(securityContext);
-            });
+        return engine.init(context, 'init', [startTransaction]);
     }
 
     /**
@@ -301,28 +295,56 @@ class EmbeddedConnection extends Connection {
      * rejected with an error.
      */
     getIdentity(identityName) {
-        if (identityName === 'admin') {
-            const certificateContents = identityName;
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from(certificateContents).toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
-            return Promise.resolve({
-                identifier: '',
-                name: 'admin',
-                issuer: DEFAULT_ISSUER,
-                secret: 'adminpw',
-                certificate,
-                imported: false,
-                options: {
-                    issuer: true
-                }
-            });
-        }
+        let identities;
         return this.getIdentities()
-            .then((identities) => {
+            .then((identities_) => {
+                identities = identities_;
                 return identities.get(identityName);
+            })
+            .catch((error) => {
+                if (identityName === 'admin') {
+                    return this._createAdminIdentity();
+                }
+                throw error;
+            });
+    }
+
+    /**
+     * Create the default admin identity.
+     * @return {Promise} A promise that is resolved with the admin identity when complete,
+     * or rejected with an error.
+     */
+    _createAdminIdentity() {
+        const identityName = 'admin';
+        const certificateContents = identityName;
+        const certificate = [
+            '-----BEGIN CERTIFICATE-----',
+            Buffer.from(certificateContents).toString('base64'),
+            '-----END CERTIFICATE-----'
+        ].join('\n').concat('\n');
+        const identifier = createHash('sha256').update(certificateContents).digest('hex');
+        const identity = {
+            identifier,
+            name: identityName,
+            issuer: DEFAULT_ISSUER,
+            secret: 'adminpw',
+            certificate,
+            imported: false,
+            options: {
+                issuer: true
+            }
+        };
+        let identities;
+        return this.getIdentities()
+            .then((identities_) => {
+                identities = identities_;
+                return identities.add(identityName, identity);
+            })
+            .then(() => {
+                return identities.add(identifier, identity);
+            })
+            .then(() => {
+                return identity;
             });
     }
 
@@ -383,9 +405,9 @@ class EmbeddedConnection extends Connection {
                 }
                 const certificateContents = identityName + ':' + uuid.v4();
                 const certificate = [
-                    '----- BEGIN CERTIFICATE -----',
+                    '-----BEGIN CERTIFICATE-----',
                     Buffer.from(certificateContents).toString('base64'),
-                    '----- END CERTIFICATE -----'
+                    '-----END CERTIFICATE-----'
                 ].join('\n').concat('\n');
                 const identifier = createHash('sha256').update(certificateContents).digest('hex');
                 const secret = uuid.v4().substring(0, 8);
@@ -399,6 +421,9 @@ class EmbeddedConnection extends Connection {
                     options: options || {}
                 };
                 return identities.add(identityName, identity)
+                    .then(() => {
+                        return identities.add(identifier, identity);
+                    })
                     .then(() => {
                         return {
                             userID: identity.name,
