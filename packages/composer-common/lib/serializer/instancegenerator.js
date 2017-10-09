@@ -48,7 +48,7 @@ class InstanceGenerator {
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else {
-            throw new Error('Unrecognised ' + JSON.stringify(thing) );
+            throw new Error('Unrecognised ' + JSON.stringify(thing));
         }
     }
 
@@ -67,8 +67,8 @@ class InstanceGenerator {
                 continue;
             }
             const value = obj[property.getName()];
-            if(Util.isNull(value)) {
-                obj[property.getName()] = property.accept(this,parameters);
+            if (Util.isNull(value)) {
+                obj[property.getName()] = property.accept(this, parameters);
             }
         }
         return obj;
@@ -100,8 +100,7 @@ class InstanceGenerator {
         let type = field.getFullyQualifiedTypeName();
 
         if (ModelUtil.isPrimitiveType(type)) {
-            switch(type) {
-            case 'DateTime':
+            switch (type) {                case 'DateTime':
                 return parameters.valueGenerator.getDateTime();
             case 'Integer':
                 return parameters.valueGenerator.getInteger();
@@ -124,16 +123,33 @@ class InstanceGenerator {
         }
 
         classDeclaration = this.findConcreteSubclass(classDeclaration);
+        let fqn = classDeclaration.getFullyQualifiedName();
+        // before doing any form of check for conept or class we want to check if this
+        // has been seen before or not
+        if (!parameters.seen.find((e) => {
+            return fqn === e;
+        })) {
 
-        if (classDeclaration.isConcept()) {
-            let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
-            parameters.stack.push(concept);
-            return classDeclaration.accept(this, parameters);
+            parameters.seen.push(fqn);
+            if (classDeclaration.isConcept()) {
+                let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
+                parameters.stack.push(concept);
+                return classDeclaration.accept(this, parameters);
+            } else {
+                const id = this.generateRandomId(classDeclaration);
+                let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
+                parameters.stack.push(resource);
+                return classDeclaration.accept(this, parameters);
+            }
         } else {
-            const id = this.generateRandomId(classDeclaration);
-            let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
-            parameters.stack.push(resource);
-            return classDeclaration.accept(this, parameters);
+            if (field.isArray()){
+                return;
+            }
+            if (field.isOptional()){
+                return null;
+            }
+            throw new Error('Model is recursive.');
+            //todo
         }
     }
 
