@@ -240,7 +240,8 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer network start</code> utility is used to deploy a business network archive from local disk to the Hyperledger Fabric peers.</p>
+<p>The <code>composer network start</code> utility is used to deploy a business network archive from local disk to a Hyperledger Fabric v1.0 network.
+Before using this command, read the topic <a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a>.</p>
 
 <p><em>Please Note</em>: You <strong>must</strong> first install the Hyperledger Composer runtime to the Hyperledger Fabric peers by using the <code>composer runtime install</code> command. The business network name specified in the <code>composer runtime install</code> command must be the same as the business network name specified in the <code>composer network start</code> command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start -a &lt;business-network-archive&gt; -i &lt;user-id&gt; -s &lt;user-id-secret&gt;
@@ -249,15 +250,18 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --loglevel, -l               The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
-  --option, -o                 Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O            A file containing options that are specific to connection  [string]
-  --startId, -i                The id of the user permitted to start a network  [string] [required]
-  --startSecret, -s            The secret of the user permitted to start a network, if required  [string]
+  --help                             Show help  [boolean]
+  -v, --version                      Show version number  [boolean]
+  --archiveFile, -a                  The business network archive file name  [string] [required]
+  --connectionProfileName, -p        The connection profile name  [string] [required]
+  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O                  A file containing options that are specific to connection  [string]
+  --startId, -i                      The id of the user permitted to start a network  [string] [required]
+  --startSecret, -s                  The secret of the user permitted to start a network, if required  [string]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string]
+  --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
 </code></pre></div>
 <h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
 
@@ -286,7 +290,7 @@ Options:
 </code></pre></div></li>
 </ul>
 
-<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric node SDK documentation</a>.</p>
+<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric Node.js SDK documentation</a>.</p>
 
             
           </section>

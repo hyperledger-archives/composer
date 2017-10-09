@@ -785,12 +785,12 @@ Command succeeded
 
 <p>Switch to the terminal, change directory to the <code>dist</code> folder containing the <code>my-network.bna</code> file and type:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd dist
-composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
 </code></pre></div>
-<p><em>Note: The flag &#39;-p&#39; specifies the type of connection profile to use to connect to the runtime Hyperledger Fabric .</em></p>
+<p><em>Note: The flag &#39;-p&#39; specifies the name of the connection profile to use to connect to the Hyperledger Fabric network. The flags &#39;-A admin&#39; and &#39;-S&#39; specifies that the &#39;admin&#39; identity should be configured as a business network administrator. You will use the &#39;admin&#39; identity in subsequent commands to administer your business network.</em></p>
 
 <p>After approximately 30 seconds or so, the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
 
 Deploying business network from archive: my-network.bna
 Business network definition:
@@ -810,7 +810,7 @@ Command succeeded
 
 The connection to the network was successfully tested: my-network
     version: 0.12.0
-    participant: &lt;no participant found&gt;
+    participant: org.hyperledger.composer.system.NetworkAdmin#admin
 
 Command succeeded
 </code></pre></div>
