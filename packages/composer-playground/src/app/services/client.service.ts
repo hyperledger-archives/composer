@@ -166,6 +166,9 @@ export class ClientService {
                     let query = this.createQueryFile(id, content);
                     this.getBusinessNetwork().getQueryManager().setQueryFile(query);
                     break;
+                case 'package':
+                      this.setBusinessNetworkPackageJson(JSON.parse(content));
+                      break;
                 case 'readme':
                     this.setBusinessNetworkReadme(content);
                     break;
@@ -225,7 +228,7 @@ export class ClientService {
         this.businessNetworkChanged$.next(true);
     }
 
-    setBusinessNetworkPackageJson(packageJson: any) {
+    setBusinessNetworkPackageJson(packageJson) {
         // prevent BND name change
         if (packageJson.name !== this.getBusinessNetworkName()) {
             throw new Error('Unsupported attempt to update Business Network Name.');

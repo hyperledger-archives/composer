@@ -619,16 +619,16 @@ Switch to the terminal, change directory to the `dist` folder containing the `my
 
 ```
 cd dist
-composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
 ```
 
 
-_Note: The flag '-p' specifies the type of connection profile to use to connect to the runtime {{site.data.conrefs.hlf_full}} ._
+_Note: The flag '-p' specifies the name of the connection profile to use to connect to the {{site.data.conrefs.hlf_full}} network. The flags '-A admin' and '-S' specifies that the 'admin' identity should be configured as a business network administrator. You will use the 'admin' identity in subsequent commands to administer your business network._
 
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
 ```
-user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
 
 Deploying business network from archive: my-network.bna
 Business network definition:
@@ -654,7 +654,7 @@ user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
 	version: 0.12.0
-	participant: <no participant found>
+	participant: org.hyperledger.composer.system.NetworkAdmin#admin
 
 Command succeeded
 ```

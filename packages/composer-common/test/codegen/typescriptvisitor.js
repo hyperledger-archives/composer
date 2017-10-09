@@ -21,7 +21,12 @@ const FileWriter = require('../../lib/codegen/filewriter');
 
 const fs = require('fs');
 const path = require('path');
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-things'));
 const sinon = require('sinon');
+const BusinessNetworkDefinition = require('../../lib/businessnetworkdefinition');
 
 const initSampleNetworkModel = (mockFileWriter) => {
     const carleaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
@@ -62,5 +67,41 @@ describe('TypescriptVisitor', function(){
             // check import was generated linking to the other file/namespace
             sinon.assert.calledWith(mockFileWriter.writeLine, 0 , 'import {MyParticipant} from \'./composer\';');
         });
+
+        it('coverage for business network definition',function(){
+            let mockBND = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+            mockBND.getModelManager.returns(mockModelManager);
+            let fakeObj = {accept: function(){}};
+
+
+            mockModelManager.getModelFiles.returns([fakeObj]);
+            let visitor = new TypescriptVisitor();
+            visitor.visit(mockBND,{});
+        });
+
+        it('coverage for random object',function(){
+
+            let fakeObj = {accept: function(){}};
+            let visitor = new TypescriptVisitor();
+            (()=>{
+                visitor.visit(fakeObj,{});
+            })
+            .should.throw(/Unrecognised type/);
+        });
+
+
+        it('coverage toTsType',function(){
+
+            let visitor = new TypescriptVisitor();
+            visitor.toTsType('Long').should.equal('number');
+            visitor.toTsType('Integer').should.equal('number');
+            visitor.toTsType('Double').should.equal('number');
+            visitor.toTsType('String').should.equal('string');
+            visitor.toTsType('Boolean').should.equal('boolean');
+            visitor.toTsType('DateTime').should.equal('Date');
+            visitor.toTsType('whatever').should.equal('whatever');
+        });
+
     });
 });

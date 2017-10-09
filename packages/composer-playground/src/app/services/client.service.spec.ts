@@ -283,6 +283,28 @@ describe('ClientService', () => {
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
+        it('should update a package.json file', inject([ClientService], (service: ClientService) => {
+          let mockSetPackage = sinon.stub(service, 'setBusinessNetworkPackageJson');
+          let packageJson = JSON.stringify({ name: 'my name' });
+
+          // call function
+          let result = service.updateFile('package', packageJson, 'package');
+
+          mockSetPackage.should.have.been.calledWith(JSON.parse(packageJson));
+          businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+
+        it('should fail to update a package.json file due to JSON error', inject([ClientService], (service: ClientService) => {
+          let mockSetPackage = sinon.stub(service, 'setBusinessNetworkPackageJson');
+          let packageJson = JSON.stringify({ name: 'my name' });
+
+          // call function
+          let result = service.updateFile('package', packageJson.substring(0, 10), 'package');
+
+          result.should.equal('SyntaxError: Unexpected end of JSON input');
+          businessNetworkChangedSpy.should.have.been.calledWith(false);
+        }));
+
         it('should update a readme file', inject([ClientService], (service: ClientService) => {
             let mockSetReadme = sinon.stub(service, 'setBusinessNetworkReadme');
 
