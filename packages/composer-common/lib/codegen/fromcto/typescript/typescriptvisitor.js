@@ -23,7 +23,6 @@ const Field = require('../../../introspect/field');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
-const FunctionDeclaration = require('../../../introspect/functiondeclaration');
 const util = require('util');
 
 /**
