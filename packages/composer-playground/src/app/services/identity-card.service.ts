@@ -170,7 +170,7 @@ export class IdentityCardService {
         });
     }
 
-    createIdentityCard(userName: string, businessNetworkName: string, enrollmentSecret: string, connectionProfile: any, credentials?: any, roles?: string[]): Promise<string> {
+    createIdentityCard(userName: string, businessNetworkName: string, enrollmentSecret: string, connectionProfile: any, credentials?: any, roles?: string[]): Promise<string | void> {
         const metadata: any = {
             version: 1,
             userName: userName,
@@ -194,7 +194,7 @@ export class IdentityCardService {
         return this.addIdentityCard(card);
     }
 
-    addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string> {
+    addIdentityCard(card: IdCard, indestructible: boolean = false): Promise<string | void> {
         let cardRef: string = uuid.v4();
         let data = {
             unused: true,
@@ -217,6 +217,16 @@ export class IdentityCardService {
             })
             .then(() => {
                 return cardRef;
+            })
+            .catch((actualError) => {
+                return this.deleteIdentityCard(cardRef)
+                    .then(() => {
+                        return Promise.reject(actualError);
+                    })
+                    // ignore this error it is probably just because it didn't atually create the card
+                    .catch(() => {
+                        return Promise.reject(actualError);
+                    });
             });
     }
 

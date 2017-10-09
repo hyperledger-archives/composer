@@ -49,6 +49,10 @@ describe('Asset system tests', function () {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     let createAsset = (assetId) => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newResource('systest.assets', 'SimpleAsset', assetId);

@@ -13,6 +13,7 @@
  */
 
 'use strict';
+
 const Connection = require('composer-common').Connection;
 const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
@@ -33,7 +34,6 @@ const runtimePackageJSON = require('composer-runtime-hlfv1/package.json');
 
 // The chaincode path is the portion of the GOPATH after 'src'.
 const chaincodePath = 'composer';
-
 
 /**
  * Class representing a connection to a business network running on Hyperledger
@@ -410,45 +410,37 @@ class HLFConnection extends Connection {
      * Instantiate the chaincode.
      *
      * @param {any} securityContext the security context
-     * @param {any} businessNetwork the business network
-     * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
+     * @param {Object} startOptions connector specific installation options
      * @returns {Promise} a promise for instantiation completion
      */
-    start(securityContext, businessNetwork, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         const method = 'start';
-        LOG.entry(method, securityContext, businessNetwork, startOptions);
+        LOG.entry(method, securityContext, businessNetworkIdentifier, startTransaction, startOptions);
 
-        if (!businessNetwork) {
-            throw new Error('businessNetwork not specified');
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!startTransaction) {
+            throw new Error('startTransaction not specified');
         }
 
-        let businessNetworkArchive;
         let finalTxId;
 
         // initialize the channel ready for instantiation
         LOG.debug(method, 'loading the channel configuration');
         return this._initializeChannel()
             .then(() => {
-                // serialise the business network
-                return businessNetwork.toArchive();
-            })
-            .then((bna) => {
-                businessNetworkArchive = bna;
                 // prepare and send the instantiate proposal
                 finalTxId = this.client.newTransactionID();
-
-                let initArgs = {};
-                if (startOptions && startOptions.logLevel) {
-                    initArgs.logLevel = startOptions.logLevel;
-                }
 
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetwork.getName(),
+                    chaincodeId: businessNetworkIdentifier,
                     txId: finalTxId,
                     fcn: 'init',
-                    args: [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]
+                    args: [startTransaction]
                 };
 
                 if (startOptions) {
@@ -509,7 +501,8 @@ class HLFConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HLFSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @param {string} deployOptions.logLevel the level of logging for the composer runtime
      * @param {any} deployOptions.endorsementPolicy the endorsement policy (either a JSON string or Object) as defined by fabric node sdk
@@ -517,20 +510,22 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
         const method = 'deploy';
-        LOG.entry(method, securityContext, businessNetwork, deployOptions);
+        LOG.entry(method, securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
         // Validate all the arguments.
-        if (!businessNetwork) {
-            throw new Error('businessNetwork not specified');
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!deployTransaction) {
+            throw new Error('deployTransaction not specified');
         }
 
         LOG.debug(method, 'installing composer runtime chaincode');
-        return this.install(securityContext, businessNetwork.getName(), {ignoreCCInstalled: true})
+        return this.install(securityContext, businessNetworkIdentifier, {ignoreCCInstalled: true})
             .then(() => {
                 // check to see if the chaincode is already instantiated
                 return this.channel.queryInstantiatedChaincodes();
@@ -538,13 +533,13 @@ class HLFConnection extends Connection {
             .then((queryResults) => {
                 LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
                 let alreadyInstantiated = queryResults.chaincodes.some((chaincode) => {
-                    return chaincode.path === 'composer' && chaincode.name === businessNetwork.getName();
+                    return chaincode.path === 'composer' && chaincode.name === businessNetworkIdentifier;
                 });
                 if (alreadyInstantiated) {
                     LOG.debug(method, 'chaincode already instantiated');
                     return Promise.resolve();
                 }
-                return this.start(securityContext, businessNetwork, deployOptions);
+                return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
             })
             .then(() => {
                 LOG.exit(method);

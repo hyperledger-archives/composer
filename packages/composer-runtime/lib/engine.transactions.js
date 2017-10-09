@@ -95,8 +95,6 @@ class EngineTransactions {
                         totalCount += count;
                     });
 
-
-
             })
             .then(() => {
 
@@ -130,7 +128,10 @@ class EngineTransactions {
                 // Store the transaction in the transaction registry.
                 LOG.debug(method, 'Storing historian record in the registry');
                 return historian.add(result);
-
+            })
+            .then(() => {
+                context.clearTransaction();
+                LOG.exit(method);
             });
 
     }

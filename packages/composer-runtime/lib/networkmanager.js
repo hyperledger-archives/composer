@@ -14,13 +14,13 @@
 
 'use strict';
 
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Context = require('./context');
+const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const TransactionHandler = require('./transactionhandler');
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+
 const LOG = Logger.getLog('IdentityManager');
-const createHash = require('sha.js');
-
-
 
 /**
  * A class for managing networks.
@@ -37,10 +37,28 @@ class NetworkManager extends TransactionHandler {
 
         LOG.info('<ResourceManager>', 'Binding in the tx names and impl');
         this.bind(
+            'org.hyperledger.composer.system.StartBusinessNetwork',
+            this.startBusinessNetwork
+        );
+        this.bind(
             'org.hyperledger.composer.system.UpdateBusinessNetwork',
             this.updateBusinessNetwork
         );
 
+    }
+
+    /**
+     * Start the business network archive.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    startBusinessNetwork(api, transaction) {
+        const method = 'startBusinessNetwork';
+        LOG.entry(method, transaction);
+        LOG.exit(method);
+        return Promise.resolve();
     }
 
     /**
@@ -51,16 +69,8 @@ class NetworkManager extends TransactionHandler {
      * with an error.
      */
     updateBusinessNetwork(api, transaction) {
-
         const method = 'updateBusinessNetwork';
         LOG.entry(method, transaction);
-
-        const Context = require('./context');
-        // if (args.length !== 1) {
-        //     LOG.error(method, 'Invalid arguments', args);
-        //     throw new Error('Inavblid arguements');
-        //     //util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive'])
-        // }
         let dataService = this.context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;

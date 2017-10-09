@@ -55,6 +55,10 @@ describe('Transaction (asset specific) system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     it('should submit and execute a transaction that contains assets', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'SimpleTransactionWithAssets');

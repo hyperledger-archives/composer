@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const prompt = require('prompt');
 
@@ -30,9 +31,18 @@ chai.use(require('chai-as-promised'));
 
 describe('composer transaction cmdutils unit tests', () => {
 
+    const pem1 = '-----BEGIN CERTIFICATE-----\nsuch admin1\n-----END CERTIFICATE-----\n';
+    const pem2 = '-----BEGIN CERTIFICATE-----\nsuch admin2\n-----END CERTIFICATE-----\n';
+    const pem3 = '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n';
+
     let sandbox;
+
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        sandbox.stub(fs, 'readFileSync');
+        fs.readFileSync.withArgs('admin1.pem').returns(pem1);
+        fs.readFileSync.withArgs('admin2.pem').returns(pem2);
+        fs.readFileSync.withArgs('admin3.pem').returns(pem3);
     });
 
     afterEach(() => {
@@ -53,7 +63,7 @@ describe('composer transaction cmdutils unit tests', () => {
                        ,connectionProfileName: 'testProfile'
                        ,optionsFile: '/path/to/options.json'};
             const optionsFileContents = '{"opt1": "value1", "opt2": "value2"}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionsFileContents);
+            fs.readFileSync.withArgs('/path/to/options.json').returns(optionsFileContents);
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'value1', opt2: 'value2'});
         });
@@ -90,7 +100,7 @@ describe('composer transaction cmdutils unit tests', () => {
                        ,option: 'opt1=newvalue1'
                        ,optionsFile: '/path/to/options.json'};
             const optionsFileContents = '{"opt1": "value1", "opt2": "value2"}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionsFileContents);
+            fs.readFileSync.withArgs('/path/to/options.json').returns(optionsFileContents);
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'newvalue1', opt2: 'value2'});
         });
@@ -102,7 +112,7 @@ describe('composer transaction cmdutils unit tests', () => {
                        ,option: 'opt4=newvalue1'
                        ,optionsFile: '/path/to/options.json'};
             const optionsFileContents = '{"opt1": "value1", "opt2": "value2"}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionsFileContents);
+            fs.readFileSync.withArgs('/path/to/options.json').returns(optionsFileContents);
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'value1', opt2: 'value2', opt4: 'newvalue1'});
         });
@@ -115,7 +125,7 @@ describe('composer transaction cmdutils unit tests', () => {
                        ,option: ['opt1=newvalue1', 'opt5=newvalue5']
                        ,optionsFile: '/path/to/options.json'};
             const optionsFileContents = '{"opt1": "value1", "opt2": "value2"}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionsFileContents);
+            fs.readFileSync.withArgs('/path/to/options.json').returns(optionsFileContents);
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'newvalue1', opt2: 'value2', opt5: 'newvalue5'});
         });
@@ -129,6 +139,316 @@ describe('composer transaction cmdutils unit tests', () => {
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(false);
             CmdUtil.parseOptions(argv).should.deep.equal({opt1: 'value1'});
         });
+    });
+
+    describe('#arrayify', () => {
+
+        it('should handle undefined values', () => {
+            CmdUtil.arrayify(undefined).should.deep.equal([]);
+        });
+
+        it('should handle null values', () => {
+            CmdUtil.arrayify(null).should.deep.equal([]);
+        });
+
+        it('should handle array values', () => {
+            CmdUtil.arrayify([3, 2, 1]).should.deep.equal([3, 2, 1]);
+        });
+
+        it('should handle string values', () => {
+            CmdUtil.arrayify('foobar').should.deep.equal(['foobar']);
+        });
+
+    });
+
+    describe('#parseNetworkAdminsWithCertificateFiles', () => {
+
+        it('should parse a single network admin', () => {
+            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1'], ['admin1.pem']);
+            result.should.deep.equal([{
+                name: 'admin1',
+                certificate: pem1
+            }]);
+        });
+
+        it('should parse multiple network admins', () => {
+            const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1', 'admin2', 'admin3'], ['admin1.pem', 'admin2.pem', 'admin3.pem']);
+            result.should.deep.equal([{
+                name: 'admin1',
+                certificate: pem1
+            }, {
+                name: 'admin2',
+                certificate: pem2
+            }, {
+                name: 'admin3',
+                certificate: pem3
+            }]);
+        });
+
+    });
+
+    describe('#parseNetworkAdminsWithEnrollSecrets', () => {
+
+        it('should parse a single network admin', () => {
+            const result = CmdUtil.parseNetworkAdminsWithEnrollSecrets(['admin1'], [true]);
+            result.should.deep.equal([{
+                name: 'admin1',
+                secret: true
+            }]);
+        });
+
+        it('should parse multiple network admins', () => {
+            const result = CmdUtil.parseNetworkAdminsWithEnrollSecrets(['admin1', 'admin2', 'admin3'], [true, true, true]);
+            result.should.deep.equal([{
+                name: 'admin1',
+                secret: true
+            }, {
+                name: 'admin2',
+                secret: true
+            }, {
+                name: 'admin3',
+                secret: true
+            }]);
+        });
+
+    });
+
+    describe('#parseNetworkAdmins', () => {
+
+        it('should handle no network admins', () => {
+            const result = CmdUtil.parseNetworkAdmins({});
+            result.should.deep.equal([]);
+        });
+
+        it('should throw if both certificates and enrollment secrets are specified', () => {
+            (() => {
+                CmdUtil.parseNetworkAdmins({
+                    networkAdmin: ['admin1'],
+                    networkAdminCertificateFile: [pem1],
+                    networkAdminEnrollSecret: [true]
+                });
+            }).should.throw(/You cannot specify both certificate files and enrollment secrets for network administrators/);
+        });
+
+        it('should handle certificates', () => {
+            const result = CmdUtil.parseNetworkAdmins({
+                networkAdmin: ['admin1'],
+                networkAdminCertificateFile: ['admin1.pem']
+            });
+            result.should.deep.equal([{
+                name: 'admin1',
+                certificate: pem1
+            }]);
+        });
+
+        it('should handle secrets', () => {
+            const result = CmdUtil.parseNetworkAdmins({
+                networkAdmin: ['admin1'],
+                networkAdminEnrollSecret: [true]
+            });
+            result.should.deep.equal([{
+                name: 'admin1',
+                secret: true
+            }]);
+        });
+
+        it('should throw if not enough certificates', () => {
+            (() => {
+                CmdUtil.parseNetworkAdmins({
+                    networkAdmin: ['admin1', 'admin2', 'admin3'],
+                    networkAdminCertificateFile: [pem1]
+                });
+            }).should.throw(/You must specify certificate files or enrollment secrets for all network administrators/);
+        });
+
+        it('should throw if not enough enrollment secrets', () => {
+            (() => {
+                CmdUtil.parseNetworkAdmins({
+                    networkAdmin: ['admin1', 'admin2', 'admin3'],
+                    networkAdminEnrollSecret: [true]
+                });
+            }).should.throw(/You must specify certificate files or enrollment secrets for all network administrators/);
+        });
+
+    });
+
+    describe('#buildBootstrapTransactions', () => {
+
+        const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+        const sanitize = (result) => {
+            result.forEach((tx) => {
+                delete tx.timestamp;
+                delete tx.transactionId;
+                return tx;
+            });
+        };
+
+        it('should handle no network admins', () => {
+            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {});
+            sanitize(result);
+            result.should.deep.equal([]);
+        });
+
+        it('should handle a single network admin with a certificate', () => {
+            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+                networkAdmin: ['admin1'],
+                networkAdminCertificateFile: ['admin1.pem']
+            });
+            sanitize(result);
+            result.should.deep.equal([
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin1'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.BindIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                    certificate: pem1
+                }
+            ]);
+        });
+
+        it('should handle a single network admin with an enrollment secret', () => {
+            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+                networkAdmin: ['admin1'],
+                networkAdminEnrollSecret: [true]
+            });
+            sanitize(result);
+            result.should.deep.equal([
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin1'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.IssueIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                    identityName: 'admin1'
+                }
+            ]);
+        });
+
+        it('should handle multiple network admins with certificates', () => {
+            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+                networkAdmin: ['admin1', 'admin2', 'admin3'],
+                networkAdminCertificateFile: ['admin1.pem', 'admin2.pem', 'admin3.pem']
+            });
+            sanitize(result);
+            result.should.deep.equal([
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin1'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin2'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin3'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.BindIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin1\n-----END CERTIFICATE-----\n'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.BindIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin2',
+                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin2\n-----END CERTIFICATE-----\n'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.BindIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin3',
+                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n'
+                }
+            ]);
+        });
+
+        it('should handle multiple network admins with enrollment secrets', () => {
+            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+                networkAdmin: ['admin1', 'admin2', 'admin3'],
+                networkAdminEnrollSecret: [true, true, true]
+            });
+            sanitize(result);
+            result.should.deep.equal([
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin1'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin2'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    resources: [
+                        {
+                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId: 'admin3'
+                        }
+                    ],
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.IssueIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                    identityName: 'admin1'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.IssueIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin2',
+                    identityName: 'admin2'
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.IssueIdentity',
+                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin3',
+                    identityName: 'admin3'
+                }
+            ]);
+        });
+
     });
 
     describe('#prompt', () => {

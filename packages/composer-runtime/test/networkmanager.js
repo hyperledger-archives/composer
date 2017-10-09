@@ -96,12 +96,17 @@ describe('NetworkManager', () => {
         sandbox.restore();
     });
 
-    describe('#goodpaths', () => {
+    describe('#startBusinessNetwork', () => {
 
-        // it('should throw for invalid arguments', () => {
-        //     let result = networkManager.invoke(mockContext, 'updateBusinessNetwork', ['no', 'args', 'supported']);
-        //     return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "updateBusinessNetwork", expecting "\[\"businessNetworkArchive\"\]"/);
-        // });
+        it('should do nothing', () => {
+            const mockApi = sinon.createStubInstance(Api);
+            const tx = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
+            return networkManager.execute(mockApi, tx);
+        });
+
+    });
+
+    describe('#updateBusinessNetwork', () => {
 
         it('should update the business network archive and create default registries', () => {
             let sysdata = sinon.createStubInstance(DataCollection);

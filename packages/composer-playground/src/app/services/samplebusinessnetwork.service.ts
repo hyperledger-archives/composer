@@ -10,6 +10,7 @@ import { IdentityCardService } from './identity-card.service';
 
 @Injectable()
 export class SampleBusinessNetworkService {
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private alertService: AlertService,
@@ -54,6 +55,30 @@ export class SampleBusinessNetworkService {
             });
     }
 
+    generateBootstrapTransactions(businessNetworkDefinition: BusinessNetworkDefinition, identityName: string): Object[] {
+        const factory = businessNetworkDefinition.getFactory();
+        const serializer = businessNetworkDefinition.getSerializer();
+        const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
+        const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
+        const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
+        Object.assign(addParticipantTransaction, {
+            resources: [ participant ],
+            targetRegistry
+        });
+        const issueIdentityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+        Object.assign(issueIdentityTransaction, {
+            participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+            identityName
+        });
+        const result = [
+            addParticipantTransaction,
+            issueIdentityTransaction
+        ].map((bootstrapTransaction) => {
+            return serializer.toJSON(bootstrapTransaction);
+        });
+        return result;
+    }
+
     public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string): Promise<void> {
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = networkName;
@@ -88,13 +113,9 @@ export class SampleBusinessNetworkService {
                     title: 'Starting Business Network'
                 });
 
-                return this.adminService.start(newNetwork);
-            })
-            .then(() => {
-                return this.clientService.refresh(newNetwork.getName());
-            })
-            .then(() => {
-                return this.clientService.reset();
+                const bootstrapTransactions = this.generateBootstrapTransactions(businessNetworkDefinition, 'admin');
+
+                return this.adminService.start(newNetwork, { bootstrapTransactions });
             })
             .then(() => {
                 return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());

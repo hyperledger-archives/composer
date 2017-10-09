@@ -27,6 +27,7 @@ const ParticipantDeclaration = require('composer-common').ParticipantDeclaration
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const util = require('util');
+const FilterParser = require('./filterparser');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -279,9 +280,11 @@ class BusinessNetworkConnector extends Connector {
     all(lbModelName, filter, options, callback) {
         debug('all', lbModelName, filter, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
@@ -293,29 +296,47 @@ class BusinessNetworkConnector extends Connector {
 
                 if(filterKeys.indexOf('where') >= 0) {
                     const keys = Object.keys(filter.where);
-                    if (keys.length === 0) {
-                        throw new Error('The destroyAll operation without a where clause is not supported');
+                    const nKeys = keys.length;
+                    if (nKeys === 0) {
+                        throw new Error('The all operation without a full where clause is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    if(!filter.where[identifierField]) {
-                        throw new Error('The specified filter does not match the identifier in the model');
-                    }
 
-                    // Check we have the right identifier for the object type
+                    // Check if the filter is a simple ID query
                     let objectId = filter.where[identifierField];
+
                     if(doResolve) {
+                        if(typeof objectId === 'undefined'|| objectId === null) {
+                            throw new Error('The filter field value is not specified');
+                        }
+                        // ensure only support the id field
+                        if( nKeys !== 1 ){
+                            throw new Error('Only one id field should be supported here');
+                        }
+
                         return registry.resolve(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);
                                 return [ result ];
                             });
 
-                    } else {
+                    } else if(objectId){
                         return registry.get(objectId)
                             .then((result) => {
                                 debug('Got Result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
+                    }else{
+                        // perform filter query when id is not the first field
+                        const queryString = FilterParser.parseFilter(filter, composerModelName);
+                        const query = networkConnection.buildQuery(queryString);
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.map((res) =>{
+                                return this.serializer.toJSON(res);
+                            });
+                        });
                     }
                 } else if(doResolve) {
                     debug('no where filter, about to resolve on all');
@@ -408,23 +429,45 @@ class BusinessNetworkConnector extends Connector {
     count(lbModelName, where, options, callback) {
         debug('count', lbModelName, where, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
                 const fields = Object.keys(where || {});
-                if (fields.length > 0) {
-                    let idField = fields[0];
-                    if(this.isValidId(composerModelName, idField)) {
+                const numFields = fields.length;
+                if (numFields > 0) {
+                    // Check if the filter is a simple ID query
+                    let idField = null;
+                    let bFound = false;
+                    // find the valid id from the list of fields
+                    for( let i=0; i<numFields; i++){
+                        if(this.isValidId(composerModelName,fields[i])){
+                            idField = fields[i];
+                            bFound = true;
+                            break;
+                        }
+                    }
+                    // find the key in the list fields
+                    if(bFound) {
                         // Just a basic existence check for now
                         return registry.exists(where[idField])
                             .then((exists) => {
                                 return exists ? 1 : 0;
                             });
                     } else {
-                        throw new Error(idField+' is not valid for asset '+composerModelName);
+                        const queryConditions = FilterParser.parseWhereCondition(where, composerModelName);
+                        const queryString = 'SELECT ' + composerModelName + ' WHERE ' + queryConditions;
+                        const query = networkConnection.buildQuery(queryString);
+
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.length;
+                        });
                     }
                 } else {
                     return registry.getAll()
@@ -719,6 +762,9 @@ class BusinessNetworkConnector extends Connector {
                 }
                 idField = keys[0];
                 if(!this.isValidId(composerModelName, idField)) {
+
+                // using where object to query the object back:
+
                     throw new Error('The specified filter does not match the identifier in the model');
                 }
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);

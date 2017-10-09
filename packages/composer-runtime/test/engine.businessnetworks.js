@@ -128,27 +128,47 @@ describe('EngineBusinessNetworks', () => {
         });
 
         it('should delete all registries and resources', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.getAll.resolves([{
-                type: 'Asset',
-                registryId: 'sheeps'
-            }, {
-                type: 'Participants',
-                registryId: 'farmers'
-            }]);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
-            mockDataService.deleteCollection.resolves();
-            mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
-            mockRegistryManager.add.withArgs('Transaction', 'default').resolves();
+            sinon.stub(engine, '_resetRegistries').resolves();
             mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'resetBusinessNetwork', [])
                 .then(() => {
-                    sinon.assert.calledWith(mockDataService.deleteCollection, 'Asset:sheeps');
-                    sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
-                    sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
-                    sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
+                    sinon.assert.calledThrice(engine._resetRegistries);
+                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Asset');
+                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Participant');
+                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Transaction');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+                    sinon.assert.calledWith(mockRegistryManager.createDefaults, true);
                 });
+        });
+
+    });
+
+    describe('#_resetRegistries', () => {
+
+        ['Asset', 'Participant', 'Transaction'].forEach((registryType) => {
+
+            it(`should remove all non-system ${registryType.toLowerCase()} registries of the specified type`, () => {
+                mockRegistryManager.getAll.withArgs(registryType).resolves([{
+                    type: registryType,
+                    id: 'sheeps',
+                    system: false
+                }, {
+                    type: registryType,
+                    id: 'farmers',
+                    system: false
+                }, {
+                    type: registryType,
+                    id: 'systemStuff',
+                    system: true
+                }]);
+                return engine._resetRegistries(mockContext, registryType)
+                    .then(() => {
+                        sinon.assert.calledTwice(mockRegistryManager.remove);
+                        sinon.assert.calledWith(mockRegistryManager.remove, registryType, 'sheeps');
+                        sinon.assert.calledWith(mockRegistryManager.remove, registryType, 'farmers');
+                    });
+            });
+
         });
 
     });
