@@ -46,7 +46,6 @@ class JSONWriter extends Writer {
         this.write('{');
         this.indent++;
         this.firstItem = true;
-        this.log('{');
     }
 
     /**
@@ -56,7 +55,6 @@ class JSONWriter extends Writer {
         this.write('}');
         this.indent--;
         this.firstItem = false;
-        this.log('}');
     }
 
     /**
@@ -67,7 +65,6 @@ class JSONWriter extends Writer {
     writeKey(key) {
         this.writeComma();
         this.write(JSON.stringify(key) + ':');
-        this.log('writeKey', key );
     }
 
     /**
@@ -76,10 +73,6 @@ class JSONWriter extends Writer {
     writeComma() {
         if(this.firstItem === false) {
             this.write(',');
-            this.log(',');
-        }
-        else {
-            this.log(', (suppressed)');
         }
     }
 
@@ -91,7 +84,6 @@ class JSONWriter extends Writer {
     writeStringValue(value) {
         this.write(JSON.stringify(value));
         this.firstItem = false;
-        this.log('writeStringValue', value);
     }
 
     /**
@@ -102,7 +94,6 @@ class JSONWriter extends Writer {
     writeValue(value) {
         this.write(`${value}`);
         this.firstItem = false;
-        this.log('writeValue', value);
     }
 
     /**
@@ -115,7 +106,6 @@ class JSONWriter extends Writer {
         this.writeKey(key);
         this.writeStringValue(value);
         this.firstItem = false;
-        this.log('writeKeyStringValue', (key + ':' + value));
     }
 
     /**
@@ -129,7 +119,6 @@ class JSONWriter extends Writer {
         this.writeKey(key);
         this.writeValue(value);
         this.firstItem = false;
-        this.log('writeKeyValue', key + '=' + value);
     }
 
     /**
@@ -141,7 +130,6 @@ class JSONWriter extends Writer {
         this.writeComma();
         this.writeStringValue(value);
         this.firstItem = false;
-        this.log('writeArrayStringValue', value);
     }
 
     /**
@@ -153,7 +141,6 @@ class JSONWriter extends Writer {
         this.writeComma();
         this.write(`${value}`);
         this.firstItem = false;
-        this.log('writeArrayValue', value);
     }
 
     /**
@@ -163,7 +150,6 @@ class JSONWriter extends Writer {
         this.write('[');
         this.indent++;
         this.firstItem = true;
-        this.log('[');
     }
 
     /**
@@ -173,7 +159,6 @@ class JSONWriter extends Writer {
         this.write(']');
         this.indent--;
         this.firstItem = false;
-        this.log(']');
     }
 
     /**
@@ -181,26 +166,6 @@ class JSONWriter extends Writer {
      */
     toString() {
         return 'indent ' + this.indent + ' firstItem ' + this.firstItem;
-    }
-
-    /**
-     * @param {String} callSite - the location
-     * @param {String} message - the message to log.
-     */
-    log(callSite, message) {
-        const log = false;
-        if(log) {
-            let spaces = '';
-            for(let n=0; n < this.indent; n++) {
-                spaces += ' ';
-            }
-
-            if(!message) {
-                message = '';
-            }
-
-            console.log(spaces + ' ' + message + ' ' + callSite );
-        }
     }
 
     /**

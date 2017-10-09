@@ -44,5 +44,16 @@ describe('PlantUMLVisitor', function(){
             // check the file exists
             fs.accessSync('./out/animaltracking/model.uml', fs.F_OK);
         });
+
+
+        it('coverage for random object',function(){
+
+            let fakeObj = {accept: function(){}};
+            let visitor = new PlantUMLVisitor();
+            (()=>{
+                visitor.visit(fakeObj,{});
+            })
+            .should.throw(/Unrecognised/);
+        });
     });
 });
