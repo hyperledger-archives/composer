@@ -4,6 +4,9 @@
 set -ev
 set -o pipefail
 
+# Remove the MongoDB repo as their GPG key has expired.
+sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
+
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
 
