@@ -526,7 +526,7 @@ describe('AdminService', () => {
     });
 
     describe('start', () => {
-        it('should start a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+        it('should start a business network without options', fakeAsync(inject([AdminService], (service: AdminService) => {
             sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
             service.start(businessNetworkDefMock);
@@ -534,6 +534,17 @@ describe('AdminService', () => {
             tick();
 
             adminConnectionMock.start.should.have.been.calledWith(businessNetworkDefMock);
+        })));
+
+        it('should start a business network with options', fakeAsync(inject([AdminService], (service: AdminService) => {
+            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            const startOptions = { option: 1 };
+            service.start(businessNetworkDefMock, startOptions);
+
+            tick();
+
+            adminConnectionMock.start.should.have.been.calledWith(businessNetworkDefMock, startOptions);
         })));
     });
 

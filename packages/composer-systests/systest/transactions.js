@@ -55,6 +55,10 @@ describe('Transaction system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     it('should submit and execute a transaction that contains primitive types', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'SimpleTransactionWithPrimitiveTypes');

@@ -103,46 +103,42 @@ class ProxyConnection extends Connection {
     /**
      * Start a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to start
-     * @param {Object} startOptions connector specific start options
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
+     * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network has been started,
      * or rejected with an error.
      */
-    start(securityContext, businessNetworkDefinition, startOptions) {
-        return businessNetworkDefinition.toArchive()
-            .then((businessNetworkArchive) => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionStart', this.connectionID, securityContext.securityContextID, businessNetworkArchive.toString('base64'), startOptions, (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        resolve();
-                    });
-                });
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionStart', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, startTransaction, startOptions, (error) => {
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                resolve();
             });
+        });
     }
 
 
     /**
      * Deploy a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetworkDefinition, deployOptions) {
-        return businessNetworkDefinition.toArchive()
-            .then((businessNetworkArchive) => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionDeploy', this.connectionID, securityContext.securityContextID, businessNetworkArchive.toString('base64'), deployOptions, (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        resolve();
-                    });
-                });
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionDeploy', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, (error) => {
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                resolve();
             });
+        });
     }
 
     /**

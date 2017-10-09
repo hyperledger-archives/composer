@@ -29,13 +29,12 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-let testBusinessNetworkArchive = {bna: 'TBNA'};
-let testBusinessNetworkId = 'net-biz-TestNetwork-0.0.1';
-let testBusinessNetworkDescription = 'Test network description';
-let mockBusinessNetworkDefinition;
-let mockAdminConnection;
+let testBusinessNetworkArchive;
+
+let businessNetworkDefinition;
 
 const VALID_ENDORSEMENT_POLICY_STRING = '{"identities":[{ "role": { "name": "member", "mspId": "Org1MSP" }}], "policy": {"1-of": [{"signed-by":0}]}}';
+let mockAdminConnection;
 
 describe('composer start network CLI unit tests', function () {
 
@@ -44,18 +43,21 @@ describe('composer start network CLI unit tests', function () {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
 
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+        businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.start.resolves();
 
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
+
+        return businessNetworkDefinition.toArchive()
+            .then((archive) => {
+                testBusinessNetworkArchive = archive;
+            });
     });
 
     afterEach(() => {
@@ -100,8 +102,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicy: optionsObject.endorsementPolicy
                     });
             });
@@ -128,8 +131,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicyFile: '/path/to/some/file.json'
                     });
             });
@@ -158,8 +162,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
                     });
             });
@@ -187,7 +192,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition);
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [] });
             });
         });
 
@@ -213,7 +218,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition, {logLevel: 'DEBUG'});
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG' });
             });
         });
 
@@ -237,7 +242,120 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.startId, argv.startSecret);
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, mockBusinessNetworkDefinition);
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [] });
+            });
+        });
+
+        const sanitize = (result) => {
+            result.forEach((tx) => {
+                delete tx.timestamp;
+                delete tx.transactionId;
+                return tx;
+            });
+        };
+
+        it('Good path, network administrator specified', function () {
+
+            let argv = {startId: 'WebAppAdmin'
+                        ,startSecret: 'DJY27pEnl16d'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,connectionProfileName: 'testProfile'
+                        ,networkAdmin: ['admin1']
+                        ,networkAdminEnrollSecret: [true]};
+            let connectionProfileName = argv.connectionProfileName;
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.startId, argv.startSecret);
+                sinon.assert.calledOnce(mockAdminConnection.start);
+                const deployOptions = mockAdminConnection.start.args[0][1];
+                sanitize(deployOptions.bootstrapTransactions);
+                deployOptions.bootstrapTransactions.should.deep.equal([
+                    {
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [
+                            {
+                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                                participantId: 'admin1'
+                            }
+                        ],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                    },
+                    {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                        identityName: 'admin1'
+                    }
+                ]);
+            });
+        });
+
+        it('Good path, network administrator and bootstrap transactions specified', function () {
+
+            let argv = {startId: 'WebAppAdmin'
+                        ,startSecret: 'DJY27pEnl16d'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,connectionProfileName: 'testProfile'
+                        ,networkAdmin: ['admin1']
+                        ,networkAdminEnrollSecret: [true]
+                        ,optionsFile: '/path/to/options.json'};
+            let connectionProfileName = argv.connectionProfileName;
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            const optionsObject = {
+                bootstrapTransactions: [{
+                    $class: 'org.acme.foobar.MyTransaction'
+                }]
+            };
+
+            const optionFileContents = JSON.stringify(optionsObject);
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
+            sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.startId, argv.startSecret);
+                sinon.assert.calledOnce(mockAdminConnection.start);
+                const startOptions = mockAdminConnection.start.args[0][1];
+                sanitize(startOptions.bootstrapTransactions);
+                startOptions.bootstrapTransactions.should.deep.equal([
+                    {
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [
+                            {
+                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                                participantId: 'admin1'
+                            }
+                        ],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                    },
+                    {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                        identityName: 'admin1'
+                    },
+                    {
+                        $class: 'org.acme.foobar.MyTransaction'
+                    }
+                ]);
             });
         });
 

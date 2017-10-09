@@ -121,9 +121,28 @@ export abstract class ImportComponent implements OnInit {
                 test: 'mocha --recursive'
             }
         };
+        let permissions =
+`rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}`;
 
         this.currentBusinessNetworkPromise = Promise.resolve().then(() => {
             this.currentBusinessNetwork = this.sampleBusinessNetworkService.createNewBusinessDefinition('', '', packageJson, readme);
+            const aclManager = this.currentBusinessNetwork.getAclManager();
+            const aclFile = aclManager.createAclFile('permissions.acl', permissions);
+            aclManager.setAclFile(aclFile);
             return this.currentBusinessNetwork;
         });
     }

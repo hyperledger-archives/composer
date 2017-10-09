@@ -15,6 +15,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeployComponent } from './deploy.component';
+import { BusinessNetworkDefinition } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -185,21 +186,19 @@ describe('DeployComponent', () => {
     });
 
     describe('deployEmptyNetwork', () => {
-        beforeEach(() => {
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
-        });
-
         it('should create the empty business network if chosen', fakeAsync(() => {
             component['networkName'] = 'myName';
             component['networkDescription'] = 'myDescription';
 
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
+            const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+            mockBusinessNetworkService.createNewBusinessDefinition.returns(businessNetworkDefinition);
 
             component.deployEmptyNetwork();
 
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            component['currentBusinessNetwork'].should.equal(businessNetworkDefinition);
+            businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
 

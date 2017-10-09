@@ -14,7 +14,6 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const ProxyConnection = require('../lib/proxyconnection');
 const ProxySecurityContext = require('../lib/proxysecuritycontext');
@@ -24,7 +23,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-
 
 describe('ProxyConnection', () => {
 
@@ -116,25 +114,18 @@ describe('ProxyConnection', () => {
 
     describe('#start', () => {
 
-        let mockBusinessNetworkDefinition;
-
-        beforeEach(() => {
-            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(Buffer.from('hello world'));
-        });
-
         it('should send a start call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionStart', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(null);
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition)
+            mockSocket.emit.withArgs('/api/connectionStart', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func).yields(null);
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 })
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionStart', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionStart', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionStart', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(serializedError);
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition)
+            mockSocket.emit.withArgs('/api/connectionStart', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func).yields(serializedError);
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 })
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 
@@ -143,25 +134,18 @@ describe('ProxyConnection', () => {
 
     describe('#deploy', () => {
 
-        let mockBusinessNetworkDefinition;
-
-        beforeEach(() => {
-            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(Buffer.from('hello world'));
-        });
-
         it('should send a deploy call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(null);
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition)
+            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func).yields(null);
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 })
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionDeploy', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', undefined, sinon.match.func).yields(serializedError);
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition)
+            mockSocket.emit.withArgs('/api/connectionDeploy', connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, sinon.match.func).yields(serializedError);
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 })
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 

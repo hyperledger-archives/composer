@@ -276,6 +276,44 @@ describe('Context', () => {
 
     });
 
+    describe('#getIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should get the current identity', () => {
+            context.currentIdentity = mockIdentity;
+            context.getIdentity().should.equal(mockIdentity);
+        });
+
+    });
+
+    describe('#setIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should set the current identity', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+        });
+
+        it('should throw if a current identity has been set', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+            (() => {
+                context.setIdentity(mockIdentity);
+            }).should.throw(/A current identity has already been specified/);
+        });
+
+    });
+
     describe('#loadCurrentParticipant', () => {
 
         let mockIdentityManager;
@@ -290,11 +328,6 @@ describe('Context', () => {
             sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
             mockIdentity = sinon.createStubInstance(Resource);
             mockParticipant = sinon.createStubInstance(Resource);
-        });
-
-        it('should set/get identity', () => {
-            context.setIdentity(mockIdentity);
-            context.getIdentity().should.equal(mockIdentity);
         });
 
         it('should get the identity, validate it, and get the participant', () => {
@@ -358,70 +391,6 @@ describe('Context', () => {
             mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
             return context.loadCurrentParticipant()
                 .should.be.rejectedWith(/such error/);
-        });
-
-        it('should not ignore an activation required error from looking up the identity for admin users', () => {
-            mockIdentityManager.getIdentity.resolves(mockIdentity);
-            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-            context.function = 'bindIdentity';
-            const error = new Error('such error');
-            error.activationRequired = true;
-            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-            // let promise = Promise.resolve();
-            let promises=[];
-
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                promises.push(context.loadCurrentParticipant());
-            });
-
-            return Promise.all(promises).catch(()=> {
-                promises[0].should.be.rejectedWith(/such error/);
-                promises[1].should.be.rejectedWith(/such error/);
-                promises[2].should.be.rejectedWith(/such error/);
-            });
-
-        });
-
-        it('should ignore any errors from looking up the identity for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.rejects(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
-        });
-
-        it('should ignore any errors from validating the identity for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
-        });
-
-        it('should ignore any errors from looking up the participant for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).rejects(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
         });
 
     });
@@ -1049,6 +1018,24 @@ describe('Context', () => {
             (() => {
                 context.setTransaction(mockTransaction);
             }).should.throw(/A current transaction has already been specified/);
+        });
+
+    });
+
+    describe('#clearTransaction', () => {
+
+        it('should clear the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockTransactionLogger = sinon.createStubInstance(TransactionLogger);
+            context.transaction = mockTransaction;
+            context.transactionLogger = mockTransactionLogger;
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.clearTransaction();
+            should.equal(context.transaction, null);
+            should.equal(context.transactionLogger, null);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, null);
         });
 
     });

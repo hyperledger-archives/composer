@@ -10,7 +10,8 @@ excerpt: Composer Network Start
 
 ---
 
-The `composer network start` utility is used to deploy a business network archive from local disk to the {{site.data.conrefs.hlf_full}} peers.
+The `composer network start` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 network.
+Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 _Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the {{site.data.conrefs.hlf_full}} peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
 
@@ -23,15 +24,18 @@ composer network start -a <business-network-archive> -i <user-id> -s <user-id-se
 composer network start [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --loglevel, -l               The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
-  --option, -o                 Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O            A file containing options that are specific to connection  [string]
-  --startId, -i                The id of the user permitted to start a network  [string] [required]
-  --startSecret, -s            The secret of the user permitted to start a network, if required  [string]
+  --help                             Show help  [boolean]
+  -v, --version                      Show version number  [boolean]
+  --archiveFile, -a                  The business network archive file name  [string] [required]
+  --connectionProfileName, -p        The connection profile name  [string] [required]
+  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O                  A file containing options that are specific to connection  [string]
+  --startId, -i                      The id of the user permitted to start a network  [string] [required]
+  --startSecret, -s                  The secret of the user permitted to start a network, if required  [string]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string]
+  --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
 ```
 
 
@@ -64,4 +68,4 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 				  "someOtherOption": "A Value"
 				}
 
-For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} node SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
+For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} Node.js SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).

@@ -68,4 +68,18 @@ rule CharlieReadOnly2 {
     action: ALLOW
 }
 
+rule NetworkAdminUser {
+    description: "The network admin has full access to the user types"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
 
+rule NetworkAdminSystem {
+    description: "The network admin has full access to the system types"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.*"
+    action: ALLOW
+}

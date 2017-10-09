@@ -102,11 +102,26 @@ class Deploy {
         .then((result) => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
+
+                // Build the deploy options.
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (loglevel) {
                     deployOptions.logLevel = loglevel;
                 }
+
+                // Build the bootstrap tranactions.
+                let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
+
+                // Merge the deploy options and bootstrap transactions.
+                if (deployOptions.bootstrapTransactions) {
+                    deployOptions.bootstrapTransactions = bootstrapTransactions.concat(deployOptions.bootstrapTransactions);
+                } else {
+                    deployOptions.bootstrapTransactions = bootstrapTransactions;
+                }
+
+                // Deploy the business network.
                 return adminConnection.deploy(businessNetworkDefinition, deployOptions);
+
             } else {
                 spinner = ora('Updating business network definition. This may take a few seconds...').start();
                 return adminConnection.update(businessNetworkDefinition);
