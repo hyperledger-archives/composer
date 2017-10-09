@@ -61,8 +61,6 @@ class TypescriptVisitor {
             return this.visitRelationship(thing, parameters);
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
-        } else if (thing instanceof FunctionDeclaration) {
-            // return this.visitEnum(thing, parameters);
         } else {
             throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 2 }));
         }

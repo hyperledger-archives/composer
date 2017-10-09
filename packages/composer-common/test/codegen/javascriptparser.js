@@ -103,8 +103,9 @@ describe('JavascriptParser', () => {
 
             (() => {
                 new JavascriptParser(contents, true);
-            }).should.throw(/private/);
+            });
         });
+
         it('should accept and return private methods', () => {
             const contents = `
             /**
@@ -118,7 +119,7 @@ describe('JavascriptParser', () => {
 
             (() => {
                 new JavascriptParser(contents, false);
-            }).should.throw(/private/);
+            });
         });
 
         it('should accept and return private classes & methods', () => {
@@ -141,7 +142,7 @@ describe('JavascriptParser', () => {
 
             (() => {
                 new JavascriptParser(contents, true);
-            }).should.throw(/private/);
+            });
         });
         it('should accept and not return private classes & methods', () => {
             const contents = `
@@ -160,7 +161,7 @@ describe('JavascriptParser', () => {
 
             (() => {
                 new JavascriptParser(contents, false);
-            }).should.throw(/private/);
+            });
         });
         it('should accept and return private classes & methods', () => {
             const contents = `
@@ -183,7 +184,7 @@ describe('JavascriptParser', () => {
 
             (() => {
                 new JavascriptParser(contents, true);
-            }).should.throw(/private/);
+            });
         });
 
     });
