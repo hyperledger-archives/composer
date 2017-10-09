@@ -14,7 +14,14 @@
 
 'use strict';
 
+const mkdirp = require('mkdirp');
+const nodeFs = require('fs');
+const path = require('path');
+const process = require('process');
+const thenifyAll = require('thenify-all');
 const JSZip = require('jszip');
+
+const thenifyMkdirp = thenifyAll(mkdirp);
 
 const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
@@ -25,11 +32,18 @@ const CREDENTIALS_DIRNAME = 'credentials';
 
 const CURRENT_VERSION = 1;
 
+const newErrorWithCause = (message, cause) => {
+    const error = new Error(message);
+    error.cause = cause;
+    return error;
+};
+
 /**
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
  * <p>
  * Instances of this class should be created using {@link IdCard.fromArchive}.
+ * @private
  * @class
  * @memberof module:composer-common
  */
@@ -40,9 +54,9 @@ class IdCard {
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link IdCard.fromArchive}</strong>
+     * @private
      * @param {Object} metadata - metadata associated with the card.
      * @param {Object} connectionProfile - connection profile associated with the card.
-     * @private
      */
     constructor(metadata, connectionProfile) {
         const method = 'constructor';
@@ -277,6 +291,133 @@ class IdCard {
         const result = zip.generateAsync(zipOptions);
         LOG.exit(method, result);
         return result;
+    }
+
+    /**
+     * Create an IdCard from a directory consisting of the content of an ID card.
+     * @param {String} cardDirectory directory containing card data.
+     * @param {*} [fs] Node file system API implementation to use for reading card data.
+     * Defaults to the Node implementation.
+     * @return {Promise} Promise that resolves to an {@link IdCard}.
+     */
+    static fromDirectory(cardDirectory, fs) {
+        const method = 'fromDirectory';
+        LOG.entry(method, cardDirectory, fs);
+
+        if (!fs) {
+            fs = nodeFs;
+        }
+
+        let metadata;
+        let connection;
+        const credentials = { };
+
+        fs = thenifyAll(fs);
+
+        const readOptions = {
+            encoding: 'utf8',
+            flag: 'r'
+        };
+        const metadataPath = path.resolve(cardDirectory, METADATA_FILENAME);
+        const connectionPath = path.resolve(cardDirectory, CONNECTION_FILENAME);
+        const credentialsPath = path.resolve(cardDirectory, CREDENTIALS_DIRNAME);
+
+        return fs.access(cardDirectory).catch(cause => {
+            throw newErrorWithCause('Unable to read card directory: ' + cardDirectory, cause);
+        }).then(() => {
+            return fs.readFile(metadataPath, readOptions).catch(cause => {
+                throw newErrorWithCause('Unable to read required file: ' + METADATA_FILENAME, cause);
+            });
+        }).then(metadataContent => {
+            metadata = JSON.parse(metadataContent);
+            // First cut of ID cards did not have a version so call them version zero
+            if (!metadata.version) {
+                metadata.version = 0;
+            }
+        }).then(() => {
+            return fs.readFile(connectionPath, readOptions).catch(cause => {
+                throw newErrorWithCause('Unable to read required file: ' + CONNECTION_FILENAME, cause);
+            });
+        }).then(connectionContent => {
+            connection = JSON.parse(connectionContent);
+        }).then(() => {
+            return fs.readdir(credentialsPath).then(credentialFilenames => {
+                const credentialPromises = [];
+                credentialFilenames.forEach(filename => {
+                    const filePath = path.resolve(credentialsPath, filename);
+                    credentialPromises.push(
+                        fs.readFile(filePath, readOptions).then(credentialData => {
+                            credentials[filename] = credentialData;
+                        })
+                    );
+                });
+                return Promise.all(credentialPromises);
+            }).catch(cause => {
+                // Ignore missing credentials as they are optional
+                LOG.debug(method, 'Ignored error reading credentials', cause);
+            });
+        }).then(() => {
+            const idCard = new IdCard(metadata, connection);
+            idCard.setCredentials(credentials);
+
+            LOG.exit(method, idCard);
+            return idCard;
+        });
+    }
+
+    /**
+     * Save the content of an IdCard a directory.
+     * @param {String} cardDirectory directory to save card data.
+     * @param {*} [fs] Node file system API implementation to use for writing card data.
+     * Defaults to the Node implementation.
+     * @return {Promise} Promise that resolves then the save is complete.
+     */
+    toDirectory(cardDirectory, fs) {
+        const method = 'toDirectory';
+
+        if (!fs) {
+            fs = nodeFs;
+        }
+
+        const metadataPath = path.join(cardDirectory, METADATA_FILENAME);
+        const connectionPath = path.join(cardDirectory, CONNECTION_FILENAME);
+        const credentialsDir = path.join(cardDirectory, CREDENTIALS_DIRNAME);
+
+        const umask = process.umask();
+        const createDirMode = 0o0750 & ~umask; // At most: user=all, group=read/execute, others=none
+        const createFileMode = 0o0640 & ~umask; // At most: user=read/write, group=read, others=none
+        const mkdirpOptions = {
+            fs: fs,
+            mode: createDirMode
+        };
+        const writeFileOptions = {
+            encoding: 'utf8',
+            mode: createFileMode
+        };
+
+        fs = thenifyAll(fs);
+
+        return thenifyMkdirp(cardDirectory, mkdirpOptions).then(() => {
+            const metadataContent = JSON.stringify(this.metadata);
+            return fs.writeFile(metadataPath, metadataContent, writeFileOptions);
+        }).then(() => {
+            const connectionContent = JSON.stringify(this.connectionProfile);
+            return fs.writeFile(connectionPath, connectionContent, writeFileOptions);
+        }).then(() => {
+            return thenifyMkdirp(credentialsDir, mkdirpOptions);
+        }).then(() => {
+            const credentialPromises = [];
+            Object.keys(this.credentials).forEach(credentialName => {
+                const credentialPath = path.join(credentialsDir, credentialName);
+                const credentialContent = this.credentials[credentialName];
+                const promise = fs.writeFile(credentialPath, credentialContent, writeFileOptions);
+                credentialPromises.push(promise);
+            });
+            return Promise.all(credentialPromises);
+        }).catch(cause => {
+            LOG.error(method, cause);
+            throw newErrorWithCause('Failed to save card to directory: ' + cardDirectory, cause);
+        });
     }
 
 }

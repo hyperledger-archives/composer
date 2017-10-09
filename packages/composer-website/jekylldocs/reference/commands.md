@@ -72,13 +72,6 @@ Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs
 
 Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.md)
 
-`composer network start`
-
-Deploy a business network archive to a {{site.data.conrefs.hlf_full}} endorsing peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.md)
-
-`composer runtime install`
-
-Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} endorsing peer: [composer runtime install](./composer.runtime.install.md)
 
 ## Participant and Identity management
 
