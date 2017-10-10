@@ -140,7 +140,10 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return adminConnection.reset('bond-network')
+            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            .then( ()=>{
+                return adminConnection.reset('bond-network');
+            })
                 .then(() => {
                     return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
                 })

@@ -27,6 +27,10 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
 describe('Asset system tests', function () {
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     let businessNetworkDefinition;
     let client;
@@ -40,6 +44,9 @@ describe('Asset system tests', function () {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+
+        bnID = businessNetworkDefinition.getName();
+
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-assets')

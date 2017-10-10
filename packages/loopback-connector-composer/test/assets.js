@@ -212,10 +212,12 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return adminConnection.reset('bond-network')
-                .then(() => {
-                    return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
-                })
+            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            .then( ()=>{
+                return adminConnection.reset('bond-network');
+            }).then(() => {
+                return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
+            })
                 .then((assetRegistry_) => {
                     assetRegistry = assetRegistry_;
                     return assetRegistry.addAll([

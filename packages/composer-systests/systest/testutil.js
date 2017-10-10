@@ -23,7 +23,7 @@ const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-const Util = require('composer-common').Util;
+// const Util = require('composer-common').Util;
 
 
 let client;
@@ -596,19 +596,22 @@ class TestUtil {
 
     /**
      * Reset the business network to its initial state.
+     * @param {String} identifier, business network identifier to reset
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static resetBusinessNetwork() {
+    static resetBusinessNetwork(identifier) {
         if (!client) {
             return Promise.resolve();
         }
-        // TODO: hack hack hack, this should be in the admin API.
-        let securityContext = client.securityContext;
-        if (!securityContext) {
-            return Promise.resolve();
-        }
+        const adminConnection = new AdminConnection();
+        return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
+        .then(() => {
+            return adminConnection.reset(identifier);
+        })
+        .then(() => {
+            return adminConnection.disconnect();
+        });
 
-        return Util.invokeChainCode(client.securityContext, 'resetBusinessNetwork', []);
     }
 
 
