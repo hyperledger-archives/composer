@@ -73,20 +73,22 @@ class Factory {
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
-        if(!id || typeof(id) !== 'string') {
-            let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        if(id.trim().length === 0) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-missingidentifier');
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
+        options = options || {};
+        if(typeof options.allowNoIdentifier==='undefined' || options.allowNoIdentifier!==true) {
+            if(!id || typeof(id) !== 'string') {
+                let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
+                throw new Error(formatter({
+                    namespace: ns,
+                    type: type
+                }));
+            }
+            if(id.trim().length === 0) {
+                let formatter = Globalize.messageFormatter('factory-newinstance-missingidentifier');
+                throw new Error(formatter({
+                    namespace: ns,
+                    type: type
+                }));
+            }
         }
 
         const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
@@ -105,7 +107,6 @@ class Factory {
         }
 
         let newObj = null;
-        options = options || {};
         if(options.disableValidation) {
             newObj = new Resource(this.modelManager, ns, type, id);
         }
