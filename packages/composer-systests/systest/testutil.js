@@ -604,9 +604,18 @@ class TestUtil {
             return Promise.resolve();
         }
 
-        if (TestUtil.isHyperledgerFabricV1()){
+        if (TestUtil.isHyperledgerFabricV1() && !forceDeploy){
             const adminConnection = new AdminConnection();
             return adminConnection.connect('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
+        } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
+            const adminConnection = new AdminConnection();
+            return adminConnection.connect('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })

@@ -46,13 +46,13 @@ describe('Util', function () {
         it('should throw for an undefined security context', function () {
             (function () {
                 Util.securityCheck(undefined);
-            }).should.throw(SecurityException, 'Connection needs to be conneted. Call connect(..)');
+            }).should.throw(SecurityException, 'Connection needs to be connected. Call connect(..)');
         });
 
         it('should throw for a null security context', function () {
             (function () {
                 Util.securityCheck(null);
-            }).should.throw(SecurityException, 'Connection needs to be conneted. Call connect(..)');
+            }).should.throw(SecurityException, 'Connection needs to be connected. Call connect(..)');
         });
 
         it('should throw for an invalid type of security context', function () {

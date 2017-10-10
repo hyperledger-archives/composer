@@ -76,8 +76,11 @@ describe('composer reset network CLI unit tests', function () {
     describe('test main reset logic', () =>{
         it('main line code path', ()=>{
             let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
+            mockAdminConnection.reset.resolves();
+            return Reset.handler(argv).then(()=>{
+                sinon.assert.calledWith(mockAdminConnection.reset,'networkname');
+            });
 
-            return Reset.handler(argv);
         });
 
         it('no secret given', ()=>{
@@ -87,14 +90,14 @@ describe('composer reset network CLI unit tests', function () {
             return Reset.handler(argv);
 
         });
-        it('error path', ()=>{
+        it('error path - prompt method fails', ()=>{
             let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin'};
             sandbox.stub(CmdUtil, 'prompt').rejects(new Error('computer says no'));
 
             return Reset.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
         });
-        it('error path #2', ()=>{
+        it('error path #2 prompt method fails, along with the spinner class', ()=>{
             let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
             mockAdminConnection.reset.rejects(new Error('computer says no'));
             sandbox.stub(ora,'start').returns({});

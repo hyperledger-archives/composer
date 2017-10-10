@@ -298,9 +298,10 @@ describe('SampleBusinessNetworkService', () => {
             clientMock.getBusinessNetworkName.returns('myNetwork');
             clientMock.getBusinessNetworkDescription.returns('myDescription');
 
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub()});
+            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('newname')});
 
             let metaData = {getPackageJson: sinon.stub().returns({})};
+            businessNetworkMock.getMetadata.returns(metaData);
             businessNetworkMock.getMetadata.returns(metaData);
 
             service.updateBusinessNetwork(businessNetworkMock);
@@ -314,7 +315,7 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.connect.should.have.been.calledWith('myNetwork', true);
             adminMock.update.should.have.been.called;
             clientMock.refresh.should.have.been.called;
-            adminMock.reset.should.have.been.called;
+            adminMock.reset.should.have.been.calledWith('newname');
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 

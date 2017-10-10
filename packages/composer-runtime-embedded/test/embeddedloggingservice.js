@@ -96,7 +96,7 @@ describe('EmbeddedLoggingService', () => {
             loggingService.getLogLevel().should.equal('doge');
         });
         it('getLogLevel', () => {
-            loggingService.getLogLevel();
+            loggingService.getLogLevel().should.equal('UnsetLogLevel');
         });
 
     });
