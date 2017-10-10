@@ -723,4 +723,86 @@ describe('Connection', () => {
 
     });
 
+    describe('#setLogLevel', () => {
+
+        it('should call _update and handle no error', () => {
+            sinon.stub(connection, '_setLogLevel').resolves();
+            return connection.setLogLevel(mockSecurityContext, mockBusinessNetworkDefinition)
+                                .then(() => {
+                                    sinon.assert.calledWith(connection._setLogLevel, mockSecurityContext, mockBusinessNetworkDefinition);
+                                });
+        });
+
+        it('should call _reset and handle an error', () => {
+            sinon.stub(connection, '_setLogLevel').rejects(new Error('error'));
+            return connection.setLogLevel(mockSecurityContext, mockBusinessNetworkDefinition)
+                                .should.be.rejectedWith(/error/)
+                                .then(() => {
+                                    sinon.assert.calledWith(connection._setLogLevel, mockSecurityContext, mockBusinessNetworkDefinition);
+                                });
+        });
+
+    });
+
+    describe('#_setLogLevel', () => {
+
+        it('should throw an error when no loglevel given', ()=>{
+            return connection._setLogLevel(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        });
+        it('should handle setting to a new level', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection._setLogLevel(mockSecurityContext,'debug');
+
+
+        });
+        it('should handle setting to a new level - alternate paths', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp = new Date();
+
+            return connection._setLogLevel(mockSecurityContext,'debug');
+
+
+        });
+    });
 });

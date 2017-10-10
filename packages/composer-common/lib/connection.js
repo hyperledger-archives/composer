@@ -380,9 +380,9 @@ class Connection extends EventEmitter {
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @param {String} loglevel The new log level
      * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been reset, or rejected with an error.
+     * logging level has been changed
      */
     setLogLevel(securityContext, loglevel) {
         return this._setLogLevel(securityContext,loglevel);
@@ -392,9 +392,9 @@ class Connection extends EventEmitter {
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @param {String} loglevel The new log level
      * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been reset, or rejected with an error.
+     * logging level has been changed
      */
     _setLogLevel(securityContext, loglevel) {
         let currentDeployedNetwork;

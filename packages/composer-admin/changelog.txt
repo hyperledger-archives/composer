@@ -11,7 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-
+Version 0.14.0 {5015f90c6a6e75089ddcdac7d0470f6e} 2017-10-9
+ - Update set/getloglrvel and resetNetwork
 
 Version 0.13.0 {57f95f6e119d99e356b839d1b63bb4c8} 2017-08-21
  - add a reset business network  api

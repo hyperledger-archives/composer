@@ -64,11 +64,22 @@ class NetworkManager extends TransactionHandler {
     setLogLevel(api, transaction) {
         const method = 'setLogLevel';
         LOG.entry(method, transaction);
-        if (this.context.getParticipant() === null) {
-            let promise = this.context.container.getLoggingService().setLogLevel(transaction.newLogLevel);
-            return promise ? promise : Promise.resolve();
-        }
-        throw new Error('Authorization failure');
+        let dataService = this.context.getDataService();
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = this.context.getSerializer().fromJSON(result);
+                return this.context.getAccessController().check(resource, 'UPDATE');
+            })
+            .then(() => {
+                return this.context.getLoggingService().setLogLevel(transaction.newLogLevel);
+            });
+
+
     }
 
     /**
@@ -180,9 +191,8 @@ class NetworkManager extends TransactionHandler {
 
     }
 
-
     /**
-     * Update the business network archive.
+     * Reset the business network by clearing all data.
      * @param {api} api The request context.
      * @param {Transaction} transaction The arguments to pass to the chaincode function.
      * @return {Promise} A promise that will be resolved when complete, or rejected
@@ -191,28 +201,26 @@ class NetworkManager extends TransactionHandler {
     resetBusinessNetwork(api, transaction) {
         const method = 'resetBusinessNetwork';
         LOG.entry(method, transaction);
-
         let dataService = this.context.getDataService();
-        return dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
 
-                return sysregistries.getAll()
-                    .then((registries) => {
-                        return registries
-
-                        .reduce((cur, next) => {
-                            return cur.then(() => {
-                                let registryType = next.type;
-                                let registryId = next.registryId;
-                                LOG.debug(method, 'Deleting collection', registryType, registryId);
-                                return dataService.deleteCollection(registryType + ':' + registryId)
-                                    .then(() => {
-                                        LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
-                                        return sysregistries.remove(registryType + ':' + registryId);
-                                    });
-                            });
-                        }, Promise.resolve());
-                    });
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = this.context.getSerializer().fromJSON(result);
+                return this.context.getAccessController().check(resource, 'UPDATE');
+            })
+            .then( ()=>{
+                return this._resetRegistries( 'Asset');
+            })
+            .then(() => {
+                return this._resetRegistries( 'Participant');
+            })
+            .then(() => {
+                return this._resetRegistries( 'Transaction');
             })
             .then ( ()=> {
                 // force creation of defaults as we know the don't exist
@@ -220,7 +228,34 @@ class NetworkManager extends TransactionHandler {
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = this.context.getRegistryManager();
                 return registryManager.createDefaults(true);
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
 
+    /**
+     * Reset all registries of the specified type by clearing all data.
+     * @param {String} type of the registry to reset
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    _resetRegistries(type) {
+        const method = '_resetRegistries';
+        LOG.entry(method, type);
+        let registryManager = this.context.getRegistryManager();
+        return registryManager.getAll(type)
+            .then((registries) => {
+                return registries.reduce((promise, registry) => {
+                    return promise.then(() => {
+                        if (registry.system) {
+                            LOG.debug(method, 'Not removing system registry', type, registry.id);
+                            return;
+                        }
+                        LOG.debug(method, 'Removing registry', type, registry.id);
+                        return registryManager.remove(type, registry.id);
+                    });
+                }, Promise.resolve());
             })
             .then(() => {
                 LOG.exit(method);

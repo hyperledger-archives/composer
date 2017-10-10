@@ -117,59 +117,6 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledWith(sysdata.update, 'businessnetwork', businessNetwork);
                 });
         });
-    });
-
-
-
-        it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'resetBusinessNetwork', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "resetBusinessNetwork", expecting "\[\]"/);
-        });
-
-        it('should delete all registries and resources', () => {
-            sinon.stub(engine, '_resetRegistries').resolves();
-            mockRegistryManager.createDefaults.resolves();
-            return engine.invoke(mockContext, 'resetBusinessNetwork', [])
-                .then(() => {
-                    sinon.assert.calledThrice(engine._resetRegistries);
-                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Asset');
-                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Participant');
-                    sinon.assert.calledWith(engine._resetRegistries, mockContext, 'Transaction');
-                    sinon.assert.calledOnce(mockRegistryManager.createDefaults);
-                    sinon.assert.calledWith(mockRegistryManager.createDefaults, true);
-                });
-        });
 
     });
-
-    describe('#_resetRegistries', () => {
-
-        ['Asset', 'Participant', 'Transaction'].forEach((registryType) => {
-
-            it(`should remove all non-system ${registryType.toLowerCase()} registries of the specified type`, () => {
-                mockRegistryManager.getAll.withArgs(registryType).resolves([{
-                    type: registryType,
-                    id: 'sheeps',
-                    system: false
-                }, {
-                    type: registryType,
-                    id: 'farmers',
-                    system: false
-                }, {
-                    type: registryType,
-                    id: 'systemStuff',
-                    system: true
-                }]);
-                return engine._resetRegistries(mockContext, registryType)
-                    .then(() => {
-                        sinon.assert.calledTwice(mockRegistryManager.remove);
-                        sinon.assert.calledWith(mockRegistryManager.remove, registryType, 'sheeps');
-                        sinon.assert.calledWith(mockRegistryManager.remove, registryType, 'farmers');
-                    });
-            });
-
-        });
-
-    });
-
 });

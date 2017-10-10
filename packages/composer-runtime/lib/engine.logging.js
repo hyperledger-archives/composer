@@ -15,7 +15,7 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-const util = require('util');
+
 
 const LOG = Logger.getLog('EngineLogging');
 
@@ -36,16 +36,25 @@ class EngineLogging {
     getLogLevel(context, args) {
         const method = 'getLogLevel';
         LOG.entry(method, context, args);
-        if (args && args.length !== 0) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting no arguments', args, 'getLogLevel'));
-        }
-        if (context.getParticipant() === null) {
-            const curLogLevel = this.getContainer().getLoggingService().getLogLevel();
-            LOG.debug(method, 'current log level=' + curLogLevel);
-            return Promise.resolve(curLogLevel);
-        }
-        throw new Error('Authorization failure');
+
+        let dataService = context.getDataService();
+        let sysdata;
+        let resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'READ');
+            })
+            .then(() => {
+                let ll = context.getLoggingService().getLogLevel();
+                LOG.exit(method,'loglevel',ll);
+                return ll;
+            });
+
     }
 }
 

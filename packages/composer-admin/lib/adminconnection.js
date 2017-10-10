@@ -467,7 +467,7 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * })
-     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network which will be used to start this runtime.
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network that will be used to start this runtime.
      * @return {Promise} A promise that will be fufilled when the business network has been
      * undeployed.
      */
@@ -507,8 +507,7 @@ class AdminConnection {
      * Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
      * must have been previously deployed.
      *
-     * Note this will remove ALL the contents of the registries, both system and network defined
-     * Default registries will be re-created as well
+     * Note this will remove ALL the contents of the network registries, but not any system registries
      *
      * @example
      * // Updates a Business Network Definition
@@ -521,13 +520,14 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network that will be reset
      * @return {Promise} A promise that will be fufilled when the business network has been
      * updated.
      */
-    reset(){
+    reset(businessNetworkIdentifier){
         return Promise.resolve().then(()=>{
             Util.securityCheck(this.securityContext);
-            return this.connection.reset(this.securityContext);
+            return this.connection.reset(this.securityContext,businessNetworkIdentifier);
         });
     }
 
@@ -685,6 +685,7 @@ class AdminConnection {
             return this.connection.queryChainCode(this.securityContext, 'getLogLevel', []);
         })
         .then((response) => {
+            console.log(response.toString());
             return Promise.resolve(JSON.parse(response));
         });
     }

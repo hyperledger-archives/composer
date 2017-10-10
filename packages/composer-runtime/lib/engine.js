@@ -39,6 +39,7 @@ class Engine {
         const method = 'constructor';
         LOG.entry(method);
         LOG.exit(method);
+        LOG.debug(method,'2419');
     }
 
     /**
@@ -220,7 +221,8 @@ class Engine {
             .then(() => {
 
                 // Initialize the context.
-                LOG.debug(method, 'Initializing context');
+                LOG.debug(method, 'Initializing context 2',this.getContainer().getVersion());
+
                 return context.initialize({
                     function: fcn,
                     arguments: args,
@@ -333,7 +335,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args })
+            return context.initialize({ function: fcn, arguments: args,  container: this.getContainer() })
                 .then(() => {
                     return context.transactionStart(false);
                 })
@@ -404,7 +406,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args })
+            return context.initialize({ function: fcn, arguments: args, container: this.getContainer() })
                 .then(() => {
                     return context.transactionStart(true);
                 })

@@ -56,6 +56,7 @@ class Reset {
             }
         })()
         .then(() => {
+
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
@@ -63,6 +64,7 @@ class Reset {
             return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
         })
           .then((result) => {
+
               spinner = ora('Reseting business network definition. This may take some seconds...').start();
               return adminConnection.reset(businessNetworkName);
 
@@ -70,7 +72,7 @@ class Reset {
               spinner.succeed();
               return result;
           }).catch((error) => {
-
+              console.log(error.stack);
               if (spinner) {
                   spinner.fail();
               }

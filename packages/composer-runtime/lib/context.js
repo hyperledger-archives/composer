@@ -157,6 +157,7 @@ class Context {
         this.compiledQueryBundle = null;
         this.aclCompiler = null;
         this.compiledAclBundle = null;
+        this.loggingService = null;
     }
 
     /**
@@ -579,6 +580,11 @@ class Context {
                 }
                 return this.initializeInner();
             })
+            .then(()=>{
+                if (this.container){
+                    this.loggingService = this.container.getLoggingService();
+                }
+            })
             .then(() => {
                 LOG.exit(method);
             });
@@ -966,6 +972,13 @@ class Context {
      */
     getCompiledAclBundle() {
         return this.compiledAclBundle;
+    }
+
+    /** Obtains the logging service
+     *@return {LoggingService} the logging service
+     */
+    getLoggingService(){
+        return this.loggingService;
     }
 
     /**
