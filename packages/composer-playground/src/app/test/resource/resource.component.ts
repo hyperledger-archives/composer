@@ -117,11 +117,13 @@ export class ResourceComponent implements OnInit {
         let factory = businessNetworkDefinition.getFactory();
         let idx = Math.round(Math.random() * 9999).toString();
         idx = leftPad(idx, 4, '0');
-        let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
+        let id = '';
         try {
             const generateParameters = {
                 generate: withSampleData ? 'sample' : 'empty',
-                includeOptionalFields: this.includeOptionalFields
+                includeOptionalFields: this.includeOptionalFields,
+                disableValidation: true,
+                allowNoIdentifier: true
             };
             let resource = factory.newResource(
                 this.resourceDeclaration.getModelFile().getNamespace(),
@@ -129,7 +131,12 @@ export class ResourceComponent implements OnInit {
                 id,
                 generateParameters);
             let serializer = this.clientService.getBusinessNetwork().getSerializer();
-            let json = serializer.toJSON(resource);
+
+            const serializeValidationOptions = {
+                validate: false
+            };
+
+            let json = serializer.toJSON(resource, serializeValidationOptions);
             this.resourceDefinition = JSON.stringify(json, null, 2);
             this.onDefinitionChanged();
         } catch (error) {

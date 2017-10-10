@@ -67,16 +67,38 @@ describe('Factory', function() {
     });
 
     describe('#newResource', function() {
-        it('should throw creating a new instance without an ID', function() {
+        it('should throw creating a new instance without an ID if the option to allowNoIdentifier is not set', function() {
             (() => {
                 factory.newResource(namespace, assetName, null);
             }).should.throw(/Invalid or missing identifier/);
         });
 
-        it('should throw creating a new instance with an ID that is just whitespace', function() {
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is not set', function() {
             (() => {
                 factory.newResource(namespace, assetName, '     ');
             }).should.throw(/Missing identifier/);
+        });
+
+        it('should throw creating a new instance without an ID if the option to allowNoIdentifier is not set to true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, null, {allowNoIdentifier: false});
+            }).should.throw(/Invalid or missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is not set to true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {allowNoIdentifier: 'true'});
+            }).should.throw(/Missing identifier/);
+        });
+
+        it('should not throw creating a new instance without an ID if the option to allowNoIdentifier is set to true', function() {
+            const resource = factory.newResource(namespace, assetName, '', {allowNoIdentifier: true});
+            resource.assetId.should.equal('');
+        });
+
+        it('should not throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is set to true', function() {
+            const resource = factory.newResource(namespace, assetName, '  ', {allowNoIdentifier: true});
+            resource.assetId.should.equal('  ');
         });
 
         it('should throw creating an abstract asset', function() {
