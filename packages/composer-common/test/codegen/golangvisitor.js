@@ -18,9 +18,14 @@ require('chai').should();
 const ModelManager = require('../../lib/modelmanager');
 const GoLangVisitor = require('../../lib/codegen/fromcto/golang/golangvisitor');
 const FileWriter = require('../../lib/codegen/filewriter');
+const BusinessNetworkDefinition = require('../../lib/businessnetworkdefinition');
 
 const fs = require('fs');
 const path = require('path');
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('GoLangVisitor', function(){
@@ -47,10 +52,33 @@ describe('GoLangVisitor', function(){
             let parameters = {};
             parameters.fileWriter = mockFileWriter;
             modelManager.accept(visitor, parameters);
-
+            BusinessNetworkDefinition;
             sinon.assert.calledWith(mockFileWriter.openFile, 'composer.go');
             sinon.assert.calledWith(mockFileWriter.openFile, 'main.go');
             sinon.assert.calledWith(mockFileWriter.openFile, 'orgacme.go');
         });
+
+        it('coverage for business network definition',function(){
+            let mockBND = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockModelManager = sinon.createStubInstance(ModelManager);
+            mockBND.getModelManager.returns(mockModelManager);
+            let fakeObj = {accept: function(){}};
+
+
+            mockModelManager.getModelFiles.returns([fakeObj]);
+            let visitor = new GoLangVisitor();
+            visitor.visit(mockBND,{});
+        });
+
+        it('coverage for business network definition',function(){
+
+            let fakeObj = {accept: function(){}};
+            let visitor = new GoLangVisitor();
+            (()=>{
+                visitor.visit(fakeObj,{});
+            })
+            .should.throw(/Unrecognised type/);
+        });
+
     });
 });
