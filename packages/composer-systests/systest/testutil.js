@@ -603,14 +603,27 @@ class TestUtil {
         if (!client) {
             return Promise.resolve();
         }
-        const adminConnection = new AdminConnection();
-        return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
-        .then(() => {
-            return adminConnection.reset(identifier);
-        })
-        .then(() => {
-            return adminConnection.disconnect();
-        });
+
+        if (TestUtil.isHyperledgerFabricV1()){
+            const adminConnection = new AdminConnection();
+            return adminConnection.connect('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
+        } else {
+
+            const adminConnection = new AdminConnection();
+            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
+        }
 
     }
 
