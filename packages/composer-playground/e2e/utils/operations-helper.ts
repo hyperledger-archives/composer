@@ -4,25 +4,31 @@ import { ExpectedConditions, ElementFinder } from 'protractor';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
 import { Replace } from '../component/replace';
+import { Constants } from './constants';
 
 export class OperationsHelper {
 
   // Perform a 'safe' click action on an element
   static click(elm: ElementFinder) {
-    browser.wait(ExpectedConditions.presenceOf(elm), 10000);
-    browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
-    browser.executeScript('arguments[0].scrollIntoView();', elm);
-    return browser.wait(() => {
-        return elm.click()
-        .then(() => true)
-        .catch(() => false);
+    return browser.wait(ExpectedConditions.presenceOf(elm), Constants.longWait)
+    .then(() => {
+        return browser.wait(ExpectedConditions.visibilityOf(elm), Constants.longWait);
+    })
+    .then(() => {
+        return browser.executeScript('arguments[0].scrollIntoView();', elm);
+    })
+    .then(() => {
+        return browser.wait(ExpectedConditions.elementToBeClickable(elm), Constants.longWait);
+    })
+    .then(() => {
+        return elm.click();
     });
   }
 
   // Retrieve text from an element
   static retriveTextFromElement(elm: ElementFinder) {
-      browser.wait(ExpectedConditions.presenceOf(elm), 10000);
-      browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
+      browser.wait(ExpectedConditions.presenceOf(elm), Constants.longWait);
+      browser.wait(ExpectedConditions.visibilityOf(elm), Constants.longWait);
       return browser.wait(() => {
         return elm.getText();
       });
@@ -30,7 +36,7 @@ export class OperationsHelper {
 
   // Retrieve an array of all matching elements
   static retriveMatchingElementsByCSS(type: string, subset: string, minCount) {
-    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), 10000);
+    browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), Constants.longWait);
     return element(by.css(type)).all(by.css(subset));
   }
 
@@ -49,16 +55,16 @@ export class OperationsHelper {
   static navigatePastWelcome() {
     browser.get(browser.baseUrl);
     let elm = element(by.id('welcome_start'));
-    browser.wait(ExpectedConditions.presenceOf(elm), 10000);
-    browser.wait(ExpectedConditions.visibilityOf(elm), 10000);
+    browser.wait(ExpectedConditions.presenceOf(elm), Constants.longWait);
+    browser.wait(ExpectedConditions.visibilityOf(elm), Constants.longWait);
     this.click(elm);
-    browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.welcome'))), 10000);
+    browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.welcome'))), Constants.longWait);
   };
 
   // Wait for success message to appear and disappear
   static processExpectedSuccess() {
-    browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), 5000);
-    browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), 5000);
+    browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), Constants.longWait);
+    browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), Constants.longWait);
   };
 
   static importBusinessNetworkArchiveFromFile(fileName: string) {
