@@ -35,7 +35,7 @@ class Util {
      */
     static securityCheck(securityContext) {
         if (Util.isNull(securityContext)) {
-            throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
+            throw new SecurityException(Globalize.formatMessage('composer-connect-notconnected'));
         } else if (!(securityContext instanceof SecurityContext)) {
             throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
         }

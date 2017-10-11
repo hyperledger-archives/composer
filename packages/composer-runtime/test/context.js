@@ -23,6 +23,7 @@ const CompiledAclBundle = require('../lib/compiledaclbundle');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Context = require('../lib/context');
+const Container = require('../lib/container');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
@@ -43,6 +44,7 @@ const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
 const TransactionLogger = require('../lib/transactionlogger');
+const LoggingService = require('../lib/loggingservice');
 
 const chai = require('chai');
 const should = chai.should();
@@ -583,11 +585,25 @@ describe('Context', () => {
                     context.participant.should.equal(mockParticipant);
                 });
         });
-
+        it('should  initialize the context with the correct loggingservices', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            let mockContainer = sinon.createStubInstance(Container);
+            let mockLoggingService = sinon.createStubInstance(LoggingService);
+            mockContainer.getLoggingService.returns(mockLoggingService);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getLoggingService().should.deep.equal(mockLoggingService);
+                });
+        });
         it('should not initialize the context with the current participant if reinitializing', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
             mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
             context.loadCurrentParticipant.resolves(mockParticipant);
+            let mockContainer = sinon.createStubInstance(Container);
+
+            mockContainer.getLoggingService.returns();
             return context.initialize({ reinitialize: true })
                 .then(() => {
                     should.equal(context.participant, null);
@@ -599,6 +615,14 @@ describe('Context', () => {
             return context.initialize({ sysregistries: mockSystemRegistries2 })
                 .then(() => {
                     context.sysregistries.should.equal(mockSystemRegistries2);
+                });
+        });
+
+        it('should initialize the context with the specified container', () => {
+            let mockContainer = sinon.createStubInstance(Container);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getContainer().should.equal(mockContainer);
                 });
         });
 

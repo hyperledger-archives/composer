@@ -500,6 +500,19 @@ describe('AdminService', () => {
 
     });
 
+    describe('reset', () => {
+        it('should reset a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            businessNetworkDefMock.getName.returns('myNetwork');
+
+            service.reset('myNetwork');
+
+            tick();
+
+            adminConnectionMock.reset.should.have.been.calledWith('myNetwork');
+        })));
+    });
+
     describe('deploy', () => {
         it('should deploy a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
             sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);

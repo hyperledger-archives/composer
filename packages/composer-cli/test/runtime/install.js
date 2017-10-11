@@ -26,6 +26,8 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
+const ora = require('ora');
+
 let mockAdminConnection;
 
 describe('composer install runtime CLI unit tests', function () {
@@ -69,6 +71,22 @@ describe('composer install runtime CLI unit tests', function () {
             });
         });
 
+        it('error path #1 - adminConnection is rejected.. .', ()=>{
+            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
+            mockAdminConnection.connect.rejects(new Error('computer says no'));
+            return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
+
+        it('error path #2 - adminConnect is rejected, and the spinner as well returns empty', ()=>{
+            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
+            mockAdminConnection.connect.rejects(new Error('computer says no'));
+            sandbox.stub(ora,'start').returns({});
+            sandbox.stub(ora,'fail').returns();
+
+            return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
     });
 
 });
