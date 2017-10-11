@@ -121,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -167,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -310,7 +306,7 @@ ga('send', 'pageview');
 
 <h3 id="update-your-readme-md-file">Update your README.md file</h3>
 
-<p>Open the <code>README.md</code> file and update the markdown with a short decription of the business network.</p>
+<p>Open the <code>README.md</code> file and update the markdown with a short description of the business network.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""># My Commodity Trading network
 </code></pre></div>
 <p>Save your changes to <code>README.md</code></p>
@@ -399,7 +395,7 @@ rule Default <span class="o">{</span>
 
 rule SystemACL <span class="o">{</span>
   description:  <span class="s2">"System ACL to permit all access"</span>
-  participant: <span class="s2">"org.hyperledger.composer.system.Participant"</span>
+  participant: <span class="s2">"ANY"</span>
   operation: ALL
   resource: <span class="s2">"org.hyperledger.composer.system.**"</span>
   action: ALLOW
@@ -711,7 +707,7 @@ Feature: Sample
 
 <h2 id="import-into-playground-and-test">Import into Playground and Test</h2>
 
-<p>Ensure you are at the toplevel project folder (my-network). Generate the BNA file using the following command:</p>
+<p>Ensure you are at the top level project folder (my-network). Generate the BNA file using the following command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">mkdir dist
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 </code></pre></div>

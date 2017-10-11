@@ -121,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -167,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -262,9 +258,9 @@ ga('send', 'pageview');
 <p>Next, we want to create a new business network from scratch. A business network has a couple of defining properties; a name, and an optional description. You can also choose to base a new business network on an existing template, or import your own template.</p>
 
 <ol>
-<li><p>Click <strong>Deploy a new business network</strong> under the Web Profile heading to get started.</p></li>
+<li><p>Click <strong>Deploy a new business network</strong> under the Web Browser heading to get started.</p></li>
 <li><p>The new business network needs a name, let&#39;s call it <code>tutorial-network</code>.</p></li>
-<li><p>Optionally, you can put in a network description.</p></li>
+<li><p>Optionally, you can enter a description for your business network.</p></li>
 <li><p>Next we must select a business network to base ours on, because we want to build the network from scratch, click <strong>empty-business-network</strong>.</p></li>
 <li><p>Now that our network is defined, click <strong>Deploy</strong>.</p></li>
 </ol>
@@ -275,11 +271,11 @@ ga('send', 'pageview');
 
 <h2 id="step-three-connecting-to-the-business-network">Step Three: Connecting to the business network</h2>
 
-<p>Now that we&#39;ve created and deployed the business network, you should see a new ID card called <em>admin</em> for our business network <em>tutorial-network</em> in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.</p>
+<p>Now that we&#39;ve created and deployed the business network, you should see a new business network card called <em>admin</em> for our business network <em>tutorial-network</em> in your wallet. The wallet can contain business network cards to connect to multiple deployed business networks.</p>
 
-<p>When connecting to an external blockchain, ID cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.</p>
+<p>When connecting to an external blockchain, business network cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.</p>
 
-<p>To connect to our business network click <strong>Connect now</strong> under our ID card.</p>
+<p>To connect to our business network click <strong>Connect now</strong> under our business network card.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/unstable/assets/img/tutorials/playground/vs_code_2.mp4" type="video/mp4" />
@@ -347,45 +343,19 @@ function tradeCommodity(trade) {
 <p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p></li>
 </ol>
 
-<h2 id="step-six-adding-an-access-control-file">Step Six: Adding an access control file</h2>
+<h2 id="step-six-access-control">Step Six: Access control</h2>
 
-<p>Access control files define the access control rules for business networks. Our network is simple, so we just want some basic rules to allow us full access.</p>
+<p>Access control files define the access control rules for business networks. Our network is simple, so the default access control file doesn&#39;t need editing. The basic file gives the current participant <code>networkAdmin</code> full access to business network and system-level operations.</p>
 
 <p>While you can have multiple model or script files, you can only have one access control file in any business network.</p>
 
 <p>For more information on access control files, check our <a href="../reference/acl_language.html">documentation</a>.</p>
 
-<ol>
-<li><p>Click the <strong>Add a file</strong> button.</p></li>
-<li><p>Click the <strong>Access Control file</strong> and click <strong>Add</strong>.</p></li>
-<li><p>Delete the lines of code in the access control file and replace it with the following code:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * Access control rules for mynetwork
- */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
-    operation: ALL
-    resource: "org.acme.mynetwork.*"
-    action: ALLOW
-}
-
-rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
-}
-</code></pre></div>
-<p>This access control rule allows all participants to access all business network resources, and allows all users to have system access control privileges.</p></li>
-</ol>
-
 <h2 id="step-seven-deploying-the-updated-business-network">Step Seven: Deploying the updated business network</h2>
 
-<p>Now that we&#39;ve created our model, script, and access control files, we need to deploy and test our business network.</p>
+<p>Now that we have model, script, and access control files, we need to deploy and test our business network.</p>
 
-<p>Click <strong>Update</strong> to deploy our new model, script, and access control files.</p>
+<p>Click <strong>Update</strong> to deploy the changes to our business network.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/unstable/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
@@ -474,7 +444,7 @@ rule SystemACL {
 }
 </code></pre></div></li>
 <li><p>Click <strong>Submit</strong>.</p></li>
-<li><p>To check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, click the <strong>Commodity</strong> tab, and expand the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
+<li><p>Check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, by expanding the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
 <li><p>To view the full transaction history of our business network, click <strong>All Transactions</strong> on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the <em>Trader</em> participants and the <em>Commodity</em> asset, are recorded as transactions, even though they&#39;re not defined as transactions in our business network model. These transactions are known as &#39;System Transactions&#39; and are common to all business networks, and defined in the Hyperledger Composer Runtime.</p></li>
 </ol>
 
