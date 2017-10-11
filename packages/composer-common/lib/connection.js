@@ -265,18 +265,6 @@ class Connection extends EventEmitter {
      * artefacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return this._updateTx(securityContext,businessNetworkDefinition);
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been updated, or rejected with an error.
-     */
-    _updateTx(securityContext, businessNetworkDefinition) {
 
         // create the new transaction to update the network
         if (!businessNetworkDefinition) {
@@ -325,18 +313,7 @@ class Connection extends EventEmitter {
      * artefacts have been reset, or rejected with an error.
      */
     reset(securityContext, businessNetworkIdentifier) {
-        return this._resetTx(securityContext,businessNetworkIdentifier);
-    }
 
-    /**
-     * Resets an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {String} businessNetworkIdentifier The identifier of the business network
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been reset, or rejected with an error.
-     */
-    _resetTx(securityContext, businessNetworkIdentifier) {
         let currentDeployedNetwork;
         return Promise.resolve()
         .then(()=>{
@@ -385,18 +362,6 @@ class Connection extends EventEmitter {
      * logging level has been changed
      */
     setLogLevel(securityContext, loglevel) {
-        return this._setLogLevel(securityContext,loglevel);
-    }
-
-    /**
-     * Resets an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {String} loglevel The new log level
-     * @return {Promise} A promise that is resolved once the business network
-     * logging level has been changed
-     */
-    _setLogLevel(securityContext, loglevel) {
         let currentDeployedNetwork;
         return Promise.resolve()
         .then(()=>{
@@ -431,22 +396,7 @@ class Connection extends EventEmitter {
         });
     }
 
-    /**
-     * @callback updateCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
 
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @param {updateCallback} callback The callback function to call when complete.
-     */
-    _update(securityContext, businessNetworkDefinition, callback) {
-        throw new Error('abstract function called');
-    }
 
     /**
      * Upgrade the Hyperledger Composer runtime.

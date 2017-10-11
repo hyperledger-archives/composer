@@ -39,7 +39,6 @@ class Engine {
         const method = 'constructor';
         LOG.entry(method);
         LOG.exit(method);
-        LOG.debug(method,'2419');
     }
 
     /**

@@ -252,29 +252,8 @@ describe('Connection', () => {
 
     describe('#reset', () => {
 
-        it('should call _update and handle no error', () => {
-            sinon.stub(connection, '_resetTx').resolves();
-            return connection.reset(mockSecurityContext, mockBusinessNetworkDefinition)
-                        .then(() => {
-                            sinon.assert.calledWith(connection._resetTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                        });
-        });
-
-        it('should call _reset and handle an error', () => {
-            sinon.stub(connection, '_resetTx').rejects(new Error('error'));
-            return connection.reset(mockSecurityContext, mockBusinessNetworkDefinition)
-                        .should.be.rejectedWith(/error/)
-                        .then(() => {
-                            sinon.assert.calledWith(connection._resetTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                        });
-        });
-
-    });
-
-    describe('#_resetTx', () => {
-
         it('should throw an error when no name given', ()=>{
-            return connection._resetTx(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+            return connection.reset(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
         });
         it('should handle wrong network name data', () => {
             const buffer = Buffer.from(JSON.stringify({
@@ -299,7 +278,7 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection._resetTx(mockSecurityContext,'wrong-network')
+            return connection.reset(mockSecurityContext,'wrong-network')
                     .should.eventually.be.rejectedWith(/Incorrect Business Network Identifier/);
 
         });
@@ -326,7 +305,7 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection._resetTx(mockSecurityContext,'acme-network')
+            return connection.reset(mockSecurityContext,'acme-network')
                     .then(()=>{
                         sinon.assert.called(Util.invokeChainCode);
                         sinon.assert.called(Util.queryChainCode);
@@ -357,7 +336,7 @@ describe('Connection', () => {
             mockTransaction.getIdentifier.returns(null);
             mockTransaction.timestamp=new Date();
 
-            return connection._resetTx(mockSecurityContext,'acme-network')
+            return connection.reset(mockSecurityContext,'acme-network')
                     .then(()=>{
                         sinon.assert.called(Util.invokeChainCode);
                         sinon.assert.called(Util.queryChainCode);
@@ -369,30 +348,9 @@ describe('Connection', () => {
 
     describe('#update', () => {
 
-        it('should call _update and handle no error', () => {
-            sinon.stub(connection, '_updateTx').resolves();
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-                .then(() => {
-                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                });
-        });
-
-        it('should call _update and handle an error', () => {
-            sinon.stub(connection, '_updateTx').rejects(new Error('error'));
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                });
-        });
-
-    });
-
-    describe('#_updateTX', () => {
-
         it('should reject if no network defn given',()=>{
             (()=>{
-                connection._updateTx(mockSecurityContext,null);
+                connection.update(mockSecurityContext,null);
             }).should.throw(/business network definition not specified/);
         });
 
@@ -418,7 +376,7 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
+            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
@@ -449,22 +407,12 @@ describe('Connection', () => {
             mockTransaction.getIdentifier.returns(null);
             mockTransaction.timestamp='the epoch';
 
-            return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
+            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
             });
 
-        });
-
-    });
-
-    describe('#_update', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._update(mockSecurityContext, mockBusinessNetworkDefinition);
-            }).should.throw(/abstract function called/);
         });
 
     });
@@ -690,7 +638,6 @@ describe('Connection', () => {
 
     });
 
-
     describe('#createTransactionId', () => {
 
         it('should call _createTransactionId and handle no error', () => {
@@ -725,29 +672,8 @@ describe('Connection', () => {
 
     describe('#setLogLevel', () => {
 
-        it('should call _update and handle no error', () => {
-            sinon.stub(connection, '_setLogLevel').resolves();
-            return connection.setLogLevel(mockSecurityContext, mockBusinessNetworkDefinition)
-                                .then(() => {
-                                    sinon.assert.calledWith(connection._setLogLevel, mockSecurityContext, mockBusinessNetworkDefinition);
-                                });
-        });
-
-        it('should call _reset and handle an error', () => {
-            sinon.stub(connection, '_setLogLevel').rejects(new Error('error'));
-            return connection.setLogLevel(mockSecurityContext, mockBusinessNetworkDefinition)
-                                .should.be.rejectedWith(/error/)
-                                .then(() => {
-                                    sinon.assert.calledWith(connection._setLogLevel, mockSecurityContext, mockBusinessNetworkDefinition);
-                                });
-        });
-
-    });
-
-    describe('#_setLogLevel', () => {
-
         it('should throw an error when no loglevel given', ()=>{
-            return connection._setLogLevel(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+            return connection.setLogLevel(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
         });
         it('should handle setting to a new level', () => {
             const buffer = Buffer.from(JSON.stringify({
@@ -772,7 +698,7 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection._setLogLevel(mockSecurityContext,'debug');
+            return connection.setLogLevel(mockSecurityContext,'debug');
 
 
         });
@@ -800,7 +726,7 @@ describe('Connection', () => {
             mockTransaction.getIdentifier.returns(null);
             mockTransaction.timestamp = new Date();
 
-            return connection._setLogLevel(mockSecurityContext,'debug');
+            return connection.setLogLevel(mockSecurityContext,'debug');
 
 
         });
