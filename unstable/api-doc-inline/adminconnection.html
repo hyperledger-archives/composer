@@ -201,7 +201,6 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
-<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -261,7 +260,13 @@ connection can then be used to:
 <li>Send a ping message to the runtime to ensure it is running and
 correctly configured.</li>
 <li>Store a connection profile document in the connection profile store</li>
-</ul></p>
+</ul>
+Note: that the methods on this class take the &#39;businessNetworkIdentifier&#39;; this has to match
+the name given on the create call. An AdminConnection that has been connected to network-A can
+only be used to adminster network-A.</p>
+
+<p>Instances of AdminConnections can be reused for different networks. Call disconnect(..) then connect(..).
+Calling an api after disconnect and before connect will give an error.</p>
 
 <h3 id="details">Details</h3>
 
@@ -309,7 +314,7 @@ correctly configured.</li>
 <tr>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#disconnect">disconnect</a></td>
-<td style="text-align: left">Disconnects this connection.</td>
+<td style="text-align: left">Disconnects this connection.securityContext</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>Promise</code></td>
@@ -358,6 +363,11 @@ correctly configured.</li>
 </tr>
 <tr>
 <td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left"><a href="#reset-businessnetworkidentifier">reset</a></td>
+<td style="text-align: left">Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#setloglevel-any">setLogLevel</a></td>
 <td style="text-align: left">Set the logging level of a business network. The connection must</td>
 </tr>
@@ -368,7 +378,7 @@ correctly configured.</li>
 </tr>
 <tr>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left"><a href="#undeploy-string">undeploy</a></td>
+<td style="text-align: left"><a href="#undeploy-businessnetworkidentifier">undeploy</a></td>
 <td style="text-align: left">Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no</td>
 </tr>
 <tr>
@@ -416,62 +426,6 @@ correctly configured.</li>
 <td style="text-align: left"><code>Object</code></td>
 <td style="text-align: left">true</td>
 <td style="text-align: left">specify an fs implementation to use.</td>
-</tr>
-</tbody></table>
-
-<h2 id="connect-string-string-string-string">connect(string,string,string,string)</h2>
-
-<p>Connects and logs in to the Hyperledger Fabric using a named connection
-profile. The connection profile must exist in the profile store.</p>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect to Hyperledger Fabric</span>
-<span class="kd">var</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'testprofile'</span><span class="p">,</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span> <span class="s1">'DJY27pEnl16d'</span><span class="p">)</span>
-<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-    <span class="c1">// Connected.</span>
-<span class="p">})</span>
-<span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3 id="returns">Returns</h3>
-
-<p><code>Promise</code> - A promise that indicates the connection is complete</p>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>connectionProfile</strong></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">The name of the connection profile</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>enrollmentID</strong></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">the enrollment ID of the user</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>enrollmentSecret</strong></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">the enrollment secret of the user</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>businessNetworkIdentifier</strong></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">the id of the network (for update) or null</td>
 </tr>
 </tbody></table>
 
@@ -624,9 +578,65 @@ AdminConnection.</p>
 
 <p>No parameters</p>
 
+<h2 id="connect-string-string-string-string">connect(string,string,string,string)</h2>
+
+<p>Connects and logs in to the Hyperledger Fabric using a named connection
+profile. The connection profile must exist in the profile store.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect to Hyperledger Fabric</span>
+<span class="kd">var</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
+<span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'testprofile'</span><span class="p">,</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span> <span class="s1">'DJY27pEnl16d'</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Connected.</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+    <span class="c1">// Add optional error handling here.</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise that indicates the connection is complete</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>connectionProfile</strong></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">The name of the connection profile</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>enrollmentID</strong></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">the enrollment ID of the user</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>enrollmentSecret</strong></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">the enrollment secret of the user</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>businessNetworkIdentifier</strong></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">the id of the network (for update) or null</td>
+</tr>
+</tbody></table>
+
 <h2 id="disconnect">disconnect()</h2>
 
-<p>Disconnects this connection.</p>
+<p>Disconnects this connection.securityContext</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Disconnect from a Business Network</span>
@@ -789,7 +799,7 @@ deployed.</p>
 </tr>
 </tbody></table>
 
-<h2 id="undeploy-string">undeploy(string)</h2>
+<h2 id="undeploy-businessnetworkidentifier">undeploy(businessnetworkidentifier)</h2>
 
 <p>Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no
 longer be able to process transactions.</p>
@@ -822,9 +832,9 @@ undeployed.</p>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>businessNetworkIdentifier</strong></td>
-<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left"><code>BusinessNetworkIdentifier</code></td>
 <td style="text-align: left">true</td>
-<td style="text-align: left">The identifier of the network to undeploy</td>
+<td style="text-align: left">The name of business network that will be used to start this runtime.</td>
 </tr>
 </tbody></table>
 
@@ -865,6 +875,48 @@ updated.</p>
 <td style="text-align: left"><code>BusinessNetworkDefinition</code></td>
 <td style="text-align: left">true</td>
 <td style="text-align: left">The new BusinessNetworkDefinition</td>
+</tr>
+</tbody></table>
+
+<h2 id="reset-businessnetworkidentifier">reset(businessnetworkidentifier)</h2>
+
+<p>Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
+must have been previously deployed.</p>
+
+<p>Note this will remove ALL the contents of the network registries, but not any system registries</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Updates a Business Network Definition</span>
+<span class="kd">var</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
+<span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">reset</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Business network definition updated</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+    <span class="c1">// Add optional error handling here.</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise that will be fufilled when the business network has been
+updated.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>businessNetworkIdentifier</strong></td>
+<td style="text-align: left"><code>BusinessNetworkIdentifier</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">The name of business network that will be reset</td>
 </tr>
 </tbody></table>
 
