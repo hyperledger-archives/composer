@@ -24,33 +24,33 @@
  */
 class BusinessNetworkCardStore {
     /**
-     * Loads a card from the store.
+     * Gets a card from the store.
      * @abstract
-     * @param {String} cardName The name of the card to load
+     * @param {String} cardName The name of the card to get
      * @return {Promise} A promise that is resolved with a {@link IdCard}.
      */
-    load(cardName) {
+    get(cardName) {
         return Promise.reject(new Error('Abstract function called'));
     }
 
     /**
-     * Save a card in the store.
+     * Puts a card in the store.
      * @abstract
      * @param {String} cardName The name of the card to save
      * @param {IdCard} card The card
      * @return {Promise} A promise that resolves once the data is written
      */
-    save(cardName, card) {
+    put(cardName, card) {
         return Promise.reject(new Error('Abstract function called'));
     }
 
     /**
-     * Loads all cards from the store.
+     * Gets all cards from the store.
      * @abstract
      * @return {Promise} A promise that is resolved with a {@link Map} where
      * the keys are identity card names and the values are {@link IdCard} objects.
      */
-    loadAll() {
+    getAll() {
         return Promise.reject(new Error('Abstract function called'));
     }
 
