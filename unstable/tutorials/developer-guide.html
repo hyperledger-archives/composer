@@ -76,6 +76,19 @@ ga('send', 'pageview');
 
           </div>
 
+            <div class="search-form">
+              <form action="/composer/unstable/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
           <p>Developer Guide</p>
           </div>
@@ -188,6 +201,7 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
+<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -961,6 +975,7 @@ npm start
 })(document);
 </script>
 <script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
 
     
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>API Reference | Hyperledger Composer</title>
+    <title>IdCard (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>API Reference</p>
+          <p>IdCard (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -250,23 +250,274 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-api">Hyperledger Composer API</h1>
+              <h1 id="idcard">IdCard</h1>
 
-<p>Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.</p>
+<p>An ID card. Encapsulates credentials and other information required to connect to a specific business network
+as a specific user.
+<p>
+Instances of this class should be created using {@link IdCard.fromArchive}.</p>
 
-<h2 id="overview">Overview</h2>
+<h3 id="details">Details</h3>
 
-<p>The major components of Hyperledger Composer are:</p>
+<ul>
+<li><strong>Extends</strong> </li>
+<li><strong>Module</strong> common</li>
+</ul>
 
-<ol>
-<li>The Hyperledger Composer language for describing the structure of resources (assets, participants
-and transactions) that participate in a blockchain backed business network.</li>
-<li>JavaScript APIs to query, create, update and delete resources and submit transactions
-from client applications. Hyperledger Composer resources are stored on the Blockchain.</li>
-<li>JavaScript transaction processor functions that runs on Hyperledger Fabric when transactions are
-submitted for processing. These functions may update the state of resources
-stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
-</ol>
+<h3 id="see-also">See also</h3>
+
+<h2 id="method-summary">Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left"><a href="#fromarchive">fromArchive</a></td>
+<td style="text-align: left">Create an IdCard from a card archive.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left"><a href="#getbusinessnetworkname">getBusinessNetworkName</a></td>
+<td style="text-align: left">Name of the business network to which the ID card applies. Generally this will be present but may be</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left"><a href="#getconnectionprofile">getConnectionProfile</a></td>
+<td style="text-align: left">Connection profile for this card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left"><a href="#getcredentials">getCredentials</a></td>
+<td style="text-align: left">Credentials associated with this card, and which are used to connect to the associated business network.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left"><a href="#getdescription">getDescription</a></td>
+<td style="text-align: left">Free text description of the card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left"><a href="#getenrollmentcredentials">getEnrollmentCredentials</a></td>
+<td style="text-align: left">Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>String[]</code></td>
+<td style="text-align: left"><a href="#getroles">getRoles</a></td>
+<td style="text-align: left">Special roles for which this ID can be used, which can include:</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left"><a href="#getusername">getUserName</a></td>
+<td style="text-align: left">Name of the user identity associated with the card. This should be unique within the scope of a given</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left"><a href="#setcredentials-object">setCredentials</a></td>
+<td style="text-align: left">Credentials to associate with this card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left"><a href="#toarchive-object-string">toArchive</a></td>
+<td style="text-align: left">Generate a card archive representing this ID card.</td>
+</tr>
+</tbody></table>
+
+<h2 id="method-details">Method Details</h2>
+
+<h2 id="getusername">getUserName()</h2>
+
+<p>Name of the user identity associated with the card. This should be unique within the scope of a given
+business network and connection profile.
+<p>
+This is a mandatory field.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>String</code> - Name of the user identity.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getdescription">getDescription()</h2>
+
+<p>Free text description of the card.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>String</code> - card description.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getbusinessnetworkname">getBusinessNetworkName()</h2>
+
+<p>Name of the business network to which the ID card applies. Generally this will be present but may be
+omitted for system cards.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>String</code> - business network name.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getconnectionprofile">getConnectionProfile()</h2>
+
+<p>Connection profile for this card.
+<p>
+This is a mandatory field.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - connection profile.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getcredentials">getCredentials()</h2>
+
+<p>Credentials associated with this card, and which are used to connect to the associated business network.
+<p>
+For PKI-based authentication, the credentials are expected to be of the form:
+<em>{ certificate: String, privateKey: String }</em>.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - credentials.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="setcredentials-object">setCredentials(object)</h2>
+
+<p>Credentials to associate with this card.
+<p>
+For PKI-based authentication, the credentials are expected to be of the form:
+<em>{ certificate: String, privateKey: String }</em>.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>credentials</strong></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">credentials.</td>
+</tr>
+</tbody></table>
+
+<h2 id="getenrollmentcredentials">getEnrollmentCredentials()</h2>
+
+<p>Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to
+enroll with a business network and obtain certificates.
+<p>
+For an ID/secret enrollment scheme, the credentials are expected to be of the form:
+<em>{ secret: String }</em>.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - enrollment credentials, or {@link null} if none exist.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getroles">getRoles()</h2>
+
+<p>Special roles for which this ID can be used, which can include:
+<ul>
+  <li>PeerAdmin</li>
+  <li>ChannelAdmin</li>
+  <li>Issuer</li>
+</ul></p>
+
+<h3 id="returns">Returns</h3>
+
+<p>`` - roles.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="fromarchive">fromArchive()</h2>
+
+<p>Create an IdCard from a card archive.
+<p>
+Valid types for <em>zipData</em> are any of the types supported by JSZip.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise to the instantiated IdCard.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>zipData</strong></td>
+<td style="text-align: left">``</td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">card archive data.</td>
+</tr>
+</tbody></table>
+
+<h2 id="toarchive-object-string">toArchive(object,string)</h2>
+
+<p>Generate a card archive representing this ID card.
+<p>
+The default value for the <em>options.type</em> parameter is <em>arraybuffer</em>. See JSZip documentation
+for other valid values.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise of the generated ZIP file; by default an {@link ArrayBuffer}.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">JSZip generation options.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options.type</strong></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">type of the resulting ZIP file data.</td>
+</tr>
+</tbody></table>
 
             
           </section>
