@@ -16,13 +16,11 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-const homedir = require('homedir');
 const fs = require('fs');
 const Deploy = require('../../lib/cmds/network/lib/deploy.js');
 const DeployCmd = require('../../lib/cmds/network/deployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -31,15 +29,9 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-let testBusinessNetworkArchive = {bna: 'TBNA'};
-let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
-let testBusinessNetworkDescription = 'Test network description';
+let testBusinessNetworkArchive;
 
-//const DEFAULT_PROFILE_NAME = 'defaultProfile';
-const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-
-let mockBusinessNetworkDefinition;
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
+let businessNetworkDefinition;
 
 const VALID_ENDORSEMENT_POLICY_STRING = '{"identities":[{ "role": { "name": "member", "mspId": "Org1MSP" }}], "policy": {"1-of": [{"signed-by":0}]}}';
 let mockAdminConnection;
@@ -51,18 +43,21 @@ describe('composer deploy network CLI unit tests', function () {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
 
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+        businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
 
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
+
+        return businessNetworkDefinition.toArchive()
+            .then((archive) => {
+                testBusinessNetworkArchive = archive;
+            });
     });
 
     afterEach(() => {
@@ -79,18 +74,8 @@ describe('composer deploy network CLI unit tests', function () {
                        ,connectionProfileName: 'testProfile'
                        ,optionsFile: '/path/to/options.json'};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
             const optionsObject = {
                 endorsementPolicy: {
                     identities: [{role: {name: 'member',mspId: 'Org1MSP'}}],
@@ -108,21 +93,20 @@ describe('composer deploy network CLI unit tests', function () {
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicy: optionsObject.endorsementPolicy
                     });
             });
@@ -136,35 +120,24 @@ describe('composer deploy network CLI unit tests', function () {
                        ,connectionProfileName: 'testProfile'
                        ,option: 'endorsementPolicyFile=/path/to/some/file.json'};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicyFile: '/path/to/some/file.json'
                     });
             });
@@ -179,35 +152,24 @@ describe('composer deploy network CLI unit tests', function () {
                        ,connectionProfileName: 'testProfile'
                        ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition,
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
+                        bootstrapTransactions: [],
                         endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
                     });
             });
@@ -221,34 +183,22 @@ describe('composer deploy network CLI unit tests', function () {
                        ,archiveFile: 'testArchiveFile.zip'
                        ,connectionProfileName: 'testProfile'};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
             });
         });
 
@@ -260,113 +210,167 @@ describe('composer deploy network CLI unit tests', function () {
                        ,connectionProfileName: 'testProfile'
                        ,loglevel: 'DEBUG'};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
             return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition, {logLevel: 'DEBUG'});
-            });
-        });
-
-
-
-        it('Good path, default connection profile, all other parms correctly specified.', function () {
-
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'};
-            let connectionProfileName = DEFAULT_PROFILE_NAME;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
-
-            sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
-
-            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
-
-            return Deploy.handler(argv)
-            .then ((result) => {
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG'});
             });
         });
 
         it('Good path, no enrollment secret, all other parms correctly specified.', function () {
 
             let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves(enrollmentSecret);
+            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
 
             let argv = {enrollId: 'WebAppAdmin'
                        ,archiveFile: 'testArchiveFile.zip'
                        ,connectionProfileName: 'testProfile'};
             let connectionProfileName = argv.connectionProfileName;
-            let keyValStore = CREDENTIALS_ROOT;
-
-            let connectOptions = {type: 'hlf'
-                                        ,membershipServicesURL: 'grpc://localhost:7054'
-                                        ,peerURL: 'grpc://localhost:7051'
-                                        ,eventHubURL: 'grpc://localhost:7053'
-                                        ,keyValStore: keyValStore
-                                        ,deployWaitTime: '300'
-                                        ,invokeWaitTime: '100'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
-            sandbox.stub(Deploy, 'getConnectOptions');
 
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
-                sinon.assert.calledOnce(mockAdminConnection.createProfile);
-                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+            });
+        });
+
+        const sanitize = (result) => {
+            result.forEach((tx) => {
+                delete tx.timestamp;
+                delete tx.transactionId;
+                return tx;
+            });
+        };
+
+        it('Good path, network administrator specified', function () {
+
+            let enrollmentSecret = 'DJY27pEnl16d';
+            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
+
+            let argv = {enrollId: 'WebAppAdmin'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,connectionProfileName: 'testProfile'
+                        ,networkAdmin: ['admin1']
+                        ,networkAdminEnrollSecret: [true]};
+            let connectionProfileName = argv.connectionProfileName;
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                const deployOptions = mockAdminConnection.deploy.args[0][1];
+                sanitize(deployOptions.bootstrapTransactions);
+                deployOptions.bootstrapTransactions.should.deep.equal([
+                    {
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [
+                            {
+                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                                participantId: 'admin1'
+                            }
+                        ],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                    },
+                    {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                        identityName: 'admin1'
+                    }
+                ]);
+            });
+        });
+
+        it('Good path, network administrator and bootstrap transactions specified', function () {
+
+            let enrollmentSecret = 'DJY27pEnl16d';
+            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
+
+            let argv = {enrollId: 'WebAppAdmin'
+                                    ,archiveFile: 'testArchiveFile.zip'
+                                    ,connectionProfileName: 'testProfile'
+                                    ,networkAdmin: ['admin1']
+                                    ,networkAdminEnrollSecret: [true]
+                                    ,optionsFile: '/path/to/options.json'};
+            let connectionProfileName = argv.connectionProfileName;
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            const optionsObject = {
+                bootstrapTransactions: [{
+                    $class: 'org.acme.foobar.MyTransaction'
+                }]
+            };
+
+            const optionFileContents = JSON.stringify(optionsObject);
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
+            sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                const deployOptions = mockAdminConnection.deploy.args[0][1];
+                sanitize(deployOptions.bootstrapTransactions);
+                deployOptions.bootstrapTransactions.should.deep.equal([
+                    {
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [
+                            {
+                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                                participantId: 'admin1'
+                            }
+                        ],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                    },
+                    {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
+                        identityName: 'admin1'
+                    },
+                    {
+                        $class: 'org.acme.foobar.MyTransaction'
+                    }
+                ]);
             });
         });
 
@@ -375,66 +379,10 @@ describe('composer deploy network CLI unit tests', function () {
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,loglevel: 'BAD'
                        ,archiveFile: 'testArchiveFile.zip'};
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
                 .should.be.rejectedWith(/or not one of/);
 
         });
-    });
-
-    describe('Deploy getConnectOption() method tests', function () {
-
-        it('Connection profile exists', function () {
-
-            sandbox.stub(fs, 'existsSync').returns(true);
-            let keyValStore = CREDENTIALS_ROOT;
-            let testConnectOptions = {type: 'hlf'
-                                     ,membershipServicesURL: 'grpc://localhost:7054'
-                                     ,peerURL: 'grpc://localhost:7051'
-                                     ,eventHubURL: 'grpc://localhost:7053'
-                                     ,keyValStore: keyValStore
-                                     ,deployWaitTime: '300'
-                                     ,invokeWaitTime: '100'};
-            let connectionProfileContents = JSON.stringify(testConnectOptions);
-            sandbox.stub(fs, 'readFileSync').returns(connectionProfileContents);
-
-            let connectionProfileName = 'testProfile';
-            let connectOptions = Deploy.getConnectOptions(connectionProfileName);
-
-            connectOptions.should.deep.equal(testConnectOptions);
-
-        });
-
-        it('Connection profile does not exist', function () {
-
-            sandbox.stub(fs, 'existsSync').returns(false);
-            let keyValStore = CREDENTIALS_ROOT;
-            let testConnectOptions = {type: 'hlf'
-                                     ,membershipServicesURL: 'grpc://localhost:7054'
-                                     ,peerURL: 'grpc://localhost:7051'
-                                     ,eventHubURL: 'grpc://localhost:7053'
-                                     ,keyValStore: keyValStore
-                                     ,deployWaitTime: '300'
-                                     ,invokeWaitTime: '100'};
-
-            let connectionProfileName = 'testProfile';
-            // set up some bad options, to ensure file contents are not read...
-            let badConnectOptions = {type: 'bad'
-                                    ,membershipServicesURL: 'grpc://localhost:7054'
-                                    ,peerURL: 'grpc://localhost:7051'
-                                    ,eventHubURL: 'grpc://localhost:7053'
-                                    ,keyValStore: keyValStore
-                                    ,deployWaitTime: '300'
-                                    ,invokeWaitTime: '100'};
-            let connectionProfileContents = JSON.stringify(badConnectOptions);
-            sandbox.stub(fs, 'readFileSync').returns(connectionProfileContents);
-
-            let connectOptions = Deploy.getConnectOptions(connectionProfileName);
-
-            connectOptions.should.deep.equal(testConnectOptions);
-            connectOptions.should.not.deep.equal(badConnectOptions);
-
-        });
-
     });
 
     describe('Deploy getArchiveFileContents() method tests', function () {
@@ -460,33 +408,6 @@ describe('composer deploy network CLI unit tests', function () {
 
             let testArchiveFile = 'testfile.zip';
             (() => {Deploy.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
-
-        });
-
-    });
-
-    describe('Deploy getDefaultProfileName() method tests', function () {
-
-        it('profile name specified in argv', function () {
-
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'};
-
-            let connectionProfileName = Deploy.getDefaultProfileName(argv);
-            connectionProfileName.should.equal(argv.connectionProfileName);
-
-        });
-
-        it('Profile name not specified in argv', function () {
-
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'};
-
-            let connectionProfileName = Deploy.getDefaultProfileName(argv);
-            connectionProfileName.should.equal(DEFAULT_PROFILE_NAME);
 
         });
 

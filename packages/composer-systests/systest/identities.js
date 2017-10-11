@@ -31,7 +31,10 @@ chai.use(require('chai-as-promised'));
 process.setMaxListeners(Infinity);
 
 describe('Identity system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
     let participant;
@@ -52,6 +55,7 @@ describe('Identity system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-identities')
@@ -59,6 +63,10 @@ describe('Identity system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     beforeEach(() => {
@@ -97,9 +105,7 @@ describe('Identity system tests', () => {
     it('should bind an identity and make it available for a ping request', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        } else if (TestUtil.isHyperledgerFabricV1()) {
+        if (TestUtil.isHyperledgerFabricV1()) {
             const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
             const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
@@ -194,9 +200,7 @@ describe('Identity system tests', () => {
     it('should bind an identity and make the participant available for transaction processor functions', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        } else if (TestUtil.isHyperledgerFabricV1()) {
+        if (TestUtil.isHyperledgerFabricV1()) {
             const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/signcerts/User2@org1.example.com-cert.pem');
             certificate = fs.readFileSync(certificateFile, 'utf8');
             const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/keystore/key.pem');
@@ -275,6 +279,45 @@ describe('Identity system tests', () => {
                 return client.submitTransaction(transaction);
             })
             .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
+    });
+
+    it('should export credentials for previously imported identity', function () {
+        let profileName;
+        let certificate;
+        let privateKey;
+        if (TestUtil.isHyperledgerFabricV1()) {
+            profileName = 'composer-systests-org1';
+            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            certificate = fs.readFileSync(certificateFile, 'utf8').replace(/\r/g, '');
+            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
+            privateKey = fs.readFileSync(privateKeyFile, 'utf8').replace(/\r/g, '');
+        } else {
+            profileName = 'composer-systests';
+            certificate =
+                '----- BEGIN CERTIFICATE -----\n' +
+                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64') + '\n' +
+                '----- END CERTIFICATE -----\n';
+            privateKey = 'FAKE_PRIVATE_KEY';
+        }
+
+        const identity = uuid.v4();
+
+        const adminConnection = new AdminConnection();
+
+        return adminConnection.importIdentity(profileName, identity, certificate, privateKey)
+            .then(() => {
+                return adminConnection.exportIdentity(profileName, identity);
+            })
+            .then((credentials) => {
+                // Remove any carriage returns that may have been added by fabric
+                credentials.certificate = credentials.certificate.replace(/\r/g, '');
+                credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
+
+                credentials.should.deep.equal({
+                    certificate: certificate,
+                    privateKey: privateKey
+                });
+            });
     });
 
 });

@@ -19,13 +19,15 @@ const ParticipantDeclaration = require('../../../introspect/participantdeclarati
 const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
+const EventDeclaration = require('../../../introspect/eventdeclaration');
 const Field = require('../../../introspect/field');
 const ModelFile = require('../../../introspect/modelfile');
 const ModelManager = require('../../../modelmanager');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
-const debug = require('debug')('concerto:jsonschemavisitor');
+const debug = require('debug')('composer:loopbackvisitor');
 const util = require('util');
+
 /**
  * Convert a fully qualified type name, for example org.acme.MyAsset,
  * into a name that is safe for use as a LoopBack model name.
@@ -76,6 +78,8 @@ class LoopbackVisitor {
             return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof TransactionDeclaration) {
             return this.visitTransactionDeclaration(thing, parameters);
+        } else if (thing instanceof EventDeclaration) {
+            return this.visitEventDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
@@ -132,9 +136,6 @@ class LoopbackVisitor {
             .concat(modelFile.getTransactionDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
-            })
-            .filter((declaration) => {
-                return !declaration.isSystemType();
             })
             .forEach((declaration) => {
                 parameters.first = true;
@@ -273,6 +274,7 @@ class LoopbackVisitor {
         return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
 
     }
+
     /**
      * Visitor design pattern
      * @param {TransactionDeclaration} transactionDeclaration - the object being visited
@@ -318,6 +320,18 @@ class LoopbackVisitor {
 
     /**
      * Visitor design pattern
+     * @param {EventDeclaration} eventDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitEventDeclaration(eventDeclaration, parameters) {
+        debug('entering visitEventDeclaration', eventDeclaration.getName());
+        return null;
+    }
+
+    /**
+     * Visitor design pattern
      * @param {ClassDeclaration} classDeclaration - the object being visited
      * @param {Object} parameters - the parameter
      * @param {Object} jsonSchema - the base JSON Schema object to use
@@ -326,6 +340,10 @@ class LoopbackVisitor {
      */
     visitClassDeclarationCommon(classDeclaration, parameters, jsonSchema) {
         debug('entering visitClassDeclarationCommon', classDeclaration.getName());
+
+        // remember that we have visited this fqn
+        // in case one of our properties is of the same type (issue #2193)
+        parameters[classDeclaration.getFullyQualifiedName()] = 'visited';
 
         // Add information from the class declaration into the composer section.
         if (jsonSchema.options && jsonSchema.options.composer) {
@@ -355,9 +373,8 @@ class LoopbackVisitor {
         // Walk over all of the properties of this class and its super classes.
         classDeclaration.getProperties().forEach((property) => {
 
-            // Get the schema for the property.
+            // Get the schema for the property
             jsonSchema.properties[property.getName()] = property.accept(this, parameters);
-
         });
 
         // For transaction declarations, we need to change the model slightly.
@@ -477,8 +494,10 @@ class LoopbackVisitor {
             let type = field.getParent().getModelFile().getType(field.getType());
 
             // Visit it, but ignore the response.
-            type.accept(this, parameters);
-
+            // We do not visit types that have already been visited to prevent recursion (issue #2193)
+            if(!parameters[field.getFullyQualifiedTypeName()]) {
+                type.accept(this, parameters);
+            }
         }
 
         // Is the type an array?

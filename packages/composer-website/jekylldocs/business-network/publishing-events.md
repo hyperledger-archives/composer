@@ -3,7 +3,7 @@ layout: default
 title: Emitting Events
 category: tasks
 section: business-network
-index-order: 404
+index-order: 504
 sidebar: sidebars/accordion-toc0.md
 excerpt: Emitting Events from Transaction Processor Functions
 ---
@@ -21,7 +21,7 @@ Before you begin adding events to your business network, you should have a good 
 1. Events are defined in the model file (`.cto`) of your business network definition, in the same way as assets and participants. Events use the following format:
 
 
-        event BasicEvent identified by eventId {
+        event BasicEvent {
         }
 
 

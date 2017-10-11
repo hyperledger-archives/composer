@@ -3,7 +3,7 @@ layout: default
 title: Create a Business Network Definition
 category: tasks
 section: business-network
-index-order: 402
+index-order: 502
 sidebar: sidebars/accordion-toc0.md
 excerpt: How to create a business network definition
 ---
@@ -30,7 +30,7 @@ A description of the purpose of the business network using the Markdown mark-up 
 A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and `-`), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
 [Semantic Versioning](http://semver.org) principles should be used when incrementing the version number.
 
-The identifier of the network is formed from its name, the `-` character and its version number. A valid identifier is therefore `mybusinessnetwork-0.6.3`.
+The identifier of the network is formed from its name, the `-` character and its version number. A valid identifier (and example) is therefore `mybusinessnetwork-1.0.3`.
 
 The metadata for a business network definition is read from `package.json`, meaning that business network definitions may also be valid `npm` packages.
 

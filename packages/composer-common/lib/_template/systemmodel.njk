@@ -14,8 +14,14 @@
 
 'use strict';
 
-const SYSTEM_MODEL_CONTENTS = `
- {{ systemmodel }}
-`;
+const SYSTEM_MODELS = [
+{% for systemmodel in systemmodels %}
+    {
+        namespace: '{{ systemmodel.namespace}}',
+        fileName: '{{ systemmodel.fileName }}',
+        contents: `{{ systemmodel.contents }}`
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+];
 
-module.exports = SYSTEM_MODEL_CONTENTS;
+module.exports = SYSTEM_MODELS;

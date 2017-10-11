@@ -2,39 +2,57 @@
     <nav class="indexnav">
         <div class="navcontent">
             <div class="navlogo">
-                <p><b>Hyperledger</b> Composer Playground</p>
+                <p title="{{composerBanner[0]}}"><b>{{ composerBanner[0] }}</b></p>&nbsp;<p id="network-name" title="{{composerBanner[1]}}">{{ composerBanner[1] }}</p>
             </div>
-            <ul class="links navleft">
-                <li>
-                    <button id='app_definebutton' class="action" [routerLink]="['editor']" [routerLinkActive]="['active']">Define</button>
-                </li>
-                <li>
-                    <button id='app_testbutton' class="action" [routerLink]="['test']" [routerLinkActive]="['active']">Test</button>
-                </li>
-            </ul>
-            <ul class="links navright">
-                <li class="withseparator">
-                    <button class="action" [routerLink]="['identity']" [routerLinkActive]="['active']">
-                        <span class="currentid" title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
-                    </button>
-                </li>
-                <li *ngIf="!usingLocally">
-                    <a href="https://hyperledger.github.io/composer/installing/using-playground-locally.html"
-                       target="_blank">
-                        <svg class="nav-icon" aria-hidden="true">
-                            <use xlink:href="#icon-simple_docker"></use>
-                        </svg>
-                        <span>Get local version</span>
-                    </a>
-                </li>
-                <li *ngIf="usingLocally">
-                    <button class="action" [routerLink]="['profile']" [routerLinkActive]="['active']">
-                        <svg class="nav-icon" aria-hidden="true">
-                            <use xlink:href="#icon-world_24"></use>
-                        </svg>
-                    </button>
-                </li>
-            </ul>
+            <div class="navmain" [ngClass]="{'rightonly' : !showHeaderLinks && !usingLocally }">
+                <ul *ngIf="showHeaderLinks" class="links navleft">
+                    <li>
+                        <button id='app_definebutton' class="action" [routerLink]="['editor']"
+                                [routerLinkActive]="['active']">Define
+                        </button>
+                    </li>
+                    <li>
+                        <button id='app_testbutton' class="action" [routerLink]="['test']"
+                                [routerLinkActive]="['active']">Test
+                        </button>
+                    </li>
+                </ul>
+                <ul *ngIf="!showHeaderLinks && !usingLocally" class="links navright">
+                    <li>
+                        <a href="https://hyperledger.github.io/composer/installing/installing-index.html"
+                           target="_blank">
+                            <svg class="nav-icon" aria-hidden="true">
+                                <use xlink:href="#icon-simple_docker"></use>
+                            </svg>
+                            <span>Get local version</span>
+                        </a>
+                    </li>
+                </ul>
+                <div *ngIf="showHeaderLinks" class="drop-select navright" [routerLinkActive]="['active']" [ngClass]="{'dropListActive' : dropListActive}">
+                    <div class="drop-select-item flex-container flex">
+                        <div ngbDropdown class="d-inline-block" (openChange)="onToggle($event)">
+                            <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>
+                                <span title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <button id="content" class="dropdown-item action" [routerLink]="['identity']">
+                                    <div class="flex-container flex" style="justify-content:space-between">
+                                        <div style="margin-right:10px">ID Registry</div>
+                                    </div>
+                                </button>
+                                <button id="footer" class="dropdown-item action" (click)="logout()">
+                                    <div class="flex-container flex">
+                                        <div style="margin-right:20px"><svg class="ibm-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-chevron-left"></use>§
+                                        </svg></div>
+                                        <div>My Business Networks</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 </header>

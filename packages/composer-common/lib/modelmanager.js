@@ -21,7 +21,7 @@ const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = require('./systemmodel');
+const SYSTEM_MODELS = require('./systemmodel');
 
 /**
  * <p>
@@ -62,15 +62,22 @@ class ModelManager {
      * @private
      */
     addSystemModels() {
-        LOG.entry('addSystemModels');
+        const method = 'addSystemModels';
+        LOG.entry(method);
 
         // add the system model
-        LOG.info('info', SYSTEM_MODEL_CONTENTS);
-        let m = new ModelFile(this, SYSTEM_MODEL_CONTENTS);
-        m.validate();
-        this.modelFiles[m.getNamespace()] = m;
+        SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
+            LOG.info(method, SYSTEM_MODEL);
+            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName);
+            this.modelFiles[m.getNamespace()] = m;
+        });
 
-        LOG.exit('addSystemModels');
+        // now validate all the models
+        Object.keys(this.modelFiles).forEach((ns) => {
+            this.modelFiles[ns].validate();
+        });
+
+        LOG.exit(method);
     }
 
     /**
@@ -119,7 +126,7 @@ class ModelManager {
      */
     addModelFile(modelFile, fileName) {
         const NAME = 'addModelFile';
-        LOG.info(NAME,'addModelFile',modelFile,fileName);
+        LOG.info(NAME, 'addModelFile', modelFile, fileName);
 
         let m = null;
 
@@ -130,8 +137,8 @@ class ModelManager {
             m = modelFile;
         }
 
-        if(m.isSystemModelFile()) {
-            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace() );
+        if (m.isSystemModelFile()) {
+            throw new Error('Cannot add a model file with the reserved system namespace: ' + m.getNamespace());
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
@@ -156,24 +163,24 @@ class ModelManager {
      */
     updateModelFile(modelFile, fileName) {
         const NAME = 'updateModelFile';
-        LOG.info(NAME,'updateModelFile',modelFile,fileName);
+        LOG.info(NAME, 'updateModelFile', modelFile, fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
-            if (m.isSystemModelFile()){
-                throw new Error('System namespace can not be updated');
-            }
-            if (!this.modelFiles[m.getNamespace()]) {
+            let existing = this.modelFiles[m.getNamespace()];
+            if (!existing) {
                 throw new Error('model file does not exist');
+            } else if (existing.isSystemModelFile()) {
+                throw new Error('System namespace can not be updated');
             }
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
-            if (modelFile.isSystemModelFile()){
-                throw new Error('System namespace can not be updated');
-            }
-            if (!this.modelFiles[modelFile.getNamespace()]) {
+            let existing = this.modelFiles[modelFile.getNamespace()];
+            if (!existing) {
                 throw new Error('model file does not exist');
+            } else if (existing.isSystemModelFile()) {
+                throw new Error('System namespace can not be updated');
             }
             modelFile.validate();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
@@ -191,9 +198,9 @@ class ModelManager {
             throw new Error('model file does not exist');
         } else if (namespace === ModelUtil.getSystemNamespace()) {
             throw new Error('Cannot delete system namespace');
-
+        } else {
+            delete this.modelFiles[namespace];
         }
-        delete this.modelFiles[namespace];
     }
 
     /**
@@ -206,7 +213,7 @@ class ModelManager {
      */
     addModelFiles(modelFiles, fileNames) {
         const NAME = 'addModelFiles';
-        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
+        LOG.entry(NAME, 'addModelFiles', modelFiles, fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -223,7 +230,7 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
-                    if (m.isSystemModelFile()){
+                    if (m.isSystemModelFile()) {
                         throw new Error('System namespace can not be updated');
                     }
                     if (!this.modelFiles[m.getNamespace()]) {
@@ -234,7 +241,7 @@ class ModelManager {
                         throw new Error('namespace already exists');
                     }
                 } else {
-                    if (modelFile.isSystemModelFile()){
+                    if (modelFile.isSystemModelFile()) {
                         throw new Error('System namespace can not be updated');
                     }
                     if (!this.modelFiles[modelFile.getNamespace()]) {
@@ -259,8 +266,8 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
-        } finally{
-            LOG.exit(NAME,newModelFiles);
+        } finally {
+            LOG.exit(NAME, newModelFiles);
         }
     }
 
@@ -350,7 +357,6 @@ class ModelManager {
     getNamespaces() {
         return Object.keys(this.modelFiles);
     }
-
     /**
      * Look up a type in all registered namespaces.
      *
@@ -389,7 +395,13 @@ class ModelManager {
      * @return {ClassDeclaration[]} the ClassDeclarations from system namespaces
      */
     getSystemTypes() {
-        return this.getModelFile(ModelUtil.getSystemNamespace()).getAllDeclarations()
+        return this.getModelFiles()
+            .filter((modelFile) => {
+                return modelFile.isSystemModelFile();
+            })
+            .reduce((classDeclarations, modelFile) => {
+                return classDeclarations.concat(modelFile.getAllDeclarations());
+            }, [])
             .filter((classDeclaration) => {
                 return classDeclaration.isSystemCoreType();
             });
@@ -397,63 +409,70 @@ class ModelManager {
 
     /**
      * Get the AssetDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {AssetDeclaration[]} the AssetDeclarations defined in the model manager
      */
-    getAssetDeclarations() {
+    getAssetDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getAssetDeclarations());
+            return prev.concat(cur.getAssetDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the TransactionDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {TransactionDeclaration[]} the TransactionDeclarations defined in the model manager
      */
-    getTransactionDeclarations() {
+    getTransactionDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getTransactionDeclarations());
+            return prev.concat(cur.getTransactionDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EventDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EventDeclaration[]} the EventDeclaration defined in the model manager
      */
-    getEventDeclarations() {
+    getEventDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEventDeclarations());
+            return prev.concat(cur.getEventDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the ParticipantDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ParticipantDeclaration[]} the ParticipantDeclaration defined in the model manager
      */
-    getParticipantDeclarations() {
+    getParticipantDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getParticipantDeclarations());
+            return prev.concat(cur.getParticipantDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EnumDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EnumDeclaration[]} the EnumDeclaration defined in the model manager
      */
-    getEnumDeclarations() {
+    getEnumDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEnumDeclarations());
+            return prev.concat(cur.getEnumDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the Concepts defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ConceptDeclaration[]} the ConceptDeclaration defined in the model manager
      */
-    getConceptDeclarations() {
+    getConceptDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getConceptDeclarations());
+            return prev.concat(cur.getConceptDeclarations(includeSystemType));
         }, []);
     }
+
 }
 
 module.exports = ModelManager;

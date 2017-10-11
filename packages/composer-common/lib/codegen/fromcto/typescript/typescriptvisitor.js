@@ -23,11 +23,10 @@ const Field = require('../../../introspect/field');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
-const FunctionDeclaration = require('../../../introspect/functiondeclaration');
 const util = require('util');
 
 /**
- * Convert the contents of a ModelManager to Go Lang code.
+ * Convert the contents of a ModelManager to TypeScript code.
  * All generated code is placed into the 'main' package. Set a
  * fileWriter property (instance of FileWriter) on the parameters
  * object to control where the generated code is written to disk.
@@ -61,8 +60,6 @@ class TypescriptVisitor {
             return this.visitRelationship(thing, parameters);
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
-        } else if (thing instanceof FunctionDeclaration) {
-            // return this.visitEnum(thing, parameters);
         } else {
             throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 2 }));
         }
@@ -108,12 +105,42 @@ class TypescriptVisitor {
         // so that they can be extended
         if( !modelFile.isSystemModelFile() ) {
             const systemTypes = modelFile.getModelManager().getSystemTypes();
-
-            for(let n=0; n < systemTypes.length; n++) {
-                const systemType = systemTypes[n];
-                parameters.fileWriter.writeLine(0, 'import {' + systemType.getName() + '} from \'./org.hyperledger.composer.system\';');
-            }
+            systemTypes.forEach(systemType =>
+                parameters.fileWriter.writeLine(0, `import {${systemType.getName()}} from './org.hyperledger.composer.system';`));
         }
+
+        // Import property types that are imported from other cto files.
+        const dot = '.';
+        const properties = new Map();
+        modelFile.getAllDeclarations()
+        .filter(v => !v.isEnum())
+        .forEach(classDeclaration => classDeclaration.getProperties().forEach(property => {
+            if(!property.isPrimitive()){
+                const fullyQualifiedTypeName = property.getFullyQualifiedTypeName();
+                const lastIndexOfDot = fullyQualifiedTypeName.lastIndexOf(dot);
+                const propertyNamespace =  fullyQualifiedTypeName.substring(0, lastIndexOfDot);
+                const propertyTypeName = fullyQualifiedTypeName.substring(lastIndexOfDot + 1);
+                if(!properties.has(propertyNamespace)) {
+                    properties.set(propertyNamespace, new Set());
+                }
+                properties.get(propertyNamespace).add(propertyTypeName);
+            }
+        }));
+
+        modelFile.getImports().map(importString => {
+            const lastIndexOfDot = importString.lastIndexOf(dot);
+            const namespace = importString.substring(0, lastIndexOfDot);
+            return namespace;
+        }).filter(namespace => namespace !== modelFile.getNamespace()) // Skip own namespace.
+        .filter((v, i, a) => a.indexOf(v) === i) // Remove any duplicates from direct imports
+        .forEach(namespace => {
+            const propertyTypeNames = properties.get(namespace);
+            if(propertyTypeNames){
+                const csvPropertyTypeNames = Array.from(propertyTypeNames).join();
+                parameters.fileWriter.writeLine(0, `import {${csvPropertyTypeNames}} from './${namespace}';`);
+            }
+        });
+
         parameters.fileWriter.writeLine(0, '// export namespace ' + modelFile.getNamespace() + '{');
 
         modelFile.getAllDeclarations().forEach((decl) => {

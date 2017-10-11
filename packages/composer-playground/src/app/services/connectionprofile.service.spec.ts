@@ -5,57 +5,28 @@
 
 import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { LocalStorageService } from 'angular-2-local-storage';
-import { WalletService } from './wallet.service';
 import { AdminConnection } from 'composer-admin';
+import { ConnectionProfileStore } from 'composer-common';
+import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 
-class LocalStorageMock {
-    private values: Object = {};
-
-    public get(key: string): Object {
-        return this.values[key] || null;
-    }
-
-    public set(key: string, val: Object) {
-        this.values[key] = val;
-    }
-}
-
 describe('ConnectionProfileService', () => {
-    let mockWalletService;
     let adminConnectionMock;
+    let connectionProfileStoreMock;
+    let connectionProfileStoreServiceMock;
 
     beforeEach(() => {
-        mockWalletService = sinon.createStubInstance(WalletService);
         adminConnectionMock = sinon.createStubInstance(AdminConnection);
+
+        connectionProfileStoreMock = sinon.createStubInstance(ConnectionProfileStore);
+        connectionProfileStoreServiceMock = sinon.createStubInstance(ConnectionProfileStoreService);
+        connectionProfileStoreServiceMock.getConnectionProfileStore.returns(connectionProfileStoreMock);
 
         TestBed.configureTestingModule({
             providers: [ConnectionProfileService,
-                {provide: LocalStorageService, useClass: LocalStorageMock},
-                {provide: WalletService, useValue: mockWalletService}]
+                {provide: ConnectionProfileStoreService, useValue: connectionProfileStoreServiceMock}]
         });
-    });
-
-    describe('getCurrentConnectionProfile', () => {
-        it('should return $default when no connection profile has been set',
-            inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-                    let result = connectionProfileService.getCurrentConnectionProfile();
-                    result.should.equal('$default');
-                }));
-    });
-
-    describe('setCurrentConnectionProfile', () => {
-        it('should set the connection profile',
-            inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-                    connectionProfileService.setCurrentConnectionProfile('new');
-                    connectionProfileService.getCurrentConnectionProfile().should.equal('new');
-                }));
     });
 
     describe('getCertificate', () => {
@@ -90,22 +61,53 @@ describe('ConnectionProfileService', () => {
                     connectionProfileService.getAdminConnection().should.equal(adminConnectionStub);
                 }
             ));
+
+        it('should create a new admin connection if not set',
+            inject([ConnectionProfileService],
+                (connectionProfileService) => {
+                    connectionProfileService.should.be.ok;
+                    const adminConnection = connectionProfileService.getAdminConnection();
+                    adminConnection.should.be.an.instanceOf(AdminConnection);
+                    adminConnection.connectionProfileStore.should.equal(connectionProfileStoreMock);
+                }
+            ));
     });
 
     describe('createProfile', () => {
-        it('should get result of createProfile from admin connection',
+        it('should get result of createProfile from admin connection if the profile does not exist',
+            fakeAsync(inject([ConnectionProfileService],
+                (connectionProfileService) => {
+                    connectionProfileService.should.be.ok;
+
+                    adminConnectionMock.getProfile.returns(Promise.reject('not exist'));
+                    let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
+
+                    const nameArg: string = 'NAME';
+                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
+                    connectionProfileService.createProfile(nameArg, connectionProfileArg);
+
+                    tick();
+
+                    mockGetAdminConnection.should.have.been.called;
+                    adminConnectionMock.getProfile.should.have.been.calledWith(nameArg);
+                    adminConnectionMock.createProfile.should.have.been.calledWith(nameArg, connectionProfileArg);
+                })));
+
+        it('should get result of getProfile from admin connection if the profile does exist',
             inject([ConnectionProfileService],
                 (connectionProfileService) => {
                     connectionProfileService.should.be.ok;
 
-                    const nameArg: string = 'NAME';
-                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
+                    adminConnectionMock.getProfile.returns(Promise.resolve());
                     let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
 
+                    const nameArg: string = 'NAME';
+                    const connectionProfileArg: string = 'CONNECTION_PROFILE';
                     connectionProfileService.createProfile(nameArg, connectionProfileArg);
 
                     mockGetAdminConnection.should.have.been.called;
-                    adminConnectionMock.createProfile.should.have.been.calledWith(nameArg, connectionProfileArg);
+                    adminConnectionMock.getProfile.should.have.been.calledWith(nameArg);
+                    adminConnectionMock.createProfile.should.not.have.been.called;
                 }));
     });
 
@@ -142,57 +144,6 @@ describe('ConnectionProfileService', () => {
                     mockGetAdminConnection.should.have.been.called;
                     adminConnectionMock.deleteProfile.should.have.been.calledWith(nameArg);
                 }));
-    });
-
-    describe('createDefaultProfile', () => {
-        it('should get result of getProfile from admin connection if default profile doesn\'t exists',
-            fakeAsync(inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-
-                    let walletMock = {
-                        add: sinon.stub()
-                    };
-
-                    mockWalletService.getWallet.returns(walletMock);
-
-                    adminConnectionMock.getProfile.returns(Promise.reject('not exist'));
-                    adminConnectionMock.createProfile.returns(Promise.resolve());
-
-                    let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
-
-                    connectionProfileService.createDefaultProfile();
-
-                    tick();
-
-                    mockGetAdminConnection.should.have.been.called;
-                    adminConnectionMock.createProfile.should.have.been.called;
-                    mockWalletService.getWallet.should.have.been.calledWith('$default');
-                    walletMock.add.should.have.been.calledWith('admin', 'adminpw');
-                })));
-
-        it('should get result of getProfile from admin connection if default profile does exists',
-            fakeAsync(inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-
-                    let walletMock = {
-                        add: sinon.stub()
-                    };
-
-                    mockWalletService.getWallet.returns(walletMock);
-
-                    adminConnectionMock.getProfile.returns(Promise.resolve());
-
-                    let mockGetAdminConnection = sinon.stub(connectionProfileService, 'getAdminConnection').returns(adminConnectionMock);
-
-                    connectionProfileService.createDefaultProfile();
-
-                    tick();
-
-                    mockGetAdminConnection.should.have.been.called;
-                    adminConnectionMock.createProfile.should.not.have.been.called;
-                })));
     });
 
     describe('getAllProfiles', () => {

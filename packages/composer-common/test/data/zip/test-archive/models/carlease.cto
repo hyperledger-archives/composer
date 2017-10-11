@@ -1,6 +1,6 @@
 /**
  * Car Lease Scenario
- * Concerto Language File
+ * composer Language File
  *
  * Author: Billy Blockchain
  * Version: 1.0
@@ -11,7 +11,7 @@
 namespace org.acme
 
 // import a type from another namespace
-import concerto.MyParticipant
+import composer.MyParticipant
 
 // define an enumeration
 enum State {

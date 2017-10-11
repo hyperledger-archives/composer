@@ -86,7 +86,7 @@ describe('System REST API unit tests', () => {
         }
     }];
 
-    const transactionIds = [];
+    const transactionIds = {};
     const identityIds = [];
 
     let app;
@@ -157,7 +157,7 @@ describe('System REST API unit tests', () => {
                     const tx = serializer.fromJSON(transaction);
                     return businessNetworkConnection.submitTransaction(tx)
                         .then(() => {
-                            transactionIds.push(tx.getIdentifier());
+                            transactionIds[tx.getIdentifier()]=tx;
                         });
                 });
             }, Promise.resolve());
@@ -187,7 +187,7 @@ describe('System REST API unit tests', () => {
                     res.should.be.json;
                     res.body.should.deep.equal({
                         version: version,
-                        participant: null
+                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin'
                     });
                 });
         });
@@ -204,8 +204,9 @@ describe('System REST API unit tests', () => {
                     const identities = res.body.sort((a, b) => {
                         return a.name.localeCompare(b.name);
                     });
-                    identities[0].name.should.equal('alice1');
-                    identities[1].name.should.equal('bob1');
+                    identities[0].name.should.equal('admin');
+                    identities[1].name.should.equal('alice1');
+                    identities[2].name.should.equal('bob1');
                 });
         });
 
@@ -215,7 +216,7 @@ describe('System REST API unit tests', () => {
 
         it('should return the specified identity', () => {
             return chai.request(app)
-                .get('/api/system/identities/' + identityIds[0])
+                .get('/api/system/identities/' + identityIds[1])
                 .then((res) => {
                     res.should.be.json;
                     const identity = res.body;
@@ -340,44 +341,43 @@ describe('System REST API unit tests', () => {
 
     });
 
-    describe('GET /transactions', () => {
+    describe('GET /historian', () => {
 
         it('should return all of the transactions', () => {
             return chai.request(app)
-                .get('/api/system/transactions')
+                .get('/api/system/historian')
                 .then((res) => {
                     res.should.be.json;
                     res.body.filter((tx) => {
-                        return tx.$class === 'org.acme.bond.PublishBond';
-                    }).sort((a, b) => {
-                        return a.ISINCode.localeCompare(b.ISINCode);
-                    }).map((tx) => {
-                        delete tx.transactionId;
-                        delete tx.timestamp;
-                        return tx;
-                    }).should.deep.equal(transactionData);
+                        return tx.transactionType === 'org.acme.bond.PublishBond';
+                    }).reduce((accumulator, currentValue) => {
+                        accumulator.push(currentValue.transactionId);
+                        return accumulator;
+                    },[]).sort().should.deep.equal(Object.keys(transactionIds).sort());
                 });
         });
 
     });
 
-    describe('GET /transactions/:id', () => {
+    describe('GET /historian/:id', () => {
 
         it('should return the specified transaction', () => {
+            let txId = Object.keys(transactionIds)[0];
             return chai.request(app)
-                .get('/api/system/transactions/' + transactionIds[0])
+                .get('/api/system/historian/' + txId)
                 .then((res) => {
                     res.should.be.json;
                     const tx = res.body;
-                    delete tx.transactionId;
-                    delete tx.timestamp;
-                    tx.should.deep.equal(transactionData[0]);
+                    tx.transactionId.should.equal(transactionIds[txId].getIdentifier());
+                    tx.transactionType.should.equal(transactionIds[txId].getFullyQualifiedType());
+                    new Date(tx.transactionTimestamp).getUTCDate().should.equal(new Date(transactionIds[txId].timestamp).getUTCDate());
+                    // nb need to do this to get the date comparision to work reliably
                 });
         });
 
         it('should return a 404 if the specified transaction does not exist', () => {
             return chai.request(app)
-                .get('/api/system/transactions/LOL')
+                .get('/api/system/historian/LOL')
                 .catch((err) => {
                     err.response.should.have.status(404);
                 });

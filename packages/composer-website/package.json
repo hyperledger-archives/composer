@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.11.3",
+  "version": "0.14.0",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -8,10 +8,11 @@
     "npm": ">=3"
   },
   "scripts": {
-    "doc": "npm run docpub && ./scripts/generate-uml.sh",
+    "doc": "npm run apiref && ./scripts/generate-uml.sh",
+    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.1.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
-    "jekyllserve": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
+    "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
     "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
     "changelog": "./scripts/changelog.sh",
@@ -30,16 +31,18 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "0.11.3",
-    "composer-client": "0.11.3",
-    "composer-common": "0.11.3",
-    "composer-runtime": "0.11.3",
-    "jsdoc": "^3.4.3",
-    "node-plantuml": "^0.5.0",
-    "sanitize-html": "^1.14.1"
+    "composer-admin": "0.14.0",
+    "composer-client": "0.14.0",
+    "composer-common": "0.14.0",
+    "composer-runtime": "0.14.0",
+    "jsdoc": "3.4.3",
+    "mkdirp": "0.5.1",
+    "node-plantuml": "0.5.0",
+    "sanitize-html": "1.14.1"
   },
   "dependencies": {
-    "github-changes": "^1.0.4",
-    "jekyll": "^3.0.0-beta1"
+    "documentation": "5.3.1",
+    "github-changes": "1.0.4",
+    "jekyll": "3.0.0-beta1"
   }
 }

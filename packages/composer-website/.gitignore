@@ -50,3 +50,5 @@ out
 # Ignore temporary built installers.
 installers/*/install.sh
 jekylldocs/install*.sh
+jsondata/**
+jekylldocs/api-doc-inline/**/*

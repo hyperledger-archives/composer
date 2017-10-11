@@ -148,11 +148,12 @@ class Registry extends EventEmitter {
      * @param {Object} [options] Options for processing the resources.
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
+     *  @param {boolean} [options.forceAdd] Forces adding the object even if it present (default to false)
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
     addAll(resources, options) {
-        options = options || {};
+        options = options || { forceAdd : false };
         return resources.reduce((result, resource) => {
             return result.then(() => {
                 return this.add(resource, options);
@@ -166,19 +167,20 @@ class Registry extends EventEmitter {
      * @param {Object} [options] Options for processing the resources.
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
+     * @param {boolean} [options.forceAdd] Forces adding the object even if it present (default to false)
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
     add(resource, options) {
         return this.accessController.check(resource, 'CREATE')
             .then(() => {
-                options = options || {};
+                options = options || { forceAdd : false };
                 let id = resource.getIdentifier();
                 let object = this.serializer.toJSON(resource, {
                     convertResourcesToRelationships: options.convertResourcesToRelationships
                 });
                 object = this.addInternalProperties(object);
-                return this.dataCollection.add(id, object);
+                return this.dataCollection.add(id, object, options.forceAdd);
             })
             .then(() => {
                 this.emit('resourceadded', {

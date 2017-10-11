@@ -11,6 +11,18 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.14.0 {5015f90c6a6e75089ddcdac7d0470f6e} 2017-10-9
+ - Update set/getloglrvel and resetNetwork
+
+Version 0.13.0 {57f95f6e119d99e356b839d1b63bb4c8} 2017-08-21
+ - add a reset business network  api
+ - add a log level change api
+ - make sure all apis return rejected promises if they fail
+
+Version 0.12.0 {be483dc13bd46652cdfa59579783a515} 2017-08-21
+- added connectionProfileStore option to AdminConnection constructor
+- Add exportIdentity function to AdminConnection
+
 Version 0.11.2 {b25b7803dd52d44e06116dac595cdd6b} 2017-08-08
 - added requestIdentity method
 

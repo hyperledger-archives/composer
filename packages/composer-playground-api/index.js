@@ -30,15 +30,16 @@ const LOG = Logger.getLog('PlaygroundAPI');
  * Create an Express.js application that hosts both the REST API for Composer Playground
  * and the Connector Server for supporting the proxy connector.
  * @param {number} port The port for the Express.js application.
+ * @param {testMode} testMode Is the api started in test mode
  * @return {Object} The Express.js application.
  */
-function createServer (port) {
+function createServer (port, testMode) {
     const method = 'createServer';
-    LOG.entry(method, port);
+    LOG.entry(method, port, testMode);
 
     const app = Util.createApp();
 
-    npmRoute(app);
+    npmRoute(app, testMode);
 
     const connectionProfileStore = new FSConnectionProfileStore(fs);
     const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
@@ -58,6 +59,9 @@ function createServer (port) {
 
     server.listen(port);
     LOG.info(method, `Playground API started on port ${port}`);
+    if(testMode) {
+        LOG.info(method, 'Playground API started in test mode');
+    }
 
     LOG.exit(method, app);
     return app;

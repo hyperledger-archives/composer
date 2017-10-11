@@ -24,7 +24,7 @@ export class RegistryComponent {
     private resources = [];
 
     private expandedResource = null;
-    private registryType: string = null;
+    private registryId: string = null;
 
     private overFlowedResources = {};
 
@@ -33,7 +33,7 @@ export class RegistryComponent {
         this._registry = registry;
         if (this._registry) {
             this.loadResources();
-            this.registryType = this._registry.registryType;
+            this.registryId = this._registry.id;
         }
     }
 
@@ -50,9 +50,9 @@ export class RegistryComponent {
                 private modalService: NgbModal) {
     }
 
-    loadResources() {
+    loadResources(): Promise<void> {
         this.overFlowedResources = {};
-        this._registry.getAll()
+        return this._registry.getAll()
             .then((resources) => {
                 if (this.isHistorian()) {
                     this.resources = resources.sort((a, b) => {
@@ -130,9 +130,17 @@ export class RegistryComponent {
     }
 
     viewTransactionData(transaction: any) {
-        let transactionModalRef = this.modalService.open(ViewTransactionComponent);
-        transactionModalRef.componentInstance.transaction = transaction;
-        transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+        return this.clientService.resolveTransactionRelationship(transaction).then((resolvedTransction) => {
+            let transactionModalRef = this.modalService.open(ViewTransactionComponent);
+            transactionModalRef.componentInstance.transaction = resolvedTransction;
+            transactionModalRef.componentInstance.events = transaction.eventsEmitted;
+
+            transactionModalRef.result.catch((error) => {
+                if (error && error !== 1) {
+                    this.alertService.errorStatus$.next(error);
+                }
+            });
+        });
     }
 
     updateTableScroll(hasScroll) {
@@ -140,6 +148,6 @@ export class RegistryComponent {
     }
 
     private isHistorian(): boolean {
-        return this.registryType === 'Historian';
+        return this.registryId === 'org.hyperledger.composer.system.HistorianRecord';
     }
 }

@@ -3,30 +3,31 @@ import { ExpectedConditions } from 'protractor';
 
 import { OperationsHelper } from '../utils/operations-helper';
 import { dragDropFile } from '../utils/fileUtils';
+import { Constants } from '../utils/constants';
 
 export class AddFile {
 
   // Wait for modal to appear
   static waitToAppear() {
-      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
-      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 5000);
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait);
+      return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait);
   }
 
   // Wait for modal to disappear
   static waitToDisappear() {
-      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), 5000);
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.import'))), Constants.shortWait);
   }
 
   // Cancel Add
   static clickCancelAdd() {
-    browser.wait(ExpectedConditions.visibilityOf(element(by.id('add-file_cancel'))), 5000);
+    browser.wait(ExpectedConditions.visibilityOf(element(by.id('add-file_cancel'))), Constants.shortWait);
     return OperationsHelper.click(element(by.id('add-file_cancel')));
   }
 
   // Exit Add
   static clickExitAdd() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.id('add-file_exit')));
     });
@@ -35,7 +36,7 @@ export class AddFile {
   // Confirm Add
   static clickConfirmAdd() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.id('add-file_confirm')));
     });
@@ -44,7 +45,7 @@ export class AddFile {
   // Select Script file via Radio Button
   static selectAddScriptViaRadioOption() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.css('[for="file-type-js"]')));
     });
@@ -53,7 +54,7 @@ export class AddFile {
   // Select Model file via Radio Button
   static selectAddModelViaRadioOption() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.css('[for="file-type-cto"]')));
     });
@@ -62,7 +63,7 @@ export class AddFile {
   // Select ACL file via Radio Button
   static selectAddAclViaRadioOption() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.css('[for="file-type-acl"]')));
     });
@@ -71,7 +72,7 @@ export class AddFile {
   // Select Query file via Radio Button
   static selectAddQueryViaRadioOption() {
     // AddFile modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         return OperationsHelper.click(element(by.css('[for="file-type-qry"]')));
     });
@@ -80,7 +81,7 @@ export class AddFile {
   // Select BND from BNA file drop
   static selectFromFile(filePath: string) {
     // Import modal should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.import'))), Constants.shortWait)
     .then(() => {
         let inputFileElement = element(by.id('file-importer_input'));
         dragDropFile(inputFileElement, filePath);
@@ -90,7 +91,7 @@ export class AddFile {
 
   // Get all radio buttons
   static retrieveAddFileRadioButtons() {
-    return OperationsHelper.retriveMatchingElementsByCSS('.file-types-list', '[type="radio"]')
+    return OperationsHelper.retriveMatchingElementsByCSS('.file-types-list', '[type="radio"]', 0)
     .map((elm) => { return {name: elm.getAttribute('id'), enabled: elm.isEnabled()}; });
   }
 

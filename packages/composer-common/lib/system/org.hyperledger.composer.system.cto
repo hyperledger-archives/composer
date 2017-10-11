@@ -1,0 +1,194 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+namespace org.hyperledger.composer.system
+
+/**
+ * Abstract system asset that all assets extend
+ */
+abstract asset Asset {  }
+
+/**
+ * Abstract system participant that all participants extend
+ */
+abstract participant Participant {   }
+
+/**
+ * Abstract transaction that all transactions, including system ones, extend
+ *
+ * @param {String} transactionId Identifier for this transaction
+ * @param {DateTime} timestamp   Timestamp for this transaction
+ */
+abstract transaction Transaction identified by transactionId {
+  o String transactionId
+  o DateTime timestamp
+}
+
+/**
+ * Abstract event that all events, including system ones, extend
+ *
+ * @param {String} eventId Identifier for this event
+ * @param {DateTime} timestamp   Timestamp for this event
+ */
+abstract event Event identified by eventId {
+  o String eventId
+  o DateTime timestamp
+}
+
+/**
+ * Abstract Registry asset, that is used as the basis for all types of registries
+
+ * @param {String} registryId identity
+ * @param {String} name Name of the regsitry
+ * @param {String} type type of the regsitry
+ * @param {Boolean} system Is this a system registry
+ */
+abstract asset Registry identified by registryId {
+  o String registryId
+  o String name
+  o String type
+  o Boolean system
+}
+
+/**
+ * AssetRegistry type
+ */
+asset AssetRegistry extends Registry { }
+
+/**
+ * ParticipantRegistry type
+ */
+asset ParticipantRegistry extends Registry { }
+
+/**
+ * TransactionRegistry type
+ */
+asset TransactionRegistry extends Registry { }
+
+
+/** Asset representing the business networkId
+ * @param {String} networkId of the business networkId
+ */
+asset Network identified by networkId {
+  o String networkId
+}
+
+participant NetworkAdmin identified by participantId {
+    o String participantId
+}
+
+// -----------------------------------------------------------------------------
+// Historian
+
+/** Asset to represent each historian registry entry
+ * @param {String} transactionId Using the transaction id as the uuid
+ * @param {Transaction} transactionInvoked Relationship to transaction
+ * @param {Participant} participantInvoking Participant who invoked this transaction
+ * @param {Identity} identityUsed The identity that was used by the participant
+ * @param {Event[]} eventsEmitted The events that where emitted by this transactionId
+ * @param {DateTime} transactionTimestamp Use the transaction's timestamp
+ */
+asset HistorianRecord identified by transactionId {
+  o String      transactionId
+  o String      transactionType
+  --> Transaction transactionInvoked
+  --> Participant participantInvoking  optional
+  --> Identity    identityUsed         optional
+  o Event[]       eventsEmitted        optional
+  o DateTime      transactionTimestamp
+}
+
+// -----------------------------------------------------------------------------
+// System transactions that act on Registries of any type
+abstract transaction RegistryTransaction {
+  --> Registry targetRegistry
+}
+
+abstract transaction AssetTransaction extends RegistryTransaction {
+   o Asset[] resources
+}
+
+abstract transaction ParticipantTransaction extends RegistryTransaction {
+  o Participant[] resources
+}
+
+transaction AddAsset extends AssetTransaction { }
+transaction UpdateAsset extends AssetTransaction { }
+transaction RemoveAsset extends AssetTransaction {
+ o String[] resourceIds
+}
+
+transaction AddParticipant extends ParticipantTransaction { }
+transaction UpdateParticipant extends ParticipantTransaction { }
+transaction RemoveParticipant extends ParticipantTransaction {
+ o String[] resourceIds
+}
+
+
+// -----------------------------------------------------------------------------
+// Identity
+enum IdentityState {
+    o ISSUED
+    o BOUND
+    o ACTIVATED
+    o REVOKED
+}
+
+asset Identity identified by identityId {
+    o String identityId
+    o String name
+    o String issuer
+    o String certificate
+    o IdentityState state
+    --> Participant participant
+}
+
+transaction IssueIdentity {
+    --> Participant participant
+    o String identityName
+}
+
+transaction BindIdentity {
+    --> Participant participant
+    o String certificate
+}
+
+transaction ActivateCurrentIdentity { }
+
+transaction RevokeIdentity {
+    --> Identity identity
+}
+
+// --------------------------------------------------------------------------
+transaction StartBusinessNetwork {
+  o String businessNetworkArchive
+  o String logLevel optional
+  o Transaction[] bootstrapTransactions optional
+}
+
+transaction ResetBusinessNetwork {
+  
+}
+
+transaction UpdateBusinessNetwork {
+  o String businessNetworkArchive
+}
+
+/**
+ * Sets the log level fo the Business Network runtime to that specified
+ * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR 
+ */
+transaction SetLogLevel {
+  o String newLogLevel
+}
+

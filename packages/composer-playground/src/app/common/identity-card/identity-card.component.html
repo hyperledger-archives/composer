@@ -1,0 +1,76 @@
+<section class="identity-card">
+    <header>
+        <button *ngIf="showDismissIcon" type="button" class="icon dismiss"
+                (click)="dismiss()">
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-close_new"></use>
+            </svg>
+        </button>
+    </header>
+    <section *ngIf="identity" class="user-details">
+        <div class="image-placeholder">
+            <span class="initials">{{getInitials()}}</span>
+            <div class="role-icon" title="{{getRoles()}}" *ngIf="getRoles()">
+                <svg class="ibm-icon vertical-top">
+                    <use xlink:href="#icon-tool"></use>
+                </svg>
+            </div>
+        </div>
+        <div class="user-name">{{identity.getUserName()}}</div>
+    </section>
+    <section *ngIf="!preview && identity" class="actions">
+        <button [disabled]="indestructible" type="button" class="action circular delete"
+                (click)="delete()">
+            <svg class="ibm-icon vertical-top" aria-hidden="true">
+                <use xlink:href="#icon-trash_32"></use>
+            </svg>
+        </button>
+        <button [disabled]="'web' === identity.getConnectionProfile().type" type="button" class="action circular export"
+                (click)="export()">
+            <svg class="ibm-icon vertical-top" aria-hidden="true">
+                <use xlink:href="#icon-download_32"></use>
+            </svg>
+        </button>
+    </section>
+    <section *ngIf="!identity" class="sample-section">
+        <div class="sample-icon">
+            <svg class="ibm-icon vertical-top">
+                <use xlink:href="#icon-konnichiwa"></use>
+            </svg>
+        </div>
+        <h2>Hello, Composer!</h2>
+        <p>Get started with the basic-sample-network, or view our <a
+            href="https://hyperledger.github.io/composer/tutorials/playground-guide.html" target="_blank">Playground
+            tutorial</a></p>
+    </section>
+    <section *ngIf="preview" class="connection-profile-details">
+        <h3>Connection Profile</h3>
+        <p>{{identity.getConnectionProfile().name}}</p>
+    </section>
+    <section *ngIf="identity" class="business-network-details">
+        <h3>Business Network</h3>
+        <p [class.none]="!identity.getBusinessNetworkName()" title="{{identity.getBusinessNetworkName() || 'none'}}">
+            {{identity.getBusinessNetworkName() || 'none'}}</p>
+    </section>
+    <section *ngIf="!identity" class="business-network-details">
+        <h3>Business Network</h3>
+        <p title="basic-sample-network">basic-sample-network</p>
+    </section>
+    <footer>
+        <button *ngIf="!preview && identity" [disabled]="!identity.getBusinessNetworkName()" type="button"
+                class="action connect"
+                (click)="connect()">
+            <span>Connect now</span>
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-forward_16"></use>
+            </svg>
+        </button>
+        <button *ngIf="!identity" type="button" class="action connect"
+                (click)="deploySample()">
+            <span>Get Started</span>
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-forward_16"></use>
+            </svg>
+        </button>
+    </footer>
+</section>

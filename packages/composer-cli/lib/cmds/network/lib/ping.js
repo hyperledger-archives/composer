@@ -14,11 +14,8 @@
 
 'use strict';
 
-const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
-
-// const ora = require('ora');
 const chalk = require('chalk');
+const cmdUtil = require('../../utils/cmdutils');
 
 /**
  * <p>
@@ -38,7 +35,7 @@ class Ping {
         let businessNetworkConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Ping.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
 
         return (() => {
@@ -51,7 +48,7 @@ class Ping {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();
@@ -74,15 +71,6 @@ class Ping {
         }).catch((error) => {
             throw error;
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

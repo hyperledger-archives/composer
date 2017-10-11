@@ -148,8 +148,8 @@ describe('server', () => {
             });
     });
 
-    it('should enable security if specified', () => {
-        composerConfig.security = true;
+    it('should enable authentication if specified', () => {
+        composerConfig.authentication = true;
         return server(composerConfig)
             .then((result) => {
                 result.app.should.exist;
@@ -161,41 +161,98 @@ describe('server', () => {
                     return r.route.path;
                 });
                 routePaths.should.deep.equal(['/auth/local', '/auth/local/callback', '/auth/logout']);
+            });
+    });
+
+    it('should logout without an access token', () => {
+        composerConfig.authentication = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
+                    return r.route && r.route.path;
+                });
                 const req = {
                     logout: sinon.stub()
                 };
                 const res = {
-                    redirect: sinon.stub()
+                    redirect: sinon.stub(),
+                    clearCookie: sinon.stub()
                 };
                 const next = sinon.stub();
-                routes[2].route.stack[0].handle(req, res, next);
-                sinon.assert.calledOnce(req.logout);
-                sinon.assert.calledOnce(res.redirect);
-                sinon.assert.calledWith(res.redirect, '/');
-                sinon.assert.notCalled(next);
+                return routes[2].route.stack[0].handle(req, res, next)
+                    .then(() => {
+                        sinon.assert.calledOnce(req.logout);
+                        sinon.assert.calledTwice(res.clearCookie);
+                        sinon.assert.calledWith(res.clearCookie, 'access_token');
+                        sinon.assert.calledWith(res.clearCookie, 'userId');
+                        sinon.assert.calledOnce(res.redirect);
+                        sinon.assert.calledWith(res.redirect, '/');
+                        sinon.assert.notCalled(next);
+                    });
             });
     });
 
-    it('should enable security if specified with providers loaded from the environment', () => {
+    it('should logout with an access token', () => {
+        composerConfig.authentication = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
+                    return r.route && r.route.path;
+                });
+                const req = {
+                    logout: sinon.stub(),
+                    accessToken: {
+                        id: 'accessTokenId'
+                    }
+                };
+                const res = {
+                    redirect: sinon.stub(),
+                    clearCookie: sinon.stub()
+                };
+                const next = sinon.stub();
+                const logoutSpy = sinon.spy(result.app.models.user, 'logout');
+                return result.app.models.accessToken.create({ id: 'accessTokenId' })
+                    .then(() => {
+                        return routes[2].route.stack[0].handle(req, res, next);
+                    })
+                    .then(() => {
+                        sinon.assert.calledOnce(req.logout);
+                        sinon.assert.calledTwice(res.clearCookie);
+                        sinon.assert.calledWith(res.clearCookie, 'access_token');
+                        sinon.assert.calledWith(res.clearCookie, 'userId');
+                        sinon.assert.calledOnce(res.redirect);
+                        sinon.assert.calledWith(res.redirect, '/');
+                        sinon.assert.notCalled(next);
+                        sinon.assert.calledOnce(logoutSpy);
+                        sinon.assert.calledWith(logoutSpy, 'accessTokenId');
+                    });
+            });
+    });
+
+    it('should enable authentication if specified with providers loaded from the environment', () => {
         process.env.COMPOSER_PROVIDERS = JSON.stringify({
-            'github-login': {
-                provider: 'github',
-                module: 'passport-github2',
-                clientID: '69e33e2302c923ebe3c5',
-                clientSecret: '2b8e4449a07b5e2dfbdc70a8e836388eb48c9e54',
-                callbackURL: '/auth/github/callback',
-                authPath: '/auth/github',
-                callbackPath: '/auth/github/callback',
-                successRedirect: '/auth/account',
-                failureRedirect: '/login',
-                scope: [
-                    'email'
-                ],
-                failureFlash: true,
-                display: 'GitHub'
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/',
+                authScheme: 'ldap',
+                server: {
+                    url: 'ldap://localhost:389',
+                    bindDN: 'cn=admin,dc=example,dc=org',
+                    bindCredentials: 'admin',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
             }
         });
-        composerConfig.security = true;
+        composerConfig.authentication = true;
         return server(composerConfig)
             .then((result) => {
                 result.app.should.exist;
@@ -205,7 +262,7 @@ describe('server', () => {
                 }).map((r) => {
                     return r.route.path;
                 });
-                routes.should.deep.equal(['/auth/github', '/auth/github/callback', '/auth/logout']);
+                routes.should.deep.equal(['/auth/ldap', '/auth/ldap/callback', '/auth/logout']);
             });
     });
 

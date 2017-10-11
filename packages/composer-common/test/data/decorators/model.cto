@@ -1,0 +1,79 @@
+namespace org.acme
+
+@noargs
+@parens()
+@bar("asset")
+@positiveInteger(1)
+@negativeInteger(-1)
+@positiveDouble(10.2)
+@negativeDouble(-10.2)
+@booleanFalse(false)
+@booleanTrue(true)
+@all("foo", 1, -1, 10.2, -10.2, false, true)
+asset Car identified by id {
+  o String id
+  -->Driver owner
+}
+
+@bar("participant")
+participant Driver identified by email {
+  @noargs
+  @parens()
+  @bar("string")
+  @positiveInteger(1)
+  @negativeInteger(-1)
+  @positiveDouble(10.2)
+  @negativeDouble(-10.2)
+  @booleanFalse(false)
+  @booleanTrue(true)
+  @all("foo", 1, -1, 10.2, -10.2, false, true)
+  o String email
+  o String firstName
+  o String lastName
+
+  @bar("double")
+  o Double myDouble
+
+  @bar("integer")
+  o Integer myInt
+
+  @bar("long")
+  o Long myLong
+
+  @bar("dateTime")
+  o DateTime myDateTime
+
+  @bar("boolean")
+  o Boolean myBoolean
+
+  @bar("concept")
+  o MyConcept myConcept
+
+  @bar("relationship")
+  --> Regulator myRegulator
+}
+
+@bar("participant")
+participant Regulator identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+@bar("transaction")
+transaction MyTransaction  {
+}
+
+@bar("event")
+transaction MyEvent {
+}
+
+@bar("concept")
+concept MyConcept {
+}
+
+@bar("enum")
+enum MyEnum {
+  @bar("enumValue")
+  o VALUE
+}

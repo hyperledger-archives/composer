@@ -14,13 +14,11 @@ excerpt: Hyperledger Composer overview
 
 {{site.data.conrefs.composer_full}} supports the existing [Hyperledger Fabric blockchain](https://hyperledger.org) infrastructure and runtime, which supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.
 
-> **Please Note:** {{site.data.conrefs.composer_full}} users should not use {{site.data.conrefs.fabric_full}} v0.6.  It is deprecated, and everybody should now use v1.0.
-
 Everyday applications can consume the data from business networks, providing end users with simple and controlled access points.
 
 You can use {{site.data.conrefs.composer_full}} to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.
 
-![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Composer-Diagram.svg)
+<img src="../assets/img/Composer-Diagram.svg" style="border: none;" alt="Diagram of Hyperledger Composer">
 
 ---
 

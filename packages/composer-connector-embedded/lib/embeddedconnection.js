@@ -164,6 +164,7 @@ class EmbeddedConnection extends Connection {
                 if (!chaincodeUUID) {
                     throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
                 }
+
                 const result = new EmbeddedSecurityContext(this, identity);
                 result.setChaincodeID(chaincodeUUID);
                 return result;
@@ -185,55 +186,34 @@ class EmbeddedConnection extends Connection {
      * Deploy a business network. For the embedded connector this just translates to
      * a start request as no install is required.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
+     * artefacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
-        return this.start(securityContext, businessNetwork, deployOptions);
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
+        return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
     }
 
     /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific start options
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed and started, or rejected with an error.
+     * artefacts have been deployed and started, or rejected with an error.
      */
-    start(securityContext, businessNetwork, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         let container = EmbeddedConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeUUID = container.getUUID();
         let engine = EmbeddedConnection.createEngine(container);
-        EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
+        EmbeddedConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
         let context = new EmbeddedContext(engine, identity, this);
-        return businessNetwork.toArchive({ date: new Date(545184000000) })
-            .then((businessNetworkArchive) => {
-                const initArgs = {};
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
-            })
-            .then(() => {
-                securityContext.setChaincodeID(chaincodeUUID);
-                return this.ping(securityContext);
-            });
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
-            });
+        return engine.init(context, 'init', [startTransaction]);
     }
 
     /**
@@ -242,7 +222,7 @@ class EmbeddedConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the business network to remove
      * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
+     * artefacts have been undeployed, or rejected with an error.
      */
     undeploy(securityContext, businessNetworkIdentifier) {
         EmbeddedConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
@@ -271,6 +251,7 @@ class EmbeddedConnection extends Connection {
      * chaincode function once it has been invoked, or rejected with an error.
      */
     queryChainCode(securityContext, functionName, args) {
+
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
@@ -316,25 +297,56 @@ class EmbeddedConnection extends Connection {
      * rejected with an error.
      */
     getIdentity(identityName) {
-        if (identityName === 'admin') {
-            const certificateContents = identityName;
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from(certificateContents).toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
-            return Promise.resolve({
-                identifier: '',
-                name: 'admin',
-                issuer: DEFAULT_ISSUER,
-                secret: 'adminpw',
-                certificate,
-                imported: false
-            });
-        }
+        let identities;
         return this.getIdentities()
-            .then((identities) => {
+            .then((identities_) => {
+                identities = identities_;
                 return identities.get(identityName);
+            })
+            .catch((error) => {
+                if (identityName === 'admin') {
+                    return this._createAdminIdentity();
+                }
+                throw error;
+            });
+    }
+
+    /**
+     * Create the default admin identity.
+     * @return {Promise} A promise that is resolved with the admin identity when complete,
+     * or rejected with an error.
+     */
+    _createAdminIdentity() {
+        const identityName = 'admin';
+        const certificateContents = identityName;
+        const certificate = [
+            '-----BEGIN CERTIFICATE-----',
+            Buffer.from(certificateContents).toString('base64'),
+            '-----END CERTIFICATE-----'
+        ].join('\n').concat('\n');
+        const identifier = createHash('sha256').update(certificateContents).digest('hex');
+        const identity = {
+            identifier,
+            name: identityName,
+            issuer: DEFAULT_ISSUER,
+            secret: 'adminpw',
+            certificate,
+            imported: false,
+            options: {
+                issuer: true
+            }
+        };
+        let identities;
+        return this.getIdentities()
+            .then((identities_) => {
+                identities = identities_;
+                return identities.add(identityName, identity);
+            })
+            .then(() => {
+                return identities.add(identifier, identity);
+            })
+            .then(() => {
+                return identity;
             });
     }
 
@@ -374,6 +386,10 @@ class EmbeddedConnection extends Connection {
      */
     createIdentity(securityContext, identityName, options) {
         let identities;
+        const currentIdentity = securityContext.getIdentity();
+        if (!currentIdentity.options.issuer) {
+            throw new Error(`The identity ${currentIdentity.name} does not have permission to create a new identity ${identityName}`);
+        }
         return this.getIdentities()
             .then((identities_) => {
                 identities = identities_;
@@ -391,9 +407,9 @@ class EmbeddedConnection extends Connection {
                 }
                 const certificateContents = identityName + ':' + uuid.v4();
                 const certificate = [
-                    '----- BEGIN CERTIFICATE -----',
+                    '-----BEGIN CERTIFICATE-----',
                     Buffer.from(certificateContents).toString('base64'),
-                    '----- END CERTIFICATE -----'
+                    '-----END CERTIFICATE-----'
                 ].join('\n').concat('\n');
                 const identifier = createHash('sha256').update(certificateContents).digest('hex');
                 const secret = uuid.v4().substring(0, 8);
@@ -403,9 +419,13 @@ class EmbeddedConnection extends Connection {
                     issuer: DEFAULT_ISSUER,
                     secret,
                     certificate,
-                    imported: false
+                    imported: false,
+                    options: options || {}
                 };
                 return identities.add(identityName, identity)
+                    .then(() => {
+                        return identities.add(identifier, identity);
+                    })
                     .then(() => {
                         return {
                             userID: identity.name,
@@ -415,6 +435,17 @@ class EmbeddedConnection extends Connection {
             });
     }
 
+
+    /**
+     * Create a new transaction id
+     * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved with a generated user
+     * secret once the new identity has been created, or rejected with an error.
+     */
+    createTransactionId(securityContext){
+        return Promise.resolve(null);
+    }
 }
 
 module.exports = EmbeddedConnection;

@@ -19,6 +19,14 @@ const TransactionHandler = require('./transactionhandler');
 
 const LOG = Logger.getLog('IdentityManager');
 
+// Do not add additional types to these constants. All system types are assets.
+const TYPE_MAP = {
+    AssetRegistry: 'Asset',
+    ParticipantRegistry: 'Participant',
+    TransactionRegistry : 'Transaction',
+    Network : 'Network'
+};
+
 /**
  * A class for managing and persisting identities.
  * @protected
@@ -30,12 +38,9 @@ class ResourceManager extends TransactionHandler {
      */
     constructor(context) {
         super();
-        this.identityService = context.getIdentityService();
+        const method = 'constructor';
+        LOG.entry(method, context);
         this.registryManager = context.getRegistryManager();
-        this.factory = context.getFactory();
-        this.serializer = context.getSerializer();
-
-        LOG.info('<ResourceManager>', 'Binding in the tx names and impl');
         this.bind(
             'org.hyperledger.composer.system.AddAsset',
             this.addResources
@@ -60,6 +65,7 @@ class ResourceManager extends TransactionHandler {
             'org.hyperledger.composer.system.UpdateParticipant',
             this.updateResources
         );
+        LOG.exit(method);
     }
 
     /**
@@ -72,10 +78,14 @@ class ResourceManager extends TransactionHandler {
     addResources(api, transaction) {
         const method = 'addResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+        const registryType = TYPE_MAP[transaction.targetRegistry.getType()];
+        const registryId = transaction.targetRegistry.getIdentifier();
+        return this.registryManager.get(registryType, registryId)
             .then(registry => {
                 return registry.addAll(transaction.resources,{ convertResourcesToRelationships: true });
+            })
+            .then(() => {
+                LOG.exit(method);
             });
     }
 
@@ -89,11 +99,14 @@ class ResourceManager extends TransactionHandler {
     updateResources(api, transaction) {
         const method = 'updateResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
-
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+        const registryType = TYPE_MAP[transaction.targetRegistry.getType()];
+        const registryId = transaction.targetRegistry.getIdentifier();
+        return this.registryManager.get(registryType, registryId)
             .then(registry => {
                 return registry.updateAll(transaction.resources,{ convertResourcesToRelationships: true });
+            })
+            .then(() => {
+                LOG.exit(method);
             });
     }
 
@@ -107,11 +120,14 @@ class ResourceManager extends TransactionHandler {
     removeResources(api, transaction) {
         const method = 'removeResources';
         LOG.entry(method, transaction.registryType, transaction.registryId);
-
-        return this.registryManager
-            .get(transaction.registryType, transaction.registryId)
+        const registryType = TYPE_MAP[transaction.targetRegistry.getType()];
+        const registryId = transaction.targetRegistry.getIdentifier();
+        return this.registryManager.get(registryType, registryId)
             .then(registry => {
-                return registry.removeAll(transaction.resourceIds,{ convertResourcesToRelationships: true });
+                return registry.removeAll(transaction.resourceIds);
+            })
+            .then(() => {
+                LOG.exit(method);
             });
     }
 }

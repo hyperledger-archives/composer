@@ -69,25 +69,135 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to load a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreLoad(connectionProfile, callback) {
+        const method = 'connectionProfileStoreLoad';
+        LOG.entry(method, connectionProfile);
+        return this.connectionProfileStore.load(connectionProfile)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Handle a request from the client to save a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreSave(connectionProfile, connectionOptions, callback) {
+        const method = 'connectionProfileStoreSave';
+        LOG.entry(method, connectionProfile, connectionOptions);
+        return this.connectionProfileStore.save(connectionProfile, connectionOptions)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Handle a request from the client to load all connection profiles.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreLoadAll(callback) {
+        const method = 'connectionProfileStoreLoadAll';
+        LOG.entry(method);
+        return this.connectionProfileStore.loadAll()
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Handle a request from the client to delete a connection profile.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionProfileStoreDelete(connectionProfile, callback) {
+        const method = 'connectionProfileStoreDelete';
+        LOG.entry(method, connectionProfile);
+        return this.connectionProfileStore.delete(connectionProfile)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
      * Handle a request from the client to import an identity.
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
-     * @param {string} publicKey the public key
+     * @param {string} certificate the certificate
      * @param {string} privateKey the private key
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey, callback) {
+    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
-        LOG.entry(method, connectionProfile, id, publicKey, privateKey);
+        LOG.entry(method, connectionProfile, id, certificate, privateKey);
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
-                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, publicKey, privateKey);
+                return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
             })
             .then(() => {
                 callback(null);
                 LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Obtain the credentials associated with a given identity.
+     * @param {String} connectionProfileName - Name of the connection profile.
+     * @param {Object} connectionOptions - connection options loaded from the profile.
+     * @param {String} id - Name of the identity.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} Promise that resolves to credentials.
+     */
+    connectionManagerExportIdentity(connectionProfileName, connectionOptions, id, callback) {
+        const method = 'connectionManagerExportIdentity';
+        LOG.entry(method, connectionProfileName, connectionOptions, id);
+        return this.connectionProfileManager.getConnectionManager(connectionProfileName)
+            .then((connectionManager) => {
+                return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
+            })
+            .then((credentials) => {
+                callback(null, credentials);
+                LOG.exit(method, credentials);
             })
             .catch((error) => {
                 LOG.error(error);
@@ -249,14 +359,15 @@ class ConnectorServer {
      * Handle a request from the client to start a business network.
      * @param {string} connectionID The connection ID.
      * @param {string} securityContextID The security context ID.
-     * @param {string} businessNetworkBase64 The business network archive, as a base64 encoded string.
-     * @param {Object} startOptions connector specific start options
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
+     * @param {Object} startOptions connector specific installation options.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionStart(connectionID, securityContextID, businessNetworkBase64, startOptions, callback) {
+    connectionStart(connectionID, securityContextID, businessNetworkIdentifier, startTransaction, startOptions, callback) {
         const method = 'connectionDeploy';
-        LOG.entry(method, connectionID, securityContextID, businessNetworkBase64, startOptions);
+        LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, startTransaction, startOptions);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
@@ -273,11 +384,7 @@ class ConnectorServer {
             LOG.exit(method, null);
             return Promise.resolve();
         }
-        let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-        return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
-            .then((businessNetworkDefinition) => {
-                return connection.start(securityContext, businessNetworkDefinition, startOptions);
-            })
+        return connection.start(securityContext, businessNetworkIdentifier, startTransaction, startOptions)
             .then(() => {
                 callback(null);
                 LOG.exit(method);
@@ -293,14 +400,15 @@ class ConnectorServer {
      * Handle a request from the client to deploy a business network.
      * @param {string} connectionID The connection ID.
      * @param {string} securityContextID The security context ID.
-     * @param {string} businessNetworkBase64 The business network archive, as a base64 encoded string.
-     * @param {Object} deployOptions connector specific deployment options
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
+     * @param {Object} deployOptions connector specific deployment options.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDeploy(connectionID, securityContextID, businessNetworkBase64, deployOptions, callback) {
+    connectionDeploy(connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
         const method = 'connectionDeploy';
-        LOG.entry(method, connectionID, securityContextID, businessNetworkBase64, deployOptions);
+        LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
@@ -317,11 +425,7 @@ class ConnectorServer {
             LOG.exit(method, null);
             return Promise.resolve();
         }
-        let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-        return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
-            .then((businessNetworkDefinition) => {
-                return connection.deploy(securityContext, businessNetworkDefinition, deployOptions);
-            })
+        return connection.deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions)
             .then(() => {
                 callback(null);
                 LOG.exit(method);
@@ -611,6 +715,43 @@ class ConnectorServer {
             });
     }
 
+    /**
+     * Handle a request from the client to create a transaction id
+     * @param {string} connectionID The connection ID.
+     * @param {string} securityContextID The security context ID.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionCreateTransactionId(connectionID, securityContextID, callback) {
+        const method = 'connectionCreateTransactionId';
+        LOG.entry(method, connectionID, securityContextID);
+        let connection = this.connections[connectionID];
+        if (!connection) {
+            let error = new Error(`No connection found with ID ${connectionID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let securityContext = this.securityContexts[securityContextID];
+        if (!securityContext) {
+            let error = new Error(`No security context found with ID ${securityContextID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        return connection.createTransactionId(securityContext)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
 }
 
 module.exports = ConnectorServer;

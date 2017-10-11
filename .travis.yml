@@ -6,7 +6,6 @@ matrix:
         - {}
         - env: DOCS=full FC_TASK=docs
         - env: SYSTEST=embedded,proxy,web FC_TASK=systest
-        - env: SYSTEST=hlf FC_TASK=systest
 #        - env: SYSTEST=hlfv1_tls FC_TASK=systest
         - env: SYSTEST=hlfv1-1_tls FC_TASK=systest
         - env: SYSTEST=hlfv1-2_tls FC_TASK=systest
@@ -24,7 +23,7 @@ before_install: |
 install: |
     set -ev
     date
-    travis_wait 30 ./.travis/install.sh
+    ./.travis/install.sh
     date
 script: ./.travis/script.sh
 after_failure: |

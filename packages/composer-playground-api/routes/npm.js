@@ -29,9 +29,12 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('NPM');
 
+const sampleList = [{name:'basic-sample-network'}];
+const fs = require('fs');
+
 let router = null;
 
-module.exports = (app) => {
+module.exports = (app, testMode) => {
 
     // Did we already create a router?
     if (router !== null) {
@@ -158,10 +161,11 @@ module.exports = (app) => {
                     name : metadata.name,
                     description : metadata.description,
                     version : metadata.version,
+                    networkImage : metadata.networkImage,
+                    networkImageanimated : metadata.networkImageanimated,
                     tarball : metadata.dist.tarball
                 });
             }
-
         });
 
         LOG.exit(method, options);
@@ -231,58 +235,82 @@ module.exports = (app) => {
     router.get('/api/getSampleList', (req, res, next) => {
         const method = '/api/getSampleList';
         LOG.entry(method, null);
-        async.waterfall([
-            getSampleNames,
-            getSampleMetaData,
-            downloadMetaData,
-            sortSamples
-        ], function (err, result) {
-            if (err) {
-                return res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : err});
-            }
-            LOG.exit(method, result);
-            return res.status(200).json(result);
-        });
 
+        if (testMode) {
+            LOG.debug(method, 'in test mode - getting sample list');
+            return res.status(200).json(sampleList);
+        } else {
+            async.waterfall([
+                getSampleNames,
+                getSampleMetaData,
+                downloadMetaData,
+                sortSamples
+            ], function (err, result) {
+                if (err) {
+                    return res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : err});
+                }
+                LOG.exit(method, result);
+                return res.status(200).json(result);
+            });
+        }
     });
 
     /**
-     * Check if environment has client id and secret in
+     * Download the chosen sample
+     * @param {stream} stream the stream of data
+     * @param {object} res response object
+     */
+    function downloadSample (stream, res) {
+        const method = 'downloadSample';
+        LOG.entry(method, null);
+
+        // Set up a tar parser that selects BNA files.
+        const tarParse = new tar.Parse({
+            filter : (path) => {
+                return path.match(/\.bna$/);
+            }
+        });
+
+        // Go through every entry.
+        const pipe = stream.pipe(tarParse);
+        pipe.on('entry', (entry) => {
+            LOG.debug(method, 'Found business network archive in package', entry.path);
+            let buffer = Buffer.alloc(0);
+            entry.on('data', (data) => {
+                // Collect the data.
+                buffer = Buffer.concat([buffer, data]);
+            });
+            entry.on('end', () => {
+                LOG.exit(method, null);
+                res.set({
+                    'Content-Type' : 'text/plain; charset=x-user-defined',
+                });
+                return res.send(buffer);
+            });
+        });
+    }
+
+    /**
+     * Download sample
      */
     router.get('/api/downloadSample', (req, res, next) => {
         let chosenSample = req.query;
         const method = 'GET /api/downloadSample';
         LOG.entry(method, chosenSample);
+
+
+        if (testMode) {
+            let readStream = fs.createReadStream(__dirname + '/../basic-sample-network-0.1.9.tgz');
+
+            return downloadSample(readStream, res);
+        }
         // Download the package tarball.
         client.fetch(chosenSample.tarball, {}, (error, stream) => {
             if (error) {
                 return res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : error});
             }
 
-            // Set up a tar parser that selects BNA files.
-            const tarParse = new tar.Parse({
-                filter : (path) => {
-                    return path.match(/\.bna$/);
-                }
-            });
-
-            // Go through every entry.
-            const pipe = stream.pipe(tarParse);
-            pipe.on('entry', (entry) => {
-                LOG.debug(method, 'Found business network archive in package', entry.path);
-                let buffer = Buffer.alloc(0);
-                entry.on('data', (data) => {
-                    // Collect the data.
-                    buffer = Buffer.concat([buffer, data]);
-                });
-                entry.on('end', () => {
-                    LOG.exit(method, null);
-                    res.set({
-                        'Content-Type' : 'text/plain; charset=x-user-defined',
-                    });
-                    return res.send(buffer);
-                });
-            });
+            downloadSample(stream, res);
         });
     });
 };

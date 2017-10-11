@@ -15,144 +15,392 @@
 'use strict';
 
 const Logger = require('../../lib/log/logger');
-const Tree = require('../../lib/log//tree.js');
+const Tree = require('../../lib/log/tree.js');
+
+const WinstonInjector = require('../../lib/log/winstonInjector.js');
 
 const chai = require('chai');
-// const should = chai.should();
+const should = chai.should();
 chai.use(require('chai-things'));
-// const sinon = require('sinon');
+const mockery = require('mockery');
+const sinon = require('sinon');
 
 describe('Logger', () => {
 
-    describe('#getLog', () => {
+    let sandbox;
 
-        it('Log should be returned', () => {
+    beforeEach(() => {
+        Logger.reset();
+        mockery.enable({
+            warnOnReplace: false,
+            warnOnUnregistered: false
+        });
+        sandbox = sinon.sandbox.create();
+    });
 
-            Logger._envDebug='composer:*';
+    afterEach(() => {
+        sandbox.restore();
+        mockery.deregisterAll();
+        Logger.reset();
+    });
 
-            let mm = Logger.getLog('Test');
-            mm.should.not.be.null;
+    ['info', 'debug', 'warn', 'error', 'verbose'].forEach((logLevel) => {
+
+        describe(`#${logLevel}`, () => {
+
+            it('should log the message to the functional logger', () => {
+                const functionalLogger = {
+                    log: sinon.stub()
+                };
+                Logger.setFunctionalLogger(functionalLogger);
+                const logger = Logger.getLog('ScriptManager');
+                logger[logLevel]('Method', 'Message');
+                sinon.assert.calledOnce(functionalLogger.log);
+                sinon.assert.calledWith(functionalLogger.log, logLevel, sinon.match(/ScriptManager.*Method\(\)/), 'Message');
+            });
+
+            it('should log the message and arguments to the functional logger', () => {
+                const functionalLogger = {
+                    log: sinon.stub()
+                };
+                Logger.setFunctionalLogger(functionalLogger);
+                const logger = Logger.getLog('ScriptManager');
+                logger[logLevel]('Method', 'Message', 'Data');
+                sinon.assert.calledOnce(functionalLogger.log);
+                sinon.assert.calledWith(functionalLogger.log, logLevel, sinon.match(/ScriptManager.*Method\(\)/), 'Message', ['Data']);
+            });
+
+            it('should log an error to the functional logger', () => {
+                const functionalLogger = {
+                    log: sinon.stub()
+                };
+                Logger.setFunctionalLogger(functionalLogger);
+                const logger = Logger.getLog('ScriptManager');
+                const error = new Error('such error');
+                logger[logLevel]('Method', 'Message', error);
+                sinon.assert.calledOnce(functionalLogger.log);
+                sinon.assert.calledWith(functionalLogger.log, logLevel, sinon.match(/ScriptManager.*Method\(\)/), 'Message', [{
+                    stack: `{${error.name}}${error.message} ${error.stack}`.match(/[^\r\n]+/g)
+                }]);
+            });
+
         });
 
     });
 
-    describe('#info', () => {
-        it('Call a trace point', () => {
+    describe('#entry', () => {
 
-            Logger._envDebug='composer:*';
-
-            let mm = Logger.getLog('Test');
-            mm.should.not.be.null;
-
-            mm.info('Method','Message','Data');
-            mm.debug('Method','Message','Data');
-            mm.warn('Method','Message','Data');
-            mm.error('Method','Message','Data');
-            mm.verbose('Method','Message','Data');
-          //  mm.silly('Method','Message','Data');
-
-            mm.entry('Method','data');
-            mm.exit('Method','data');
-
-            mm.verbose('Method');
-
-            mm.verbose('Method','Error',new Error('test error'));
+        it('should log to the functional logger', () => {
+            const functionalLogger = {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(functionalLogger);
+            const logger = Logger.getLog('ScriptManager');
+            logger.entry('Method', 'Message', 'Data');
+            sinon.assert.calledOnce(functionalLogger.log);
+            sinon.assert.calledWith(functionalLogger.log, 'debug', sinon.match(/ScriptManager.*Method\(\)/), '>', ['Message', 'Data']);
         });
+
     });
 
-    describe('#infoOff', () => {
-        it('Call a trace point trace not enabled', () => {
+    describe('#exit', () => {
 
-            // Logger._envDebug='composer:*';
-
-            let mm = Logger.getLog('Test');
-            mm.should.not.be.null;
-
-            mm.info('Method','Message','Data');
-            mm.debug('Method','Message','Data');
-            mm.warn('Method','Message','Data');
-            mm.error('Method','Message','Data');
-            mm.verbose('Method','Message','Data');
-          //  mm.silly('Method','Message','Data');
-
-            mm.entry('Method','data');
-            mm.exit('Method','data');
-
-            mm.verbose('Method');
-
-            mm.verbose('Method','Error',new Error('test error'));
+        it('should log to the functional logger', () => {
+            const functionalLogger = {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(functionalLogger);
+            const logger = Logger.getLog('ScriptManager');
+            logger.exit('Method', 'Message', 'Data');
+            sinon.assert.calledOnce(functionalLogger.log);
+            sinon.assert.calledWith(functionalLogger.log, 'debug', sinon.match(/ScriptManager.*Method\(\)/), '<', ['Message', 'Data']);
         });
+
+    });
+
+    describe('#getSelectionTree', () => {
+
+        it('should return null by default', () => {
+            should.equal(Logger.getSelectionTree(), null);
+        });
+
+    });
+
+    describe('#setSelectionTree', () => {
+
+        it('should set a new selection tree', () => {
+            const tree = sinon.createStubInstance(Tree);
+            Logger.setSelectionTree(tree);
+            Logger.getSelectionTree().should.equal(tree);
+        });
+
+    });
+
+    describe('#getFunctionalLogger', () => {
+
+        it('should return null by default', () => {
+            should.equal(Logger.getFunctionalLogger(), null);
+        });
+
     });
 
     describe('#setFunctionalLogger', () => {
-        it('Call a trace point', () => {
-            Logger._envDebug='composer:*';
 
-            // let mm = Logger.getLog('Test');
-            Logger.setFunctionalLogger({
-                log: function(){
-                    console.log('{\"composer\":'+JSON.stringify(arguments)+'}');
+        it('should set a new functional logger', () => {
+            const logger = {
+                log: () => {
+
                 }
+            };
+            Logger.setFunctionalLogger(logger);
+            Logger.getFunctionalLogger().should.equal(logger);
+        });
+
+    });
+
+    describe('#getDebugEnv', () => {
+
+        beforeEach(() => {
+            delete process.env.DEBUG;
+            delete Logger._envDebug;
+        });
+
+        afterEach(() => {
+            delete process.env.DEBUG;
+            delete Logger._envDebug;
+        });
+
+        it('should return DEBUG environment variable if set', () => {
+            process.env.DEBUG = 'composer:ScriptManager';
+            Logger.getDebugEnv().should.equal('composer:ScriptManager');
+        });
+
+        it('should return _envDebug property if set', () => {
+            Logger._envDebug = 'composer:Connection';
+            Logger.getDebugEnv().should.equal('composer:Connection');
+        });
+
+        it('should return empty string when neither DEBUG or _envDebug are set', () => {
+            Logger.getDebugEnv().should.equal('');
+        });
+
+    });
+
+    describe('#getLoggerConfig', () => {
+
+        it('should return the default winston logger', () => {
+            Logger.getLoggerConfig().logger.should.equal('./winstonInjector.js');
+        });
+
+        it('should load the config module but ignore a missing composer.debug setting', () => {
+            const mockConfig = {
+                has: sinon.stub(),
+                get: sinon.stub()
+            };
+            mockConfig.has.withArgs('composer.debug').returns(false);
+            mockConfig.get.withArgs('composer.debug').throws(new Error('such error'));
+            mockery.registerMock('config', mockConfig);
+            Logger.getLoggerConfig().logger.should.equal('./winstonInjector.js');
+        });
+
+        it('should load the config module and use a present composer.debug setting', () => {
+            const mockConfig = {
+                has: sinon.stub(),
+                get: sinon.stub()
+            };
+            mockConfig.has.withArgs('composer.debug').returns(true);
+            mockConfig.get.withArgs('composer.debug').returns({
+                logger: 'foolog'
             });
-            // mm.should.not.be.null;
-            //
-            Logger.setFunctionalLogger(null);
+            mockery.registerMock('config', mockConfig);
+            Logger.getLoggerConfig().logger.should.equal('foolog');
         });
-
 
     });
 
-    describe('#info', () => {
-        it('Call a trace point specific on string', () => {
-            console.log('reseting root');
-            Logger.reset();
-            Logger._envDebug='composer:bill';
+    describe('#getLog', () => {
 
-            let mm = Logger.getLog('Test');
-            mm.should.not.be.null;
-
-            mm.info('Method','Message','Data');
+        it('should return a new logger', () => {
+            Logger.getLog('ScriptManager').should.be.an.instanceOf(Logger);
         });
+
+        it('should return an existing logger', () => {
+            const logger = Logger.getLog('ScriptManager');
+            logger.should.be.an.instanceOf(Logger);
+            const logger2 = Logger.getLog('ScriptManager');
+            logger2.should.be.an.instanceOf(Logger);
+            logger.should.equal(logger2);
+        });
+
     });
 
-    describe('#info', () => {
-        it('Call a trace point matching specific', () => {
-            console.log('reseting root');
-            Logger.reset();
-            Logger._envDebug='composer:bill';
+    describe('#_setupLog', () => {
 
-            let mm = Logger.getLog('bill');
-            mm.should.not.be.null;
+        beforeEach(() => {
+            const loggerConfig = {
+                logger: 'foolog',
+                config: {
+                    log: 'config',
+                    more: 'details'
+                }
+            };
+            const loggerModule = {
+                getLogger: sinon.stub()
+            };
+            const mockLogger = {};
+            loggerModule.getLogger.returns(mockLogger);
+            mockery.registerMock('foolog', loggerModule);
+            sandbox.stub(Logger, 'getLoggerConfig').returns(loggerConfig);
+        });
 
-            mm.info('Method','Message','Data');
+        it('should handle a logger class that should be included', () => {
+            const composerLogger = {
+                className: 'Connection'
+            };
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:Connection');
+            Logger._setupLog(composerLogger);
+            composerLogger.include.should.be.true;
+        });
+
+        it('should handle a logger class that should be included and cache the tree/logger', () => {
+            const composerLogger = {
+                className: 'Connection'
+            };
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:Connection');
+            Logger._setupLog(composerLogger);
+            const tree = Logger.getSelectionTree();
+            const logger = Logger.getFunctionalLogger();
+            Logger._setupLog(composerLogger);
+            tree.should.equal(Logger.getSelectionTree());
+            logger.should.equal(Logger.getFunctionalLogger());
+            composerLogger.include.should.be.true;
+        });
+
+        it('should handle a logger class that should not be included', () => {
+            const composerLogger = {
+                className: 'Connection'
+            };
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:ScriptManager');
+            Logger._setupLog(composerLogger);
+            composerLogger.include.should.be.false;
+        });
+
+        it('should handle a logger class that should not be included and cache the tree/logger', () => {
+            const composerLogger = {
+                className: 'Connection'
+            };
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:ScriptManager');
+            Logger._setupLog(composerLogger);
+            const tree = Logger.getSelectionTree();
+            const logger = Logger.getFunctionalLogger();
+            Logger._setupLog(composerLogger);
+            tree.should.equal(Logger.getSelectionTree());
+            logger.should.equal(Logger.getFunctionalLogger());
+            composerLogger.include.should.be.false;
+        });
+
+    });
+
+    describe('#_parseLoggerConfig', () => {
+
+        it('should parse a wildcard logger configuration', () => {
+            const configElements = [];
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:*');
+            const tree = Logger._parseLoggerConfig(configElements);
+            tree.should.be.an.instanceOf(Tree);
+            tree.root.isIncluded().should.be.true;
+        });
+
+        it('should parse a single logger configuration', () => {
+            const configElements = [];
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:ScriptManager');
+            const tree = Logger._parseLoggerConfig(configElements);
+            tree.should.be.an.instanceOf(Tree);
+            tree.root.isIncluded().should.be.false;
+            tree.getInclusion('Connection').should.be.false;
+            tree.getInclusion('ModelUtil').should.be.false;
+            tree.getInclusion('ScriptManager').should.be.true;
+        });
+
+        it('should parse a multiple logger configuration', () => {
+            const configElements = [];
+            sandbox.stub(Logger, 'getDebugEnv').returns('composer:Connection,composer:ScriptManager');
+            const tree = Logger._parseLoggerConfig(configElements);
+            tree.should.be.an.instanceOf(Tree);
+            tree.root.isIncluded().should.be.false;
+            tree.getInclusion('Connection').should.be.true;
+            tree.getInclusion('ModelUtil').should.be.false;
+            tree.getInclusion('ScriptManager').should.be.true;
+        });
+
+    });
+
+    describe('#_loadLogger', () => {
+
+        const configElements = [ 'Connection', 'ModelUtil', 'ScriptManager' ];
+
+        it('should load a logger', () => {
+            const loggerConfig = {
+                logger: 'foolog',
+                config: {
+                    log: 'config',
+                    more: 'details'
+                }
+            };
+            const loggerModule = {
+                getLogger: sinon.stub()
+            };
+            const mockLogger = {};
+            loggerModule.getLogger.withArgs(loggerConfig.config, { debug: configElements }).returns(mockLogger);
+            mockery.registerMock('foolog', loggerModule);
+            sandbox.stub(Logger, 'getLoggerConfig').returns(loggerConfig);
+            const actualLogger = Logger._loadLogger(configElements);
+            sinon.assert.calledOnce(loggerModule.getLogger);
+            sinon.assert.calledWith(loggerModule.getLogger, loggerConfig.config, { debug: configElements });
+            actualLogger.should.equal(mockLogger);
+        });
+
+        it('should use the null logger if the specified logger cannot be loaded', () => {
+            const spy = sandbox.spy(console, 'error');
+            const loggerConfig = {
+                logger: 'foolog',
+                config: {
+                    log: 'config',
+                    more: 'details'
+                }
+            };
+            const loggerModule = {
+                getLogger: sinon.stub()
+            };
+            const mockLogger = {};
+            loggerModule.getLogger.withArgs(loggerConfig.config, { debug: configElements }).returns(mockLogger);
+            sandbox.stub(Logger, 'getLoggerConfig').returns(loggerConfig);
+            const actualLogger = Logger._loadLogger(configElements);
+            sinon.assert.calledWith(spy, sinon.match(/Failed to load logger module foolog/));
+            actualLogger.log('foo', 'bar');
+        });
+
+    });
+
+    describe('#WinstonInjector',()=>{
+        it('additional code paths ',()=>{
+            let config = {
+                'console': {
+                    'enabledLevel': 'info',
+                    'alwaysLevel': 'none'
+
+                },
+                'file': {
+
+                    'filename': 'trace_TIMESTAMP.log',
+                    'enabledLevel': 'debug',
+                    'alwaysLevel': 'error'
+                }};
+            let configElements = {debug: {things:'here'}};
+            WinstonInjector.getLogger(config,configElements);
+
 
         });
     });
-
-    describe('#tree tests', () => {
-        it('Run data into the tree object', () => {
-
-            let _tree = new Tree();
-            _tree.setRootInclusion();
-            _tree.addNode('alpha',false);
-
-
-            _tree.getInclusion('alpha').should.be.false;
-            _tree.getInclusion('omega').should.be.true;
-            _tree.addNode('alpha/beta',true);
-            _tree.getInclusion('alpha/beta').should.be.true;
-
-            _tree.addNode('alpha/beta',true);
-            _tree.getInclusion('alpha/beta').should.be.true;
-
-            _tree.addNode('gamma/delta/epsilon',false);
-            _tree.getInclusion('gamma/delta/epsilon').should.be.false;
-            _tree.getInclusion('gamma/delta').should.be.true;
-            _tree.getInclusion('gamma').should.be.true;
-        });
-
-    }
-
-  );
 
 });

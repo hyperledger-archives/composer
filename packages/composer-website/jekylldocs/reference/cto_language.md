@@ -2,7 +2,7 @@
 layout: default
 title: Modeling Language
 section: reference
-index-order: 902
+index-order: 1002
 sidebar: sidebars/accordion-toc0.md
 excerpt: The [**Hyperledger Composer modeling language**](./cto_language.html) is an object-oriented language which defines the business network model containing assets, participants, and transactions.
 ---
@@ -23,23 +23,9 @@ A {{site.data.conrefs.composer_full}} CTO file is composed of the following elem
 
 Your organization namespace is defined in the namespace line of your model (`.cto`) file, and all resources created are implicitly part of this namespace.
 
-As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.
+As well as defining new classes of asset, participant, event, and transaction, there is a [system namespace](https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto) which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstract types which are implicitly extended by all assets, events, participants, and transactions.
 
-Represented as a `.cto` model file, the system namespace is as follows:
-
-```
-    namespace org.hyperledger.composer.system
-    abstract asset Asset {  }
-    abstract participant Participant {   }
-    abstract transaction Transaction {
-      o DateTime timestamp
-    }
-    abstract event Event {
-      o DateTime timestamp
-    }
-```
-
-In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.
+In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp. The system namespace also includes definitions of registries, historian records, identities, and a number of system transactions.
 
 >If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.
 
@@ -61,18 +47,18 @@ A resource definition has the following properties:
 1. A namespace defined by the namespace of its parent file. The namespace of a `.cto` file implicitly applies to all resources created in it.
 2. A name, for example `Vehicle`, and an identifying field, for example, `vin`. If the resource is an asset or participant, the name is followed by the identifying field, if the resource is an event or transaction, the identifying field is set automatically. In this example, the asset is named `Vehicle` and the identifying field is `vin`.
 
-        ```
+
         /**
          * A vehicle asset.
          */
         asset Vehicle identified by vin {
           o String vin
         }
-        ```
+
 
 3. An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.
 
-        ```
+
         /**
          * A car asset. A car is related to a list of parts
          */
@@ -80,23 +66,23 @@ A resource definition has the following properties:
           o String model
           --> Part[] Parts
         }
-        ```
+
 
 4. An optional 'abstract' declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset `Vehicle` defined above should never be created, as there should be more specific asset classes defined to extend it.
 
-        ```
+
         /**
         * An abstract Vehicle asset.
         */
         abstract asset Vehicle identified by vin {
           o String vin
         }
-        ```
+
 
 5. A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a `Car` asset has a `vin`, and a `model` property, both of which are strings.
 6. A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.
 
-    ```
+
     /**
      * A Field asset. A Field is related to a list of animals
      */
@@ -105,29 +91,29 @@ A resource definition has the following properties:
       o String name
       --> Animal[] animals
     }
-    ```
+
 
 ### Declarations of enumerated types
 
-Enumerated types are to define the potential content of properties of other resources. By using enumerated types, the expected content in a field can be restricted and controlled, reducing unexpected data. The following enumerated type declaration contains a list of roles.
+Enumerated types are used to specify a type that may have 1 or N possible values. The example below defines the ProductType enumeration, which may have the value `DAIRY` or `BEEF` or `VEGETABLES`.
 
 ```
 /**
 * An enumerated type
 */
-enum product {
+enum ProductType {
 o DAIRY
 o BEEF
 o VEGETABLES
 }
 ```
 
-When another resource is created, for example, a participant, a property of that resource can be defined to expect one of the enumerated types.
+When another resource is created, for example, a participant, a property of that resource can be defined in terms of an enumerated type.
 
 ```
 participant Farmer identified by farmerId {
     o String farmerId
-    o product primaryProduct
+    o ProductType primaryProduct
 ```
 
 
@@ -245,4 +231,32 @@ Use the `import` keyword with a fully-qualified type name to import a type from 
 ```
 import org.example.MyAsset
 import org.example2.*
+```
+
+## Decorators
+
+Resources and properties of resources may have decorators attached. Decorators are used to annotate a model with metadata. The example below adds the `foo` decorator to the Buyer participant, with "arg1' and 2 passed as arguments to the decorator.
+
+Similarly decorators can be attached to properties, relationships and enumerated values.
+
+```
+@foo("arg1", 2)
+participant Buyer extends Person {
+}
+```
+
+Resource definitions and properties may be decorated with 0 or more decorations. Note that only a single instance of a decorator is allowed on each element type. I.e. it is invalid to have the `@bar` decorator listed twice on the same element.
+
+## Decorator Arguments
+
+Decorators may have an arbitrary list of arguments (0 or more items). Argument values must be strings, numbers or booleans.
+
+## Decorator APIs
+
+Decorators are accessible at runtime via the ModelManager introspect APIs. This allows external tools and utilities to use the Composer Modelling Language (CTO) file format to describe a core model, while decorating it with sufficient metadata for their own purposes.
+
+The example below retrieves the 3rd argument to the foo decorator attached to the myField property of a class declaration:
+
+```
+const val = myField.getDecorator('foo').getArguments()[2];
 ```

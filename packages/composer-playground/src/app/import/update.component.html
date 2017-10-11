@@ -1,0 +1,125 @@
+<header class="drawer-header">
+    <button class="icon modal-exit" (click)="activeDrawer.dismiss();">
+        <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-close_new"></use>
+        </svg>
+    </button>
+
+    <h2>Import/Replace Network</h2>
+    <h3 class="sub-title">Choose a Business Network Definition to replace your current one:</h3>
+    <p>Choose a sample to play with, start a new project, or import your previous work</p>
+</header>
+<div class="scroll-view">
+    <div class="github-spinner" *ngIf="npmInProgress">
+        <div class="ibm-spinner-indeterminate medium loop">
+            <div class="loader">
+                <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="circle-path" cx="50" cy="50" r="20"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <section class="choose-network" fileDragDrop
+             (fileDragDropFileAccepted)="fileAccepted($event)"
+             (fileDragDropFileRejected)="fileRejected($event)"
+             (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
+             [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
+        <div *ngIf="!npmInProgress" class="sample-network-list-container">
+            <div class="sample-network-list" id="base-samples">
+                <div class="sample-network-list-item"
+                     [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
+                     (click)="selectNetwork(sampleNetworks[1])">
+                    <img src="{{sampleNetworks[1].networkImage}}">
+                    <div class="sample-network-name">{{sampleNetworks[1].name}}</div>
+                </div>
+                <div class="sample-network-list-item"
+                     [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}"
+                     (click)="selectNetwork(sampleNetworks[0])">
+                    <svg>
+                        <use xlink:href="#icon-default-network"></use>
+                    </svg>
+                    <div class="sample-network-name">{{sampleNetworks[0].name}}</div>
+                </div>
+                <div *ngIf="sampleDropped" class="sample-network-list-item"  [ngClass]="{'selected-network' : uploadedNetwork.name === chosenNetwork.name}" (click)="selectNetwork(uploadedNetwork)">
+                    <button class="icon close-dropped" (click)="closeSample()">
+                        <svg class="ibm-icon">
+                            <use xlink:href="#icon-close_24"></use>
+                        </svg>
+                    </button>
+                    <img *ngIf="uploadedNetwork && uploadedNetwork.networkImage" src="{{uploadedNetwork.networkImage}}">
+                    <svg *ngIf="!uploadedNetwork || !uploadedNetwork.networkImage">
+                        <use xlink:href="#icon-default-network"></use>
+                    </svg>
+                    <div class="sample-network-name">{{uploadedNetwork.name}}</div>
+                </div>
+                <file-importer *ngIf="!sampleDropped" class="sample-network-list-item file-importer"
+                               (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)"
+                               [expandInput]="expandInput"
+                               [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'"
+                               [maxFileSize]="maxFileSize"
+                               [supportedFileTypes]="supportedFileTypes"></file-importer>
+            </div>
+
+            <h3>Samples on npm</h3>
+
+            <div class="sample-network-list" id="npm-samples">
+                <div class="sample-network-list-item"
+                     [ngClass]="{'selected-network' : sampleNetwork.name === chosenNetwork.name}"
+                     *ngFor=" let sampleNetwork of sampleNetworks | slice:2; let networkIndex=index"
+                     (click)="selectNetwork(sampleNetwork)">
+                    <img *ngIf="sampleNetwork.networkImage" src="{{sampleNetwork.networkImage}}">
+                    <svg *ngIf="!sampleNetwork.networkImage">
+                        <use xlink:href="#icon-default-network"></use>
+                    </svg>
+                    <div class="sample-network-name">{{sampleNetwork.name}}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section *ngIf="!npmInProgress" class="chosen-network">
+        <div class="replace-message">
+            The files in the <b>{{networkName}}</b> will be replaced with files from:
+        </div>
+        <div class="chosen-network-info">
+            <div class="image">
+                <img class="animated-image" *ngIf="chosenNetwork && chosenNetwork.networkImageanimated"
+                     src="{{chosenNetwork.networkImageanimated}}"/>
+                <img class="animated-image" *ngIf="!chosenNetwork || !chosenNetwork.networkImageanimated"
+                     src="../../assets/svg/other/default-network-animated.svg"/>
+            </div>
+            <div>
+                <section>
+                    <div>
+                        <h3>{{chosenNetwork.name}}</h3>
+                        <p>{{chosenNetwork.description}}</p>
+                    </div>
+
+                    <div *ngIf="currentBusinessNetworkPromise | async as bn">
+                        <p class="network-info">
+                            <span>Contains:</span>
+                            {{bn.participants.length}} Participant {{bn.participants.length == 1 ? "Type" : "Types"}},
+                            {{bn.assets.length}} Asset {{bn.assets.length == 1 ? "Type" : "Types"}}, and
+                            {{bn.transactions.length}} Transaction {{bn.transactions.length == 1 ? "Type" : "Types"}}
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="deploy">
+    <button id="import_cancel" type="button" class="secondary" (click)="cancel()">Cancel</button>
+    <button id="import_confirm" type="button" class="primary" (click)="deploy()" [disabled]="deployInProgress">
+        <div *ngIf="!deployInProgress">
+            <span>Import</span>
+        </div>
+        <div *ngIf="deployInProgress" class="ibm-spinner-indeterminate small loop">
+            <div class="loader">
+                <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="circle-path" cx="50" cy="50" r="20"/>
+                </svg>
+            </div>
+        </div>
+    </button>
+</div>

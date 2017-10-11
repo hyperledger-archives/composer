@@ -20,7 +20,6 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
 const loopback = require('loopback');
-const Util = require('composer-common').Util;
 
 const chai = require('chai');
 const should = chai.should();
@@ -63,17 +62,17 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             exchangeId: [
                 'NYSE'
             ],
-            faceAmount: 1000,
+            faceAmount: 2000,
             instrumentId: [
                 'BobCorp'
             ],
-            issuer: 'resource:org.acme.bond.Issuer#1',
-            maturity: '2018-02-27T21:03:52.000Z',
+            issuer: 'resource:org.acme.bond.Issuer#2',
+            maturity: '2018-12-27T21:03:52.000Z',
             parValue: 1000,
             paymentFrequency: {
                 $class: 'org.acme.bond.PaymentFrequency',
-                period: 'MONTH',
-                periodMultiplier: 6
+                period: 'YEAR',
+                periodMultiplier: 12
             }
         }
     }, {
@@ -129,10 +128,11 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let businessNetworkConnection;
         let assetRegistry;
         let serializer;
+        let adminConnection;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
+            adminConnection = new AdminConnection({ fs: bfs_fs });
             return adminConnection.createProfile('defaultProfile', {
                 type : 'embedded'
             })
@@ -174,7 +174,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 console.log('Generating schemas for all types in business network definition ...');
                 return modelDefinitions.reduce((promise, modelDefinition) => {
                     return promise.then((schemas) => {
-
                         return new Promise((resolve, reject) => {
                             dataSource.discoverSchemas(modelDefinition.name, { visited: {}, associations: true }, (error, modelSchema) => {
                                 if (error) {
@@ -197,33 +196,28 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         public: true
                     });
                 });
-                console.log('Creating BNC');
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-
                 return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
-                console.log('Getting asset registry');
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
             })
             .then((assetRegistry_) => {
-                console.log('Adding asset data' + assetRegistry_);
                 assetRegistry = assetRegistry_;
                 return assetRegistry.addAll([
                     serializer.fromJSON(assetData[0]),
                     serializer.fromJSON(assetData[1])
                 ]);
-            }).then(()=>{
-                console.log('Done adding asset data');
             });
         });
 
         beforeEach(() => {
-            console.log('before each');
-            return Util.invokeChainCode(businessNetworkConnection.securityContext, 'resetBusinessNetwork', [])
-                .then(() => {
-                    return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
-                })
+            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            .then( ()=>{
+                return adminConnection.reset('bond-network');
+            }).then(() => {
+                return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
+            })
                 .then((assetRegistry_) => {
                     assetRegistry = assetRegistry_;
                     return assetRegistry.addAll([
@@ -249,13 +243,40 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
             });
 
+            it('should count an existing asset using the other asset property', () => {
+                return app.models[prefix + 'BondAsset'].count({'bond.faceAmount': 1000 })
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+
+            it('should count an existing asset using the combination of the asset properties with the or operator', () => {
+                return app.models[prefix + 'BondAsset'].count({'or':[{'bond.faceAmount': 1000}, {'bond.paymentFrequency.period': 'YEAR'}]})
+                    .then((count) => {
+                        count.should.equal(2);
+                    });
+            });
+
+            it('should count an existing asset using the combination of the asset properties with the nested and|or operator', () => {
+                return app.models[prefix + 'BondAsset'].count({'and':[{'bond.issuer': 'resource:org.acme.bond.Issuer#1'},{'or':[{'bond.faceAmount': 1000}, {'bond.paymentFrequency.period': 'YEAR'}]}]})
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+
+            it('should count an existing asset using the range of the asset properties', () => {
+                return app.models[prefix + 'BondAsset'].count({'bond.maturity': {'between':['2018-02-27T21:03:52.000Z', '2018-12-27T21:03:52.000Z']}})
+                    .then((count) => {
+                        count.should.equal(2);
+                    });
+            });
+
             it('should count an non-existing asset using the asset ID', () => {
                 return app.models[prefix + 'BondAsset'].count({ ISINCode: 'ISIN_999' })
                     .then((count) => {
                         count.should.equal(0);
                     });
             });
-
         });
 
         describe(`#create namespaces[${namespaces}]`, () => {

@@ -16,12 +16,10 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-// const homedir = require('homedir');
 const fs = require('fs');
 const Create = require('../../lib/cmds/archive/createCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -30,15 +28,10 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-// let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
 
-//const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-
 let mockBusinessNetworkDefinition;
-// const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 let mockAdminConnection;
 
@@ -66,7 +59,7 @@ describe('composer archive create unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Deploy handler() method tests', function () {
+    describe('Create handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
@@ -76,6 +69,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -90,6 +84,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -103,6 +98,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -116,6 +112,7 @@ describe('composer archive create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);
@@ -130,6 +127,7 @@ describe('composer archive create unit tests', function () {
             try{
                 return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
                 sinon.assert.calledOnce(fs.writeFileSync);

@@ -25,24 +25,35 @@ const path = require('path');
 describe('PlantUMLVisitor', function(){
 
     describe('#visit', function() {
-        it('should generate PlantUML code from Mozart BusinessNetworkDefinition', function() {
+        it('should generate PlantUML code from animaltracking BusinessNetworkDefinition', function() {
 
-            const mozartModel = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto'), 'utf8');
-            const mozartScript = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto.js'), 'utf8');
+            const animaltrackingModel = fs.readFileSync(path.resolve(__dirname, '../data/model/animaltracking.cto'), 'utf8');
+            const animaltrackingScript = fs.readFileSync(path.resolve(__dirname, '../data/model/animaltracking.cto.js'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            const businessNetworkDefinition = new BusinessNetworkDefinition('com-ibm-concerto-mozart-defranetwork@1.0.0', 'DEFRA Animal Tracking Network');
-            businessNetworkDefinition.getModelManager().addModelFile(mozartModel,'mozart.cto');
-            const script = businessNetworkDefinition.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
+            const businessNetworkDefinition = new BusinessNetworkDefinition('com-ibm-composer-animaltracking-defranetwork@1.0.0', 'DEFRA Animal Tracking Network');
+            businessNetworkDefinition.getModelManager().addModelFile(animaltrackingModel,'animaltracking.cto');
+            const script = businessNetworkDefinition.getScriptManager().createScript('animaltracking.cto.js', 'JS', animaltrackingScript);
             businessNetworkDefinition.getScriptManager().addScript(script);
 
             let visitor = new PlantUMLVisitor();
             let parameters = {};
-            parameters.fileWriter = new FileWriter('./out/mozart');
+            parameters.fileWriter = new FileWriter('./out/animaltracking');
             businessNetworkDefinition.accept(visitor, parameters);
 
             // check the file exists
-            fs.accessSync('./out/mozart/model.uml', fs.F_OK);
+            fs.accessSync('./out/animaltracking/model.uml', fs.F_OK);
+        });
+
+
+        it('coverage for random object',function(){
+
+            let fakeObj = {accept: function(){}};
+            let visitor = new PlantUMLVisitor();
+            (()=>{
+                visitor.visit(fakeObj,{});
+            })
+            .should.throw(/Unrecognised/);
         });
     });
 });

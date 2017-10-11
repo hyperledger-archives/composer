@@ -1267,7 +1267,7 @@ NamespaceToken    = "namespace"   !IdentifierPart
 AbstractToken     = "abstract"    !IdentifierPart
 ConceptToken      = "concept"     !IdentifierPart
 AssetToken        = "asset"       !IdentifierPart
-TransactionToken  = "transaction" !IdentifierPart 
+TransactionToken  = "transaction" !IdentifierPart
 EventToken        = "event"       !IdentifierPart
 ParticipantToken  = "participant" !IdentifierPart
 
@@ -1327,8 +1327,63 @@ IdentifiedByField
         return idField
     }
 
+DecoratorString =
+  s:StringLiteral {
+      return {
+      	type: "String",
+        value: s.value,
+        location: location()
+      }
+  }
+
+DecoratorNumber =
+  n:SignedNumber {
+      return {
+      	type: "Number",
+        value: +n,
+        location: location()
+      }
+  }
+
+DecoratorBoolean =
+  b:$BooleanLiteral {
+      return {
+      	type: "Boolean",
+        value: (b == "true"),
+        location: location()
+      }
+  }
+
+DecoratorLiteral =
+  DecoratorString
+  / DecoratorBoolean
+  / DecoratorNumber
+
+DecoratorArguments
+  = "(" __ first:(d:DecoratorLiteral __ "," __ {return d;})* last:DecoratorLiteral? __ ")" {
+      return {
+        type: "DecoratorArguments",
+        list: first.concat(last),
+        location: location()
+      };
+    }
+
+Decorator
+  = "@" name:$Identifier decoratorArgs:DecoratorArguments?
+  {
+    return {
+            type: "Decorator",
+            name: name,
+            arguments: decoratorArgs,
+            location: location()
+          };
+  }
+
+Decorators
+  = decorators:(d:Decorator __ {return d;})*
+
 AssetDeclaration
-  = abstract:AbstractToken? __ AssetToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
+  = decorators:Decorators __ abstract:AbstractToken? __ AssetToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
     "{" __ body:ClassDeclarationBody __ "}"
     {
       return {
@@ -1338,12 +1393,13 @@ AssetDeclaration
         idField: idField,
         body:   body,
         abstract: abstract,
+        decorators: decorators,
         location: location()
       };
     }
 
 ParticipantDeclaration
-      = abstract:AbstractToken? __ ParticipantToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
+      = decorators:Decorators __ abstract:AbstractToken? __ ParticipantToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
         "{" __ body:ClassDeclarationBody __ "}"
         {
           return {
@@ -1353,6 +1409,7 @@ ParticipantDeclaration
             idField: idField,
             body:   body,
             abstract: abstract,
+            decorators: decorators,
             location: location()
           };
         }
@@ -1367,7 +1424,7 @@ ClassExtension
     }
 
 TransactionDeclaration
-  = abstract:AbstractToken? __ TransactionToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
+  = decorators:Decorators __ abstract:AbstractToken? __ TransactionToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
     "{" __ body:ClassDeclarationBody __ "}"
     {
       return {
@@ -1377,12 +1434,13 @@ TransactionDeclaration
         body:   body,
         idField: idField,
         abstract: abstract,
+        decorators: decorators,
         location: location()
       };
     }
 
 EventDeclaration
-  = abstract:AbstractToken? __ EventToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
+  = decorators:Decorators __ abstract:AbstractToken? __ EventToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
     "{" __ body:ClassDeclarationBody __ "}"
     {
       return {
@@ -1392,12 +1450,13 @@ EventDeclaration
         body:   body,
         idField: idField,
         abstract: abstract,
+        decorators: decorators,
         location: location()
       };
     }
 
 ConceptDeclaration
-      = abstract:AbstractToken? __ ConceptToken __ id:Identifier __ classExtension: ClassExtension? __
+      = decorators:Decorators __ abstract:AbstractToken? __ ConceptToken __ id:Identifier __ classExtension: ClassExtension? __
         "{" __ body:ClassDeclarationBody __ "}"
         {
           return {
@@ -1406,6 +1465,7 @@ ConceptDeclaration
             classExtension: classExtension,
             body:   body,
             abstract: abstract,
+            decorators: decorators,
             location: location()
           };
         }
@@ -1433,7 +1493,7 @@ IntegerDefault
     }
 
 RealDefault
-   = "default" __ "=" __ def:SignedRealLiteral{
+   = "default" __ "=" __ def:$SignedRealLiteral{
       return def;
     }
 
@@ -1456,7 +1516,7 @@ ClassDeclarationBody
     }
 
 ObjectFieldDeclaration
-    = "o" __ propertyType:ObjectType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ propertyType:ObjectType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1464,12 +1524,13 @@ ObjectFieldDeclaration
     		array: array,
         default: d,
     		optional: optional,
+        decorators: decorators,
         location: location()
     	}
     }
 
 BooleanFieldDeclaration
-    = "o" __ BooleanType __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ BooleanType __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1477,12 +1538,13 @@ BooleanFieldDeclaration
     		array: array,
     		default: d,
     		optional: optional,
-            location: location()
+        decorators: decorators,
+        location: location()
     	}
     }
 
 DateTimeFieldDeclaration
-    = "o" __ DateTimeType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ DateTimeType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1490,12 +1552,13 @@ DateTimeFieldDeclaration
     		array: array,
     		default: d,
     		optional: optional,
-            location: location()
+        decorators: decorators,
+        location: location()
     	}
     }
 
 StringFieldDeclaration
-    = "o" __ StringType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ StringType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1504,7 +1567,8 @@ StringFieldDeclaration
     		regex: regex,
     		default: d,
     		optional: optional,
-            location: location()
+        decorators: decorators,
+        location: location()
     	}
     }
 
@@ -1530,7 +1594,7 @@ IntegerDomainValidator
   }
 
 RealFieldDeclaration
-    = "o" __ propertyType:RealNumberType __ array:"[]"? __ id:Identifier __  d:RealDefault? __ range:RealDomainValidator? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ propertyType:RealNumberType __ array:"[]"? __ id:Identifier __  d:RealDefault? __ range:RealDomainValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1539,12 +1603,13 @@ RealFieldDeclaration
     		range: range,
     		default: d,
     		optional: optional,
-            location: location()
+        decorators: decorators,
+        location: location()
     	}
     }
 
 IntegerFieldDeclaration
-    = "o" __ propertyType:WholeNumberType __ array:"[]"? __ id:Identifier __  d:IntegerDefault? __ range:IntegerDomainValidator? __ optional:Optional? __ {
+    = decorators:Decorators __ "o" __ propertyType:WholeNumberType __ array:"[]"? __ id:Identifier __  d:IntegerDefault? __ range:IntegerDomainValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1553,18 +1618,20 @@ IntegerFieldDeclaration
     		range: range,
     		default: d,
     		optional: optional,
-            location: location()
+        decorators: decorators,
+        location: location()
     	}
     }
 
 EnumDeclaration
-    = EnumToken __ id:Identifier __
+    = decorators:Decorators __ EnumToken __ id:Identifier __
     "{" __ body:EnumDeclarationBody __ "}"
     {
       return {
         type:   "EnumDeclaration",
         id:     id,
         body:   body,
+        decorators: decorators,
         location: location()
       };
     }
@@ -1578,23 +1645,25 @@ EnumDeclarationBody
     }
 
 EnumPropertyDeclaration
-    = "o"__ id:Identifier __ optional:Optional? __ {
+    = decorators:Decorators __ "o"__ id:Identifier __ optional:Optional? __ {
     	return {
     		type: "EnumPropertyDeclaration",
     		id: id,
         optional: optional,
+        decorators: decorators,
         location: location()
     	}
     }
 
 RelationshipDeclaration
-    = "-->" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __ optional:Optional? __ {
+    = decorators:Decorators __ "-->" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __ optional:Optional? __ {
     	return {
     		type: "RelationshipDeclaration",
     		id: id,
     		propertyType: propertyType,
      		array: array,
         optional: optional,
+        decorators: decorators,
         location: location()
     	}
     }
@@ -1653,4 +1722,7 @@ SourceElement
 /* ----- A.8 JSON ----- */
 
 /* Irrelevant. */
+
+
+
 

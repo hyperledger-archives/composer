@@ -34,7 +34,7 @@ Options:
 `--connectionProfileName, -p`
 
 The connection profile name.  
-Example: `defaultProfile`
+Example: `hlfv1`
 
 `--businessNetworkName, -n`
 

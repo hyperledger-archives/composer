@@ -7,7 +7,8 @@ exports.config = {
   framework: 'jasmine',
   directConnect: true,
   baseUrl: 'http://127.0.0.1:3001',
-  specs: ['./e2e/**/*.*spec.ts'],
+  specs: ['./e2e/specs/welcome.spec.ts',
+          './e2e/specs/login-define.spec.ts'],
   capabilities: {
     'browserName': 'chrome',
     'chromeOptions': {

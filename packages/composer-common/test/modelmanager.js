@@ -22,6 +22,7 @@ const ParticipantDeclaration = require('../lib/introspect/participantdeclaration
 const EventDeclaration = require('../lib/introspect/eventdeclaration');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
+const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
 const fs = require('fs');
 
 const chai = require('chai');
@@ -33,19 +34,23 @@ describe('ModelManager', () => {
 
     let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
     let farm2fork = fs.readFileSync('./test/data/model/farm2fork.cto', 'utf8');
-    let concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
+    let composerModel = fs.readFileSync('./test/data/model/composer.cto', 'utf8');
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
     let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
     let mockSystemModelFile;
+    let sandbox;
 
     beforeEach(() => {
+
         modelManager = new ModelManager();
         mockSystemModelFile = sinon.createStubInstance(ModelFile);
         mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
         mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockSystemModelFile.isSystemModelFile.returns(true);
     });
+
+
 
     describe('#accept', () => {
 
@@ -88,9 +93,24 @@ describe('ModelManager', () => {
                 err.getFileLocation().start.offset.should.equal(err.getFileLocation().start.offset);
             }
         });
+
+        it('should cope with object as modelfile', ()=>{
+            let mockModelFile = sinon.createStubInstance(ModelFile);
+            modelManager.validateModelFile(mockModelFile);
+            sinon.assert.calledOnce(mockModelFile.validate);
+
+
+        });
     });
 
     describe('#addModelFile', () => {
+        beforeEach(()=>{
+            sandbox=sinon.sandbox.create();
+        });
+
+        afterEach(()=>{
+            sandbox.restore();
+        });
 
         it('should add a model file from a string', () => {
             let res = modelManager.addModelFile(modelBase);
@@ -117,13 +137,13 @@ describe('ModelManager', () => {
         it('should not be possible to add a system model file', ()=>{
             (() => {
                 modelManager.addModelFile(mockSystemModelFile);
-            }).should.throw();
+            }).should.throw(/Cannot add a model file with the reserved system namespace/);
         });
 
         it('should not be possible to add a system model file (via string)', ()=>{
             (() => {
                 modelManager.addModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
-            }).should.throw();
+            }).should.throw(/Cannot add a model file with the reserved system namespace/);
         });
 
         it('should return error for duplicate namespaces for a string', () => {
@@ -147,13 +167,19 @@ describe('ModelManager', () => {
     });
 
     describe('#addModelFiles', () => {
+        beforeEach(()=>{
+            sandbox=sinon.sandbox.create();
+        });
 
+        afterEach(()=>{
+            sandbox.restore();
+        });
         it('should add model files from strings', () => {
             farm2fork.should.not.be.null;
 
-            concertoModel.should.not.be.null;
+            composerModel.should.not.be.null;
 
-            let res = modelManager.addModelFiles([concertoModel, modelBase, farm2fork]);
+            let res = modelManager.addModelFiles([composerModel, modelBase, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             res.should.all.be.an.instanceOf(ModelFile);
             res.should.have.lengthOf(3);
@@ -175,7 +201,7 @@ describe('ModelManager', () => {
         it('should add to existing model files from strings', () => {
             modelManager.addModelFile(modelBase);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.addModelFiles([concertoModel, farm2fork]);
+            modelManager.addModelFiles([composerModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
         });
@@ -200,14 +226,16 @@ describe('ModelManager', () => {
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
 
             try {
-                modelManager.addModelFiles([concertoModel, 'invalid file']);
+                modelManager.addModelFiles([composerModel, 'invalid file']);
             }
             catch(err) {
                 // ignore
             }
 
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.getModelFiles().length.should.equal(2);
+            modelManager.getModelFiles().filter((modelFile) => {
+                return !modelFile.isSystemModelFile();
+            }).length.should.equal(1);
         });
 
         it('should restore existing model files on validation error', () => {
@@ -234,9 +262,15 @@ describe('ModelManager', () => {
             }).should.throw();
         });
 
+        it('should not be possible to add a system model file (via string)', ()=>{
+            (() => {
+                modelManager.addModelFiles(['namespace org.hyperledger.composer.system'],['fakesysnamespace.cto']);
+            }).should.throw(/System namespace can not be updated/);
+        });
+
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
-                modelManager.addModelFiles([concertoModel, modelBase, farm2fork, modelBase]);
+                modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase]);
             }).should.throw(/namespace already exists/);
         });
 
@@ -369,8 +403,8 @@ describe('ModelManager', () => {
 
         it('should not be possible to delete a system model file', ()=>{
             (() => {
-                modelManager.deleteModelFile(mockSystemModelFile);
-            }).should.throw();
+                modelManager.deleteModelFile('org.hyperledger.composer.system');
+            }).should.throw(/Cannot delete system namespace/);
         });
 
     });
@@ -384,7 +418,9 @@ describe('ModelManager', () => {
             let mf2 = sinon.createStubInstance(ModelFile);
             mf2.getNamespace.returns('org.such');
             modelManager.addModelFile(mf2);
-            modelManager.getNamespaces().should.have.members(['org.hyperledger.composer.system', 'org.wow', 'org.such']);
+            let ns = modelManager.getNamespaces();
+            ns.should.include('org.wow');
+            ns.should.include('org.such');
         });
 
     });
@@ -399,54 +435,243 @@ describe('ModelManager', () => {
 
     });
 
-    describe('#getAssetDeclarations', () => {
+    describe('#getDeclarations', () => {
 
-        it('should return all of the asset declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getAssetDeclarations();
-            decls.should.all.be.an.instanceOf(AssetDeclaration);
+        const numberSystemAssets = 8;
+        const numberSystemEnums = 1;
+        const numberSystemParticipants = 2;
+        const numberSystemEvents = 1;
+        const numberSystemTransactions = 18;
+        const numberSystemConcepts = 0;
+
+        const numberModelBaseAssets = 5;
+        const numberModelBaseEnums = 1;
+        const numberModelBaseParticipants = 2;
+        const numberModelBaseEvents = 0;
+        const numberModelBaseTransactions = 3;
+        const numberModelBaseConcepts = 2;
+
+
+        describe('#getAssetDeclarations', () => {
+
+            it('should return all of the asset declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations();
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberSystemAssets+numberModelBaseAssets);
+            });
+
         });
 
-    });
+        describe('#getAssetDeclarationsWithParameterFalse', () => {
 
-    describe('#getEnumDeclarations', () => {
+            it('should return all of the asset declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations(false);
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberModelBaseAssets);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
 
-        it('should return all of the enum declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getEnumDeclarations();
-            decls.should.all.be.an.instanceOf(EnumDeclaration);
         });
 
-    });
+        describe('#getAssetDeclarationsWithParameterTrue', () => {
 
-    describe('#getParticipantDeclarations', () => {
+            it('should return all of the asset declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getAssetDeclarations(true);
+                decls.should.all.be.an.instanceOf(AssetDeclaration);
+                decls.length.should.equal(numberSystemAssets+numberModelBaseAssets);
+            });
 
-        it('should return all of the participant declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getParticipantDeclarations();
-            decls.should.all.be.an.instanceOf(ParticipantDeclaration);
         });
 
-    });
+        describe('#getEnumDeclarations', () => {
 
-    describe('#getEventDeclarations', () => {
+            it('should return all of the enum declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations();
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberSystemEnums+numberModelBaseEnums);
+            });
 
-        it('should return all of the event declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getEventDeclarations();
-            decls.should.all.be.an.instanceOf(EventDeclaration);
         });
 
-    });
+        describe('#getEnumDeclarationsWithParameterFalse', () => {
 
-    describe('#getTransactionDeclarations', () => {
+            it('should return all of the enum declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations(false);
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberModelBaseEnums);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
 
-        it('should return all of the transaction declarations', () => {
-            modelManager.addModelFile(modelBase);
-            let decls = modelManager.getTransactionDeclarations();
-            decls.should.all.be.an.instanceOf(TransactionDeclaration);
         });
 
+        describe('#getEnumDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the enum declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEnumDeclarations(true);
+                decls.should.all.be.an.instanceOf(EnumDeclaration);
+                decls.length.should.equal(numberSystemEnums+numberModelBaseEnums);
+            });
+
+        });
+
+        describe('#getParticipantDeclarations', () => {
+
+            it('should return all of the participant declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations();
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberSystemParticipants+numberModelBaseParticipants);
+            });
+
+        });
+
+        describe('#getParticipantDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the participant declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations(false);
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberModelBaseParticipants);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getParticipantDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the participant declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getParticipantDeclarations(true);
+                decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+                decls.length.should.equal(numberSystemParticipants+numberModelBaseParticipants);
+            });
+
+        });
+
+        describe('#getEventDeclarations', () => {
+
+            it('should return all of the event declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations();
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberSystemEvents+numberModelBaseEvents);
+            });
+
+        });
+
+        describe('#getEventDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the event declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations(false);
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberModelBaseEvents);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getEventDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the event declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getEventDeclarations(true);
+                decls.should.all.be.an.instanceOf(EventDeclaration);
+                decls.length.should.equal(numberSystemEvents+numberModelBaseEvents);
+            });
+
+        });
+
+        describe('#getTransactionDeclarations', () => {
+
+            it('should return all of the transaction declarations', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations();
+                decls.length.should.equal(numberSystemTransactions+numberModelBaseTransactions);
+            });
+
+        });
+
+        describe('#getTransactionDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the transaction declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations(false);
+                decls.should.all.be.an.instanceOf(TransactionDeclaration);
+                decls.length.should.equal(numberModelBaseTransactions);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getTransactionDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the transaction declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getTransactionDeclarations(true);
+                decls.should.all.be.an.instanceOf(TransactionDeclaration);
+                decls.length.should.equal(numberSystemTransactions+numberModelBaseTransactions);
+            });
+
+        });
+
+        describe('#getConceptDeclarations', () => {
+
+            it('should return all of the concept declarations', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations();
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberSystemConcepts+numberModelBaseConcepts);
+            });
+
+        });
+
+        describe('#getConceptDeclarationsWithParameterFalse', () => {
+
+            it('should return all of the concept declarations without system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations(false);
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberModelBaseConcepts);
+                let i;
+                for(i = 0; i < decls.length; i++) {
+                    decls[i].modelFile.should.have.property('systemModelFile', false);
+                }
+            });
+
+        });
+
+        describe('#getConceptDeclarationsWithParameterTrue', () => {
+
+            it('should return all of the concept declarations with system types', () => {
+                modelManager.addModelFile(modelBase);
+                let decls = modelManager.getConceptDeclarations(true);
+                decls.should.all.be.an.instanceOf(ConceptDeclaration);
+                decls.length.should.equal(numberSystemConcepts+numberModelBaseConcepts);
+            });
+
+        });
     });
 
     describe('#resolveType', () => {

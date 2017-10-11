@@ -2,20 +2,20 @@
 layout: default
 title: Historian
 section: reference
-index-order: 911
+index-order:
 sidebar: sidebars/accordion-toc0.md
-excerpt: The Hyperledger Composer Historian provides a registry retain information about previous transactions
+excerpt: The Hyperledger Composer Historian provides a registry that contains information about historical transactions
 ---
 
 # {{site.data.conrefs.composer_full}} Historian
 
 >**Warning**: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.
 
-The historian is a registry populated with `HistorianRecords`. When a transaction is submitted, the `HistorianRecords` show the changes to assets within a business network, and the participants and identities involved in submitting those transactions. Historian records can also be queried to extract specific records or data.
+The Historian is a registry populated with `HistorianRecords` that contains information about historical transactions.  When a transaction is submitted, the `HistorianRecord` is updated, and over time, maintains a history of transactions within a business network, and the participants and identities involved in submitting those transactions. Historian records can be queried using Composer Queries to extract specific records or data. An example would be tracking the lifecycle of an asset such as a Land Title, from creation (with a Land Title ID) through update, through ownership changes carried out by different identities and/or participants. The transactions associated with this example can be queried in Historian, say, over a given time period.
 
 ## Historian Record
 
-A `HistorianRecord` is an asset defined in the {{site.data.conrefs.composer_full}} system namespace. `HistorianRecord`s are defined as follows.
+A `HistorianRecord` is an 'asset' defined in the {{site.data.conrefs.composer_full}} system namespace. `HistorianRecord`s are defined as follows.
 
 ```
 asset HistorianRecord identified by transactionId {
@@ -59,10 +59,9 @@ For example to get all the Historian records a typical promise chain would be as
     .then(() => {       
         return businessNetworkConnection.getHistorian();
     }).then((historian) => {
-
         return historian.getAll();
     }).then((historianRecords) => {        
-       console.log(prettyoutput(historianRecords));
+        console.log(prettyoutput(historianRecords));
     })
 ```
 
@@ -72,8 +71,8 @@ As this is a 'getAll' call it will potentially return high volume of data. There
   let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
-  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord' +
-                                                'FROM HistorianRegistry WHERE (transactionTimestamp > _$justnow)');   
+  let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
+                                                'WHERE (transactionTimestamp > _$justnow)');   
 
   return businessNetworkConnection.query(q1,{justnow:now});
 ```
@@ -83,7 +82,7 @@ More advanced queries can be used; for example, the following query selects and 
 ```
   // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
-      `SELECT org.hyperledger.composer.system.HistorianRecord FROM HistorianRegistry
+      `SELECT org.hyperledger.composer.system.HistorianRecord
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 

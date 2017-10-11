@@ -10,7 +10,7 @@ index-order: 102
 
 {{site.data.conrefs.composer_full}} enables architects and developers to quickly create "full-stack" blockchain solutions. I.e. business logic that runs on the blockchain, REST APIs that expose the blockchain logic to web or mobile applications, as well as integrating the blockchain with existing enterprise systems of record.
 
-![Diagram of typical {{site.data.conrefs.composer_full}} archetecture](../assets/img/ComposerArchitecture.svg)
+<img src="../assets/img/ComposerArchitecture.svg" style="border: none;" alt="Diagram of typical Hyperledger Composer architecture">
 
 ---
 
@@ -27,9 +27,8 @@ index-order: 102
 
 ## Execution Runtimes
 
-{{site.data.conrefs.composer_full}} has been designed to support different pluggable runtimes, and currently has four runtime implementations:
-
-* {{site.data.conrefs.hlf_full}} version 0.6. State is stored on the distributed ledger.
+{{site.data.conrefs.composer_full}} has been designed to support different pluggable runtimes, and currently has three runtime implementations:
+.
 * {{site.data.conrefs.hlf_full}} version 1.0. State is stored on the distributed ledger.
 * Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.
 * Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.

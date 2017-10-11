@@ -24,13 +24,16 @@ const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const Factory = require('composer-common').Factory;
 const Logger = require('composer-common').Logger;
 const LoggingService = require('../lib/loggingservice');
+const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
 const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
+const Serializer = require('composer-common').Serializer;
 const version = require('../package.json').version;
 
 const chai = require('chai');
@@ -43,6 +46,9 @@ const LOG = Logger.getLog('Engine');
 
 describe('Engine', () => {
 
+    let modelManager;
+    let factory;
+    let serializer;
     let mockContainer;
     let mockLoggingService;
     let mockContext;
@@ -52,6 +58,9 @@ describe('Engine', () => {
     let sandbox;
 
     beforeEach(() => {
+        modelManager = new ModelManager();
+        factory = new Factory(modelManager);
+        serializer = new Serializer(factory, modelManager);
         mockContainer = sinon.createStubInstance(Container);
         mockLoggingService = sinon.createStubInstance(LoggingService);
         mockContainer.getLoggingService.returns(mockLoggingService);
@@ -120,6 +129,16 @@ describe('Engine', () => {
 
     describe('#init', () => {
 
+        let tx;
+        let json;
+
+        beforeEach(() => {
+            tx = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
+            tx.businessNetworkArchive = 'aGVsbG8gd29ybGQ=';
+            json = serializer.toJSON(tx);
+            sinon.stub(engine, 'submitTransaction').resolves();
+        });
+
         it('should throw for an unrecognized function', () => {
             (() => {
                 engine.init(mockContext, 'blahblahblah', []);
@@ -129,12 +148,39 @@ describe('Engine', () => {
         it('should throw for invalid arguments', () => {
             (() => {
                 engine.init(mockContext, 'init', ['no', 'args', 'supported']);
-            }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"businessNetworkArchive\",\"initArgs\"\]"/);
+            }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"serializedResource\"\]"/);
+        });
+
+        it('should throw for a missing $class', () => {
+            delete json.$class;
+            (() => {
+                engine.init(mockContext, 'init', [JSON.stringify(json)]);
+            }).should.throw(/The transaction data specified is not valid/);
+        });
+
+        it('should throw for an invalid $class', () => {
+            json.$class = 'WoopWoop';
+            (() => {
+                engine.init(mockContext, 'init', [JSON.stringify(json)]);
+            }).should.throw(/The transaction data specified is not valid/);
+        });
+
+        it('should throw for a missing businessNetworkArchive', () => {
+            delete json.businessNetworkArchive;
+            (() => {
+                engine.init(mockContext, 'init', [JSON.stringify(json)]);
+            }).should.throw(/The business network archive specified is not valid/);
+        });
+
+        it('should throw for an empty businessNetworkArchive', () => {
+            json.businessNetworkArchive = '';
+            (() => {
+                engine.init(mockContext, 'init', [JSON.stringify(json)]);
+            }).should.throw(/The business network archive specified is not valid/);
         });
 
         it('should accept upgrade function', () => {
-            return engine.init(mockContext, 'upgrade')
-                .then(() => {});
+            return engine.init(mockContext, 'upgrade');
         });
 
         it('should enable logging if logging specified on the init', () => {
@@ -167,7 +213,8 @@ describe('Engine', () => {
             sandbox.stub(Context, 'cacheCompiledAclBundle');
             mockRegistryManager.createDefaults.resolves();
             mockContext.getParticipant.returns(null);
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{"logLevel": "DEBUG"}'])
+            json.logLevel = 'DEBUG';
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
                     sinon.assert.calledOnce(mockLoggingService.setLogLevel);
                     sinon.assert.calledWith(mockLoggingService.setLogLevel, 'DEBUG');
@@ -193,26 +240,30 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledAclBundle);
                     sinon.assert.calledWith(Context.cacheCompiledAclBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledTwice(mockRegistryManager.ensure);
-                    sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'init',
-                        arguments: ['aGVsbG8gd29ybGQ=','{"logLevel": "DEBUG"}'],
+                        arguments: [JSON.stringify(json)],
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries
+                        sysregistries: sysregistries,
+                        container: sinon.match.any
                     });
+                    sinon.assert.calledOnce(engine.submitTransaction);
+                    const txs = engine.submitTransaction.args.map((arg) => {
+                        return JSON.parse(arg[1]);
+                    });
+                    txs[0].$class.should.equal('org.hyperledger.composer.system.StartBusinessNetwork');
+                    txs[0].transactionId.should.equal(json.transactionId);
                     sinon.assert.calledOnce(mockContext.transactionStart);
                     sinon.assert.calledWith(mockContext.transactionStart, false);
                     sinon.assert.calledOnce(mockContext.transactionPrepare);
                     sinon.assert.calledOnce(mockContext.transactionCommit);
                     sinon.assert.notCalled(mockContext.transactionRollback);
                     sinon.assert.calledOnce(mockContext.transactionEnd);
-
                 });
         });
 
@@ -239,11 +290,11 @@ describe('Engine', () => {
             mockContext.getAclCompiler.returns(mockAclCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
                     sinon.assert.notCalled(mockLoggingService.setLogLevel);
                     sinon.assert.calledTwice(mockDataService.ensureCollection);
@@ -262,19 +313,24 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
-                    sinon.assert.calledTwice(mockRegistryManager.ensure);
-                    sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'init',
-                        arguments: ['aGVsbG8gd29ybGQ=','{}'],
+                        arguments: [JSON.stringify(json)],
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries
+                        sysregistries: sysregistries,
+                        container: sinon.match.any
                     });
+                    sinon.assert.calledOnce(engine.submitTransaction);
+                    const txs = engine.submitTransaction.args.map((arg) => {
+                        return JSON.parse(arg[1]);
+                    });
+                    txs[0].$class.should.equal('org.hyperledger.composer.system.StartBusinessNetwork');
+                    txs[0].transactionId.should.equal(json.transactionId);
                     sinon.assert.calledOnce(mockContext.transactionStart);
                     sinon.assert.calledWith(mockContext.transactionStart, false);
                     sinon.assert.calledOnce(mockContext.transactionPrepare);
@@ -312,7 +368,7 @@ describe('Engine', () => {
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
                     sinon.assert.notCalled(Context.cacheCompiledScriptBundle);
                 });
@@ -346,7 +402,7 @@ describe('Engine', () => {
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledQueryBundle');
             mockRegistryManager.createDefaults.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
                     sinon.assert.notCalled(Context.cacheCompiledQueryBundle);
                 });
@@ -380,7 +436,7 @@ describe('Engine', () => {
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledAclBundle');
             mockRegistryManager.createDefaults.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=','{}'])
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
                     sinon.assert.notCalled(Context.cacheCompiledAclBundle);
                 });
@@ -400,7 +456,7 @@ describe('Engine', () => {
             mockContext.getScriptCompiler.returns(mockScriptCompiler);
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default').rejects();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ=', '{}'])
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .should.be.rejected
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.transactionStart);
@@ -409,6 +465,68 @@ describe('Engine', () => {
                     sinon.assert.notCalled(mockContext.transactionCommit);
                     sinon.assert.calledOnce(mockContext.transactionRollback);
                     sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should execute any specified bootstrap transactions', () => {
+            json.bootstrapTransactions = [
+                {
+                    $class: 'org.hyperledger.composer.system.AddParticipant',
+                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#doges',
+                    resources: [
+                        {
+                            $class: 'org.acme.SampleParticipant',
+                            participantId: 'PARTICIPANT_1'
+                        },
+                        {
+                            $class: 'org.acme.SampleParticipant',
+                            participantId: 'PARTICIPANT_1'
+                        }
+                    ]
+                },
+                {
+                    $class: 'org.hyperledger.composer.system.BindIdentity',
+                    participant: 'resource:org.acme.SampleParticipant#PARTICIPANT_1',
+                    certificate: '----BEGIN CERTIFICATE\nsuch certificate\n----END CERTIFICATE-----\n'
+                }
+            ];
+            let sysdata = sinon.createStubInstance(DataCollection);
+            let sysregistries = sinon.createStubInstance(DataCollection);
+            mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            mockBusinessNetworkDefinition.getIdentifier.returns('test');
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
+            mockAclCompiler.compile.returns(mockCompiledAclBundle);
+            mockContext.getAclCompiler.returns(mockAclCompiler);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
+            sandbox.stub(Context, 'cacheBusinessNetwork');
+            sandbox.stub(Context, 'cacheCompiledScriptBundle');
+            mockRegistryManager.createDefaults.resolves();
+            return engine.init(mockContext, 'init', [JSON.stringify(json)])
+                .then(() => {
+                    sinon.assert.calledThrice(engine.submitTransaction);
+                    const txs = engine.submitTransaction.args.map((arg) => {
+                        return JSON.parse(arg[1]);
+                    });
+                    txs[0].$class.should.equal('org.hyperledger.composer.system.AddParticipant');
+                    txs[0].transactionId.should.equal(json.transactionId + '#0');
+                    txs[1].$class.should.equal('org.hyperledger.composer.system.BindIdentity');
+                    txs[1].transactionId.should.equal(json.transactionId + '#1');
+                    txs[2].$class.should.equal('org.hyperledger.composer.system.StartBusinessNetwork');
+                    txs[2].transactionId.should.equal(json.transactionId);
                 });
         });
 
@@ -459,6 +577,7 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'test',
+                        container: {},
                         arguments: []
                     });
                     sinon.assert.calledOnce(engine.test);
@@ -535,6 +654,7 @@ describe('Engine', () => {
                 .then(() => {
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'test',
+                        container: {},
                         arguments: []
                     });
                     sinon.assert.calledOnce(mockContext.initialize);

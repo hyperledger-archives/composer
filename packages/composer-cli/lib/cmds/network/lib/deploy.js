@@ -16,21 +16,11 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const homedir = require('homedir');
-
-
-const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
-const CONNECTION_FILE = 'connection.json';
-
-const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
-
-const ora = require('ora');
-const chalk = require('chalk');
 const LogLevel = require('./loglevel');
-
+const ora = require('ora');
 
 /**
  * <p>
@@ -54,11 +44,10 @@ class Deploy {
                                   : false;
         let businessNetworkDefinition;
 
-        let connectOptions;
         let adminConnection;
         let enrollId;
         let enrollSecret;
-        let connectionProfileName = Deploy.getDefaultProfileName(argv);
+        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let spinner;
         let loglevel;
@@ -84,7 +73,7 @@ class Deploy {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();
@@ -96,12 +85,6 @@ class Deploy {
             let archiveFileContents = null;
             // Read archive file contents
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
-            // Get the connection options
-            try {
-                connectOptions = Deploy.getConnectOptions(connectionProfileName);
-            } catch (error) {
-                throw new Error('Failed to read connection profile \'' + connectionProfileName + '\'. Error was ' + error);
-            }
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
         })
         .then ((result) => {
@@ -112,9 +95,6 @@ class Deploy {
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.createProfile(connectionProfileName, connectOptions);
-        })
-        .then ((result) => {
             // if we are performing an update we have to actually connect to the network
             // we want to update!
             return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
@@ -122,11 +102,26 @@ class Deploy {
         .then((result) => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
+
+                // Build the deploy options.
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (loglevel) {
                     deployOptions.logLevel = loglevel;
                 }
+
+                // Build the bootstrap tranactions.
+                let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
+
+                // Merge the deploy options and bootstrap transactions.
+                if (deployOptions.bootstrapTransactions) {
+                    deployOptions.bootstrapTransactions = bootstrapTransactions.concat(deployOptions.bootstrapTransactions);
+                } else {
+                    deployOptions.bootstrapTransactions = bootstrapTransactions;
+                }
+
+                // Deploy the business network.
                 return adminConnection.deploy(businessNetworkDefinition, deployOptions);
+
             } else {
                 spinner = ora('Updating business network definition. This may take a few seconds...').start();
                 return adminConnection.update(businessNetworkDefinition);
@@ -149,32 +144,6 @@ class Deploy {
     }
 
     /**
-      * Get connection options from profile
-      * @param {string} connectionProfileName connection profile name
-      * @return {connectOptions} connectOptions options
-      */
-    static getConnectOptions(connectionProfileName) {
-
-        let connectOptions;
-        let connectionProfile = PROFILE_ROOT + connectionProfileName + '/' + CONNECTION_FILE;
-        if (fs.existsSync(connectionProfile)) {
-            let connectionProfileContents = fs.readFileSync(connectionProfile);
-            connectOptions = JSON.parse(connectionProfileContents);
-        } else {
-            let defaultKeyValStore = CREDENTIALS_ROOT;
-
-            connectOptions = {type: 'hlf'
-                             ,membershipServicesURL: 'grpc://localhost:7054'
-                             ,peerURL: 'grpc://localhost:7051'
-                             ,eventHubURL: 'grpc://localhost:7053'
-                             ,keyValStore: defaultKeyValStore
-                             ,deployWaitTime: '300'
-                             ,invokeWaitTime: '100'};
-        }
-        return connectOptions;
-    }
-
-    /**
       * Get contents from archive file
       * @param {string} archiveFile connection profile name
       * @return {String} archiveFileContents archive file contents
@@ -187,15 +156,6 @@ class Deploy {
             throw new Error('Archive file '+archiveFile+' does not exist.');
         }
         return archiveFileContents;
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

@@ -14,10 +14,8 @@
 
 'use strict';
 
-const cmdUtil = require('../../utils/cmdutils');
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
-
 const chalk = require('chalk');
+const cmdUtil = require('../../utils/cmdutils');
 
 /**
  * <p>
@@ -59,7 +57,7 @@ class LogLevel {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();
@@ -89,15 +87,6 @@ class LogLevel {
         }).catch((error) => {
             throw error;
         });
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
     /**

@@ -14,8 +14,11 @@
 
 'use strict';
 
-const JavaScriptParser = require('../codegen/javascriptparser');
 const FunctionDeclaration = require('../introspect/functiondeclaration');
+const JavaScriptParser = require('../codegen/javascriptparser');
+
+const Logger = require('../log/logger');
+const LOG = Logger.getLog('Script');
 
 /**
  * <p>
@@ -26,6 +29,7 @@ const FunctionDeclaration = require('../introspect/functiondeclaration');
  * @memberof module:composer-common
  */
 class Script {
+
   /**
    * Create the Script.
    * <p>
@@ -44,8 +48,17 @@ class Script {
         if(!contents) {
             throw new Error('Empty script contents');
         }
-
-        const parser = new JavaScriptParser(this.contents, false, 5);
+        let data = {errorStatement:''};
+        let parser;
+        try {
+            parser = new JavaScriptParser(this.contents, false, 5,{});
+        } catch (cause) {
+            // consider adding a toHex method in the exception to put out the pure hex values of the file.
+            const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message+'\n'+data.errorStatement);
+            error.cause = cause;
+            LOG.error('constructor', error.message, contents);
+            throw error;
+        }
 
         const functions = parser.getFunctions();
 

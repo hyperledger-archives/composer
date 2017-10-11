@@ -4,7 +4,7 @@ title: "Calling external REST services"
 category: start
 section: integrating
 status: experimental
-index-order: 606
+index-order: 708
 sidebar: sidebars/accordion-toc0.md
 excerpt: "[**Transaction processor functions can be used to call external REST services**](./call-out.html). This allows you to move complex computation off the blockchain."
 ---
@@ -23,7 +23,7 @@ In some cases it is desirable to be able to call REST APIs from transaction proc
 
 The `post(url,data)` function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the `application/json` content encoding.
 
-Note that the `post` function is supported in all runtime environments: web (playground), Node.js (embedded), HLF v0.6 and HLF v1.0.
+Note that the `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and HLF v1.0.
 
 ## Handling Results
 

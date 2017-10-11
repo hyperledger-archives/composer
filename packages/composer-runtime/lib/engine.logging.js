@@ -15,7 +15,7 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-const util = require('util');
+
 
 const LOG = Logger.getLog('EngineLogging');
 
@@ -27,27 +27,6 @@ const LOG = Logger.getLog('EngineLogging');
 class EngineLogging {
 
     /**
-     * Set the log level for the runtime.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    setLogLevel(context, args) {
-        const method = 'setLogLevel';
-        LOG.entry(method, context, args);
-        if (!args || args.length !== 1) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'setLogLevel', ['newLogLevel']));
-        }
-        if (context.getParticipant() === null) {
-            this.getContainer().getLoggingService().setLogLevel(args[0]);
-            return Promise.resolve();
-        }
-        throw new Error('Authorization failure');
-    }
-
-    /**
      * Get the current log level of the runtime.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
@@ -57,16 +36,25 @@ class EngineLogging {
     getLogLevel(context, args) {
         const method = 'getLogLevel';
         LOG.entry(method, context, args);
-        if (args && args.length !== 0) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting no arguments', args, 'getLogLevel'));
-        }
-        if (context.getParticipant() === null) {
-            const curLogLevel = this.getContainer().getLoggingService().getLogLevel();
-            LOG.debug(method, 'current log level=' + curLogLevel);
-            return Promise.resolve(curLogLevel);
-        }
-        throw new Error('Authorization failure');
+
+        let dataService = context.getDataService();
+        let sysdata;
+        let resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = context.getSerializer().fromJSON(result);
+                return context.getAccessController().check(resource, 'READ');
+            })
+            .then(() => {
+                let ll = context.getLoggingService().getLogLevel();
+                LOG.exit(method,'loglevel',ll);
+                return ll;
+            });
+
     }
 }
 

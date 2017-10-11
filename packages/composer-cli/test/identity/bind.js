@@ -28,7 +28,6 @@ chai.use(require('chai-as-promised'));
 const fs = require('fs');
 
 const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
@@ -56,23 +55,6 @@ describe('composer identity bind CLI unit tests', () => {
         sandbox.restore();
     });
 
-    it('should bind an existing identity using the default profile', () => {
-        let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
-            participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
-        };
-        return Bind.handler(argv)
-            .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, 'org.doge.Doge#DOGE_1', pem);
-            });
-    });
-
     it('should bind an existing identity using the specified profile', () => {
         let argv = {
             connectionProfileName: 'someOtherProfile',
@@ -80,10 +62,11 @@ describe('composer identity bind CLI unit tests', () => {
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
@@ -94,15 +77,17 @@ describe('composer identity bind CLI unit tests', () => {
     it('should prompt for the enrollment secret if not specified', () => {
         sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .then((res) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, 'org.doge.Doge#DOGE_1', pem);
             });
@@ -111,11 +96,12 @@ describe('composer identity bind CLI unit tests', () => {
     it('should error when the certificate file cannot be read', () => {
         fs.readFileSync.withArgs('admin.pem').throws(new Error('such error'));
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .should.be.rejectedWith(/such error/);
@@ -124,11 +110,12 @@ describe('composer identity bind CLI unit tests', () => {
     it('should error when the existing identity cannot be bound', () => {
         mockBusinessNetworkConnection.bindIdentity.withArgs('org.doge.Doge#DOGE_1', pem).rejects(new Error('such error'));
         let argv = {
+            connectionProfileName: 'someOtherProfile',
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
             participantId: 'org.doge.Doge#DOGE_1',
-            publicKeyFile: 'admin.pem'
+            certificateFile: 'admin.pem'
         };
         return Bind.handler(argv)
             .should.be.rejectedWith(/such error/);

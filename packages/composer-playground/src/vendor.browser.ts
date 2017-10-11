@@ -22,24 +22,6 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
 import 'jquery';
-// Bootstrap v4 currently requires window.Tether to exist.
-import * as Tether from 'tether';
-(<any> window).Tether = Tether;
-import 'bootstrap';
-
-import * as BrowserFS from 'browserfs';
-
-// Installs globals onto window:
-// * Buffer
-// * require (monkey-patches if already defined)
-// * process
-// You can pass in an arbitrary object if you do not wish to pollute
-// the global namespace.
-BrowserFS.install(window);
-// Constructs an instance of the LocalStorage-backed file system.
-const lsfs = new BrowserFS.FileSystem.LocalStorage();
-// Initialize it as the root file system.
-BrowserFS.initialize(lsfs);
 
 if ('production' === ENV) {
     // Production

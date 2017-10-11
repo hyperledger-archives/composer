@@ -2,14 +2,9 @@
     <div class="main-view-content">
         <div class="flex">
             <div class="flex-container">
-                <h1 class="flex">My Wallet</h1>
-
-                <button type="button" class="secondary" (click)="addId()">
-                    <span>+ Add to Wallet</span>
-                </button>
-
+                <h1 class="flex">My IDs for {{businessNetworkName}}</h1>
                 <button type="button" class="secondary" (click)="issueNewId()">
-                    <span>+ Issue New ID</span>
+                    <span>Issue New ID</span>
                 </button>
             </div>
 
@@ -18,26 +13,27 @@
                 <div class="id">ID Name</div>
                 <div class="status">Status</div>
             </div>
-            <div class="identity" *ngFor="let id of myIdentities" (dblclick)="setCurrentIdentity(id)">
-                <div class="selected-border" [ngClass]="{'selected-border--selected': id === currentIdentity}"></div>
+            <div class="identity" *ngFor="let cardRef of cardRefs" (dblclick)="setCurrentIdentity(cardRef)">
+                <div class="selected-border"
+                     [ngClass]="{'selected-border--selected': cardRef === currentIdentity}"></div>
                 <div class="id">
-                    {{id}}
+                    {{identityCards.get(cardRef).getUserName()}}
                 </div>
-                <div class="flex" *ngIf="id===currentIdentity">
-                    In Use
+                <div class="flex" *ngIf="cardRef===currentIdentity">
+                    IN USE
                 </div>
-                <div class="flex" *ngIf="id!==currentIdentity">
+                <div class="flex" *ngIf="cardRef!==currentIdentity">
                     <i>In my wallet</i>
                 </div>
-                <div class="actions" *ngIf="id!==currentIdentity">
-                    <button class="clear" (click)="setCurrentIdentity(id)">Use now</button>
-                    <button class="clear" (click)="removeIdentity(id); $event.stopPropagation()">Remove</button>
+                <div class="actions" *ngIf="cardRef!==currentIdentity">
+                    <button class="clear" (click)="setCurrentIdentity(cardRef)">Use now</button>
+                    <button class="clear" (click)="removeIdentity(cardRef); $event.stopPropagation()">Remove</button>
                 </div>
             </div>
         </div>
         <div class="flex">
             <div class="flex-container">
-                <h1 class="flex">All IDs for {{ deployedPackageName }}</h1>
+                <h1 class="flex">All IDs for {{ businessNetworkName }}</h1>
             </div>
 
             <div class="identity-title">
@@ -49,7 +45,7 @@
             </div>
             <div class="identity" *ngFor="let id of allIdentities">
                 <div class="selected-border"
-                     [ngClass]="{'selected-border--selected': id.name === currentIdentity}"></div>
+                     [ngClass]="{'selected-border--selected': id.ref === currentIdentity}"></div>
                 <div class="id cell-24">
                     {{ id.name }}
                 </div>
@@ -60,7 +56,7 @@
                     {{ id.state }}
                 </div>
                 <div class="cell-24">
-                    <div class="actions" *ngIf="id.name!==currentIdentity&&id.state!=='REVOKED'">
+                    <div class="actions" *ngIf="id.ref !== currentIdentity && id.state!=='REVOKED'">
                         <button class="clear" (click)="revokeIdentity(id)">Revoke</button>
                     </div>
                 </div>
@@ -68,5 +64,4 @@
         </div>
     </div>
     <app-footer></app-footer>
-
 </section>

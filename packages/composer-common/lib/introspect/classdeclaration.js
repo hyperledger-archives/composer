@@ -14,13 +14,13 @@
 
 'use strict';
 
+const Decorated = require('./decorated');
 const Field = require('./field');
 const EnumValueDeclaration = require('./enumvaluedeclaration');
 const RelationshipDeclaration = require('./relationshipdeclaration');
 const IllegalModelException = require('./illegalmodelexception');
 const Globalize = require('../globalize');
 const Introspector = require('./introspector');
-const ModelUtil = require('../modelutil');
 
 /**
  * ClassDeclaration defines the structure (model/schema) of composite data.
@@ -34,7 +34,7 @@ const ModelUtil = require('../modelutil');
  * @class
  * @memberof module:composer-common
  */
-class ClassDeclaration {
+class ClassDeclaration extends Decorated {
 
     /**
      * Create a ClassDeclaration from an Abstract Syntax Tree. The AST is the
@@ -45,24 +45,13 @@ class ClassDeclaration {
      * @throws {IllegalModelException}
      */
     constructor(modelFile, ast) {
-        if(!modelFile || !ast) {
+        super(ast);
+
+        if(!modelFile) {
             throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
         }
-
-        this.ast = ast;
         this.modelFile = modelFile;
         this.process();
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
     }
 
     /**
@@ -81,6 +70,9 @@ class ClassDeclaration {
      * @private
      */
     process() {
+
+        super.process();
+
         this.name = this.ast.id.name;
         this.properties = [];
         this.superType = null;
@@ -136,6 +128,8 @@ class ClassDeclaration {
      * @private
      */
     validate() {
+
+        super.validate();
 
         const declarations = this.getModelFile().getAllDeclarations();
         for(let n=0; n < declarations.length; n++) {
@@ -316,7 +310,7 @@ class ClassDeclaration {
      * @return {boolean} true if the class may be pointed to by a relationship
      */
     isSystemType() {
-        return ModelUtil.getSystemNamespace() === this.getNamespace();
+        return this.modelFile.isSystemModelFile();
     }
 
     /**

@@ -117,8 +117,10 @@ describe('NumberValidator', () => {
 
         it('should do nothing if no value is given', () => {
             let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
-            v.validate();
+            v.validate('id',null);
         });
+
+
     });
 
     describe('#toString', () => {

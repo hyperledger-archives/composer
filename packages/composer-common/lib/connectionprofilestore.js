@@ -26,7 +26,7 @@ class ConnectionProfileStore {
 
     /**
      * Loads connectOptions for a given connection profile.
-     *
+     * @abstract
      * @param {string} connectionProfile The name of the connection profile to load
      * @return {Promise} A promise that is resolved with a JS Object for the
      * data in the connection profile.
@@ -37,7 +37,7 @@ class ConnectionProfileStore {
 
     /**
      * Save connectOptions for a given connection profile.
-     *
+     * @abstract
      * @param {string} connectionProfile The name of the connection profile to save
      * @param {Object} connectOptions The connection options object
      * @return {Promise} A promise that once the data is written
@@ -48,7 +48,7 @@ class ConnectionProfileStore {
 
     /**
      * Loads all of the connection profiles.
-     *
+     * @abstract
      * @return {Promise} A promise that is resolved with a JS Object where the
      * keys are the connection profiles, and the values are the connection options.
      */
@@ -58,7 +58,7 @@ class ConnectionProfileStore {
 
     /**
      * Delete the given connection profile.
-     *
+     * @abstract
      * @param {string} connectionProfile The name of the connection profile to delete
      * @return {Promise} A promise that is resolved when the connection profile
      * is deleted.

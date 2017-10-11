@@ -48,9 +48,17 @@ describe('EmbeddedSecurityContext', () => {
 
     });
 
-    describe('#getIdentity', () => {
+    describe('#getUser', () => {
 
         it('should get the current user ID', () => {
+            securityContext.getUser().should.equal(identity.name);
+        });
+
+    });
+
+    describe('#getIdentity', () => {
+
+        it('should get the current identity', () => {
             securityContext.getIdentity().should.deep.equal(identity);
         });
 

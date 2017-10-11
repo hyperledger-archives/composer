@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Connection = require('../lib/connection');
 const ConnectionManager = require('../lib/connectionmanager');
 const ConnectionProfileManager = require('../lib/connectionprofilemanager');
 
@@ -25,9 +26,13 @@ const sinon = require('sinon');
 describe('ConnectionManager', () => {
 
     let mockConnectionProfileManager;
+    let mockConnection;
+    let connectionManager;
 
     beforeEach(() => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
+        mockConnection = sinon.createStubInstance(Connection);
+        connectionManager = new ConnectionManager(mockConnectionProfileManager);
     });
 
     describe('#constructor', () => {
@@ -43,40 +48,136 @@ describe('ConnectionManager', () => {
     describe('#getConnectionProfileManager', () => {
 
         it('should get connection profile manager', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            cm.getConnectionProfileManager().should.equal(mockConnectionProfileManager);
+            connectionManager.getConnectionProfileManager().should.equal(mockConnectionProfileManager);
         });
 
     });
 
     describe('#connect', () => {
 
-        it('should throw as abstract', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            return cm.connect('profile', 'network', { connect: 'options' })
-                .should.be.rejectedWith(/abstract function called/);
+        it('should call _connect and handle no error', () => {
+            sinon.stub(connectionManager, '_connect').yields(null, mockConnection);
+            return connectionManager.connect('hlfabric', 'org-acme-biznet', { connect: 'options' })
+                .should.eventually.be.equal(mockConnection)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._connect, 'hlfabric', 'org-acme-biznet', { connect: 'options' });
+                });
+        });
+
+        it('should call _connect and handle an error', () => {
+            sinon.stub(connectionManager, '_connect').yields(new Error('error'));
+            return connectionManager.connect('hlfabric', 'org-acme-biznet', { connect: 'options' })
+                .should.be.rejectedWith(/error/)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._connect, 'hlfabric', 'org-acme-biznet', { connect: 'options' });
+                });
+        });
+
+    });
+
+    describe('#_connect', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                connectionManager._connect('hlfabric', 'org-acme-biznet', { connect: 'options' });
+            }).should.throw(/abstract function called/);
         });
 
     });
 
     describe('#importIdentity', () => {
 
+        it('should call _connect and handle no error', () => {
+            sinon.stub(connectionManager, '_importIdentity').yields(null);
+            return connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._importIdentity, 'profile', { connect: 'options' }, 'bob1', 'public key', 'private key');
+                });
+        });
+
+        it('should call _connect and handle an error', () => {
+            sinon.stub(connectionManager, '_importIdentity').yields(new Error('error'));
+            return connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
+                .should.be.rejectedWith(/error/)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._importIdentity, 'profile', { connect: 'options' }, 'bob1', 'public key', 'private key');
+                });
+        });
+
+    });
+
+    describe('#_importIdentity', () => {
+
         it('should throw as abstract', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            return cm.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
-                .should.be.rejectedWith(/abstract function called/);
+            (() => {
+                connectionManager._importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key');
+            }).should.throw(/abstract function called/);
         });
 
     });
 
     describe('#requestIdentity', () => {
 
-        it('should throw as abstract', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            return cm.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
-                .should.be.rejectedWith(/abstract function called/);
+        it('should call _connect and handle no error', () => {
+            sinon.stub(connectionManager, '_requestIdentity').yields(null, { caName: 'ca1', key: 'suchkey' });
+            return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
+                    .then((result) => {
+                        result.should.deep.equal({ caName: 'ca1', key: 'suchkey' });
+                        sinon.assert.calledWith(connectionManager._requestIdentity, 'profile', { connect: 'options' }, 'bob1', 'secret');
+                    });
         });
 
+        it('should call _connect and handle an error', () => {
+            sinon.stub(connectionManager, '_requestIdentity').yields(new Error('error'));
+            return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
+                    .should.be.rejectedWith(/error/)
+                    .then(() => {
+                        sinon.assert.calledWith(connectionManager._requestIdentity, 'profile', { connect: 'options' }, 'bob1', 'secret');
+                    });
+        });
+
+    });
+
+    describe('#_requestIdentity', () => {
+
+        it('should throw as abstract', () => {
+            (() => {
+                connectionManager._requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#exportIdentity', function() {
+        const profileName = 'PROFILE_NAME';
+        const id = 'Eric';
+        const connectOptions = { connect: 'options' };
+
+        it('should call _exportIdentity and handle no error', () => {
+            sinon.stub(connectionManager, '_exportIdentity').yields(null);
+            return connectionManager.exportIdentity(profileName, connectOptions, id)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._exportIdentity, profileName, connectOptions, id);
+                });
+        });
+
+        it('should call _exportIdentity and handle an error', function() {
+            const errorText = 'ERROR_TEXT';
+            sinon.stub(connectionManager, '_exportIdentity').yields(new Error(errorText));
+            return connectionManager.exportIdentity(profileName, connectOptions, id)
+                .should.be.rejectedWith(new RegExp(errorText))
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._exportIdentity, profileName, connectOptions, id);
+                });
+        });
+    });
+
+    describe('#_exportIdentity', function() {
+        it('should throw as abstract', function() {
+            (() => {
+                connectionManager._exportIdentity('PROFILE_NAME', { connect: 'options' }, 'Eric');
+            }).should.throw();
+        });
     });
 
 });

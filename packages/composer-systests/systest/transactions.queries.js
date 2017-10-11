@@ -26,6 +26,10 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('Transaction (query specific) system tests', () => {
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     let businessNetworkDefinition;
     let client;
@@ -94,9 +98,6 @@ describe('Transaction (query specific) system tests', () => {
     }
 
     before(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         const modelFiles = [
             { fileName: 'models/transactions.queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.queries.cto'), 'utf8') }
         ];
@@ -118,6 +119,7 @@ describe('Transaction (query specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition, true)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-queries')
@@ -147,10 +149,11 @@ describe('Transaction (query specific) system tests', () => {
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     beforeEach(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return client.getAssetRegistry('systest.transactions.queries.SampleAsset')
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);

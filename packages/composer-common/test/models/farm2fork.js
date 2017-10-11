@@ -26,7 +26,7 @@ describe('Farm2Fork Model', function() {
             modelManager.should.not.be.null;
 
             // parse a model file from disk and add to the ModelManager
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);
@@ -35,7 +35,9 @@ describe('Farm2Fork Model', function() {
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
             modelManager.addModelFile(file,fileName);
-            modelManager.getModelFiles().length.should.equal(3);
+            modelManager.getModelFiles().filter((modelFile) => {
+                return !modelFile.isSystemModelFile();
+            }).length.should.equal(2);
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
 

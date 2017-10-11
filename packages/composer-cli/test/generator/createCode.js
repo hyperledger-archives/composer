@@ -16,7 +16,6 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-// const homedir = require('homedir');
 const fs = require('fs');
 const Create = require('../../lib/cmds/generator/createCodeCommand.js');
 const CreateCode = require('../../lib/cmds/generator/lib/createCode.js');
@@ -31,7 +30,6 @@ const TypescriptVisitor = CodeGen.TypescriptVisitor;
 const FileWriter = CodeGen.FileWriter;
 
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -40,12 +38,9 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-// let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
 
-//const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 
 let mockBusinessNetworkDefinition;
 let mockGoLang;
@@ -53,7 +48,6 @@ let mockPlantUML;
 let mockTypescript;
 let mockJSONSchema;
 let mockFileWriter;
-// const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 let mockAdminConnection;
 
@@ -107,6 +101,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 // sinon.assert.calledOnce(mockGoLang.visit);
@@ -124,6 +119,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};
@@ -139,6 +135,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};
@@ -154,6 +151,7 @@ describe('composer generator create unit tests', function () {
 
             return Create.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(fs.readFileSync);
                 let parameters = {};

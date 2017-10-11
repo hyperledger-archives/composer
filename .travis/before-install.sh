@@ -4,16 +4,19 @@
 set -ev
 set -o pipefail
 
+# Remove the MongoDB repo as their GPG key has expired.
+#sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
+
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
 
-pip install linkchecker requests==2.9.2
+pip install --user linkchecker requests==2.9.2
 linkchecker --version
 
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-npm install -g npm@4 lerna@2 @alrra/travis-scripts asciify
+npm install -g npm@4 lerna@2 @alrra/travis-scripts asciify gnomon
 
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg

@@ -2,7 +2,7 @@
 layout: default
 title: Connection Profiles
 section: reference
-index-order: 906
+index-order: 1006
 sidebar: sidebars/accordion-toc0.md
 excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0.
 ---
@@ -27,16 +27,10 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
         cd MyProfile
 
-4. Create a new file called `connection.json` that contains the following information for either {{site.data.conrefs.hlf_full}} v0.6 or v1.0. If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v0.6, use the following format:
-
-        {
-            "type": <hlf|web>,
-            "keyValStore":"/home/<your-username>/.composer-credentials",
-            "membershipServicesURL": <your-membership-services-url>,
-            "peerURL": <your-peer-url>,
-            "eventHubURL": <your-event-hub-url>
+4. Create a new file called `connection.json` that contains the following information for {{site.data.conrefs.hlf_full}} v1.0. 
         }
-  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
+  
+  Create a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
 
         {
             "type": "hlfv1",

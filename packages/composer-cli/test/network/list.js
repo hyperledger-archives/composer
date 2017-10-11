@@ -17,14 +17,11 @@
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-// const homedir = require('homedir');
 const fs = require('fs');
-// const Download = require('../../lib/cmds/network/lib/download.js');
 const List = require('../../lib/cmds/network/listCommand.js');
 const ListCmd = require('../../lib/cmds/network/lib/list.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -33,19 +30,12 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-// let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
-//
-// //const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-//
 let mockBusinessNetworkDefinition;
-// const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// let businessNetworkConnection = new BusinessNetworkConnection();
 let mockBusinessNetworkConnection;
 
-describe('composer network download CLI unit tests', function () {
+describe('composer network list CLI unit tests', function () {
 
     let sandbox;
 
@@ -77,21 +67,21 @@ describe('composer network download CLI unit tests', function () {
 
     describe('List handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function (done) {
+        it('Good path, all parms correctly specified.', function () {
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'defaultProfile'
+                       ,connectionProfileName: 'someOtherProfile'
                        ,businessNetworkName: 'testBusinessNetworkId'};
 
 
 
-            List.handler(argv)
+            return List.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
             });
-
-            done();
         });
 
 

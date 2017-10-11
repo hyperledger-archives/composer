@@ -24,9 +24,11 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-
 describe('HTTP POST system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -41,6 +43,7 @@ describe('HTTP POST system tests', () => {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+        bnID = businessNetworkDefinition.getName();
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
@@ -52,6 +55,10 @@ describe('HTTP POST system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     it('should update an asset with the the results of an HTTP POST. WARNING, running remote on Bluemix.', () => {

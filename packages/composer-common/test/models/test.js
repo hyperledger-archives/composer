@@ -34,7 +34,7 @@ describe('Test Model', function(){
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
 
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);
@@ -72,7 +72,7 @@ describe('Test Model', function(){
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
 
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);
@@ -113,7 +113,7 @@ describe('Test Model', function(){
             cObject.LeaseContractID = 'foo';
             cObject.scrapped = false;
             cObject.owner = factory.newRelationship(
-                'concerto', 'MyParticipant', 'CUST_1');
+                'composer', 'MyParticipant', 'CUST_1');
             cObject.previousOwners = null;
             // serialize the instance to JSON using a Serializer
             let serializer = new Serializer(factory, modelManager);
@@ -139,7 +139,7 @@ describe('Test Model', function(){
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
 
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);
@@ -222,7 +222,7 @@ describe('Test Model', function(){
             let modelManager = new ModelManager();
             modelManager.should.not.be.null;
 
-            let fileName1 = './test/data/model/concerto.cto';
+            let fileName1 = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName1, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName1);
@@ -237,7 +237,9 @@ describe('Test Model', function(){
 
             // check the clear
             modelManager.clearModelFiles();
-            modelManager.getModelFiles().length.should.equal(1);
+            modelManager.getModelFiles().filter((modelFile) => {
+                return !modelFile.isSystemModelFile();
+            }).length.should.equal(0);
             // the system model will remain hence 1.
 
             // re-add
@@ -250,7 +252,7 @@ describe('Test Model', function(){
             vehicleDecl.getFullyQualifiedName().should.equal('org.acme.Vehicle');
             (() => { modelManager.getType('String'); }).should.throw(TypeNotFoundException);
             modelManager.getType('org.acme.Base').getFullyQualifiedName().should.equal('org.acme.Base');
-            modelManager.getType('concerto.MyParticipant').getName().should.equal('MyParticipant');
+            modelManager.getType('composer.MyParticipant').getName().should.equal('MyParticipant');
 
             modelFile.getAssetDeclarations().length.should.equal(2);
             modelFile.getTransactionDeclarations().length.should.equal(8);
@@ -314,7 +316,7 @@ describe('Test Model', function(){
             // create and populate the ModelManager with a model file
             let modelManager = new ModelManager();
 
-            let fileName = './test/data/model/concerto.cto';
+            let fileName = './test/data/model/composer.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
             modelManager.addModelFile(systemModel,fileName);
@@ -331,7 +333,7 @@ describe('Test Model', function(){
                 return !element.startsWith(ModelUtil.getSystemNamespace());
             });
             imprts.length.should.equal(1);
-            modelFile.getImports().includes('concerto.MyParticipant').should.equal(true);
+            modelFile.getImports().includes('composer.MyParticipant').should.equal(true);
         });
     });
 

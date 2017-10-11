@@ -6,7 +6,7 @@ The runtime should be verified against the following platforms:
 
 A fresh virtualised image should be used where possible, to ensure that the process will be as that of a new user with a fresh machine. This does however preclude this process from detecting issues where a user already has some components (dependancies etc) pre-installed and may cause a conflict with script files provided.
 
-## CLI
+## Sample Applications (digital property app)
 Cmd line Installation Verification  (Mac OS X and Ubuntu). These test should be run following the instructions in the web pages.
 _These should be run using the unstable releases of the code to validate what is going to be released is good_
 
@@ -14,18 +14,11 @@ This short output shows how to install and update the package.json of the gettin
 
 ```bash
 $ npm install -g composer-cli@unstable
-<output redacted>
-$ composer --version
-composer-cli                   v0.10.0-20170720064757
-composer-admin                 v0.10.0-20170720064757
-composer-client                v0.10.0-20170720064757
-composer-common                v0.10.0-20170720064757
-composer-runtime-hlf           v0.10.0-20170720064757
-composer-connector-hlf         v0.10.0-20170720064757
 
-# Execute the following 4 steps, to stand up a runtime Fabric 
+# Execute the following steps, to stand up a runtime Fabric 
 $ mkdir fabric-tools && cd fabric-tools
 $ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
+$ unzip fabric-dev-servers.zip
 $./startFabric.sh # will remove containers that exist previously including dev-* containers
 $./createComposerProfile.sh
 $ cd  # ie $HOME
@@ -40,14 +33,47 @@ $ docker ps -a # check the container version after the business network name eg 
 $ npm test # check the assets are bootstrapped / updated.
 ```
 
-## New Feature Testing
+## Sample Networks
+Following from testing of the digital-property-app, a similar operation should be performed targetting the composer-sample-networks repository.
 
-All new features added for the release, which will be named in the release notes outline, should be proven on the unstable build. At this point some exploratory testing needs to be investigated, in an attempt to break the delivered feature and/or knowingly drive it towards a state where features could be working from invalid information.
+```
+$ git clone https://github.com/hyperledger/composer-sample-networks.git
+```
 
-## Exploratory Testing
+Move through each of the sample networks in sequence, updating their composer package dependancies to point to the unstable version and then run the npm test.
+```
+$ cd composer-sample-networks/packages/myTestPackageItem
+$ sed -i.ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
+$ npm install --tag=unstable
+$npm test
+```
+ 
+## Vehicle Lifecycle Demo
+The composer-sample-applications repository also contains the vehicle-lifecyle demo. This should be run on a clean VM using the one line install.
 
-Different users will attempt different things, be starting from different points with different skill level. Options to consider
+From a fresh VM
+ - Create a new directory, eg `mkdir git`
+ - Navigate to directory and clone the composer-sample-applications `git clone https://github.com/hyperledger/composer-sample-applications.git`
+ - navigate to `composer-sample-applications/packages/vehicle-lifecycle`
+ - run `./build.sh`
+ - install the unstable version `cat installers/hlfv1/install-unstable.sh | bash`
+ -- this will take 'some' time
+ - after build web browser should open with pages for each aspect
 
- - Add a new asset type to a model and a new transaction, or write a new model from a different business domain
- - Review the questions found in the week on StackOverflow & Rocket.Chat - how did the user get to the position they are in?
- - What new PRs have gone in this week - how could they deployed and used in the existing networks?
+Verification Stage (basic)
+ - Should be able to log into Playground
+ - Should be able to use rest server to post/get
+ - Node Red nodes should be shown with no errors
+ - VDA screen should be shown, with all links operating
+ - Dashboard should be visible, with all links working
+ - Ionic App should be accessible
+
+Verification Stage (adv)
+ - Use the Ionic App to drive the vehicle lifecycle
+ -- From the ionic app, define the car order and then select 'build'
+ -- From the manufcturing page, commence manufacture
+ -- From the VDA page, observe the chains being generated as the order progresses
+ - Log into Playground and inspect transactions via Historian, and all items in the registry
+
+Points to note:
+ - If you get lost, or don't know what to do, ask

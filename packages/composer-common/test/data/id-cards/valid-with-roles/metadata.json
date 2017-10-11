@@ -1,11 +1,12 @@
 {
-    "name": "Conga",
+    "version": 1,
+    "userName": "conga",
     "description": "A valid ID card",
     "businessNetwork": "org-acme-biznet",
     "image": "images/conga.png",
     "roles": [
-        "peerAdmin",
-        "channelAdmin",
-        "issuer"
+        "PeerAdmin",
+        "ChannelAdmin",
+        "Issuer"
     ]
 }

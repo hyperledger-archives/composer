@@ -1,0 +1,97 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+.create-card {
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+  margin-bottom: $space-large;
+  margin-top: $space-large;
+  border:$border-width-small solid $keyline-highlight;
+  border-radius: $radius-medium;
+
+  h1 {
+      margin-top: $space-medium;
+      margin-bottom: $space-large;
+      margin-left: $space-medium;
+      font-size: 20px;
+      color: $primary-text;
+      letter-spacing:0;
+      text-align:left;
+  }
+
+  .profiles {
+      display: flex;
+      flex-direction: row;
+      padding-left: $space-medium;
+
+      &.section {
+          border-bottom: 1px solid $fourth-highlight;
+          margin-bottom: $space-medium;
+      }
+
+      .description {
+        margin-right: $space-xlarge;
+        margin-top: $space-small;
+        font-size: 0.7rem;
+        color:$tertiary-text;
+        min-width: 182px;
+
+        &.upper {
+            text-transform: uppercase;
+        }
+      }
+
+      .create-route {
+          margin-bottom: $space-large;
+
+          p {
+              color:$primary-text;
+              margin-top: 0;
+              margin-bottom: 0;
+              font-weight: 300;
+          }
+
+          .file-types-list {
+              display: flex;
+              flex-direction: row;
+              margin-top: $space-large;
+              margin-bottom: $space-mlarge;
+              flex-wrap: wrap;
+
+              .file-types-list-item {
+                    background-color: $white;
+                    padding: $space-medium;
+                    max-width: 25rem;
+                    min-width: 22rem;
+
+                .description {
+                    color:$primary-text;
+                    margin-left: $space-large;
+                }
+
+                label.radio-label {
+                    font-weight: 600;
+                }
+            }
+        }
+      }
+  }
+
+  section {
+    font-size: 0.9em;
+
+    file-importer {
+      margin-top: $space-medium;
+    }
+
+    span {
+      color: $secondary-text;
+    }
+
+    form {
+      overflow-y: auto;
+    }
+  }
+}
+

@@ -16,10 +16,9 @@
 
 const Admin = require('composer-admin');
 
-const Undeploy = require('../../lib/cmds/network/lib/undeploy.js');
+const Undeploy = require('../../lib/cmds/network/undeployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -58,11 +57,12 @@ describe('composer undeploy network CLI unit tests', function () {
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'defaultProfile'};
+                       ,connectionProfileName: 'someOtherProfile'};
             let connectionProfileName = argv.connectionProfileName;
 
             return Undeploy.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockAdminConnection.undeploy);

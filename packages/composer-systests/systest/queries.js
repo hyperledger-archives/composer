@@ -26,13 +26,18 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('Query system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
     let assetsAsJSON;
     let participantsAsJSON;
+    let transactionsAsJSON;
     let assetsAsResources;
     let participantsAsResources;
+    let transactionsAsResources;
     let serializer;
 
     /**
@@ -92,17 +97,31 @@ describe('Query system tests', () => {
         return result;
     }
 
+        /**
+         * Generate a transaction.
+         * @param {Number} i The index.
+         * @return {Object} The generated transaction.
+         */
+    function generateTransaction(i) {
+        let result = {
+            $class: 'systest.queries.SampleTransaction',
+            asset: 'resource:systest.queries.SampleAsset#ASSET_' + (i % 4),
+            participant: 'resource:systest.queries.SampleParticipant#PARTICIPANT_' + (i % 4)
+        };
+        Object.assign(result, generateCommon(i));
+        return result;
+    }
+
     before(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         const modelFiles = [
             { fileName: 'models/queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.cto'), 'utf8') }
         ];
         const queryFiles = [
             { identifier: 'queries.qry', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.qry'), 'utf8') }
         ];
-        const scriptFiles = [];
+        const scriptFiles = [
+            { identifier: 'queries.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.js'), 'utf8') }
+        ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest-queries@0.0.1', 'The network for the query system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
@@ -115,6 +134,7 @@ describe('Query system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition, true)
             .then(() => {
                 return TestUtil.getClient('systest-queries')
@@ -126,6 +146,7 @@ describe('Query system tests', () => {
                 serializer = client.getBusinessNetwork().getSerializer();
                 assetsAsJSON = []; assetsAsResources = [];
                 participantsAsJSON = []; participantsAsResources = [];
+                transactionsAsJSON = []; transactionsAsResources = [];
                 for (let i = 0; i < 32; i++) {
                     const asset = generateAsset(i);
                     assetsAsJSON.push(asset);
@@ -133,20 +154,24 @@ describe('Query system tests', () => {
                     const participant = generateParticipant(i);
                     participantsAsJSON.push(participant);
                     participantsAsResources.push(serializer.fromJSON(participant));
+                    const transaction = generateTransaction(i);
+                    transactionsAsJSON.push(transaction);
+                    transactionsAsResources.push(serializer.fromJSON(transaction));
                 }
-                assetsAsJSON.sort(function (a, b) {
+                assetsAsJSON.sort((a, b) => {
                     return a.assetId.localeCompare(b.assetId);
                 });
-                participantsAsJSON.sort(function (a, b) {
+                participantsAsJSON.sort((a, b) => {
                     return a.participantId.localeCompare(b.participantId);
                 });
             });
     });
 
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
+    });
+
     beforeEach(function () {
-        if (TestUtil.isHyperledgerFabricV06()) {
-            return this.skip();
-        }
         return client.getAssetRegistry('systest.queries.SampleAsset')
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
@@ -156,10 +181,33 @@ describe('Query system tests', () => {
             })
             .then((participantRegistry) => {
                 return participantRegistry.addAll(participantsAsResources);
+            })
+            .then(() => {
+                return transactionsAsResources.reduce((promise, transaction) => {
+                    return promise.then(() => {
+                        return client.submitTransaction(transaction);
+                    });
+                }, Promise.resolve());
+            })
+            .then(() => {
+                return client.getTransactionRegistry('systest.queries.SampleTransaction');
+            })
+            .then((transactionRegistry) => {
+                return transactionRegistry.getAll();
+            })
+            .then((transactions) => {
+                transactionsAsResources = transactions.filter((transaction) => {
+                    return transaction.getFullyQualifiedType() === 'systest.queries.SampleTransaction';
+                }).sort((a, b) => {
+                    return a.transactionId.localeCompare(b.transactionId);
+                });
+                transactionsAsJSON = transactionsAsResources.map((transaction) => {
+                    return serializer.toJSON(transaction);
+                });
             });
     });
 
-    ['assets', 'participants'].forEach((type) => {
+    ['assets', 'participants', 'transactions'].forEach((type) => {
 
         describe('#' + type, () => {
 
@@ -173,6 +221,9 @@ describe('Query system tests', () => {
                 } else if (type === 'participants') {
                     expected = participantsAsJSON;
                     resource = 'systest.queries.SampleParticipant';
+                } else if (type === 'transactions') {
+                    expected = transactionsAsJSON;
+                    resource = 'systest.queries.SampleTransaction';
                 } else {
                     throw new Error('unexpected type ' + type);
                 }

@@ -12,17 +12,18 @@ import { EditorComponent } from './editor.component';
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
-import { InitializationService } from '../services/initialization.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclManager, AclFile, QueryFile, QueryManager } from 'composer-common';
+import { ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
+import { BehaviorSubject } from 'rxjs/Rx';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
+import { DrawerService } from '../common/drawer/drawer.service';
 
 let should = chai.should();
 
@@ -61,7 +62,7 @@ describe('EditorComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockModal;
-    let mockInitializationService;
+    let mockDrawer;
     let mockModelFile;
     let mockScriptFile;
     let mockRuleFile;
@@ -73,7 +74,7 @@ describe('EditorComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockModal = sinon.createStubInstance(NgbModal);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
+        mockDrawer = sinon.createStubInstance(DrawerService);
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
@@ -94,8 +95,8 @@ describe('EditorComponent', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: InitializationService, useValue: mockInitializationService},
-                {provide: EditorService, useValue: editorService}]
+                {provide: EditorService, useValue: editorService},
+                {provide: DrawerService, useValue: mockDrawer}]
         });
 
         fixture = TestBed.createComponent(EditorComponent);
@@ -106,7 +107,7 @@ describe('EditorComponent', () => {
         let mockEditorFilesValidate;
 
         beforeEach(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.businessNetworkChanged$ = {
                 takeWhile: sinon.stub().returns({
                     subscribe: (callback) => {
@@ -289,6 +290,16 @@ describe('EditorComponent', () => {
 
             fileSpy.should.have.been.called;
         }));
+
+        it('should handle error', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
+
+            component.ngOnInit();
+
+            tick();
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
     });
 
     describe('ngOnDestroy', () => {
@@ -305,19 +316,13 @@ describe('EditorComponent', () => {
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
             let mockMetaData = {
-                getName: sinon.stub().returns('my name'),
                 getVersion: sinon.stub().returns('my version'),
-                getDescription: sinon.stub().returns('my description'),
             };
 
             mockClientService.getMetaData = sinon.stub().returns(mockMetaData);
 
             component.updatePackageInfo();
-
-            component['deployedPackageName'].should.equal('my name');
             component['deployedPackageVersion'].should.equal('my version');
-            component['deployedPackageDescription'].should.equal('my description');
-            component['inputPackageName'].should.equal('my name');
             component['inputPackageVersion'].should.equal('my version');
         });
     });
@@ -1013,11 +1018,18 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1032,11 +1044,18 @@ describe('EditorComponent', () => {
 
             component['files'] = [{readme: true}, {model: true}];
 
-            mockModal.open = sinon.stub().returns({
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1053,11 +1072,18 @@ describe('EditorComponent', () => {
 
             component['files'] = [{model: true}, {script: true}];
 
-            mockModal.open = sinon.stub().returns({
-                result: Promise.resolve()
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            mockDrawer.open = sinon.stub().returns({
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
             });
 
             component.openImportModal();
+
+            finishedImport.next({deployed: true});
 
             tick();
 
@@ -1071,17 +1097,25 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                result: Promise.reject('some error')
-            });
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            let drawerItem = {
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
+            };
+            mockDrawer.open = sinon.stub().returns(drawerItem);
 
             component.openImportModal();
+
+            finishedImport.next({deployed: false, error: 'some error'});
 
             tick();
 
             mockUpdatePackage.should.not.have.been.called;
             mockUpdateFiles.should.not.have.been.called;
-
+            drawerItem.close.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
 
@@ -1089,17 +1123,25 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            mockModal.open = sinon.stub().returns({
-                result: Promise.reject(1)
-            });
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            let drawerItem = {
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
+            };
+            mockDrawer.open = sinon.stub().returns(drawerItem);
 
             component.openImportModal();
+
+            finishedImport.next({deployed: false});
 
             tick();
 
             mockUpdatePackage.should.not.have.been.called;
             mockUpdateFiles.should.not.have.been.called;
-
+            drawerItem.close.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
     });
@@ -1312,9 +1354,7 @@ describe('EditorComponent', () => {
 
         it('should open add file modal and handle cancel', fakeAsync(() => {
             mockModal.open = sinon.stub().returns({
-                componentInstance: {
-                    businessNetwork: {}
-                },
+                componentInstance: {},
                 result: Promise.reject(1)
             });
 
@@ -1331,9 +1371,7 @@ describe('EditorComponent', () => {
 
             mockAddModel.throws('some error');
             mockModal.open = sinon.stub().returns({
-                componentInstance: {
-                    businessNetwork: {}
-                },
+                componentInstance: {},
                 result: Promise.resolve(mockModelFile)
             });
 
@@ -1425,6 +1463,7 @@ describe('EditorComponent', () => {
         });
 
         it('should toggle editing', () => {
+            component['currentFile'] = {model : true};
             component['editActive'] = false;
 
             component.toggleEditActive();
@@ -1435,8 +1474,6 @@ describe('EditorComponent', () => {
         it('should make edit package fields visible when true for README', () => {
             component['editActive'] = false;
             component['editingPackage'] = false;
-            component['editingPackage'] = false;
-            component['deployedPackageName'] = 'TestPackageName';
             component['deployedPackageVersion'] = '1.0.0';
 
             // Specify README file
@@ -1445,120 +1482,20 @@ describe('EditorComponent', () => {
 
             fixture.detectChanges();
 
-            // Expect to see "deployedPackageName" visible within class="business-network-details"
+            // Expect to see "description" visible within class="business-network-details"
             // Expect to have "edit" option available within class="business-network-details"
             let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-            element.textContent.should.contain('TestPackageName');
             element.innerHTML.should.contain('id="editFileButton"');
 
             // Flip editActive boolean
-            component['editActive'] = true;
+            component.toggleEditActive();
             fixture.detectChanges();
 
-            // Expect three visible edit fields:
-            // 1) Name (input text)
-            // 2) Version (input text)
-            // 3) Full package (button)
+            // Should show the package json
             element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
             element.innerHTML.should.not.contain('id="editFileButton"');
-            element.innerHTML.should.contain('id="editPackageButton"');
-            element.textContent.should.contain('Name');
-            element.textContent.should.contain('Version');
-            element.textContent.should.contain('View/edit full metadata in package.json');
-
-        });
-
-        it('should make edit fields interactable when true for README', () => {
-            component['editActive'] = true;
-
-            // Specify README file
-            let file = {readme: true, id: 'readme', displayID: 'README.md'};
-            component['currentFile'] = file;
-
-            fixture.detectChanges();
-
-            // Expect edit fields:
-            // 1) Name & Version (input text) should not be editable (focused)
-            // 3) Full package (button) to be enabled
-
-            let editItem = fixture.debugElement.query(By.css('#editName')).nativeElement;
-            (editItem as HTMLInputElement).isContentEditable.should.be.false;
-
-            editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
-            (editItem as HTMLInputElement).isContentEditable.should.be.false;
-
-            editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement;
-            (editItem as HTMLButtonElement).disabled.should.be.false;
-
-        });
-
-        it('should only show package information if editingPackage==true', () => {
-            component['editingPackage'] = true;
-            component['deployedPackageName'] = 'TestPackageName';
-
-            fixture.detectChanges();
-
-            // Grab element
-            let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-
-            // Should contain package name edit only
             element.textContent.should.contain('Editing package.json');
 
-            // Should not contain any buttons/text entry
-            should.not.exist(fixture.debugElement.query(By.css('#editName')));
-            should.not.exist(fixture.debugElement.query(By.css('#editVersion')));
-            should.not.exist(fixture.debugElement.query(By.css('#editPackageButton')));
-        });
-
-    });
-
-    describe('editPackageName', () => {
-        beforeEach(() => {
-            mockClientService.setBusinessNetworkName.reset();
-        });
-
-        it('should edit the package name', () => {
-            component['inputPackageName'] = 'my name';
-
-            component.editPackageName();
-
-            mockClientService.setBusinessNetworkName.should.have.been.calledWith('my name');
-            component['editActive'].should.equal(false);
-            component['deployedPackageName'].should.equal('my name');
-        });
-
-        it('should not edit the package name if not changed', () => {
-            component['deployedPackageName'] = 'my name';
-            component['inputPackageName'] = 'my name';
-
-            component.editPackageName();
-
-            mockClientService.setBusinessNetworkName.should.not.have.been.called;
-        });
-    });
-
-    describe('editPackageVersion', () => {
-        beforeEach(() => {
-            mockClientService.setBusinessNetworkVersion.reset();
-        });
-
-        it('should edit the package version', () => {
-            component['inputPackageVersion'] = 'my version';
-
-            component.editPackageVersion();
-
-            mockClientService.setBusinessNetworkVersion.should.have.been.calledWith('my version');
-            component['editActive'].should.equal(false);
-            component['deployedPackageVersion'].should.equal('my version');
-        });
-
-        it('should not edit the package version if not changed', () => {
-            component['deployedPackageVersion'] = 'my version';
-            component['inputPackageVersion'] = 'my version';
-
-            component.editPackageVersion();
-
-            mockClientService.setBusinessNetworkVersion.should.not.have.been.called;
         });
     });
 
@@ -2231,4 +2168,10 @@ describe('EditorComponent', () => {
         });
     });
 
+    describe('setReadmePreview', () => {
+        it('should set the read me', () => {
+            component.setReadmePreview(true);
+            component['previewReadme'].should.equal(true);
+        });
+    });
 });

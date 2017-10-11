@@ -16,24 +16,78 @@ import { InitializationService } from './initialization.service';
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
-import { FileWallet } from 'composer-common';
+import { ConfigService } from './config.service';
+import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
+import * as chai from 'chai';
+
+let should = chai.should();
+
+import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 
 describe('InitializationService', () => {
+
+    let mockConfig = {
+        cards: [
+            {
+                metadata: {
+                    userName: 'PeerAdmin',
+                    enrollmentId: 'PeerAdmin',
+                    enrollmentSecret: 'NOTUSED',
+                    roles: [
+                        'PeerAdmin',
+                        'ChannelAdmin'
+                    ]
+                },
+                connectionProfile: {
+                    name: 'hlfabric',
+                    description: 'Hyperledger Fabric v1.0',
+                    type: 'hlfv1',
+                    keyValStore: '/home/composer/.composer-credentials',
+                    timeout: 300,
+                    orderers: [
+                        {
+                            url: 'grpc://orderer.example.com:7050'
+                        }
+                    ],
+                    channel: 'composerchannel',
+                    mspID: 'Org1MSP',
+                    ca: {
+                        url: 'http://ca.org1.example.com:7054',
+                        name: 'ca.org1.example.com'
+                    },
+                    peers: [
+                        {
+                            requestURL: 'grpc://peer0.org1.example.com:7051',
+                            eventURL: 'grpc://peer0.org1.example.com:7053'
+                        }
+                    ]
+                },
+                credentials: null
+            }
+        ]
+    };
 
     let mockClientService;
     let mockAlertService;
     let mockConnectionProfileService;
-    let mockWalletService;
+    let mockIdentityService;
+    let mockIdentityCardService;
+    let mockConfigService;
 
     beforeEach(() => {
 
         mockClientService = sinon.createStubInstance(ClientService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockWalletService = sinon.createStubInstance(WalletService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+        mockConfigService = sinon.createStubInstance(ConfigService);
+
+        mockAlertService.busyStatus$ = {next: sinon.stub()};
+        mockAlertService.errorStatus$ = {next: sinon.stub()};
 
         TestBed.configureTestingModule({
             imports: [HttpModule],
@@ -42,8 +96,10 @@ describe('InitializationService', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: WalletService, useValue: mockWalletService},
-                {provide: XHRBackend, useClass: MockBackend}
+                {provide: IdentityService, useValue: mockIdentityService},
+                {provide: IdentityCardService, useValue: mockIdentityCardService},
+                {provide: XHRBackend, useClass: MockBackend},
+                {provide: ConfigService, useValue: mockConfigService}
             ]
         });
     });
@@ -66,213 +122,55 @@ describe('InitializationService', () => {
             result.should.deep.equal(Promise.resolve());
         })));
 
-        it('should initialize and deploy sample', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+        it('should initialize', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            mockConfigService.loadConfig.returns(Promise.resolve({}));
 
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({}));
+            mockIdentityService.getLoggedIn.returns(false);
 
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
 
             service.initialize();
 
             tick();
-            stubLoadConfig.should.be.called;
+            mockConfigService.loadConfig.should.be.called;
 
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
-            mockClientService.ensureConnected.should.be.called;
+            mockIdentityCardService.loadIdentityCards.should.have.been.called;
+            mockIdentityCardService.addInitialIdentityCards.should.have.been.called;
         })));
 
-        it('should initialize and continue if sample is already deployed', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+        it('should initialize with config data', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            mockConfigService.loadConfig.returns(Promise.resolve(mockConfig));
 
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({}));
+            mockIdentityService.getLoggedIn.returns(false);
 
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
+            mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
 
             service.initialize();
 
             tick();
+            mockConfigService.loadConfig.should.be.called;
 
-            stubLoadConfig.should.be.called;
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
-            mockClientService.ensureConnected.should.be.called;
-        })));
-
-        it('should connect to profile specified in config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let stubLoadConfig = sinon.stub(service, 'loadConfig');
-            stubLoadConfig.returns(Promise.resolve({defaultConnectionProfile: 'myProfile'}));
-
-            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
-            stubCreateInitialProfiles.returns(Promise.resolve());
-
-            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
-            stubCreateInitialIdentities.returns(Promise.resolve());
-
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-
-            service.initialize();
-
-            tick();
-            stubLoadConfig.should.be.called;
-
-            stubCreateInitialProfiles.should.be.called;
-            stubCreateInitialIdentities.should.be.called;
-            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-            mockClientService.ensureConnected.should.be.called;
+            mockIdentityCardService.loadIdentityCards.should.have.been.called;
+            mockIdentityCardService.addInitialIdentityCards.should.have.been.calledWith([sinon.match.instanceOf(IdCard)]);
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
 
-            let loadConfigStub = sinon.stub(service, 'loadConfig').throws();
+            mockConfigService.loadConfig.throws();
 
-            mockAlertService.busyStatus$ = {next: sinon.stub()};
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
+            mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
             service.initialize();
             tick();
 
-            mockAlertService.errorStatus$.next.should.be.called;
+            mockAlertService.errorStatus$.next.should.have.been.called;
             service['initialized'].should.be.false;
 
-            sinon.restore(service.loadConfig);
-        })));
-    });
-
-    describe('loadConfig', () => {
-        it('should load config', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
-            // setup a mocked response
-            mockBackend.connections.subscribe((connection) => {
-                connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify({result: 'a result'})
-                })));
-            });
-
-            service.loadConfig().then((config) => {
-                config.should.deep.equal({result: 'a result'});
-            });
-            tick();
-        })));
-    });
-
-    describe('createInitialProfiles', () => {
-        it('should get initial profile', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.getProfile.returns(Promise.resolve());
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {
-                connectionProfiles: [{
-                    profile1: {
-                        name: 'profile1',
-                        type: 'hlf'
-                    }
-                }, {profile2: {name: 'profile2', type: 'hlf'}}]
-            };
-            service.createInitialProfiles();
-            tick();
-            mockConnectionProfileService.getProfile.should.be.called;
-        })));
-
-        it('should create initial profile if it doesnt exist', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.getProfile.returns(Promise.reject(''));
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {connectionProfiles: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            service.createInitialProfiles();
-
-            tick();
-
-            mockConnectionProfileService.getProfile.should.be.called;
-            mockConnectionProfileService.createProfile.should.be.calledWith('0', {
-                'profile1': {
-                    name: 'profile1',
-                    type: 'hlf'
-                }
-            });
-        })));
-
-        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {};
-            service.createInitialProfiles();
-
-            tick();
-
-            mockConnectionProfileService.getProfile.should.not.have.been.called;
-            mockConnectionProfileService.createProfile.should.not.have.been.called;
-        })));
-    });
-
-    describe('createInitialIdentities', () => {
-
-        it('should get initial identities', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {credentials: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            const fileWalletStub = sinon.createStubInstance(FileWallet);
-            fileWalletStub.get.returns(Promise.resolve());
-            fileWalletStub.add.returns(Promise.resolve());
-            mockWalletService.getWallet.returns(fileWalletStub);
-            service.createInitialIdentities();
-
-            tick();
-
-            fileWalletStub.get.should.be.called;
-        })));
-
-        it('should create initial identities if it doesnt exist', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {credentials: [{profile1: {name: 'profile1', type: 'hlf'}}]};
-            const fileWalletStub = sinon.createStubInstance(FileWallet);
-            fileWalletStub.get.returns(Promise.reject('Error'));
-            fileWalletStub.add.returns(Promise.resolve());
-            mockWalletService.getWallet.returns(fileWalletStub);
-            service.createInitialIdentities();
-
-            tick();
-
-            fileWalletStub.get.should.be.called;
-            fileWalletStub.add.should.be.calledWith('profile1', {name: 'profile1', type: 'hlf'});
-        })));
-
-        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {};
-
-            service.createInitialIdentities();
-
-            tick();
-
-            mockWalletService.getWallet.should.not.have.been.called;
-        })));
-    });
-
-    describe('isWebOnly', () => {
-        it('should return false if web only', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            let result = service.isWebOnly();
-            tick();
-            result.should.equal(false);
-        })));
-
-        it('should return true if not web only', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            service['config'] = {webonly: true};
-            let result = service.isWebOnly();
-            tick();
-            result.should.equal(true);
+            sinon.restore(mockConfigService.loadConfig);
         })));
     });
 });

@@ -17,6 +17,7 @@
 const Globalize = require('./globalize');
 const SecurityContext = require('./securitycontext');
 const SecurityException = require('./securityexception');
+const uuid = require('uuid');
 
 /**
  * Internal Utility Class
@@ -34,7 +35,7 @@ class Util {
      */
     static securityCheck(securityContext) {
         if (Util.isNull(securityContext)) {
-            throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
+            throw new SecurityException(Globalize.formatMessage('composer-connect-notconnected'));
         } else if (!(securityContext instanceof SecurityContext)) {
             throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
         }
@@ -55,11 +56,14 @@ class Util {
         } else if (!args) {
             throw new Error('args not specified');
         }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
+        args.forEach((arg,index) => {
+            if (typeof arg === 'boolean') {
+                args[index] = arg.toString();
+            } else if (typeof arg !== 'string') {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
+
         return securityContext.getConnection().queryChainCode(securityContext, functionName, args);
     }
 
@@ -68,22 +72,26 @@ class Util {
      * @param {SecurityContext} securityContext - The user's security context
      * @param {string} functionName - The name of the function to call.
      * @param {string[]} args - The arguments to pass to the function being called.
+     * @param {Object} options - options to pass to the invoking chain code
+     * @param {Object} options.transactionId Transaction Id to use.
      * @return {Promise} - A promise that will be resolved with the value returned
      * by the chain-code function.
      */
-    static invokeChainCode(securityContext, functionName, args) {
+    static invokeChainCode(securityContext, functionName, args, options) {
         Util.securityCheck(securityContext);
         if (!functionName) {
             throw new Error('functionName not specified');
         } else if (!args) {
             throw new Error('args not specified');
         }
+        options = options || {};
         args.forEach((arg) => {
             if (typeof arg !== 'string') {
                 throw new Error('invalid arg specified: ' + arg);
             }
         });
-        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args);
+
+        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args, options);
     }
 
     /**
@@ -94,6 +102,24 @@ class Util {
      */
     static isNull(obj) {
         return(typeof(obj) === 'undefined' || obj === null);
+    }
+
+   /** Obtain a UUID for use as a TransactionId
+     * @param {SecurityContext} securityContext - The user's security context
+     * @return {Promise}  resolved with an object representing the transaction Id to be used later when invoking chain code
+     * Strutcure of this object is { id: <id object>, idStr:<string representation>}
+    */
+    static createTransactionId(securityContext){
+        Util.securityCheck(securityContext);
+        return securityContext.getConnection().createTransactionId(securityContext)
+        .then((id)=>{
+            if (this.isNull(id)){
+                let tempId = uuid.v4();
+                return {id:tempId, idStr:tempId};
+            }
+            return id;
+        });
+
     }
 
 }

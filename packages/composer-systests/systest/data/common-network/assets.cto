@@ -1,0 +1,43 @@
+namespace systest.assets
+
+enum SimpleEnum {
+    o WOW
+    o SUCH
+    o MANY
+    o MUCH
+}
+
+asset SimpleAsset identified by assetId {
+    o String assetId
+    o String stringValue
+    o String[] stringValues
+    o Double doubleValue
+    o Double[] doubleValues
+    o Integer integerValue
+    o Integer[] integerValues
+    o Long longValue
+    o Long[] longValues
+    o DateTime dateTimeValue
+    o DateTime[] dateTimeValues
+    o Boolean booleanValue
+    o Boolean[] booleanValues
+    o SimpleEnum enumValue
+    o SimpleEnum[] enumValues
+}
+
+asset SimpleAssetContainer identified by assetId {
+    o String assetId
+    o SimpleAsset simpleAsset
+    o SimpleAsset[] simpleAssets
+}
+
+asset SimpleAssetRelationshipContainer identified by assetId {
+    o String assetId
+    --> SimpleAsset simpleAsset
+    --> SimpleAsset[] simpleAssets
+}
+
+asset SimpleAssetCircle identified by assetId {
+    o String assetId
+    --> SimpleAssetCircle next
+}

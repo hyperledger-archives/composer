@@ -14,23 +14,12 @@
 
 'use strict';
 
-
-// const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const homedir = require('homedir');
-// const cmdUtil = require('../../utils/cmdutils');
-const sanitize = require('sanitize-filename');
-const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
-const CONNECTION_FILE = 'connection.json';
-
-const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
-const DEFAULT_PROFILE_NAME = 'defaultProfile';
-
 const ora = require('ora');
-const chalk = require('chalk');
+const sanitize = require('sanitize-filename');
 
-let businessNetworkConnection ;
 /**
  * <p>
  * Composer deploy command
@@ -53,7 +42,7 @@ class Download {
         let businessNetworkName;
         let spinner;
 
-        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        let businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
         return (() => {
 
@@ -67,7 +56,7 @@ class Download {
                     replace: '*'
                 })
                 .then((result) => {
-                    argv.enrollSecret = result;
+                    argv.enrollSecret = result.enrollmentSecret;
                 });
             } else {
                 return Promise.resolve();
@@ -75,7 +64,7 @@ class Download {
         })()
         .then (() => {
             spinner = ora('Downloading deployed Business Network Archive').start();
-            return businessNetworkConnection.connect(Download.getDefaultProfileName(argv), argv.businessNetworkName, argv.enrollId, argv.enrollSecret)
+            return businessNetworkConnection.connect(argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret)
                 .then((result) => {
                     businessNetworkDefinition = result;
                     return businessNetworkConnection.disconnect();
@@ -109,41 +98,6 @@ class Download {
             throw error;
         })
         ;
-    }
-
-    /**
-      * Get connection options from profile
-      * @param {string} connectionProfileName connection profile name
-      * @return {connectOptions} connectOptions options
-      */
-    static getConnectOptions(connectionProfileName) {
-
-        let connectOptions;
-        let connectionProfile = PROFILE_ROOT + connectionProfileName + '/' + CONNECTION_FILE;
-        if (fs.existsSync(connectionProfile)) {
-            let connectionProfileContents = fs.readFileSync(connectionProfile);
-            connectOptions = JSON.parse(connectionProfileContents);
-        } else {
-            let defaultKeyValStore = CREDENTIALS_ROOT;
-
-            connectOptions = {type: 'hlf'
-                             ,membershipServicesURL: 'grpc://localhost:7054'
-                             ,peerURL: 'grpc://localhost:7051'
-                             ,eventHubURL: 'grpc://localhost:7053'
-                             ,keyValStore: defaultKeyValStore
-                             ,deployWaitTime: '300'
-                             ,invokeWaitTime: '100'};
-        }
-        return connectOptions;
-    }
-
-    /**
-      * Get default profile name
-      * @param {argv} argv program arguments
-      * @return {String} defaultConnection profile name
-      */
-    static getDefaultProfileName(argv) {
-        return argv.connectionProfileName || DEFAULT_PROFILE_NAME;
     }
 
 }

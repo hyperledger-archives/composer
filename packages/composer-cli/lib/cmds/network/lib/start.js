@@ -16,13 +16,11 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-
-const ora = require('ora');
-const chalk = require('chalk');
 const LogLevel = require('../../network/lib/loglevel');
-
+const ora = require('ora');
 
 /**
  * <p>
@@ -79,11 +77,26 @@ class Start {
         .then((result) => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Starting business network definition. This may take a minute...').start();
+
+                // Build the start options.
                 let startOptions = cmdUtil.parseOptions(argv);
                 if (loglevel) {
                     startOptions.logLevel = loglevel;
                 }
+
+                // Build the bootstrap tranactions.
+                let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
+
+                // Merge the start options and bootstrap transactions.
+                if (startOptions.bootstrapTransactions) {
+                    startOptions.bootstrapTransactions = bootstrapTransactions.concat(startOptions.bootstrapTransactions);
+                } else {
+                    startOptions.bootstrapTransactions = bootstrapTransactions;
+                }
+
+                // Start the business network.
                 return adminConnection.start(businessNetworkDefinition, startOptions);
+
             } else {
                 spinner = ora('Updating business network definition. This may take a few seconds...').start();
                 return adminConnection.update(businessNetworkDefinition);

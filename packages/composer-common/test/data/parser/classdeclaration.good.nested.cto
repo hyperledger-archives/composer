@@ -1,0 +1,17 @@
+namespace com.hyperledger.testing
+
+asset Inner identified by assetId {
+    o String assetId
+}
+
+asset Outer identified by assetId {
+    o String assetId
+    o Inner  innerAsset
+    o Integer int
+}
+
+asset ExtremeOuter identified by assetId {
+    o String assetId
+    o Outer  outerAsset
+
+}

@@ -22,7 +22,6 @@ const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
-const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
 const Resolver = require('./resolver');
@@ -146,7 +145,6 @@ class Context {
         this.registryManager = null;
         this.resolver = null;
         this.api = null;
-        this.queryExecutor = null;
         this.identityManager = null;
         this.participant = null;
         this.transaction = null;
@@ -159,6 +157,7 @@ class Context {
         this.compiledQueryBundle = null;
         this.aclCompiler = null;
         this.compiledAclBundle = null;
+        this.loggingService = null;
     }
 
     /**
@@ -334,6 +333,7 @@ class Context {
 
                 // Validate the identity.
                 try {
+                    this.setIdentity(identity);
                     this.getIdentityManager().validateIdentity(identity);
                 } catch (e) {
 
@@ -341,7 +341,7 @@ class Context {
                     let isActivation = false;
                     try {
                         if (this.getFunction() === 'submitTransaction') {
-                            const json = JSON.parse(this.getArguments()[1]);
+                            const json = JSON.parse(this.getArguments()[0]);
                             isActivation = json.$class === 'org.hyperledger.composer.system.ActivateCurrentIdentity';
                         }
                     } catch (e) {
@@ -369,24 +369,6 @@ class Context {
             .then((participant) => {
                 LOG.exit(method, participant);
                 return participant;
-            })
-            .catch((error) => {
-                const name = this.getIdentityService().getName();
-                // Check for an admin user.
-                // TODO: this is temporary whilst we migrate to requiring all
-                // users to have identities that are mapped to participants.
-                if (!error.activationRequired) {
-
-                    if (name && name.match(/admin/i)) {
-                        LOG.exit(method, null);
-                        return null;
-                    }
-                }
-
-                // Throw the error.
-                LOG.error(method, error);
-                throw error;
-
             });
     }
 
@@ -532,6 +514,7 @@ class Context {
         options = options || {};
         this.function = options.function || this.function;
         this.arguments = options.arguments || this.arguments;
+        this.container = options.container;
         return Promise.resolve()
             .then(() => {
                 return this.findBusinessNetworkDefinition(options);
@@ -565,35 +548,76 @@ class Context {
                 }
             })
             .then(() => {
-                if (options.function !== 'init') {
-                    LOG.debug(method, 'Loading current participant');
-                    return this.loadCurrentParticipant();
-                } else {
+                if (options.function === 'init') {
                     // No point loading the participant as no participants exist!
                     LOG.debug(method, 'Not loading current participant as processing deployment');
                     return null;
+                } else if (options.reinitialize) {
+                    // We don't want to change the participant in the middle of a update.
+                    LOG.debug(method, 'Reinitializing, not loading current participant');
+                    return null;
+                } else {
+                    LOG.debug(method, 'Loading current participant');
+                    return this.loadCurrentParticipant();
                 }
             })
             .then((participant) => {
-                if (!options.reinitialize) {
+                if (participant) {
                     LOG.debug(method, 'Setting current participant', participant);
                     this.setParticipant(participant);
                 } else {
                     // We don't want to change the participant in the middle of a update.
-                    LOG.debug(method, 'Reinitializing, not setting current participant', participant);
-                    // but other things that are dependant on data in the business network
-                    // definition do need to be reset
+                    LOG.debug(method, 'Deploying or reinitializing, not setting current participant');
+                }
+                if (options.reinitialize) {
+                    // If we are reinitializing, things that are dependant on data in the
+                    // business network definition do need to be reset
                     // TODO: Concerned about data migration when the model is changed.
                     this.registryManager = null;
                     this.resolver = null;
                     this.resourceManager = null;
                     this.identityManager = null;
-                    this.queryExecutor = null;
+                }
+                return this.initializeInner();
+            })
+            .then(()=>{
+                if (this.container){
+                    this.loggingService = this.container.getLoggingService();
                 }
             })
             .then(() => {
                 LOG.exit(method);
             });
+    }
+
+    /**
+     * Perform additional initialization for the context.
+     * @return {Promise} A promise that will be resolved when complete, or rejected with an error.
+     */
+    initializeInner() {
+        return new Promise((resolve, reject) => {
+            this._initializeInner((error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
+    }
+
+    /**
+     * @callback initializeInnerCallback
+     * @protected
+     * @param {Error} error The error if any.
+     */
+
+    /**
+     * Perform additional initialization for the context.
+     * @abstract
+     * @param {initializeInnerCallback} callback The callback function to call when complete.
+     */
+    _initializeInner(callback) {
+        callback(null);
     }
 
     /**
@@ -608,7 +632,13 @@ class Context {
             this.getHTTPService()
         ];
     }
-
+    /**
+     * Get the container.
+     * @return {Container} The container.
+     */
+    getContainer() {
+        return this.container;
+    }
     /**
      * Get the data service provided by the chaincode container.
      * @abstract
@@ -636,6 +666,16 @@ class Context {
         throw new Error('abstract function called');
     }
 
+    /**
+     * Get the serializer.
+     * @return {Serializer} The serializer.
+     */
+    getSerializer() {
+        if (!this.businessNetworkDefinition) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.businessNetworkDefinition.getSerializer();
+    }
     /**
      * Get the event service provided by the chaincode container.
      * @abstract
@@ -689,16 +729,6 @@ class Context {
         return this.businessNetworkDefinition.getFactory();
     }
 
-    /**
-     * Get the serializer.
-     * @return {Serializer} The serializer.
-     */
-    getSerializer() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getSerializer();
-    }
 
     /**
      * Get the introspector.
@@ -716,7 +746,7 @@ class Context {
      * @return {RegistryManager} The registry manager.
      */
     getRegistryManager() {
-        if (!this.registryManager) {
+        if ( !this.registryManager) {
             // TODO: This method call is getting too long.
             this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController(), this.getSystemRegistries(),this.getFactory());
         }
@@ -746,17 +776,6 @@ class Context {
     }
 
     /**
-     * Get the query executor.
-     * @return {QueryExecutor} The query executor.
-     */
-    getQueryExecutor() {
-        if (!this.queryExecutor) {
-            this.queryExecutor = new QueryExecutor(this.getResolver());
-        }
-        return this.queryExecutor;
-    }
-
-    /**
      * Get the identity manager.
      * @return {IdentityManager} The identity manager.
      */
@@ -776,6 +795,18 @@ class Context {
             this.resourceManager = new ResourceManager(this);
         }
         return this.resourceManager;
+    }
+
+        /**
+     * Get the network manager.
+     * @return {NetworkManager} The network manager.
+     */
+    getNetworkManager() {
+        if (!this.networkManager) {
+            const NetworkManager = require('./networkmanager');
+            this.networkManager = new NetworkManager(this);
+        }
+        return this.networkManager;
     }
 
     /**
@@ -798,6 +829,26 @@ class Context {
         this.getAccessController().setParticipant(participant);
     }
 
+
+    /**
+     * Get the current identity.
+     * @return {Resource} the current identity.
+     */
+    getIdentity() {
+        return this.currentIdentity;
+    }
+
+    /**
+     * Set the current identity.
+     * @param {Resource} currentIdentity the current identity.
+     */
+    setIdentity(currentIdentity) {
+        if (this.currentIdentity) {
+            throw new Error('A current identity has already been specified');
+        }
+        this.currentIdentity = currentIdentity;
+    }
+
     /**
      * Get the current transaction.
      * @return {Resource} the current transaction.
@@ -817,6 +868,15 @@ class Context {
         this.transaction = transaction;
         this.transactionLogger = new TransactionLogger(this.transaction, this.getRegistryManager(), this.getSerializer());
         this.getAccessController().setTransaction(transaction);
+    }
+
+    /**
+     * Clear the current transaction.
+     */
+    clearTransaction() {
+        this.transaction = null;
+        this.transactionLogger = null;
+        this.getAccessController().setTransaction(null);
     }
 
     /**
@@ -914,13 +974,20 @@ class Context {
         return this.compiledAclBundle;
     }
 
+    /** Obtains the logging service
+     *@return {LoggingService} the logging service
+     */
+    getLoggingService(){
+        return this.loggingService;
+    }
+
     /**
      * Get the list of transaction handlers.
      * @return {TransactionHandler[]} The list of transaction handlers.
      */
     getTransactionHandlers() {
         return [
-            this.getIdentityManager(),this.getResourceManager()
+            this.getIdentityManager(),this.getResourceManager(),this.getNetworkManager()
         ];
     }
 

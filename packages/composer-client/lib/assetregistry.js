@@ -20,7 +20,7 @@ const Util = require('composer-common').Util;
 const REGISTRY_TYPE = 'Asset';
 
 /**
- * The AssetRegistry is used to manage a set of assets stored on the blockchain.
+ * The AssetRegistry is used to manage a set of assets stored on the Blockchain.
  * <p><a href="./diagrams/assetregistry.svg"><img src="./diagrams/assetregistry.svg" style="height:100%;"/></a></p>
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
@@ -37,11 +37,12 @@ class AssetRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
+     * @param {Boolean} [includeSystem] Should system registries be included? (defaults to false)
      * @return {Promise} A promise that will be resolved with a list of {@link AssetRegistry}
      * instances representing the asset registries.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
      */
-    static getAllAssetRegistries(securityContext, modelManager, factory, serializer,bnc) {
+    static getAllAssetRegistries(securityContext, modelManager, factory, serializer,bnc,includeSystem) {
         Util.securityCheck(securityContext);
         if (!modelManager) {
             throw new Error('modelManager not specified');
@@ -50,10 +51,10 @@ class AssetRegistry extends Registry {
         } else if (!serializer) {
             throw new Error('serializer not specified');
         }
-        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
+        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE,includeSystem)
             .then((assetRegistries) => {
                 return assetRegistries.map((assetRegistry) => {
-                    return new AssetRegistry(assetRegistry.id, assetRegistry.name, securityContext, modelManager, factory, serializer,bnc);
+                    return new AssetRegistry(assetRegistry.id, assetRegistry.name, securityContext, modelManager, factory, serializer, bnc);
                 });
             });
     }
@@ -67,9 +68,9 @@ class AssetRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
      * @return {Promise} A promise that will be resolved with a {@link AssetRegistry}
      * instance representing the asset registry.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
      */
     static getAssetRegistry(securityContext, id, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
@@ -84,7 +85,7 @@ class AssetRegistry extends Registry {
         }
         return Registry.getRegistry(securityContext, REGISTRY_TYPE, id)
             .then((registry) => {
-                return new AssetRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer,bnc);
+                return new AssetRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer, bnc);
             });
     }
 
@@ -124,9 +125,9 @@ class AssetRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
      * @return {Promise} A promise that will be resolved with a {@link AssetRegistry}
      * instance representing the new asset registry.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
      */
     static addAssetRegistry(securityContext, id, name, modelManager, factory, serializer,bnc) {
         Util.securityCheck(securityContext);
@@ -143,7 +144,7 @@ class AssetRegistry extends Registry {
         }
         return Registry.addRegistry(securityContext, REGISTRY_TYPE, id, name)
             .then(() => {
-                return new AssetRegistry(id, name, securityContext, modelManager, factory, serializer,bnc);
+                return new AssetRegistry(id, name, securityContext, modelManager, factory, serializer, bnc);
             });
     }
 
@@ -160,7 +161,7 @@ class AssetRegistry extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
      * @param {Factory} factory The factory to use for this asset registry.
      * @param {Serializer} serializer The Serializer to use for this asset registry.
-     * @param {BusinessNetworkConnection} bnc Instance of the BuinsssNetworkConnection
+     * @param {BusinessNetworkConnection} bnc Instance of the BusinessNetworkConnection
      */
     constructor(id, name, securityContext, modelManager, factory, serializer, bnc) {
         super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer, bnc);

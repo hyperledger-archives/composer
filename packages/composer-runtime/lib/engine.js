@@ -74,11 +74,8 @@ class Engine {
                 }
             }
         };
-
-
         Logger.setFunctionalLogger(loggingProxy);
         Logger._envDebug = 'composer:*';
-
     }
 
     /**
@@ -92,6 +89,7 @@ class Engine {
     init(context, fcn, args) {
         const method = 'init';
         LOG.entry(method, context, fcn, args);
+
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
@@ -106,29 +104,48 @@ class Engine {
 
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
-        } else if (args.length !== 2) {
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive', 'initArgs']));
+        } else if (args.length !== 1) {
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['serializedResource']));
         }
 
-        // see if there are any init options and process
-        const initOptions = JSON.parse(args[1]);
-        if (initOptions.logLevel && context.getParticipant() === null) {
-            this.getContainer().getLoggingService().setLogLevel(initOptions.logLevel);
+        // Parse the transaction from the JSON string..
+        LOG.debug(method, 'Parsing transaction from JSON');
+        let transactionData = JSON.parse(args[0]);
+
+        // We can't parse the transaction data using the serializer.
+        // This is because it may contain classes that we haven't loaded yet.
+        // So we need to do it the "old fashioned way".
+        if (transactionData.$class !== 'org.hyperledger.composer.system.StartBusinessNetwork') {
+            throw new Error('The transaction data specified is not valid');
         }
+
+        // Extract and validate the required business network archive property.
+        const businessNetworkBase64 = transactionData.businessNetworkArchive;
+        if (!businessNetworkBase64) {
+            throw new Error('The business network archive specified is not valid');
+        }
+
+        // Extract and validate the optional log level property.
+        const logLevel = transactionData.logLevel;
+        if (logLevel) {
+            this.getContainer().getLoggingService().setLogLevel(logLevel);
+        }
+
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
+        let businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
+
                 // Start the transaction.
                 return context.transactionStart(false);
 
             })
             .then(() => {
+
                 // Load, validate, and hash the business network definition.
                 LOG.debug(method, 'Loading business network definition');
-                businessNetworkBase64 = args[0];
                 let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
                 let sha256 = createHash('sha256');
                 businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
@@ -145,6 +162,7 @@ class Engine {
 
             })
             .then((businessNetworkDefinition_) => {
+
                 // Cache the business network.
                 businessNetworkDefinition = businessNetworkDefinition_;
                 LOG.debug(method, 'Loaded business network definition, storing in cache');
@@ -180,8 +198,9 @@ class Engine {
 
             })
             .then((sysdata_) => {
-                sysdata = sysdata_;
+
                 // Add the business network definition to the sysdata collection.
+                sysdata = sysdata_;
                 return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })
@@ -189,6 +208,7 @@ class Engine {
                 return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
             })
             .then(() => {
+
                 // Ensure that the system registries collection exists.
                 LOG.debug(method, 'Ensuring that sysregistries collection exists');
                 return dataService.ensureCollection('$sysregistries')
@@ -200,7 +220,8 @@ class Engine {
             .then(() => {
 
                 // Initialize the context.
-                LOG.debug(method, 'Initializing context');
+                LOG.debug(method, 'Initializing context 2',this.getContainer().getVersion());
+
                 return context.initialize({
                     function: fcn,
                     arguments: args,
@@ -208,33 +229,57 @@ class Engine {
                     compiledScriptBundle: compiledScriptBundle,
                     compiledQueryBundle: compiledQueryBundle,
                     compiledAclBundle: compiledAclBundle,
-                    sysregistries: sysregistries
+                    sysregistries: sysregistries,
+                    container: this.getContainer()
                 });
 
             })
             .then(() => {
 
-                // Create all the default registries for each asset and participant type.
+                // Create all the default registries for each asset, participant, and transaction type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
                 return registryManager.createDefaults();
 
             })
             .then(() => {
-                LOG.debug(method, 'Setting up historian');
-                // Create the default transaction registry if it does not exist.
-                let registryManager = context.getRegistryManager();
-                return registryManager.ensure('Historian', 'HistorianRegistry', 'Historian');
+
+                // We want the historian entries to be ordered, so lets bump the milliseconds for every
+                // bootstrap transaction we execute.
+                const timestamp = new Date(transactionData.timestamp);
+
+                // First we need to prepare any bootstrap transactions by forcing the transaction ID
+                // and timestamp to be derived from the start business network transaction.
+                const bootstrapTransactions = transactionData.bootstrapTransactions || [];
+                bootstrapTransactions.forEach((bootstrapTransaction, index) => {
+                    bootstrapTransaction.transactionId = transactionData.transactionId + '#' + index;
+                    timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
+                    bootstrapTransaction.timestamp = timestamp.toISOString();
+                });
+
+                // Now update the original timestamp so the start business network transaction is correct.
+                timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
+                transactionData.timestamp = timestamp.toISOString();
+
+                // Now that we have initialized and loaded the business network defintion, we can now
+                // safely execute all of the bootstrap transactions.
+                return bootstrapTransactions.reduce((promise, bootstrapTransaction) => {
+                    return promise.then(() => {
+                        LOG.debug(method, 'Executing bootstrap transaction', bootstrapTransaction.transactionId);
+                        return this.submitTransaction(context, [JSON.stringify(bootstrapTransaction)]);
+                    });
+                }, Promise.resolve());
 
             })
             .then(() => {
-                // Create the default transaction registry if it does not exist.
-                let registryManager = context.getRegistryManager();
-                return registryManager.ensure('Transaction', 'default', 'Default Transaction Registry');
+
+                // This step executes the start business network transaction. This is a no-op, but records
+                // the event into the transaction registry and historian.
+                LOG.debug(method, 'Executing start business network transaction');
+                return this.submitTransaction(context, [JSON.stringify(transactionData)]);
 
             })
             .then(() => {
-                LOG.debug(method, 'Transaction Prepare');
                 return context.transactionPrepare()
                     .then(() => {
                         return context.transactionCommit();
@@ -289,7 +334,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args })
+            return context.initialize({ function: fcn, arguments: args,  container: this.getContainer() })
                 .then(() => {
                     return context.transactionStart(false);
                 })
@@ -360,7 +405,7 @@ class Engine {
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args })
+            return context.initialize({ function: fcn, arguments: args, container: this.getContainer() })
                 .then(() => {
                     return context.transactionStart(true);
                 })

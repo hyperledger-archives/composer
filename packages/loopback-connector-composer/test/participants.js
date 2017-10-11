@@ -20,7 +20,6 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
 const loopback = require('loopback');
-const Util = require('composer-common').Util;
 
 const chai = require('chai');
 const should = chai.should();
@@ -57,10 +56,11 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let businessNetworkConnection;
         let participantRegistry;
         let serializer;
+        let adminConnection;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
+            adminConnection = new AdminConnection({ fs: bfs_fs });
             return adminConnection.createProfile('defaultProfile', {
                 type : 'embedded'
             })
@@ -140,7 +140,10 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return Util.invokeChainCode(businessNetworkConnection.securityContext, 'resetBusinessNetwork', [])
+            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            .then( ()=>{
+                return adminConnection.reset('bond-network');
+            })
                 .then(() => {
                     return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
                 })
@@ -173,6 +176,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return app.models[prefix + 'Issuer'].count({ memberId: 'MEMBER_999' })
                     .then((count) => {
                         count.should.equal(0);
+                    });
+            });
+            it('should count all of the participants using the other peroperty', () => {
+                return app.models[prefix + 'Issuer'].count({ name: 'Bob' })
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+            it('should count all of the participants using the and|or operator', () => {
+                return app.models[prefix + 'Issuer'].count({'or':[{name: 'Bob'}, {name: 'Alice'}]})
+                    .then((count) => {
+                        count.should.equal(2);
                     });
             });
 

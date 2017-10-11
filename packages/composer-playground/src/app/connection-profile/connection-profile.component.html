@@ -1,60 +1,207 @@
-<section class="side-bar">
-  <div class="profiles flex">
-    <span class="uppercase">Connection Profiles</span>
-    <div class="side-bar-nav">
-      <ul>
-        <li *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile.name === currentConnectionProfile.name" [class.disabled]="connectionProfile.default" (click)="setCurrentProfile(connectionProfile)">
-          <div class="flex-container">
-            <div class="flex" *ngIf="connectionProfile.default">Web browser</div>
-            <div class="flex" *ngIf="!connectionProfile.default">{{connectionProfile.name}}</div>
-            <div class="flex" style="text-align:right">
-            <svg *ngIf="connectionProfile.name == activeProfile" class="ibm-icon blue-icon" aria-hidden="true">
-              <use xlink:href="#icon-confirm_24"></use>
-            </svg>
-            </div>
-          </div>
-        </li>
-      </ul>
+<div *ngIf="connectionProfileData">
+    <div *ngIf="connectionProfileData.profile.type === 'hlfv1'" class="edit-data">
+        <form [formGroup]="v1Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
+            <section class="profile-section delimited">
+                <div class="description upper">Basic Configuration</div>
+                <div class="profile-content">
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Connection Profile Name*
+                        </div>
+                        <div class="profile-value">
+                            <input [ngClass]="{'error-underline': v1FormErrors.name}" type="text" formControlName="name">
+                            <div *ngIf="v1FormErrors.name" class="error-message">
+                                {{ v1FormErrors.name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Profile Description
+                        </div>
+                        <div class="profile-value">
+                            <textarea formControlName="description" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Orderer(s)*
+                        </div>
+                        <div class="profile-value">
+                            <div class="nested-group">
+                                <div formArrayName="orderers" *ngFor="let orderer of v1Form.controls.orderers.controls; let i=index">
+                                    <div class="nested-group-row" [formGroupName]="i">
+                                        <div class="nested-group-value">
+                                            <input [ngClass]="{'error-underline': v1FormErrors.orderers.url}" class="margin-right flex" type="text" formControlName="url">
+                                            <div *ngIf="v1FormErrors.orderers.url" class="error-message">
+                                                {{ v1FormErrors.orderers.url }}
+                                            </div>
+                                        </div>
+                                        <input hidden type="text" formControlName="cert">
+                                        <button type="button" [ngClass]="{'certificate-button':true, 'no-cert': v1Form.controls.orderers.controls[i].value.cert === ''}"
+                                        (click)="openAddCertificateModal(i,'orderers');">
+                                        <svg class="standard-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-data-quality_16"></use>
+                                        </svg>
+                                    </button>
+                                    </div>
+                                </div>
+                                <div *ngIf="v1FormErrors.orderers.cert" class="error-message">
+                                    {{ v1FormErrors.orderers.cert }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-buttons">
+                            <button type="button" class="secondary"
+                                (click)="addOrderer()">+ Add another
+                            </button>
+                            <button type="button" class="secondary" *ngIf="v1Form.controls.orderers.controls.length > 1"
+                                (click)="removeOrderer((v1Form.controls.orderers.controls.length - 1))">Remove orderer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Channel*
+                        </div>
+                        <div class="profile-value">
+                            <input [ngClass]="{'error-underline': v1FormErrors.channel}" type="text" formControlName="channel">
+                            <div *ngIf="v1FormErrors.channel" class="error-message">
+                                {{ v1FormErrors.channel }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            MSP ID*
+                        </div>
+                        <div class="profile-value">
+                            <input [ngClass]="{'error-underline': v1FormErrors.mspID}" type="text" formControlName="mspID">
+                            <div *ngIf="v1FormErrors.mspID" class="error-message">
+                                {{ v1FormErrors.mspID }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Certificate Authority (CA)*
+                        </div>
+                        <div class="profile-value">
+                            <div class="nested-section" formGroupName="ca">
+                                <div class="nested-row">
+                                    <div class="nested-property">
+                                        CA URL*
+                                    </div>
+                                    <div class="nested-value">
+                                        <input [ngClass]="{'error-underline': v1FormErrors.ca.url}" type="text" formControlName="url">
+                                        <div *ngIf="v1FormErrors.ca.url" class="error-message">
+                                            {{ v1FormErrors.ca.url}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="nested-row">
+                                    <div class="nested-property">
+                                        CA Name
+                                    </div>
+                                    <div class="nested-value">
+                                        <input type="text" formControlName="name">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Peer(s)*
+                        </div>
+                        <div class="profile-value">
+                            <div class="nested-group">
+                                <div formArrayName="peers" class="nested-group" *ngFor="let peer of v1Form.controls.peers.controls; let i=index">
+                                    <div class="nested-section" [formGroupName]="i">
+                                        <div class="nested-row">
+                                            <div class="nested-property">
+                                                Request URL*
+                                            </div>
+                                            <div class="nested-value-row">
+                                                <div class="nested-value margin-right">
+                                                    <input [ngClass]="{'error-underline': v1FormErrors.peers.requestURL}" type="text" formControlName="requestURL">
+                                                    <div *ngIf="v1FormErrors.peers.requestURL" class="error-message">
+                                                        {{ v1FormErrors.peers.requestURL }}
+                                                    </div>
+                                                </div>
+                                                <button type="button" [ngClass]="{'certificate-button':true, 'no-cert': v1Form.controls.peers.controls[i].value.cert === ''}"
+                                                    (click)="openAddCertificateModal(i,'peers');">
+                                                    <svg class="standard-icon" aria-hidden="true">
+                                                        <use xlink:href="#icon-data-quality_16"></use>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="nested-row">
+                                            <div class="nested-property">
+                                                Event URL*
+                                            </div>
+                                            <div class="nested-value">
+                                                <input [ngClass]="{'error-underline': v1FormErrors.peers.eventURL}" class="margin-right" type="text" formControlName="eventURL">
+                                                <div *ngIf="v1FormErrors.peers.eventURL" class="error-message">
+                                                    {{ v1FormErrors.peers.eventURL }}
+                                                </div>
+                                                <input hidden type="text" formControlName="cert">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-buttons">
+                            <button type="button" class="secondary" (click)="addPeer()">+ Add another</button>
+                            <button type="button" class="secondary" *ngIf="v1Form.controls.peers.controls.length > 1"
+                                (click)="removePeer((v1Form.controls.orderers.controls.length - 1))">Remove Peer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Key Value Store Directory Path*
+                        </div>
+                        <div class="profile-value">
+                            <input [ngClass]="{'error-underline': v1FormErrors.keyValStore}" type="text" formControlName="keyValStore">
+                            <div *ngIf="v1FormErrors.keyValStore" class="error-message">
+                                {{ v1FormErrors.keyValStore }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="profile-section">
+                <div class="description upper">Advanced</div>
+                <div class="profile-content">
+                    <div class="profile-row">
+                        <div class="profile-property">
+                            Time out (seconds)
+                        </div>
+                        <div class="profile-value">
+                            <input [ngClass]="{'error-underline': v1FormErrors.timeout}" type="text" formControlName="timeout">
+                            <div *ngIf="v1FormErrors.timeout" class="error-message">
+                                {{ v1FormErrors.timeout }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="with-info" *ngIf="!v1Form.valid">
+                <div class="info">Provide values for all required properties to continue.</div>
+                <div>
+                    <button class="secondary" (click)="stopEditing()">Cancel</button>
+                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Save</button>
+                </div>
+            </footer>
+            <footer *ngIf="v1Form.valid">
+                <div>
+                    <button class="secondary" (click)="stopEditing()">Cancel</button>
+                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Next</button>
+                </div>
+            </footer>
+        </form>
     </div>
-    <div class="actions">
-      <div>
-        <button type="button" class="action" (click)="openAddProfileModal()">+ Import or Create a Profile
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="main-view">
-    <div class="main-view-content">
-        <div class="flex">
-        <div class="playground-profile-warning" *ngIf="warningVisible">
-            <div class="profile-warning-content">
-            <div>
-                <svg class="ibm-icon blue-icon" aria-hidden="true">
-                <use xlink:href="#icon-world_24"></use>
-                </svg>
-            </div>
-            <div class="profile-warning-text">
-                <h3>Connection Profiles are not available in Web Playground</h3>
-                <p>
-                It is not possible to add Connection Profiles in the Web Playground version of Hyperledger Composer.
-                If you like what you see, you can install a a local version of Hyperledger Composer.
-                The local version offers the same UI, or a CLI experience, and can be used to deploy Business Network Definitions to running Hyperledger Fabric instances.
-                </p>
-                <p>And of course it's still 100% open source</p>
-                <p><a href="https://hyperledger.github.io/composer/">Learn more in the docs</a></p>
-            </div>
-            <div>
-                <button type="button" class="button secondary" (click)="hideWarning()">Hide</button>
-            </div>
-            </div>
-
-        </div>
-
-        <div class="current-profile">
-            <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
-        </div>
-    </div>
-    </div>
-    <app-footer></app-footer>
-</section>
+</div>

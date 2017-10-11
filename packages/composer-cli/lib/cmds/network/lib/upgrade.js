@@ -15,9 +15,7 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-
 const ora = require('ora');
-
 
 /**
  * <p>
@@ -46,16 +44,12 @@ class Upgrade {
             return adminConnection.upgrade();
         }).then((result) => {
             spinner.succeed();
-            console.log();
-
             return result;
         }).catch((error) => {
 
             if (spinner) {
                 spinner.fail();
             }
-
-            console.log();
 
             throw error;
         });

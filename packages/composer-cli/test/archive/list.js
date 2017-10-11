@@ -16,12 +16,10 @@
 
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-// const homedir = require('homedir');
 const fs = require('fs');
 const List = require('../../lib/cmds/archive/listCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
-//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
@@ -30,15 +28,11 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-// let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
 
-//const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 
 let mockBusinessNetworkDefinition;
-// const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 let mockAdminConnection;
 
@@ -66,7 +60,7 @@ describe('composer archive list unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Deploy handler() method tests', function () {
+    describe('List handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
@@ -74,6 +68,7 @@ describe('composer archive list unit tests', function () {
 
             return List.handler(argv)
             .then ((result) => {
+                argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.getName);
                 sinon.assert.calledOnce(mockBusinessNetworkDefinition.getIdentifier);

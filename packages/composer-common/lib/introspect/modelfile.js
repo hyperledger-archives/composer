@@ -42,7 +42,7 @@ class ModelFile {
      * @param {ModelManager} modelManager - the ModelManager that manages this
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
-     * @param {string} fileName - The optional filename for this modelfile
+     * @param {string} [fileName] - The optional filename for this modelfile
      * @throws {IllegalModelException}
      */
     constructor(modelManager, definitions, fileName) {
@@ -50,6 +50,7 @@ class ModelFile {
         this.declarations = [];
         this.imports = [];
         this.fileName = 'UNKNOWN';
+
 
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Composer model as a string as input.');
@@ -74,6 +75,7 @@ class ModelFile {
         }
 
         this.namespace = this.ast.namespace;
+        this.systemModelFile = (this.namespace === ModelUtil.getSystemNamespace());
 
         if(this.ast.imports) {
             this.imports = this.ast.imports;
@@ -247,8 +249,8 @@ class ModelFile {
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
-                if (modelFile) {
-                    return modelFile.isLocalType(type);
+                if (modelFile && modelFile.isLocalType(type)) {
+                    return true;
                 }
             }
         }
@@ -457,62 +459,69 @@ class ModelFile {
 
     /**
      * Get the AssetDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {AssetDeclaration[]} the AssetDeclarations defined in the model file
      */
-    getAssetDeclarations() {
-        return this.getDeclarations(AssetDeclaration);
+    getAssetDeclarations(includeSystemType = true) {
+        return this.getDeclarations(AssetDeclaration, includeSystemType);
     }
 
     /**
      * Get the TransactionDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {TransactionDeclaration[]} the TransactionDeclarations defined in the model file
      */
-    getTransactionDeclarations() {
-        return this.getDeclarations(TransactionDeclaration);
+    getTransactionDeclarations(includeSystemType = true) {
+        return this.getDeclarations(TransactionDeclaration, includeSystemType);
     }
 
     /**
      * Get the EventDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EventDeclaration[]} the EventDeclarations defined in the model file
      */
-    getEventDeclarations() {
-        return this.getDeclarations(EventDeclaration);
+    getEventDeclarations(includeSystemType = true) {
+        return this.getDeclarations(EventDeclaration, includeSystemType);
     }
 
     /**
      * Get the ParticipantDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ParticipantDeclaration[]} the ParticipantDeclaration defined in the model file
      */
-    getParticipantDeclarations() {
-        return this.getDeclarations(ParticipantDeclaration);
+    getParticipantDeclarations(includeSystemType = true) {
+        return this.getDeclarations(ParticipantDeclaration, includeSystemType);
     }
 
     /**
      * Get the ConceptDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ConceptDeclaration[]} the ParticipantDeclaration defined in the model file
      */
-    getConceptDeclarations() {
-        return this.getDeclarations(ConceptDeclaration);
+    getConceptDeclarations(includeSystemType = true) {
+        return this.getDeclarations(ConceptDeclaration, includeSystemType);
     }
 
     /**
      * Get the EnumDeclarations defined in this ModelFile
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EnumDeclaration[]} the EnumDeclaration defined in the model file
      */
-    getEnumDeclarations() {
-        return this.getDeclarations(EnumDeclaration);
+    getEnumDeclarations(includeSystemType = true) {
+        return this.getDeclarations(EnumDeclaration, includeSystemType);
     }
 
     /**
      * Get the instances of a given type in this ModelFile
      * @param {Function} type - the type of the declaration
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ClassDeclaration[]} the ClassDeclaration defined in the model file
      */
-    getDeclarations(type) {
+    getDeclarations(type, includeSystemType = true) {
         let result = [];
         for(let n=0; n < this.declarations.length; n++) {
             let classDeclaration = this.declarations[n];
-            if(classDeclaration instanceof type) {
+            if(classDeclaration instanceof type && (includeSystemType || !classDeclaration.isSystemType())) {
                 result.push(classDeclaration);
             }
         }
@@ -540,7 +549,7 @@ class ModelFile {
      * @return {boolean} true of this ModelFile is a system model
      */
     isSystemModelFile() {
-        return ModelUtil.getSystemNamespace() === this.getNamespace();
+        return this.systemModelFile;
     }
 }
 

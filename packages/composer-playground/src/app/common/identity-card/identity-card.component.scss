@@ -1,0 +1,170 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+.composer {
+    .identity-card {
+        position: relative;
+        background-color: $white;
+        box-shadow: 3px 6px 15px 0 rgba(0, 0, 0, 0.20);
+        width: 275px;
+
+        section, footer {
+            padding: 0 $space-large;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        h3 {
+            text-align: center;
+            text-transform: uppercase;
+            color: $secondary-text;
+            font-family: $font-stack;
+            font-weight: 400;
+            font-size: 0.9rem;
+            font-size: x-small;
+        }
+
+        header {
+            button.dismiss {
+                position: absolute;
+                top: 0;
+                right: $space-smedium;
+
+                svg {
+                    fill: $second-highlight;
+                }
+            }
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-around;
+            background-color: $white;
+            border-top: 1px solid $fourth-highlight;
+
+            button {
+                display: flex;
+                align-items: center;
+
+                span {
+                    color: $second-highlight;
+                    margin-right: $space-smedium;
+                }
+
+                svg.ibm-icon {
+                    // why is the align-self required for Safari?!
+                    align-self: center;
+                    fill: $second-highlight;
+                }
+
+                &.action[disabled],
+                &.action[disabled]:active,
+                &.action[disabled]:focus {
+                    span {
+                        color: $fifth-highlight;
+                    }
+
+                    svg.ibm-icon {
+                        fill: $fifth-highlight;
+                    }
+                }
+            }
+        }
+
+        .user-details {
+            padding-top: $space-large;
+            text-align: center;
+            font-size: 0.9em;
+
+            .user-name {
+                font-weight: 600;
+                margin: $space-medium 0 $space-smedium 0;
+            }
+
+            .image-placeholder {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                background-color: $fourth-highlight;
+                border: 1px solid $fourth-highlight;
+                border-radius: 50%;
+                width: 75px;
+                height: 75px;
+                margin: 0 auto;
+                position: relative;
+
+                .initials {
+                    color: $second-highlight;
+                    font-weight: 600;
+                    font-size: large;
+                    text-transform: uppercase;
+                }
+            }
+
+            .role-icon {
+                background-color: $second-highlight;
+                border: 3px solid $white;
+                border-radius: 50%;
+                width: 25px;
+                height: 25px;
+                position: absolute;
+                bottom: 4px;
+                right: -4px;
+
+                svg {
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    top: 5px;
+                    left: 5px;
+                }
+            }
+        }
+
+        .sample-section {
+            text-align: center;
+
+            .sample-icon {
+                padding-top: $space-medium;
+                svg {
+                    height: 70px;
+                    width: 70px;
+                }
+            }
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            padding-bottom: $space-smedium;
+
+            button.delete {
+                border-color: transparent;
+            }
+
+            button {
+                margin: 0 $space-medium 0 $space-medium;
+            }
+
+            svg {
+                fill: $second-highlight;
+            }
+        }
+
+        .connection-profile-details, .business-network-details {
+            padding-top: $space-medium;
+            border-top: 1px solid $fourth-highlight;
+
+            p {
+                text-overflow: ellipsis;
+                overflow: hidden;
+
+                &.none {
+                    color: $fifth-highlight;
+                }
+            }
+        }
+    }
+}

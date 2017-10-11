@@ -4,6 +4,9 @@
 set -ev
 set -o pipefail
 
+# Set ARCH
+ARCH=`uname -m`
+
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
@@ -12,10 +15,10 @@ cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
 if [ "${SYSTEST}" = "" ]; then
-    echo You must set SYSTEST to 'embedded', 'hlf', 'hlfv1', 'proxy', or 'web', or a comma
+    echo You must set SYSTEST to 'embedded', 'hlfv1', 'proxy', or 'web', or a comma
     echo separated list of a set of system test configurations to run.
     echo For example:
-    echo  export SYSTEST=hlf
+    echo  export SYSTEST=hlfv1
     echo  export SYSTEST=embedded,proxy,web
     exit 1
 fi
@@ -33,25 +36,17 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer-credentials/composer-systests*
 
     # Pull any required Docker images.
-    if [ "${SYSTEST}" = "hlf"  ]; then
-        DOCKER_FILE=${DIR}/hlf/docker-compose.yml
-        docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
-        docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
-        docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
-        docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
-        docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-        docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
-    elif [[ ${SYSTEST} == hlfv1* ]]; then
+    if [[ ${SYSTEST} == hlfv1* ]]; then
         if [[ ${SYSTEST} == *tls ]]; then
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:x86_64-1.0.0
-        docker pull hyperledger/fabric-ca:x86_64-1.0.0
-        docker pull hyperledger/fabric-ccenv:x86_64-1.0.0
-        docker pull hyperledger/fabric-orderer:x86_64-1.0.0
-        docker pull hyperledger/fabric-couchdb:x86_64-1.0.0
+        docker pull hyperledger/fabric-peer:$ARCH-1.0.1
+        docker pull hyperledger/fabric-ca:$ARCH-1.0.1
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.0.1
+        docker pull hyperledger/fabric-orderer:$ARCH-1.0.1
+        docker pull hyperledger/fabric-couchdb:$ARCH-1.0.1
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
@@ -67,9 +62,9 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     # Start any required Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
         echo Using docker file ${DOCKER_FILE}
-        docker-compose -f ${DOCKER_FILE} kill
-        docker-compose -f ${DOCKER_FILE} down
-        docker-compose -f ${DOCKER_FILE} up -d
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
     fi
 
     # configure v1 to run the tests
@@ -101,8 +96,8 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
-        docker-compose -f ${DOCKER_FILE} kill
-        docker-compose -f ${DOCKER_FILE} down
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
+        ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
     fi
 
     # Delete any written configuration.

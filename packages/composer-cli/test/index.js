@@ -13,15 +13,8 @@
  */
 
 'use strict';
-
-
-
-
-//require('../lib/deploy.js');
-require('chai').should();
-
-const chai = require('chai');
 const sinon = require('sinon');
+const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
