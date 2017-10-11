@@ -192,7 +192,6 @@ class AdminConnection {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
-                this.businessNetworkIdentifier = businessNetworkIdentifier;
                 return connection.login(enrollmentID, enrollmentSecret);
             })
             .then((securityContext) => {
@@ -225,7 +224,6 @@ class AdminConnection {
         return this.connection.disconnect()
             .then(() => {
                 this.connection = null;
-                this.businessNetworkIdentifier = null;
                 this.securityContext = null;
             });
     }
