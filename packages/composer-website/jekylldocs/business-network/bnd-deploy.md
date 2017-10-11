@@ -76,9 +76,9 @@ You can also create multiple business network administrators by repeating the op
 
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.
 
-Identities in playground are associated with ID cards, comprising a connection profile, identity metadata, and certificates.
+Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.
 
-When deploying a business network using Playground locally, you must have at least one ID card with the `PeerAdmin` role and at least one ID card with the `ChannelAdmin` role. Each of these ID cards must contain the correct admin certificates.
+When deploying a business network using Playground locally, you must have at least one business network card with the `PeerAdmin` role and at least one business network card with the `ChannelAdmin` role. Each of these business network cards must contain the correct admin certificates.
 
 ## Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
 

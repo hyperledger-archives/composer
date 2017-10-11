@@ -19,7 +19,7 @@ It's worth highlighting that the style of the API is to use promises. Typically 
 
 If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea.
 
-##  Modules required
+## Modules required
 
 ```javascript
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
@@ -177,5 +177,5 @@ What we need to do here is create a 'serializer'.  This is able to create a reso
 
 ## References
 
-* [**JavaScript API Documentation**](../jsdoc/index.html)
+* [**JavaScript API Documentation**](../api-doc-inline/api-doc-index.html)
 * [**Promises tutorial**](https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics)

@@ -65,7 +65,7 @@ For more information on the specifics of the {{site.data.conrefs.composer_full}}
 
 Queries can be invoked by calling the _buildQuery_ or _query_ APIs. The _buildQuery_ API requires the entire query string to be specified as part of the API input. The _query_ API requires you to specify the name of the query you wish to run.
 
-For more information on the query APIs, see the [API documentation](../jsdoc/index.html).
+For more information on the query APIs, see the [API documentation](../api-doc-inline/api-doc-index.html).
 
 ### Access Control for Queries
 

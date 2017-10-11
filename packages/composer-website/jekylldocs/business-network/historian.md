@@ -14,7 +14,7 @@ The {{site.data.conrefs.composer_full}} Historian is a specialised registry whic
 
 The historian registry is a {{site.data.conrefs.composer_full}} system-level entity. To refer to the historian registry as a resource for access control the historian must be referenced as: `org.hyperledger.composer.system.HistorianRecord`.
 
-**Please note:** All participants must have the permission to create `HistorianRecord` assets. If a transaction is submitted by a participant who does not have the permission to create `HistorianRecord` assets, the transaction will fail. 
+**Please note:** All participants must have the permission to create `HistorianRecord` assets. If a transaction is submitted by a participant who does not have the permission to create `HistorianRecord` assets, the transaction will fail.
 
 
 ## HistorianRecord assets
@@ -126,4 +126,4 @@ More advanced queries can be used; for example, the following query selects and 
 
 - [Applying queries to a business network.](../business-network/query.html)
 - [Emitting events from transactions.](../business-network/publishing-events.html)
-- [{{site.data.conrefs.composer_full}} API documentation.](../jsdoc/index.html)
+- [{{site.data.conrefs.composer_full}} API documentation.](../api-doc-inline/api-doc-index.html)
