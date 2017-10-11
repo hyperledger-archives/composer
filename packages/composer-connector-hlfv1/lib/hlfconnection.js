@@ -24,7 +24,6 @@ const semver = require('semver');
 const temp = require('temp').track();
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
-const EventHub = require('fabric-client/lib/EventHub');
 
 const LOG = Logger.getLog('HLFConnection');
 
@@ -54,14 +53,67 @@ class HLFConnection extends Connection {
         return user;
     }
 
-  /**
-     * Create a new event hub.
+    static getOrgConfig(client) {
+        let networkConfig = client._network_config;
+        let clientConfig = networkConfig.getClientConfig();
+        let orgConfig;
+        if (clientConfig && clientConfig.organization) {
+            orgConfig = networkConfig.getOrganization(clientConfig.organization);
+        }
+        return orgConfig;
+    }
+
+    static getInstallPeers(client) {
+        let installPeers = [];
+        let orgConfig = HLFConnection.getOrgConfig(client);
+        if (orgConfig) {
+            let peers = orgConfig.getPeers();
+            peers.forEach((peer) => {
+                //TODO: Need to be able to determine if it is a 'endorsingPeer' or a 'chaincodeQuery' peer
+                // but can't at the moment, so will just all them all.
+                installPeers.push(peer);
+            });
+        }
+        return installPeers;
+    }
+
+    /**
+     * TODO: get MSPid
      *
-     * @param {hfc} clientContext client context
-     * @return {EventHub} A new event hub.
+     * @static
+     * @param {any} client client
+     * @returns {string} mspid
+     * @memberof HLFConnection
      */
-    static createEventHub(clientContext) {
-        return new EventHub(clientContext);
+    static getMspId(client) {
+        let orgConfig = HLFConnection.getOrgConfig(client);
+        if (orgConfig) {
+            return orgConfig.getMspid();
+        }
+        return null;
+    }
+
+    /**
+     *
+     * TODO: Get Event Hubs. Have to do it just after login/enroll
+     * creation of eventhub object requires a user context. That check should be moved to connect.
+     * as this is not ideal.
+     *
+     * @static
+     * @param {any} client client
+     * @returns {any} hubs
+     * @memberof HLFConnection
+     */
+    static getEventHubs(client) {
+        let eventHubs = [];
+        let orgConfig = HLFConnection.getOrgConfig(client);
+        if (orgConfig) {
+            let peers = orgConfig.getPeers();
+            peers.forEach((peer) => {
+                eventHubs.push(client.getEventHub(peer.getName()));
+            });
+        }
+        return eventHubs;
     }
 
     /**
@@ -73,13 +125,12 @@ class HLFConnection extends Connection {
      * @param {object} connectOptions The connection options in use by this connection.
      * @param {Client} client A configured and connected {@link Client} object.
      * @param {Chain} channel A configured and connected {@link Chain} object.
-     * @param {array} eventHubDefs An array of event hub definitions
      * @param {FabricCAClientImpl} caClient A configured and connected {@link FabricCAClientImpl} object.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
 
         // Validate all the arguments.
         if (!connectOptions) {
@@ -88,34 +139,25 @@ class HLFConnection extends Connection {
             throw new Error('client not specified');
         } else if (!channel) {
             throw new Error('channel not specified');
-        } else if (!eventHubDefs || !Array.isArray(eventHubDefs)) {
-            throw new Error('eventHubDefs not specified or not an array');
         } else if (!caClient) {
             throw new Error('caClient not specified');
         }
 
         // Save all the arguments away for later.
-        this.connectOptions = connectOptions;
+        //this.connectOptions = connectOptions;
         this.client = client;
         this.channel = channel;
-        this.eventHubDefs = eventHubDefs;
-        this.eventHubs = [];
         this.ccEvents = [];
+        this.eventHubs = [];
         this.caClient = caClient;
         this.initialized = false;
+        this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
+        LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
         this.temp = thenifyAll(temp);
         LOG.exit(method);
-    }
-
-    /**
-     * Get the connection options for this connection.
-     * @return {object} The connection options for this connection.
-     */
-    getConnectionOptions() {
-        return this.connectOptions;
     }
 
     /**
@@ -182,7 +224,7 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspID);
+                return user.setEnrollment(enrollment.key, enrollment.certificate, HLFConnection.getMspId(this.client));
             })
             .then(() => {
 
@@ -213,11 +255,10 @@ class HLFConnection extends Connection {
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
-        this.eventHubDefs.forEach((eventHubDef) => {
-            const eventHub = HLFConnection.createEventHub(this.client);  //TODO: Change this.
-            eventHub.setPeerAddr(eventHubDef.eventURL, eventHubDef.opts);
+        this.eventHubs = HLFConnection.getEventHubs(this.client);
+
+        this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
-            this.eventHubs.push(eventHub);
         });
 
         if (this.businessNetworkIdentifier) {
@@ -362,7 +403,7 @@ class HLFConnection extends Connection {
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: businessNetworkIdentifier,
                     txId: txId,
-                    targets: this.channel.getPeers()
+                    targets: HLFConnection.getInstallPeers(this.client) //TODO: Node sdk should do this for me.
                 };
 
                 return this.client.installChaincode(request);
@@ -426,6 +467,7 @@ class HLFConnection extends Connection {
         }
 
         let finalTxId;
+        let eventPromises;
 
         // initialize the channel ready for instantiation
         LOG.debug(method, 'loading the channel configuration');
@@ -471,6 +513,7 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+                eventPromises = this._prepareForCommit(finalTxId);
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -483,9 +526,10 @@ class HLFConnection extends Connection {
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
+                    this._cancelCommitListeners(finalTxId);
                     throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId, this.connectOptions.timeout);
+                return Promise.all(eventPromises);
 
             })
             .then(() => {
@@ -704,7 +748,7 @@ class HLFConnection extends Connection {
      */
     queryChainCode(securityContext, functionName, args) {
         const method = 'queryChainCode';
-        LOG.entry(method, securityContext, functionName, args);
+        LOG.entry(method, functionName, args);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -742,7 +786,7 @@ class HLFConnection extends Connection {
                     // will be handled by the catch block
                     throw payload;
                 }
-                LOG.exit(payload);
+                LOG.exit(method, payload);
                 return payload;
             })
             .catch((error) => {
@@ -788,6 +832,7 @@ class HLFConnection extends Connection {
         } else {
             txId = this.client.newTransactionID();
         }
+        let eventPromises;
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
         LOG.debug(method, 'loading channel configuration');
@@ -814,6 +859,7 @@ class HLFConnection extends Connection {
                 const proposal = results[1];
                 const header = results[2];
 
+                eventPromises = this._prepareForCommit(txId);
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -822,13 +868,13 @@ class HLFConnection extends Connection {
             })
             .then((response) => {
                 // If the transaction was successful, wait for it to be committed.
-                // TODO: Should only listen for the events if SUCCESS is returned
                 LOG.debug(method, 'Received response from orderer', response);
 
                 if (response.status !== 'SUCCESS') {
+                    this._cancelCommitListeners(txId);
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return Promise.all(eventPromises);
             })
             .then(() => {
                 LOG.exit(method);
@@ -965,16 +1011,16 @@ class HLFConnection extends Connection {
      * if an event is not received within the given timeout period
      * @memberOf HLFConnection
      */
-    _waitForEvents(txObj, waitTime) {
+    _waitForCommit(txObj) {
         const txId = txObj.getTransactionID().toString();
-        const method = '_waitForEvents';
-        LOG.entry(method, txId, waitTime);
+        const method = '_waitForCommit';
+        LOG.entry(method, txId);
         let eventPromises = [];
         this.eventHubs.forEach((eh) => {
             let txPromise = new Promise((resolve, reject) => {
                 const handle = setTimeout(() => {
                     reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, waitTime * 1000);
+                }, this.commitTimeout);
                 eh.registerTxEvent(txId, (tx, code) => {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
@@ -992,6 +1038,39 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             });
     }
+
+    _prepareForCommit(txObj) {
+        const txId = txObj.getTransactionID().toString();
+        const method = '_prepareForCommit';
+        LOG.entry(method, txId);
+        let eventPromises = [];
+        this.eventHubs.forEach((eh) => {
+            let txPromise = new Promise((resolve, reject) => {
+                const handle = setTimeout(() => {
+                    reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
+                }, this.commitTimeout);
+                eh.registerTxEvent(txId, (tx, code) => {
+                    clearTimeout(handle);
+                    eh.unregisterTxEvent(txId);
+                    if (code !== 'VALID') {
+                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            eventPromises.push(txPromise);
+        });
+        return eventPromises;
+    }
+
+    _cancelCommitListeners(txObj) {
+        const txId = txObj.getTransactionID().toString();
+        this.eventHubs.forEach((eh) => {
+            eh.unregisterTxEvent(txId);
+        });
+    }
+
 
     /**
      * return the logged in user
@@ -1018,6 +1097,7 @@ class HLFConnection extends Connection {
         }
 
         let txId;
+        let eventPromises;
         // check runtime versions to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
@@ -1049,6 +1129,8 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+
+                eventPromises = this._prepareForCommit(txId);
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -1061,9 +1143,10 @@ class HLFConnection extends Connection {
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
+                    this._cancelCommitListeners(txId);
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return Promise.all(eventPromises);
 
             })
             .then(() => {

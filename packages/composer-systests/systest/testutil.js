@@ -230,66 +230,125 @@ class TestUtil {
                     if (process.env.SYSTEST.match('tls$')) {
                         console.log('setting up TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
-                            type: 'hlfv1',
-                            orderers: [
-                                {
-                                    url: 'grpcs://localhost:7050',
-                                    hostnameOverride: 'orderer.example.com',
-                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
-                                }
-                            ],
-                            ca: {
-                                url: 'https://localhost:7054',
-                                name: 'ca.org1.example.com'
-                            },
-                            peers: [
-                                {
-                                    requestURL: 'grpcs://localhost:7051',
-                                    eventURL: 'grpcs://localhost:7053',
-                                    hostnameOverride: 'peer0.org1.example.com',
-                                    cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                            'x-type': 'hlfv1',
+                            'x-commitTimeout': 300,
+                            'version': '1.0.0',
+                            'client': {
+                                'organization': 'Org1',
+                                'connection': {
+                                    'timeout': {
+                                        'peer': {
+                                            'endorser': '30s',
+                                            'eventHub': '30s',
+                                            'eventReg': '30s'
+                                        },
+                                        'orderer': '30s'
+                                    }
                                 },
-                                {
-                                    requestURL: 'grpcs://localhost:8051',
-                                    hostnameOverride: 'peer0.org2.example.com',
-                                    cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                'credentialStore': {
+                                    'path': keyValStoreOrg1,
+                                    'cryptoStore': {
+                                        'path': keyValStoreOrg1
+                                    }
                                 }
-                            ],
-                            keyValStore: keyValStoreOrg1,
-                            channel: 'composerchannel',
-                            mspID: 'Org1MSP',
-                            timeout: '300'
+                            },
+                            'channels': {
+                                'composerchannel': {
+                                    'orderers': [
+                                        'orderer.example.com'
+                                    ],
+                                    'peers': {
+                                        'peer0.org1.example.com': {},
+                                        'peer0.org2.example.com': {}
+                                    }
+                                }
+                            },
+                            'organizations': {
+                                'Org1': {
+                                    'mspid': 'Org1MSP',
+                                    'peers': [
+                                        'peer0.org1.example.com'
+                                    ],
+                                    'certificateAuthorities': [
+                                        'ca.org1.example.com'
+                                    ]
+                                },
+                                'Org2': {
+                                    'mspid': 'Org2MSP',
+                                    'peers': [
+                                        'peer0.org2.example.com'
+                                    ],
+                                    'certificateAuthorities': [
+                                        'ca.org2.example.com'
+                                    ]
+                                }
+                            },
+                            'orderers': {
+                                'orderer.example.com': {
+                                    'url': 'grpcs://localhost:7050',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'orderer.example.com'
+                                    },
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                    }
+                                }
+                            },
+                            'peers': {
+                                'peer0.org1.example.com': {
+                                    'url': 'grpcs://localhost:7051',
+                                    'eventUrl': 'grpcs://localhost:7053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org1.example.com',
+                                        'request-timeout': 300 * 1000
+                                    },
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                                    }
+                                },
+                                'peer0.org2.example.com': {
+                                    'url': 'grpcs://localhost:8051',
+                                    'eventUrl': 'grpcs://localhost:8053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org2.example.com',
+                                        'request-timeout': 300 * 1000
+                                    },
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                    }
+                                }
+                            },
+                            'certificateAuthorities': {
+                                'ca.org1.example.com': {
+                                    'url': 'https://localhost:7054',
+                                    'caName': 'ca.org1.example.com'
+                                },
+                                'ca.org2.example.com': {
+                                    'url': 'https://localhost:8054',
+                                    'caName': 'ca.org2.example.com'
+                                }
+                            }
                         };
-                        connectionProfileOrg2 = {
-                            type: 'hlfv1',
-                            orderers: [
-                                {
-                                    url: 'grpcs://localhost:7050',
-                                    hostnameOverride: 'orderer.example.com',
-                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                        connectionProfileOrg2 = {};
+                        Object.assign(connectionProfileOrg2, connectionProfileOrg1);
+                        connectionProfileOrg2.client = {
+                            'organization': 'Org2',
+                            'connection': {
+                                'timeout': {
+                                    'peer': {
+                                        'endorser': '30s',
+                                        'eventHub': '30s',
+                                        'eventReg': '30s'
+                                    },
+                                    'orderer': '30s'
                                 }
-                            ],
-                            ca: {
-                                url: 'https://localhost:8054',
-                                name: 'ca.org2.example.com'
                             },
-                            peers: [
-                                {
-                                    requestURL: 'grpcs://localhost:8051',
-                                    eventURL: 'grpcs://localhost:8053',
-                                    hostnameOverride: 'peer0.org2.example.com',
-                                    cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
-                                },
-                                {
-                                    requestURL: 'grpcs://localhost:7051',
-                                    hostnameOverride: 'peer0.org1.example.com',
-                                    cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                            'credentialStore': {
+                                'path': keyValStoreOrg2,
+                                'cryptoStore': {
+                                    'path': keyValStoreOrg2
                                 }
-                            ],
-                            keyValStore: keyValStoreOrg2,
-                            channel: 'composerchannel',
-                            mspID: 'Org2MSP',
-                            timeout: '300'
+                            }
                         };
                     } else {
                         console.log('setting up Non-TLS Connection Profile for HLF V1');
@@ -349,14 +408,6 @@ class TestUtil {
                     return adminConnection.createProfile('composer-systests-org1', connectionProfileOrg1)
                         .then(() => {
                             return adminConnection.createProfile('composer-systests-org2', connectionProfileOrg2);
-                        })
-                        .then(() => {
-                            connectionProfileOrg1.peers.pop();
-                            return adminConnection.createProfile('composer-systests-org1-solo', connectionProfileOrg1);
-                        })
-                        .then(() => {
-                            connectionProfileOrg2.peers.pop();
-                            return adminConnection.createProfile('composer-systests-org2-solo', connectionProfileOrg2);
                         });
                 } else {
                     throw new Error('I do not know what kind of tests you want me to run!');
@@ -434,7 +485,7 @@ class TestUtil {
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
                 return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
-                return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
+                return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else {
                 return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
             }
@@ -475,7 +526,7 @@ class TestUtil {
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
-                    return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connect('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -485,7 +536,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
-                    return adminConnection.connect('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connect('composer-systests-org2', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -534,7 +585,7 @@ class TestUtil {
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network on the peers for org1.
-            return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
+            return adminConnection.connect('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED')
                 .then(() => {
                     return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
@@ -615,7 +666,7 @@ class TestUtil {
             });
         } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
             const adminConnection = new AdminConnection();
-            return adminConnection.connect('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
+            return adminConnection.connect('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
