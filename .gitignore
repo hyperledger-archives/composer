@@ -49,12 +49,11 @@ jspm_packages
 # vscode folder
 .vscode
 
-#generated jsdoc
-packages/composer-website/jekylldocs/jsdoc/
-
 #Broken link report
 packages/composer-website/linkresults.txt
 
+packages/composer-website/jsondata
+packages/composer-website/jekyll-docs/api-doc-inline
 
 packages/composer-playground/src/assets/npmlist.json
 
