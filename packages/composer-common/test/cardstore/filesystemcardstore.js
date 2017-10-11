@@ -59,11 +59,11 @@ describe('FileSystemCardStore', function() {
         });
     });
 
-    describe('#load', function() {
-        it('should load a valid identity card', function() {
+    describe('#get', function() {
+        it('should get a valid identity card', function() {
             const options = { storePath: testStorePath };
             const cardStore = new FileSystemCardStore(options);
-            return cardStore.load('valid')
+            return cardStore.get('valid')
                 .should.eventually.be.an.instanceof(IdCard);
         });
 
@@ -71,12 +71,12 @@ describe('FileSystemCardStore', function() {
             const cardName = 'INVALID_CARD_NAME';
             const options = { storePath: testStorePath };
             const cardStore = new FileSystemCardStore(options);
-            return cardStore.load(cardName)
+            return cardStore.get(cardName)
                 .should.be.rejectedWith(cardName);
         });
     });
 
-    describe('#save', function() {
+    describe('#put', function() {
         let tmpStorePath;
         let minimalCard;
         let cardStore;
@@ -98,52 +98,52 @@ describe('FileSystemCardStore', function() {
             return thenifyRimraf(tmpStorePath, rimrafOptions);
         });
 
-        it('should save a minimal identity card', function() {
+        it('should put a minimal identity card', function() {
             const cardName = 'minimal';
-            return cardStore.save(cardName, minimalCard).then(() => {
-                return cardStore.load(cardName)
+            return cardStore.put(cardName, minimalCard).then(() => {
+                return cardStore.get(cardName)
                     .should.eventually.be.an.instanceof(IdCard)
                     .that.deep.equals(minimalCard);
             });
         });
 
         it('should throw on empty card name', function() {
-            return cardStore.save('', minimalCard).should.be.rejected;
+            return cardStore.put('', minimalCard).should.be.rejectedWith(/Invalid card name/);
         });
 
-        it('should throw on save error due to write permissions', function() {
+        it('should throw on put error due to write permissions', function() {
             return thenifyFs.chmod(tmpStorePath, 0o000).then(() => {
                 const cardName = 'conga';
-                return cardStore.save(cardName, minimalCard)
+                return cardStore.put(cardName, minimalCard)
                     .should.be.rejectedWith(cardName);
             });
         });
 
         it('should handle @ character in card name', function() {
             const cardName = 'conga@hyperledger';
-            return cardStore.save(cardName, minimalCard).then(() => {
-                return cardStore.load(cardName)
+            return cardStore.put(cardName, minimalCard).then(() => {
+                return cardStore.get(cardName)
                     .should.eventually.be.an.instanceof(IdCard)
                     .that.deep.equals(minimalCard);
             });
         });
     });
 
-    describe('#loadAll', function() {
-        it('should load all cards when cards exist', function() {
+    describe('#getAll', function() {
+        it('should get all cards when cards exist', function() {
             const options = { storePath: testStorePath };
             const cardStore = new FileSystemCardStore(options);
-            return cardStore.loadAll().then(result => {
+            return cardStore.getAll().then(result => {
                 result.should.be.a('Map');
                 result.size.should.equal(1);
                 result.get('valid').should.be.an.instanceof(IdCard);
             });
         });
 
-        it('should load all cards when store directory does not exist', function() {
+        it('should get all cards when store directory does not exist', function() {
             const options = { storePath: path.join(testStorePath, 'NON_EXISTENT_CARD_STORE') };
             const cardStore = new FileSystemCardStore(options);
-            return cardStore.loadAll().should.eventually.be.a('Map').that.is.empty;
+            return cardStore.getAll().should.eventually.be.a('Map').that.is.empty;
         });
     });
 
