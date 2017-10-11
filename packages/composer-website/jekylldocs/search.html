@@ -1,0 +1,27 @@
+---
+layout: default
+title: Hyperledger Composer - Search
+category: search
+sidebar: sidebars/accordion-toc0.md
+excerpt: Search
+---
+<h1>Search Results</h1>
+
+<p id="search-results"></p>
+
+<script>
+  window.store = {
+    {% for post in site.pages %}
+      "{{ post.url | slugify }}": {
+        "title": "{{ post.title | xml_escape }}",
+        "author": "{{ post.author | xml_escape }}",
+        "category": "{{ post.category | xml_escape }}",
+        "content": {{ post.content | strip_html | strip_newlines | jsonify }},
+        "url": "{{site.baseurl}}/{{ post.url | xml_escape }}"
+      }
+      {% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  };
+</script>
+<script src="{{site.baseurl}}/assets/js/lunr.js"></script>
+<script src="{{site.baseurl}}/assets/js/search.js"></script>
