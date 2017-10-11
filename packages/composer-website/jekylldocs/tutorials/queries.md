@@ -18,7 +18,7 @@ It is recommended to do the [Developer-Tutorial](developer-guide.html) first, wh
 
 1. Build a new 'my-network' VSCode project (as shown in the Developer tutorial where its based on the `basic-sample-network` project)
 2. Edit your package.json, once again changing the 'name' field to `my-network`, the 'description' to 'My Commodity Trading network' and modify the 'prepublish' script (at the end) to change the filename of the business network archive (.bna) - ie to 'my-network.bna'
-3. Finally, you must use the `composer network deploy` command later on here (ie not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
+3. Finally, you must use the `composer network deploy` command later on here (i.e. not 'composer network update') to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).
 
 ## Re-open your Commodities Trading 'my-network' project
 
@@ -218,7 +218,7 @@ rule Default {
 
 rule SystemACL {
   description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
+  participant: "ANY"
   operation: ALL
   resource: "org.hyperledger.composer.system.**"
   action: ALLOW
