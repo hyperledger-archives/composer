@@ -164,6 +164,7 @@ class EmbeddedConnection extends Connection {
                 if (!chaincodeUUID) {
                     throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
                 }
+
                 const result = new EmbeddedSecurityContext(this, identity);
                 result.setChaincodeID(chaincodeUUID);
                 return result;
@@ -250,6 +251,7 @@ class EmbeddedConnection extends Connection {
      * chaincode function once it has been invoked, or rejected with an error.
      */
     queryChainCode(securityContext, functionName, args) {
+
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);

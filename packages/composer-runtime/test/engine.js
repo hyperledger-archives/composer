@@ -249,7 +249,8 @@ describe('Engine', () => {
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries
+                        sysregistries: sysregistries,
+                        container: sinon.match.any
                     });
                     sinon.assert.calledOnce(engine.submitTransaction);
                     const txs = engine.submitTransaction.args.map((arg) => {
@@ -321,7 +322,8 @@ describe('Engine', () => {
                         compiledScriptBundle: mockCompiledScriptBundle,
                         compiledQueryBundle: mockCompiledQueryBundle,
                         compiledAclBundle: mockCompiledAclBundle,
-                        sysregistries: sysregistries
+                        sysregistries: sysregistries,
+                        container: sinon.match.any
                     });
                     sinon.assert.calledOnce(engine.submitTransaction);
                     const txs = engine.submitTransaction.args.map((arg) => {
@@ -575,6 +577,7 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'test',
+                        container: {},
                         arguments: []
                     });
                     sinon.assert.calledOnce(engine.test);
@@ -651,6 +654,7 @@ describe('Engine', () => {
                 .then(() => {
                     sinon.assert.calledWith(mockContext.initialize, {
                         function: 'test',
+                        container: {},
                         arguments: []
                     });
                     sinon.assert.calledOnce(mockContext.initialize);

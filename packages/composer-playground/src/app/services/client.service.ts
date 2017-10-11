@@ -289,11 +289,6 @@ export class ClientService {
         return this.connectingPromise;
     }
 
-    reset(): Promise<any> {
-        // TODO: hack hack hack, this should be in the admin API.
-        return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
-    }
-
     refresh(businessNetworkName): Promise<any> {
         this.currentBusinessNetwork = null;
         let connectionProfile = this.identityService.getCurrentConnectionProfile();
