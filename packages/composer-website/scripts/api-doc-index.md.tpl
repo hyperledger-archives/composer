@@ -11,6 +11,8 @@ index-order: 1200
 Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.
 
 
+The [original JSDoc format](../jsdoc/index.html) can still be found temporarily; whilst the new format is refinded.
+
 ## Overview
 The major components of Hyperledger Composer are:
 
