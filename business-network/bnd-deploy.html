@@ -76,6 +76,19 @@ ga('send', 'pageview');
 
           </div>
 
+            <div class="search-form">
+              <form action="/composer/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
           <p>Deploying and Updating Business Networks</p>
           </div>
@@ -108,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -119,7 +132,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
-<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/query.html">Using Filters and Queries with Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 <li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
@@ -154,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -188,7 +197,6 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
-<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -239,33 +247,72 @@ ga('send', 'pageview');
             
               <h1 id="deploying-and-updating-business-networks">Deploying and Updating Business Networks</h1>
 
-<p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (BNA) file. The <code>composer archive create</code> command is used to create a BNA file from a root folder on disk.</p>
+<p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (.bna) file. The <code>composer archive create</code> command is used to create a business network archive file from a business network definition folder on disk.</p>
 
-<p>Once the BNA file has been created it can be deployed to a runtime using the <code>composer network deploy</code> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a></p>
+<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a>.</p>
 
 <p>For example:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna
        -i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
+       -A admin -S
 </code></pre></div>
-<p>To update the definition of an already deployed business network use the <code>composer network update</code> CLI command.</p>
+<p>To update the business network definition for an already deployed business network use the <a href="../reference/composer.network.update.html"><code>composer network update</code></a> CLI command.</p>
 
 <h2 id="deploying-business-networks-to-hyperledger-fabric-v1-0">Deploying business networks to Hyperledger Fabric v1.0</h2>
 
-<p>In Hyperledger Fabric v1.0 peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
+<p>In Hyperledger Fabric v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install Hyperledger Fabric chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.</p>
 
-<p>When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, <code>Admin</code> or <code>AdminPeer</code> are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
+<p>To make that identity and its certificates available, your must import the identity into the credential store used by Hyperledger Composer. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code></a> command. When importing an identity, you do not assign it a secret, however the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command requires a secret. If you are using an imported identity, you can enter any value for the secret, and it will be ignored.</p>
 
-<p>Due to many breaking API changes between Hyperledger Fabric alpha 1 and Hyperledger Fabric v1.0, Hyperledger Composer only supports the Hyperledger Fabric v1.0 and cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
+<p>Hyperledger Composer provides a sample Hyperledger Fabric v1.0 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric v1.0 networks.</p>
 
-<h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
+<h2 id="business-network-administrators">Business network administrators</h2>
+
+<p>When you deploy a business network, access controls are enforced as per the access control rules specified in the business network definition. Each business network must have at least one participant, and that participant must have a valid identity for accessing the business network. Otherwise, client applications cannot interact with the business network.</p>
+
+<p>A business network administrator is a participant who is responsible for configuring the business network for their organisation after the business network is deployed, and is responsible for on-boarding other participants from their organisation. Because business networks include multiple organisations, there should be multiple business network administrators for any given business network.</p>
+
+<p>A built-in participant type, <code>org.hyperledger.composer.system.NetworkAdmin</code>, representing a business network administrator is provided by Hyperledger Composer. This built-in participant type does not have any special permissions; they are still subject to the access control rules specified in the business network definition. For this reason, it is recommended that you start with the following sample access control rules that grant business network administrators full access to a business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+</code></pre></div>
+<p>By default, Hyperledger Composer will automatically create a single business network administrator participant during deployment. The identity that is used for deploying the business network will also be bound to that business network administrator participant, so that identity can be used to interact with the business network after deployment.</p>
+
+<p>Hyperledger Fabric peer administrators may not have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA). This may restrict the ability of the business network administrator to on-board other participants from their organisation. For this reason, it may be preferable to create a business network administrator that does have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA).</p>
+
+<p>You can use additional options to the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command to specify the business network administrators that should be created during the deployment of the business network.</p>
+
+<p>If the business network administrator has an enrollment ID and enrollment secret, you can use the <code>-A</code> (business network administrator) and <code>-S</code> (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing <code>admin</code> enrollment ID:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -S
+</code></pre></div>
+<p>If the business network administrator already has a certificate, you can use the <code>-A</code> (business network administrator) and <code>-C</code> (business network administrator certificate file) flags. For example, the following command will create a business network administrator for the specified certificate file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -C /path/to/admin.pem
+</code></pre></div>
+<p>You can also create multiple business network administrators by repeating the options. For example, the following command will create a business network administrator for all three of the specified certificate files:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin1 -C /path/to/admin1.pem -A admin2 -C /path/to/admin2.pem -A admin3 -C /path/to/admin3.pem
+</code></pre></div>
+<h2 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h2>
 
 <p>When deploying a business network to Hyperledger Fabric v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.</p>
 
-<p>Identities in playground are associated with ID cards, comprising a connection profile, identity metadata, and certificates.</p>
+<p>Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.</p>
 
-<p>When deploying a business network using Playground locally, you must have at least one ID card with the <code>PeerAdmin</code> role and at least one ID card with the <code>ChannelAdmin</code> role. Each of these ID cards must contain the correct admin certificates.</p>
+<p>When deploying a business network using Playground locally, you must have at least one business network card with the <code>PeerAdmin</code> role and at least one business network card with the <code>ChannelAdmin</code> role. Each of these business network cards must contain the correct admin certificates.</p>
 
-<h3 id="errors-deploying-a-business-network-to-a-local-fabric-using-the-hyperledger-composer-playground">Errors deploying a business network to a local fabric using the Hyperledger Composer Playground</h3>
+<h2 id="errors-deploying-a-business-network-to-a-local-fabric-using-the-hyperledger-composer-playground">Errors deploying a business network to a local fabric using the Hyperledger Composer Playground</h2>
 
 <p>When deploying a business network to an instance of Hyperledger Fabric by using a locally installed Hyperledger Composer Playground, you may encounter the following error:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
@@ -331,6 +378,7 @@ ga('send', 'pageview');
 })(document);
 </script>
 <script src="/composer/assets/js/nav.js"></script>
+<script src="/composer/assets/js/search_bar.js"></script>
 
     
 

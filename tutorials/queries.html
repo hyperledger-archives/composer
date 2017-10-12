@@ -76,6 +76,19 @@ ga('send', 'pageview');
 
           </div>
 
+            <div class="search-form">
+              <form action="/composer/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
           <p>Queries Guide</p>
           </div>
@@ -108,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -119,7 +132,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
-<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/query.html">Using Filters and Queries with Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 <li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
@@ -154,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -188,7 +197,6 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
-<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -248,7 +256,7 @@ ga('send', 'pageview');
 <ol>
 <li>Build a new &#39;my-network&#39; VSCode project (as shown in the Developer tutorial where its based on the <code>basic-sample-network</code> project)</li>
 <li>Edit your package.json, once again changing the &#39;name&#39; field to <code>my-network</code>, the &#39;description&#39; to &#39;My Commodity Trading network&#39; and modify the &#39;prepublish&#39; script (at the end) to change the filename of the business network archive (.bna) - ie to &#39;my-network.bna&#39;</li>
-<li>Finally, you must use the <code>composer network deploy</code> command later on here (ie not &#39;composer network update&#39;) to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).</li>
+<li>Finally, you must use the <code>composer network deploy</code> command later on here (i.e. not &#39;composer network update&#39;) to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).</li>
 </ol>
 
 <h2 id="re-open-your-commodities-trading-my-network-project">Re-open your Commodities Trading &#39;my-network&#39; project</h2>
@@ -435,7 +443,7 @@ rule Default {
 
 rule SystemACL {
   description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
+  participant: "ANY"
   operation: ALL
   resource: "org.hyperledger.composer.system.**"
   action: ALLOW
@@ -1055,6 +1063,7 @@ Browse your REST API at http://localhost:3000/explorer
 })(document);
 </script>
 <script src="/composer/assets/js/nav.js"></script>
+<script src="/composer/assets/js/search_bar.js"></script>
 
     
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Querying Business Network Data | Hyperledger Composer</title>
+    <title>Using Filters and Queries with Business Network Data | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -76,8 +76,21 @@ ga('send', 'pageview');
 
           </div>
 
+            <div class="search-form">
+              <form action="/composer/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
-          <p>Querying Business Network Data</p>
+          <p>Using Filters and Queries with Business Network Data</p>
           </div>
 
           <nav class="context-nav">
@@ -108,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -119,7 +132,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
-<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/query.html">Using Filters and Queries with Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 <li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
@@ -154,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -188,7 +197,6 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
-<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -237,23 +245,21 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="querying-business-network-data">Querying business network data</h1>
+              <h1 id="querying-and-filtering-business-network-data">Querying and filtering business network data</h1>
 
-<blockquote>
-<p><strong>Warning</strong>: The status of this feature is experimental. You <strong>must</strong> use Hyperledger Composer v0.8 or greater (preferably &#39;latest&#39;) with the Hyperledger Fabric v1.0 GA runtime to use queries. We welcome feedback and comments while we continue to iteratively add query functionality. The API may change, based on the feedback received.</p>
-</blockquote>
-
-<p>Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a specified age, or all drivers with a specific name. The composer-rest-server component exposes named queries via the generated REST API.</p>
+<p>Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a specified age, or all drivers with a specific name. The <code>composer-rest-server</code> component exposes named queries via the generated REST API.</p>
 
 <p>Queries are an optional component of a business network definition, written in a single query file (<code>queries.qry</code>).</p>
 
-<p>Note: Queries are supported by the Hyperledger Fabric v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the Hyperledger Fabric v1.0 runtime Hyperledger Fabric must be configured to use CouchDB persistence. </p>
+<p>Note: When using the Hyperledger Fabric v1.0 runtime Hyperledger Fabric must be configured to use CouchDB persistence.</p>
+
+<p>Filters are similar to queries, but use the LoopBack filter syntax, and can only be sent using the Hyperledger Composer REST API. Currently, only the <code>WHERE</code> LoopBack filter is supported. The supported operators within <code>WHERE</code> are: <strong>=</strong>, <strong>and</strong>, <strong>or</strong>, <strong>gt</strong>, <strong>gte</strong>, <strong>lt</strong>, <strong>lte</strong>, <strong>neq</strong>. Filters are submitted using a <code>GET</code> call against an asset type, participant type, or transaction type; the filter is then supplied as a parameter. Filters return the results from the specified class, and will not return results from classes extending the specified class.</p>
 
 <h2 id="types-of-queries">Types of Queries</h2>
 
 <p>Hyperledger Composer supports two types of queries: named queries and dynamic queries. Named queries are specified in the business network definition and are exposed as GET methods by the composer-rest-server component. Dynamic queries may be constructed dynamically at runtime within a Transaction Processor function, or from client code.</p>
 
-<h2 id="writing-named-queries">Writing Named Queries</h2>
+<h3 id="writing-named-queries">Writing Named Queries</h3>
 
 <p>Queries must contain a description and a statement. Query descriptions are a string that describe the function of the query. Query statements contain the operators and functions that control the query behavior.</p>
 
@@ -267,7 +273,7 @@ ga('send', 'pageview');
           WHERE (age&gt;65)
 }
 </code></pre></div>
-<h3 id="query-parameters">Query Parameters</h3>
+<h4 id="query-parameters">Query Parameters</h4>
 
 <p>Queries may embed parameters using the <code>_$</code> syntax. Note that query parameters must be primitive types (String, Integer, Double, Long, Boolean, DateTime), a Relationship or an Enumeration.</p>
 
@@ -286,17 +292,35 @@ ga('send', 'pageview');
 
 <p>For more information on the specifics of the Hyperledger Composer query language, see the <a href="../reference/query-language.html">query language reference documentation</a>.</p>
 
-<h2 id="using-queries">Using Queries</h2>
+<h3 id="queries-using-the-api">Queries using the API</h3>
 
 <p>Queries can be invoked by calling the <em>buildQuery</em> or <em>query</em> APIs. The <em>buildQuery</em> API requires the entire query string to be specified as part of the API input. The <em>query</em> API requires you to specify the name of the query you wish to run.</p>
 
-<p>For more information on the query APIs, see the <a href="../jsdoc/index.html">API documentation</a>.</p>
+<p>For more information on the query APIs, see the <a href="../api-doc-inline/api-doc-index.html">API documentation</a>.</p>
 
-<h2 id="access-control-for-queries">Access Control for Queries</h2>
+<h3 id="access-control-for-queries">Access Control for Queries</h3>
 
 <p>When returning the results of a query, your access control rules are applied to the results. Any content which the current user does not have authority to view is stripped from the results.</p>
 
 <p>For example, if the current user sends a query that would return all assets, if they only have authority to view a limited selection of assets, the query would return only that limited set of assets.</p>
+
+<h2 id="using-filters">Using filters</h2>
+
+<p>Filters can only be submitted using the Hyperledger Composer REST API, and must use the <a href="https://loopback.io/doc/en/lb2/Where-filter.html">LoopBack syntax</a>. To submit a query, a <strong>GET</strong> REST call must be submitted against an asset type, participant type, or transaction type with the filter supplied as a parameter. The supported data types for parameters to be filtered are <em>numbers</em>, <em>Boolean</em>, <em>DateTime</em>, and <em>strings</em>. A basic filter takes the following format, where <code>op</code> indicates an operator:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{"where": {"field1": {"op":"value1"}}}
+</code></pre></div>
+<p><em>Please note</em>: Only the top level <code>WHERE</code> operator can have more than two operands.</p>
+
+<p>Currently, only the <code>WHERE</code> LoopBack filter is supported. The supported operators within <code>WHERE</code> are: <strong>=</strong>, <strong>and</strong>, <strong>or</strong>, <strong>gt</strong>, <strong>gte</strong>, <strong>lt</strong>, <strong>lte</strong>, <strong>neq</strong>. Filters can combine multiple operators, in the following example, an <strong>and</strong> operator is nested within an <strong>or</strong> operator.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{"where":{"or":[{"and":[{"field1":"foo"},{"field2":"bar"}]},{"field3":"foobar"}]}}
+</code></pre></div>
+<!--
+The **between** operator returns values between the given range. It accepts numbers, datetime values, and strings. If supplied with strings, the **between** operator returns results between the supplied strings alphabetically. In the example below, the filter will return all resources where the driver property is alphabetically between _a_ and _c_, inclusively.
+
+```
+{"where":{"driver":{"between": ["a","c"]}}}
+```
+-->
 
             
           </section>
@@ -351,6 +375,7 @@ ga('send', 'pageview');
 })(document);
 </script>
 <script src="/composer/assets/js/nav.js"></script>
+<script src="/composer/assets/js/search_bar.js"></script>
 
     
 

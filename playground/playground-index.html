@@ -76,6 +76,19 @@ ga('send', 'pageview');
 
           </div>
 
+            <div class="search-form">
+              <form action="/composer/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
           <p>Using Playground</p>
           </div>
@@ -108,7 +121,7 @@ ga('send', 'pageview');
 <li><p><a href="../playground/playground-index.html">Using Playground</a></p>
 
 <ul>
-<li><a href="../playground/id-cards-playground.html">ID Cards</a></li>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
 </ul></li>
 <li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
 
@@ -119,7 +132,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
-<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
+<li><a href="../business-network/query.html">Using Filters and Queries with Business Network Data</a></li>
 <li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
 <li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
 </ul></li>
@@ -154,11 +167,7 @@ ga('send', 'pageview');
 <li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
 <li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
 </ul></li>
-<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p>
-
-<ul>
-<li><a href="../problems/deployment-local-playground.html">Error using the local Playground</a></li>
-</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
 <li><p><a href="../reference/reference-index.html">Reference</a></p>
 
 <ul>
@@ -188,7 +197,6 @@ ga('send', 'pageview');
 <li><a href="../api-doc-inline/factory.html">Factory (Common API)</a></li>
 <li><a href="../api-doc-inline/filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api-doc-inline/historian.html">Historian (Client API)</a></li>
-<li><a href="../api-doc-inline/idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api-doc-inline/identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api-doc-inline/identityregistry.html">IdentityRegistry (Client API)</a></li>
 <li><a href="../api-doc-inline/illegalmodelexception.html">IllegalModelException (Common API)</a></li>
@@ -241,7 +249,7 @@ ga('send', 'pageview');
 
 <p>The Hyperledger Composer Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.</p>
 
-<p>If you are new to the Playground, we recommend that you follow the <a href="../tutorials/playground-guide.html">Playground Tutorial</a> that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with ID cards.</p>
+<p>If you are new to the Playground, we recommend that you follow the <a href="../tutorials/playground-guide.html">Playground Tutorial</a> that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with Business Network Cards.</p>
 
 <p><strong>Please note</strong>: If two or more users are using Hyperledger Composer Playground to connect to the same instance of Hyperledger Fabric, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.</p>
 
@@ -251,24 +259,24 @@ ga('send', 'pageview');
 
 <h2 id="the-wallet-page">The wallet page</h2>
 
-<p>The <strong>My Wallet</strong>  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid ID Card. Once connected to a deployed Business Network, you will be taken to the <strong>Define</strong> page.</p>
+<p>The <strong>My Wallet</strong>  page is the default Playground landing page. Here you can see all the Business Network Cards in your Wallet. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the <strong>Define</strong> page.</p>
 
 <p><img src="./images/wallet-page.png" alt="wallet-page"></p>
 
 <p>From this page you can:</p>
 
 <ul>
-<li>Connect to a business network. If you already have a deployed business network and an ID card created for it, you can click <strong>Connect now</strong> to connect to the business network.</li>
+<li>Connect to a business network. If you already have a deployed business network and a Business Network Card created for it, you can click <strong>Connect now</strong> to connect to the business network.</li>
 <li>Deploy a new business network. If this is your first time using Playground, or you wish to start a new network, deploying your own network is a great place to start. When creating a new business network, you can choose to base your business network definition on a sample network, or create your own network from scratch.</li>
-<li>Interact with ID cards. ID cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.</li>
-<li>Import ID cards. Importing an existing <code>.card</code> file from your computer is the simplest way to add an ID card to your wallet.</li>
-<li>Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click <strong>Connect using credentials</strong> to enter them and generate an ID card.</li>
+<li>Interact with Business Network Cards. Business Network Cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.</li>
+<li>Import Business Network Cards. Importing an existing <code>.card</code> file from your computer is the simplest way to add a Business Network Card to your wallet.</li>
+<li>Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click <strong>Connect using credentials</strong> to enter them and generate a Business Network Card.</li>
 <li>Run through the Playground tutorial. If you don&#39;t know where to start, the Playground tutorial runs through creating a business network from scratch, and performing some basic operations.</li>
 </ul>
 
 <h2 id="business-network-options">Business network options</h2>
 
-<p>Once connected to a business network using an ID card, there are a number of options available whether you&#39;re looking at the <strong>Define</strong> tab, or the <strong>Test</strong> tab.</p>
+<p>Once connected to a business network using a Business Network Card, there are a number of options available whether you&#39;re looking at the <strong>Define</strong> tab, or the <strong>Test</strong> tab.</p>
 
 <p><img src="./images/editor-header.png" alt="editor-header"></p>
 
@@ -306,11 +314,11 @@ ga('send', 'pageview');
 
 <h1 id="playground-tasks">Playground Tasks</h1>
 
-<h3 id="id-cards">ID Cards</h3>
+<h3 id="business-network-cards">Business Network Cards</h3>
 
 <ul>
-<li><a href="./id-cards-playground.html#provide">Provide Access To Your Business Network With an ID Card</a></li>
-<li><a href="./id-cards-playground.html#gain">Gain Access To A Business Network with an ID Card</a></li>
+<li><a href="./id-cards-playground.html#provide">Provide Access To Your Business Network With a Business Network Card</a></li>
+<li><a href="./id-cards-playground.html#gain">Gain Access To A Business Network with a Business Network Card</a></li>
 </ul>
 
 <hr>
@@ -368,6 +376,7 @@ ga('send', 'pageview');
 })(document);
 </script>
 <script src="/composer/assets/js/nav.js"></script>
+<script src="/composer/assets/js/search_bar.js"></script>
 
     
 
