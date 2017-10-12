@@ -70,7 +70,26 @@ class EmbeddedLoggingService extends LoggingService {
     logWarning(message) {
         debug(message);
     }
+    /**
+    * Set the log level for the runtime.
+    *
+    * @param {string} newLogLevel The new log level to apply.
+    */
+    setLogLevel(newLogLevel) {
+        this.logLevel = newLogLevel;
+    }
 
+   /**
+    * Get the current log level for the runtime.
+    * @return {String} logLevel
+    */
+    getLogLevel() {
+        if (this.logLevel){
+            return this.logLevel;
+        }else {
+            return 'UnsetLogLevel';
+        }
+    }
 }
 
 module.exports = EmbeddedLoggingService;

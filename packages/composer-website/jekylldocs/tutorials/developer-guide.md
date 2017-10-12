@@ -79,7 +79,7 @@ Save your changes to `package.json`
 
 ### Update your README.md file
 
-Open the `README.md` file and update the markdown with a short decription of the business network.
+Open the `README.md` file and update the markdown with a short description of the business network.
 
 ```
 # My Commodity Trading network
@@ -180,7 +180,7 @@ rule Default {
 
 rule SystemACL {
   description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
+  participant: "ANY"
   operation: ALL
   resource: "org.hyperledger.composer.system.**"
   action: ALLOW
@@ -512,7 +512,7 @@ And the cucumber tests defined in the file `features/sample.feature` will produc
 
 ## Import into Playground and Test
 
-Ensure you are at the toplevel project folder (my-network). Generate the BNA file using the following command:
+Ensure you are at the top level project folder (my-network). Generate the BNA file using the following command:
 
 ```
 mkdir dist

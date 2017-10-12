@@ -11,7 +11,7 @@ excerpt: Playground is a web tool for defining and testing Hyperledger Composer 
 # Using Playground
 The {{site.data.conrefs.composer_full}} Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.
 
-If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with ID cards.
+If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with Business Network Cards.
 
 **Please note**: If two or more users are using {{site.data.conrefs.composer_full}} Playground to connect to the same instance of {{site.data.conrefs.hlf_full}}, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.
 
@@ -21,23 +21,23 @@ If you are new to the Playground, we recommend that you follow the [Playground T
 
 ## The wallet page
 
-The **My Wallet**  page is the default Playground landing page. Here you can see all the ID Cards in your Wallet. Each ID Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid ID Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
+The **My Wallet**  page is the default Playground landing page. Here you can see all the Business Network Cards in your Wallet. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
 ![wallet-page](./images/wallet-page.png)
 
 From this page you can:
 
 
-- Connect to a business network. If you already have a deployed business network and an ID card created for it, you can click **Connect now** to connect to the business network.
+- Connect to a business network. If you already have a deployed business network and a Business Network Card created for it, you can click **Connect now** to connect to the business network.
 - Deploy a new business network. If this is your first time using Playground, or you wish to start a new network, deploying your own network is a great place to start. When creating a new business network, you can choose to base your business network definition on a sample network, or create your own network from scratch.
-- Interact with ID cards. ID cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.
-- Import ID cards. Importing an existing `.card` file from your computer is the simplest way to add an ID card to your wallet.
-- Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click **Connect using credentials** to enter them and generate an ID card.
+- Interact with Business Network Cards. Business Network Cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.
+- Import Business Network Cards. Importing an existing `.card` file from your computer is the simplest way to add a Business Network Card to your wallet.
+- Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click **Connect using credentials** to enter them and generate a Business Network Card.
 - Run through the Playground tutorial. If you don't know where to start, the Playground tutorial runs through creating a business network from scratch, and performing some basic operations.
 
 ## Business network options
 
-Once connected to a business network using an ID card, there are a number of options available whether you're looking at the **Define** tab, or the **Test** tab.
+Once connected to a business network using a Business Network Card, there are a number of options available whether you're looking at the **Define** tab, or the **Test** tab.
 
 ![editor-header](./images/editor-header.png)
 
@@ -72,8 +72,8 @@ In the **All transactions** registry, also known as the Historian, you can see a
 ---
 # Playground Tasks
 
-### ID Cards
-* [Provide Access To Your Business Network With an ID Card](./id-cards-playground.html#provide)
-* [Gain Access To A Business Network with an ID Card](./id-cards-playground.html#gain)
+### Business Network Cards
+* [Provide Access To Your Business Network With a Business Network Card](./id-cards-playground.html#provide)
+* [Gain Access To A Business Network with a Business Network Card](./id-cards-playground.html#gain)
 
 ---

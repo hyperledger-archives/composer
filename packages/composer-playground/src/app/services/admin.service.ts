@@ -175,6 +175,10 @@ export class AdminService {
         });
     }
 
+    public reset(businessNetworkDefinitionName): Promise<any> {
+        return this.getAdminConnection().reset(businessNetworkDefinitionName);
+    }
+
     public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
         return this.getAdminConnection().deploy(businessNetworkDefinition);
     }

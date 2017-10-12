@@ -409,61 +409,67 @@ class ModelManager {
 
     /**
      * Get the AssetDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {AssetDeclaration[]} the AssetDeclarations defined in the model manager
      */
-    getAssetDeclarations() {
+    getAssetDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getAssetDeclarations());
+            return prev.concat(cur.getAssetDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the TransactionDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {TransactionDeclaration[]} the TransactionDeclarations defined in the model manager
      */
-    getTransactionDeclarations() {
+    getTransactionDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getTransactionDeclarations());
+            return prev.concat(cur.getTransactionDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EventDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EventDeclaration[]} the EventDeclaration defined in the model manager
      */
-    getEventDeclarations() {
+    getEventDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEventDeclarations());
+            return prev.concat(cur.getEventDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the ParticipantDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ParticipantDeclaration[]} the ParticipantDeclaration defined in the model manager
      */
-    getParticipantDeclarations() {
+    getParticipantDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getParticipantDeclarations());
+            return prev.concat(cur.getParticipantDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EnumDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EnumDeclaration[]} the EnumDeclaration defined in the model manager
      */
-    getEnumDeclarations() {
+    getEnumDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEnumDeclarations());
+            return prev.concat(cur.getEnumDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the Concepts defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ConceptDeclaration[]} the ConceptDeclaration defined in the model manager
      */
-    getConceptDeclarations() {
+    getConceptDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getConceptDeclarations());
+            return prev.concat(cur.getConceptDeclarations(includeSystemType));
         }, []);
     }
 
