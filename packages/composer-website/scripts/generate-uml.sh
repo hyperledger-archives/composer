@@ -26,5 +26,6 @@ node ./node_modules/composer-common/lib/codegen/parsejs.js --format PlantUML --i
 
 echo $(date) Generating images for public and private APIs...
 node ./node_modules/composer-common/lib/tools/plantumltoimage.js --inputDir "$DIR/out/uml" --outputDir "$DIR/jekylldocs/api-doc-inline/diagrams"
+node ./node_modules/composer-common/lib/tools/plantumltoimage.js --inputDir "$DIR/out/uml" --outputDir "$DIR/jekylldocs/jsdoc/diagrams"
 #node ./node_modules/composer-common/lib/tools/plantumltoimage.js --inputDir "$DIR/out/uml-private" --outputDir "$DIR/out/diagrams-private"
 echo $(date) Processed UML files
