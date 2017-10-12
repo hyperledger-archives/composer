@@ -53,8 +53,8 @@ jspm_packages
 packages/composer-website/linkresults.txt
 
 packages/composer-website/jsondata
-packages/composer-website/jekyll-docs/api-doc-inline
-packages/composer-website/jekull-docs/jsdoc
+packages/composer-website/jekylldocs/api-doc-inline
+packages/composer-website/jekylldocs/jsdoc
 packages/composer-playground/src/assets/npmlist.json
 
 packages/composer-systests/systestv1/tls/ca/fabric-ca-server.db
