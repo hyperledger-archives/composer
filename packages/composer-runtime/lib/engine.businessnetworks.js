@@ -101,67 +101,7 @@ class EngineBusinessNetworks {
             });
     }
 
-    /**
-     * Reset the business network by clearing all data.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    resetBusinessNetwork(context, args) {
-        const method = 'resetBusinessNetwork';
-        LOG.entry(method, context, args);
-        if (args.length !== 0) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resetBusinessNetwork', []));
-        }
-        return this._resetRegistries(context, 'Asset')
-            .then(() => {
-                return this._resetRegistries(context, 'Participant');
-            })
-            .then(() => {
-                return this._resetRegistries(context, 'Transaction');
-            })
-            .then ( ()=> {
-                // force creation of defaults as we know the don't exist
-                // Create all other default registries.
-                LOG.debug(method, 'Creating default registries');
-                let registryManager = context.getRegistryManager();
-                return registryManager.createDefaults(true);
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
 
-    /**
-     * Reset all registries of the specified type by clearing all data.
-     * @param {Context} context The request context.
-     * @param {string} type The type of the registries to reset.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    _resetRegistries(context, type) {
-        const method = '_resetRegistries';
-        LOG.entry(method, context, type);
-        let registryManager = context.getRegistryManager();
-        return registryManager.getAll(type)
-            .then((registries) => {
-                return registries.reduce((promise, registry) => {
-                    return promise.then(() => {
-                        if (registry.system) {
-                            LOG.debug(method, 'Not removing system registry', type, registry.id);
-                            return;
-                        }
-                        LOG.debug(method, 'Removing registry', type, registry.id);
-                        return registryManager.remove(type, registry.id);
-                    });
-                }, Promise.resolve());
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
 
 }
 

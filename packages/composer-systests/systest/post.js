@@ -25,7 +25,10 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('HTTP POST system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -40,6 +43,7 @@ describe('HTTP POST system tests', () => {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+        bnID = businessNetworkDefinition.getName();
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));

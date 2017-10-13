@@ -25,7 +25,7 @@ process.setMaxListeners(Infinity);
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const fs = require('fs');
 let client;
-
+let bnID;
 let createAsset = (assetId) => {
     let factory = client.getBusinessNetwork().getFactory();
     let asset = factory.newResource('systest.assets', 'SimpleAsset', assetId);
@@ -129,11 +129,19 @@ let deployCommon =  ()=> {
     });
     let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
     businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+
+    bnID = businessNetworkDefinition.getName();
     return TestUtil.deploy(businessNetworkDefinition);
 };
 
 
 describe('Historian', () => {
+
+
+
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     describe('CRUD Asset', () => {
         it('should track updates for CREATE asset calls ', () => {

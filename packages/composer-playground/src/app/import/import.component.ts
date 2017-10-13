@@ -68,7 +68,12 @@ export abstract class ImportComponent implements OnInit {
         if (this.chosenNetwork.name !== this.NAME) {
             this.currentBusinessNetworkPromise = this.sampleBusinessNetworkService.getChosenSample(this.chosenNetwork).then((result) => {
                 this.currentBusinessNetwork = result;
-                return result;
+
+                this.currentBusinessNetwork.participants = result.getModelManager().getParticipantDeclarations(false);
+                this.currentBusinessNetwork.assets = result.getModelManager().getAssetDeclarations(false);
+                this.currentBusinessNetwork.transactions = result.getModelManager().getTransactionDeclarations(false);
+
+                return this.currentBusinessNetwork;
             });
         } else {
             this.deployEmptyNetwork();
@@ -183,6 +188,9 @@ rule NetworkAdminSystem {
                 .then((businessNetwork) => {
                     this.chosenNetwork = businessNetwork.getMetadata().getPackageJson();
                     this.currentBusinessNetwork = businessNetwork;
+                    this.currentBusinessNetwork.participants = businessNetwork.getModelManager().getParticipantDeclarations(false);
+                    this.currentBusinessNetwork.assets = businessNetwork.getModelManager().getAssetDeclarations(false);
+                    this.currentBusinessNetwork.transactions = businessNetwork.getModelManager().getTransactionDeclarations(false);
                     this.sampleDropped = true;
                     // needed for if browse file
                     this.expandInput = false;

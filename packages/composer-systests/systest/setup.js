@@ -27,7 +27,7 @@ before(() => {
 });
 
 beforeEach(() => {
-    return TestUtil.resetBusinessNetwork();
+    // has moved into each test as reset needs to know the business network name
 });
 
 after(() => {

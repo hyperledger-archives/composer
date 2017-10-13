@@ -89,5 +89,15 @@ describe('EmbeddedLoggingService', () => {
         });
 
     });
+    describe('#loglevel', () => {
 
+        it('setLogLevel', () => {
+            loggingService.setLogLevel('doge');
+            loggingService.getLogLevel().should.equal('doge');
+        });
+        it('getLogLevel returns default value when no log level set', () => {
+            loggingService.getLogLevel().should.equal('UnsetLogLevel');
+        });
+
+    });
 });

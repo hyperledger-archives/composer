@@ -27,7 +27,10 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
 describe('Event system tests', function () {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -47,6 +50,8 @@ describe('Event system tests', function () {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-events')

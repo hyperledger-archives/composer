@@ -171,11 +171,24 @@ transaction RevokeIdentity {
 
 // --------------------------------------------------------------------------
 transaction StartBusinessNetwork {
-    o String businessNetworkArchive
-    o String logLevel optional
-    o Transaction[] bootstrapTransactions optional
+  o String businessNetworkArchive
+  o String logLevel optional
+  o Transaction[] bootstrapTransactions optional
+}
+
+transaction ResetBusinessNetwork {
+  
 }
 
 transaction UpdateBusinessNetwork {
-    o String businessNetworkArchive
+  o String businessNetworkArchive
 }
+
+/**
+ * Sets the log level fo the Business Network runtime to that specified
+ * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR 
+ */
+transaction SetLogLevel {
+  o String newLogLevel
+}
+
