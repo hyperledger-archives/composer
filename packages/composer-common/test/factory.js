@@ -67,39 +67,48 @@ describe('Factory', function() {
     });
 
     describe('#newResource', function() {
-        it('should throw creating a new instance without an ID if the option to allowNoIdentifier is not set', function() {
+
+        it('should not throw creating a new instance with a zero length string as the ID if the option to allowEmptyStringId is set to boolean true', function() {
+            const resource = factory.newResource(namespace, assetName, '', {allowEmptyStringId: true});
+            resource.assetId.should.equal('');
+        });
+
+        it('should throw creating a new instance with a zero length string as the ID if the option to allowEmptyStringId is not set to boolean true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {});
+            }).should.throw(/Missing identifier/);
+        });
+
+        it('should throw creating a new instance with a null ID', function() {
             (() => {
                 factory.newResource(namespace, assetName, null);
             }).should.throw(/Invalid or missing identifier/);
         });
 
-        it('should throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is not set', function() {
+        it('should throw creating a new instance with an ID of an invalid type', function() {
+            (() => {
+                factory.newResource(namespace, assetName, 1);
+            }).should.throw(/Invalid or missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID that is just whitespace', function() {
             (() => {
                 factory.newResource(namespace, assetName, '     ');
             }).should.throw(/Missing identifier/);
         });
 
-        it('should throw creating a new instance without an ID if the option to allowNoIdentifier is not set to true', function() {
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowEmptyStringId is not set to boolean true', function() {
             (() => {
-                factory.newResource(namespace, assetName, null, {allowNoIdentifier: false});
-            }).should.throw(/Invalid or missing identifier/);
-        });
-
-        it('should throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is not set to true', function() {
-            (() => {
-                factory.newResource(namespace, assetName, '     ', {allowNoIdentifier: 'true'});
+                factory.newResource(namespace, assetName, '     ', {allowEmptyStringId: 'true'});
             }).should.throw(/Missing identifier/);
         });
 
-        it('should not throw creating a new instance without an ID if the option to allowNoIdentifier is set to true', function() {
-            const resource = factory.newResource(namespace, assetName, '', {allowNoIdentifier: true});
-            resource.assetId.should.equal('');
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowEmptyStringId is set to boolean true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {allowEmptyStringId: true});
+            }).should.throw(/Missing identifier/);
         });
 
-        it('should not throw creating a new instance with an ID that is just whitespace if the option to allowNoIdentifier is set to true', function() {
-            const resource = factory.newResource(namespace, assetName, '  ', {allowNoIdentifier: true});
-            resource.assetId.should.equal('  ');
-        });
 
         it('should throw creating an abstract asset', function() {
             (() => {

@@ -31,7 +31,7 @@ class BusinessNetworkMetadata {
 }
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newResource(string,string,string,Object,boolean,string,boolean) throws TypeNotFoundException
+   + Resource newResource(string,string,string,Object,boolean,string,boolean,boolean) throws TypeNotFoundException
    + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
    + Resource newTransaction(string,string,string,Object,string,boolean) 

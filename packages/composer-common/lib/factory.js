@@ -69,12 +69,15 @@ class Factory {
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
      * is specified, whether optional fields should be generated.
+     * @param {boolean} [options.allowEmptyStringId] - if <code>options.allowEmptyStringId</code>
+     * is specified as true, a zero length string for id is allowed (allows it to be filled in later).
      * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
         options = options || {};
-        if(typeof options.allowNoIdentifier==='undefined' || options.allowNoIdentifier!==true) {
+
+        if(!(options.allowEmptyStringId && id==='')) {
             if(!id || typeof(id) !== 'string') {
                 let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
                 throw new Error(formatter({

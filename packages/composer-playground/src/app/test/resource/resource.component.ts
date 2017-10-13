@@ -123,7 +123,7 @@ export class ResourceComponent implements OnInit {
                 generate: withSampleData ? 'sample' : 'empty',
                 includeOptionalFields: this.includeOptionalFields,
                 disableValidation: true,
-                allowNoIdentifier: true
+                allowEmptyStringId: true
             };
             let resource = factory.newResource(
                 this.resourceDeclaration.getModelFile().getNamespace(),
