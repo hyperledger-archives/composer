@@ -342,14 +342,9 @@ describe('Registry', () => {
         it('should throw if resource not specified', () => {
 
             return registry.add({})
-                .should.be.rejectedWith(/Expected a Resource or Concept./);
+                .should.be.rejectedWith(/Expected a Resource./);
         });
 
-        it('should throw if resource not specified', () => {
-
-            return registry.update({})
-                .should.be.rejectedWith(/Expected a Resource or Concept./);
-        });
         it('should return errors from the data service', () => {
             mockDataCollection.add.rejects();
             return registry.add(mockResource).should.be.rejected;
@@ -524,6 +519,11 @@ describe('Registry', () => {
         it('should return errors from the data service', () => {
             mockDataCollection.update.rejects();
             return registry.update(mockResource).should.be.rejected;
+        });
+        it('should throw if resource not specified', () => {
+
+            return registry.update({})
+                .should.be.rejectedWith(/Expected a Resource./);
         });
 
     });
