@@ -28,13 +28,6 @@ const LOG = Logger.getLog('Query');
  * @memberof module:composer-runtime
  * @public
  */
-
-/**
- * A class that represents a built query in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
- */
 class Query {
 
     /**

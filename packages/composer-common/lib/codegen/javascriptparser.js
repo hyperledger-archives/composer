@@ -84,8 +84,23 @@ class JavaScriptParser {
         this.classes = [];
         this.functions = [];
 
-        for (let n = 0; n < ast.body.length; n++) {
-            let statement = ast.body[n];
+        // let nodesToProcess = ast.body;
+        let nodesToProcess = [];
+        const walk = require('acorn/dist/walk');
+        walk.simple(ast, {
+            FunctionExpression(node) {
+                if (node.id && node.id.name){
+                    nodesToProcess.push(node);
+                }
+            },
+            ClassDeclaration(node) {
+                nodesToProcess.push(node);
+            }
+        });
+        // console.log(Util.inspect(nodesToProcess));
+
+        for (let n = 0; n < nodesToProcess.length; n++) {
+            let statement = nodesToProcess[n];
 
             // record the end of the previous node.
             let previousEnd = -1;
@@ -282,13 +297,16 @@ class JavaScriptParser {
 
         for(let n=0; n < comments.length; n++) {
             let comment = comments[n];
-            let endComment = comment.end;
-            if(rangeStart > endComment && comment.start > stopPoint) {
+            let endComment = parseInt(comment.loc.end.line);
 
-                if(distance === -1 || rangeStart - endComment < distance) {
-                    distance = rangeStart - endComment;
-                    foundIndex = n;
-                }
+            if ( (lineNumber-endComment) === 1 ){
+                // i.e. on the line before
+                foundIndex = n;
+                break;
+            }
+            // if(rangeStart > endComment && comment.start > stopPoint) {
+
+
             }
         }
         return foundIndex;
@@ -320,7 +338,8 @@ class JavaScriptParser {
      */
     static getVisibility(comment) {
         const PRIVATE = 'private';
-        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
+        const PROTECTED = 'protected';
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE,PROTECTED]});
         const tags = parsedComment.tags;
         if (tags.length > 0) {
             return '-';

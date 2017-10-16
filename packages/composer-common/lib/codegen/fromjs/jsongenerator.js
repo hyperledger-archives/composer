@@ -33,9 +33,34 @@ class JSONGenerator {
      * @param {Object[]} functions - the functions within the file
      */
     generate(program, file, includes, classes, functions) {
-        let data  = classes[0];
+        let classData = classes[0];
+        if (classData){
+            // merge the methods and the functions
+            classData.methods = classData.methods || [];
+            classData.methods = classData.methods.concat(functions);
+
+            let json = this._process(classData);
+
+            let f = path.resolve(program.outputDir, json.module+'-'+path.parse(file).name+'.json');
+            fs.writeFileSync(f,JSON.stringify(json));
+        }
+    }
+
+    /**
+     * This takes a set of data that represents a class, or something that is effectively a class
+     * and produces a formed up set of JSON data reperesenting this.
+     * This can then be processed for documentation of other puposes.
+     * @return {Object} JSON data
+     * @param {Object} data to process
+     */
+    _process(data)  {
         if (data){
-            data.description = data.commentData.description.split('\n');
+            data.commentData.description = data.commentData.description || '';
+            data.commentData.tags = data.commentData.tags || [];
+
+
+
+            data.description = data.commentData.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~');
             data.seeAlso=[];
             data.visibility='public';
             data.commentData.tags.forEach((e)=>{
@@ -64,33 +89,44 @@ class JSONGenerator {
             let listMethods = data.methods;
             listMethods
             .forEach((e)=>{
-                e.description = e.commentData.description.split('\n');
+                e.description = e.commentData.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~');
                 e.parameters = [];
+                e.suboptions = [];
                 e.commentData.tags.forEach( (p)=>{
                     if (p.title==='param'){
                         let oneParam = {};
-                        oneParam.description=p.description;
+                        oneParam.description=p.description.replace(/\n/g, ' ');
                         if (p.type.type==='OptionalType'){
                             oneParam.type=p.type.expression.name;
                             oneParam.name=p.name;
                             oneParam.optional=true;
-                        }    else {
+                        } else if (p.type.type==='UnionType') {
+                            oneParam.name=p.name;
+                            oneParam.type= p.type.elements.map((e)=>{return e.name;}).join('; ');
+                            oneParam.optional=false;
+                        } else {
                             oneParam.type=p.type.name;
                             oneParam.name=p.name;
-                            oneParam.optional=true;
+                            oneParam.optional=false;
                         }
-                        e.parameters.push(oneParam);
+                        if (oneParam.name.indexOf('.')>0){
+                            e.suboptions.push(oneParam);
+                        }else {
+                            e.parameters.push(oneParam);
+                        }
                     } else if (p.title.startsWith('return')) {
-                        e.return={description:p.description.split('\n'),
-                            type : p.type.name};
+                        e.return = {
+                            description : p.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~'),
+                            type : p.type.name
+                        };
                     }
                 });
             });
 
-            let f = path.resolve(program.outputDir, path.parse(file).name+'.json');
-            fs.writeFileSync(f,JSON.stringify(data));
+            // let f = path.resolve(program.outputDir, path.parse(file).name+'.json');
+            // fs.writeFileSync(f,JSON.stringify(data));
         }
-        // console.log(JSON.stringify(data));
+        return data;
     }
 }
 

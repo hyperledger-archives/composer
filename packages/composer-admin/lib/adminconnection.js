@@ -214,7 +214,9 @@ class AdminConnection {
 
     /**
      * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile. The connection profile must exist in the profile store.
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
      * @example
      * // Connect to Hyperledger Fabric
      * var adminConnection = new AdminConnection();
