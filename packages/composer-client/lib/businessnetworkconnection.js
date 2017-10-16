@@ -543,10 +543,7 @@ class BusinessNetworkConnection extends EventEmitter {
         return Util.createTransactionId(this.securityContext)
         .then ((id)=>{
             transaction.setIdentifier(id.idStr);
-            let timestamp = transaction.timestamp;
-            if (timestamp === null || timestamp === undefined) {
-                timestamp = transaction.timestamp = new Date();
-            }
+            transaction.timestamp = new Date();
             let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
             return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId:id.id});
         });
