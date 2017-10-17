@@ -104,6 +104,28 @@ describe('Registry', () => {
             }).returns(mockResource2);
         });
 
+        it('should filter objects that cannot be serialized using fromJSON due to cannot instantiate type error', () => {
+            mockSerializer.fromJSON.withArgs({
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            }).throws(new Error('Cannot instantiate Type'));
+
+            registry.getAll()
+                .then((resources) => {
+                    resources.length.should.deep.equal(1);
+                    resources[0].should.deep.equal({theValue: 'the value 1'});
+                });
+        });
+
+        it('should throw error if serializing using fromJSON throws an error that is not cannot instantiate type', () => {
+            mockSerializer.fromJSON.withArgs({
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            }).throws(new Error('Another type of error'));
+
+            registry.getAll().should.be.rejectedWith('Another type of error');
+        });
+
         it('should get and parse all of the resources in the registry', () => {
             return registry.getAll()
                 .then((resources) => {

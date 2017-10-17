@@ -69,6 +69,19 @@ class Registry extends EventEmitter {
             .then((objects) => {
                 return objects.map((object) => {
                     object = Registry.removeInternalProperties(object);
+                    return object;
+                }).filter((object) => {
+                    try {
+                        this.serializer.fromJSON(object);
+                        return true;
+                    } catch (err) {
+                        if(err.message.includes('Cannot instantiate Type')) {
+                            return false;
+                        } else {
+                            throw new Error(err);
+                        }
+                    }
+                }).map((object) => {
                     return this.serializer.fromJSON(object);
                 }).reduce((promise, resource) => {
                     return promise.then((resources) => {
