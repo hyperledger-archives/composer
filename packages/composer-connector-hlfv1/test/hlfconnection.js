@@ -2276,7 +2276,7 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'client'
                     }, mockUser);
                 });
@@ -2296,7 +2296,7 @@ describe('HLFConnection', () => {
                         attrs: [
                             {name: 'hf.Registrar.Roles', value: 'client'}
                         ],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'client'
                     }, mockUser);
                 });
@@ -2332,7 +2332,7 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'bank_b',
                         attrs: [],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'client'
                     }, mockUser);
                 });
@@ -2350,7 +2350,7 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'peer,auditor'
                     }, mockUser);
                 });
@@ -2371,7 +2371,7 @@ describe('HLFConnection', () => {
                             {name: 'attr1', value: 'value1'},
                             {name: 'attr2', value: 'value2'}
                         ],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'client'
                     }, mockUser);
                 });
@@ -2392,7 +2392,7 @@ describe('HLFConnection', () => {
                             {name: 'attr1', value: 'value1'},
                             {name: 'attr2', value: 20}
                         ],
-                        maxEnrollments: 0,
+                        maxEnrollments: 1,
                         role: 'client'
                     }, mockUser);
                 });
