@@ -41,7 +41,7 @@ class Validator {
      * @throws {Error} throws an error to report the message
      */
     reportError(id, msg) {
-        throw new Error( 'Invalid validator for field ' + id + ' ' + this.getField().getFullyQualifiedName() + ': ' + msg );
+        throw new Error( 'Validator error for field ' + id + ' ' + this.getField().getFullyQualifiedName() + ': ' + msg );
     }
 
     /**

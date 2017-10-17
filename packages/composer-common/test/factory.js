@@ -67,9 +67,27 @@ describe('Factory', function() {
     });
 
     describe('#newResource', function() {
-        it('should throw creating a new instance without an ID', function() {
+
+        it('should not throw creating a new instance with a zero length string as the ID if the option to allowEmptyId is set to boolean true', function() {
+            const resource = factory.newResource(namespace, assetName, '', {allowEmptyId: true});
+            resource.assetId.should.equal('');
+        });
+
+        it('should throw creating a new instance with a non-zero length string as the ID if the option to allowEmptyId is not set to boolean true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {});
+            }).should.throw(/Missing identifier/);
+        });
+
+        it('should throw creating a new instance with a null ID', function() {
             (() => {
                 factory.newResource(namespace, assetName, null);
+            }).should.throw(/Invalid or missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID of an invalid type', function() {
+            (() => {
+                factory.newResource(namespace, assetName, 1);
             }).should.throw(/Invalid or missing identifier/);
         });
 
@@ -78,6 +96,19 @@ describe('Factory', function() {
                 factory.newResource(namespace, assetName, '     ');
             }).should.throw(/Missing identifier/);
         });
+
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowEmptyId is not set to boolean true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {allowEmptyId: 'true'});
+            }).should.throw(/Missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID that is just whitespace if the option to allowEmptyId is set to boolean true', function() {
+            (() => {
+                factory.newResource(namespace, assetName, '     ', {allowEmptyId: true});
+            }).should.throw(/Missing identifier/);
+        });
+
 
         it('should throw creating an abstract asset', function() {
             (() => {
