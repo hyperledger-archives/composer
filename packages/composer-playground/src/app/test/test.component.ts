@@ -45,11 +45,17 @@ export class TestComponent implements OnInit, OnDestroy {
 
                 return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()
                     .then((assetRegistries) => {
-                        assetRegistries.forEach((assetRegistry) => {
+                        let modelFileAssetTypes = this.clientService.getBusinessNetwork().getModelManager().getAssetDeclarations(false).map((a) => a.name);
+
+                        for (let i = assetRegistries.length - 1; i >= 0; i--) {
+                            let assetRegistry = assetRegistries[i];
                             let index = assetRegistry.id.lastIndexOf('.');
                             let displayName = assetRegistry.id.substring(index + 1);
                             assetRegistry.displayName = displayName;
-                        });
+                            if (modelFileAssetTypes.indexOf(displayName) === -1) {
+                              assetRegistries.splice(i, 1);
+                            }
+                        }
 
                         this.registries['assets'] = assetRegistries.sort((a, b) => {
                             return a.id.localeCompare(b.id);
@@ -58,11 +64,17 @@ export class TestComponent implements OnInit, OnDestroy {
                         return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries();
                     })
                     .then((participantRegistries) => {
-                        participantRegistries.forEach((participantRegistry) => {
+                        let modelFileParticipantTypes = this.clientService.getBusinessNetwork().getModelManager().getParticipantDeclarations(false).map((a) => a.name);
+
+                        for (let i = participantRegistries.length - 1; i >= 0; i--) {
+                            let participantRegistry = participantRegistries[i];
                             let index = participantRegistry.id.lastIndexOf('.');
                             let displayName = participantRegistry.id.substring(index + 1);
                             participantRegistry.displayName = displayName;
-                        });
+                            if (modelFileParticipantTypes.indexOf(displayName) === -1) {
+                              participantRegistries.splice(i, 1);
+                            }
+                        }
 
                         this.registries['participants'] = participantRegistries.sort((a, b) => {
                             return a.id.localeCompare(b.id);
