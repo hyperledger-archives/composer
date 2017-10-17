@@ -65,11 +65,26 @@ class Registry extends EventEmitter {
      * Resource} objects when complete, or rejected with an error.
      */
     getAll() {
+        let serialized_array = [];
         return this.dataCollection.getAll()
             .then((objects) => {
                 return objects.map((object) => {
                     object = Registry.removeInternalProperties(object);
-                    return this.serializer.fromJSON(object);
+                    return object;
+                }).filter((object) => {
+                    try {
+                        // push to array to prevent second serializer call
+                        serialized_array.push(this.serializer.fromJSON(object));
+                        return true;
+                    } catch (err) {
+                        if(err.message.includes('Cannot instantiate Type')) {
+                            return false;
+                        } else {
+                            throw new Error(err);
+                        }
+                    }
+                }).map((object, index) => {
+                    return serialized_array[index];
                 }).reduce((promise, resource) => {
                     return promise.then((resources) => {
                         return this.accessController.check(resource, 'READ')
