@@ -16,9 +16,9 @@ Once the business network archive file has been created it can be deployed to a 
 
 For example:
 
-        composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna
-           -i <Your EnrollmentID> -s <Your EnrollmentSecret>
-           -A admin -S
+    composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna
+    -i <Your EnrollmentID> -s <Your EnrollmentSecret>
+    -A admin -S
 
 To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
 
@@ -38,21 +38,23 @@ A business network administrator is a participant who is responsible for configu
 
 A built-in participant type, `org.hyperledger.composer.system.NetworkAdmin`, representing a business network administrator is provided by {{site.data.conrefs.composer_full}}. This built-in participant type does not have any special permissions; they are still subject to the access control rules specified in the business network definition. For this reason, it is recommended that you start with the following sample access control rules that grant business network administrators full access to a business network:
 
-    rule NetworkAdminUser {
-        description: "Grant business network administrators full access to user resources"
-        participant: "org.hyperledger.composer.system.NetworkAdmin"
-        operation: ALL
-        resource: "**"
-        action: ALLOW
-    }
+```json
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
 
-    rule NetworkAdminSystem {
-        description: "Grant business network administrators full access to system resources"
-        participant: "org.hyperledger.composer.system.NetworkAdmin"
-        operation: ALL
-        resource: "org.hyperledger.composer.system.**"
-        action: ALLOW
-    }
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+  ```
 
 By default, {{site.data.conrefs.composer_full}} will automatically create a single business network administrator participant during deployment. The identity that is used for deploying the business network will also be bound to that business network administrator participant, so that identity can be used to interact with the business network after deployment.
 
