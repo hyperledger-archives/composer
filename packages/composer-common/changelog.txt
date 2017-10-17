@@ -11,10 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-
-
-Version 0.14.0 {8201d46faa3b28ecc3ae0f649eff231e} 2017-10-16
-- Added allowEmptyStringId option to Factory.newResource
+Version 0.14.0  {06b9fe19f8d0de36b494e9a3d3e0776f} 2017-10-16
+- Added allowEmptyId option to Factory.newResource Factory.newEvent and Factory.newTransaction
 
 Version 0.13.2 {9298d9135c88f3d3e2e508de1981f1b9} 2017-09-29
 - Added validate option to Serializer.fromJSON

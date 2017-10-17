@@ -219,7 +219,7 @@ describe('ResourceComponent', () => {
                                                             generate: 'empty',
                                                             includeOptionalFields: false,
                                                             disableValidation: true,
-                                                            allowEmptyStringId: true
+                                                            allowEmptyId: true
                                                          });
             component.onDefinitionChanged.should.be.calledOn;
         });

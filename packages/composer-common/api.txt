@@ -34,8 +34,8 @@ class Factory {
    + Resource newResource(string,string,string,Object,boolean,string,boolean,boolean) throws TypeNotFoundException
    + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string,boolean) 
-   + Resource newEvent(string,string,string,Object,string,boolean) 
+   + Resource newTransaction(string,string,string,Object,string,boolean,boolean) 
+   + Resource newEvent(string,string,string,Object,string,boolean,boolean) 
 }
 class FileWallet extends Wallet {
    + string getHomeDirectory() 
