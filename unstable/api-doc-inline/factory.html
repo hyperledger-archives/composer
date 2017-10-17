@@ -281,7 +281,7 @@ and assets.
 </tr>
 <tr>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left"><a href="#newevent-string-string-string-object-string-boolean">newEvent</a></td>
+<td style="text-align: left"><a href="#newevent-string-string-string-object-string-boolean-boolean">newEvent</a></td>
 <td style="text-align: left">Create a new event object. The identifier of the event is</td>
 </tr>
 <tr>
@@ -291,12 +291,12 @@ and assets.
 </tr>
 <tr>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left"><a href="#newresource-string-string-string-object-boolean-string-boolean">newResource</a></td>
+<td style="text-align: left"><a href="#newresource-string-string-string-object-boolean-string-boolean-boolean">newResource</a></td>
 <td style="text-align: left">Create a new Resource with a given namespace, type name and id</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left"><a href="#newtransaction-string-string-string-object-string-boolean">newTransaction</a></td>
+<td style="text-align: left"><a href="#newtransaction-string-string-string-object-string-boolean-boolean">newTransaction</a></td>
 <td style="text-align: left">Create a new transaction object. The identifier of the transaction is</td>
 </tr>
 </tbody></table>
@@ -329,7 +329,7 @@ retrieve instances from {@link Hyperledger-Composer}</strong>
 </tr>
 </tbody></table>
 
-<h2 id="newresource-string-string-string-object-boolean-string-boolean">newResource(string,string,string,object,boolean,string,boolean)</h2>
+<h2 id="newresource-string-string-string-object-boolean-string-boolean-boolean">newResource(string,string,string,object,boolean,string,boolean,boolean)</h2>
 
 <p>Create a new Resource with a given namespace, type name and id</p>
 
@@ -394,7 +394,9 @@ retrieve instances from {@link Hyperledger-Composer}</strong>
 <p><dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
 <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>|
 |<strong>options.includeOptionalFields</strong>|<code>boolean</code>|true|if <code>options.generate</code>
-is specified, whether optional fields should be generated.|</p>
+is specified, whether optional fields should be generated.|
+|<strong>options.allowEmptyId</strong>|<code>boolean</code>|true|if <code>options.allowEmptyId</code>
+is specified as true, a zero length string for id is allowed (allows it to be filled in later).|</p>
 
 <h2 id="newconcept-string-string-object-boolean-string-boolean">newConcept(string,string,object,boolean,string,boolean)</h2>
 
@@ -499,7 +501,7 @@ ABC.</p>
 </tr>
 </tbody></table>
 
-<h2 id="newtransaction-string-string-string-object-string-boolean">newTransaction(string,string,string,object,string,boolean)</h2>
+<h2 id="newtransaction-string-string-string-object-string-boolean-boolean">newTransaction(string,string,string,object,string,boolean,boolean)</h2>
 
 <p>Create a new transaction object. The identifier of the transaction is
 set to a UUID.</p>
@@ -559,9 +561,11 @@ set to a UUID.</p>
 <p><dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
 <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>|
 |<strong>options.includeOptionalFields</strong>|<code>boolean</code>|true|if <code>options.generate</code>
-is specified, whether optional fields should be generated.|</p>
+is specified, whether optional fields should be generated.|
+|<strong>options.allowEmptyId</strong>|<code>boolean</code>|true|if <code>options.allowEmptyId</code>
+is specified as true, a zero length string for id is allowed (allows it to be filled in later).|</p>
 
-<h2 id="newevent-string-string-string-object-string-boolean">newEvent(string,string,string,object,string,boolean)</h2>
+<h2 id="newevent-string-string-string-object-string-boolean-boolean">newEvent(string,string,string,object,string,boolean,boolean)</h2>
 
 <p>Create a new event object. The identifier of the event is
 set to a UUID.</p>
@@ -621,7 +625,9 @@ set to a UUID.</p>
 <p><dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
 <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>|
 |<strong>options.includeOptionalFields</strong>|<code>boolean</code>|true|if <code>options.generate</code>
-is specified, whether optional fields should be generated.|</p>
+is specified, whether optional fields should be generated.|
+|<strong>options.allowEmptyId</strong>|<code>boolean</code>|true|if <code>options.allowEmptyId</code>
+is specified as true, a zero length string for id is allowed (allows it to be filled in later).|</p>
 
             
           </section>
