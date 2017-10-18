@@ -208,6 +208,9 @@ describe('DeployComponent', () => {
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
             component['currentBusinessNetwork'].should.equal(businessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([]);
             businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
