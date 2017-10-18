@@ -82,7 +82,9 @@ class StubCardStore extends BusinessNetworkCardStore {
      */
     delete(cardName) {
         return Promise.resolve().then(() => {
-            this.cards.delete(cardName);
+            if (!this.cards.delete(cardName)) {
+                throw new Error('Card not found: ' + cardName);
+            }
         });
     }
 
@@ -934,12 +936,12 @@ describe('AdminConnection', () => {
             });
         });
 
-        describe('#getAllCards', () => {
-            it('should return empty map when card store contains no cards', () => {
+        describe('#getAllCards', function() {
+            it('should return empty map when card store contains no cards', function() {
                 return adminConnection.getAllCards().should.eventually.be.instanceOf(Map).that.is.empty;
             });
 
-            it('should return map of cards when card store is not empty', () => {
+            it('should return map of cards when card store is not empty', function() {
                 const cardName = 'conga-card';
                 return cardStore.put(cardName, peerAdminCard).then(() => {
                     return adminConnection.getAllCards();
@@ -947,6 +949,24 @@ describe('AdminConnection', () => {
                     result.should.be.instanceOf(Map);
                     result.size.should.equal(1);
                     result.get(cardName).should.deep.equal(peerAdminCard);
+                });
+            });
+        });
+
+        describe('#deleteCard', function() {
+            it('should reject for non-existent card', function() {
+                const cardName = 'conga-card';
+                return adminConnection.deleteCard(cardName).should.be.rejectedWith(cardName);
+            });
+
+            it('should succeed for an existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.deleteCard(cardName);
+                }).then(() => {
+                    return cardStore.getAll();
+                }).then(cardMap => {
+                    cardMap.size.should.equal(0);
                 });
             });
         });
