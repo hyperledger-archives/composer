@@ -50,7 +50,19 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         this.thenifyFs = thenifyAll(this.fs);
         this.rimrafOptions = Object.assign({}, this.fs);
         this.rimrafOptions.disableGlob = true;
-        this.storePath = options.storePath || path.join(os.homedir(), '.composer', 'cards');
+        this.storePath = options.storePath || FileSystemCardStore._defaultStorePath(os.homedir);
+    }
+
+    /**
+     * Get the default store path based on the user's home directory, or based on the filesystem root
+     * directory if the supplied function does not exist or returns a falsy value.
+     * @private
+     * @param {Function} homedirFunction Function to obtain the user's home directory
+     * @returns {String} Absolute path
+     */
+    static _defaultStorePath(homedirFunction) {
+        const homeDirectory = (homedirFunction && homedirFunction()) || path.sep;
+        return path.join(homeDirectory, '.composer', 'cards');
     }
 
     /**
