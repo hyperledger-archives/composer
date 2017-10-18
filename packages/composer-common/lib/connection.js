@@ -265,18 +265,6 @@ class Connection extends EventEmitter {
      * artefacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return this._updateTx(securityContext,businessNetworkDefinition);
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been updated, or rejected with an error.
-     */
-    _updateTx(securityContext, businessNetworkDefinition) {
 
         // create the new transaction to update the network
         if (!businessNetworkDefinition) {
@@ -314,26 +302,101 @@ class Connection extends EventEmitter {
             let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
             return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
-
-
     }
 
     /**
-     * @callback updateCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Updates an existing deployed business network definition.
+     * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @param {updateCallback} callback The callback function to call when complete.
+     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
      */
-    _update(securityContext, businessNetworkDefinition, callback) {
-        throw new Error('abstract function called');
+    reset(securityContext, businessNetworkIdentifier) {
+
+        let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!businessNetworkIdentifier) {
+                throw new Error('business network identifier not specified');
+            }
+
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+            // Send an update request to the chaincode.
+            // create the new system transaction to add the resources
+
+            if (currentDeployedNetwork.getName() !== businessNetworkIdentifier){
+                throw new Error('Incorrect Business Network Identifier');
+            }
+
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        });
     }
+
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} loglevel The new log level
+     * @return {Promise} A promise that is resolved once the business network
+     * logging level has been changed
+     */
+    setLogLevel(securityContext, loglevel) {
+        let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!loglevel) {
+                throw new Error('Log Level not specified');
+            }
+
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            transaction.newLogLevel = loglevel;
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        });
+    }
+
+
 
     /**
      * Upgrade the Hyperledger Composer runtime.

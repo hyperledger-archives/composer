@@ -22,24 +22,24 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('BusinessNetworkCardStore', function() {
-    describe('#load', function() {
+    describe('#get', function() {
         it('should throw as abstract method', function() {
             const store = new BusinessNetworkCardStore();
-            return store.load().should.be.rejectedWith(/Abstract/);
+            return store.get().should.be.rejectedWith(/Abstract/);
         });
     });
 
-    describe('#save', function() {
+    describe('#put', function() {
         it('should throw as abstract method', function() {
             const store = new BusinessNetworkCardStore();
-            return store.save().should.be.rejectedWith(/Abstract/);
+            return store.put().should.be.rejectedWith(/Abstract/);
         });
     });
 
-    describe('#loadAll', function() {
+    describe('#getAll', function() {
         it('should throw as abstract method', function() {
             const store = new BusinessNetworkCardStore();
-            return store.loadAll().should.be.rejectedWith(/Abstract/);
+            return store.getAll().should.be.rejectedWith(/Abstract/);
         });
     });
 

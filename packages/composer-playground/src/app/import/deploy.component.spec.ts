@@ -15,7 +15,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeployComponent } from './deploy.component';
-import { BusinessNetworkDefinition } from 'composer-common';
+import { ModelManager, BusinessNetworkDefinition, AssetDeclaration, ParticipantDeclaration, TransactionDeclaration } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -82,6 +82,11 @@ describe('DeployComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
+    let mockModelManager;
+    let mockBusinessNetworkDefinition;
+    let mockAssetDeclaration;
+    let mockParticipantDeclaration;
+    let mockTransactionDeclaration;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -89,6 +94,11 @@ describe('DeployComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+        mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+        mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -205,14 +215,22 @@ describe('DeployComponent', () => {
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
             let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
-            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve({network: 'myNetwork'}));
+
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
+            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve(mockBusinessNetworkDefinition));
             component.selectNetwork('bob');
 
             tick();
 
             component['chosenNetwork'];
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
             mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
+            component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
         }));
 
         it('should select the empty network', () => {
@@ -307,9 +325,19 @@ describe('DeployComponent', () => {
                 getPackageJson: sinon.stub().returns({json: 'some json'})
             };
 
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
+
+            mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+
             let businessNetworkMock = {
                 network: 'mockNetwork',
-                getMetadata: sinon.stub().returns(metaDataMock)
+                getMetadata: sinon.stub().returns(metaDataMock),
+                getModelManager: sinon.stub().returns(mockModelManager)
             };
 
             let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
@@ -326,6 +354,9 @@ describe('DeployComponent', () => {
 
             mockClientService.getBusinessNetworkFromArchive.should.have.been.called;
             component['currentBusinessNetwork'].network.should.equal('mockNetwork');
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
             component['expandInput'].should.equal(false);
             component['chosenNetwork'].should.deep.equal({json: 'some json'});
             component['sampleDropped'].should.equal(true);

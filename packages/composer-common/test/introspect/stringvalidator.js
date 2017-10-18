@@ -34,7 +34,7 @@ describe('StringValidator', () => {
         it('should throw for invalid regexes', () => {
             (() => {
                 new StringValidator(mockField, '/^[A-z/' );
-            }).should.throw(/Invalid validator for field/);
+            }).should.throw(/Validator error for field/);
         });
 
     });
@@ -56,7 +56,7 @@ describe('StringValidator', () => {
 
             (() => {
                 v.validate('id', 'xyz');
-            }).should.throw(/Invalid validator for field id org.acme.myField/);
+            }).should.throw(/Validator error for field id org.acme.myField/);
         });
     });
 });

@@ -157,6 +157,7 @@ class Context {
         this.compiledQueryBundle = null;
         this.aclCompiler = null;
         this.compiledAclBundle = null;
+        this.loggingService = null;
     }
 
     /**
@@ -513,6 +514,7 @@ class Context {
         options = options || {};
         this.function = options.function || this.function;
         this.arguments = options.arguments || this.arguments;
+        this.container = options.container;
         return Promise.resolve()
             .then(() => {
                 return this.findBusinessNetworkDefinition(options);
@@ -578,6 +580,11 @@ class Context {
                 }
                 return this.initializeInner();
             })
+            .then(()=>{
+                if (this.container){
+                    this.loggingService = this.container.getLoggingService();
+                }
+            })
             .then(() => {
                 LOG.exit(method);
             });
@@ -625,7 +632,13 @@ class Context {
             this.getHTTPService()
         ];
     }
-
+    /**
+     * Get the container.
+     * @return {Container} The container.
+     */
+    getContainer() {
+        return this.container;
+    }
     /**
      * Get the data service provided by the chaincode container.
      * @abstract
@@ -653,6 +666,16 @@ class Context {
         throw new Error('abstract function called');
     }
 
+    /**
+     * Get the serializer.
+     * @return {Serializer} The serializer.
+     */
+    getSerializer() {
+        if (!this.businessNetworkDefinition) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.businessNetworkDefinition.getSerializer();
+    }
     /**
      * Get the event service provided by the chaincode container.
      * @abstract
@@ -706,16 +729,6 @@ class Context {
         return this.businessNetworkDefinition.getFactory();
     }
 
-    /**
-     * Get the serializer.
-     * @return {Serializer} The serializer.
-     */
-    getSerializer() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getSerializer();
-    }
 
     /**
      * Get the introspector.
@@ -959,6 +972,13 @@ class Context {
      */
     getCompiledAclBundle() {
         return this.compiledAclBundle;
+    }
+
+    /** Obtains the logging service
+     *@return {LoggingService} the logging service
+     */
+    getLoggingService(){
+        return this.loggingService;
     }
 
     /**

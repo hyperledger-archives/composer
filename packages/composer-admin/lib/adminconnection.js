@@ -36,7 +36,12 @@ const LOG = Logger.getLog('AdminConnection');
  * correctly configured.</li>
  * <li>Store a connection profile document in the connection profile store</li>
  * </ul>
+ * Note: that the methods on this class take the 'businessNetworkIdentifier'; this has to match
+ * the name given on the create call. An AdminConnection that has been connected to network-A can
+ * only be used to adminster network-A.
  *
+ * Instances of AdminConnections can be reused for different networks. Call disconnect(..) then connect(..).
+ * Calling an api after disconnect and before connect will give an error.
  * @class
  * @memberof module:composer-admin
  */
@@ -75,38 +80,7 @@ class AdminConnection {
         LOG.exit(method);
     }
 
-    /**
-     * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile. The connection profile must exist in the profile store.
-     * @example
-     * // Connect to Hyperledger Fabric
-     * var adminConnection = new AdminConnection();
-     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(){
-     *     // Connected.
-     * })
-     * .catch(function(error){
-     *     // Add optional error handling here.
-     * });
-     * @param {string} connectionProfile - The name of the connection profile
-     * @param {string} enrollmentID the enrollment ID of the user
-     * @param {string} enrollmentSecret the enrollment secret of the user
-     * @param {string} businessNetworkIdentifier the id of the network (for update) or null
-     * @return {Promise} A promise that indicates the connection is complete
-     */
-    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
-        return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
-            .then((connection) => {
-                this.connection = connection;
-                return connection.login(enrollmentID, enrollmentSecret);
-            })
-            .then((securityContext) => {
-                this.securityContext = securityContext;
-                if (businessNetworkIdentifier) {
-                    return this.ping(this.securityContext);
-                }
-            });
-    }
+    // ---- connection profile methods that will be replaced by business network card support
 
     /**
      * Stores a connection profile into the profile store being used by this
@@ -193,8 +167,43 @@ class AdminConnection {
         return this.connectionProfileManager.getConnectionProfileStore().loadAll();
     }
 
+    // admin connection methods...
+
     /**
-     * Disconnects this connection.
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile. The connection profile must exist in the profile store.
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {string} connectionProfile - The name of the connection profile
+     * @param {string} enrollmentID the enrollment ID of the user
+     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {string} businessNetworkIdentifier the id of the network (for update) or null
+     * @return {Promise} A promise that indicates the connection is complete
+     */
+    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
+        return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
+            .then((connection) => {
+                this.connection = connection;
+                return connection.login(enrollmentID, enrollmentSecret);
+            })
+            .then((securityContext) => {
+                this.securityContext = securityContext;
+                if (businessNetworkIdentifier) {
+                    return this.ping(this.securityContext);
+                }
+            });
+    }
+
+    /**
+     * Disconnects this connection.securityContext
      * @example
      * // Disconnect from a Business Network
      * var adminConnection = new AdminConnection();
@@ -241,8 +250,10 @@ class AdminConnection {
      * deployed.
      */
     install(businessNetworkIdentifier, installOptions) {
-        Util.securityCheck(this.securityContext);
-        return this.connection.install(this.securityContext, businessNetworkIdentifier, installOptions);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.install(this.securityContext, businessNetworkIdentifier, installOptions);
+        });
     }
 
     /**
@@ -454,13 +465,15 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * })
-     * @param {string} businessNetworkIdentifier - The identifier of the network to undeploy
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network that will be used to start this runtime.
      * @return {Promise} A promise that will be fufilled when the business network has been
      * undeployed.
      */
     undeploy(businessNetworkIdentifier) {
-        Util.securityCheck(this.securityContext);
-        return this.connection.undeploy(this.securityContext, businessNetworkIdentifier);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.undeploy(this.securityContext,businessNetworkIdentifier);
+        });
     }
 
     /**
@@ -482,8 +495,38 @@ class AdminConnection {
      * updated.
      */
     update(businessNetworkDefinition) {
-        Util.securityCheck(this.securityContext);
-        return this.connection.update(this.securityContext, businessNetworkDefinition);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.update(this.securityContext, businessNetworkDefinition);
+        });
+    }
+
+    /**
+     * Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
+     * must have been previously deployed.
+     *
+     * Note this will remove ALL the contents of the network registries, but not any system registries
+     *
+     * @example
+     * // Updates a Business Network Definition
+     * var adminConnection = new AdminConnection();
+     * var businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+     * return adminConnection.reset(businessNetworkDefinition)
+     * .then(function(){
+     *     // Business network definition updated
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {BusinessNetworkIdentifier} businessNetworkIdentifier - The name of business network that will be reset
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * updated.
+     */
+    reset(businessNetworkIdentifier){
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.reset(this.securityContext,businessNetworkIdentifier);
+        });
     }
 
     /**
@@ -510,8 +553,10 @@ class AdminConnection {
      * @memberof AdminConnection
      */
     upgrade() {
-        Util.securityCheck(this.securityContext);
-        return this.connection.upgrade(this.securityContext);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.upgrade(this.securityContext);
+        });
     }
 
     /**
@@ -560,12 +605,14 @@ class AdminConnection {
     pingInner() {
         const method = 'pingInner';
         LOG.entry(method);
-        Util.securityCheck(this.securityContext);
-        return this.connection.ping(this.securityContext)
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
-            });
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.ping(this.securityContext);
+        })
+        .then((result) => {
+            LOG.exit(method, result);
+            return result;
+        });
     }
 
     /**
@@ -607,8 +654,10 @@ class AdminConnection {
      * @memberof AdminConnection
      */
     setLogLevel(newLogLevel) {
-        Util.securityCheck(this.securityContext);
-        return this.connection.invokeChainCode(this.securityContext, 'setLogLevel' , [newLogLevel]);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.setLogLevel(this.securityContext, newLogLevel);
+        });
     }
 
     /**
@@ -629,11 +678,14 @@ class AdminConnection {
      * @memberof AdminConnection
      */
     getLogLevel() {
-        Util.securityCheck(this.securityContext);
-        return this.connection.queryChainCode(this.securityContext, 'getLogLevel', [])
-            .then((response) => {
-                return Promise.resolve(JSON.parse(response));
-            });
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.queryChainCode(this.securityContext, 'getLogLevel', []);
+        })
+        .then((response) => {
+            console.log(response.toString());
+            return Promise.resolve(JSON.parse(response));
+        });
     }
 
     /**
@@ -656,8 +708,10 @@ class AdminConnection {
      * business network identifiers, or rejected with an error.
      */
     list() {
-        Util.securityCheck(this.securityContext);
-        return this.connection.list(this.securityContext);
+        return Promise.resolve().then(()=>{
+            Util.securityCheck(this.securityContext);
+            return this.connection.list(this.securityContext);
+        });
     }
 
     /**

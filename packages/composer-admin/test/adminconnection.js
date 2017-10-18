@@ -77,6 +77,7 @@ describe('AdminConnection', () => {
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
         mockConnection.upgrade.resolves();
+        mockConnection.reset.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
@@ -285,6 +286,19 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#reset', () => {
+
+        it('should be able to reset a composer runtime', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.reset('name')
+                    .then(() => {
+                        sinon.assert.calledOnce(mockConnection.reset);
+                        sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
+                    });
+        });
+    });
+
     describe('#deploy', () => {
 
         it('should be able to deploy a business network definition', () => {
@@ -471,8 +485,8 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.setLogLevel('ERROR')
             .then(() => {
-                sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'setLogLevel', ['ERROR']);
+                sinon.assert.calledOnce(mockConnection.setLogLevel);
+                sinon.assert.calledWith(mockConnection.setLogLevel,mockSecurityContext, 'ERROR');
             });
         });
     });

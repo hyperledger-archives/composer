@@ -64,12 +64,12 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Loads a card from the store.
-     * @param {String} cardName The name of the card to load
+     * Gets a card from the store.
+     * @param {String} cardName The name of the card to get
      * @return {Promise} A promise that is resolved with a {@link IdCard}.
      */
-    load(cardName) {
-        const method = 'load';
+    get(cardName) {
+        const method = 'get';
         return IdCard.fromDirectory(this._cardPath(cardName), this.fs).catch(cause => {
             LOG.error(method, cause);
             const error = new Error('Card not found: ' + cardName);
@@ -79,19 +79,19 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Save an card in the store.
+     * Puts a card in the store.
      * @param {String} cardName The name of the card to save
-     * @param {IdCard} idCard The card
+     * @param {IdCard} card The card
      * @return {Promise} A promise that resolves once the data is written
      */
-    save(cardName, idCard) {
-        const method = 'save';
+    put(cardName, card) {
+        const method = 'put';
 
         if (!cardName) {
             return Promise.reject(new Error('Invalid card name'));
         }
 
-        return idCard.toDirectory(this._cardPath(cardName), this.fs).catch(cause => {
+        return card.toDirectory(this._cardPath(cardName), this.fs).catch(cause => {
             LOG.error(method, cause);
             const error = new Error('Failed to save card: ' + cardName);
             error.cause = cause;
@@ -100,12 +100,12 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Loads all cards from the store.
+     * Gets all cards from the store.
      * @return {Promise} A promise that is resolved with a {@link Map} where
-     * the keys are card names and the values are {@link IdCard} objects.
+     * the keys are identity card names and the values are {@link IdCard} objects.
      */
-    loadAll() {
-        const method = 'loadAll';
+    getAll() {
+        const method = 'getAll';
 
         const results = new Map();
         return this.thenifyFs.readdir(this.storePath).catch(cause => {
@@ -113,14 +113,14 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
             LOG.debug(method, cause);
             return results;
         }).then(fileNames => {
-            const loadPromises = [];
+            const getPromises = [];
             fileNames.forEach(cardName => {
-                const promise = this.load(cardName).then(card => {
+                const promise = this.get(cardName).then(card => {
                     results.set(cardName, card);
                 });
-                loadPromises.push(promise);
+                getPromises.push(promise);
             });
-            return Promise.all(loadPromises);
+            return Promise.all(getPromises);
         }).then(() => {
             return results;
         });

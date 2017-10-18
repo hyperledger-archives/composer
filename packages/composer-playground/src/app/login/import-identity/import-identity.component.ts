@@ -1,18 +1,7 @@
 import { Component } from '@angular/core';
 import { ActiveDrawer, DrawerService } from '../../common/drawer';
 
-import { AdminService } from '../../services/admin.service';
-import { ClientService } from '../../services/client.service';
-import { SampleBusinessNetworkService } from '../../services/samplebusinessnetwork.service';
-import { AlertService } from '../../basic-modals/alert.service';
-import { ReplaceComponent } from '../../basic-modals/replace-confirm';
-
 import { IdCard } from 'composer-common';
-import { BusinessNetworkDefinition } from 'composer-common';
-import { ErrorComponent } from '../../basic-modals/error';
-
-const fabricComposerOwner = 'hyperledger';
-const fabricComposerRepository = 'composer-sample-networks';
 
 @Component({
     selector: 'import-identity',
@@ -30,10 +19,7 @@ export class ImportIdentityComponent {
     private identityCard: IdCard;
 
     constructor(public activeDrawer: ActiveDrawer,
-                public drawerService: DrawerService,
-                private alertService: AlertService) {
-
-    }
+                public drawerService: DrawerService) {}
 
     removeFile() {
         this.expandInput = false;
@@ -64,7 +50,7 @@ export class ImportIdentityComponent {
             this.expandInput = true;
             this.identityCard = card;
         }).catch((reason) => {
-            this.fileRejected(reason.message || 'Could not read ID card');
+            this.fileRejected(reason.message || 'Could not read business network card');
         });
     }
 

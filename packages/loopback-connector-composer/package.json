@@ -13,7 +13,7 @@
     "postlint": "npm run licchk",
     "licchk": "license-check",
     "test": "nyc mocha --recursive -t 10000",
-    "mocha": "mocha --recursive -t 10000 test/businessnetworkconnector.js"
+    "mocha": "mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
