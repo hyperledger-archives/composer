@@ -153,9 +153,7 @@ export class EditorFileComponent {
             } else if (this._editorFile.query) {
                 type = 'query';
             } else if (this._editorFile.package) {
-                let packageObject = JSON.parse(this.editorContent);
-                this.clientService.setBusinessNetworkPackageJson(packageObject);
-                this.clientService.businessNetworkChanged$.next(true);
+                type = 'package';
             } else if (this._editorFile.readme) {
                 type = 'readme';
                 this.previewContent = marked(this.editorContent);

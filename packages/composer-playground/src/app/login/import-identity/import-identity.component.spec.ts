@@ -10,7 +10,6 @@ import { By } from '@angular/platform-browser';
 import { ImportIdentityComponent } from './import-identity.component';
 
 import { ActiveDrawer, DrawerService } from '../../common/drawer';
-import { AlertService } from '../../basic-modals/alert.service';
 import { Logger, IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
@@ -75,23 +74,12 @@ describe('ImportIdentityComponent', () => {
     let fixture: ComponentFixture<ImportIdentityComponent>;
 
     let mockDragDropComponent;
-
-    let mockAlertService;
     let mockActiveDrawer;
     let mockDrawerService;
 
     beforeEach(() => {
-        mockAlertService = sinon.createStubInstance(AlertService);
         mockActiveDrawer = sinon.createStubInstance(ActiveDrawer);
         mockDrawerService = sinon.createStubInstance(DrawerService);
-
-        mockAlertService.errorStatus$ = {
-            next: sinon.stub()
-        };
-
-        mockAlertService.busyStatus$ = {
-            next: sinon.stub()
-        };
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
@@ -103,8 +91,7 @@ describe('ImportIdentityComponent', () => {
             ],
             providers: [
                 {provide: ActiveDrawer, useValue: mockActiveDrawer},
-                {provide: DrawerService, useValue: mockDrawerService},
-                {provide: AlertService, useValue: mockAlertService}]
+                {provide: DrawerService, useValue: mockDrawerService}]
         });
 
         mockDrawerService.open.returns({componentInstance: {}});
@@ -198,7 +185,7 @@ describe('ImportIdentityComponent', () => {
 
             tick();
 
-            mockActiveDrawer.dismiss.should.have.been.calledWith('Could not read ID card');
+            mockActiveDrawer.dismiss.should.have.been.calledWith('Could not read business network card');
             component['expandInput'].should.equal(false);
         }));
     });

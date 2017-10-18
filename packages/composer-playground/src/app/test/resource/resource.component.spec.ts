@@ -213,7 +213,15 @@ describe('ResourceComponent', () => {
             component['resourceDefinition'].should.equal('{\n  "$class": "com.org"\n}');
 
             // We use the following internal calls
-            mockFactory.newResource.should.be.called;
+            mockFactory.newResource.should.be.calledWith(undefined,
+                                                         'class.declaration',
+                                                         '',
+                                                         {
+                                                            generate: 'empty',
+                                                            includeOptionalFields: false,
+                                                            disableValidation: true,
+                                                            allowEmptyId: true
+                                                         });
             component.onDefinitionChanged.should.be.calledOn;
             component['updateExistingJSON'].should.not.be.called;
         });

@@ -2,6 +2,7 @@ import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { dragDropFile } from '../utils/fileUtils';
 import { OperationsHelper } from '../utils/operations-helper';
+import { Constants } from '../utils/constants';
 
 // Initialise known tile orderings
 let baseTiles = ['basic-sample-network', 'empty-business-network', 'drag-drop'];
@@ -15,11 +16,11 @@ export class Import {
   // Select BND from BNA file drop
   static selectBusinessNetworkDefinitionFromFile(filePath: string) {
     // Import slide out should be present
-    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), 10000)
+    return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait)
     .then(() => {
         // must have file drag drop visible
         OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3);
-        return browser.wait(ExpectedConditions.visibilityOf(element(by.id('file-importer_input'))), 10000);
+        return browser.wait(ExpectedConditions.visibilityOf(element(by.id('file-importer_input'))), Constants.longWait);
     })
     .then(() => {
         let inputFileElement = element(by.id('file-importer_input'));
@@ -27,7 +28,7 @@ export class Import {
     })
     .then(() => {
         let importElement = element(by.id('import_confirm'));
-        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), 10000)
+        return browser.wait(ExpectedConditions.elementToBeClickable(importElement), Constants.longWait)
         .then(() => {
             return importElement.click();
         });
@@ -90,7 +91,7 @@ export class Import {
   // Confirm import
   static confirmImport() {
     // Import drawer should be present and populated with chosen-network div
-    browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), 10000);
+    browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), Constants.longWait);
 
     // Wait for poplation of sample-network-list-item(s)
     OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
@@ -104,7 +105,7 @@ export class Import {
   // Cancel import
   static cancelImport() {
       // Import drawer should be present, button should be visible within chosen-network div
-      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), 5000);
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), Constants.longWait);
 
       // Wait for poplation of sample-network-list-item(s)
       OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
@@ -112,24 +113,24 @@ export class Import {
         let cancelElement = element(by.id('import_cancel'));
         browser.executeScript('arguments[0].scrollIntoView();', cancelElement.getWebElement());
         OperationsHelper.click(cancelElement);
-        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.drawer'))), 5000);
+        browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.drawer'))), Constants.longWait);
       });
   }
 
   static waitToAppear() {
-      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), 5000);
+      browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait);
   }
 
   static waitToDisappear() {
-      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.drawer'))), 5000);
+      browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.drawer'))), Constants.longWait);
   }
 
   static waitToLoadBaseOptions() {
-      browser.wait(OperationsHelper.elementsPresent(element(by.id('base-samples')).all(by.css('.sample-network-list-item')), baseTiles.length), 20000);
+      browser.wait(OperationsHelper.elementsPresent(element(by.id('base-samples')).all(by.css('.sample-network-list-item')), baseTiles.length), Constants.mlongwait);
   }
 
   static waitToLoadNpmOptions() {
-      browser.wait(OperationsHelper.elementsPresent(element(by.id('npm-samples')).all(by.css('.sample-network-list-item')), npmTiles.length), 20000);
+      browser.wait(OperationsHelper.elementsPresent(element(by.id('npm-samples')).all(by.css('.sample-network-list-item')), npmTiles.length), Constants.mlongwait);
   }
 
   static retrieveBaseTileOptions() {
@@ -141,6 +142,5 @@ export class Import {
     this.waitToLoadNpmOptions();
     return element(by.id('npm-samples')).all(by.css('.sample-network-list-item'));
   }
-
 
 }

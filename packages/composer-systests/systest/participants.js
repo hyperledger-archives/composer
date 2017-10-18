@@ -27,7 +27,10 @@ chai.use(require('chai-subset'));
 chai.use(require('chai-as-promised'));
 
 describe('Participant system tests', function () {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -40,6 +43,7 @@ describe('Participant system tests', function () {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-participants')

@@ -19,6 +19,7 @@ const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
+const EnumDeclaration = require('../../lib/introspect/enumdeclaration');
 const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
@@ -545,10 +546,55 @@ describe('ModelFile', () => {
 
     describe('#getEventDeclarations', () => {
 
-        it('should return the expected number of Event declarations', () => {
+        it('should return the expected number of Event declarations with system types', () => {
             let modelFile = new ModelFile(mockModelManager, carLeaseModel);
             let events = modelFile.getEventDeclarations();
             events.length.should.equal(1);
+        });
+
+        it('should return the expected number of Event declarations with system types', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let events = modelFile.getEventDeclarations(true);
+            events.length.should.equal(1);
+        });
+
+        it('should return the expected number of Event declarations without system types', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let events = modelFile.getEventDeclarations(false);
+            events.length.should.equal(1);
+            let i;
+            for(i = 0; i < events.length; i++) {
+                events[i].modelFile.should.have.property('systemModelFile', false);
+            }
+        });
+    });
+
+    describe('#getEnumDeclarations', () => {
+
+        it('should return the expected number of Enum declarations with system types', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let decls = modelFile.getEnumDeclarations();
+            decls.should.all.be.an.instanceOf(EnumDeclaration);
+            decls.length.should.equal(1);
+            // TO DO ADD IN CHECK FOR TRUE AND FALSE, CHECK THAT SYSTEM TYPE IS CORRECT USING FOR LOOP LIKE EARLIER
+        });
+
+        it('should return the expected number of Enum declarations with system types', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let decls = modelFile.getEnumDeclarations(true);
+            decls.should.all.be.an.instanceOf(EnumDeclaration);
+            decls.length.should.equal(1);
+        });
+
+        it('should return the expected number of Enum declarations without system types', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let decls = modelFile.getEnumDeclarations(false);
+            decls.should.all.be.an.instanceOf(EnumDeclaration);
+            decls.length.should.equal(1);
+            let i;
+            for(i = 0; i < decls.length; i++) {
+                decls[i].modelFile.should.have.property('systemModelFile', false);
+            }
         });
 
     });
