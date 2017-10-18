@@ -45,11 +45,11 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 
-        composer network deploy -o endorsementPolicy='{"identities": [.... }'
+        composer network start -o endorsementPolicy='{"identities": [.... }'
 
 - Using the `-o` option, the endorsement policy can be sent as a file path as follows:
 
-        composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+        composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 
 	In this case, the endorsement policy file should follow this format:
 
@@ -58,7 +58,7 @@ The `--option, -o` option and the `--optionsFile, -O` option allow connection sp
 
 - Using the `-O` option, the endorsement policy can be sent as a file path as follows:
 
-        composer network deploy -O /path/to/file/options.json
+        composer network start -O /path/to/file/options.json
 
 	In this case, the options file should follow this format:
 
