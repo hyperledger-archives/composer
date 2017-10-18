@@ -222,6 +222,7 @@ describe('UpdateComponent', () => {
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
+          let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
           mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
           mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
           mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
@@ -236,14 +237,17 @@ describe('UpdateComponent', () => {
           component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
           component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
           component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
+          mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
         }));
 
         it('should select the empty network', () => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
             component.selectNetwork({name: 'empty-business-network'});
 
             empty.should.have.been.called;
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({name: 'empty-business-network'});
         });
     });
 
