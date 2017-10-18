@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "The runtime execution environment for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -63,7 +63,7 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.14.0",
+    "composer-common": "0.14.1",
     "debug": "2.6.2",
     "fast-json-patch": "1.1.8",
     "lru-cache": "4.0.2",
