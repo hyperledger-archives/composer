@@ -152,6 +152,9 @@ rule NetworkAdminSystem {
             const aclManager = this.currentBusinessNetwork.getAclManager();
             const aclFile = aclManager.createAclFile('permissions.acl', permissions);
             aclManager.setAclFile(aclFile);
+            this.currentBusinessNetwork.participants = this.currentBusinessNetwork.getModelManager().getParticipantDeclarations(false);
+            this.currentBusinessNetwork.assets = this.currentBusinessNetwork.getModelManager().getAssetDeclarations(false);
+            this.currentBusinessNetwork.transactions = this.currentBusinessNetwork.getModelManager().getTransactionDeclarations(false);
             return this.currentBusinessNetwork;
         });
     }
