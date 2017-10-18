@@ -3,7 +3,7 @@ layout: default
 title: {{name}} ({{module | capitalize }} API)
 section: api
 sidebar: sidebars/accordion-toc0.md
-excerpt: The Client, Admin, and Runtime components of Hyperledger Composer .
+excerpt: The Client, Admin, and Runtime components of Hyperledger Composer
 index-order: {{index}}
 ---
 # {{name}}
@@ -14,9 +14,11 @@ index-order: {{index}}
 - **Extends** {{extends}}
 - **Module** {{module}}
 
-### See also
 {% for sa in seeAlso -%}
+### See also
 - {{sa}}
+{% else %}
+
 {% endfor %}
 
 ## Method Summary
@@ -25,12 +27,12 @@ index-order: {{index}}
 {% for method in methods | sort(attribute='name') %}| `{{method.returnType}}` | [{{method.name}}](#{{method.name | lower }}{% for args in method.methodArgs %}-{{args | lower }}{% endfor %}) | {{method.description[0]}}  |
 {% endfor %}
 
-## Method Details
+# Method Details
 {% for method in methods %}
 {% if method.name == 'constructor'%}
-## new {{name}}() 
+## new {{name}}()
 {% else %}
-## {{method.name}}({% for args in method.methodArgs %}{{args | lower }}{% if not loop.last %},{% endif %}{% endfor %}) 
+## {{method.name}}({% for args in method.methodArgs %}{{args | lower }}{% if not loop.last %},{% endif %}{% endfor %})
 {% endif %}
 
 
@@ -67,4 +69,4 @@ index-order: {{index}}
 
 No parameters
 {% endif %}
-{% endfor %} 
+{% endfor %}
