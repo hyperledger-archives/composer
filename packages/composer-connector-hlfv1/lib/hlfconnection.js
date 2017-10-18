@@ -871,7 +871,7 @@ class HLFConnection extends Connection {
                 enrollmentID: userID,
                 affiliation: options.affiliation || 'org1',  // or eg. org1.department1
                 attrs: [],
-                maxEnrollments: options.maxEnrollments || 0,
+                maxEnrollments: options.maxEnrollments || 1,
                 role: options.role || 'client'
             };
 

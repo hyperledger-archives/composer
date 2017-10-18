@@ -188,6 +188,9 @@ rule NetworkAdminSystem {
                 .then((businessNetwork) => {
                     this.chosenNetwork = businessNetwork.getMetadata().getPackageJson();
                     this.currentBusinessNetwork = businessNetwork;
+                    this.currentBusinessNetwork.participants = businessNetwork.getModelManager().getParticipantDeclarations(false);
+                    this.currentBusinessNetwork.assets = businessNetwork.getModelManager().getAssetDeclarations(false);
+                    this.currentBusinessNetwork.transactions = businessNetwork.getModelManager().getTransactionDeclarations(false);
                     this.sampleDropped = true;
                     // needed for if browse file
                     this.expandInput = false;

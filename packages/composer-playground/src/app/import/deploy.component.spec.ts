@@ -322,9 +322,19 @@ describe('DeployComponent', () => {
                 getPackageJson: sinon.stub().returns({json: 'some json'})
             };
 
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
+
+            mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+
             let businessNetworkMock = {
                 network: 'mockNetwork',
-                getMetadata: sinon.stub().returns(metaDataMock)
+                getMetadata: sinon.stub().returns(metaDataMock),
+                getModelManager: sinon.stub().returns(mockModelManager)
             };
 
             mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve(businessNetworkMock));
@@ -339,6 +349,9 @@ describe('DeployComponent', () => {
 
             mockClientService.getBusinessNetworkFromArchive.should.have.been.called;
             component['currentBusinessNetwork'].network.should.equal('mockNetwork');
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
             component['expandInput'].should.equal(false);
             component['chosenNetwork'].should.deep.equal({json: 'some json'});
             component['sampleDropped'].should.equal(true);
