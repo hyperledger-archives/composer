@@ -14,6 +14,7 @@
 
 'use strict';
 
+const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
@@ -29,16 +30,13 @@ describe('composer card import CLI', function() {
     const sandbox = sinon.sandbox.create();
     const cardFileName = '/TestCard.card';
     let cardBuffer;
-    let adminConnectionMock;
+    let adminConnectionStub;
+    let consoleLogSpy;
 
     beforeEach(function() {
-        // TODO: create a stub instance of AdminConnection once it implements importCard()
-        const adminConnectionStub = {
-            importCard: () => { return Promise.resolve('CARD_NAME'); }
-        };
-
-        adminConnectionMock = sandbox.mock(adminConnectionStub);
+        adminConnectionStub = sinon.createStubInstance(AdminConnection);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(adminConnectionStub);
+        consoleLogSpy = sandbox.spy(console, 'log');
         sandbox.stub(process, 'exit');
 
         const testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
@@ -56,22 +54,28 @@ describe('composer card import CLI', function() {
         const args = {
             file: cardFileName
         };
-        adminConnectionMock.expects('importCard')
-            .once()
-            .withExactArgs(sinon.match.instanceOf(IdCard), sinon.match.falsy);
-        return ImportCmd.handler(args).should.not.be.rejected;
+        const cardName = 'CARD_NAME';
+        adminConnectionStub.importCard.resolves(cardName);
+        return ImportCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(adminConnectionStub.importCard);
+            sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.instanceOf(IdCard), sinon.match.falsy);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(cardName));
+        });
     });
 
     it('should import valid card file with specified name', function() {
         sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(cardBuffer);
+        const cardName = 'CONGA_CARD';
         const args = {
             file: cardFileName,
-            name: 'CARD_NAME'
+            name: cardName
         };
-        adminConnectionMock.expects('importCard')
-            .once()
-            .withExactArgs(sinon.match.instanceOf(IdCard), args.name);
-        return ImportCmd.handler(args).should.not.be.rejected;
+        adminConnectionStub.importCard.resolves(args.name);
+        return ImportCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(adminConnectionStub.importCard);
+            sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.instanceOf(IdCard), cardName);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(cardName));
+        });
     });
 
     it('should reject invalid card file with absolute path in message', function() {
