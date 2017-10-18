@@ -263,7 +263,7 @@ ga('send', 'pageview');
 <li><p>Navigate into the new profile folder.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd MyProfile
 </code></pre></div></li>
-<li><p>Create a new file called <code>connection.json</code> that contains the following information for Hyperledger Fabric v1.0. 
+<li><p>Create a new file called <code>connection.json</code> that contains the following information for Hyperledger Fabric v1.0.
     }</p></li>
 </ol>
 
@@ -302,7 +302,7 @@ ga('send', 'pageview');
         "channel": "composerchannel",
         "mspID": "Org1MSP",
         "timeout": 300,
-        "globalcert": "",
+        "globalCert": "",
         "maxSendSize": 10,
         "maxRecvSize": 15
     }
@@ -331,7 +331,7 @@ _Please note: The simplified version of the connection profile will only work if
     "channel": "composerchannel",
     "mspID": "Org1MSP",
     "timeout": 300,
-    "globalcert": "",
+    "globalCert": "",
     "maxSendSize": 10,
     "maxRecvSize": 15
     }
@@ -347,7 +347,7 @@ _Please note: The simplified version of the connection profile will only work if
 </code></pre></div></li>
 <li><p><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p></li>
 <li><p><code>timeout</code> is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.</p></li>
-<li><p><code>globalcert</code> defines the TLS certificate which is used for all peers and orderers if no <code>cert</code> property is specified. If a <code>cert</code> property is specified, it overrides the <code>globalcert</code> property only for the peer or orderer it is specified for.</p></li>
+<li><p><code>globalCert</code> defines the TLS certificate which is used for all peers and orderers if no <code>cert</code> property is specified. If a <code>cert</code> property is specified, it overrides the <code>globalCert</code> property only for the peer or orderer it is specified for.</p></li>
 <li><p><code>maxSendSize</code> is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
 <li><p><code>maxRecvSize</code> is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
 </ul>

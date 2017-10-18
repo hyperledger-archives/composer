@@ -249,9 +249,9 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer participant add</code> command adds a new instance of a participant to a
-participant registry. See the task <a href="../managing/participant-add.html">Add a Participant</a>
-for a walkthrough of using this command or the API.</p>
+<p>The <code>composer participant add</code> command adds a new instance of a participant to a participant registry. See the task <a href="../managing/participant-add.html">Add a Participant</a> for a walkthrough of using this command or the API.</p>
+
+<p>The <code>data</code> option must contain a serialized JSON representation of the participant to add, and must be wrapped in single quotes.</p>
 
 <h2 id="syntax">Syntax</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">$ composer participant add
@@ -269,32 +269,35 @@ Options:
 
 <p><code>--connectionProfileName, -p</code></p>
 
-<p>The connection profile name.<br>
-Example: <code>hlfv1</code></p>
+<p>The connection profile name.  </p>
+
+<p>Example: <code>hlfv1</code></p>
 
 <p><code>--businessNetworkName, -n</code></p>
 
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
+<p>The name of the deployed Business Network to connect to.  </p>
+
+<p>Example: <code>digitalproperty-network</code></p>
 
 <p><code>--enrollId, -i</code></p>
 
 <p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
+Business Network.</p>
+
+<p>Example: <code>maeid1</code></p>
 
 <p><code>--enrollSecret, -s</code></p>
 
 <p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
+Business Network.  </p>
+
+<p>Example: <code>Xurw3yU9zI0l</code></p>
 
 <p><code>--data, -d</code></p>
 
-<p>The serialized JSON representation of the participant to add to the participant
-registry. The data must be valid according to the model of the participant.<br>
-Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}</code></p>
+<p>The serialized JSON representation of the participant to add to the participant registry. The data must be valid according to the model of the participant.  </p>
+
+<p>Example: <code>&#39;{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}&#39;</code></p>
 
             
           </section>

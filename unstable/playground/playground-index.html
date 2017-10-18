@@ -257,9 +257,9 @@ ga('send', 'pageview');
 
 <h1 id="navigating-playground">Navigating Playground</h1>
 
-<h2 id="the-wallet-page">The wallet page</h2>
+<h2 id="the-business-networks-page">The Business Networks page</h2>
 
-<p>The <strong>My Wallet</strong>  page is the default Playground landing page. Here you can see all the Business Network Cards in your Wallet. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the <strong>Define</strong> page.</p>
+<p>The <strong>Business Networks</strong>  page is the default Playground landing page. Here you can see all the Business Network Cards you have available for use. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the <strong>Define</strong> page.</p>
 
 <p><img src="./images/wallet-page.png" alt="wallet-page"></p>
 
@@ -269,7 +269,7 @@ ga('send', 'pageview');
 <li>Connect to a business network. If you already have a deployed business network and a Business Network Card created for it, you can click <strong>Connect now</strong> to connect to the business network.</li>
 <li>Deploy a new business network. If this is your first time using Playground, or you wish to start a new network, deploying your own network is a great place to start. When creating a new business network, you can choose to base your business network definition on a sample network, or create your own network from scratch.</li>
 <li>Interact with Business Network Cards. Business Network Cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.</li>
-<li>Import Business Network Cards. Importing an existing <code>.card</code> file from your computer is the simplest way to add a Business Network Card to your wallet.</li>
+<li>Import Business Network Cards. Importing an existing <code>.card</code> file from your computer is the simplest way to add a Business Network Card to your Business Networks page.</li>
 <li>Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click <strong>Connect using credentials</strong> to enter them and generate a Business Network Card.</li>
 <li>Run through the Playground tutorial. If you don&#39;t know where to start, the Playground tutorial runs through creating a business network from scratch, and performing some basic operations.</li>
 </ul>
@@ -283,7 +283,7 @@ ga('send', 'pageview');
 <ul>
 <li>In the upper-left is the name of the connection profile you&#39;re using and the business network you&#39;re connected to. In the example above, the connection profile is called <em>Web</em> and the business network name is <em>basic-sample-network</em>.</li>
 <li>Links to the <strong>Define</strong> and <strong>Test</strong> tabs. In the <strong>Define</strong> tab, you can add, modify and delete the content of your business network, and in the <strong>Test</strong> tab you can create assets and participants that were defined in the <strong>Define</strong> tab, and test the functionality of your business network.</li>
-<li>On the upper-right is a dropdown menu displaying the identity which is being used to connect to the business network. The dropdown contains a link to the <strong>Identity Registry</strong>, and the ability to log out of the business network, returning to the <strong>My Wallet</strong> screen.</li>
+<li>On the upper-right is a dropdown menu displaying the identity which is being used to connect to the business network. The dropdown contains a link to the <strong>Identity Registry</strong>, and the ability to log out of the business network, returning to the <strong>Business Networks</strong> page.</li>
 </ul>
 
 <h2 id="the-define-tab">The Define tab</h2>
@@ -294,7 +294,7 @@ ga('send', 'pageview');
 
 <p>On the left of the <strong>Define</strong> tab, you can see a list of all the files in your current business network definition. To examine the contents of a file, click on it, and it will appear in the editor view. New files can be added to your business network with the <strong>Add a file</strong> button. Model files, script files, access control files, and query files can be added to your business network.</p>
 
-<p>Once you&#39;ve added and modified the files for your business network definition, you can deploy the changes to your network with the <strong>Update</strong> button. After click <strong>Update</strong> you can experiment with your changes in the <strong>Test</strong> tab. The <strong>Import/Replace</strong> button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the <strong>Export</strong> button downloads your current business network as a business network archive <code>.bna</code> file.</p>
+<p>Once you&#39;ve added and modified the files for your business network definition, you can deploy the changes to your network with the <strong>Update</strong> button. After clicking <strong>Update</strong> you can experiment with your changes in the <strong>Test</strong> tab. The <strong>Import/Replace</strong> button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the <strong>Export</strong> button downloads your current business network as a <code>.bna</code> file.</p>
 
 <p><strong>Please note</strong>: If two or more users are using Hyperledger Composer Playground to connect to the same instance of Hyperledger Fabric, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.</p>
 
