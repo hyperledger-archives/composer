@@ -252,9 +252,9 @@ ga('send', 'pageview');
 <p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a>.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna
-       -i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
-       -A admin -S
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna
+-i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
+-A admin -S
 </code></pre></div>
 <p>To update the business network definition for an already deployed business network use the <a href="../reference/composer.network.update.html"><code>composer network update</code></a> CLI command.</p>
 
@@ -273,22 +273,22 @@ ga('send', 'pageview');
 <p>A business network administrator is a participant who is responsible for configuring the business network for their organisation after the business network is deployed, and is responsible for on-boarding other participants from their organisation. Because business networks include multiple organisations, there should be multiple business network administrators for any given business network.</p>
 
 <p>A built-in participant type, <code>org.hyperledger.composer.system.NetworkAdmin</code>, representing a business network administrator is provided by Hyperledger Composer. This built-in participant type does not have any special permissions; they are still subject to the access control rules specified in the business network definition. For this reason, it is recommended that you start with the following sample access control rules that grant business network administrators full access to a business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">rule NetworkAdminUser {
-    description: "Grant business network administrators full access to user resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "**"
-    action: ALLOW
-}
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">rule</span><span class="w"> </span><span class="err">NetworkAdminUser</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">description</span><span class="p">:</span><span class="w"> </span><span class="s2">"Grant business network administrators full access to user resources"</span><span class="w">
+    </span><span class="err">participant</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.NetworkAdmin"</span><span class="w">
+    </span><span class="err">operation</span><span class="p">:</span><span class="w"> </span><span class="err">ALL</span><span class="w">
+    </span><span class="err">resource</span><span class="p">:</span><span class="w"> </span><span class="s2">"**"</span><span class="w">
+    </span><span class="err">action</span><span class="p">:</span><span class="w"> </span><span class="err">ALLOW</span><span class="w">
+</span><span class="p">}</span><span class="w">
 
-rule NetworkAdminSystem {
-    description: "Grant business network administrators full access to system resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "org.hyperledger.composer.system.**"
-    action: ALLOW
-}
-</code></pre></div>
+</span><span class="err">rule</span><span class="w"> </span><span class="err">NetworkAdminSystem</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">description</span><span class="p">:</span><span class="w"> </span><span class="s2">"Grant business network administrators full access to system resources"</span><span class="w">
+    </span><span class="err">participant</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.NetworkAdmin"</span><span class="w">
+    </span><span class="err">operation</span><span class="p">:</span><span class="w"> </span><span class="err">ALL</span><span class="w">
+    </span><span class="err">resource</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.**"</span><span class="w">
+    </span><span class="err">action</span><span class="p">:</span><span class="w"> </span><span class="err">ALLOW</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
 <p>By default, Hyperledger Composer will automatically create a single business network administrator participant during deployment. The identity that is used for deploying the business network will also be bound to that business network administrator participant, so that identity can be used to interact with the business network after deployment.</p>
 
 <p>Hyperledger Fabric peer administrators may not have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA). This may restrict the ability of the business network administrator to on-board other participants from their organisation. For this reason, it may be preferable to create a business network administrator that does have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA).</p>
