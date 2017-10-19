@@ -26,7 +26,7 @@ const path = require('path');
 class Import {
   /**
     * Command implementation.
-    * @param {string} args argument list from composer command
+    * @param {Object} args argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(args) {
