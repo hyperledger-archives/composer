@@ -19,9 +19,9 @@ If you are new to the Playground, we recommend that you follow the [Playground T
 
 # Navigating Playground
 
-## The wallet page
+## The Business Networks page
 
-The **My Wallet**  page is the default Playground landing page. Here you can see all the Business Network Cards in your Wallet. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
+The **Business Networks**  page is the default Playground landing page. Here you can see all the Business Network Cards you have available for use. Each Business Network Card provides all of the information needed to connect to a blockchain business network. It is only possible to access a blockchain business network by using a valid Business Network Card. Once connected to a deployed Business Network, you will be taken to the **Define** page.
 
 ![wallet-page](./images/wallet-page.png)
 
@@ -31,7 +31,7 @@ From this page you can:
 - Connect to a business network. If you already have a deployed business network and a Business Network Card created for it, you can click **Connect now** to connect to the business network.
 - Deploy a new business network. If this is your first time using Playground, or you wish to start a new network, deploying your own network is a great place to start. When creating a new business network, you can choose to base your business network definition on a sample network, or create your own network from scratch.
 - Interact with Business Network Cards. Business Network Cards are used to connect to business networks which already exist, and are a combination of connection profile and identity. The card provides options to delete the identity/card, export the card, and to connect to the corresponding business network.
-- Import Business Network Cards. Importing an existing `.card` file from your computer is the simplest way to add a Business Network Card to your wallet.
+- Import Business Network Cards. Importing an existing `.card` file from your computer is the simplest way to add a Business Network Card to your Business Networks page.
 - Connect using a user ID and user secret. If you have been provided with a user ID and user secret by your network administrator, click **Connect using credentials** to enter them and generate a Business Network Card.
 - Run through the Playground tutorial. If you don't know where to start, the Playground tutorial runs through creating a business network from scratch, and performing some basic operations.
 
@@ -43,7 +43,7 @@ Once connected to a business network using a Business Network Card, there are a 
 
 - In the upper-left is the name of the connection profile you're using and the business network you're connected to. In the example above, the connection profile is called _Web_ and the business network name is _basic-sample-network_.
 - Links to the **Define** and **Test** tabs. In the **Define** tab, you can add, modify and delete the content of your business network, and in the **Test** tab you can create assets and participants that were defined in the **Define** tab, and test the functionality of your business network.
-- On the upper-right is a dropdown menu displaying the identity which is being used to connect to the business network. The dropdown contains a link to the **Identity Registry**, and the ability to log out of the business network, returning to the **My Wallet** screen.
+- On the upper-right is a dropdown menu displaying the identity which is being used to connect to the business network. The dropdown contains a link to the **Identity Registry**, and the ability to log out of the business network, returning to the **Business Networks** page.
 
 ## The Define tab
 
@@ -53,7 +53,7 @@ The Define tab is used to create, edit and update your business network.
 
 On the left of the **Define** tab, you can see a list of all the files in your current business network definition. To examine the contents of a file, click on it, and it will appear in the editor view. New files can be added to your business network with the **Add a file** button. Model files, script files, access control files, and query files can be added to your business network.
 
-Once you've added and modified the files for your business network definition, you can deploy the changes to your network with the **Update** button. After click **Update** you can experiment with your changes in the **Test** tab. The **Import/Replace** button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the **Export** button downloads your current business network as a business network archive `.bna` file.
+Once you've added and modified the files for your business network definition, you can deploy the changes to your network with the **Update** button. After clicking **Update** you can experiment with your changes in the **Test** tab. The **Import/Replace** button allows you to import a business network, either from your own computer, or import a business network from our samples. Conversely, the **Export** button downloads your current business network as a `.bna` file.
 
 **Please note**: If two or more users are using {{site.data.conrefs.composer_full}} Playground to connect to the same instance of {{site.data.conrefs.hlf_full}}, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.
 

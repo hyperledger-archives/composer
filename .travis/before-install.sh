@@ -5,7 +5,9 @@ set -ev
 set -o pipefail
 
 # Remove the MongoDB repo as their GPG key has expired.
-#sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
+sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
+# Remove Riak https://github.com/travis-ci/travis-ci/issues/8607
+sudo rm -vf /etc/apt/sources.list.d/*riak*
 
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
