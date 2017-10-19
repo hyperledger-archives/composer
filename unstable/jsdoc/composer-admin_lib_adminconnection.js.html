@@ -230,6 +230,16 @@ class AdminConnection {
     }
 
     /**
+     * Delete an existing card.
+     * @private
+     * @param {String} name Name of the card to delete.
+     * @returns {Promise} Resolves if an existing card was deleted; rejected otherwise.
+     */
+    deleteCard(name) {
+        return this.cardStore.delete(name);
+    }
+
+    /**
      * Deletes the specified connection profile from the profile store being used by this
      * AdminConnection.
      * @example
