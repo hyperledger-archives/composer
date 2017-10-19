@@ -39,10 +39,13 @@ describe('Login Define', (() => {
                 return Deploy.waitToLoadDeployBasisOptions();
             })
             .then(() => {
-                return Deploy.nameBusinessNetwork(networkName);
+                return Deploy.selectDeployBasisOption('empty-business-network');
             })
             .then(() => {
-                return Deploy.selectDeployBasisOption('empty-business-network');
+              return Deploy.clearBusinessNetworkName();
+            })
+            .then(() => {
+                return Deploy.nameBusinessNetwork(networkName);
             })
             .then(() => {
                 return Deploy.clickDeploy();
