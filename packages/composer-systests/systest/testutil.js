@@ -182,7 +182,7 @@ class TestUtil {
                 } else if (TestUtil.isEmbedded()) {
                     console.log('Calling AdminConnection.createProfile() ...');
                     return adminConnection.createProfile('composer-systests', {
-                        type: 'embedded'
+                        'x-type': 'embedded'
                     });
 
                 // Create all necessary configuration for the embedded runtime hosted via the connector server.
@@ -215,7 +215,7 @@ class TestUtil {
                     });
                     console.log('Calling AdminConnection.createProfile() ...');
                     return adminConnection.createProfile('composer-systests', {
-                        type: 'embedded'
+                        'x-type': 'embedded'
                     });
 
                 // Create all necessary configuration for Hyperledger Fabric v1.0.
