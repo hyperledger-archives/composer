@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
             <div class="search-form">
-              <form action="/composer/search.html" method="get">
+              <form action="/composer/search/search.html" method="get">
                 <!-- <label for="search-box">Search</label> -->
 
                 <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
@@ -265,12 +265,12 @@ ga('send', 'pageview');
 
 <p>There must be a Participant existing in the business network in order to bind an Identity required to create the Business Network Card.</p>
 
-<p>When an identity is issued within Playground, there is an option to add the Identity to your Wallet. By selecting this option a Business Network Card is created for the issued identity that is valid for the current business network. The Business Network Card will appear in your wallet once you log out of the current business network, and it is from this location where it may be exported to share with another user.</p>
+<p>When an identity is issued within Playground, there is an option to save the identity for use in your Business Networks page. By selecting this option a Business Network Card is created for the issued identity that is valid for the current business network. The Business Network Card will appear on your Business Networks page once you log out of the current business network, and it is from this location where it may be exported to share with another user.</p>
 
 <h3 id="creating-a-business-network-card">Creating a Business Network Card</h3>
 
 <ol>
-<li><p>From the <strong>My Wallet</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p></li>
+<li><p>From the <strong>Business Networks</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p></li>
 <li><p>If required, create the participant to which you intend to assign the identity:</p>
 
 <ul>
@@ -285,10 +285,10 @@ ga('send', 'pageview');
 <li><p>Click <strong>+Issue New ID</strong>.</p></li>
 <li><p>Choose an <strong>ID Name</strong>, and input an existing <strong>Participant</strong> to associate the new identity with. A look-ahead service is provided to auto-complete on known Participants.</p></li>
 <li><p>Click <strong>Create New</strong>.</p></li>
-<li><p>Click <strong>Add to My Wallet</strong>. Adding the Business Network Card to your wallet allows you to use it to connect to the business network, or export it for someone else to use.</p></li>
+<li><p>Click <strong>Add to My Wallet</strong>. Adding the Business Network Card to your Business Networks page allows you to use it to connect to the business network, or export it for someone else to use.</p></li>
 </ol>
 
-<p>The <strong>My Wallet</strong> page should now show the new Business Network Card.</p>
+<p>The <strong>Business Networks</strong> page should now show the new Business Network Card.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/assets/img/tutorials/playground/vs_code_22.mp4" type="video/mp4" />
@@ -296,10 +296,10 @@ ga('send', 'pageview');
 
 <h3 id="exporting-a-business-network-card">Exporting a Business Network Card</h3>
 
-<p>Business Network Cards are exported from the <strong>My Wallet</strong> page in Playground, through interaction with the Business Network Card that you wish to export and is a one-step process.</p>
+<p>Business Network Cards are exported from the <strong>Business Networks</strong> page in Playground, through interaction with the Business Network Card that you wish to export and is a one-step process.</p>
 
 <ul>
-<li>On the <strong>My Wallet</strong> page, click the <strong>Export</strong> icon on the Business Network Card you wish to export. The Business Network Card should download as a <code>.card</code> file.</li>
+<li>On the <strong>Business Networks</strong> page, click the <strong>Export</strong> icon on the Business Network Card you wish to export. The Business Network Card should download as a <code>.card</code> file.</li>
 </ul>
 
 <p><em>Please note</em>: If you export a Business Network Card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and private key which are then used to identify Participants. Alternatively, if you export a Business Network Card that has been used before, it will already contain the certificate and private key. For more information on Participants and Identities, please see our <a href="../managing/participantsandidentities.html">main documentation</a>.</p>
@@ -309,7 +309,7 @@ ga('send', 'pageview');
 <h3 id="creating-business-network-card-credentials">Creating Business Network Card Credentials</h3>
 
 <p>It is possible to provide credentials to a user to enable them to create a Business Network Card and then use it to connect to the business network for which the credentials are valid.
-1. From the <strong>My Wallet</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p>
+1. From the <strong>Business Networks</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p>
 
 <ol>
 <li><p>If required, create the participant to which you intend to assign the identity:</p>
@@ -343,41 +343,41 @@ ga('send', 'pageview');
 <p>Importing a Business Network Card allows you to connect to a deployed business network.</p>
 
 <ol>
-<li><p>On the <strong>My Wallet</strong> page, click <strong>Import Business Network Card</strong> in the upper right.</p></li>
+<li><p>On the <strong>Business Networks</strong> page, click <strong>Import Business Network Card</strong> in the upper right.</p></li>
 <li><p>Drag and drop, or browse, to select a Business Network Card (<code>.card</code>) file to import. Click <strong>Import</strong>.</p></li>
 </ol>
 
-<p>The Business Network Card should now be visible in your wallet; you can now connect to the deployed Business Network.</p>
+<p>The Business Network Card should now be visible in your Business Networks page; you can now connect to the deployed Business Network.</p>
 
 <h3 id="connecting-using-credentials">Connecting using Credentials</h3>
 
-<p>There are two ways a Business Network Card can be created from the <strong>My Wallet</strong> page.</p>
+<p>There are two ways a Business Network Card can be created from the <strong>Business Networks</strong> page.</p>
 
 <p>A Business Network Card can be created using certificates, which requires the following: a <em>certificate</em> and <em>private key</em>, provided by an admin of a business network; a <em>name</em> for the Business Network Card; the <em>business network name</em> for which the credentials are valid; the <em>Connection Profile</em> details for the runtime on which the target business network is deployed.</p>
 
-<p>To create a Business Network Card from the <strong>My Wallet</strong> page using <em>certificates</em>:</p>
+<p>To create a Business Network Card from the <strong>Business Networks</strong> page using <em>certificates</em>:</p>
 
 <ol>
-<li><p>After receiving a certificate and private key, click the <strong>Connect using credentials</strong> button in the upper right of the <strong>My Wallet</strong> page.</p></li>
+<li><p>After receiving a certificate and private key, click the <strong>Connect using credentials</strong> button in the upper right of the <strong>Business Networks</strong> page.</p></li>
 <li><p>If you have previously connected to the deployed runtime, select it from the displayed list, click <strong>Next</strong> and proceed to step 4; otherwise select the radio option to connect to a new Blockchain and click <strong>Next</strong>.</p></li>
 <li><p>Specify the Connection Profile details that were provided to you and click <strong>Save</strong>.</p></li>
 <li><p>Enter the <em>certificate</em>, <em>private key</em>, an <em>Business Network Card name</em> and <em>business network name</em>, and click <strong>Create</strong>.</p></li>
 </ol>
 
-<p>The Business Network Card should now be displayed in the <strong>My Wallet</strong> page.</p>
+<p>The Business Network Card should now be displayed in the <strong>Business Networks</strong> page.</p>
 
 <p>A Business Network Card can be created using an ID and secret, through knowledge of the following: a <em>Enrollment ID</em> and <em>Enrollment Secret</em>, generated by an admin of a business network; the <em>Business network name</em> for which the credentials are valid; the <em>Connection Profile</em> details for the runtime on which the target business network is deployed.</p>
 
-<p>To create a Business Network Card from the <strong>My Wallet</strong> page using an <em>enrollment ID</em> and <em>enrollment secret</em>:</p>
+<p>To create a Business Network Card from the <strong>Business Networks</strong> page using an <em>enrollment ID</em> and <em>enrollment secret</em>:</p>
 
 <ol>
-<li><p>After receiving an enrollment ID and enrollment secret, click the <strong>Connect using credentials</strong> button in the upper right of the <strong>My Wallet</strong> page.</p></li>
+<li><p>After receiving an enrollment ID and enrollment secret, click the <strong>Connect using credentials</strong> button in the upper right of the <strong>Business Networks</strong> page.</p></li>
 <li><p>If you have previously connected to the deployed runtime, select it from the displayed list, click <strong>Next</strong> and proceed to step 4; otherwise select the radio option to connect to a new Blockchain and click <strong>Next</strong>.</p></li>
 <li><p>Specify the Connection Profile details that were provided to you and click <strong>Save</strong>.</p></li>
 <li><p>Enter the <em>enrollment ID</em>, <em>enrollment secret</em> and <em>business network name</em>, and click <strong>Create</strong>.</p></li>
 </ol>
 
-<p>The Business Network Card should now be displayed in the <strong>My Wallet</strong> page.</p>
+<p>The Business Network Card should now be displayed in the <strong>Business Networks</strong> page.</p>
 
 <h3 id="manually-creating-a-business-network-card">Manually Creating a Business Network Card</h3>
 

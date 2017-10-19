@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
             <div class="search-form">
-              <form action="/composer/search.html" method="get">
+              <form action="/composer/search/search.html" method="get">
                 <!-- <label for="search-box">Search</label> -->
 
                 <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
@@ -278,17 +278,17 @@ Options:
 
 <ul>
 <li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicy='{"identities": [.... }'
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicy='{"identities": [.... }'
 </code></pre></div></li>
 <li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 </code></pre></div>
 <p>In this case, the endorsement policy file should follow this format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
     "policy": {...}}
 </code></pre></div></li>
 <li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -O /path/to/file/options.json
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -O /path/to/file/options.json
 </code></pre></div>
 <p>In this case, the options file should follow this format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].

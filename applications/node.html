@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
             <div class="search-form">
-              <form action="/composer/search.html" method="get">
+              <form action="/composer/search/search.html" method="get">
                 <!-- <label for="search-box">Search</label> -->
 
                 <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
@@ -301,10 +301,10 @@ This API returns a Promise to the businessNetworkDefinition if successful:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">titlesRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">landTitle1</span><span class="p">,</span> <span class="nx">landTitle2</span><span class="p">]);</span>
 </code></pre></div>
 <p>This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a &#39;participant&#39;, the getParticipantRegistry API is used.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person'</span><span class="p">)</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">personRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">personRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">owner</span><span class="p">);</span>
-      <span class="p">})</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">personRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">personRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">owner</span><span class="p">);</span>
+  <span class="p">})</span>
 </code></pre></div>
 <h2 id="listing-assets-in-a-regsitry">Listing assets in a regsitry</h2>
 
