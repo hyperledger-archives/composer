@@ -789,7 +789,6 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newResource('org.acme.sample', 'SampleTransaction', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
-            tx.timestamp = new Date();
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
@@ -820,7 +819,6 @@ describe('BusinessNetworkConnection', () => {
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
             delete tx.$identifier;
-            tx.timestamp = new Date();
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
@@ -844,7 +842,7 @@ describe('BusinessNetworkConnection', () => {
 
         });
 
-        it('should generate a transaction timestamp if one not specified', () => {
+        it('should overwrite a user passed timestamp', () => {
 
             // Fake the transaction registry.
             const txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -853,7 +851,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-            delete tx.timestamp;
+            tx.timestamp = new Date('October 24, 1994');
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
@@ -867,7 +865,11 @@ describe('BusinessNetworkConnection', () => {
                 .then(() => {
 
                     // Force the transaction to be serialized as some fake JSON.
-                    const json = JSON.stringify(serializer.toJSON(tx));
+                    const serialized = serializer.toJSON(tx);
+                    const json = JSON.stringify(serialized);
+
+                    // Check that timestamp was overwritten
+                    serialized.timestamp.should.deep.equal('1970-01-01T00:00:00.000Z');
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
