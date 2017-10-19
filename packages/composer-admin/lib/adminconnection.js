@@ -135,6 +135,15 @@ class AdminConnection {
     }
 
     /**
+     * List all Business Network cards.
+     * @private
+     * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
+     */
+    getAllCards() {
+        return this.cardStore.getAll();
+    }
+
+    /**
      * Deletes the specified connection profile from the profile store being used by this
      * AdminConnection.
      * @example
