@@ -32,7 +32,7 @@ Obtain two BNA files from the [Composer Playground on Bluemix](http://composer-p
     - unzip the exported BNA file
     - delete the original BNA file
     - build a BNA by targetting the folder that was created on unzip ``` composer archive create -t dir -a v1_bna -n basic-sample-network_V1 ```
-    - deploy the new BNA ``` composer network deploy -a v1_bna -i PeerAdmin -s mySecret -p hlfv1 ```
+    - deploy the new BNA ``` composer network deploy -a v1_bna -i PeerAdmin -s mySecret -p hlfv1 -A admin -S```
 
 2) Check the network
     - ping: ``` composer network ping -n basic-sample-network -p hlfv1 -i admin -s adminpw ```
@@ -40,7 +40,7 @@ Obtain two BNA files from the [Composer Playground on Bluemix](http://composer-p
     - list assets ``` composer network list -n basic-sample-network -p hlfv1 -i admin -s silent -r org.acme.sample.SampleAsset ```
 
 3) Update with the edited BNA
-    - update ``` composer network update -i PeerAdmin -s silent -p hlfv1 -a v2_bna ```
+    - update ``` composer network update -i admin -s silent -p hlfv1 -a v2_bna ```
     - ping ``` composer network ping -n basic-sample-network -p hlfv1 -i admin -s mySecret ```
     - list all ``` composer network list -n basic-sample-network -p hlfv1 -i admin -s mySecret ```
     - check that the new items are listed
@@ -51,10 +51,8 @@ Obtain two BNA files from the [Composer Playground on Bluemix](http://composer-p
     - check ``` composer network list -n basic-sample-network -p hlfv1 -i admin -s silent ```
 
 5) Submit a transaction
-    - formulate a valid transaction, eg ``` {"$class": "org.acme.sample.SampleAsset","assetId": "newAsset","owner": "resource:org.acme.sample.SampleParticipant#bob","value": "101"} ``` for basic-sample-network asset creation
-    - run it ``` composer transaction submit -p hlfv1 -n basic-sample-network -i admin -s mySecret -d '{the transaction}' ```
-    - formulate an interaction transaction eg ``` {"$class": "org.acme.sample.SampleTransaction","asset": "resource:org.acme.sample.SampleAsset#newAsset","newValue": "1300"} ```
-    - run it ``` composer transaction submit -p hlfv1 -n basic-sample-network -i admin -s admin pw -d '{the transaction}' ```
+    - submit a system transaction to add asset ```composer transaction submit -p hlfv1 -n basic-sample-network -i admin -s silent -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.sample.SampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.sample.SampleAsset", "resources": [{"$class": "org.acme.sample.SampleAsset","assetId": "newAsset","owner": "resource:org.acme.sample.SampleParticipant#bob","value": "101"}]}'```
+    - Submit a user transaction ```composer transaction submit -p hlfv1 -n basic-sample-network -i admin -s mySecret -d '{"$class": "org.acme.sample.SampleTransaction",  "asset": "resource:org.acme.sample.SampleAsset#newAsset",  "newValue": "5"}'
     - list all ``` composer network list -n basic-sample-network -p hlfv1 -i admin -s mySecret ```
     - list assets ``` composer network list -n basic-sample-network -p hlfv1 -i admin -s silent -r org.acme.sample.SampleAsset ```
 
@@ -67,6 +65,6 @@ Obtain two BNA files from the [Composer Playground on Bluemix](http://composer-p
     - list current IDs again ``` composer identity list -i admin -n basic-sample-network -p hlfv1 -s secret ``` (looking for ID status changes)
     - Obtain the long uuid for newUser1
     - revoke the id ``` composer identity revoke -p hlfv1 -n basic-sample-network -i admin -s adsf -u theLongUUID ```
-    - list current IDs again ``` composer identity list -i PeerAdmin -n basic-sample-network -p hlfv1 -s secret ``` (looking for ID status changes)
+    - list current IDs again ``` composer identity list -i admin -n basic-sample-network -p hlfv1 -s secret ``` (looking for ID status changes)
 
 

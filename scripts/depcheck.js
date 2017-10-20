@@ -37,25 +37,30 @@ packageNames.forEach((packageName) => {
 
 // Not going to catch ranges but unlikely to see those anyway
 const badDependencies = {};
-for (const i in packages) {
-    const currentPackage = packages[i];
-    for (const dependency in currentPackage.dependencies) {
-        const currentValue = currentPackage.dependencies[dependency];
-        if (isNaN(currentValue.slice(0,1))) {
-            if (!badDependencies[i]) {
-                badDependencies[i] = [];
-            }
-            badDependencies[i].push({ dependency: dependency, currentValue: currentValue });
+const checkValue = function checkValue(packageIndex, dependency, currentValue) {
+    if (packages[packageIndex].name === 'composer-connector-hlfv1' && dependency === 'grpc') {
+        // Due to https://jira.hyperledger.org/browse/FAB-6425 we currently
+        // need to relax the exact value restriction on grpc in composer-connector-hlfv1
+        // The dependency and this hack should be removed as soon as we can make
+        // use of the fixed version of fabric-ca-client!
+        return;
+    }
+
+    if (isNaN(currentValue.slice(0,1))) {
+        if (!badDependencies[packageIndex]) {
+            badDependencies[packageIndex] = [];
         }
+        badDependencies[packageIndex].push({ dependency: dependency, currentValue: currentValue });
+    }
+};
+
+for (const packageIndex in packages) {
+    const currentPackage = packages[packageIndex];
+    for (const dependency in currentPackage.dependencies) {
+        checkValue(packageIndex, dependency, currentPackage.dependencies[dependency]);
     }
     for (const dependency in currentPackage.devDependencies) {
-        const currentValue = currentPackage.devDependencies[dependency];
-        if (isNaN(currentValue.slice(0,1))) {
-            if (!badDependencies[i]) {
-                badDependencies[i] = [];
-            }
-            badDependencies[i].push({ dependency: dependency, currentValue: currentValue });
-        }
+        checkValue(packageIndex, dependency, currentPackage.devDependencies[dependency]);
     }
 }
 
