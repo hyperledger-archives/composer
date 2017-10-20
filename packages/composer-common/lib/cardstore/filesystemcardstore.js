@@ -50,28 +50,26 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         this.thenifyFs = thenifyAll(this.fs);
         this.rimrafOptions = Object.assign({}, this.fs);
         this.rimrafOptions.disableGlob = true;
-        this.storePath = options.storePath || FileSystemCardStore._defaultStorePath(os.homedir);
+        this.storePath = options.storePath || FileSystemCardStore.defaultStorePath(os.homedir);
     }
 
     /**
      * Get the default store path based on the user's home directory, or based on the filesystem root
      * directory if the supplied function does not exist or returns a falsy value.
-     * @private
      * @param {Function} homedirFunction Function to obtain the user's home directory
      * @returns {String} Absolute path
      */
-    static _defaultStorePath(homedirFunction) {
+    static defaultStorePath(homedirFunction) {
         const homeDirectory = (homedirFunction && homedirFunction()) || path.sep;
         return path.join(homeDirectory, '.composer', 'cards');
     }
 
     /**
      * Get the file system path for a given card.
-     * @private
      * @param {String} cardName name of the card.
      * @return {String} directory in which the card is stored.
      */
-    _cardPath(cardName) {
+    cardPath(cardName) {
         return path.join(this.storePath, cardName);
     }
 
@@ -82,7 +80,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
      */
     get(cardName) {
         const method = 'get';
-        return IdCard.fromDirectory(this._cardPath(cardName), this.fs).catch(cause => {
+        return IdCard.fromDirectory(this.cardPath(cardName), this.fs).catch(cause => {
             LOG.error(method, cause);
             const error = new Error('Card not found: ' + cardName);
             error.cause = cause;
@@ -103,7 +101,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
             return Promise.reject(new Error('Invalid card name'));
         }
 
-        return card.toDirectory(this._cardPath(cardName), this.fs).catch(cause => {
+        return card.toDirectory(this.cardPath(cardName), this.fs).catch(cause => {
             LOG.error(method, cause);
             const error = new Error('Failed to save card: ' + cardName);
             error.cause = cause;
@@ -146,7 +144,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     delete(cardName) {
         const method = 'delete';
 
-        const cardPath = this._cardPath(cardName);
+        const cardPath = this.cardPath(cardName);
         return this.thenifyFs.access(cardPath).then(() => {
             return thenifyRimraf(cardPath, this.rimrafOptions);
         }).catch(cause => {
