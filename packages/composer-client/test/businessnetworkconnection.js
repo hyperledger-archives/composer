@@ -238,7 +238,7 @@ describe('BusinessNetworkConnection', () => {
             let mockIdCard = sinon.createStubInstance(IdCard);
             mockCardStore.get.resolves(mockIdCard);
             mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
-
+            mockIdCard.getUserName.returns('FredBloggs');
             businessNetworkConnection.cardStore = mockCardStore;
 
             mockConnection.login.resolves(mockSecurityContext);
@@ -259,6 +259,7 @@ describe('BusinessNetworkConnection', () => {
                 .then((result)=>{
                     sinon.assert.calledOnce(mockCardStore.get);
                     sinon.assert.calledWith(mockCardStore.get,'cardName');
+                    sinon.assert.calledWith(mockConnection.login,'FredBloggs','password');
                 });
         });
 
