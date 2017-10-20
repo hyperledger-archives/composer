@@ -62,7 +62,7 @@ describe('ConnectionProfileManager', () => {
 
         it('should be able to set then get connection manager associated with a type', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
             let cpm = new ConnectionProfileManager(store);
@@ -73,25 +73,46 @@ describe('ConnectionProfileManager', () => {
                 result.should.equal(connectionManager);
             });
         });
+
+        it('should throw an error if no x-type is defined in profile', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {'type': 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.getConnectionManager( 'baz' ).should.be.rejectedWith(/x-type/);
+        });
     });
 
     describe('#getConnectionManager', () => {
 
         it('should throw if no connection manager available', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
             return cpm.getConnectionManager( 'baz' ).should.be.rejectedWith(/Failed to load connector module/);
         });
 
+        it('should throw if no x-type defined in profile', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {'type': 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            return cpm.getConnectionManager( 'baz' ).should.be.rejectedWith(/x-type/);
+        });
+
+
         it('should dynamically load the connection manager', () => {
             /** test class */
             class TestConnectionManager extends ConnectionManager { }
             mockery.registerMock('composer-connector-foo', TestConnectionManager);
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
@@ -103,11 +124,12 @@ describe('ConnectionProfileManager', () => {
             class TestConnectionManager extends ConnectionManager { }
             ConnectionProfileManager.registerConnectionManager('foo', TestConnectionManager);
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
             return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+            //TODO: test that it stores an instance of the class if possible.
         });
 
         it('should dynamically load the connection manager from a registered connection manager module', () => {
@@ -118,7 +140,7 @@ describe('ConnectionProfileManager', () => {
             };
             module.require.withArgs('composer-connector-foo').returns(TestConnectionManager);
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
@@ -138,7 +160,7 @@ describe('ConnectionProfileManager', () => {
             module.require.withArgs('composer-connector-foo').throws(new Error('such error'));
             module2.require.withArgs('composer-connector-foo').returns(TestConnectionManager);
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
@@ -192,7 +214,7 @@ describe('ConnectionProfileManager', () => {
 
         it('should call connect on connection manager', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data'};
+            const profile = {'x-type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
             const stubConnection = sinon.createStubInstance(Connection);
@@ -204,13 +226,13 @@ describe('ConnectionProfileManager', () => {
             .then((connection) => {
                 connection.should.equal(stubConnection);
                 sinon.assert.calledOnce(connectionManager.connect);
-                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {type: 'foo', data : 'data' });
+                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {'x-type': 'foo', data : 'data' });
             });
         });
 
         it('should call connect on connection manager applying any additional options', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data', overrideMe: 'please' };
+            const profile = {'x-type': 'foo', data : 'data', overrideMe: 'please' };
             store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
             const stubConnection = sinon.createStubInstance(Connection);
@@ -222,8 +244,21 @@ describe('ConnectionProfileManager', () => {
             .then((connection) => {
                 connection.should.equal(stubConnection);
                 sinon.assert.calledOnce(connectionManager.connect);
-                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {type: 'foo', data : 'data', overrideMe: 'sure thing' });
+                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {'x-type': 'foo', data : 'data', overrideMe: 'sure thing' });
             });
+        });
+
+        it('should throw if no c-type defined in profile', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {'type': 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            const stubConnection = sinon.createStubInstance(Connection);
+            connectionManager.connect.returns(stubConnection);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.connect( 'foo', 'myNetwork' ).should.be.rejectedWith(/x-type/);
         });
 
     });

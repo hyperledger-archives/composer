@@ -53,6 +53,13 @@ class HLFConnection extends Connection {
         return user;
     }
 
+    /**
+     * TODO: Temp code to work around node sdk missing stuff
+     *
+     * @static
+     * @param {any} client  client
+     * @returns {any} any
+     */
     static getOrgConfig(client) {
         let networkConfig = client._network_config;
         let clientConfig = networkConfig.getClientConfig();
@@ -63,6 +70,13 @@ class HLFConnection extends Connection {
         return orgConfig;
     }
 
+    /**
+     * TODO: Temp code to work around node sdk missing stuff
+     *
+     * @static
+     * @param {any} client  client
+     * @returns {any} any
+     */
     static getInstallPeers(client) {
         let installPeers = [];
         let orgConfig = HLFConnection.getOrgConfig(client);
@@ -1003,13 +1017,13 @@ class HLFConnection extends Connection {
 
     }
 
-  /**
+   /**
      * wait for events from the peers associated with the provided transaction id.
+     * @private
      * @param {string} txObj the transaction id to listen for events on
-     * @param {number} waitTime the time to wait in seconds for an event response
      * @returns {Promise} A promise which resolves when all the events are received or rejected
      * if an event is not received within the given timeout period
-     * @memberOf HLFConnection
+     *
      */
     _waitForCommit(txObj) {
         const txId = txObj.getTransactionID().toString();
@@ -1039,6 +1053,13 @@ class HLFConnection extends Connection {
             });
     }
 
+   /**
+     * Prepare to wait for events from the peers associated with the provided transaction id.
+     * @private
+     * @param {string} txObj the transaction id to listen for events on
+     * @returns {Promise[]} An array of promises which resolve when the transaction has been
+     * committed for each of the peers.
+     */
     _prepareForCommit(txObj) {
         const txId = txObj.getTransactionID().toString();
         const method = '_prepareForCommit';
@@ -1064,6 +1085,11 @@ class HLFConnection extends Connection {
         return eventPromises;
     }
 
+    /**
+     * Cancel listening for transaction committed events.
+     *
+     * @param {any} txObj the transaction id that the eventhub is registered to listen for
+     */
     _cancelCommitListeners(txObj) {
         const txId = txObj.getTransactionID().toString();
         this.eventHubs.forEach((eh) => {
