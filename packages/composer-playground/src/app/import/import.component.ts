@@ -183,11 +183,11 @@ rule NetworkAdminSystem {
       let descEl = this.networkDescription;
       let name = network.name;
       let desc = (typeof network.description === 'undefined') ? '' : network.description;
-      if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined') && name !== 'basic-sample-network' && name !== 'empty-business-network') {
+      if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
         this.networkName = name;
         this.lastName = name;
       }
-      if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined') && name !== 'basic-sample-network' && name !== 'empty-business-network') {
+      if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
         this.networkDescription = desc;
         this.lastDesc = desc;
       }
