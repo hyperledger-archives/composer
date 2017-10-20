@@ -257,145 +257,143 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <li><strong>Module</strong> client</li>
 </ul>
 
-<h3 id="see-also">See also</h3>
-
 <h2 id="method-summary">Method Summary</h2>
 
 <table><thead>
 <tr>
-<th style="text-align: left">Returns</th>
 <th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#addassetregistry-string-string">addAssetRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Add a new asset registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#addparticipantregistry-string-string">addParticipantRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Add a new participant registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#assetregistryexists-string">assetRegistryExists</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Determine whether a asset registry exists.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#bindidentity-string">bindIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Bind an existing identity to the specified participant.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Query</code></td>
 <td style="text-align: left"><a href="#buildquery-string">buildQuery</a></td>
+<td style="text-align: left"><code>Query</code></td>
 <td style="text-align: left">Build a query ready for later execution. The specified query string must be written</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#connect-string-string-string-string-object">connect</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>void</code></td>
 <td style="text-align: left"><a href="#constructor-object-connectionprofilestore-object">constructor</a></td>
+<td style="text-align: left"><code>void</code></td>
 <td style="text-align: left">Create an instance of the BusinessNetworkConnection class.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#disconnect">disconnect</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Disconnects from the Hyperledger Fabric.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getallassetregistries-boolean">getAllAssetRegistries</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get a list of all existing asset registries.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getallparticipantregistries-boolean">getAllParticipantRegistries</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get a list of all existing participant registries.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getalltransactionregistries-boolean">getAllTransactionRegistries</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get all transaction registries.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getassetregistry-string">getAssetRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get an existing asset registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>BusinessNetworkDefinition</code></td>
 <td style="text-align: left"><a href="#getbusinessnetwork">getBusinessNetwork</a></td>
+<td style="text-align: left"><code>BusinessNetworkDefinition</code></td>
 <td style="text-align: left">Returns the currently connected BusinessNetworkDefinition</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#gethistorian">getHistorian</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get the historian</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getidentityregistry">getIdentityRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get the identity registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getparticipantregistry-string">getParticipantRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get an existing participant registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getregistry-string">getRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Given a fully qualified name, works out and looks up the registry that this resource will be found in.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#gettransactionregistry-string">getTransactionRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get the transaction registry.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#issueidentity-string-object-boolean">issueIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Issue an identity with the specified name and map it to the specified</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#participantregistryexists-string">participantRegistryExists</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Determine whether a participant registry exists.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#ping">ping</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Test the connection to the runtime and verify that the version of the</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#query-object">query</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#revokeidentity">revokeIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Revoke the specified identity by removing any existing mapping to a participant.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#submittransaction-resource">submitTransaction</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Submit a transaction for processing by the currently connected business network.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#transactionregistryexists-string">transactionRegistryExists</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Determine whether a transaction registry exists.</td>
 </tr>
 </tbody></table>
 
-<h2 id="method-details">Method Details</h2>
+<h1 id="method-details">Method Details</h1>
 
 <h2 id="new-businessnetworkconnection">new BusinessNetworkConnection()</h2>
 

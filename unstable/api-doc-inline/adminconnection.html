@@ -271,125 +271,123 @@ Calling an api after disconnect and before connect will give an error.</p>
 <li><strong>Module</strong> admin</li>
 </ul>
 
-<h3 id="see-also">See also</h3>
-
 <h2 id="method-summary">Method Summary</h2>
 
 <table><thead>
 <tr>
-<th style="text-align: left">Returns</th>
 <th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#connect-string-string-string-string">connect</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Connects and logs in to the Hyperledger Fabric using a named connection</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>void</code></td>
 <td style="text-align: left"><a href="#constructor-object-connectionprofilestore-object">constructor</a></td>
+<td style="text-align: left"><code>void</code></td>
 <td style="text-align: left">Create an instance of the AdminConnection class.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#createprofile-string-object">createProfile</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Stores a connection profile into the profile store being used by this</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#deleteprofile-string">deleteProfile</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Deletes the specified connection profile from the profile store being used by this</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#deploy-businessnetworkdefinition-object">deploy</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#disconnect">disconnect</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Disconnects this connection.securityContext</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#exportidentity-string-string">exportIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Obtain the credentials associated with a given identity.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getallprofiles">getAllProfiles</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Retrieve all connection profiles from the profile store being used by this</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getloglevel">getLogLevel</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get the current logging level of a business network. The connection must</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#getprofile-string">getProfile</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Retrieve the specified connection profile from the profile store being</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#importidentity-string-string-string-string">importIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Import an identity into a profiles&#39; wallet. No connection needs to be established</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#install-businessnetworkidentifier-object">install</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#list">list</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">List all of the deployed business networks. The connection must</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#ping">ping</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Test the connection to the runtime and verify that the version of the</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#requestidentity-string-string-string">requestIdentity</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Request the certificates for an identity. No connection needs to be established</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#reset-businessnetworkidentifier">reset</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#setloglevel-any">setLogLevel</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Set the logging level of a business network. The connection must</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#start-businessnetworkdefinition-object">start</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Starts a business network within the runtime previously installed to the Hyperledger Fabric with</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#undeploy-businessnetworkidentifier">undeploy</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#update-businessnetworkdefinition">update</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left"><a href="#upgrade">upgrade</a></td>
+<td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Upgrades an existing business network&#39;s composer runtime to a later level.</td>
 </tr>
 </tbody></table>
 
-<h2 id="method-details">Method Details</h2>
+<h1 id="method-details">Method Details</h1>
 
 <h2 id="new-adminconnection">new AdminConnection()</h2>
 
