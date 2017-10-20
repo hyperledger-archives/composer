@@ -29,6 +29,7 @@ class List {
 
   /**
     * Command process for network list command
+    * The --card option can be used instead of the combination of --enrollId --enrollSecret --connectionProfileName --businessNetworkName
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
@@ -42,11 +43,14 @@ class List {
         let businessNetworkDefinition;
         let listOutput;
         let spinner;
+        let cardName = argv.card;
+
+        let usingCard = !(cardName===undefined);
 
         return (() => {
-            spinner = ora('List business network '+businessNetworkName);
+            spinner = ora('List business network '+ (usingCard ?  'from card "'+ cardName +'"' : 'with name "'+businessNetworkName+'"' ));
 
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !argv.card) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -66,7 +70,12 @@ class List {
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            // check to see if we are using a card, if so use card API
+            if (!usingCard){
+                return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            } else {
+                return businessNetworkConnection.connectWithCard(cardName);
+            }
 
         })
         .then ((result) => {
