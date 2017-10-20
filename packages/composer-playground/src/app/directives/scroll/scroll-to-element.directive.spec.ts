@@ -88,7 +88,9 @@ describe('ScrollToElementDirective', () => {
             tick(1000);
 
             // Check initial call based on test information was correct
-            stepSpy.getCall(0).args[0].should.equal(0.08, 0);
+            let firstStepSpyCall = stepSpy.getCall(0);
+            firstStepSpyCall.calledWith(sinon.match.number, 0);
+            firstStepSpyCall.args[0].should.be.within(0.05, 0.1);
         })));
 
         it('should not action if no items matched for selected element', () => {

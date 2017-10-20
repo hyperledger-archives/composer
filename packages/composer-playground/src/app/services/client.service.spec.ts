@@ -301,7 +301,7 @@ describe('ClientService', () => {
           // call function
           let result = service.updateFile('package', packageJson.substring(0, 10), 'package');
 
-          result.should.equal('SyntaxError: Unexpected end of JSON input');
+          result.should.have.string('SyntaxError').and.have.string('JSON');
           businessNetworkChangedSpy.should.have.been.calledWith(false);
         }));
 
