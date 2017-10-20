@@ -28,7 +28,8 @@ module.exports.builder = {
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     networkAdmin: { alias: 'A', required: false, description: 'The identity name of the business network administrator', type: 'string' },
     networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
-    networkAdminEnrollSecret: { alias: 'S', required: false, description: 'Use enrollment secret for the business network administrator', type: 'boolean' }
+    networkAdminEnrollSecret: { alias: 'S', required: false, description: 'Use enrollment secret for the business network administrator', type: 'boolean' },
+    card: { alias: 'c', required: false, description: '', type:'string'}
 };
 
 module.exports.handler = (argv) => {
