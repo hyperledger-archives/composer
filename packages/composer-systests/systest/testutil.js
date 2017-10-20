@@ -175,7 +175,7 @@ class TestUtil {
                     ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
                     console.log('Calling AdminConnection.createProfile() ...');
                     return adminConnection.createProfile('composer-systests', {
-                        type: 'web'
+                        'x-type': 'web'
                     });
 
                 // Create all necessary configuration for the embedded runtime.
