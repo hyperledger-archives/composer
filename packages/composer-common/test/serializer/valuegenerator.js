@@ -92,6 +92,11 @@ describe('ValueGenerator', function() {
             const output = ValueGeneratorFactory.sample().getArray(() => value);
             expect(output).to.be.a('Array').and.deep.equal([value]);
         });
+        it('getArray should return an empty array when obtained undefined from callback', function() {
+            let value;
+            const output = ValueGeneratorFactory.sample().getArray(() => value);
+            expect(output).to.be.a('Array').and.deep.equal([]);
+        });
     });
 
 });

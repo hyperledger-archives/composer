@@ -126,6 +126,7 @@ class InstanceGenerator {
         let fqn = classDeclaration.getFullyQualifiedName();
         // before doing any form of check for conept or class we want to check if this
         // has been seen before or not
+        console.log(field);
         if (!parameters.seen.find((e) => {
             return fqn === e;
         })) {
