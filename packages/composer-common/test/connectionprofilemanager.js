@@ -149,6 +149,45 @@ describe('ConnectionProfileManager', () => {
 
     });
 
+    describe('#connectWithData', () => {
+        it ('Good path, calling with valid data' ,()=>{
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data', name: 'myNetwork'};
+
+            // store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            const stubConnection = sinon.createStubInstance(Connection);
+            connectionManager.connect.returns(stubConnection);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.connectWithData( profile, 'myNetwork' )
+            .then((connection) => {
+                connection.should.equal(stubConnection);
+                sinon.assert.calledOnce(connectionManager.connect);
+                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {type: 'foo', data : 'data' , name: 'myNetwork'});
+            });
+        });
+        it ('Good path, calling with valid data, and optional data' ,()=>{
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data', name: 'myNetwork'};
+
+            // store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            const stubConnection = sinon.createStubInstance(Connection);
+            connectionManager.connect.returns(stubConnection);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.connectWithData( profile, 'myNetwork' ,{optional:'true'})
+            .then((connection) => {
+                connection.should.equal(stubConnection);
+                sinon.assert.calledOnce(connectionManager.connect);
+                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {type: 'foo', data : 'data' , name: 'myNetwork',optional:'true'});
+            });
+        });
+    });
+
     describe('#connect', () => {
 
         it('should call connect on connection manager', () => {

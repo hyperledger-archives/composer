@@ -472,13 +472,24 @@ describe('DeployComponent', () => {
           component['networkDescription'].should.deep.equal('some description');
         }));
 
-        it('should set name and desc to undefined for basic-sample-network', fakeAsync(() => {
-          component.updateBusinessNetworkNameAndDesc({name: 'basic-sample-network', description: 'some description'});
+        it('should not update the name if a user has changed the value', fakeAsync(() => {
+          component['networkName'] = 'user-entered-name';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
 
           tick();
 
-          should.equal(component['networkName'], undefined);
-          should.equal(component['networkDescription'], undefined);
+          component['networkName'].should.deep.equal('user-entered-name');
+          component['networkDescription'].should.deep.equal('some description');
+        }));
+
+        it('should not update the description if a user has changed the value', fakeAsync(() => {
+          component['networkDescription'] = 'user entered description';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('my-network');
+          component['networkDescription'].should.deep.equal('user entered description');
         }));
 
         it('should set name to undefined when no name sent', fakeAsync(() => {
@@ -495,15 +506,6 @@ describe('DeployComponent', () => {
           tick();
 
           component['networkDescription'].should.deep.equal('');
-        }));
-
-        it('should set name and desc to undefined for empty-business-network', fakeAsync(() => {
-          component.updateBusinessNetworkNameAndDesc({name: 'empty-business-network', description: 'some description'});
-
-          tick();
-
-          should.equal(component['networkName'], undefined);
-          should.equal(component['networkDescription'], undefined);
         }));
 
         it('should set the network name', () => {

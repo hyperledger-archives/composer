@@ -24,6 +24,11 @@ export class Deploy {
     }
 
     // Name the network
+    static clearBusinessNetworkName() {
+            return element(by.id('import-businessNetworkName')).clear();
+    }
+
+    // Name the network
     static nameBusinessNetwork(name: string) {
             return element(by.id('import-businessNetworkName')).sendKeys(name);
     }
