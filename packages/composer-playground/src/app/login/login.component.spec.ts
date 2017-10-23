@@ -89,6 +89,8 @@ class MockDeployComponent {
 
     @Output()
     public finishedSampleImport: EventEmitter<any> = new EventEmitter<any>();
+    @Input()
+    public showCredentials;
 }
 
 @Component({
@@ -526,7 +528,9 @@ describe(`LoginComponent`, () => {
     });
 
     describe('deployNetwork', () => {
-        it('should deploy a new business network', () => {
+        it('should deploy a new business network showing credentials', () => {
+            component['indestructibleCards'] = [];
+
             mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
             component.deployNetwork('1234');
 
@@ -535,6 +539,23 @@ describe(`LoginComponent`, () => {
 
             component['showSubScreen'].should.equal(true);
             component['showDeployNetwork'].should.equal(true);
+
+            component['showCredentials'].should.equal(true);
+        });
+
+        it('should deploy a new business network not showing credentials', () => {
+            component['indestructibleCards'] = ['4321'];
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
+            component.deployNetwork('1234');
+
+            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234');
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
+
+            component['showSubScreen'].should.equal(true);
+            component['showDeployNetwork'].should.equal(true);
+
+            component['showCredentials'].should.equal(false);
         });
     });
 

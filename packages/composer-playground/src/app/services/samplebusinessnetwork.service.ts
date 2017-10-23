@@ -5,7 +5,7 @@ import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 
-import { BusinessNetworkDefinition } from 'composer-common';
+import { BusinessNetworkDefinition, IdCard } from 'composer-common';
 import { IdentityCardService } from './identity-card.service';
 
 @Injectable()
@@ -55,34 +55,51 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    generateBootstrapTransactions(businessNetworkDefinition: BusinessNetworkDefinition, identityName: string): Object[] {
+    generateBootstrapTransactions(businessNetworkDefinition: BusinessNetworkDefinition, identityName: string, credentials): Object[] {
         const factory = businessNetworkDefinition.getFactory();
         const serializer = businessNetworkDefinition.getSerializer();
         const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
         const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
         const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
         Object.assign(addParticipantTransaction, {
-            resources: [ participant ],
+            resources: [participant],
             targetRegistry
         });
-        const issueIdentityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
-        Object.assign(issueIdentityTransaction, {
-            participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
-            identityName
-        });
+
+        let identityTransaction;
+
+        if (!credentials) {
+            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+            Object.assign(identityTransaction, {
+                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+                identityName
+            });
+        } else {
+            let certificate = credentials.certificate;
+
+            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+            Object.assign(identityTransaction, {
+                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+                certificate
+            });
+        }
+
         const result = [
             addParticipantTransaction,
-            issueIdentityTransaction
+            identityTransaction
         ].map((bootstrapTransaction) => {
             return serializer.toJSON(bootstrapTransaction);
         });
         return result;
     }
 
-    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string): Promise<string> {
+    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string, networkId: string, networkSecret: string, credentials): Promise<string> {
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = networkName;
         packageJson.description = networkDescription;
+
+        let newCardRef: string;
+        let channelAdminCardRef: string;
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
 
@@ -102,7 +119,7 @@ export class SampleBusinessNetworkService {
             .then(() => {
                 let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
                 let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                let channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
+                channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
 
                 return this.identityCardService.setCurrentIdentityCard(channelAdminCardRef);
             })
@@ -110,25 +127,71 @@ export class SampleBusinessNetworkService {
                 return this.adminService.connectWithoutNetwork(true);
             })
             .then(() => {
+                if (networkSecret) {
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), networkSecret, this.identityCardService.getCurrentIdentityCard().getConnectionProfile())
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                            return this.identityCardService.setCurrentIdentityCard(idCardRef);
+                        })
+                        .then(() => {
+                            return this.adminService.connectWithoutNetwork(true);
+                        })
+                        .then(() => {
+                            let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
+                            let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                            return this.adminService.exportIdentity(qpn, networkId);
+                        })
+                        .then((retrievedCertificate) => {
+                            credentials = {};
+                            credentials.certificate = retrievedCertificate.certificate;
+                            return this.identityCardService.setCurrentIdentityCard(channelAdminCardRef);
+                        })
+                        .then(() => {
+                            return this.adminService.connectWithoutNetwork(true);
+                        });
+                } else if (credentials) {
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), null, this.identityCardService.getCurrentIdentityCard().getConnectionProfile(), credentials)
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                        });
+                } else {
+                    networkId = 'admin';
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile())
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                        });
+                }
+            })
+            .then(() => {
                 this.alertService.busyStatus$.next({
                     title: 'Starting Business Network',
                     force: true
                 });
 
-                const bootstrapTransactions = this.generateBootstrapTransactions(businessNetworkDefinition, 'admin');
+                const bootstrapTransactions = this.generateBootstrapTransactions(businessNetworkDefinition, networkId, credentials);
 
-                return this.adminService.start(newNetwork, { bootstrapTransactions });
+                return this.adminService.start(newNetwork, {bootstrapTransactions});
             })
             .then(() => {
-                return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
-            })
-            .then((cardRef: string) => {
                 this.alertService.busyStatus$.next(null);
-                return cardRef;
+                return newCardRef;
             })
             .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                throw error;
+                if (newCardRef) {
+                    return this.identityCardService.deleteIdentityCard(newCardRef)
+                        .then(() => {
+                            this.alertService.busyStatus$.next(null);
+                            return Promise.reject(error);
+                        })
+                        .catch(() => {
+                            // Ignore error from deleting
+                            this.alertService.busyStatus$.next(null);
+                            return Promise.reject(error);
+                        });
+                } else {
+                    this.alertService.busyStatus$.next(null);
+                    throw error;
+                }
             });
     }
 

@@ -3,21 +3,38 @@
     <section>
         <h3 class="title">1. Basic Information</h3>
         <div class="information">
-            <div>
-                <label for="import-businessNetworkName">Give your new Business Network a name:</label>
-                <div>
-                    <input [ngClass]="{'error-underline': !networkNameValid}" type="text" id="import-businessNetworkName" [ngModel]="networkName"
-                        (ngModelChange)="setNetworkName($event)"
-                        placeholder="eg commodity-trading">
-                    <div *ngIf="!networkNameValid" class="error-message">Names must be lower case alpha-numeric with no whitespace</div>
-                </div>
-            </div>
-            <div>
-                <label for="import-businessNetworkDescription">Describe what your Business Network will be used
-                    for:</label>
-                <textarea rows="4" id="import-businessNetworkDescription" [(ngModel)]="networkDescription"
-                          placeholder="eg Track the exchange of Commodities between traders on a blockchain"></textarea>
-            </div>
+            <table class="no-shadow">
+                <colgroup>
+                    <col span="1" style="width: 35%;">
+                    <col span="1" style="width: 65%;">
+                </colgroup>
+                <tr>
+                    <th>
+                        <label for="import-businessNetworkName"><h3>Give your new Business Network a name:</h3>
+                        </label>
+                    </th>
+                    <td>
+                        <input [ngClass]="{'error-underline': !networkNameValid}" type="text"
+                               id="import-businessNetworkName" [ngModel]="networkName"
+                               (ngModelChange)="setNetworkName($event)"
+                               placeholder="eg commodity-trading">
+                        <div *ngIf="!networkNameValid" class="error-message">Names must be lower case alpha-numeric
+                            with
+                            no whitespace
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="import-businessNetworkDescription"><h3>Describe what your Business Network will
+                        be
+                        used for:</h3></label>
+                    </th>
+                    <td>
+                         <textarea rows="4" id="import-businessNetworkDescription" [(ngModel)]="networkDescription"
+                                   placeholder="eg Track the exchange of Commodities between traders on a blockchain"></textarea>
+                    </td>
+                </tr>
+            </table>
         </div>
     </section>
     <section fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
@@ -49,19 +66,24 @@
                         </svg>
                         <div class="sample-network-name">{{sampleNetworks[1].name}}</div>
                     </div>
-                    <div class="sample-network-list-item" [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}" (click)="selectNetwork(sampleNetworks[0])">
+                    <div class="sample-network-list-item"
+                         [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}"
+                         (click)="selectNetwork(sampleNetworks[0])">
                         <svg>
                             <use xlink:href="#icon-default-network"></use>
                         </svg>
                         <div class="sample-network-name">{{sampleNetworks[0].name}}</div>
                     </div>
-                    <div *ngIf="sampleDropped" class="sample-network-list-item"  [ngClass]="{'selected-network' : uploadedNetwork.name === chosenNetwork.name}" (click)="selectNetwork(uploadedNetwork)">
+                    <div *ngIf="sampleDropped" class="sample-network-list-item"
+                         [ngClass]="{'selected-network' : uploadedNetwork.name === chosenNetwork.name}"
+                         (click)="selectNetwork(uploadedNetwork)">
                         <button class="icon close-dropped" (click)="closeSample()">
                             <svg class="ibm-icon">
                                 <use xlink:href="#icon-close_24"></use>
                             </svg>
                         </button>
-                        <img *ngIf="uploadedNetwork && uploadedNetwork.networkImage" src="{{uploadedNetwork.networkImage}}">
+                        <img *ngIf="uploadedNetwork && uploadedNetwork.networkImage"
+                             src="{{uploadedNetwork.networkImage}}">
                         <svg *ngIf="!uploadedNetwork || !uploadedNetwork.networkImage">
                             <use xlink:href="#icon-default-network"></use>
                         </svg>
@@ -92,6 +114,17 @@
             </div>
         </div>
     </section>
+    <section *ngIf="showCredentials">
+        <h3 class="title">3. credentials for network administrator</h3>
+        <div class="information">
+            <div class="credentials">
+                <h3>You must provide credentials in one of the following formats before you deploy this business
+                    network</h3>
+                <p>The credentials will be used to access the business network once it is deployed</p>
+                <credentials (credentials)="updateCredentials($event)"></credentials>
+            </div>
+        </div>
+    </section>
 </div>
 <div *ngIf="!npmInProgress" class="chosen-network">
     <div class="chosen-network-info">
@@ -103,9 +136,12 @@
         </div>
         <div>
             <section>
-                <h3 class="network-desc" *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <h3 class="network-desc" *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName : 'Business Network Name'}}</h3>
-                <p class="network-desc">{{networkDescription ? networkDescription : 'Business network description will be previewed here when
+                <h3 class="network-desc" *ngIf="networkNameValid">{{networkName ? networkName : 'Business Network
+                    Name'}}</h3>
+                <h3 class="network-desc" *ngIf="!networkNameValid" style="color:red">{{networkName ? networkName :
+                    'Business Network Name'}}</h3>
+                <p class="network-desc">{{networkDescription ? networkDescription : 'Business network description will
+                    be previewed here when
                     entered in the basic information section.'}}</p>
             </section>
             <section>
@@ -144,7 +180,7 @@
         </div>
     </div>
     <div class="deploy">
-        <button id="import_confirm" [disabled]="!networkName || !networkNameValid || deployInProgress" type="button"
+        <button id="import_confirm" [disabled]="isInvalidDeploy()" type="button"
                 class="primary" (click)="deploy()">
             <div *ngIf="!deployInProgress">
                 <span>Deploy</span>
