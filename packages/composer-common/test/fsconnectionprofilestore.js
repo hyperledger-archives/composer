@@ -59,7 +59,17 @@ const sinon = require('sinon');
 
         describe('#load', () => {
 
-            it('should read all existing files', () => {
+            it('should read a yaml connection profile', () => {
+                let ccp = path.resolve(expectedHomeDirectory, '.composer-connection-profiles');
+                let ccp1 = path.resolve(ccp, 'profile1');
+                mkdirp.sync(ccp1, { fs: bfs_fs });
+                let ccp1f = path.resolve(ccp1, 'connection.yaml');
+                bfs_fs.writeFileSync(ccp1f, 'x-type: "hlfv1"');
+                return cps.load('profile1')
+                    .should.eventually.be.deep.equal({'x-type': 'hlfv1'});
+            });
+
+            it('should read a json connection profile', () => {
                 let ccp = path.resolve(expectedHomeDirectory, '.composer-connection-profiles');
                 let ccp1 = path.resolve(ccp, 'profile1');
                 mkdirp.sync(ccp1, { fs: bfs_fs });

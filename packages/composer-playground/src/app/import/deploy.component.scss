@@ -34,31 +34,17 @@ deploy-business-network {
             .information {
                 padding: $space-medium $space-large;
 
-                & > * {
-                    display: flex;
-                    align-items: baseline;
-
-                    & > * {
-                        flex-basis: 50%;
-                    }
-
-                    & > *:last-child {
-                        width: inherit;
-                    }
-                }
-
-                // description property
-                & > *:last-child {
-                    margin-top: $space-medium;
-
-                    & > * {
-                        vertical-align: middle;
-                        height: 100%;
-                    }
-                }
-
                 input {
                     margin-bottom: 0;
+                }
+
+                textarea {
+                    border-bottom: 2px solid transparent;
+                    height: auto;
+                    margin-bottom: 0;
+                }
+                .credentials {
+                    margin-top: $space-medium;
                 }
             }
 

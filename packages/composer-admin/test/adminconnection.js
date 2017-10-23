@@ -111,7 +111,7 @@ describe('AdminConnection', () => {
 
     const config2 =
         {
-            type: 'embedded'
+            'x-type': 'embedded'
         };
 
     beforeEach(() => {

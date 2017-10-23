@@ -52,7 +52,7 @@ describe('WebConnection', () => {
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
         mockConnectionProfileStore.load.resolves({
-            type: 'web',
+            'x-type': 'web',
             networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
         });
         mockConnectionProfileStore.save.resolves();
@@ -561,7 +561,7 @@ describe('WebConnection', () => {
 
         it('should list all existing business networks', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: {
                     'org-acme-business': '133c00a3-8555-4aa5-9165-9de9a8f8a838',
                     'org-acme-biznet2': '6eeb8858-eced-4a32-b1cd-2491f1e3718f'
@@ -573,7 +573,7 @@ describe('WebConnection', () => {
 
         it('should cope with missing business networks', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
+                'x-type': 'web'
             });
             return connection.list()
                 .should.eventually.be.deep.equal([]);
@@ -585,7 +585,7 @@ describe('WebConnection', () => {
 
         it('should return the chaincode ID for the specified business network', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
             return connection.getChaincodeID('org.acme.business')
@@ -594,7 +594,7 @@ describe('WebConnection', () => {
 
         it('should undefined if the specified business network does not exist', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
             return connection.getChaincodeID('org-acme-biznet2')
@@ -603,7 +603,7 @@ describe('WebConnection', () => {
 
         it('should undefined if the profile contains no networks', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
+                'x-type': 'web'
             });
             return connection.getChaincodeID('org-acme-biznet2')
                 .should.eventually.be.undefined;
@@ -615,13 +615,13 @@ describe('WebConnection', () => {
 
         it('should set the chaincode ID for the specified business network', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
+                'x-type': 'web'
             });
             return connection.setChaincodeID('org.acme.business', '133c00a3-8555-4aa5-9165-9de9a8f8a838')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                     sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
+                        'x-type': 'web',
                         networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
                     });
                 });
@@ -629,14 +629,14 @@ describe('WebConnection', () => {
 
         it('should update the chaincode ID for an existing business network', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
             return connection.setChaincodeID('org.acme.business', '5b8d4830-e348-4a25-9fc4-64b89690a6a3')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                     sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
+                        'x-type': 'web',
                         networks: { 'org.acme.business': '5b8d4830-e348-4a25-9fc4-64b89690a6a3' }
                     });
                 });
@@ -648,14 +648,14 @@ describe('WebConnection', () => {
 
         it('should delete the chaincode ID for the specified business network', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
             return connection.deleteChaincodeID('org.acme.business')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                     sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
+                        'x-type': 'web',
                         networks: { }
                     });
                 });
@@ -663,14 +663,14 @@ describe('WebConnection', () => {
 
         it('should ignore a missing business network', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
+                'x-type': 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
             return connection.deleteChaincodeID('org-acme-biznet2')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                     sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
+                        'x-type': 'web',
                         networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
                     });
                 });

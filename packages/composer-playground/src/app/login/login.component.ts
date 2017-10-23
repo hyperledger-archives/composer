@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit {
     private editingConnectionProfile = null;
     private creatingIdCard: boolean = false;
     private showSubScreen: boolean = false;
+    private showCredentials: boolean = true;
 
     constructor(private identityService: IdentityService,
                 private router: Router,
@@ -70,7 +71,7 @@ export class LoginComponent implements OnInit {
                 .map((cardRef) => {
                     let card = cards.get(cardRef);
                     let connectionProfile = card.getConnectionProfile();
-                    if (connectionProfile.type === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
+                    if (connectionProfile['x-type'] === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
                         return;
                     }
 
@@ -158,7 +159,7 @@ export class LoginComponent implements OnInit {
 
             })
             .then((businessNetworkDefinition) => {
-                return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'my-basic-sample', 'The Composer basic sample network');
+                return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'my-basic-sample', 'The Composer basic sample network', null, null, null);
             })
             .then((cardRef: string) => {
                 this.alertService.busyStatus$.next({
@@ -215,6 +216,12 @@ export class LoginComponent implements OnInit {
         let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
 
         this.identityCardService.setCurrentIdentityCard(peerCardRef);
+
+        if (this.indestructibleCards.indexOf(peerCardRef) > -1) {
+            this.showCredentials = false;
+        } else {
+            this.showCredentials = true;
+        }
 
         this.showSubScreen = true;
         this.showDeployNetwork = true;

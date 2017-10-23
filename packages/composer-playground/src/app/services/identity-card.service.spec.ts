@@ -154,8 +154,8 @@ describe('IdentityCardService', () => {
     describe('#loadIdentityCards', () => {
         beforeEach(() => {
             mockIdentityCardStorageService.keys.returns(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd']);
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
-            mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"Mr Penguin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","x-type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"Mr Penguin","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"$default","x-type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"Eric","businessNetwork":"basic-sample-network","enrollmentId":"admin","enrollmentSecret":"adminpw"},"connectionProfile":{"name":"conga"},"credentials":null}'));
         });
 
@@ -225,7 +225,7 @@ describe('IdentityCardService', () => {
             let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
             setCurrentIdentityCardStub.returns(Promise.resolve());
 
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","x-type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"current":true}'));
 
             service.loadIdentityCards(false);
@@ -240,7 +240,7 @@ describe('IdentityCardService', () => {
             let setCurrentIdentityCardStub = sinon.stub(service, 'setCurrentIdentityCard');
             setCurrentIdentityCardStub.returns(Promise.resolve());
 
-            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","type":"web"},"credentials":null}'));
+            mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx').returns(JSON.parse('{"metadata":{"userName":"NetworkAdmin","businessNetwork":"basic-sample-network"},"connectionProfile":{"name":"$default","x-type":"web"},"credentials":null}'));
             mockIdentityCardStorageService.get.withArgs('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-pd').returns(JSON.parse('{"indestructible":true}'));
 
             service.loadIdentityCards(false);
@@ -615,7 +615,7 @@ describe('IdentityCardService', () => {
 
             mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getEnrollmentCredentials.returns({id: 'admin'});
-            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
+            mockIdCard1.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
 
             mockConnectionProfile2 = {name: 'hlfv1'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
@@ -692,7 +692,7 @@ describe('IdentityCardService', () => {
             mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('admin');
             mockIdCard1.getEnrollmentCredentials.returns({secret: 'adminpw'});
-            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
+            mockIdCard1.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
 
             mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('admin');
@@ -859,8 +859,8 @@ describe('IdentityCardService', () => {
     describe('getQualifiedProfileName', () => {
         it('should get a qualified profile name for a web connection profile', inject([IdentityCardService], (service: IdentityCardService) => {
             let connectionProfile = {
-                name: '$default',
-                type: 'web'
+                'name': '$default',
+                'x-type': 'web'
             };
 
             let qualifiedName = service.getQualifiedProfileName(connectionProfile);

@@ -47,7 +47,7 @@ export class PlaygroundConnectionProfileStore extends ConnectionProfileStore {
      * @return {Promise} A promise that once the data is written
      */
     save(connectionProfile, connectOptions): Promise<void> {
-        if (connectOptions.type === 'web') {
+        if (connectOptions['x-type'] === 'web') {
             // Web connection profile - save to the browser.
             return this.browserConnectionProfileStore.save(connectionProfile, connectOptions);
         } else {
@@ -91,7 +91,7 @@ export class PlaygroundConnectionProfileStore extends ConnectionProfileStore {
             .then((connectOptions) => {
                 if (!connectOptions) {
                     // Don't do anything - connection profile doesn't exist.
-                } else if (connectOptions.type === 'web') {
+                } else if (connectOptions['x-type'] === 'web') {
                     // Web connection profile - save to the browser.
                     return this.browserConnectionProfileStore.delete(connectionProfile);
                 } else {

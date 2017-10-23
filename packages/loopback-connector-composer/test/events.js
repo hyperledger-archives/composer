@@ -39,7 +39,7 @@ describe('Event unit tests', () => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
         const adminConnection = new AdminConnection({ fs: bfs_fs });
         return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
+            'x-type' : 'embedded'
         })
             .then(() => {
                 return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');

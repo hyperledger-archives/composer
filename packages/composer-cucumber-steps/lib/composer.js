@@ -141,7 +141,7 @@ class Composer {
         userID = userID || 'admin';
         userSecret = userSecret || 'adminpw';
         const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', { type : 'embedded' })
+        return adminConnection.createProfile('defaultProfile', { 'x-type' : 'embedded' })
             .then(() => {
                 return adminConnection.connect('defaultProfile', userID, userSecret);
             })

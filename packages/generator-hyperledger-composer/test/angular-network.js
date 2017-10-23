@@ -14,7 +14,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
     before(function() {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
         const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('generatorProfile',{type : 'embedded'})
+        return adminConnection.createProfile('generatorProfile',{'x-type' : 'embedded'})
         .then(() => {
             return adminConnection.connect('generatorProfile', 'admin', 'Xurw3yU9zI0l');
         })

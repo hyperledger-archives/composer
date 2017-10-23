@@ -27,10 +27,10 @@ describe('ProxyConnectionProfileStore', () => {
 
     const connectionProfile = 'defaultProfile';
     const connectionOptions = {
-        type: 'embedded'
+        'x-type': 'embedded'
     };
     const otherConnectionOptions = {
-        type: 'web'
+        'x-type': 'web'
     };
     const serializedError = serializerr(new TypeError('such type error'));
 
