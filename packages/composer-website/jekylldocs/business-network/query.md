@@ -88,10 +88,9 @@ Currently, only the `WHERE` LoopBack filter is supported. The supported operator
 ```
 {"where":{"or":[{"and":[{"field1":"foo"},{"field2":"bar"}]},{"field3":"foobar"}]}}
 ```
-<!--
+
 The **between** operator returns values between the given range. It accepts numbers, datetime values, and strings. If supplied with strings, the **between** operator returns results between the supplied strings alphabetically. In the example below, the filter will return all resources where the driver property is alphabetically between _a_ and _c_, inclusively.
 
 ```
 {"where":{"driver":{"between": ["a","c"]}}}
 ```
--->

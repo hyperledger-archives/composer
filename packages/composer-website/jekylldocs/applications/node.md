@@ -87,10 +87,10 @@ this.titlesRegistry.addAll([landTitle1, landTitle2]);
 This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a 'participant', the getParticipantRegistry API is used.
 
 ```javascript
-    this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
-      .then((personRegistry) => {
-          return personRegistry.add(owner);
-      })
+this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
+  .then((personRegistry) => {
+      return personRegistry.add(owner);
+  })
 ```
 
 ##Listing assets in a regsitry

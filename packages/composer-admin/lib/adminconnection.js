@@ -18,6 +18,7 @@ const ComboConnectionProfileStore = require('composer-common').ComboConnectionPr
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
 const fs = require('fs');
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const Logger = require('composer-common').Logger;
 const Util = require('composer-common').Util;
@@ -54,9 +55,12 @@ class AdminConnection {
      * @param {Object} [options.fs] - specify an fs implementation to use.
      */
     constructor(options) {
+        // @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
+
         const method = 'constructor';
         LOG.entry(method, options);
         options = options || {};
+
         let connectionProfileStore;
         if (options.connectionProfileStore) {
             LOG.debug(method, 'Using connection profile store from options');
@@ -73,10 +77,13 @@ class AdminConnection {
                 envConnectionProfileStore
             );
         }
+
+        this.cardStore = options.cardStore || new FileSystemCardStore();
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
         this.securityContext = null;
+
         LOG.exit(method);
     }
 
@@ -108,6 +115,42 @@ class AdminConnection {
      */
     createProfile(connectionProfile, data) {
         return this.connectionProfileManager.getConnectionProfileStore().save(connectionProfile, data);
+    }
+
+    /**
+     * Import a business network card.
+     * @private
+     * @param {IdCard} card The card to import
+     * @param {String} [name] Name by which this card should be referred
+     * @return {Promise} Resolved with the name by which the card is referred as a {@link String}.
+     */
+    importCard(card, name) {
+        if (!name) {
+            const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
+            name = card.getUserName() + '@' + locationName;
+        }
+        return this.cardStore.put(name, card).then(() => {
+            return name;
+        });
+    }
+
+    /**
+     * List all Business Network cards.
+     * @private
+     * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
+     */
+    getAllCards() {
+        return this.cardStore.getAll();
+    }
+
+    /**
+     * Delete an existing card.
+     * @private
+     * @param {String} name Name of the card to delete.
+     * @returns {Promise} Resolves if an existing card was deleted; rejected otherwise.
+     */
+    deleteCard(name) {
+        return this.cardStore.delete(name);
     }
 
     /**

@@ -171,7 +171,7 @@ class IdCard {
      */
     getEnrollmentCredentials() {
         const secret = this.metadata.enrollmentSecret;
-        return secret ? { secret: secret } : null;
+        return secret ? { secret : secret } : null;
     }
 
     /**

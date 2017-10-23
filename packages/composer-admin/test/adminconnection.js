@@ -15,13 +15,16 @@
 'use strict';
 
 const AdminConnection = require('..').AdminConnection;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Factory = require('composer-common').Factory;
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const IdCard = require('composer-common').IdCard;
 const ModelManager = require('composer-common').ModelManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -35,6 +38,58 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
+/**
+ * Stub card store implementation.
+ */
+class StubCardStore extends BusinessNetworkCardStore {
+    /**
+     * Constructor.
+     */
+    constructor() {
+        super();
+        this.cards = new Map();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    get(cardName) {
+        return Promise.resolve().then(() => {
+            return this.cards.get(cardName);
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    put(cardName, card) {
+        return Promise.resolve().then(() => {
+            this.cards.set(cardName, card);
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getAll() {
+        return Promise.resolve().then(() => {
+            return this.cards;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    delete(cardName) {
+        return Promise.resolve().then(() => {
+            if (!this.cards.delete(cardName)) {
+                throw new Error('Card not found: ' + cardName);
+            }
+        });
+    }
+
+}
+
 describe('AdminConnection', () => {
     const testProfileName = 'TEST_PROFILE';
     let mockConnectionManager;
@@ -43,6 +98,7 @@ describe('AdminConnection', () => {
     let adminConnection;
     let sandbox;
     let clock;
+    let cardStore;
 
     const config =
         {
@@ -81,7 +137,11 @@ describe('AdminConnection', () => {
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        adminConnection = new AdminConnection();
+        cardStore = new StubCardStore();
+        const adminConnectionOptions = {
+            cardStore: cardStore
+        };
+        adminConnection = new AdminConnection(adminConnectionOptions);
         adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
@@ -137,6 +197,16 @@ describe('AdminConnection', () => {
             adminConnection.connectionProfileManager.should.not.be.null;
         });
 
+        it('should allow valid card store implementation to be specified', function() {
+            const cardStore = new BusinessNetworkCardStore();
+            const adminConnection = new AdminConnection({ cardStore: cardStore });
+            adminConnection.cardStore.should.equal(cardStore);
+        });
+
+        it('should use FileSystemCardStore as default card store', function() {
+            const adminConnection = new AdminConnection();
+            adminConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
+        });
     });
 
     describe('#connect', () => {
@@ -806,6 +876,100 @@ describe('AdminConnection', () => {
                 });
         });
 
+    });
+
+    describe('Business Network Cards', function() {
+        let peerAdminCard;
+        let peerAdminCardExpectedName;
+        let userCard;
+        let userCardExpectedName;
+
+        beforeEach(function() {
+            const peerAdminMetadata = {
+                userName: 'PeerAdmin',
+                roles: [ 'PeerAdmin', 'ChannelAdmin' ]
+            };
+            const userMetadata = {
+                userName: 'user',
+                businessNetwork: 'penguin-network'
+            };
+            const connection = { name: 'connectionName' };
+
+            peerAdminCard = new IdCard(peerAdminMetadata, connection);
+            peerAdminCardExpectedName = peerAdminCard.getUserName() + '@' + peerAdminCard.getConnectionProfile().name;
+
+            userCard = new IdCard(userMetadata, connection);
+            userCardExpectedName = userCard.getUserName() + '@' + userCard.getBusinessNetworkName();
+        });
+
+        describe('#importCard', function() {
+            it('should import card with name', function() {
+                const cardName = 'conga';
+                return adminConnection.importCard(userCard, cardName).then(() => {
+                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                });
+            });
+
+            it('should generate name for user card when no name supplied', function() {
+                return adminConnection.importCard(userCard).then(() => {
+                    return cardStore.get(userCardExpectedName).should.eventually.deep.equal(userCard);
+                });
+            });
+
+            it('should generate name for PeerAdmin card when no name supplied', function() {
+                return adminConnection.importCard(peerAdminCard).then(() => {
+                    return cardStore.get(peerAdminCardExpectedName).should.eventually.deep.equal(peerAdminCard);
+                });
+            });
+
+            it('should return provided card name', function() {
+                const cardName = 'conga';
+                return adminConnection.importCard(userCard, cardName).should.eventually.equal(cardName);
+            });
+
+            it('should return generated name for user card when no name supplied', function() {
+                return adminConnection.importCard(userCard).should.eventually.equal(userCardExpectedName);
+            });
+
+            it('should return generated name for PeerAdmin card when no name supplied', function() {
+                return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
+            });
+        });
+
+        describe('#getAllCards', function() {
+            it('should return empty map when card store contains no cards', function() {
+                return adminConnection.getAllCards().should.eventually.be.instanceOf(Map).that.is.empty;
+            });
+
+            it('should return map of cards when card store is not empty', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.getAllCards();
+                }).then((result) => {
+                    result.should.be.instanceOf(Map);
+                    result.size.should.equal(1);
+                    result.get(cardName).should.deep.equal(peerAdminCard);
+                });
+            });
+        });
+
+        describe('#deleteCard', function() {
+            it('should reject for non-existent card', function() {
+                const cardName = 'conga-card';
+                return adminConnection.deleteCard(cardName).should.be.rejectedWith(cardName);
+            });
+
+            it('should succeed for an existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.deleteCard(cardName);
+                }).then(() => {
+                    return cardStore.getAll();
+                }).then(cardMap => {
+                    cardMap.size.should.equal(0);
+                });
+            });
+        });
     });
 
 });

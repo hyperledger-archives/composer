@@ -324,6 +324,7 @@ $callout: #FFD640;
             padding: 1rem;
             color: white;
             border-radius: 4px;
+            padding-right: 4rem;
 
             code {
               padding-right: 35px;
@@ -417,6 +418,56 @@ $callout: #FFD640;
             }
           }
 
+        }
+
+        // Table styling
+
+        table {
+          font-size: 0.8rem;
+          display: block;
+          background-color: white;
+          padding: 1rem;
+
+          td {
+            border-bottom: 1px solid $keyline-highlight;
+            padding-bottom: 1rem;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding: 1rem;
+          }
+
+          th {
+            padding-bottom: 1rem;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding: 1rem;
+            color: $secondary-text;
+          }
+
+          thead {
+            font-weight: 600;
+            padding-bottom: 1rem;
+            // border-bottom: 1px solid blue;
+          }
+          tbody {
+            // display: block;
+            tr {
+              transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+              &:last-of-type {
+                td {
+                  border-bottom: none;
+                }
+                &:hover {
+                  background-color: transparent;
+                }
+
+              }
+              &:hover {
+                background-color: $third-highlight;
+
+              }
+            }
+          }
         }
 
         }

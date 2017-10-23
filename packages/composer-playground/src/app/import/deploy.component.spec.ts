@@ -208,12 +208,16 @@ describe('DeployComponent', () => {
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
             component['currentBusinessNetwork'].should.equal(businessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([]);
             businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
 
             mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
             mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
@@ -225,6 +229,7 @@ describe('DeployComponent', () => {
             tick();
 
             component['chosenNetwork'];
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
             component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
             component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
             component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
@@ -232,11 +237,12 @@ describe('DeployComponent', () => {
         }));
 
         it('should select the empty network', () => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
             component.selectNetwork({name: 'empty-business-network'});
-
             empty.should.have.been.called;
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({name: 'empty-business-network'});
         });
     });
 
@@ -337,6 +343,8 @@ describe('DeployComponent', () => {
                 getModelManager: sinon.stub().returns(mockModelManager)
             };
 
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
+
             mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve(businessNetworkMock));
 
             mockDragDropComponent.fileDragDropFileAccepted.emit(file);
@@ -355,6 +363,7 @@ describe('DeployComponent', () => {
             component['expandInput'].should.equal(false);
             component['chosenNetwork'].should.deep.equal({json: 'some json'});
             component['sampleDropped'].should.equal(true);
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({json: 'some json'});
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -439,6 +448,52 @@ describe('DeployComponent', () => {
     });
 
     describe('setNetworkName', () => {
+
+        it('should set the name and desc to values passed', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('my-network');
+          component['networkDescription'].should.deep.equal('some description');
+        }));
+
+        it('should not update the name if a user has changed the value', fakeAsync(() => {
+          component['networkName'] = 'user-entered-name';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('user-entered-name');
+          component['networkDescription'].should.deep.equal('some description');
+        }));
+
+        it('should not update the description if a user has changed the value', fakeAsync(() => {
+          component['networkDescription'] = 'user entered description';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('my-network');
+          component['networkDescription'].should.deep.equal('user entered description');
+        }));
+
+        it('should set name to undefined when no name sent', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({});
+
+          tick();
+
+          should.equal(component['networkName'], undefined);
+        }));
+
+        it('should set desc to \'\' when no desc sent', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({});
+
+          tick();
+
+          component['networkDescription'].should.deep.equal('');
+        }));
+
         it('should set the network name', () => {
             component['setNetworkName']('bob');
 
