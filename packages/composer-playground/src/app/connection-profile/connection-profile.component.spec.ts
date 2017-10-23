@@ -53,7 +53,7 @@ describe('ConnectionProfileComponent', () => {
     describe('expandSection', () => {
         it('should error on unknown profile type', () => {
             let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'invalidType'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'invalidType'}};
             component['expandedSection'] = ['Basic Configuration', 'Security Settings', 'Advanced'];
             (() => {
                 component.expandSection(sectionToExpand);
@@ -62,7 +62,7 @@ describe('ConnectionProfileComponent', () => {
 
         it('should close all expanded sections for a v1 profile', () => {
             let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component['expandedSection'] = ['Basic Configuration', 'Advanced'];
             component.expandSection(sectionToExpand);
 
@@ -71,7 +71,7 @@ describe('ConnectionProfileComponent', () => {
 
         it('should open all collapsed sections for a v1 profile', () => {
             let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component['expandedSection'] = [];
             component.expandSection(sectionToExpand);
 
@@ -80,7 +80,7 @@ describe('ConnectionProfileComponent', () => {
 
         it('should close a single section for a v1 profile', () => {
             let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component['expandedSection'] = ['Basic Configuration', 'Advanced'];
             component.expandSection(sectionToExpand);
 
@@ -89,7 +89,7 @@ describe('ConnectionProfileComponent', () => {
 
         it('should open a single section for a v1 profile', () => {
             let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component['expandedSection'] = ['Advanced'];
             component.expandSection(sectionToExpand);
 
@@ -99,7 +99,7 @@ describe('ConnectionProfileComponent', () => {
 
     describe('startEditing', () => {
         it('should be able to edit a v1 form', () => {
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
 
             component.startEditing();
@@ -107,7 +107,7 @@ describe('ConnectionProfileComponent', () => {
         });
 
         it('should error if unknown form type', () => {
-            component['connectionProfileData'] = {profile: {type: 'test'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'test'}};
             let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
 
             (() => {
@@ -289,7 +289,7 @@ describe('ConnectionProfileComponent', () => {
 
     describe('onValueChanged', () => {
         it('should error if profile type is invalid', () => {
-            component['connectionProfileData'] = {profile: {type: 'invalidType'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'invalidType'}};
             (() => {
                 component.onValueChanged();
             }).should.throw('Invalid connection profile type');
@@ -297,14 +297,14 @@ describe('ConnectionProfileComponent', () => {
 
         it('should validate v1 profile if no form is defined', () => {
             let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component.onValueChanged();
             onValueChangedSpy.should.be.called;
         });
 
         it('should validate v1 profile if a form is defined', () => {
             let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {profile: {'x-type': 'hlfv1'}};
             component['v1Form'] = component['fb'].group({
                 name: ['v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
                 peers: component['fb'].array([component['fb'].group({
@@ -334,55 +334,55 @@ describe('ConnectionProfileComponent', () => {
 
         it('should submit v1 profile form', fakeAsync(() => {
             let profileOne = {
-                name: 'new v1 Profile',
-                description: 'A description for a V1 Profile',
-                type: 'hlfv1',
-                orderers: [{
+                'name': 'new v1 Profile',
+                'description': 'A description for a V1 Profile',
+                'x-type': 'hlfv1',
+                'orderers': [{
                     url: 'grpc://localhost:7050',
                     cert: ''
                 }],
-                channel: 'composerchannel',
-                mspID: 'Org1MSP',
-                ca: {
+                'channel': 'composerchannel',
+                'mspID': 'Org1MSP',
+                'ca': {
                     url: 'http://localhost:7054',
                     name: ''
                 },
-                peers: [{
+                'peers': [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
-                timeout: 300
+                'keyValStore': '/tmp/keyValStore',
+                'timeout': 300
             };
 
             let profileTwo = {
-                name: 'v1 Profile',
-                description: 'A description for a V1 Profile',
-                type: 'hlfv1',
-                orderers: [{
+                'name': 'v1 Profile',
+                'description': 'A description for a V1 Profile',
+                'x-type': 'hlfv1',
+                'orderers': [{
                     url: 'grpc://localhost:7050',
                     cert: ''
                 }],
-                channel: 'composerchannel',
-                mspID: 'Org1MSP',
-                ca: {
+                'channel': 'composerchannel',
+                'mspID': 'Org1MSP',
+                'ca': {
                     url: 'http://localhost:7054',
                     name: ''
                 },
-                peers: [{
+                'peers': [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
-                timeout: 300
+                'keyValStore': '/tmp/keyValStore',
+                'timeout': 300
             };
 
             mockConnectionProfileService.createProfile.returns(Promise.resolve());
             mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
 
-            component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
+            component['connectionProfileData'] = {name: 'v1 Profile', profile: {'x-type': 'hlfv1'}};
 
             component['v1Form'] = component['fb'].group({
                 name: ['new v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
@@ -427,7 +427,7 @@ describe('ConnectionProfileComponent', () => {
             mockConnectionProfileService.createProfile.returns(Promise.resolve());
             mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne]));
 
-            component['connectionProfileData'] = {name: 'unknown profile', profile: {type: 'unknown type'}};
+            component['connectionProfileData'] = {name: 'unknown profile', profile: {'x-type': 'unknown type'}};
 
             component['v06Form'] = component['fb'].group({
                 name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
@@ -640,14 +640,14 @@ describe('ConnectionProfileComponent', () => {
     describe('component input', () => {
         it('should change profile if an existing profile is selected', () => {
             let startEditingStub = sinon.stub(component, 'startEditing');
-            component.connectionProfile = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
+            component.connectionProfile = {name: 'v1 Profile', profile: {'x-type': 'hlfv1'}};
             startEditingStub.should.have.been.called;
-            component['connectionProfileData'].should.deep.equal({name: 'v1 Profile', profile: {type: 'hlfv1'}});
+            component['connectionProfileData'].should.deep.equal({name: 'v1 Profile', profile: {'x-type': 'hlfv1'}});
         });
 
         it('should not change if no profile', () => {
             let startEditingStub = sinon.stub(component, 'startEditing');
-            component.connectionProfile = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
+            component.connectionProfile = {name: 'v1 Profile', profile: {'x-type': 'hlfv1'}};
             startEditingStub.reset();
             component.connectionProfile = null;
             startEditingStub.should.not.have.been.called;

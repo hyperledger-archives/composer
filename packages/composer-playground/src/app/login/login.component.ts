@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
                 .map((cardRef) => {
                     let card = cards.get(cardRef);
                     let connectionProfile = card.getConnectionProfile();
-                    if (connectionProfile.type === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
+                    if (connectionProfile['x-type'] === 'web' && (this.indestructibleCards.indexOf(cardRef) > -1)) {
                         return;
                     }
 

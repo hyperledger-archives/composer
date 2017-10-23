@@ -25,7 +25,7 @@
                 <use xlink:href="#icon-trash_32"></use>
             </svg>
         </button>
-        <button [disabled]="'web' === identity.getConnectionProfile().type" type="button" class="action circular export"
+        <button [disabled]="'web' === identity.getConnectionProfile()['x-type']" type="button" class="action circular export"
                 (click)="export()">
             <svg class="ibm-icon vertical-top" aria-hidden="true">
                 <use xlink:href="#icon-download_32"></use>

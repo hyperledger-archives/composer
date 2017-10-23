@@ -95,7 +95,7 @@ export class ConnectionProfileComponent {
 
     expandSection(sectionToExpand) {
 
-        if (this.connectionProfileData.profile.type === 'hlfv1') {
+        if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
             if (sectionToExpand === 'All') {
                 if (this.expandedSection.length === 2) {
                     this.expandedSection = [];
@@ -118,7 +118,7 @@ export class ConnectionProfileComponent {
     }
 
     startEditing() {
-        if (this.connectionProfileData.profile.type === 'hlfv1') {
+        if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
 
             this.v1Form = this.fb.group({
                 name: [
@@ -126,7 +126,7 @@ export class ConnectionProfileComponent {
                     [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]
                 ],
                 description: [this.connectionProfileData ? this.connectionProfileData.profile.description : ''],
-                type: [this.connectionProfileData ? this.connectionProfileData.type : 'hlfv1'],
+                type: [this.connectionProfileData ? this.connectionProfileData['x-type'] : 'hlfv1'],
                 orderers: this.fb.array(
                     this.initOrderers()
                 ),
@@ -273,10 +273,10 @@ export class ConnectionProfileComponent {
         let form;
         let formErrors;
         let validationMessages;
-        if (!(this.connectionProfileData.profile.type === 'hlfv1')) {
+        if (!(this.connectionProfileData.profile['x-type'] === 'hlfv1')) {
             throw new Error('Invalid connection profile type');
         } else {
-            if (this.connectionProfileData.profile.type === 'hlfv1') {
+            if (this.connectionProfileData.profile['x-type'] === 'hlfv1') {
                 if (!this.v1Form) {
                     return;
                 }
@@ -326,13 +326,13 @@ export class ConnectionProfileComponent {
         }
 
         let connectionProfile;
-        if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
+        if (!(this.connectionProfileData.profile['x-type'] === 'hlf' || this.connectionProfileData.profile['x-type'] === 'hlfv1')) {
             throw new Error('Unknown profile type');
         } else {
             connectionProfile = this.v1Form.value;
 
             // Need to set this as user doesn't input profile type
-            connectionProfile.type = this.connectionProfileData.profile.type;
+            connectionProfile['x-type'] = this.connectionProfileData.profile['x-type'];
             this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
 
                 // Need to set the profile back to its original form
