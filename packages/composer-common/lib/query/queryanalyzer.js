@@ -87,6 +87,8 @@ class QueryAnalyzer {
             result = this.visitIdentifier(thing, parameters);
         } else if (thing.type === 'Literal') {
             result = this.visitLiteral(thing, parameters);
+        } else if (thing.type === 'ArrayExpression') {
+            result = this.visitArrayExpression(thing, parameters);
         } else if (thing.type === 'MemberExpression') {
             result = this.visitMemberExpression(thing, parameters);
         } else {
@@ -251,6 +253,8 @@ class QueryAnalyzer {
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
+        } else if (ast.operator === 'CONTAINS') {
+            result = this.visitContainsOperator(ast, parameters);
         } else {
             result = this.visitConditionOperator(ast, parameters);
         }
@@ -280,6 +284,56 @@ class QueryAnalyzer {
     }
 
     /**
+     * Visitor design pattern; handle an contains operator.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitContainsOperator(ast, parameters) {
+        const method = 'visitContainsOperator';
+        LOG.entry(method, ast, parameters);
+
+        // Check we haven't already entered a scope - let's keep it simple!
+        if (parameters.validationDisabled) {
+            throw new Error('A CONTAINS expression cannot be nested within another CONTAINS expression');
+        }
+
+        // Disable validation.
+        parameters.validationDisabled = true;
+
+        // Resolve both the left and right sides of the expression.
+        let left = this.visit(ast.left, parameters);
+        let right = this.visit(ast.right, parameters);
+
+        // Enable validation again.
+        parameters.validationDisabled = false;
+
+        // Initialize the scopes array.
+        parameters.scopes = parameters.scopes || [];
+
+        // Look for a scope name.
+        if (typeof left === 'string' && !left.startsWith('_$')) {
+            parameters.scopes.push(left);
+        } else if (typeof right === 'string' && !right.startsWith('_$')) {
+            parameters.scopes.push(right);
+        } else {
+            throw new Error('A property name is required on one side of a CONTAINS expression');
+        }
+
+        // Re-resolve both the left and right sides of the expression.
+        left = this.visit(ast.left, parameters);
+        right = this.visit(ast.right, parameters);
+
+        // Pop the scope name off again.
+        parameters.scopes.pop();
+
+        const result = [left, right];
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
      * Visitor design pattern; handle a condition operator.
      * Condition operators are operators that compare two pieces of data, such
      * as '>=' and '!='.
@@ -298,11 +352,19 @@ class QueryAnalyzer {
         const rhs = this.visit(ast.right, parameters);
         const lhs = this.visit(ast.left, parameters);
 
+        // Bypass the following validation if required. This will be set during
+        // the first pass of a CONTAINS when we are trying to figure out the name
+        // of the current scope so we can correctly validate model references.
+        if (parameters.validationDisabled) {
+            LOG.exit(method, result);
+            return result;
+        }
+
         // if the rhs is a string, it is the name of a property
         // and we infer the type of the lhs from the model
         // if the lhs is a parameter
         if (typeof rhs === 'string' && (lhs instanceof Array && lhs.length > 0)) {
-            lhs[0].type = this.getParameterType(rhs);
+            lhs[0].type = this.getParameterType(rhs, parameters);
             result = result.concat(lhs);
         }
 
@@ -310,7 +372,7 @@ class QueryAnalyzer {
         // and we infer the type of the rhs from the model
         // if the rhs is a parameter
         if (typeof lhs === 'string' && (rhs instanceof Array && rhs.length > 0)) {
-            rhs[0].type = this.getParameterType(lhs);
+            rhs[0].type = this.getParameterType(lhs, parameters);
             result = result.concat(rhs);
         }
 
@@ -369,6 +431,23 @@ class QueryAnalyzer {
     }
 
     /**
+     * Visitor design pattern; handle an array expression.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitArrayExpression(ast, parameters) {
+        const method = 'visitArrayExpression';
+        LOG.entry(method, ast, parameters);
+        const result = ast.elements.map((element) => {
+            return this.visit(element, parameters);
+        });
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
      * Visitor design pattern; handle a member expression.
      * @param {Object} ast The abstract syntax tree being visited.
      * @param {Object} parameters The parameters.
@@ -388,16 +467,24 @@ class QueryAnalyzer {
     /**
      * Get the parameter type for a property path on a resource
      * @param {string} parameterName The parameter name or name with nested structure e.g A.B.C
+     * @param {object} parameters The parameters
      * @return {string} The type to use for the parameter
      * @throws {Error} if the property does not exist or is of an unsupported type
      * @private
      */
-    getParameterType(parameterName) {
+    getParameterType(parameterName, parameters) {
         const method = 'getParameterType';
         LOG.entry(method, parameterName);
 
+        // If we have entered a scope, for example a CONTAINS, then we need
+        // to prepend the current scope to the property name.
+        let actualParameterName = parameterName;
+        if (parameters.scopes && parameters.scopes.length) {
+            actualParameterName = parameters.scopes.concat(parameterName).join('.');
+        }
+
         const classDeclaration = this.query.getSelect().getResourceClassDeclaration();
-        const property = classDeclaration.getNestedProperty(parameterName);
+        const property = classDeclaration.getNestedProperty(actualParameterName);
 
         let result = null;
 

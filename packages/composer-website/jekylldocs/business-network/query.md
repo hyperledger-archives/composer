@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Using Filters and Queries with Business Network Data
+title: Using Queries and Filters with Business Network Data
 category: tasks
 section: business-network
 index-order: 507

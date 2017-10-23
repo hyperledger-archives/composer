@@ -824,6 +824,14 @@ LogicalORExpressionNoIn
 LogicalOROperator
   = "OR"
 
+ContainsExpression
+  = first:LogicalORExpression
+    rest:(__ ContainsOperator __ LogicalORExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+ContainsOperator
+  = "CONTAINS"
+
 ConditionalExpression
   = test:LogicalORExpression __
     "?" __ consequent:AssignmentExpression __
@@ -836,7 +844,7 @@ ConditionalExpression
         alternate:  alternate
       };
     }
-  / LogicalORExpression
+  / ContainsExpression
 
 ConditionalExpressionNoIn
   = test:LogicalORExpressionNoIn __
