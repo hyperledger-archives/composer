@@ -174,7 +174,7 @@ describe('ConnectionProfileManager', () => {
     describe('#connectWithData', () => {
         it ('Good path, calling with valid data' ,()=>{
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data', name: 'myNetwork'};
+            const profile = {'x-type': 'foo', data : 'data', name: 'myNetwork'};
 
             // store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
@@ -187,12 +187,12 @@ describe('ConnectionProfileManager', () => {
             .then((connection) => {
                 connection.should.equal(stubConnection);
                 sinon.assert.calledOnce(connectionManager.connect);
-                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {type: 'foo', data : 'data' , name: 'myNetwork'});
+                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {'x-type': 'foo', data : 'data' , name: 'myNetwork'});
             });
         });
         it ('Good path, calling with valid data, and optional data' ,()=>{
             const store = sinon.createStubInstance(ConnectionProfileStore);
-            const profile = {type: 'foo', data : 'data', name: 'myNetwork'};
+            const profile = {'x-type': 'foo', data : 'data', name: 'myNetwork'};
 
             // store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
@@ -205,7 +205,7 @@ describe('ConnectionProfileManager', () => {
             .then((connection) => {
                 connection.should.equal(stubConnection);
                 sinon.assert.calledOnce(connectionManager.connect);
-                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {type: 'foo', data : 'data' , name: 'myNetwork',optional:'true'});
+                sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {'x-type': 'foo', data : 'data' , name: 'myNetwork',optional:'true'});
             });
         });
     });
@@ -248,7 +248,7 @@ describe('ConnectionProfileManager', () => {
             });
         });
 
-        it('should throw if no c-type defined in profile', () => {
+        it('should throw if no x-type defined in profile', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
             const profile = {'type': 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
