@@ -15,8 +15,7 @@ export class InitializationService {
 
     private config;
 
-    constructor(private clientService: ClientService,
-                private alertService: AlertService,
+    constructor(private alertService: AlertService,
                 private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private configService: ConfigService) {

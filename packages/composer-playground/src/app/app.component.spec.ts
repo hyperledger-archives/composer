@@ -148,7 +148,6 @@ describe('AppComponent', () => {
     let mockAlertService: MockAlertService;
     let mockModal;
     let mockAdminService;
-    let mockConnectionProfileService;
     let mockBusinessNetworkConnection;
     let mockIdCard;
     let mockIdentityService;
@@ -164,6 +163,8 @@ describe('AppComponent', () => {
 
     let activatedRoute: ActivatedRouteStub;
     let routerStub: RouterStub;
+
+    let checkVersionStub;
 
     beforeEach(async(() => {
         mockClientService = sinon.createStubInstance(ClientService);
@@ -217,9 +218,12 @@ describe('AppComponent', () => {
     beforeEach(async(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
+        checkVersionStub = sinon.stub(component, 'checkVersion');
     }));
 
-    function updateComponent() {
+    function updateComponent(checkVersion = true) {
+        checkVersionStub.returns(Promise.resolve(checkVersion));
+
         // trigger initial data binding
         fixture.detectChanges();
 
@@ -306,14 +310,13 @@ describe('AppComponent', () => {
         });
 
         it('should check version and open version modal', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(false));
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
-            updateComponent();
+            updateComponent(false);
 
             tick();
 
@@ -323,7 +326,6 @@ describe('AppComponent', () => {
         }));
 
         it('should check version and not open version modal', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
@@ -340,7 +342,6 @@ describe('AppComponent', () => {
         }));
 
         it('should not do anything on non navigation end events', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion');
             let welcomeModalStub = sinon.stub(component, 'openWelcomeModal');
 
             routerStub.eventParams = {url: '/', nav: 'start'};
@@ -349,12 +350,10 @@ describe('AppComponent', () => {
 
             tick();
 
-            checkVersionStub.should.not.have.been.called;
             welcomeModalStub.should.not.have.been.called;
         }));
 
         it('should show header links if logged in', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             routerStub.eventParams = {url: '/editor', nav: 'end'};
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetworkName.returns('bob');
@@ -369,7 +368,6 @@ describe('AppComponent', () => {
         }));
 
         it('should not show header links if not logged in', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             routerStub.eventParams = {url: '/login', nav: 'end'};
 
             updateComponent();
@@ -382,7 +380,6 @@ describe('AppComponent', () => {
         }));
 
         it('should not show header links if redirected to login', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
             routerStub.eventParams = {url: '/editor', nav: 'end', urlAfterRedirects: '/login'};
 
             updateComponent();
@@ -826,8 +823,6 @@ describe('AppComponent', () => {
         }));
 
         it('should open the welcome modal', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(true));
-
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -842,11 +837,9 @@ describe('AppComponent', () => {
         }));
 
         it('should open the version modal', fakeAsync(() => {
-            let checkVersionStub = sinon.stub(component, 'checkVersion').returns(Promise.resolve(false));
-
             activatedRoute.testParams = {};
 
-            updateComponent();
+            updateComponent(false);
 
             component['openWelcomeModal']();
 
@@ -895,7 +888,6 @@ describe('AppComponent', () => {
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-
         }));
 
         it('should check the version return true', fakeAsync(() => {
@@ -905,6 +897,8 @@ describe('AppComponent', () => {
             activatedRoute.testParams = {};
 
             updateComponent();
+
+            checkVersionStub.restore();
 
             component['checkVersion']().then((result) => {
                 result.should.equal(true);
@@ -926,6 +920,8 @@ describe('AppComponent', () => {
 
             updateComponent();
 
+            checkVersionStub.restore();
+
             component['checkVersion']().then((result) => {
                 result.should.equal(true);
             });
@@ -946,6 +942,8 @@ describe('AppComponent', () => {
             activatedRoute.testParams = {};
 
             updateComponent();
+
+            checkVersionStub.restore();
 
             component['checkVersion']().then((result) => {
                 result.should.equal(false);
