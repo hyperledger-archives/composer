@@ -92,18 +92,6 @@ describe('InstanceGenerator', () => {
             }`);
             should.not.exist(resource.theValues);
         });
-        // it('should return null for optional recursive field ', () => {
-        //     //useSampleGenerator();
-        //     try {
-        //         test(`namespace org.acme.test
-        //     asset MyAsset identified by assetId {
-        //         o String assetId
-        //         o MyAsset theValues optional
-        //     }`);
-        //     } finally {
-        //         should.not.exist(test.theValues);
-        //     }
-        // });
 
         it('should generate one default value for a string array property with sample generator ', () => {
             useSampleGenerator();

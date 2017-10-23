@@ -100,7 +100,8 @@ class InstanceGenerator {
         let type = field.getFullyQualifiedTypeName();
 
         if (ModelUtil.isPrimitiveType(type)) {
-            switch (type) {                case 'DateTime':
+            switch (type) {
+            case 'DateTime':
                 return parameters.valueGenerator.getDateTime();
             case 'Integer':
                 return parameters.valueGenerator.getInteger();
@@ -126,7 +127,6 @@ class InstanceGenerator {
         let fqn = classDeclaration.getFullyQualifiedName();
         // before doing any form of check for conept or class we want to check if this
         // has been seen before or not
-        console.log(field);
         if (!parameters.seen.find((e) => {
             return fqn === e;
         })) {
@@ -150,7 +150,6 @@ class InstanceGenerator {
                 return null;
             }
             throw new Error('Model is recursive.');
-            //todo
         }
     }
 
