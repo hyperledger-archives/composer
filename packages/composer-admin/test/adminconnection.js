@@ -82,7 +82,9 @@ class StubCardStore extends BusinessNetworkCardStore {
      */
     delete(cardName) {
         return Promise.resolve().then(() => {
-            this.cards.delete(cardName);
+            if (!this.cards.delete(cardName)) {
+                throw new Error('Card not found: ' + cardName);
+            }
         });
     }
 
@@ -876,7 +878,7 @@ describe('AdminConnection', () => {
 
     });
 
-    describe('#importCard', function() {
+    describe('Business Network Cards', function() {
         let peerAdminCard;
         let peerAdminCardExpectedName;
         let userCard;
@@ -900,36 +902,73 @@ describe('AdminConnection', () => {
             userCardExpectedName = userCard.getUserName() + '@' + userCard.getBusinessNetworkName();
         });
 
-        it('should import card with name', function() {
-            const cardName = 'conga';
-            return adminConnection.importCard(userCard, cardName).then(() => {
-                return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+        describe('#importCard', function() {
+            it('should import card with name', function() {
+                const cardName = 'conga';
+                return adminConnection.importCard(userCard, cardName).then(() => {
+                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                });
+            });
+
+            it('should generate name for user card when no name supplied', function() {
+                return adminConnection.importCard(userCard).then(() => {
+                    return cardStore.get(userCardExpectedName).should.eventually.deep.equal(userCard);
+                });
+            });
+
+            it('should generate name for PeerAdmin card when no name supplied', function() {
+                return adminConnection.importCard(peerAdminCard).then(() => {
+                    return cardStore.get(peerAdminCardExpectedName).should.eventually.deep.equal(peerAdminCard);
+                });
+            });
+
+            it('should return provided card name', function() {
+                const cardName = 'conga';
+                return adminConnection.importCard(userCard, cardName).should.eventually.equal(cardName);
+            });
+
+            it('should return generated name for user card when no name supplied', function() {
+                return adminConnection.importCard(userCard).should.eventually.equal(userCardExpectedName);
+            });
+
+            it('should return generated name for PeerAdmin card when no name supplied', function() {
+                return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
             });
         });
 
-        it('should generate name for user card when no name supplied', function() {
-            return adminConnection.importCard(userCard).then(() => {
-                return cardStore.get(userCardExpectedName).should.eventually.deep.equal(userCard);
+        describe('#getAllCards', function() {
+            it('should return empty map when card store contains no cards', function() {
+                return adminConnection.getAllCards().should.eventually.be.instanceOf(Map).that.is.empty;
+            });
+
+            it('should return map of cards when card store is not empty', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.getAllCards();
+                }).then((result) => {
+                    result.should.be.instanceOf(Map);
+                    result.size.should.equal(1);
+                    result.get(cardName).should.deep.equal(peerAdminCard);
+                });
             });
         });
 
-        it('should generate name for PeerAdmin card when no name supplied', function() {
-            return adminConnection.importCard(peerAdminCard).then(() => {
-                return cardStore.get(peerAdminCardExpectedName).should.eventually.deep.equal(peerAdminCard);
+        describe('#deleteCard', function() {
+            it('should reject for non-existent card', function() {
+                const cardName = 'conga-card';
+                return adminConnection.deleteCard(cardName).should.be.rejectedWith(cardName);
             });
-        });
 
-        it('should return provided card name', function() {
-            const cardName = 'conga';
-            return adminConnection.importCard(userCard, cardName).should.eventually.equal(cardName);
-        });
-
-        it('should return generated name for user card when no name supplied', function() {
-            return adminConnection.importCard(userCard).should.eventually.equal(userCardExpectedName);
-        });
-
-        it('should return generated name for PeerAdmin card when no name supplied', function() {
-            return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
+            it('should succeed for an existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.deleteCard(cardName);
+                }).then(() => {
+                    return cardStore.getAll();
+                }).then(cardMap => {
+                    cardMap.size.should.equal(0);
+                });
+            });
         });
     });
 
