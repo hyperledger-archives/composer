@@ -17,9 +17,10 @@ import { ImportModule } from '../import/import.module';
 import { FooterModule } from '../footer/footer.module';
 import { IdentityCardModule } from '../common/identity-card/identity-card.module';
 import { IdentityModule } from '../identity/identity.module';
+import { CredentialsModule } from '../common/credentials/credentials.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule, FooterModule, FileImporterModule, DrawerModule, ImportModule, IdentityModule, TutorialLinkModule, IdentityCardModule],
+    imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule, FooterModule, FileImporterModule, DrawerModule, ImportModule, IdentityModule, TutorialLinkModule, IdentityCardModule, CredentialsModule],
     entryComponents: [ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent],
     declarations: [LoginComponent, ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent]
 })

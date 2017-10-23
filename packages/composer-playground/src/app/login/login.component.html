@@ -56,7 +56,7 @@
         <tutorial-link *ngIf="showDeployNetwork"></tutorial-link>
     </div>
     <div *ngIf="showDeployNetwork">
-        <deploy-business-network (finishedSampleImport)="finishedDeploying()"></deploy-business-network>
+        <deploy-business-network (finishedSampleImport)="finishedDeploying()" [showCredentials]="showCredentials"></deploy-business-network>
     </div>
     <div *ngIf="creatingIdCard">
         <create-identity-card [connectionProfileRefs]="connectionProfileRefs"

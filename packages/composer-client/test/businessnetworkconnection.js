@@ -17,12 +17,14 @@
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CardStore = require('composer-common').BusinessNetworkCardStore;
 const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
 const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Factory = require('composer-common').Factory;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const IdCard = require('composer-common').IdCard;
 const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
@@ -227,6 +229,43 @@ describe('BusinessNetworkConnection', () => {
             });
         });
     });
+
+    describe('#connectWithCard',()=>{
+
+        it('Correct with with existing card name',()=>{
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            let mockCardStore = sinon.createStubInstance(CardStore);
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockCardStore.get.resolves(mockIdCard);
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            mockIdCard.getUserName.returns('FredBloggs');
+            businessNetworkConnection.cardStore = mockCardStore;
+
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            const cb = sinon.stub();
+            businessNetworkConnection.on('event', cb);
+            mockConnection.on.withArgs('events', sinon.match.func).yields([
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
+            ]);
+
+            return businessNetworkConnection.connectWithCard('cardName')
+                .then((result)=>{
+                    sinon.assert.calledOnce(mockCardStore.get);
+                    sinon.assert.calledWith(mockCardStore.get,'cardName');
+                    sinon.assert.calledWith(mockConnection.login,'FredBloggs','password');
+                });
+        });
+
+    });
+
+
 
     describe('#disconnect', () => {
 
@@ -789,7 +828,6 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newResource('org.acme.sample', 'SampleTransaction', 'c89291eb-969f-4b04-b653-82deb5ee0ba1');
-            tx.timestamp = new Date();
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
@@ -820,7 +858,6 @@ describe('BusinessNetworkConnection', () => {
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
             delete tx.$identifier;
-            tx.timestamp = new Date();
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
@@ -844,7 +881,7 @@ describe('BusinessNetworkConnection', () => {
 
         });
 
-        it('should generate a transaction timestamp if one not specified', () => {
+        it('should overwrite a user passed timestamp', () => {
 
             // Fake the transaction registry.
             const txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -853,7 +890,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-            delete tx.timestamp;
+            tx.timestamp = new Date('October 24, 1994');
 
             // Stub the UUID generator.
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
@@ -867,7 +904,11 @@ describe('BusinessNetworkConnection', () => {
                 .then(() => {
 
                     // Force the transaction to be serialized as some fake JSON.
-                    const json = JSON.stringify(serializer.toJSON(tx));
+                    const serialized = serializer.toJSON(tx);
+                    const json = JSON.stringify(serialized);
+
+                    // Check that timestamp was overwritten
+                    serialized.timestamp.should.deep.equal('1970-01-01T00:00:00.000Z');
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);

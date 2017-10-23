@@ -344,6 +344,13 @@ describe('ResourceComponent', () => {
             result.should.have.deep.property('optionalField', 'optional value');
         });
 
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and are not blank', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: ''}, {$class: '', someField: 'not blank', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'not blank');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
         it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and ignoring fields from the first that do not exist in the second', () => {
             let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value', anotherField: 'another field'}, {$class: '', someField: '', optionalField: 'optional value'});
             result.should.have.deep.property('$class', 'com.org');

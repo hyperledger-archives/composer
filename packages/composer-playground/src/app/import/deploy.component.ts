@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ImportComponent } from './import.component';
+import { ConfigService } from '../services/config.service';
+import { IdentityCardService } from '../services/identity-card.service';
 
 @Component({
     selector: 'deploy-business-network',
@@ -13,7 +15,13 @@ import { ImportComponent } from './import.component';
 })
 export class DeployComponent extends ImportComponent {
 
+    @Input() showCredentials: boolean;
+
     private networkNameValid: boolean = true;
+
+    private userId: string = '';
+    private userSecret: string = null;
+    private credentials = null;
 
     constructor(protected clientService: ClientService,
                 protected modalService: NgbModal,
@@ -23,12 +31,11 @@ export class DeployComponent extends ImportComponent {
     }
 
     deploy() {
-        let replacePromise;
-
         let deployed: boolean = true;
 
         this.deployInProgress = true;
-        return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.networkName, this.networkDescription)
+
+        return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.networkName, this.networkDescription, this.userId, this.userSecret, this.credentials)
             .then(() => {
                 this.deployInProgress = false;
                 this.finishedSampleImport.emit({deployed: deployed});
@@ -38,6 +45,38 @@ export class DeployComponent extends ImportComponent {
                 this.alertService.errorStatus$.next(error);
                 this.finishedSampleImport.emit({deployed: false, error: error});
             });
+    }
+
+    updateCredentials($event) {
+        // credentials not valid yet
+        if (!$event || !$event.userId) {
+            this.userId = null;
+            this.userSecret = null;
+            this.credentials = null;
+            return;
+        }
+
+        if ($event.secret) {
+            this.userSecret = $event.secret;
+            this.credentials = null;
+
+        } else {
+            this.userSecret = null;
+            this.credentials = {
+                certificate : $event.cert,
+                privateKey : $event.key
+            };
+        }
+
+        this.userId = $event.userId;
+    }
+
+    isInvalidDeploy() {
+        if (!this.networkName || !this.networkNameValid || this.deployInProgress || (this.showCredentials && !this.userId)) {
+            return true;
+        }
+
+        return false;
     }
 
     private setNetworkName(name) {

@@ -136,7 +136,7 @@ export class ResourceComponent implements OnInit {
             };
             let replacementJSON = serializer.toJSON(resource, serializeValidationOptions);
             let existingJSON = JSON.parse(this.resourceDefinition);
-            if (existingJSON && !withSampleData) {
+            if (existingJSON) {
                 this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
             } else {
               // Initial popup, no previous data to protect
@@ -154,7 +154,7 @@ export class ResourceComponent implements OnInit {
             if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
                 if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
                     toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
-                } else {
+                } else if (previousJSON[key].toString().length > 0 && previousJSON[key] !== 0) {
                     toUpdateWithJSON[key] = previousJSON[key];
                 }
             }

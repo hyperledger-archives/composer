@@ -138,7 +138,7 @@ export class TransactionComponent implements OnInit {
             this.hiddenTransactionItems.forEach((value, key) => {
                 delete replacementJSON[key];
             });
-            if (existingJSON && !withSampleData) {
+            if (existingJSON) {
                 this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
             } else {
                 // Initial popup, no previous data to protect
@@ -156,7 +156,7 @@ export class TransactionComponent implements OnInit {
             if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
                 if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
                     toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
-                } else {
+                } else if (typeof previousJSON[key] === 'string' && previousJSON[key].length > 0) {
                     toUpdateWithJSON[key] = previousJSON[key];
                 }
             }

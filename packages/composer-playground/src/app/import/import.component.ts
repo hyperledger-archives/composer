@@ -32,6 +32,9 @@ export abstract class ImportComponent implements OnInit {
 
     private currentBusinessNetworkPromise: Promise<BusinessNetworkDefinition>;
 
+    private lastName = 'empty-business-network';
+    private lastDesc = '';
+
     private NAME = 'empty-business-network';
     private DESC = 'Start from scratch with a blank business network';
     private EMPTY_BIZNET = {name: this.NAME, description: this.DESC};
@@ -65,6 +68,7 @@ export abstract class ImportComponent implements OnInit {
 
     selectNetwork(network): void {
         this.chosenNetwork = network;
+        this.updateBusinessNetworkNameAndDesc(network);
         if (this.chosenNetwork.name !== this.NAME) {
             this.currentBusinessNetworkPromise = this.sampleBusinessNetworkService.getChosenSample(this.chosenNetwork).then((result) => {
                 this.currentBusinessNetwork = result;
@@ -148,6 +152,9 @@ rule NetworkAdminSystem {
             const aclManager = this.currentBusinessNetwork.getAclManager();
             const aclFile = aclManager.createAclFile('permissions.acl', permissions);
             aclManager.setAclFile(aclFile);
+            this.currentBusinessNetwork.participants = this.currentBusinessNetwork.getModelManager().getParticipantDeclarations(false);
+            this.currentBusinessNetwork.assets = this.currentBusinessNetwork.getModelManager().getAssetDeclarations(false);
+            this.currentBusinessNetwork.transactions = this.currentBusinessNetwork.getModelManager().getTransactionDeclarations(false);
             return this.currentBusinessNetwork;
         });
     }
@@ -171,6 +178,21 @@ rule NetworkAdminSystem {
         return newOrder;
     }
 
+    updateBusinessNetworkNameAndDesc(network) {
+      let nameEl = this.networkName;
+      let descEl = this.networkDescription;
+      let name = network.name;
+      let desc = (typeof network.description === 'undefined') ? '' : network.description;
+      if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
+        this.networkName = name;
+        this.lastName = name;
+      }
+      if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
+        this.networkDescription = desc;
+        this.lastDesc = desc;
+      }
+    }
+
     private fileDetected() {
         this.expandInput = true;
     }
@@ -187,6 +209,7 @@ rule NetworkAdminSystem {
             this.currentBusinessNetworkPromise = this.clientService.getBusinessNetworkFromArchive(dataBuffer)
                 .then((businessNetwork) => {
                     this.chosenNetwork = businessNetwork.getMetadata().getPackageJson();
+                    this.updateBusinessNetworkNameAndDesc(this.chosenNetwork);
                     this.currentBusinessNetwork = businessNetwork;
                     this.currentBusinessNetwork.participants = businessNetwork.getModelManager().getParticipantDeclarations(false);
                     this.currentBusinessNetwork.assets = businessNetwork.getModelManager().getAssetDeclarations(false);
