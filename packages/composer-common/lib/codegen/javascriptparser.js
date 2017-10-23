@@ -97,16 +97,17 @@ class JavaScriptParser {
                 nodesToProcess.push(node);
             }
         });
-        // console.log(Util.inspect(nodesToProcess));
+        //console.log(Util.inspect(nodesToProcess));
 
         for (let n = 0; n < nodesToProcess.length; n++) {
             let statement = nodesToProcess[n];
 
             // record the end of the previous node.
             let previousEnd = -1;
-            if (n !== 0) {
-                previousEnd = ast.body[n-1].end;
-            }
+            // if (n !== 0) {
+            //     previousEnd = ast.body[n-1].end;
+            // }
+            let lineNumber=statement.loc.start.line;
 
             if (statement.type === 'VariableDeclaration') {
                 let variableDeclarations = statement.declarations;
@@ -124,8 +125,8 @@ class JavaScriptParser {
                     }
                 }
             }
-            else if (statement.type === 'FunctionDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+            else if (statement.type === 'FunctionDeclaration' || statement.type==='FunctionExpression') {
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments,lineNumber);
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -133,8 +134,10 @@ class JavaScriptParser {
                 let decorators = [];
                 let throws = '';
                 let example = '';
+                let commentData;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
+                    commentData = doctrine.parse(comment, {unwrap: true, sloppy: true});
                     returnType = JavaScriptParser.getReturnType(comment);
                     visibility = JavaScriptParser.getVisibility(comment);
                     parameterTypes = JavaScriptParser.getMethodArguments(comment);
@@ -156,12 +159,13 @@ class JavaScriptParser {
                         throws: throws,
                         decorators: decorators,
                         functionText : JavaScriptParser.getText(statement.start, statement.end, fileContents),
-                        example: example
+                        example: example,
+                        commentData : commentData
                     };
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments,lineNumber);
                 let privateClass = false;
                 let d;
                 if(closestComment >= 0) {
@@ -186,7 +190,7 @@ class JavaScriptParser {
                         }
 
                         if (thing.type === 'MethodDefinition') {
-                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments);
+                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments,lineNumber);
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
@@ -291,9 +295,9 @@ class JavaScriptParser {
      * @return {integer} the comment index or -1 if there are no comments
      * @private
      */
-    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments) {
+    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments,lineNumber) {
         let foundIndex = -1;
-        let distance = -1;
+        // let distance = -1;
 
         for(let n=0; n < comments.length; n++) {
             let comment = comments[n];
@@ -304,10 +308,7 @@ class JavaScriptParser {
                 foundIndex = n;
                 break;
             }
-            // if(rangeStart > endComment && comment.start > stopPoint) {
 
-
-            }
         }
         return foundIndex;
     }
