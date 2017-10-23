@@ -21,6 +21,7 @@ export class CreateIdentityCardComponent {
 
     newConnection: boolean;
     wrappedConnectionProfile: any;
+    profileChosen: boolean = false;
 
     cancelCreate() {
         this.editingCredentials = false;
@@ -41,39 +42,14 @@ export class CreateIdentityCardComponent {
         if (ref.valueOf() === '_$v1') {
             // Wish to work with new V1
             this.newConnection = true;
-            profile = {
-                description: 'A description for a V1 Profile',
-                type: 'hlfv1',
-                orderers: [{
-                            url: 'grpc://localhost:7050',
-                            cert: ''
-                            }],
-                ca: {
-                        url: 'http://localhost:7054',
-                        name: ''
-                    },
-                peers: [{
-                            requestURL: 'grpc://localhost:7051',
-                            eventURL: 'grpc://localhost:7053',
-                            cert: ''
-                        }],
-                keyValStore: '/tmp/keyValStore',
-                channel: 'composerchannel',
-                mspID: 'Org1MSP',
-                timeout: 5 * 60,
-            };
+            this.profileChosen = true;
         } else {
             // Wish to work with existing
             this.newConnection = false;
             // Retrieve details
-            profile = this.connectionProfiles.get(ref);
+            this.wrappedConnectionProfile = this.connectionProfiles.get(ref);
+            this.profileChosen = true;
         }
-
-        this.wrappedConnectionProfile = {
-            name: this.newConnection ? 'New Connection Profile' : this.connectionProfileNames.get(ref),
-            profile: profile,
-            default: this.newConnection ? false : true,
-        };
     }
 
     createWithExistingProfile(): void {

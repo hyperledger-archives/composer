@@ -43,10 +43,10 @@
             <button type="button" class="secondary" (click)="cancelCreate();">
                 <span>Cancel</span>
             </button>
-            <button *ngIf = "newConnection" type="button" class="primary" (click)="createWithNewProfile()" [disabled]="!wrappedConnectionProfile">
+            <button *ngIf = "newConnection" type="button" class="primary" (click)="createWithNewProfile()" [disabled]="!profileChosen">
                 <span>Next</span>
             </button>
-            <button *ngIf = "!newConnection" type="button" class="primary" (click)="createWithExistingProfile()" [disabled]="!wrappedConnectionProfile">
+            <button *ngIf = "!newConnection" type="button" class="primary" (click)="createWithExistingProfile()" [disabled]="!profileChosen">
                 <span>Next</span>
             </button>
         </footer>
