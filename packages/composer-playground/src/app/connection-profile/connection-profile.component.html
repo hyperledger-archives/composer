@@ -1,5 +1,5 @@
 <div *ngIf="connectionProfileData">
-    <div *ngIf="connectionProfileData.profile.type === 'hlfv1'" class="edit-data">
+    <div *ngIf="connectionProfileData.profile['x-type'] === 'hlfv1'" class="edit-data">
         <form [formGroup]="v1Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
             <section class="profile-section delimited">
                 <div class="description upper">Basic Configuration</div>

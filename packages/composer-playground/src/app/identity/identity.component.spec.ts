@@ -219,7 +219,7 @@ describe(`IdentityComponent`, () => {
 
         it('should add id to wallet when using the web profile', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'web'
+                'x-type': 'web'
             });
 
             mockModal.open.returns({
@@ -280,7 +280,7 @@ describe(`IdentityComponent`, () => {
 
         it('should handle error adding identity to wallet', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'web'
+                'x-type': 'web'
             });
 
             mockModal.open.returns({

@@ -21,8 +21,8 @@ const defaultCardProperties = {
         roles: ['PeerAdmin', 'ChannelAdmin'],
     },
     connectionProfile: {
-        name: '$default',
-        type: 'web'
+        'name': '$default',
+        'x-type': 'web'
     },
     credentials: null
 };
@@ -111,7 +111,7 @@ export class IdentityCardService {
                     if (cardRef.length === 36) {
                         let cardProperties: any = this.identityCardStorageService.get(cardRef);
 
-                        if (webOnly && cardProperties.connectionProfile.type !== 'web') {
+                        if (webOnly && cardProperties.connectionProfile['x-type'] !== 'web') {
                             return;
                         }
 
@@ -284,7 +284,7 @@ export class IdentityCardService {
     getQualifiedProfileName(connectionProfile: any): string {
         let prefix = hash(connectionProfile);
 
-        if ('web' === connectionProfile.type) {
+        if ('web' === connectionProfile['x-type']) {
             return 'web-' + connectionProfile.name;
         } else {
             return prefix + '-' + connectionProfile.name;

@@ -173,7 +173,7 @@ describe('AppComponent', () => {
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
+        mockIdCard.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
         mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);

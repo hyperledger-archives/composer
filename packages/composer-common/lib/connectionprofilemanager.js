@@ -99,7 +99,7 @@ class ConnectionProfileManager {
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
             LOG.debug(METHOD,data);
-            return this.getConnectionManagerByType(data.type);
+            return this.getConnectionManagerByType(data['x-type']);
         });
     }
 
@@ -113,6 +113,12 @@ class ConnectionProfileManager {
     getConnectionManagerByType(connectionType) {
         const METHOD = 'getConnectionManagerByType';
         LOG.info(METHOD,'Looking up a connection manager for type', connectionType);
+        if (!connectionType) {
+            let err = new Error('Connection profile has no \'x-type\' property defined to specify the type of connection required');
+            LOG.error(METHOD, err);
+            throw err;
+        }
+
         let errorList = [];
 
         return Promise.resolve()
@@ -230,7 +236,7 @@ class ConnectionProfileManager {
             if (additionalConnectOptions) {
                 connectOptions = Object.assign(connectOptions, additionalConnectOptions);
             }
-            return this.getConnectionManagerByType(connectOptions.type);
+            return this.getConnectionManagerByType(connectOptions['x-type']);
         })
         .then((connectionManager) => {
             // todo - this connect is duplicating values

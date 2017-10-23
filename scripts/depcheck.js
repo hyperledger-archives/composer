@@ -38,7 +38,7 @@ packageNames.forEach((packageName) => {
 // Not going to catch ranges but unlikely to see those anyway
 const badDependencies = {};
 const checkValue = function checkValue(packageIndex, dependency, currentValue) {
-    if (packages[packageIndex].name === 'composer-connector-hlfv1' && dependency === 'grpc') {
+    if (packages[packageIndex].name === 'composer-connector-hlfv1' && (dependency === 'grpc' || dependency === 'fabric-client' || dependency === 'fabric-ca-client')) {
         // Due to https://jira.hyperledger.org/browse/FAB-6425 we currently
         // need to relax the exact value restriction on grpc in composer-connector-hlfv1
         // The dependency and this hack should be removed as soon as we can make

@@ -290,7 +290,7 @@ describe(`LoginComponent`, () => {
         it('should load identity cards and ensure there is always a web connection profile', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('PeerAdmin');
-            mockIdCard1.getConnectionProfile.returns({name: '$default', type: 'web'});
+            mockIdCard1.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
             let mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard2.getUserName.returns('bob');
             mockIdCard2.getConnectionProfile.returns({name: 'bobProfile'});

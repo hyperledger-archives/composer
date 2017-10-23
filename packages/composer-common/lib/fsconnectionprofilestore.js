@@ -22,6 +22,7 @@ const path = require('path');
 const rimraf = require('rimraf');
 const thenify = require('thenify');
 const thenifyAll = require('thenify-all');
+const yaml = require('js-yaml');
 
 const PROFILE_ROOT = (() => {
     const h = homedir();
@@ -31,7 +32,8 @@ const PROFILE_ROOT = (() => {
         return path.resolve('/', '.composer-connection-profiles');
     }
 })();
-const CONNECTION_FILE = 'connection.json';
+const CONNECTION_FILE_JSON = 'connection.json';
+const CONNECTION_FILE_YAML = 'connection.yaml';
 const ENCODING = 'utf8';
 
 const LOG = require('./log/logger').getLog('FSConnectionProfileStore');
@@ -58,7 +60,7 @@ class FSConnectionProfileStore extends ConnectionProfileStore {
         if (!fs) {
             throw new Error('Must create FSConnectionProfileStore with an fs implementation.');
         }
-
+        this.syncFS = fs;
         this.fs = thenifyAll(fs, {});
         this.mkdirp = thenify((dir, cb) => {
             return mkdirp(dir, { fs: fs }, cb);
@@ -77,9 +79,20 @@ class FSConnectionProfileStore extends ConnectionProfileStore {
      */
     load(connectionProfile) {
         const options = { flag : 'r', encoding : ENCODING };
-        return this.fs.readFile(path.resolve(PROFILE_ROOT, connectionProfile, CONNECTION_FILE), options)
+
+        let profilePathJSON = path.resolve(PROFILE_ROOT, connectionProfile, CONNECTION_FILE_JSON);
+        let profilePathYAML = path.resolve(PROFILE_ROOT, connectionProfile, CONNECTION_FILE_YAML);
+        let profilePath = profilePathJSON;
+        let profileYAML = false;
+        if (this.syncFS.existsSync(profilePathYAML)) {
+            profilePath = profilePathYAML;
+            profileYAML = true;
+        }
+        return this.fs.readFile(profilePath, options)
             .then((contents) => {
-                LOG.info('load','Loaded connection profile ' + connectionProfile, contents);
+                if (profileYAML) {
+                    return yaml.safeLoad(contents);
+                }
                 return JSON.parse(contents);
             })
             .catch((err) => {
@@ -100,7 +113,7 @@ class FSConnectionProfileStore extends ConnectionProfileStore {
         return this.mkdirp(DIR)
             .then(() => {
                 const options = { flag : 'w', encoding : ENCODING };
-                return this.fs.writeFile(path.resolve(DIR, CONNECTION_FILE), JSON.stringify(connectOptions, null, 4), options);
+                return this.fs.writeFile(path.resolve(DIR, CONNECTION_FILE_JSON), JSON.stringify(connectOptions, null, 4), options);
             })
             .then(() => {
                 LOG.info('save','Saved connection profile ' + connectionProfile);
