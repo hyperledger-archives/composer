@@ -52,6 +52,9 @@ class Deploy {
         let spinner;
         let loglevel;
 
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
+
         if (argv.loglevel) {
             // validate log level as yargs cannot at this time
             // https://github.com/yargs/yargs/issues/849
@@ -64,7 +67,7 @@ class Deploy {
         return (() => {
             console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
 
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !argv.card) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -97,7 +100,11 @@ class Deploy {
             adminConnection = cmdUtil.createAdminConnection();
             // if we are performing an update we have to actually connect to the network
             // we want to update!
-            return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
+            if (!usingCard){
+                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
+            } else {
+                return adminConnection.connectWithCard(cardName, updateBusinessNetwork);
+            }
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {

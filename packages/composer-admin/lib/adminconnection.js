@@ -135,6 +135,18 @@ class AdminConnection {
     }
 
     /**
+     * Get a specific Business Network cards
+     *
+     * @param {String} cardName of the card to get
+     * @return {Promise} promise resolved with a business network card
+     */
+    getCard(cardName) {
+        if (cardName) {
+            return this.cardStore.get(cardName);
+        }
+    }
+
+    /**
      * List all Business Network cards.
      * @private
      * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
@@ -242,6 +254,50 @@ class AdminConnection {
             .then((securityContext) => {
                 this.securityContext = securityContext;
                 if (businessNetworkIdentifier) {
+                    return this.ping(this.securityContext);
+                }
+            });
+    }
+
+    /**
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {string} connectionProfile - The name of the connection profile
+     * @param {string} enrollmentID the enrollment ID of the user
+     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {boolean} update true if this is for an update operation
+     * @return {Promise} A promise that indicates the connection is complete
+     */
+    connectWithCard(cardName, update) {
+        const method = 'connectWithCard';
+        LOG.entry(method,cardName);
+
+        let card;
+
+        return this.cardStore.get(cardName)
+            .then((card_)=>{
+                card = card_;
+                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName(), additionalConnectOptions);
+            })
+            .then((connection) => {
+                this.connection = connection;
+                return connection.login(card.getUserName(),card.getEnrollmentCredentials().secret);
+            })
+            .then((securityContext) => {
+                this.securityContext = securityContext;
+                if (update) {
                     return this.ping(this.securityContext);
                 }
             });

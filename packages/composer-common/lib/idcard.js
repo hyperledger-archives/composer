@@ -273,7 +273,7 @@ class IdCard {
         const method = 'fromArchive';
         LOG.entry(method, options);
 
-        const zipOptions = Object.assign({ type: 'arraybuffer' }, options);
+        const zipOptions = Object.assign({ type: 'nodebuffer' }, options);
         const zip = new JSZip();
 
         const connectionContents = JSON.stringify(this.connectionProfile);
