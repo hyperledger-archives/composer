@@ -62,7 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 private configService: ConfigService) {
     }
 
-    ngOnInit() {
+    ngOnInit(): Promise<void> {
         this.subs = [
             this.alertService.busyStatus$.subscribe((busyStatus) => {
                 this.onBusyStatus(busyStatus);
@@ -80,6 +80,12 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.processRouteEvent(e);
             })
         ];
+
+        return this.checkVersion().then((success) => {
+            if (!success) {
+                this.openVersionModal();
+            }
+        });
     }
 
     ngOnDestroy() {
@@ -101,12 +107,6 @@ export class AppComponent implements OnInit, OnDestroy {
         let welcomePromise;
         if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
-        } else {
-            welcomePromise = this.checkVersion().then((success) => {
-                if (!success) {
-                    this.openVersionModal();
-                }
-            });
         }
 
         if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {

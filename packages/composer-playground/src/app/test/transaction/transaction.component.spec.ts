@@ -5,28 +5,26 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By, BrowserModule } from '@angular/platform-browser';
 import { Component, Input } from '@angular/core';
-import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { TransactionComponent } from './transaction.component';
-import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 
 import {
     TransactionDeclaration,
     BusinessNetworkDefinition,
     Serializer,
     Factory,
-    Resource,
     ModelFile,
     Introspector
 } from 'composer-common';
 
-import { BusinessNetworkConnection, AssetRegistry, TransactionRegistry } from 'composer-client';
+import { BusinessNetworkConnection } from 'composer-client';
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+
 let should = chai.should();
 
 @Component({
@@ -43,7 +41,6 @@ describe('TransactionComponent', () => {
     let element: HTMLElement;
     let mockNgbActiveModal;
     let mockClientService;
-    let mockInitializationService;
     let mockTransaction;
     let mockBusinessNetwork;
     let mockBusinessNetworkConnection;
@@ -58,7 +55,6 @@ describe('TransactionComponent', () => {
         sandbox = sinon.sandbox.create();
         mockNgbActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockSerializer = sinon.createStubInstance(Serializer);
@@ -77,7 +73,6 @@ describe('TransactionComponent', () => {
         mockBusinessNetworkConnection.submitTransaction = sandbox.stub();
         mockTransaction = sinon.createStubInstance(TransactionDeclaration);
         mockNgbActiveModal.close = sandbox.stub();
-        mockInitializationService.initialize.returns(Promise.resolve());
 
         TestBed.configureTestingModule({
             imports: [
@@ -90,11 +85,10 @@ describe('TransactionComponent', () => {
             ],
             providers: [
                 {provide: NgbActiveModal, useValue: mockNgbActiveModal},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: InitializationService, useValue: mockInitializationService}
+                {provide: ClientService, useValue: mockClientService}
             ]
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
