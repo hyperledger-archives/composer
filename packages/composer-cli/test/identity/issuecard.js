@@ -70,7 +70,7 @@ describe('composer identity card issue CLI unit tests', () => {
         return IssueCard.handler(argv)
             .then((res) => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithCard);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithCard, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithCard, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
 
