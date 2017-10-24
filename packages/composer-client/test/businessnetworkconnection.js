@@ -231,14 +231,18 @@ describe('BusinessNetworkConnection', () => {
     });
 
     describe('#connectWithCard',()=>{
+        const userName = 'FredBloggs';
+        const enrollmentSecret = 'password';
+        const keyValStore = '/conga/conga/conga';
 
-        it('Correct with with existing card name',()=>{
+        beforeEach(() => {
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
             let mockCardStore = sinon.createStubInstance(CardStore);
             let mockIdCard = sinon.createStubInstance(IdCard);
             mockCardStore.get.resolves(mockIdCard);
-            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
-            mockIdCard.getUserName.returns('FredBloggs');
+            mockIdCard.getEnrollmentCredentials.returns({secret: enrollmentSecret});
+            mockIdCard.getUserName.returns(userName);
+            mockIdCard.getConnectionProfile.returns({ keyValStore: keyValStore });
             businessNetworkConnection.cardStore = mockCardStore;
 
             mockConnection.login.resolves(mockSecurityContext);
@@ -254,18 +258,42 @@ describe('BusinessNetworkConnection', () => {
                 { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
                 { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
             ]);
+        });
 
+        afterEach(() => {
+            sandbox.reset();
+        });
+
+        it('Connect with existing card name',()=>{
             return businessNetworkConnection.connectWithCard('cardName')
                 .then((result)=>{
-                    sinon.assert.calledOnce(mockCardStore.get);
-                    sinon.assert.calledWith(mockCardStore.get,'cardName');
-                    sinon.assert.calledWith(mockConnection.login,'FredBloggs','password');
+                    sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
+                });
+        });
+
+        it('should add card name to connection profile additional options when additional options not specified', () => {
+            const cardName = 'CARD_NAME';
+            return businessNetworkConnection.connectWithCard(cardName)
+                .then(result => {
+                    sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
+                        sinon.match.any,
+                        sinon.match.any,
+                        sinon.match.has('cardName', cardName));
+                });
+        });
+
+        it('should override cardName property specified in additional options', () => {
+            const cardName = 'CARD_NAME';
+            return businessNetworkConnection.connectWithCard(cardName, { cardName: 'WRONG' })
+                .then(result => {
+                    sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
+                        sinon.match.any,
+                        sinon.match.any,
+                        sinon.match.has('cardName', cardName));
                 });
         });
 
     });
-
-
 
     describe('#disconnect', () => {
 

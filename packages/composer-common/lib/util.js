@@ -15,6 +15,8 @@
 'use strict';
 
 const Globalize = require('./globalize');
+const os = require('os');
+const path = require('path');
 const SecurityContext = require('./securitycontext');
 const SecurityException = require('./securityexception');
 const uuid = require('uuid');
@@ -120,6 +122,15 @@ class Util {
             return id;
         });
 
+    }
+
+    /**
+     * Get the home directory path for the current user. Returns root directory for environments where there is no
+     * file system path available.
+     * @returns {String} A file system path.
+     */
+    static homeDirectory() {
+        return (os.homedir && os.homedir()) || path.sep;
     }
 
 }
