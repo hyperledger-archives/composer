@@ -26,10 +26,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('Query system tests', () => {
-    let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
-    });
+
     let businessNetworkDefinition;
     let client;
     let assetsAsJSON;
@@ -175,11 +172,11 @@ describe('Query system tests', () => {
         return result;
     }
 
-        /**
-         * Generate a transaction.
-         * @param {Number} i The index.
-         * @return {Object} The generated transaction.
-         */
+    /**
+     * Generate a transaction.
+     * @param {Number} i The index.
+     * @return {Object} The generated transaction.
+     */
     function generateTransaction(i) {
         let result = {
             $class: 'systest.queries.SampleTransaction',
@@ -212,7 +209,6 @@ describe('Query system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition, true)
             .then(() => {
                 return TestUtil.getClient('systest-queries')
@@ -242,15 +238,8 @@ describe('Query system tests', () => {
                 participantsAsJSON.sort((a, b) => {
                     return a.participantId.localeCompare(b.participantId);
                 });
-            });
-    });
-
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
-    });
-
-    beforeEach(function () {
-        return client.getAssetRegistry('systest.queries.SampleAsset')
+                return client.getAssetRegistry('systest.queries.SampleAsset');
+            })
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
             })
@@ -283,6 +272,10 @@ describe('Query system tests', () => {
                     return serializer.toJSON(transaction);
                 });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     ['assets', 'participants', 'transactions'].forEach((type) => {
