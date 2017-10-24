@@ -103,7 +103,7 @@ class Deploy {
             if (!usingCard){
                 return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
             } else {
-                return adminConnection.connectWithCard(cardName, updateBusinessNetwork);
+                return adminConnection.connect(cardName, updateBusinessNetwork);
             }
         })
         .then((result) => {

@@ -244,7 +244,7 @@ class AdminConnection {
      * @param {string} businessNetworkIdentifier the id of the network (for update) or null
      * @return {Promise} A promise that indicates the connection is complete
      */
-    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
+    _connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
@@ -256,6 +256,63 @@ class AdminConnection {
                     return this.ping(this.securityContext);
                 }
             });
+    }
+
+     /**
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile.
+     * EITHER, the cardName, and updateflag , OR
+     * the connectionProfile, enrollmentID, enrollmentSecret and businessNetworkIdentifier
+     * Should be specified. NOT both
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });*
+     * @param {String} cardName - The name of the business network card
+     * @param {boolean} update true if this is for an update operation
+     * @param {string} connectionProfile - The name of the connection profile
+     * @param {string} enrollmentID the enrollment ID of the user
+     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {string} businessNetworkIdentifier the id of the network (for update) or null
+     * @return {Promise} A promise that indicates the connection is complete
+     */
+    connect(){
+
+        let cardName,update;
+        let connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier;
+        if (arguments.length===2){
+            cardName = arguments[0];
+            update = arguments[1];
+            return this._connectWithCard(cardName,update);
+        } else if (arguments.length === 3){
+            connectionProfile = arguments[0];
+            enrollmentID = arguments[1];
+            enrollmentSecret = arguments[2];
+            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
+        } else  if (arguments.length === 5){
+            connectionProfile = arguments[0];
+            enrollmentID = arguments[1];
+            enrollmentSecret = arguments[2];
+            businessNetworkIdentifier = arguments[3];
+            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,businessNetworkIdentifier);
+        } else {
+            return Promise.reject(new Error('Incorrect number of arguments'));
+        }
     }
 
     /**
@@ -277,7 +334,7 @@ class AdminConnection {
      * @param {boolean} update true if this is for an update operation
      * @return {Promise} A promise that indicates the connection is complete
      */
-    connectWithCard(cardName, update) {
+    _connectWithCard(cardName, update) {
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 

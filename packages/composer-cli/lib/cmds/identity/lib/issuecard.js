@@ -47,7 +47,7 @@ class Issue {
             .then((result) =>{
                 issuingCard = result;
                 businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-                return businessNetworkConnection.connectWithCard(cardName);
+                return businessNetworkConnection.connect(cardName);
             })
             .then(() => {
                 let issueOptions = cmdUtil.parseOptions(argv);

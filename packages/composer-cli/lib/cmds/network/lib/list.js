@@ -74,7 +74,7 @@ class List {
             if (!usingCard){
                 return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
             } else {
-                return businessNetworkConnection.connectWithCard(cardName);
+                return businessNetworkConnection.connect(cardName);
             }
 
         })

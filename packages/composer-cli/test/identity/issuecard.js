@@ -44,7 +44,7 @@ describe('composer identity card issue CLI unit tests', () => {
         mockIdCard.getBusinessNetworkName.returns('network');
         mockIdCard.getConnectionProfile.returns({name:'network'});
         mockAdminConnection.getCard.resolves(mockIdCard);
-        mockBusinessNetworkConnection.connectWithCard.resolves();
+        mockBusinessNetworkConnection.connect.resolves();
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', sinon.match.object).resolves({
             userID: 'dogeid1',
             userSecret: 'suchsecret'
@@ -69,11 +69,10 @@ describe('composer identity card issue CLI unit tests', () => {
         sandbox.stub(Export,'writeCardToFile').resolves();
         return IssueCard.handler(argv)
             .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithCard);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithCard, 'cardname');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-
             });
     });
 
