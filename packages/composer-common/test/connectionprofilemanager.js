@@ -228,4 +228,15 @@ describe('ConnectionProfileManager', () => {
 
     });
 
+    describe('#_getConnectionManager', () => {
+
+        it('should throw if no connection manager available', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            return cpm._getConnectionManager( 'baz' ).should.be.rejectedWith(/Failed to load connector module/);
+        });
+    });
 });
