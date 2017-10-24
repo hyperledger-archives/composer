@@ -117,38 +117,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
             });
 
-            it('should return all of the participants with a specified property value', () => {
-                return chai.request(app)
-                    .get(`/api/${prefix}Member?filter={"where": {"name": "Bob"}}`)
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                            participantData[1]
-                        ]);
-                    });
-            });
-
-            it('should return all of the participants with a range of property value', () => {
-                return chai.request(app)
-                    .get(`/api/${prefix}Member?filter={"where": {"lastName": {"between":["A", "C"]}}}`)
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                            participantData[1]
-                        ]);
-                    });
-            });
-
-            it('should return an empty with a specified property value does not exsit in the registry', () => {
-                return chai.request(app)
-                    .get(`/api/${prefix}Member?filter={"where": {"lastName": "Chow"}}`)
-                    .then((res) => {
-                        res.should.be.json;
-                        res.body.should.deep.equal([
-                        ]);
-                    });
-            });
-
         });
 
         describe(`POST / namespaces[${namespaces}]`, () => {
