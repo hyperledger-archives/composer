@@ -141,9 +141,8 @@ class AdminConnection {
      * @return {Promise} promise resolved with a business network card
      */
     getCard(cardName) {
-        if (cardName) {
-            return this.cardStore.get(cardName);
-        }
+        return this.cardStore.get(cardName);
+
     }
 
     /**
@@ -274,9 +273,7 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
-     * @param {string} connectionProfile - The name of the connection profile
-     * @param {string} enrollmentID the enrollment ID of the user
-     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {String} cardName - The name of the business network card
      * @param {boolean} update true if this is for an update operation
      * @return {Promise} A promise that indicates the connection is complete
      */
@@ -289,7 +286,7 @@ class AdminConnection {
         return this.cardStore.get(cardName)
             .then((card_)=>{
                 card = card_;
-                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName(), additionalConnectOptions);
+                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName());
             })
             .then((connection) => {
                 this.connection = connection;

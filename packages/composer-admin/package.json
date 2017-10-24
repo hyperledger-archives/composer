@@ -16,7 +16,9 @@
     "postlint": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.json"
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
+    "mocha": "mocha --recursive -t 10000"
+
   },
   "repository": {
     "type": "git",

@@ -232,6 +232,56 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#connectWithCard', () =>{
+
+
+        it ('should connect, login and ping if update not specified', () => {
+            sinon.spy(cardStore,'get');
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({});
+            mockIdCard.getUserName.returns('fred');
+            mockIdCard.getBusinessNetworkName.returns('network');
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',mockIdCard);
+
+            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            return adminConnection.connectWithCard('testCardname').then(()=>{
+                sinon.assert.calledOnce(cardStore.get);
+                sinon.assert.calledWith(cardStore.get,'testCardname');
+                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login,'fred','password');
+                sinon.assert.notCalled(mockConnection.ping);
+            });
+        });
+
+        it ('should connect, login and ping if update specified', () => {
+            sinon.spy(cardStore,'get');
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({});
+            mockIdCard.getUserName.returns('fred');
+            mockIdCard.getBusinessNetworkName.returns('network');
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',mockIdCard);
+
+            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            return adminConnection.connectWithCard('testCardname',true).then(()=>{
+                sinon.assert.calledOnce(cardStore.get);
+                sinon.assert.calledWith(cardStore.get,'testCardname');
+                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login,'fred','password');
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+            });
+        });
+    });
+
+
     describe('#createProfile', () => {
         it('should return a resolved promise', () => {
             return adminConnection.createProfile(testProfileName, config)
@@ -934,6 +984,19 @@ describe('AdminConnection', () => {
             it('should return generated name for PeerAdmin card when no name supplied', function() {
                 return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
             });
+        });
+
+        describe('#getCard', ()=>{
+            it('should return valid card if one exists', ()=>{
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.getCard('conga-card');
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('PeerAdmin');
+                });
+            });
+
         });
 
         describe('#getAllCards', function() {

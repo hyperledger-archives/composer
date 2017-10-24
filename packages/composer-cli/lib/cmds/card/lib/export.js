@@ -16,7 +16,6 @@
 
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const IdCard = require('composer-common').IdCard;
 const path = require('path');
 
 /**
@@ -53,7 +52,7 @@ class Export {
      */
     static writeCardToFile(cardFileName,card) {
         let cardFilePath;
-        return card.toArchive()
+        return card.toArchive({ type: 'nodebuffer' })
            .then( (cardBuffer)=>{
                // got the id card to write to a buffer
                cardFilePath = path.resolve(cardFileName);

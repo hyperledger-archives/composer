@@ -92,7 +92,7 @@ function processDirectory(path, fileProcessor) {
 function processFile(file, fileProcessor) {
     let filePath = path.parse(file);
     if (filePath.ext === '.js') {
-        console.log('%s is a file.', file);
+        //console.log('%s is a file.', file);
         let fileContents = fs.readFileSync(file, 'utf8');
         const parser = new JavaScriptParser(fileContents, program.private);
         fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
