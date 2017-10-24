@@ -230,6 +230,10 @@ describe('AdminConnection', () => {
                 });
         });
 
+        it('should error if wrong number of arguments given', () => {
+            return adminConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
+        });
+
     });
 
     describe('#connectWithCard', () =>{
@@ -246,7 +250,7 @@ describe('AdminConnection', () => {
             cardStore.put('testCardname',mockIdCard);
 
             sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
-            return adminConnection.connectWithCard('testCardname').then(()=>{
+            return adminConnection.connect('testCardname').then(()=>{
                 sinon.assert.calledOnce(cardStore.get);
                 sinon.assert.calledWith(cardStore.get,'testCardname');
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
@@ -268,7 +272,7 @@ describe('AdminConnection', () => {
             cardStore.put('testCardname',mockIdCard);
 
             sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
-            return adminConnection.connectWithCard('testCardname',true).then(()=>{
+            return adminConnection.connect('testCardname',true).then(()=>{
                 sinon.assert.calledOnce(cardStore.get);
                 sinon.assert.calledWith(cardStore.get,'testCardname');
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
@@ -320,8 +324,9 @@ describe('AdminConnection', () => {
     describe('#disconnect', () => {
         it('should set connection and security context to null', () => {
             let adminConnection = new AdminConnection();
-            sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
-            return adminConnection.connect()
+
+            sinon.stub(adminConnection, '_connectWithCard').resolves(mockConnection);
+            return adminConnection.connect('fakeCard')
             .then(() => {
                 return adminConnection.disconnect();
             })
@@ -335,6 +340,18 @@ describe('AdminConnection', () => {
             let adminConnection = new AdminConnection();
             return adminConnection.disconnect();
         });
+
+        it('should connect, login and ping if business network specified, and then disconnect', () => {
+            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
+                    sinon.assert.calledOnce(mockConnection.ping);
+                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                    adminConnection.disconnect();
+                });
+        });
+
     });
 
     describe('#install', () => {

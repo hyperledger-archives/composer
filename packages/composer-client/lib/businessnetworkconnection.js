@@ -468,6 +468,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
+     * @private
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
     _connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {

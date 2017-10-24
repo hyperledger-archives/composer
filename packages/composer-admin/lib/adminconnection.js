@@ -243,6 +243,7 @@ class AdminConnection {
      * @param {string} enrollmentSecret the enrollment secret of the user
      * @param {string} businessNetworkIdentifier the id of the network (for update) or null
      * @return {Promise} A promise that indicates the connection is complete
+     * @private
      */
     _connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
@@ -282,7 +283,7 @@ class AdminConnection {
      * })
      * .catch(function(error){
      *     // Add optional error handling here.
-     * });*
+     * });
      * @param {String} cardName - The name of the business network card
      * @param {boolean} update true if this is for an update operation
      * @param {string} connectionProfile - The name of the connection profile
@@ -295,7 +296,11 @@ class AdminConnection {
 
         let cardName,update;
         let connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier;
-        if (arguments.length===2){
+        if (arguments.length===1){
+            cardName = arguments[0];
+            update = false;
+            return this._connectWithCard(cardName,update);
+        } else  if (arguments.length===2){
             cardName = arguments[0];
             update = arguments[1];
             return this._connectWithCard(cardName,update);
@@ -304,7 +309,7 @@ class AdminConnection {
             enrollmentID = arguments[1];
             enrollmentSecret = arguments[2];
             return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
-        } else  if (arguments.length === 5){
+        } else  if (arguments.length === 4){
             connectionProfile = arguments[0];
             enrollmentID = arguments[1];
             enrollmentSecret = arguments[2];
@@ -332,6 +337,7 @@ class AdminConnection {
      * });
      * @param {String} cardName - The name of the business network card
      * @param {boolean} update true if this is for an update operation
+     * @private
      * @return {Promise} A promise that indicates the connection is complete
      */
     _connectWithCard(cardName, update) {

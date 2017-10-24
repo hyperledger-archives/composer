@@ -228,6 +228,11 @@ describe('BusinessNetworkConnection', () => {
                 ev2.getIdentifier().should.equal('event2');
             });
         });
+
+        it('should fail with the wrong number of arguments', ()=>{
+            return businessNetworkConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
+
+        });
     });
 
     describe('#connectWithCard',()=>{
@@ -264,8 +269,31 @@ describe('BusinessNetworkConnection', () => {
             sandbox.reset();
         });
 
-        it('Connect with existing card name',()=>{
-            return businessNetworkConnection.connectWithCard('cardName')
+
+        it('Correct with with existing card name & additional options',()=>{
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            let mockCardStore = sinon.createStubInstance(CardStore);
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockCardStore.get.resolves(mockIdCard);
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            mockIdCard.getUserName.returns('FredBloggs');
+            businessNetworkConnection.cardStore = mockCardStore;
+
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            const cb = sinon.stub();
+            businessNetworkConnection.on('event', cb);
+            mockConnection.on.withArgs('events', sinon.match.func).yields([
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
+                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
+            ]);
+
+            return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
                 .then((result)=>{
                     sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
                 });
