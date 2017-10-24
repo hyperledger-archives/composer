@@ -23,6 +23,7 @@ const EventEmitter = require('events');
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const Historian = require('./historian');
+const HLFStoreLocator = require('./hlfstorelocator');
 const IdentityRegistry = require('./identityregistry');
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
@@ -76,6 +77,7 @@ class BusinessNetworkConnection extends EventEmitter {
         }
 
         this.cardStore = options.cardStore || new FileSystemCardStore();
+        this.hlfStoreLocator = new HLFStoreLocator(this.cardStore);
 
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
@@ -447,9 +449,11 @@ class BusinessNetworkConnection extends EventEmitter {
         let card;
 
         return this.cardStore.get(cardName)
-            .then((card_)=>{
-                card = card_;
-                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName(), additionalConnectOptions);
+            .then(retrievedCard => {
+                card = retrievedCard;
+                let connectionProfile = card.getConnectionProfile();
+                connectionProfile = this.hlfStoreLocator.updateConnectionProfile(connectionProfile, cardName);
+                return this.connectionProfileManager.connectWithData(connectionProfile, card.getBusinessNetworkName(), additionalConnectOptions);
             })
             .then((connection) => {
                 LOG.exit(method);
