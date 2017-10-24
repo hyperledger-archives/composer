@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
-import { ConfirmComponent } from '../../basic-modals/confirm/confirm.component';
+import { DeleteComponent } from '../../basic-modals/delete-confirm/delete-confirm.component';
 import { ViewTransactionComponent } from '../view-transaction/view-transaction.component';
 
 @Component({
@@ -108,9 +108,12 @@ export class RegistryComponent {
     }
 
     openDeleteResourceModal(resource: any) {
-        const confirmModalRef = this.modalService.open(ConfirmComponent);
-        confirmModalRef.componentInstance.confirmMessage = 'Please confirm that you want to delete Asset: ' + resource.getIdentifier();
-
+        const confirmModalRef = this.modalService.open(DeleteComponent);
+        confirmModalRef.componentInstance.headerMessage = 'Delete Asset/Participant';
+        confirmModalRef.componentInstance.deleteMessage = 'This action will be recorded in the Historian, and cannot be reversed. Are you sure you want to delete?';
+        confirmModalRef.componentInstance.fileType = resource.$type;
+        confirmModalRef.componentInstance.fileName = resource.getIdentifier();
+        confirmModalRef.componentInstance.action = 'delete';
         confirmModalRef.result.then((result) => {
             if (result) {
                 this._registry.remove(resource)
@@ -125,6 +128,7 @@ export class RegistryComponent {
             } else {
                 // TODO: we should always get called with a code for this usage of the
                 // modal but will that always be true
+
             }
         });
     }
