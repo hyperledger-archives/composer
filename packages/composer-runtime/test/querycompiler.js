@@ -68,6 +68,8 @@ describe('QueryCompiler', () => {
             o String foo
             o String bar
             o Baa baa
+            o String[] noises
+            o Meow[] meows
         }
 
         participant SampleParticipant identified by participantId {
@@ -168,6 +170,30 @@ describe('QueryCompiler', () => {
                 SELECT org.hyperledger.composer.system.HistorianRecord
                     FROM HistorianRegistry
         }
+        query Q16 {
+            description: "Simple Historian Query"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (noises CONTAINS "baa")
+        }
+        query Q17 {
+            description: "Simple Historian Query"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (noises CONTAINS ["baa","moo"])
+        }
+        query Q18 {
+            description: "Simple Historian Query"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (meows CONTAINS (woof == "foo"))
+        }
+        query Q19 {
+            description: "Simple Historian Query"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (meows CONTAINS ((woof == "foo") OR (woof == "noo")))
+        }
         `);
         queryFile1.validate();
         queries = {};
@@ -195,7 +221,7 @@ describe('QueryCompiler', () => {
             const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
             compiledQueryBundle.compiledQueries.should.be.an('array');
-            compiledQueryBundle.compiledQueries.should.have.lengthOf(15);
+            compiledQueryBundle.compiledQueries.should.have.lengthOf(19);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
             compiledQueryBundle.compiledQueries.should.all.have.property('hash');
             compiledQueryBundle.compiledQueries.should.all.have.property('generator');
@@ -208,7 +234,7 @@ describe('QueryCompiler', () => {
         it('should visit all of the things', () => {
             const compiled = queryCompiler.visit(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(15);
+            compiled.should.have.lengthOf(19);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -227,7 +253,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query manager', () => {
             const compiled = queryCompiler.visitQueryManager(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(15);
+            compiled.should.have.lengthOf(19);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -247,7 +273,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query file', () => {
             const compiled = queryCompiler.visitQueryFile(queryFile1, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(15);
+            compiled.should.have.lengthOf(19);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -672,6 +698,244 @@ describe('QueryCompiler', () => {
 
     });
 
+    describe('#visitContainsOperator', () => {
+
+        it('should throw for an expression with two literals', () => {
+            (() => {
+                queryCompiler.visitContainsOperator({
+                    type: 'BinaryExpression',
+                    operator: 'CONTAINS',
+                    left: {
+                        type: 'Literal',
+                        value: 'foo'
+                    },
+                    right: {
+                        type: 'Literal',
+                        value: 'bar'
+                    }
+                });
+            }).should.throw(/The operator CONTAINS requires a property name/);
+        });
+
+        it('should compile an expression with a literal', () => {
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'Literal',
+                    value: 'bar'
+                }
+            });
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with a reversed literal', () => {
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Literal',
+                    value: 'bar'
+                },
+                right: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                }
+            });
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with a parameter', () => {
+            const parameters = {
+                requiredParameters: [],
+                parametersToUse: {
+                    myvar: 'bar'
+                }
+            };
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'Identifier',
+                    name: '_$myvar'
+                }
+            }, parameters);
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with a reversed parameter', () => {
+            const parameters = {
+                requiredParameters: [],
+                parametersToUse: {
+                    myvar: 'bar'
+                }
+            };
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: '_$myvar'
+                },
+                right: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                }
+            }, parameters);
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with an array literal', () => {
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'ArrayExpression',
+                    elements: [
+                        {
+                            type: 'Literal',
+                            value: 'foo'
+                        },
+                        {
+                            type: 'Literal',
+                            value: 'bar'
+                        }
+                    ]
+                }
+            });
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'foo', 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with an array parameter', () => {
+            const parameters = {
+                requiredParameters: [],
+                parametersToUse: {
+                    myvar: ['foo', 'bar']
+                }
+            };
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'Identifier',
+                    name: '_$myvar'
+                }
+            }, parameters);
+            result.should.deep.equal({
+                someArray: {
+                    $all: [ 'foo', 'bar' ]
+                }
+            });
+        });
+
+        it('should compile an expression with a nested expression with literals', () => {
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'BinaryExpression',
+                    operator: '==',
+                    left: {
+                        type: 'Identifier',
+                        name: 'someProp'
+                    },
+                    right: {
+                        type: 'Literal',
+                        value: 'foo'
+                    }
+                }
+            });
+            result.should.deep.equal({
+                someArray: {
+                    $elemMatch: {
+                        someProp: {
+                            $eq: 'foo'
+                        }
+                    }
+                }
+            });
+        });
+
+        it('should compile an expression with a nested expression with parameter', () => {
+            const parameters = {
+                requiredParameters: [],
+                parametersToUse: {
+                    myvar: 'bar'
+                }
+            };
+            const result = queryCompiler.visitContainsOperator({
+                type: 'BinaryExpression',
+                operator: 'CONTAINS',
+                left: {
+                    type: 'Identifier',
+                    name: 'someArray'
+                },
+                right: {
+                    type: 'BinaryExpression',
+                    operator: '==',
+                    left: {
+                        type: 'Identifier',
+                        name: 'someProp'
+                    },
+                    right: {
+                        type: 'Identifier',
+                        name: '_$myvar'
+                    }
+                }
+            }, parameters);
+            result.should.deep.equal({
+                someArray: {
+                    $elemMatch: {
+                        someProp: {
+                            $eq: 'bar'
+                        }
+                    }
+                }
+            });
+        });
+
+    });
+
     describe('#visitConditionOperator', () => {
 
         it('should throw for an unrecognized operator', () => {
@@ -1060,6 +1324,20 @@ describe('QueryCompiler', () => {
 
         it('should return the literal value', () => {
             queryCompiler.visitLiteral({ type: 'Literal', value: 1234 }, {}).should.equal(1234);
+        });
+
+    });
+
+    describe('#visitArrayExpression', () => {
+
+        it('should return the array value', () => {
+            queryCompiler.visitArrayExpression({
+                elements: [
+                    { type: 'Literal', value: 1234 },
+                    { type: 'Literal', value: 2345 },
+                    { type: 'Literal', value: 3456 }
+                ],
+            }, {}).should.deep.equal([1234, 2345, 3456]);
         });
 
     });
