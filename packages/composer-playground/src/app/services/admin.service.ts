@@ -72,7 +72,7 @@ export class AdminService {
             console.log('Connecting with connection profile %s with id %s', connectionProfileRef, userName);
         }
 
-        this.connectingPromise = this.getAdminConnection()._connectWithDetails(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
+        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -121,7 +121,7 @@ export class AdminService {
                     force: true
                 });
 
-                return this.getAdminConnection()._connectWithDetails(connectionProfileRef, userName, enrollmentSecret);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret);
             })
             .then(() => {
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
@@ -138,7 +138,7 @@ export class AdminService {
                 });
 
                 console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, userName);
-                return this.getAdminConnection()._connectWithDetails(connectionProfileRef, userName, enrollmentSecret, name);
+                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, name);
             })
             .then(() => {
                 return true;

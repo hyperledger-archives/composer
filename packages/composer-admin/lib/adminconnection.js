@@ -284,36 +284,29 @@ class AdminConnection {
      * .catch(function(error){
      *     // Add optional error handling here.
      * });
-     * @param {String} cardName - The name of the business network card
-     * @param {boolean} update true if this is for an update operation
+     *
      * @param {string} connectionProfile - The name of the connection profile
      * @param {string} enrollmentID the enrollment ID of the user
      * @param {string} enrollmentSecret the enrollment secret of the user
      * @param {string} businessNetworkIdentifier the id of the network (for update) or null
+     * @param {String} cardName - The name of the business network card
+     * @param {boolean} update true if this is for an update operation
      * @return {Promise} A promise that indicates the connection is complete
      */
-    connect(){
+    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier,cardName,update){
 
-        let cardName,update;
-        let connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier;
+        let _cardName,_update;
         if (arguments.length===1){
-            cardName = arguments[0];
-            update = false;
-            return this._connectWithCard(cardName,update);
+            _cardName = arguments[0];
+            _update = false;
+            return this._connectWithCard(_cardName,_update);
         } else  if (arguments.length===2){
             cardName = arguments[0];
             update = arguments[1];
             return this._connectWithCard(cardName,update);
         } else if (arguments.length === 3){
-            connectionProfile = arguments[0];
-            enrollmentID = arguments[1];
-            enrollmentSecret = arguments[2];
             return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
         } else  if (arguments.length === 4){
-            connectionProfile = arguments[0];
-            enrollmentID = arguments[1];
-            enrollmentSecret = arguments[2];
-            businessNetworkIdentifier = arguments[3];
             return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,businessNetworkIdentifier);
         } else {
             return Promise.reject(new Error('Incorrect number of arguments'));
@@ -844,7 +837,6 @@ class AdminConnection {
             return this.connection.queryChainCode(this.securityContext, 'getLogLevel', []);
         })
         .then((response) => {
-            console.log(response.toString());
             return Promise.resolve(JSON.parse(response));
         });
     }

@@ -25,7 +25,7 @@ module.exports.builder = {
     asset: {alias: 'a', optional: true, describe: 'List specific asset', type: 'string' },
     enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    card: {alias: 'c', required: false, describe: '', type: 'string'}
+    card: {alias: 'c', required: false, describe: 'The card name used to list the network', type: 'string'}
 };
 
 module.exports.handler = (argv) => {

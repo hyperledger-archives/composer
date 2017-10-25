@@ -20,9 +20,10 @@ module.exports.command = 'undeploy [options]';
 module.exports.describe = 'Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric.';
 module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
+    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    card: { alias: 'c', required: false, description: 'The cardname to use to download the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

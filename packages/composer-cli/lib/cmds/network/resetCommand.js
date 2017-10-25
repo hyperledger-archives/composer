@@ -19,10 +19,11 @@ const Reset = require ('./lib/reset.js');
 module.exports.command = 'reset [options]';
 module.exports.describe = 'Resets a business network';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
+    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    card: { alias: 'c', required: false, description: 'The cardname to use to reset  the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

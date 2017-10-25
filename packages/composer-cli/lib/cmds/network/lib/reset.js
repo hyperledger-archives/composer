@@ -36,11 +36,12 @@ class Reset {
         let enrollSecret;
         let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
-
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
         let spinner;
 
         return (() => {
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -61,7 +62,11 @@ class Reset {
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
+            if (!cardName){
+                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
+            } else {
+                return adminConnection.connect(cardName);
+            }
         })
           .then((result) => {
 

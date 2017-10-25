@@ -37,9 +37,11 @@ class Ping {
         let enrollSecret;
         let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
 
         return (() => {
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -59,7 +61,11 @@ class Ping {
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            if (!usingCard){
+                return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            } else {
+                return businessNetworkConnection.connect(cardName);
+            }
         })
         .then(() => {
             return businessNetworkConnection.ping();

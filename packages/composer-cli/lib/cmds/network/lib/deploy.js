@@ -67,7 +67,7 @@ class Deploy {
         return (() => {
             console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
 
-            if (!argv.enrollSecret && !argv.card) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',

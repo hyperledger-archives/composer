@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.14.1 {8db176cbbe244c0b023c6aa5d0a51f0f} 2017-10-24
+Version 0.14.1 {b07c61ea10d457971e7f68b80cd2110b} 2017-10-24
 - Support cardname in connect api
 
 Version 0.13.0 {78ee149d0abd107c1e61efe48436c419} 2017-09-19

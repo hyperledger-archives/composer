@@ -50,7 +50,7 @@ class List {
         return (() => {
             spinner = ora('List business network '+ (usingCard ?  'from card "'+ cardName +'"' : 'with name "'+businessNetworkName+'"' ));
 
-            if (!argv.enrollSecret && !argv.card) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',

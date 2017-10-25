@@ -416,35 +416,25 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {string} businessNetwork - The identifier of the business network
      * @param {string} enrollmentID the enrolment ID of the user
      * @param {string} enrollmentSecret the enrolment secret of the user
-     * @param {String} cardName  businessNetworkCard Name (must have been imported already)
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
+     * @param {String} cardName  businessNetworkCard Name (must have been imported already)
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    connect(){
+    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions,cardName){
 
-        let cardName;
-        let connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions;
+        let _cardName;
         if (arguments.length===1){
-            cardName = arguments[0];
-            return this._connectWithCard(cardName);
+            _cardName = arguments[0];
+            return this._connectWithCard(_cardName);
         } else if (arguments.length===2){
             cardName = arguments[0];
             additionalConnectOptions=arguments[1];
             return this._connectWithCard(cardName,additionalConnectOptions);
         } else if (arguments.length === 4){
-            connectionProfile = arguments[0];
-            businessNetwork = arguments[1];
-            enrollmentID = arguments[2];
-            enrollmentSecret = arguments[3];
             return this._connectWithDetails(connectionProfile,businessNetwork,enrollmentID,enrollmentSecret);
         } else  if (arguments.length === 5){
-            connectionProfile = arguments[0];
-            businessNetwork = arguments[1];
-            enrollmentID = arguments[2];
-            enrollmentSecret = arguments[3];
-            additionalConnectOptions = arguments[4];
             return this._connectWithDetails(connectionProfile,businessNetwork,enrollmentID,enrollmentSecret,additionalConnectOptions);
         } else {
             return Promise.reject(new Error('Incorrect number of arguments'));
