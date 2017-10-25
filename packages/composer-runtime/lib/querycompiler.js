@@ -86,6 +86,8 @@ class QueryCompiler {
             result = this.visitIdentifier(thing, parameters);
         } else if (thing.type === 'Literal') {
             result = this.visitLiteral(thing, parameters);
+        } else if (thing.type === 'ArrayExpression') {
+            result = this.visitArrayExpression(thing, parameters);
         } else if (thing.type === 'MemberExpression') {
             result = this.visitMemberExpression(thing, parameters);
         } else {
@@ -458,6 +460,8 @@ class QueryCompiler {
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
+        } else if (ast.operator === 'CONTAINS') {
+            result = this.visitContainsOperator(ast, parameters);
         } else if (conditionOperators.indexOf(ast.operator) !== -1) {
             result = this.visitConditionOperator(ast, parameters);
         } else {
@@ -491,12 +495,94 @@ class QueryCompiler {
             throw new Error('The query compiler does not support this operator');
         }
 
+        // Visit the left and right sides of the expression.
+        let left = this.visit(ast.left, parameters);
+        let right = this.visit(ast.right, parameters);
+
         // Build the Mango selector for this operator.
         const result = {};
         result[operator] = [
-            this.visit(ast.left, parameters),
-            this.visit(ast.right, parameters)
+            left,
+            right
         ];
+
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Visitor design pattern; handle an contains operator.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitContainsOperator(ast, parameters) {
+        const method = 'visitContainsOperator';
+        LOG.entry(method, ast, parameters);
+
+        // Visit the left and right sides of the expression.
+        let left = this.visit(ast.left, parameters);
+        let right = this.visit(ast.right, parameters);
+
+        // Grab the left hand side of this expression.
+        const leftIsIdentifier = (ast.left.type === 'Identifier' && typeof left !== 'function');
+        const leftIsMemberExpression = (ast.left.type === 'MemberExpression');
+        const leftIsVariable = leftIsIdentifier || leftIsMemberExpression;
+
+        // Grab the right hand side of this expression.
+        const rightIsIdentifier = (ast.right.type === 'Identifier' && typeof right !== 'function');
+        const rightIsMemberExpression = (ast.right.type === 'MemberExpression');
+        const rightIsVariable = rightIsIdentifier || rightIsMemberExpression;
+
+        // Ensure the arguments are valid.
+        if (leftIsVariable) {
+            // This is OK.
+        } else if (rightIsVariable) {
+            // This is OK, but swap the arguments.
+            const temp = left;
+            left = right;
+            right = temp;
+        } else {
+            throw new Error(`The operator ${ast.operator} requires a property name`);
+        }
+
+        // Check to see if we have a selector, in which case this is an $elemMatch.
+        let operator = '$all';
+        if (!Array.isArray(right) && typeof right === 'object') {
+            operator = '$elemMatch';
+        }
+
+        // We have to coerce the right hand side into an array for an $all.
+        if (operator === '$all' && !Array.isArray(right)) {
+            if (typeof right === 'function') {
+                const originalRight = right;
+                right = () => {
+                    const value = originalRight();
+                    if (Array.isArray(value)) {
+                        return value;
+                    } else {
+                        return [ value ];
+                    }
+                };
+            } else {
+                right = [ right ];
+            }
+        }
+
+        // Build the Mango selector for this operator.
+        const result = {};
+        result[left] = {};
+        const property = {
+            enumerable: true,
+            configurable: false
+        };
+        if (typeof right === 'function') {
+            property.get = right;
+        } else {
+            property.value = right;
+        }
+        Object.defineProperty(result[left], operator, property);
 
         LOG.exit(method, result);
         return result;
@@ -638,6 +724,24 @@ class QueryCompiler {
         const method = 'visitLiteral';
         LOG.entry(method, ast, parameters);
         const selector = ast.value;
+        LOG.exit(method, selector);
+        return selector;
+    }
+
+    /**
+     * Visitor design pattern; handle an array expression.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitArrayExpression(ast, parameters) {
+        const method = 'visitArrayExpression';
+        LOG.entry(method, ast, parameters);
+        const selector = ast.elements.map((element) => {
+            const result = this.visit(element, parameters);
+            return result;
+        });
         LOG.exit(method, selector);
         return selector;
     }
