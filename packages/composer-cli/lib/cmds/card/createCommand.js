@@ -21,7 +21,7 @@ module.exports.describe = 'Creates a business network card from individual compo
 module.exports.builder = {
     file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    connectionProfileFile: {alias: 'j', required: false, describe: 'Filename of the connection profile json file', type: 'string' },
     enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
 };

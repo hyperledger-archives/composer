@@ -14,10 +14,10 @@
 
 'use strict';
 
-const cmdUtil = require('../../utils/cmdutils');
 const IdCard = require('composer-common').IdCard;
 const Export = require('./export');
-
+const fs = require('fs');
+const path = require('path');
 /**
  * Composer "card import" command
  * @private
@@ -30,7 +30,7 @@ class Create {
     */
     static handler(args) {
 
-        let profileName  = args.connectionProfileName;
+        let profileFile  = args.connectionProfileFile;
         let businessNetworkName = args.businessNetworkName;
         let fileName = args.file;
 
@@ -43,20 +43,34 @@ class Create {
 
         return Promise.resolve()
             .then( ()=>{
-                const adminConnection = cmdUtil.createAdminConnection();
-                return adminConnection.getProfile(profileName);
+                return this.readJsonFromFile(profileFile);
             })
             .then((profileData) =>{
-                if (!profileData.name){
-                    profileData.name = profileName;
-                }
                 let idCard = new IdCard(metadata,profileData);
-
                 return Export.writeCardToFile(fileName,idCard);
             })
             .then(() => {
                 console.log('Successfully created business network card');
             });
+    }
+
+    /**
+     * Read a json file (that in this case has the connection profile)
+     * @param {String} fileName absolute or relative (to current working directory) file name
+     * @return {Promise} Resolves with a JSON object
+     */
+    static readJsonFromFile(fileName) {
+        const filePath = path.resolve(fileName);
+        let buffer;
+        try {
+            buffer = fs.readFileSync(filePath);
+        } catch (cause) {
+            const error = new Error(`Unable to read JSON file: ${filePath}`);
+            error.cause = cause;
+            return Promise.reject(error);
+        }
+
+        return JSON.parse(buffer);
     }
 
 }
