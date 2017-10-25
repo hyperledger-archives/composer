@@ -43,3 +43,15 @@ participant Regulator identified by email {
 transaction MyTransaction {
 
 }
+
+concept TestConcept {
+    o String value
+    o String[] values
+}
+
+asset TestAsset identified by assetId {
+    o String assetId
+    o String[] stringValues
+    o TestConcept conceptValue
+    o TestConcept[] conceptValues
+}
