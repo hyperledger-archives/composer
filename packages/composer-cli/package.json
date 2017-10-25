@@ -78,7 +78,7 @@
       "scripts/**",
       "systest/**",
       "test/**",
-      "**/shell/**",
+      "lib/shellcmds/**",
       "shell.js"
     ],
     "reporter": [
