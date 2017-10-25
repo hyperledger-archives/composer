@@ -26,6 +26,7 @@ const HLFWalletProxy = require('../lib/hlfwalletproxy');
 const KeyValueStore = api.KeyValueStore;
 const CryptoSuite = api.CryptoSuite;
 const Orderer = require('fabric-client/lib/Orderer');
+const path = require('path');
 const Peer = require('fabric-client/lib/Peer');
 const User = require('fabric-client/lib/User');
 const Wallet = require('composer-common').Wallet;
@@ -545,7 +546,7 @@ describe('HLFConnectionManager', () => {
             mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
             sandbox.stub(HLFConnectionManager, 'createCAClient').withArgs(sinon.match.string).returns(mockCAClient);
             mockKeyValueStore = sinon.createStubInstance(KeyValueStore);
-            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockKeyValueStore);
+            sandbox.stub(Client, 'newDefaultKeyValueStore').withArgs(sinon.match.has('path', sinon.match.string)).resolves(mockKeyValueStore);
             configSettingStub = sandbox.stub(Client, 'setConfigSetting');
             mockWallet = sinon.createStubInstance(Wallet);
         });
@@ -645,11 +646,52 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/The certificate authority URL has not been specified/);
         });
 
-        it('should throw if keyValStore and wallet are not specified', () => {
+        it('should throw if none of keyValStore, wallet and cardName are specified', () => {
             delete connectOptions.keyValStore;
+            delete connectOptions.wallet;
+            delete connectOptions.cardName;
             (() => {
                 connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No key value store directory or wallet has been specified/);
+            }).should.throw(/No key value store directory, wallet or card name has been specified/);
+        });
+
+        it('should not throw if keyValStore specified but wallet and cardName are not', () => {
+            delete connectOptions.wallet;
+            delete connectOptions.cardName;
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.not.throw();
+        });
+
+        it('should not throw if wallet specified but keyValStore and cardName are not', () => {
+            connectOptions.wallet = mockWallet;
+            delete connectOptions.keyValStore;
+            delete connectOptions.cardName;
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.not.throw();
+        });
+
+        it('should not throw if cardName specified but keyValStore and wallet are not', () => {
+            delete connectOptions.wallet;
+            delete connectOptions.keyValStore;
+            connectOptions.cardName = 'CONGA_CARD';
+            (() => {
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
+            }).should.not.throw();
+        });
+
+        it('should use cardName to build keyValStore path if cardName and keyValStore specified but wallet is not', () => {
+            delete connectOptions.wallet;
+            const cardName = 'CONGA_CARD';
+            connectOptions.cardName = cardName;
+            connectOptions.keyValStore = 'KEY_VAL_STORE';
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions).then(connection => {
+                sinon.assert.calledWith(Client.newDefaultKeyValueStore,
+                    sinon.match.has('path',
+                        sinon.match(value => path.isAbsolute(value) && value.includes(connectOptions.cardName)
+                    )));
+            });
         });
 
         //TODO: should throw if wallet not of the right type.
@@ -875,7 +917,9 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should handle an error creating a store using keyValStore', () => {
+            Client.newDefaultKeyValueStore.reset();
             Client.newDefaultKeyValueStore.rejects('wow such fail');
+            // sandbox.stub(Client, 'newDefaultKeyValueStore').rejects('wow such fail');
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
@@ -897,8 +941,28 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
+        it('should use specified wallet in preference to cardName and keyValStore', () => {
+            connectOptions.cardName = 'CONGA_CARD';
+            connectOptions.keyValStore = 'KEY_VAL_STORE';
+            connectOptions.wallet = mockWallet;
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .then((connection) => {
+                    sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
+                });
+        });
+
         it('should configure a wallet proxy if a singleton wallet is provided', () => {
             Wallet.setWallet(mockWallet);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .then((connection) => {
+                    sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
+                });
+        });
+
+        it('should use singleton wallet in preference to cardName and keyValStore', () => {
+            Wallet.setWallet(mockWallet);
+            connectOptions.cardName = 'CONGA_CARD';
+            connectOptions.keyValStore = 'KEY_VAL_STORE';
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
@@ -1039,11 +1103,13 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/No msp id defined/);
         });
 
-        it('should throw if no keyValStore or wallet is not specified', () => {
+        it('should throw if none of keyValStore, wallet and cardName are specified', () => {
             delete profile.keyValStore;
+            delete profile.wallet;
+            delete profile.cardName;
             (() => {
                 connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
-            }).should.throw(/No key value store directory or wallet has been specified/);
+            }).should.throw(/No key value store directory, wallet or card name has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {

@@ -131,7 +131,7 @@ class IdCard {
      * @return {Object} connection profile.
      */
     getConnectionProfile() {
-        return this.connectionProfile;
+        return Object.assign({}, this.connectionProfile);
     }
 
     /**
