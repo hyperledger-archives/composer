@@ -45,7 +45,7 @@
     "composer-client": "0.14.2",
     "composer-common": "0.14.2",
     "composer-rest-server": "0.14.2",
-    "figlet": "^1.2.0",
+    "figlet": "1.2.0",
     "homedir": "0.6.0",
     "mkdirp": "0.5.1",
     "npm-paths": "0.1.3",
