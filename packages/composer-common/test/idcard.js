@@ -473,4 +473,12 @@ describe('IdCard', function() {
         });
     });
 
+    describe('#getConnectionProfile', function() {
+        it('should make defensive copy of connection profile', function() {
+            const connectionProfile = minimalCard.getConnectionProfile();
+            connectionProfile.CONGA = 'CONGA';
+            minimalCard.getConnectionProfile().should.not.equal(connectionProfile);
+        });
+    });
+
 });
