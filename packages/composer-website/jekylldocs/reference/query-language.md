@@ -28,6 +28,7 @@ The `statement` property contains the defining rules of the query, and can have 
 - `WHERE` is an optional operator which defines the conditions to be applied to the registry data.
 - `AND` is an optional operator which defines additional conditions.
 - `OR` is an optional operator which defines alternative conditions.
+- `CONTAINS` is an optional operator that defines conditions for array values
 - `ORDER BY` is an optional operator which defines the sorting or results.
 - `SKIP` is an optional operator which defines the number of results to skip.
 - `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
