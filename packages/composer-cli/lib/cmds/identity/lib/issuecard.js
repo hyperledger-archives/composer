@@ -24,7 +24,7 @@ const IdCard = require('composer-common').IdCard;
  * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
-class Issue {
+class IssueCard {
 
   /**
     * Command process for deploy command
@@ -69,4 +69,4 @@ class Issue {
 
 }
 
-module.exports = Issue;
+module.exports = IssueCard;

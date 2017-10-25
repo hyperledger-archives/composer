@@ -271,27 +271,7 @@ describe('BusinessNetworkConnection', () => {
 
 
         it('Correct with with existing card name & additional options',()=>{
-            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
-            let mockCardStore = sinon.createStubInstance(CardStore);
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockCardStore.get.resolves(mockIdCard);
-            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
-            mockIdCard.getUserName.returns('FredBloggs');
-            businessNetworkConnection.cardStore = mockCardStore;
 
-            mockConnection.login.resolves(mockSecurityContext);
-            mockConnection.ping.resolves();
-            const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
-            }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            const cb = sinon.stub();
-            businessNetworkConnection.on('event', cb);
-            mockConnection.on.withArgs('events', sinon.match.func).yields([
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
-            ]);
 
             return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
                 .then((result)=>{
@@ -301,7 +281,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should add card name to connection profile additional options when additional options not specified', () => {
             const cardName = 'CARD_NAME';
-            return businessNetworkConnection.connectWithCard(cardName)
+            return businessNetworkConnection.connect(cardName)
                 .then(result => {
                     sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
                         sinon.match.any,
@@ -312,7 +292,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should override cardName property specified in additional options', () => {
             const cardName = 'CARD_NAME';
-            return businessNetworkConnection.connectWithCard(cardName, { cardName: 'WRONG' })
+            return businessNetworkConnection.connect(cardName, { cardName: 'WRONG' })
                 .then(result => {
                     sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
                         sinon.match.any,

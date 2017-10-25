@@ -342,7 +342,10 @@ class AdminConnection {
         return this.cardStore.get(cardName)
             .then((card_)=>{
                 card = card_;
-                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName());
+                return this.connectionProfileManager.connectWithData(
+                    card.getConnectionProfile(),
+                    card.getBusinessNetworkName(),
+                    {cardName:cardName});
             })
             .then((connection) => {
                 this.connection = connection;

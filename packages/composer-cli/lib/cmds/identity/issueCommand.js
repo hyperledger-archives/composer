@@ -15,7 +15,7 @@
 'use strict';
 
 const Issue = require ('./lib/issue.js');
-
+const IssueCard = require ('./lib/issuecard.js');
 module.exports.command = 'issue [options]';
 module.exports.describe = 'Issue a new identity to a participant in a participant registry';
 module.exports.builder =function (yargs) {
@@ -65,5 +65,9 @@ module.exports.builder =function (yargs) {
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Issue.handler(argv);
+    if (argv.c){
+        return argv.thePromise = IssueCard.handler(argv);
+    } else {
+        return argv.thePromise = Issue.handler(argv);
+    }
 };

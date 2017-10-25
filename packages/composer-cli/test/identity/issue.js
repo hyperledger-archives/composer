@@ -16,10 +16,12 @@
 
 const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
-
+const Admin = require('composer-admin');
+const AdminConnection = Admin.AdminConnection;
+const IdCard = require('composer-common').IdCard;
 const Issue = require('../../lib/cmds/identity/issueCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
-
+const Export = require('../../lib/cmds/card/lib/export.js');
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -35,16 +37,23 @@ describe('composer identity issue CLI unit tests', () => {
 
     let sandbox;
     let mockBusinessNetworkConnection;
+    let mockAdminConnection;
+    let mockIdCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
+        mockAdminConnection = sinon.createStubInstance(AdminConnection);
+        mockIdCard = sinon.createStubInstance(IdCard);
         mockBusinessNetworkConnection.connect.resolves();
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', sinon.match.object).resolves({
             userID: 'dogeid1',
             userSecret: 'suchsecret'
         });
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
+        sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+        mockAdminConnection.getCard.returns(mockIdCard);
+
         sandbox.stub(process, 'exit');
     });
 
@@ -192,6 +201,26 @@ describe('composer identity issue CLI unit tests', () => {
         };
         return Issue.handler(argv)
             .should.be.rejectedWith(/such error/);
+    });
+
+    it('should issue a new card using the specified profile', () => {
+        let argv = {
+            c: 'cardname',card:'cardname',   // needed as yargs would do this
+            file: 'filename',
+            newUserId: 'dogeid1',
+            participantId: 'org.doge.Doge#DOGE_1'
+        };
+        sandbox.stub(fs,'readFileSync').resolves();
+        sandbox.stub(Export,'writeCardToFile').resolves();
+        mockIdCard.getBusinessNetworkName.returns('networkname');
+        mockIdCard.getConnectionProfile.returns({name:'networkname'});
+        return Issue.handler(argv)
+            .then((res) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
+            });
     });
 
 });
