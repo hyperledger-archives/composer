@@ -52,17 +52,19 @@ describe('composer card import CLI', function() {
 
     it('should create a valid card file with supplied details', function() {
         sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).returns(cardBuffer);
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileName: 'profilename',
+            connectionProfileFile: 'filename',
             businessNetworkName : 'network',
             file: 'filename',
             enrollSecret:'password',
             enrollId:'fred'
         };
 
-        adminConnectionStub.getProfile.resolves({data:'profiledata'});
         return CreateCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(adminConnectionStub.getProfile);
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
             sinon.assert.calledWith(consoleLogSpy, sinon.match('Successfully created business network card'));
         });
     });

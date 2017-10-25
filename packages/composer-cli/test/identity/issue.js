@@ -52,6 +52,21 @@ describe('composer identity issue CLI unit tests', () => {
         sandbox.restore();
     });
 
+    it('test the yargs builder function', ()=>{
+        let mockYargs = {options:()=>{},conflicts:()=>{},check:()=>{},group:()=>{}};
+
+        sinon.stub(mockYargs,'options').returns();
+        sinon.stub(mockYargs,'conflicts').returns();
+        sinon.spy(mockYargs,'check');
+        sinon.stub(mockYargs,'group').returns();
+
+        Issue.builder(mockYargs);
+        sinon.assert.calledOnce(mockYargs.options);
+        sinon.assert.calledOnce(mockYargs.conflicts);
+        sinon.assert.calledOnce(mockYargs.check);
+        sinon.assert.calledThrice(mockYargs.group);
+    });
+
     it('should issue a new identity using the specified profile', () => {
         let argv = {
             connectionProfileName: 'someOtherProfile',
