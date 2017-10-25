@@ -15,12 +15,18 @@
 'use strict';
 
 const Connection = require('../lib/connection');
+const os = require('os');
+const path = require('path');
 const SecurityContext = require('../lib/securitycontext');
 const SecurityException = require('../lib/securityexception');
 const Util = require('../lib/util');
 const uuid = require('uuid');
-require('chai').should();
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('Util', function () {
 
@@ -196,6 +202,19 @@ describe('Util', function () {
             Util.isNull('hello').should.equal(false);
         });
 
+    });
+
+    describe('#homeDirectory', function() {
+        it('should return valid path', function() {
+            const result = Util.homeDirectory();
+            path.isAbsolute(result).should.be.true;
+        });
+
+        it('should return root directory if os.homedir function returns undefined', function() {
+            sandbox.stub(os, 'homedir').returns(undefined);
+            const result = Util.homeDirectory();
+            result.should.equal(path.sep);
+        });
     });
 
 });

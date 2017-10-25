@@ -447,9 +447,13 @@ class BusinessNetworkConnection extends EventEmitter {
         let card;
 
         return this.cardStore.get(cardName)
-            .then((card_)=>{
-                card = card_;
-                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(),card.getBusinessNetworkName(), additionalConnectOptions);
+            .then((retrievedCard)=>{
+                card = retrievedCard;
+                if (!additionalConnectOptions) {
+                    additionalConnectOptions = {};
+                }
+                additionalConnectOptions.cardName = cardName;
+                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(), card.getBusinessNetworkName(), additionalConnectOptions);
             })
             .then((connection) => {
                 LOG.exit(method);
