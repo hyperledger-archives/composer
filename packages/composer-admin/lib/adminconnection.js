@@ -295,15 +295,15 @@ class AdminConnection {
      */
     connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier,cardName,update){
 
-        let _cardName,_update;
         if (arguments.length===1){
-            _cardName = arguments[0];
-            _update = false;
+            const _cardName = arguments[0];
+            const _update = false;
             return this._connectWithCard(_cardName,_update);
         } else  if (arguments.length===2){
-            cardName = arguments[0];
-            update = arguments[1];
-            return this._connectWithCard(cardName,update);
+
+            const _cardName = arguments[0];
+            const _update = arguments[1];
+            return this._connectWithCard(_cardName,_update);
         } else if (arguments.length === 3){
             return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
         } else  if (arguments.length === 4){
