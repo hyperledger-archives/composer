@@ -948,7 +948,8 @@ describe('HLFConnection', () => {
             mockChannel.compareProposalResponseResults.returns(true);
 
             (function() {
-                connection._validateResponses(responses, true);
+                const errorsIgnored = connection._validateResponses(responses, true);
+                errorsIgnored.should.be.false;
             }).should.not.throw();
         });
 
@@ -962,7 +963,8 @@ describe('HLFConnection', () => {
             mockChannel.compareProposalResponseResults.returns(true);
 
             (function() {
-                connection._validateResponses(responses, false, /chaincode exists/);
+                const errorsIgnored = connection._validateResponses(responses, false, /chaincode exists/);
+                errorsIgnored.should.be.true;
             }).should.not.throw();
         });
 
@@ -1044,12 +1046,6 @@ describe('HLFConnection', () => {
             mockChannel.compareProposalResponseResults.returns(true);
             connection._validateResponses(responses, true);
             sinon.assert.calledWith(logWarnSpy, 'Response from peer was not valid');
-
-
-            //(function() {
-            //    connection._validateResponses(responses, true);
-            //}).should.throw(/Response from peer was not valid/);
-
         });
 
         it('should throw if compareProposals returns false', () => {
@@ -1066,12 +1062,6 @@ describe('HLFConnection', () => {
             mockChannel.compareProposalResponseResults.returns(false);
             connection._validateResponses(responses, true);
             sinon.assert.calledWith(logWarnSpy, 'Peers do not agree, Read Write sets differ');
-
-
-            //(function() {
-            //    connection._validateResponses(responses, true);
-            //}).should.throw(/Peers do not agree/);
-
         });
 
         it('should not try to check proposal responses if not a response from a proposal', () => {
@@ -1107,8 +1097,8 @@ describe('HLFConnection', () => {
             sandbox.stub(connection.fs, 'outputFile').resolves();
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
-            sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
+            sandbox.stub(connection, '_validateResponses').returns(false);
             connection._connectToEventHubs();
         });
 
@@ -1428,7 +1418,6 @@ describe('HLFConnection', () => {
             .should.be.rejectedWith(/Error trying parse endorsement policy/);
         });
 
-
         it('should deploy the business network with no debug level specified', () => {
             sandbox.stub(global, 'setTimeout');
             // This is the deployment proposal and response (from the peers).
@@ -1505,6 +1494,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID.toString(), 'VALID');
+            connection._validateResponses.withArgs(installResponses).returns(true);
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
@@ -1572,7 +1562,6 @@ describe('HLFConnection', () => {
 
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
@@ -1596,6 +1585,28 @@ describe('HLFConnection', () => {
                     sinon.assert.notCalled(mockChannel.sendInstantiateProposal);
                     sinon.assert.notCalled(mockChannel.sendTransaction);
                 });
+        });
+
+        it('should throw an error is already installed and instantiated', () => {
+            sandbox.stub(global, 'setTimeout');
+            const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
+            const installResponses = [errorResp];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
+            // query instantiate response shows chaincode already instantiated
+            const queryInstantiatedResponse = {
+                chaincodes: [
+                    {
+                        path: 'composer',
+                        name: 'org-acme-biznet'
+                    }
+                ]
+            };
+            mockChannel.queryInstantiatedChaincodes.resolves(queryInstantiatedResponse);
+            connection._validateResponses.withArgs(installResponses).returns(true);
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
+                .should.be.rejectedWith(/already been deployed/);
         });
 
         it('should throw if install fails to validate', () => {
@@ -2486,18 +2497,15 @@ describe('HLFConnection', () => {
     });
 
     describe('#createTransactionID', ()=>{
-
-        beforeEach(() => {
-            mockChannel.initialize.resolves();
-        });
-
         it('should create a transaction id', () => {
-            connection.initialized = true;
-
-            connection.createTransactionId().then((result) =>{
-                sinon.assert.calledOnce(mockClient.getTransactionID);
-                result.should.deep.equal('00000000-0000-0000-0000-000000000000');
-            });
+            return connection.createTransactionId()
+                .then((result) =>{
+                    sinon.assert.calledOnce(mockClient.newTransactionID);
+                    result.should.deep.equal({
+                        id: mockTransactionID,
+                        idStr: '00000000-0000-0000-0000-000000000000'
+                    });
+                });
         });
     });
 
