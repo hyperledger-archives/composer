@@ -38,6 +38,15 @@ class MockCheckOverFlowDirective {
     @Input() public expanded: boolean;
 }
 
+@Directive({
+    selector: '[ngbTooltip]'
+})
+class MockToolTipDirective {
+    @Input() public ngbTooltip: string;
+    @Input() public placement: string;
+    @Input() public container: string;
+}
+
 describe(`RegistryComponent`, () => {
     let component: RegistryComponent;
     let fixture: ComponentFixture<RegistryComponent>;
@@ -80,6 +89,7 @@ describe(`RegistryComponent`, () => {
             ],
             declarations: [
                 MockCheckOverFlowDirective,
+                MockToolTipDirective,
                 RegistryComponent,
             ],
             providers: [
