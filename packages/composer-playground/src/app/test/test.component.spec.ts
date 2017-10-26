@@ -9,7 +9,7 @@ import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Resource } from 'composer-common';
+import { Resource, ModelManager } from 'composer-common';
 
 import * as sinon from 'sinon';
 
@@ -53,6 +53,7 @@ describe('TestComponent', () => {
     let mockBusinessNetwork;
     let mockBusinessNetworkConnection;
     let mockTransaction;
+    let mockModelManager;
 
     class MockModelClass {
         isAbstract(): boolean {
@@ -72,9 +73,11 @@ describe('TestComponent', () => {
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockIntrospector = sinon.createStubInstance(Introspector);
         mockTransaction = sinon.createStubInstance(TransactionDeclaration);
+        mockModelManager = sinon.createStubInstance(ModelManager);
 
         mockClientService.getBusinessNetwork.returns(mockBusinessNetwork);
         mockBusinessNetwork.getIntrospector.returns(mockIntrospector);
+        mockBusinessNetwork.getModelManager.returns(mockModelManager);
         mockBusinessNetworkConnection.listenerCount.returns(0);
         mockBusinessNetworkConnection.on = sinon.stub();
         mockBusinessNetworkConnection.removeAllListeners = sinon.stub();
@@ -114,6 +117,8 @@ describe('TestComponent', () => {
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
             mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockModelManager.getAssetDeclarations.returns([{name: 'bob'}, {name: 'fred'}]);
+            mockModelManager.getParticipantDeclarations.returns([{name: 'bob'}, {name: 'fred'}]);
 
             component.ngOnInit();
             tick();
@@ -153,6 +158,8 @@ describe('TestComponent', () => {
             mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
             mockIntrospector.getClassDeclarations.returns([new MockModelClass()]);
+            mockModelManager.getAssetDeclarations.returns([{name: 'bob'}, {name: 'fred'}]);
+            mockModelManager.getParticipantDeclarations.returns([{name: 'bob'}, {name: 'fred'}]);
 
             component.ngOnInit();
 
@@ -184,6 +191,45 @@ describe('TestComponent', () => {
             component.hasTransactions.should.be.false;
         }));
 
+        it('should load all the registries and filter out assets and participants that do not match items in the model manager', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockIntrospector.getClassDeclarations.returns([new MockModelClass()]);
+            mockModelManager.getAssetDeclarations.returns([{name: 'fred'}]);
+            mockModelManager.getParticipantDeclarations.returns([{name: 'bob'}]);
+
+            component.ngOnInit();
+
+            tick();
+
+            mockClientService.getBusinessNetworkConnection.should.have.been.called;
+            mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
+
+            component['registries']['assets'].length.should.equal(1);
+            component['registries']['assets'][0].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+
+            mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
+
+            component['registries']['participants'].length.should.equal(1);
+
+            component['registries']['participants'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
+
+            component['registries']['historian'].should.equal('historianRegistry');
+
+            component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+
+            mockClientService.getBusinessNetwork.should.have.been.called;
+            mockBusinessNetwork.getIntrospector.should.have.been.called;
+            mockIntrospector.getClassDeclarations.should.have.been.called;
+            component.hasTransactions.should.be.false;
+        }));
+
         it('should set chosen registry to first asset one if no participant registries', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.resolve());
 
@@ -191,6 +237,8 @@ describe('TestComponent', () => {
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
             mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockModelManager.getAssetDeclarations.returns([{name: 'bob'}, {name: 'fred'}]);
+            mockModelManager.getParticipantDeclarations.returns([]);
 
             component.ngOnInit();
 
@@ -222,6 +270,8 @@ describe('TestComponent', () => {
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
             mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockModelManager.getAssetDeclarations.returns([]);
+            mockModelManager.getParticipantDeclarations.returns([]);
 
             component.ngOnInit();
 
