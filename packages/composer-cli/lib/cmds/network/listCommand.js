@@ -19,12 +19,12 @@ const List = require ('./lib/list.js');
 module.exports.command = 'list [options]';
 module.exports.describe = 'List the contents of a business network';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+  //  businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+  //  connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
     registry: {alias: 'r', optional: true, describe: 'List specific registry', type: 'string' },
     asset: {alias: 'a', optional: true, describe: 'List specific asset', type: 'string' },
-    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+  //  enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+  //  enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     card: {alias: 'c', required: false, describe: 'The card name used to list the network', type: 'string'}
 };
 

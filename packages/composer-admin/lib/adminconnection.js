@@ -136,12 +136,37 @@ class AdminConnection {
 
     /**
      * Get a specific Business Network cards
-     *
+     * PROTOTYPE METHOD - can be refactored
      * @param {String} cardName of the card to get
      * @return {Promise} promise resolved with a business network card
      */
     getCard(cardName) {
-        return this.cardStore.get(cardName);
+        let card;
+        return this.cardStore.get(cardName)
+            .then((result)=>{
+                card=result;
+                let credentials = card.getCredentials();
+                //anything set? if so don't do it again
+                if (Object.keys(credentials).length!==0){
+                    return card;
+                } else {
+                    // check to make sure the credentials are present and if not then extract them.
+                    let cpname = card.getConnectionProfile().name;
+
+                    return this.exportIdentity(cpname,cardName.getUserName())
+                        .then((result)=>{
+                                //{ certificate: String, privateKey: String }
+                            card.setCredentials(result);
+                            // put back the card
+                            return this.cardStore.put(card);
+
+                        }).then(()=>{
+                            return card;
+                        });
+                }
+            });
+
+
 
     }
 

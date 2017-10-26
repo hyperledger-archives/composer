@@ -44,6 +44,7 @@ if (typeof(results.thePromise) !== 'undefined'){
         console.log(chalk.green('\nCommand succeeded\n'));
         process.exit(0);
     }).catch((error) => {
+        console.log(error.stack);
         console.log(error+chalk.red('\nCommand failed\n'));
         process.exit(1);
     });

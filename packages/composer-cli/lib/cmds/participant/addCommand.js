@@ -19,12 +19,12 @@ const Add = require ('./lib/add.js');
 module.exports.command = 'add [options]';
 module.exports.describe = 'Add a new participant to a participant registry';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    //connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    //businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+    //enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+    //enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     data: { alias: 'd', required: true, describe: 'Serialized participant JSON object as a string', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to download the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to download the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

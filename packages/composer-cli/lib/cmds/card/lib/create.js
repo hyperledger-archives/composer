@@ -40,12 +40,17 @@ class Create {
             enrollmentSecret:args.enrollSecret,
             businessNetwork : businessNetworkName
         };
-
+        const filePath = path.resolve(profileFile);
         return Promise.resolve()
             .then( ()=>{
-                return this.readJsonFromFile(profileFile);
+                return this.readJsonFromFile(filePath);
             })
             .then((profileData) =>{
+                // if there is no name, take the name from the directory the profilefile is in
+                if (!profileData.name){
+                    profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
+                }
+
                 let idCard = new IdCard(metadata,profileData);
                 return Export.writeCardToFile(fileName,idCard);
             })
@@ -56,21 +61,21 @@ class Create {
 
     /**
      * Read a json file (that in this case has the connection profile)
-     * @param {String} fileName absolute or relative (to current working directory) file name
+     * @param {String} filePath absolute or relative (to current working directory) file name
      * @return {Promise} Resolves with a JSON object
      */
-    static readJsonFromFile(fileName) {
-        const filePath = path.resolve(fileName);
-        let buffer;
+    static readJsonFromFile(filePath) {
+
+        let content='';
         try {
-            buffer = fs.readFileSync(filePath);
+            content = fs.readFileSync(filePath,'utf8');
         } catch (cause) {
             const error = new Error(`Unable to read JSON file: ${filePath}`);
             error.cause = cause;
             return Promise.reject(error);
         }
 
-        return JSON.parse(buffer);
+        return JSON.parse(content);
     }
 
 }

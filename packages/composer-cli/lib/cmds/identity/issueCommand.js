@@ -20,10 +20,10 @@ module.exports.command = 'issue [options]';
 module.exports.describe = 'Issue a new identity to a participant in a participant registry';
 module.exports.builder =function (yargs) {
     yargs.options({
-        'connectionProfileName': {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-        'businessNetworkName': {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-        'enrollId': { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-        'enrollSecret': { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+        //'connectionProfileName': {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+        //'businessNetworkName': {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+        //'enrollId': { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+        //'enrollSecret': { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
         'newUserId': { alias: 'u', required: false, describe: 'The user ID for the new identity', type: 'string' },
         'participantId': { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
         'issuer': { alias: 'x', required: false, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' },
