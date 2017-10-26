@@ -47,6 +47,8 @@ class Start {
         let businessNetworkName;
         let spinner;
         let loglevel;
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
 
         if (argv.loglevel) {
             // validate log level as yargs cannot at this time
@@ -72,7 +74,11 @@ class Start {
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.startId, argv.startSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
+            if (!usingCard){
+                return adminConnection.connect(argv.connectionProfileName, argv.startId, argv.startSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
+            } else {
+                return adminConnection.connect(cardName, updateBusinessNetwork );
+            }
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {

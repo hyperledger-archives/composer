@@ -413,4 +413,41 @@ describe('composer deploy network CLI unit tests', function () {
 
     });
 
+    describe('using business network card',()=>{
+        it('Good path', function () {
+
+
+            let argv = {card: 'cardName'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return DeployCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect,'cardName');
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+            });
+        });
+        it('Failure of the archive functions', function () {
+
+
+            let argv = {card: 'cardName'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).throws(new Error('failure'));
+
+            return DeployCmd.handler(argv)
+                        .should.be.rejectedWith(/failure/);
+        });
+
+    });
 });

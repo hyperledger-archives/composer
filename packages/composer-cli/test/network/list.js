@@ -84,7 +84,32 @@ describe('composer network list CLI unit tests', function () {
             });
         });
 
+        it('Good path, all parms correctly specified no enroll secret', function () {
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'someOtherProfile'
+                       ,businessNetworkName: 'testBusinessNetworkId'};
 
+            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:'usersresponse'});
+
+            return List.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, 'usersresponse');
+            });
+        });
+
+
+        it('Good path, all parms correctly specified with card.', function () {
+            let argv = {card: 'cardName'};
+            return List.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardName');
+            });
+        });
 
 
     });

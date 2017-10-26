@@ -40,6 +40,7 @@ class Bind {
         let participantId = argv.participantId;
         let certificateFile = argv.certificateFile;
         let certificate;
+
         try {
             certificate = fs.readFileSync(certificateFile).toString();
         } catch(error) {

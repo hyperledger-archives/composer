@@ -11,6 +11,11 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.14.1 {4d2de763c61ba58a8b8a80c83bf9e84a} 2017-10-23
+ - Update to have connectWithCard
+
+
 Version 0.14.0 {5015f90c6a6e75089ddcdac7d0470f6e} 2017-10-9
  - Update set/getloglrvel and resetNetwork
 

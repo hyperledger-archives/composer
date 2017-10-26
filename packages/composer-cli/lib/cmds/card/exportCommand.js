@@ -14,10 +14,15 @@
 
 'use strict';
 
-exports.command = 'card <subcommand>';
-exports.desc = 'Command for managing business network cards';
-exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('card');
+const Import = require ('./lib/export.js');
+
+module.exports.command = 'export [options]';
+module.exports.describe = 'Export a business network card';
+module.exports.builder = {
+    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
+    name: {alias: 'n', required: true, describe: 'The name used to identify the card', type: 'string' }
 };
-exports.handler = function (argv) {};
+
+module.exports.handler = (argv) => {
+    return argv.thePromise = Import.handler(argv);
+};

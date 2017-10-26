@@ -106,6 +106,34 @@ describe('composer transaction submit CLI unit tests', () => {
             });
         });
 
+
+
+        it('should not error when all requred params (card based) are specified', () => {
+            sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
+
+            let argv = {
+                card: 'cardname',
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
+            };
+
+            return Submit.handler(argv)
+            .then((res) => {
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
+
+            });
+        });
+
+        it('should  error when can not parse the json (card based)', () => {
+            sandbox.stub(JSON, 'parse').throws(new Error('failure'));
+
+            let argv = {
+                card: 'cardname',
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
+            };
+
+            return Submit.handler(argv).should.be.rejectedWith(/JSON error/);
+        });
+
         it('should error when the transaction fails to submit', () => {
             let argv = {
                 connectionProfileName: 'someOtherProfile',

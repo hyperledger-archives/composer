@@ -13,8 +13,9 @@
  */
 
 'use strict';
-
 const Admin = require('composer-admin');
+const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+
 
 const UpdateCMD = require('../../lib/cmds/network/updateCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
@@ -82,4 +83,28 @@ describe('composer update network CLI unit tests', function () {
 
     });
 
+    describe('using network cards', ()=>{
+        it('Good path with update enabled', function () {
+            let businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+
+            let testBusinessNetworkArchive;
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
+            let argv = {card: 'cardName'};
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return businessNetworkDefinition.toArchive()
+                .then((archive) => {
+                    testBusinessNetworkArchive = archive;
+                    return UpdateCMD.handler(argv,true);
+                })
+                .then ((result) => {
+                    argv.thePromise.should.be.a('promise');
+                    sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+                    sinon.assert.calledOnce(mockAdminConnection.connect);
+                    sinon.assert.calledWith(mockAdminConnection.connect,'cardName');
+
+                });
+        });
+    });
 });
