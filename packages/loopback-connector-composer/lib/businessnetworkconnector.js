@@ -272,7 +272,7 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Retrieves all the instances of objects in the Business Network.
      * @param {string} lbModelName The name of the model.
-     * @param {string} filter The filter of which objects to get
+     * @param {Object} filter The filter of which objects to get
      * @param {Object} options The options provided by Loopback.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
@@ -291,55 +291,56 @@ class BusinessNetworkConnector extends Connector {
 
                 // check for resolve include filter
                 let doResolve = this.isResolveSet(filter);
-                debug('doResolve', doResolve);
                 let filterKeys = Object.keys(filter);
 
-                if(filterKeys.indexOf('where') >= 0) {
+                if (filterKeys.indexOf('where') !== -1) {
                     const keys = Object.keys(filter.where);
                     const nKeys = keys.length;
                     if (nKeys === 0) {
-                        throw new Error('The all operation without a full where clause is not supported');
+                        throw new Error('The Loopback ALL operation, without a full WHERE clause, is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
 
                     // Check if the filter is a simple ID query
+                    // - will be undefined if no identifier involved
+                    // - will have a single string objectId if a simple query on the identifier
+                    // - will have an object if identifier is involved with more complex query
                     let objectId = filter.where[identifierField];
-
-                    if(doResolve) {
-                        if(typeof objectId === 'undefined'|| objectId === null) {
-                            throw new Error('The filter field value is not specified');
+                    if (doResolve) {
+                        if (typeof objectId === 'undefined'|| objectId === null) {
+                            throw new Error('Unable to resolve: the filter field value is not specified');
                         }
-                        // ensure only support the id field
-                        if( nKeys !== 1 ){
-                            throw new Error('Only one id field should be supported here');
+                        // ensure only support resolving via the id field
+                        if ( nKeys !== 1 ) {
+                            throw new Error('Unable to resolve: only one id field is supported');
                         }
 
                         return registry.resolve(objectId)
                             .then((result) => {
-                                debug('Got Result:', result);
+                                debug('registry.resolve result:', result);
                                 return [ result ];
                             });
 
-                    } else if(objectId){
+                    } else if (objectId && typeof objectId === 'string') {
                         return registry.get(objectId)
                             .then((result) => {
-                                debug('Got Result:', result);
+                                debug('registry.get result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
-                    }else{
+                    } else {
                         // perform filter query when id is not the first field
                         const queryString = FilterParser.parseFilter(filter, composerModelName);
                         const query = networkConnection.buildQuery(queryString);
                         return networkConnection.query(query, {})
                         .then((result) => {
-                            debug('Got Result:', result);
+                            debug('networkConnection.query result:', result);
                             return result.map((res) =>{
                                 return this.serializer.toJSON(res);
                             });
                         });
                     }
-                } else if(doResolve) {
-                    debug('no where filter, about to resolve on all');
+                } else if (doResolve) {
+                    debug('No `where` filter, about to perform resolveAll');
                     // get all unresolved objects
                     return registry.resolveAll()
                         .then((result) => {
@@ -349,7 +350,7 @@ class BusinessNetworkConnector extends Connector {
 
                 } else {
                     // get all unresolved objects
-                    debug('no where filter, about to get all');
+                    debug('No `where` filter, about to perform getAll');
                     return registry.getAll()
                         .then((result) => {
                             debug('Got Result:', result);
@@ -367,13 +368,14 @@ class BusinessNetworkConnector extends Connector {
                     callback(null, []);
                     return;
                 }
+                debug('all', 'error thrown doing all', error);
                 callback(error);
             });
     }
 
     /**
      * check if the filter contains an Include filter
-     * @param {string} filter The filter of which objects to get
+     * @param {Object} filter The filter of which objects to get
      * @return {boolean} true if there is an include that specifies to resolve
      */
     isResolveSet(filter) {
@@ -480,7 +482,7 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                debug('exists', 'error thrown doing exists', error);
+                debug('count', 'error thrown doing count', error);
                 callback(error);
             });
     }
