@@ -18,11 +18,7 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('AssetRegistry');
 
-
 /**
- * A class that represents an asset registry in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
  * Do not attempt to create an instance of this class.<br>
  * You must use the {@link module:composer-runtime#getAssetRegistry getAssetRegistry}
  * method instead.
@@ -31,6 +27,13 @@ const LOG = Logger.getLog('AssetRegistry');
  * @classdesc An asset registry manages a set of assets.
  * @memberof module:composer-runtime
  * @public
+ */
+
+/**
+ * A class that represents an asset registry in the transaction processor API. The
+ * transaction processor API should expose no internal properties or internal
+ * methods which could be accessed or misused.
+ * @private
  */
 class AssetRegistry {
 

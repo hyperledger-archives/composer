@@ -29,6 +29,13 @@ const LOG = Logger.getLog('Serializer');
  * @memberof module:composer-runtime
  * @public
  */
+
+/**
+ * A class that represents a serializer in the transaction processor API. The
+ * transaction processor API should expose no internal properties or internal
+ * methods which could be accessed or misused.
+ * @private
+ */
 class Serializer {
 
     /**
