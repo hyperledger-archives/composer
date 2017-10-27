@@ -64,9 +64,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Gets a card from the store.
-     * @param {String} cardName The name of the card to get
-     * @return {Promise} A promise that is resolved with a {@link IdCard}.
+     * @inheritdoc
      */
     get(cardName) {
         const method = 'get';
@@ -79,10 +77,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Puts a card in the store.
-     * @param {String} cardName The name of the card to save
-     * @param {IdCard} card The card
-     * @return {Promise} A promise that resolves once the data is written
+     * @inheritdoc
      */
     put(cardName, card) {
         const method = 'put';
@@ -91,18 +86,25 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
             return Promise.reject(new Error('Invalid card name'));
         }
 
-        return card.toDirectory(this._cardPath(cardName), this.fs).catch(cause => {
-            LOG.error(method, cause);
-            const error = new Error('Failed to save card: ' + cardName);
-            error.cause = cause;
-            throw error;
-        });
+        const cardPath = this._cardPath(cardName);
+        return this.thenifyFs.access(cardPath).then(
+            resolved => {
+                throw new Error('Card already exists: ' + cardName);
+            },
+            rejected => {
+                return card.toDirectory(cardPath, this.fs)
+                    .catch(cause => {
+                        LOG.error(method, cause);
+                        const error = new Error('Failed to save card: ' + cardName);
+                        error.cause = cause;
+                        throw error;
+                    });
+            }
+        );
     }
 
     /**
-     * Gets all cards from the store.
-     * @return {Promise} A promise that is resolved with a {@link Map} where
-     * the keys are identity card names and the values are {@link IdCard} objects.
+     * @inheritdoc
      */
     getAll() {
         const method = 'getAll';
@@ -111,7 +113,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         return this.thenifyFs.readdir(this.storePath).catch(cause => {
             // Store directory does not exist, so there are no cards
             LOG.debug(method, cause);
-            return results;
+            return [];
         }).then(fileNames => {
             const getPromises = [];
             fileNames.forEach(cardName => {
@@ -127,9 +129,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     }
 
     /**
-     * Delete a specific card from the store.
-     * @param {String} cardName The name of the card to delete
-     * @return {Promise} A promise that resolves when the card is deleted.
+     * @inheritdoc
      */
     delete(cardName) {
         const method = 'delete';
