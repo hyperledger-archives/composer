@@ -177,7 +177,8 @@ class ConnectionManager {
      * @param {String} connectionProfileName Name of the connection profile.
      * @param {Object} connectionOptions connection options loaded from the profile.
      * @param {String} id Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>, or
+     * {@link null} if the named identity does not exist.
      * @abstract
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
