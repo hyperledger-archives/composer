@@ -28,13 +28,6 @@ const LOG = Logger.getLog('AssetRegistry');
  * @memberof module:composer-runtime
  * @public
  */
-
-/**
- * A class that represents an asset registry in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
- */
 class AssetRegistry {
 
     /**

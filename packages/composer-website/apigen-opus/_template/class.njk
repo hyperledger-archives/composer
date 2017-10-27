@@ -11,15 +11,20 @@ index-order: {{index}}
 {{commentData.description}}
 
 ### Details
+{% if extends %}
 - **Extends** {{extends}}
+{% endif %}
 - **Module** {{module}}
 
-{% for sa in seeAlso -%}
+
+{% if seeAlso %}
 ### See also
+{% for sa in seeAlso -%}
 - {{sa}}
 {% else %}
 
 {% endfor %}
+{% endif %}
 
 ## Method Summary
 | Name | Returns | Description |
@@ -32,7 +37,7 @@ index-order: {{index}}
 {% if method.name == 'constructor'%}
 ## new {{name}}()
 {% else %}
-## {{method.name}}({% for args in method.methodArgs %}{{args | lower }}{% if not loop.last %},{% endif %}{% endfor %})
+## {{method.name}}( {% for args in method.parameters %}{{args.name | lower }}{% if not loop.last %}, {% endif %}{% endfor %} ) 
 {% endif %}
 
 
@@ -63,10 +68,29 @@ index-order: {{index}}
 | Name | Type | Optional | Description |
 | :-----------  | :----------- | :----------- | :----------- |
 {% for p in method.parameters -%}
-|**{{p.name}}**|`{{p.type}}`|{{p.optional}}|{{p.description}}|
+|**{{p.name}}**| {{p.type}} |{{p.optional}}|{{p.description}}|
+{% endfor %}
+{% else %}
+No parameters
+{% endif %}
+
+{% if method.suboptions | length != 0 -%}
+#### Sub-options
+
+| Name | Type | Optional | Description |
+| :-----------  | :----------- | :----------- | :----------- |
+{% for p in method.suboptions -%}
+|**{{p.name}}**| {{p.type}} |{{p.optional}}|{{p.description}}|
 {% endfor %}
 {% else %}
 
-No parameters
 {% endif %}
-{% endfor %}
+
+{% if method.example %}
+### Example
+```javascript
+{{method.example}}
+```
+{% endif %}
+{% endfor %} 
+

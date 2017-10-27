@@ -10,7 +10,7 @@
   "scripts": {
     "jsdocpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "doc": "npm run apiref && ./scripts/generate-uml.sh && npm run jsdocpub",
-    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.1.sh",
+    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",

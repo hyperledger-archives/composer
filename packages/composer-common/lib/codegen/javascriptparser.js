@@ -84,14 +84,35 @@ class JavaScriptParser {
         this.classes = [];
         this.functions = [];
 
-        for (let n = 0; n < ast.body.length; n++) {
-            let statement = ast.body[n];
+        // let nodesToProcess = ast.body;
+        let nodesToProcess = [];
+        const walk = require('acorn/dist/walk');
+        walk.simple(ast, {
+            FunctionDeclaration(node) {
+                if (node.id && node.id.name){
+                    nodesToProcess.push(node);
+                }
+            },
+            FunctionExpression(node) {
+                if (node.id && node.id.name){
+                    nodesToProcess.push(node);
+                }
+            },
+            ClassDeclaration(node) {
+                nodesToProcess.push(node);
+            }
+        });
+        //console.log(Util.inspect(nodesToProcess));
+
+        for (let n = 0; n < nodesToProcess.length; n++) {
+            let statement = nodesToProcess[n];
 
             // record the end of the previous node.
             let previousEnd = -1;
-            if (n !== 0) {
-                previousEnd = ast.body[n-1].end;
-            }
+            // if (n !== 0) {
+            //     previousEnd = ast.body[n-1].end;
+            // }
+            let lineNumber=statement.loc.start.line;
 
             if (statement.type === 'VariableDeclaration') {
                 let variableDeclarations = statement.declarations;
@@ -109,8 +130,8 @@ class JavaScriptParser {
                     }
                 }
             }
-            else if (statement.type === 'FunctionDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+            else if (statement.type === 'FunctionDeclaration' || statement.type==='FunctionExpression') {
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments,lineNumber);
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -118,8 +139,10 @@ class JavaScriptParser {
                 let decorators = [];
                 let throws = '';
                 let example = '';
+                let commentData;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
+                    commentData = doctrine.parse(comment, {unwrap: true, sloppy: true});
                     returnType = JavaScriptParser.getReturnType(comment);
                     visibility = JavaScriptParser.getVisibility(comment);
                     parameterTypes = JavaScriptParser.getMethodArguments(comment);
@@ -141,12 +164,13 @@ class JavaScriptParser {
                         throws: throws,
                         decorators: decorators,
                         functionText : JavaScriptParser.getText(statement.start, statement.end, fileContents),
-                        example: example
+                        example: example,
+                        commentData : commentData
                     };
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments,lineNumber);
                 let privateClass = false;
                 let d;
                 if(closestComment >= 0) {
@@ -162,6 +186,8 @@ class JavaScriptParser {
 
                     for(let n=0; n < statement.body.body.length; n++) {
                         let thing = statement.body.body[n];
+
+                        lineNumber=thing.loc.start.line;
                         // previousEnd is the end of the node before the ClassDeclaration
                         let previousThingEnd = previousEnd;
                         if (n !== 0) {
@@ -171,7 +197,7 @@ class JavaScriptParser {
                         }
 
                         if (thing.type === 'MethodDefinition') {
-                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments);
+                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments,lineNumber);
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
@@ -190,7 +216,7 @@ class JavaScriptParser {
                                 example = JavaScriptParser.getExample(comment);
                             }
                             commentData = commentData || [];
-                            if(visibility === '+' || includePrivates) {
+                            if(visibility === '+' || visibility === '~' || includePrivates) {
                                 const method = {
                                     visibility: visibility,
                                     returnType: returnType,
@@ -273,23 +299,24 @@ class JavaScriptParser {
      * @param {integer} rangeEnd - the end of the range
      * @param {integer} stopPoint - the point to stop searching for previous comments
      * @param {string[]} comments - the end of the range
+     * @param {integer} lineNumber - current linenumber
      * @return {integer} the comment index or -1 if there are no comments
      * @private
      */
-    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments) {
+    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments,lineNumber) {
         let foundIndex = -1;
-        let distance = -1;
+        // let distance = -1;
 
         for(let n=0; n < comments.length; n++) {
             let comment = comments[n];
-            let endComment = comment.end;
-            if(rangeStart > endComment && comment.start > stopPoint) {
+            let endComment = parseInt(comment.loc.end.line);
 
-                if(distance === -1 || rangeStart - endComment < distance) {
-                    distance = rangeStart - endComment;
-                    foundIndex = n;
-                }
+            if ( (lineNumber-endComment) === 1 ){
+                // i.e. on the line before
+                foundIndex = n;
+                break;
             }
+
         }
         return foundIndex;
     }
@@ -320,10 +347,20 @@ class JavaScriptParser {
      */
     static getVisibility(comment) {
         const PRIVATE = 'private';
-        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
+        const PROTECTED = 'protected';
+
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE,PROTECTED]});
         const tags = parsedComment.tags;
+
         if (tags.length > 0) {
-            return '-';
+            switch(tags[0].title){
+            case PRIVATE:
+                return '-';
+            case PROTECTED:
+                return '~';
+            default:
+                return '+';
+            }
         }
         return '+';
     }

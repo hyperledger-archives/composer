@@ -4,41 +4,29 @@ set -ev
 
 # Grab the Composer directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-INDEX=1200
 
-for file in ${DIR}/../composer-client/lib/*.js
+# start index higher to allow for extras such as a class index. 
+INDEX=1210
+
+# rely on the parsejs tool (that is used to check the external API) to get the suitable classes
+node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-client/lib  --outputDir ${DIR}/jsondata
+node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-admin/lib  --outputDir ${DIR}/jsondata
+node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-runtime/lib/api  --outputDir ${DIR}/jsondata
+node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-common/lib  --outputDir ${DIR}/jsondata
+
+# for each json file process using the class template
+for file in ${DIR}/jsondata/*.json
 do
   echo "${file}"
-  BASENAME="$(basename ${file})"
+  BASENAME="$(basename -s .json ${file})"
   ((INDEX++))
-
-  FILENAME=${DIR}/jekylldocs/api-doc/${BASENAME}.md
-
-  cat ${DIR}/scripts/header.tpl | sed "s/{{TITLE}}/Client ${BASENAME}/g" |  sed "s/{{SECTION}}/api/g" | sed "s/{{INDEXORDER}}/${INDEX}/g" > "${FILENAME}"
-  documentation build "${file}" --markdown-toc=true  -f md >> "${FILENAME}"
+  ${DIR}/apigen-opus/bin/cli1.js -i jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api-doc-inline --context "{\"index\":\"${INDEX}\"}"
 done
 
-for file in ${DIR}/../composer-admin/lib/*.js
-do
-  echo "${file}"
-  BASENAME="$(basename ${file})"
-  ((INDEX++))
+# TODO, create the template a class index.
+# This can be done by merging the json data from each class, and using a different template
 
-  FILENAME=${DIR}/jekylldocs/api-doc/${BASENAME}.md
+# Copy the Main index doc into place
 
-  cat ${DIR}/scripts/header.tpl | sed "s/{{TITLE}}/Admin ${BASENAME}/g" |  sed "s/{{SECTION}}/api/g" | sed "s/{{INDEXORDER}}/${INDEX}/g" > "${FILENAME}"
-  documentation build "${file}" --markdown-toc=true  -f md >> "${FILENAME}"
-done
-
-for file in ${DIR}/../composer-runtime/lib/api/*.js
-do
-  echo "${file}"
-  BASENAME="$(basename ${file})"
-  ((INDEX++))
-
-  FILENAME=${DIR}/jekylldocs/api-doc/${BASENAME}.md
-
-  cat ${DIR}/scripts/header.tpl | sed "s/{{TITLE}}/Runtime ${BASENAME}/g" |  sed "s/{{SECTION}}/api/g"  | sed "s/{{INDEXORDER}}/${INDEX}/g" > "${FILENAME}"
-  documentation build "${file}" --markdown-toc=true  -f md >> "${FILENAME}"
-done
-
+cp ${DIR}/scripts/api-doc-index.md.tpl ${DIR}/jekylldocs/api-doc-inline/api-doc-index.md
+# all done
