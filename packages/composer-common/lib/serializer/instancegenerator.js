@@ -48,7 +48,7 @@ class InstanceGenerator {
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else {
-            throw new Error('Unrecognised ' + JSON.stringify(thing));
+            throw new Error('Unrecognised ' + JSON.stringify(thing) );
         }
     }
 
@@ -67,8 +67,8 @@ class InstanceGenerator {
                 continue;
             }
             const value = obj[property.getName()];
-            if (Util.isNull(value)) {
-                obj[property.getName()] = property.accept(this, parameters);
+            if(Util.isNull(value)) {
+                obj[property.getName()] = property.accept(this,parameters);
             }
         }
         return obj;
@@ -82,13 +82,35 @@ class InstanceGenerator {
      * @private
      */
     visitField(field, parameters) {
+        if(!field.isPrimitive()){
+            let type = field.getFullyQualifiedTypeName();
+            let classDeclaration = parameters.modelManager.getType(type);
+            classDeclaration = this.findConcreteSubclass(classDeclaration);
+            let fqn = classDeclaration.getFullyQualifiedName();
+
+            if (parameters.seen.includes(fqn)){
+                if (field.isArray()) {
+                    return [];
+                }
+                if (field.isOptional()) {
+                    return null;
+                }
+                throw new Error('Model is recursive.');
+            }
+            parameters.seen.push(fqn);
+        } else { parameters.seen.push('Primitve');
+        }
+        let result;
         if (field.isArray()) {
             const valueSupplier = () => this.getFieldValue(field, parameters);
-            return parameters.valueGenerator.getArray(valueSupplier);
+            result =  parameters.valueGenerator.getArray(valueSupplier);
         } else {
-            return this.getFieldValue(field, parameters);
+            result = this.getFieldValue(field, parameters);
         }
+        parameters.seen.pop();
+        return result;
     }
+
 
     /**
      * Get a value for the specified field.
@@ -100,7 +122,7 @@ class InstanceGenerator {
         let type = field.getFullyQualifiedTypeName();
 
         if (ModelUtil.isPrimitiveType(type)) {
-            switch (type) {
+            switch(type) {
             case 'DateTime':
                 return parameters.valueGenerator.getDateTime();
             case 'Integer':
@@ -124,32 +146,16 @@ class InstanceGenerator {
         }
 
         classDeclaration = this.findConcreteSubclass(classDeclaration);
-        let fqn = classDeclaration.getFullyQualifiedName();
-        // before doing any form of check for conept or class we want to check if this
-        // has been seen before or not
-        if (!parameters.seen.find((e) => {
-            return fqn === e;
-        })) {
 
-            parameters.seen.push(fqn);
-            if (classDeclaration.isConcept()) {
-                let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
-                parameters.stack.push(concept);
-                return classDeclaration.accept(this, parameters);
-            } else {
-                const id = this.generateRandomId(classDeclaration);
-                let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
-                parameters.stack.push(resource);
-                return classDeclaration.accept(this, parameters);
-            }
+        if (classDeclaration.isConcept()) {
+            let concept = parameters.factory.newConcept(classDeclaration.getNamespace(), classDeclaration.getName());
+            parameters.stack.push(concept);
+            return classDeclaration.accept(this, parameters);
         } else {
-            if (field.isArray()){
-                return;
-            }
-            if (field.isOptional()){
-                return null;
-            }
-            throw new Error('Model is recursive.');
+            const id = this.generateRandomId(classDeclaration);
+            let resource = parameters.factory.newResource(classDeclaration.getNamespace(), classDeclaration.getName(), id);
+            parameters.stack.push(resource);
+            return classDeclaration.accept(this, parameters);
         }
     }
 

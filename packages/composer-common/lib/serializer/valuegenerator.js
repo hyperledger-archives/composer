@@ -194,14 +194,7 @@ class SampleValueGenerator extends EmptyValueGenerator {
      * @return {Array} an array
      */
     getArray(valueSupplier) {
-        let value = valueSupplier();
-        console.log(value);
-        if (value !== undefined) {
-            return [value];
-
-        } else {
-            return [];
-        }
+        return [valueSupplier()];
     }
 }
 

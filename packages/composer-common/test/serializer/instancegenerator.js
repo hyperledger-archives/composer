@@ -73,6 +73,20 @@ describe('InstanceGenerator', () => {
             }`);
             resource.theValue.should.be.a('string');
         });
+        it('should not throw a recursion error', () => {
+            let resource = test(`namespace org.acme.test
+            participant MyParticipant identified by participantId{
+                o String participantId
+                o String value
+            }
+            asset MyAsset identified by assetId {
+                o String assetId
+                o String theValue
+                o MyParticipant test1
+                o MyParticipant test2
+            }`);
+            should.exist(resource.theValue);
+        });
 
         it('should generate empty array value for array property with empty generator ', () => {
             useEmptyGenerator();
@@ -114,7 +128,6 @@ describe('InstanceGenerator', () => {
             // resource.theValues[0].should.be.a('String');
         });
         it('should return an empty array with sample generator, when empty array is recursive ', () => {
-            // useSampleGenerator();
             try {
 
                 test(`namespace org.acme.test
