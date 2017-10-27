@@ -1240,12 +1240,14 @@ describe('HLFConnectionManager', () => {
         const certificate = 'CERTIFICATE';
         const signerKey = 'SIGNER_KEY';
         let profile;
+        let mockClient;
+        let mockUser;
 
         beforeEach(() => {
-            const mockClient = sinon.createStubInstance(Client);
+            mockClient = sinon.createStubInstance(Client);
             sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
 
-            const mockUser = sinon.createStubInstance(User);
+            mockUser = sinon.createStubInstance(User);
             const mockIdentity = {
                 _certificate: certificate
             };
@@ -1253,7 +1255,6 @@ describe('HLFConnectionManager', () => {
             const mockSigner = sinon.createStubInstance(idModule.Signer);
             const mockSignerKey = sinon.createStubInstance(api.Key);
 
-            mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
             mockUser.getIdentity.returns(mockIdentity);
             mockUser.getSigningIdentity.returns(mockSigningIdentity);
             mockSigningIdentity._signer = mockSigner;
@@ -1278,14 +1279,23 @@ describe('HLFConnectionManager', () => {
             };
         });
 
-        it('should return identity credentials from Fabric Client', function() {
+        afterEach(() => {
+            sandbox.reset();
+        });
+
+        it('should return credentials from Fabric Client for valid user', function() {
+            mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
             return connectionManager.exportIdentity('connprof1', profile, userId)
-                .then((credentials) => {
-                    credentials.should.deep.equal({
-                        certificate: certificate,
-                        privateKey: signerKey
-                    });
+                .should.eventually.deep.equal({
+                    certificate: certificate,
+                    privateKey: signerKey
                 });
+        });
+
+        it('should return null for invalid user', function() {
+            mockClient.getUserContext.withArgs(userId, true).resolves(null);
+            return connectionManager.exportIdentity('connprof1', profile, userId)
+                .should.eventually.be.null;
         });
     });
 
