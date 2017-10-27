@@ -120,7 +120,8 @@ class BusinessNetworkCardStore {
     }
 
     /**
-     * Puts a card in the store.
+     * Puts a card in the store. It is an error to put a card name that already exists
+     * in the store.
      * @abstract
      * @param {String} cardName The name of the card to save
      * @param {IdCard} card The card
