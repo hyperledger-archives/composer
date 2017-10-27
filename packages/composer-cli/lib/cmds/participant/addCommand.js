@@ -18,13 +18,28 @@ const Add = require ('./lib/add.js');
 
 module.exports.command = 'add [options]';
 module.exports.describe = 'Add a new participant to a participant registry';
-module.exports.builder = {
-    //connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    //businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    //enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    //enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    data: { alias: 'd', required: true, describe: 'Serialized participant JSON object as a string', type: 'string' },
-    card: { alias: 'c', required: true, description: 'The cardname to use to download the network', type:'string'}
+module.exports.builder = (yargs) =>{
+
+    yargs.options({
+        data: { alias: 'd', required: true, describe: 'Serialized participant JSON object as a string', type: 'string' },
+        card: { alias: 'c', required: true, description: 'The cardname to use to add the participant', type:'string'}
+    });
+
+    yargs.strict();
+
+    yargs.check((argv,options)=>{
+        if (Array.isArray(argv.card)){
+            throw new Error('Please specify --card or -c only once');
+        }
+        if (Array.isArray(argv.data)){
+            throw new Error('Please specify --data or -d only once');
+        }
+        return true;
+    });
+
+    yargs.group(['card','data'],'Participant options');
+
+    return yargs;
 };
 
 module.exports.handler = (argv) => {
