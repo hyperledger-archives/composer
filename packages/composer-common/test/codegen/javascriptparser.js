@@ -342,9 +342,6 @@ describe('JavascriptParser', () => {
             funcs[4].decorators[0].should.equal('transaction');
         });
 
-        it('unusual circumstances', () =>{
-         //   JavascriptParser.findCommentBefore(50,100,100,[{start:220,end:40},{start:220,end:40}]);
-        });
     });
 
     describe('#getDecorators', () => {
