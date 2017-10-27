@@ -32,6 +32,23 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
     const prefix = namespaces === 'always' ? 'org.acme.bond.' : '';
 
     describe(`Filter REST API unit tests namespaces[${namespaces}]`, () => {
+        const participants = [{
+            $class: 'org.acme.bond.Issuer',
+            memberId: 'ISSUER_1',
+            name: 'Billy Banterlope'
+        }, {
+            $class: 'org.acme.bond.Issuer',
+            memberId: 'ISSUER_2',
+            name: 'Conga Block'
+        }, {
+            $class: 'org.acme.bond.Issuer',
+            memberId: 'ISSUER_3',
+            name: 'Percy Penguin'
+        }, {
+            $class: 'org.acme.bond.Issuer',
+            memberId: 'ISSUER_4',
+            name: 'Wendy Wombat'
+        }];
 
         const assetData = [{
             $class: 'org.acme.bond.BondAsset',
@@ -47,7 +64,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 instrumentId: [
                     'AliceCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_1',
                 maturity: '2018-01-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
@@ -70,7 +87,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 instrumentId: [
                     'BobCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#2',
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_2',
                 maturity: '2018-12-27T21:03:52.000Z',
                 parValue: 2000,
                 paymentFrequency: {
@@ -93,7 +110,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 instrumentId: [
                     'CharlieCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_3',
                 maturity: '2017-02-27T21:03:52.000Z',
                 parValue: 3000,
                 paymentFrequency: {
@@ -116,7 +133,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 instrumentId: [
                     'DogeCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_4',
                 maturity: '2016-02-27T21:03:52.000Z',
                 parValue: 4000,
                 paymentFrequency: {
@@ -129,7 +146,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         let app;
         let businessNetworkConnection;
-        let assetRegistry;
         let serializer;
 
         before(() => {
@@ -166,15 +182,26 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
             })
-            .then((assetRegistry_) => {
-                assetRegistry = assetRegistry_;
+            .then((assetRegistry) => {
                 return assetRegistry.addAll([
                     serializer.fromJSON(assetData[0]),
                     serializer.fromJSON(assetData[1]),
                     serializer.fromJSON(assetData[2]),
                     serializer.fromJSON(assetData[3])
                 ]);
+            })
+            .then(() => {
+                return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
+            })
+            .then((participantRegistry) => {
+                return participantRegistry.addAll([
+                    serializer.fromJSON(participants[0]),
+                    serializer.fromJSON(participants[1]),
+                    serializer.fromJSON(participants[2]),
+                    serializer.fromJSON(participants[3])
+                ]);
             });
+
         });
 
         describe('Filter Equivalence', () => {
@@ -185,6 +212,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1"}}`)
                     .then((res) => {
                         res.should.be.json;
+                        res.should.have.status(200);
                         res.body.should.deep.equal([
                             assetData[0]
                         ]);
@@ -196,6 +224,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .get(`/api/${prefix}BondAsset?filter[where][ISINCode]=ISIN_1`)
                     .then((res) => {
                         res.should.be.json;
+                        res.should.have.status(200);
                         res.body.should.deep.equal([
                             assetData[0]
                         ]);
@@ -208,6 +237,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM"}}`)
                     .then((res) => {
                         res.should.be.json;
+                        res.should.have.status(200);
                         res.body.should.deep.equal([
                             assetData[0],
                             assetData[2]
@@ -235,6 +265,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM", "bond.maturity":"2018-01-27T21:03:52.000Z"}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0]
                     ]);
@@ -246,6 +277,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOM", "bond.faceAmount":1000}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0]
                     ]);
@@ -257,6 +289,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"DOES_NOT_EXIST"}}`)
                     .then((res) => {
                         res.should.be.json;
+                        res.should.have.status(200);
                         res.body.should.deep.equal([]);
                     });
             });
@@ -269,6 +302,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     .get(`/api/${prefix}BondAsset?filter[where][ISINCode]=DOES_NOT_EXIST`)
                     .then((res) => {
                         res.should.be.json;
+                        res.should.have.status(200);
                         res.body.should.deep.equal([]);
                     });
             });
@@ -334,6 +368,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"bond.maturity":{"lt":"2018-06-27T21:03:52.000Z"}}]}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0],
                         assetData[2]
@@ -375,6 +410,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"EOM"}, {"bond.maturity":"2018-01-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0],
                         assetData[2]
@@ -408,6 +444,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"or":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}]}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0]
                     ]);
@@ -436,7 +473,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe('Filter BETWEEN', () => {
 
-            xit('should return matches when filtering on the identifier field, using json format', () => {
+            it('should return matches when filtering on the identifier field, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1],
+                        assetData[2]
+                    ]);
+                });
             });
 
             it('should return matches when filtering on STRING property field, using json format', () => {
@@ -444,6 +492,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.description":{"between":["C", "D"]}}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
                         assetData[3]
@@ -459,6 +508,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[900, 1501]}}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0],
                         assetData[2]
@@ -471,9 +521,101 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"between":["2017-09-27T21:03:52.000Z", "2018-12-27T21:03:52.000Z"]}}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[0],
                         assetData[1]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN STRING when there is a starting match, but unbounded ending match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.description":{"between":["C", "Z"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[2],
+                        assetData[3]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN DOUBLE when there is a starting match, but unbounded ending match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[2000, 9000]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1],
+                        assetData[3]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN DATETIME when there is a starting match, but unbounded ending match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"between":["2017-09-27T21:03:52.000Z", "2118-12-27T21:03:52.000Z"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN STRING when there is an ending match, but unbounded starting match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.description":{"between":["C", "Z"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[2],
+                        assetData[3]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN DOUBLE when there is an ending match, but unbounded starting match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[0, 1500]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
+                    ]);
+                });
+            });
+
+            it('should return contained matches when searching BETWEEN DATETIME when there is an ending match, but unbounded starting match, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"between":["2010-09-27T21:03:52.000Z", "2017-09-27T21:03:52.000Z"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[2],
+                        assetData[3]
+                    ]);
+                });
+            });
+
+            xit('should handle searching BETWEEN when there are unmatched types, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[0, "Penguin"]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
                     ]);
                 });
             });
@@ -483,6 +625,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.description":{"between":["X", "Z"]}}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([]);
                 });
             });
@@ -492,26 +635,56 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[9000, 10000]}}}`)
                 .then((res) => {
                     res.should.be.json;
+                    res.should.have.status(200);
                     res.body.should.deep.equal([]);
                 });
             });
 
         });
-    });
 
-    describe('Filter UNSUPPORTED', () => {
+        describe('Filter include:resolve', () => {
 
-        xit('should return an error message when trying to use NEAR', () => {
+            xit('should return a single fully resolved Resource', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1"}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    // TODO : Assert fully resolved (includes Issuer)
+                });
+            });
+
+            xit('should return multiple fully resolved Resources', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    // TODO : Assert all fully resolved (includes Issuer)
+                });
+            });
+
+            xit('should handle missing reference in resolve process of single Resource', () => {
+            });
+
+            xit('should handle missing reference in resolve process of multiple Resources', () => {
+            });
         });
 
-        xit('should return an error message when trying to use LIKE', () => {
-        });
+        describe('Filter UNSUPPORTED', () => {
 
-        xit('should return an error message when trying to use NLIKE', () => {
-        });
+            xit('should return an error message when trying to use NEAR', () => {
+            });
 
-        xit('should return an error message when trying to use REGEXP', () => {
-        });
+            xit('should return an error message when trying to use LIKE', () => {
+            });
 
+            xit('should return an error message when trying to use NLIKE', () => {
+            });
+
+            xit('should return an error message when trying to use REGEXP', () => {
+            });
+
+        });
     });
 });
