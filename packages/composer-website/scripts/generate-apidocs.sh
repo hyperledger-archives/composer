@@ -25,6 +25,10 @@ done
 
 # TODO, create the template a class index.
 # This can be done by merging the json data from each class, and using a different template
+cd ${DIR}
+node ./scripts/merge.js
+${DIR}/apigen-opus/bin/cli1.js -i allData -t classindex.njk -o ${DIR}/jekylldocs/api-doc-inline --context "{\"index\":\"1205\"}"
+
 
 # Copy the Main index doc into place
 
