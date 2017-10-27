@@ -30,7 +30,6 @@ describe('composer participant cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
     });
 
     afterEach(() => {

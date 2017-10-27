@@ -19,8 +19,6 @@
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs');
-
-
 const chalk = require('chalk');
 const version = 'v' +require('./package.json').version;
 
@@ -35,7 +33,6 @@ let results = yargs
     .alias('v', 'version')
     .version(version)
     .describe('v', 'show version information')
-
     .argv;
 
 if (typeof(results.thePromise) !== 'undefined'){
@@ -44,7 +41,6 @@ if (typeof(results.thePromise) !== 'undefined'){
         console.log(chalk.green('\nCommand succeeded\n'));
         process.exit(0);
     }).catch((error) => {
-        console.log(error.stack);
         console.log(error+chalk.red('\nCommand failed\n'));
         process.exit(1);
     });
