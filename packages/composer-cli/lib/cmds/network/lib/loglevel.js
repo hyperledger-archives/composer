@@ -32,50 +32,15 @@ class LogLevel {
     */
     static handler(argv) {
         let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName;
         let businessNetworkName;
         let newlevel;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
 
-        if (argv.newlevel) {
-            // validate log level as yargs cannot at this time
-            // https://github.com/yargs/yargs/issues/849
-            newlevel = argv.newlevel.toUpperCase();
-            if (!LogLevel.validLogLevel(newlevel)) {
-                return Promise.reject(new Error('newlevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
-            }
-        }
 
-        return (() => {
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
+        return Promise.resolve()
         .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            connectionProfileName = argv.connectionProfileName;
             adminConnection = cmdUtil.createAdminConnection();
-            if (!usingCard){
-                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, businessNetworkName);
-            } else {
-                return adminConnection.connect(cardName);
-            }
+            return adminConnection.connect(cardName);
         })
         .then(() => {
             if (newlevel) {
@@ -94,27 +59,6 @@ class LogLevel {
             throw error;
         });
     }
-
-    /**
-     * check the loglevel specified matches the known set
-     *
-     * @static
-     * @param {string} logLevel the loglevel to check
-     * @returns {boolean} true if valid, false otherwise
-     * @memberof LogLevel
-     */
-    static validLogLevel(logLevel) {
-
-        switch (logLevel) {
-        case 'INFO':
-        case 'WARNING':
-        case 'ERROR':
-        case 'DEBUG':
-            return true;
-        }
-        return false;
-    }
-
 }
 
 module.exports = LogLevel;

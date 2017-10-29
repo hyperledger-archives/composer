@@ -37,39 +37,19 @@ class Download {
     */
     static handler(argv) {
 
-
         let businessNetworkDefinition;
         let businessNetworkName;
         let spinner;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
+
         let businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
-        return (() => {
-
-
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
+        return Promise.resolve()
         .then (() => {
             spinner = ora('Downloading deployed Business Network Archive').start();
-            if (!usingCard){
-                return businessNetworkConnection.connect(argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-            } else {
-                return businessNetworkConnection.connect(cardName);
-            }
+
+            return businessNetworkConnection.connect(cardName);
+
         })
         .then((result) => {
             businessNetworkDefinition = result;
@@ -86,7 +66,8 @@ class Download {
             if (!argv.archiveFile){
                 argv.archiveFile = sanitize(businessNetworkName,{replacement:'_'})+'.bna';
             }
-          // need to write this out to the required file now.
+
+            // need to write this out to the required file now.
             return businessNetworkDefinition.toArchive();
         }).then ( (result) => {
             //write the buffer to a file

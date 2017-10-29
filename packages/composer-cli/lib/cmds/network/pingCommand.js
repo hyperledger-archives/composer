@@ -19,10 +19,6 @@ const Ping = require ('./lib/ping.js');
 module.exports.command = 'ping [options]';
 module.exports.describe = 'Test a connection to a business network';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
     card: { alias: 'c', required: false, description: 'The cardname to use to ping the network', type:'string'}
 };
 

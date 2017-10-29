@@ -36,17 +36,14 @@ class Upgrade {
         let spinner;
 
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
+
 
         return Promise.resolve()
         .then(() => {
             spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
-            if (!usingCard){
-                return adminConnection.connect(argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);
-            } else {
-                return adminConnection.connect(cardName);
-            }
+            return adminConnection.connect(cardName);
+
         })
         .then((result) => {
             return adminConnection.upgrade();

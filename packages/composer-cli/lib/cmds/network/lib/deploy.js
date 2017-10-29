@@ -23,10 +23,7 @@ const LogLevel = require('./loglevel');
 const ora = require('ora');
 
 /**
- * <p>
  * Composer deploy command
- * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Deploy {
@@ -43,48 +40,15 @@ class Deploy {
                                   ? true
                                   : false;
         let businessNetworkDefinition;
-
         let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let spinner;
         let loglevel;
-
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
 
-        if (argv.loglevel) {
-            // validate log level as yargs cannot at this time
-            // https://github.com/yargs/yargs/issues/849
-            loglevel = argv.loglevel.toUpperCase();
-            if (!LogLevel.validLogLevel(loglevel)) {
-                return Promise.reject(new Error('loglevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
-            }
-        }
-
-        return (() => {
-            console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
-
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
+        return  Promise.resolve()
         .then (() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
+            console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
             let archiveFileContents = null;
             // Read archive file contents
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
@@ -100,11 +64,9 @@ class Deploy {
             adminConnection = cmdUtil.createAdminConnection();
             // if we are performing an update we have to actually connect to the network
             // we want to update!
-            if (!usingCard){
-                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
-            } else {
-                return adminConnection.connect(cardName, updateBusinessNetwork);
-            }
+
+            return adminConnection.connect(cardName, updateBusinessNetwork);
+
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {
@@ -139,11 +101,9 @@ class Deploy {
 
             return result;
         }).catch((error) => {
-
             if (spinner) {
                 spinner.fail();
             }
-
             console.log();
 
             throw error;

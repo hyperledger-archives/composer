@@ -32,56 +32,29 @@ class Undeploy {
     */
     static handler(argv) {
         let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
         let spinner;
 
-        return (() => {
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            adminConnection = cmdUtil.createAdminConnection();
-            if (!usingCard){
-                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
-            } else {
+        return Promise.resolve()
+            .then(() => {
+                adminConnection = cmdUtil.createAdminConnection();
                 return adminConnection.connect(cardName);
-            }
-        })
-          .then((result) => {
-              spinner = ora('Undeploying business network definition. This may take some seconds...').start();
-              return adminConnection.undeploy(businessNetworkName);
+            })
+            .then((result) => {
+                spinner = ora('Undeploying business network definition. This may take some seconds...').start();
+                return adminConnection.undeploy();
 
-          }).then((result) => {
-              spinner.succeed();
-              return result;
-          }).catch((error) => {
+            }).then((result) => {
+                spinner.succeed();
+                return result;
+            }).catch((error) => {
 
-              if (spinner) {
-                  spinner.fail();
-              }
+                if (spinner) {
+                    spinner.fail();
+                }
 
-              throw error;
-          });
+                throw error;
+            });
     }
 
 }

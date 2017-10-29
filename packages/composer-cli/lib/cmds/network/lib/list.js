@@ -36,46 +36,22 @@ class List {
     static handler(argv) {
 
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
+
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
         let listOutput;
         let spinner;
         let cardName = argv.card;
 
-        let usingCard = !(cardName===undefined);
 
-        return (() => {
-            spinner = ora('List business network '+ (usingCard ?  'from card "'+ cardName +'"' : 'with name "'+businessNetworkName+'"' ));
 
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then (() => {
+        return Promise.resolve()
+        .then(() => {
+            spinner = ora('List business network from card '+ cardName );
             spinner.start();
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
+
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            // check to see if we are using a card, if so use card API
-            if (!usingCard){
-                return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
-            } else {
-                return businessNetworkConnection.connect(cardName);
-            }
+            return businessNetworkConnection.connect(cardName);
 
         })
         .then ((result) => {

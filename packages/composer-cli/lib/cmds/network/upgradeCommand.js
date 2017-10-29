@@ -19,10 +19,6 @@ const Upgrade = require ('./lib/upgrade.js');
 module.exports.command = 'upgrade [options]';
 module.exports.describe = 'Upgrades the Hyperledger Composer runtime of a business network';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name whose runtime will be upgraded', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    upgradeId: { alias: 'i', required: false, describe: 'The id of the user permitted to upgrade the runtime', type: 'string' },
-    upgradeSecret: { alias: 's', required: false, describe: 'The secret of the user permitted to upgrade the runtime, if required', type: 'string' },
     card: { alias: 'c', required: false, description: 'The cardname to use to upgrade the network', type:'string'}
 };
 
