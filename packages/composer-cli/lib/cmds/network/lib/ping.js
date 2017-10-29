@@ -36,8 +36,16 @@ class Ping {
         let businessNetworkDefinition;
         let cardName = argv.card;
 
+<<<<<<< HEAD
         businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
         return businessNetworkConnection.connect(cardName)
+=======
+        return Promise.resolve()
+        .then(() => {
+            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+            return businessNetworkConnection.connect(cardName);
+        })
+>>>>>>> code for the network cli updates
         .then((result) => {
             businessNetworkDefinition = result;
             return businessNetworkConnection.ping();

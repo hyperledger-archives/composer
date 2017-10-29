@@ -48,12 +48,14 @@ class Start {
         let logLevel = argv.loglevel;
         let cardName = argv.card;
 
-
-        console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
-        let archiveFileContents = null;
+        // needs promise resolve here in case the archive errors
+        return Promise.resolve().then(() => {
+            console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
+            let archiveFileContents = null;
             // Read archive file contents
-        archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
-        return BusinessNetworkDefinition.fromArchive(archiveFileContents)
+            archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
+            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
+        })
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
