@@ -64,5 +64,15 @@ describe('composer card import CLI', function() {
         });
     });
 
+    it('should copy with the file system write failing', function() {
+        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).throws(new Error('Failed to write'));
+        const args = {
+            file: cardFileName,
+            name : 'CARD_NAME'
+        };
+
+        adminConnectionStub.exportCard.resolves(testCard);
+        return ExportCmd.handler(args).should.be.rejectedWith(/Unable to write card file/);
+    });
 
 });
