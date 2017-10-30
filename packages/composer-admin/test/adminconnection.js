@@ -145,6 +145,7 @@ describe('AdminConnection', () => {
         adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
+        sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs(testProfileName, sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs(testProfileName).resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
@@ -230,7 +231,61 @@ describe('AdminConnection', () => {
                 });
         });
 
+        it('should error if wrong number of arguments given', () => {
+            return adminConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
+        });
+
     });
+
+    describe('#connectWithCard', () =>{
+
+
+        it ('should connect, login and ping if update not specified', () => {
+            sinon.spy(cardStore,'get');
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({});
+            mockIdCard.getUserName.returns('fred');
+            mockIdCard.getBusinessNetworkName.returns('network');
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',mockIdCard);
+
+            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            return adminConnection.connect('testCardname').then(()=>{
+                sinon.assert.calledOnce(cardStore.get);
+                sinon.assert.calledWith(cardStore.get,'testCardname');
+                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login,'fred','password');
+                sinon.assert.notCalled(mockConnection.ping);
+            });
+        });
+
+        it ('should connect, login and ping if update specified', () => {
+            sinon.spy(cardStore,'get');
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({});
+            mockIdCard.getUserName.returns('fred');
+            mockIdCard.getBusinessNetworkName.returns('network');
+            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',mockIdCard);
+
+            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            return adminConnection.connect('testCardname',true).then(()=>{
+                sinon.assert.calledOnce(cardStore.get);
+                sinon.assert.calledWith(cardStore.get,'testCardname');
+                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login,'fred','password');
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+            });
+        });
+    });
+
 
     describe('#createProfile', () => {
         it('should return a resolved promise', () => {
@@ -270,8 +325,9 @@ describe('AdminConnection', () => {
     describe('#disconnect', () => {
         it('should set connection and security context to null', () => {
             let adminConnection = new AdminConnection();
-            sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
-            return adminConnection.connect()
+
+            sinon.stub(adminConnection, '_connectWithCard').resolves(mockConnection);
+            return adminConnection.connect('fakeCard')
             .then(() => {
                 return adminConnection.disconnect();
             })
@@ -285,6 +341,18 @@ describe('AdminConnection', () => {
             let adminConnection = new AdminConnection();
             return adminConnection.disconnect();
         });
+
+        it('should connect, login and ping if business network specified, and then disconnect', () => {
+            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
+                    sinon.assert.calledOnce(mockConnection.ping);
+                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                    adminConnection.disconnect();
+                });
+        });
+
     });
 
     describe('#install', () => {
@@ -893,8 +961,9 @@ describe('AdminConnection', () => {
                 userName: 'user',
                 businessNetwork: 'penguin-network'
             };
-            const connection = { name: 'connectionName' };
-
+            const connection = config;
+            connection.card='user@penguin-network';
+            connection.name='connectionName';
             peerAdminCard = new IdCard(peerAdminMetadata, connection);
             peerAdminCardExpectedName = peerAdminCard.getUserName() + '@' + peerAdminCard.getConnectionProfile().name;
 
@@ -903,6 +972,20 @@ describe('AdminConnection', () => {
         });
 
         describe('#importCard', function() {
+
+            beforeEach(()=>{
+                mockConnectionManager.importIdentity.resolves();
+                sinon.spy(userCard,'getCredentials');
+            });
+
+            it('should import card with name & credentials', function() {
+                const cardName = 'conga';
+                userCard.setCredentials({certificate: 'String', privateKey: 'String' });
+                return adminConnection.importCard(userCard, cardName).then(() => {
+                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                });
+            });
+
             it('should import card with name', function() {
                 const cardName = 'conga';
                 return adminConnection.importCard(userCard, cardName).then(() => {
@@ -934,6 +1017,19 @@ describe('AdminConnection', () => {
             it('should return generated name for PeerAdmin card when no name supplied', function() {
                 return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
             });
+        });
+
+        describe('#getCard', ()=>{
+            it('should return valid card if one exists', ()=>{
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.getCard('conga-card');
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('PeerAdmin');
+                });
+            });
+
         });
 
         describe('#getAllCards', function() {
@@ -968,6 +1064,42 @@ describe('AdminConnection', () => {
                 }).then(cardMap => {
                     cardMap.size.should.equal(0);
                 });
+            });
+        });
+
+        describe('#exportCard', ()=> {
+
+            it('Card exists, but no credentials, call to export identity is correct executed',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                mockConnectionManager.exportIdentity.resolves({ certificate: 'String', privateKey: 'String' });
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                sinon.spy(userCard,'setCredentials');
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('user');
+                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
+                    sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
+                });
+
+            });
+
+            it('Card exists, but with credentials',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                userCard.setCredentials({ certificate: 'String', privateKey: 'String' });
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('user');
+                });
+
             });
         });
     });

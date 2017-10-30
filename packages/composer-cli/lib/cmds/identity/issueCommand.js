@@ -15,21 +15,59 @@
 'use strict';
 
 const Issue = require ('./lib/issue.js');
-
+const IssueCard = require ('./lib/issuecard.js');
 module.exports.command = 'issue [options]';
 module.exports.describe = 'Issue a new identity to a participant in a participant registry';
-module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    newUserId: { alias: 'u', required: true, describe: 'The user ID for the new identity', type: 'string' },
-    participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
-    issuer: { alias: 'x', required: true, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' },
-    option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
-    optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' }
+module.exports.builder =function (yargs) {
+    yargs.options({
+        //'connectionProfileName': {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+        //'businessNetworkName': {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+        //'enrollId': { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
+        //'enrollSecret': { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+        'newUserId': { alias: 'u', required: false, describe: 'The user ID for the new identity', type: 'string' },
+        'participantId': { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
+        'issuer': { alias: 'x', required: false, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' },
+        'option': { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+        'optionsFile': { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
+        'card': {alias: 'c', required: false, describe: 'Name of the network card to use for issuing', type: 'string'},
+        'file': {alias: 'f', required: false, describe: 'The card file name for the new identity', type: 'string' }
+    });
+
+    // mark that the card options conflict with the detail options
+    yargs.conflicts({'c':['p','n','i','s'],
+        'f':['p','n','i','s']})  ;
+
+    yargs.check((argv,options)=>{
+        // if either from one of the 'groups'  details or card have been specified, then check the minimal subset is given
+        if (argv.c || argv.f){
+            if (!(argv.c && argv.f)){
+                throw new Error('Error: Both --card and --file must be specified');
+            }
+        }
+        if (argv.p || argv.n || argv.i || argv.s ){
+            if (!(argv.p && argv.n && argv.i)){
+                throw new Error('Error: --connectionProfileName and --businessNetworkName and --enrollId must be specified');
+            }
+        }
+
+        // finally the userid and participant must be specified for all commands
+        if (!(argv.u && argv.a)){
+            throw new Error('Error: Both --newUserId and --participantId  must be specified');
+        }
+        return true;
+    });
+
+    yargs.group(['p','n','i','s'],'Full Connection Details');
+    yargs.group(['c','f'],'Business Network Cards');
+    yargs.group(['u','a','x'],'Identity Options');
+
+    return yargs;
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Issue.handler(argv);
+    if (argv.c){
+        return argv.thePromise = IssueCard.handler(argv);
+    } else {
+        return argv.thePromise = Issue.handler(argv);
+    }
 };

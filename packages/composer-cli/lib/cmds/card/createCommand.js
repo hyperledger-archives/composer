@@ -14,19 +14,20 @@
 
 'use strict';
 
-const Submit = require ('./lib/submit.js');
+const Create = require ('./lib/create.js');
 
-module.exports.command = 'submit [options]';
-module.exports.describe = 'Submit a transaction to a business network';
+module.exports.command = 'create [options]';
+module.exports.describe = 'Creates a business network card from individual components';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
+    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
+    connectionProfileFile: {alias: 'j', required: false, describe: 'Filename of the connection profile json file', type: 'string' },
     enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    data: { alias: 'd', required: true, describe: 'Transactions JSON object as a string', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to connect to the network', type:'string'}
+    certificateFile: { alias: 'c', required: false, describe: 'File containing the certificate', type: 'string' },
+    privateKeyFile: { alias: 'k', required: false, describe: 'File containing the private key', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise =  Submit.handler(argv);
+    return argv.thePromise = Create.handler(argv);
 };

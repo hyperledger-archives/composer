@@ -20,7 +20,7 @@ module.exports.command = 'import [options]';
 module.exports.describe = 'Import a business network card';
 module.exports.builder = {
     file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
-    name: { alias: 'n', required: false, describe: 'The name used to identify the card', type: 'string' }
+    name: {alias: 'n', required: false, describe: 'The name used to identify the card', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

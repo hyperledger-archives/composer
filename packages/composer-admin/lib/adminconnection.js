@@ -129,11 +129,74 @@ class AdminConnection {
             const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
             name = card.getUserName() + '@' + locationName;
         }
-        return this.cardStore.put(name, card).then(() => {
-            return name;
-        });
+        let connectionProfileData;
+        return this.cardStore.put(name, card)
+            .then(() => {
+                connectionProfileData = card.getConnectionProfile();
+                connectionProfileData.cardName=name;
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            })
+            .then((connectionManager)=>{
+                let certificate = card.getCredentials().certificate;
+                let privateKey = card.getCredentials().privateKey;
+                if (certificate && privateKey){
+                    return connectionManager.importIdentity(connectionProfileData.name,connectionProfileData, card.getUserName(), certificate, privateKey);
+                } else {
+                    return; // use secret
+                }
+            })
+            .then( ()=>{
+                return name;
+            });
     }
 
+    /**
+     * Get a specific Business Network cards
+     * @param {String} cardName of the card to get
+     * @return {Promise} promise resolved with a business network card
+     */
+    getCard(cardName) {
+        return this.cardStore.get(cardName);
+    }
+
+    /** Exports an network card.
+     * Should the card not actually contain the certificates in the card, a exportIdentity will be
+     * performed to get the details of the cards
+     * @private
+     * @param {String} cardName The name of the card that needs to be exported
+     * @return {Promise} resolved with an instance of the network id card populated
+     */
+    exportCard(cardName) {
+        let card;
+        return this.cardStore.get(cardName)
+            .then((result)=>{
+                card=result;
+                let credentials = card.getCredentials();
+                //anything set? if so don't go and get the credentials again
+                if (Object.keys(credentials).length!==0){
+                    return card;
+                } else {
+                    // check to make sure the credentials are present and if not then extract them.
+                    let connectionProfileData = card.getConnectionProfile();
+                    connectionProfileData.cardName = cardName;
+                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+                        .then((connectionManager)=>{
+                            return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+                        }).
+                        then( (result)=>{
+                            //{ certificate: String, privateKey: String }
+                            card.setCredentials(result);
+
+                            // put back the card, so that it has the ceritificates sotre
+                            return this.cardStore.put(cardName,card);
+
+                        }).then(()=>{
+                            return card;
+                        });
+                }
+            });
+
+    }
     /**
      * List all Business Network cards.
      * @private
@@ -214,7 +277,9 @@ class AdminConnection {
 
     /**
      * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile. The connection profile must exist in the profile store.
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
      * @example
      * // Connect to Hyperledger Fabric
      * var adminConnection = new AdminConnection();
@@ -230,8 +295,9 @@ class AdminConnection {
      * @param {string} enrollmentSecret the enrollment secret of the user
      * @param {string} businessNetworkIdentifier the id of the network (for update) or null
      * @return {Promise} A promise that indicates the connection is complete
+     * @private
      */
-    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
+    _connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
@@ -240,6 +306,106 @@ class AdminConnection {
             .then((securityContext) => {
                 this.securityContext = securityContext;
                 if (businessNetworkIdentifier) {
+                    return this.ping(this.securityContext);
+                }
+            });
+    }
+
+     /**
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile.
+     * EITHER, the cardName, and updateflag , OR
+     * the connectionProfile, enrollmentID, enrollmentSecret and businessNetworkIdentifier
+     * Should be specified. NOT both
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {string} connectionProfile - The name of the connection profile
+     * @param {string} enrollmentID the enrollment ID of the user
+     * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {string} businessNetworkIdentifier the id of the network (for update) or null
+     * @param {String} cardName - The name of the business network card
+     * @param {boolean} update true if this is for an update operation
+     * @return {Promise} A promise that indicates the connection is complete
+     */
+    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier,cardName,update){
+
+        if (arguments.length===1){
+            const _cardName = arguments[0];
+            const _update = false;
+            return this._connectWithCard(_cardName,_update);
+        } else  if (arguments.length===2){
+
+            const _cardName = arguments[0];
+            const _update = arguments[1];
+            return this._connectWithCard(_cardName,_update);
+        } else if (arguments.length === 3){
+            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
+        } else  if (arguments.length === 4){
+            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,businessNetworkIdentifier);
+        } else {
+            return Promise.reject(new Error('Incorrect number of arguments'));
+        }
+    }
+
+    /**
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {String} cardName - The name of the business network card
+     * @param {boolean} update true if this is for an update operation
+     * @private
+     * @return {Promise} A promise that indicates the connection is complete
+     */
+    _connectWithCard(cardName, update) {
+        const method = 'connectWithCard';
+        LOG.entry(method,cardName);
+
+        let card;
+
+        return this.cardStore.get(cardName)
+            .then((card_)=>{
+                card = card_;
+                return this.connectionProfileManager.connectWithData(
+                    card.getConnectionProfile(),
+                    card.getBusinessNetworkName(),
+                    {cardName:cardName});
+            })
+            .then((connection) => {
+                this.connection = connection;
+                return connection.login(card.getUserName(),card.getEnrollmentCredentials().secret);
+            })
+            .then((securityContext) => {
+                this.securityContext = securityContext;
+                if (update) {
                     return this.ping(this.securityContext);
                 }
             });
@@ -726,7 +892,6 @@ class AdminConnection {
             return this.connection.queryChainCode(this.securityContext, 'getLogLevel', []);
         })
         .then((response) => {
-            console.log(response.toString());
             return Promise.resolve(JSON.parse(response));
         });
     }
