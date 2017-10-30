@@ -972,6 +972,20 @@ describe('AdminConnection', () => {
         });
 
         describe('#importCard', function() {
+
+            beforeEach(()=>{
+                mockConnectionManager.importIdentity.resolves();
+                sinon.spy(userCard,'getCredentials');
+            });
+
+            it('should import card with name & credentials', function() {
+                const cardName = 'conga';
+                userCard.setCredentials({certificate: 'String', privateKey: 'String' });
+                return adminConnection.importCard(userCard, cardName).then(() => {
+                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                });
+            });
+
             it('should import card with name', function() {
                 const cardName = 'conga';
                 return adminConnection.importCard(userCard, cardName).then(() => {
