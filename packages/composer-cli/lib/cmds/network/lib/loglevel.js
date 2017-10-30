@@ -33,15 +33,11 @@ class LogLevel {
     static handler(argv) {
         let adminConnection;
         let businessNetworkName;
-        let newlevel =argv.newlevel;
+        let newlevel = argv.newlevel;
         let cardName = argv.card;
 
-
-        return Promise.resolve()
-        .then(() => {
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(cardName);
-        })
+        adminConnection = cmdUtil.createAdminConnection();
+        return adminConnection.connect(cardName)
         .then(() => {
             if (newlevel) {
                 return adminConnection.setLogLevel(newlevel);

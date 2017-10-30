@@ -43,17 +43,11 @@ class List {
         let spinner;
         let cardName = argv.card;
 
+        spinner = ora('List business network from card '+ cardName );
+        spinner.start();
 
-
-        return Promise.resolve()
-        .then(() => {
-            spinner = ora('List business network from card '+ cardName );
-            spinner.start();
-
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(cardName);
-
-        })
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        return businessNetworkConnection.connect(cardName)
         .then ((result) => {
             businessNetworkDefinition = result;
 

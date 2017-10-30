@@ -35,15 +35,16 @@ class Undeploy {
         let cardName = argv.card;
         let spinner;
 
-        return Promise.resolve()
-            .then(() => {
-                adminConnection = cmdUtil.createAdminConnection();
-                return adminConnection.connect(cardName);
-            })
-            .then((result) => {
-                spinner = ora('Undeploying business network definition. This may take some seconds...').start();
-                return adminConnection.undeploy();
 
+        adminConnection = cmdUtil.createAdminConnection();
+        return adminConnection.connect(cardName)
+            .then(() => {
+                // nothing is returned from connect
+                return adminConnection.getCard(cardName);
+            })
+            .then((card)=>{
+                spinner = ora('Undeploying business network definition. This may take some seconds...').start();
+                return adminConnection.undeploy(card.getBusinessNetworkName());
             }).then((result) => {
                 spinner.succeed();
                 return result;

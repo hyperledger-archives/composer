@@ -192,7 +192,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified, including optional loglevel.', function () {
+        it('Good path, all parms correctly specified, including optional logLevel.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -212,7 +212,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], loglevel: 'DEBUG'});
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG'});
             });
         });
 
@@ -400,13 +400,9 @@ describe('composer deploy network CLI unit tests', function () {
         });
         it('Failure of the archive functions', function () {
 
-
             let argv = {card: 'cardName'};
-
             sandbox.stub(Deploy, 'getArchiveFileContents');
-
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).throws(new Error('failure'));
-
             return DeployCmd.handler(argv)
                         .should.be.rejectedWith(/failure/);
         });

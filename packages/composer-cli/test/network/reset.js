@@ -15,7 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
-
+const IdCard = require('composer-common').IdCard;
 const ResetCMD = require('../../lib/cmds/network/resetCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const Reset = require('../../lib/cmds/network/lib/reset.js');
@@ -31,6 +31,7 @@ chai.use(require('chai-as-promised'));
 
 
 let mockAdminConnection;
+let mockIdCard;
 
 describe('composer reset network CLI unit tests', function () {
 
@@ -43,6 +44,9 @@ describe('composer reset network CLI unit tests', function () {
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
+        mockIdCard = sinon.createStubInstance(IdCard);
+        mockIdCard.getBusinessNetworkName.returns('penguin-network');
+        mockAdminConnection.getCard.resolves(mockIdCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 

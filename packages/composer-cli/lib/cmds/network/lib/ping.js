@@ -36,11 +36,8 @@ class Ping {
         let businessNetworkDefinition;
         let cardName = argv.card;
 
-        return Promise.resolve()
-        .then(() => {
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(cardName);
-        })
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        return businessNetworkConnection.connect(cardName)
         .then((result) => {
             businessNetworkDefinition = result;
             return businessNetworkConnection.ping();

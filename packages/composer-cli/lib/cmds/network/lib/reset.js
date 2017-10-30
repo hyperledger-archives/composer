@@ -35,23 +35,25 @@ class Reset {
         let cardName = argv.card;
         let spinner;
 
-        return Promise.resolve()
+
+        adminConnection = cmdUtil.createAdminConnection();
+        return adminConnection.connect(cardName)
             .then(() => {
-                adminConnection = cmdUtil.createAdminConnection();
-                return adminConnection.connect(cardName);
+                // nothing is returned from connect
+                return adminConnection.getCard(cardName);
             })
-          .then((result) => {
-              spinner = ora('Resetting business network definition. This may take some seconds...').start();
-              return adminConnection.reset();
-          }).then((result) => {
-              spinner.succeed();
-              return result;
-          }).catch((error) => {
-              if (spinner) {
-                  spinner.fail();
-              }
-              throw error;
-          });
+            .then((card)=>{
+                spinner = ora('Resetting business network definition. This may take some seconds...').start();
+                return adminConnection.reset(card.getBusinessNetworkName());
+            }).then((result) => {
+                spinner.succeed();
+                return result;
+            }).catch((error) => {
+                if (spinner) {
+                    spinner.fail();
+                }
+                throw error;
+            });
     }
 
 }

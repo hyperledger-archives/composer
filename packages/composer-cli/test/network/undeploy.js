@@ -15,7 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
-
+const IdCard = require('composer-common').IdCard;
 const Undeploy = require('../../lib/cmds/network/undeployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
@@ -33,6 +33,7 @@ let mockAdminConnection;
 describe('composer undeploy network CLI unit tests', function () {
 
     let sandbox;
+    let mockIdCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -41,6 +42,9 @@ describe('composer undeploy network CLI unit tests', function () {
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
+        mockIdCard = sinon.createStubInstance(IdCard);
+        mockIdCard.getBusinessNetworkName.returns('penguin-network');
+        mockAdminConnection.getCard.resolves(mockIdCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
@@ -69,6 +73,7 @@ describe('composer undeploy network CLI unit tests', function () {
         });
         it('error path  undeploy method fails', ()=>{
             let argv = {card:'cardname'};
+
             mockAdminConnection.undeploy.rejects(new Error('computer says no'));
 
 

@@ -187,7 +187,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified, including optional loglevel.', function () {
+        it('Good path, all parms correctly specified, including optional logLevel.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -207,7 +207,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [], loglevel: 'DEBUG' });
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG' });
             });
         });
 

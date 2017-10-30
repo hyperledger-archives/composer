@@ -45,16 +45,15 @@ class Start {
         let adminConnection;
         let businessNetworkName;
         let spinner;
-        let loglevel = argv.loglevel;
+        let logLevel = argv.loglevel;
         let cardName = argv.card;
 
-        return Promise.resolve().then(() => {
-            console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
-            let archiveFileContents = null;
+
+        console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
+        let archiveFileContents = null;
             // Read archive file contents
-            archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })
+        archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
+        return BusinessNetworkDefinition.fromArchive(archiveFileContents)
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
@@ -72,8 +71,8 @@ class Start {
 
                 // Build the start options.
                 let startOptions = cmdUtil.parseOptions(argv);
-                if (loglevel) {
-                    startOptions.loglevel = loglevel;
+                if (logLevel) {
+                    startOptions.logLevel = logLevel;
                 }
 
                 // Build the bootstrap tranactions.

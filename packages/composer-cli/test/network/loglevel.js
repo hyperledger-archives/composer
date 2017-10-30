@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Client = require('composer-admin');
+const AdminConnection = require('composer-admin').AdminConnection;
 
 const LogLevel = require('../../lib/cmds/network/loglevelCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
@@ -31,7 +31,8 @@ describe('composer network logLevel CLI unit tests', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockAdminConnection = sinon.createStubInstance(Client.AdminConnection);
+        mockAdminConnection = sinon.createStubInstance(AdminConnection);
+        mockAdminConnection.connect.resolves();
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         mockAdminConnection.getLogLevel.resolves('INFO');
         sandbox.stub(process, 'exit');
@@ -41,7 +42,7 @@ describe('composer network logLevel CLI unit tests', () => {
         sandbox.restore();
     });
 
-    it('should query the current loglevel', () => {
+    it('should query the current logLevel', () => {
         let argv = {
             card:'cardname'
         };
@@ -55,7 +56,7 @@ describe('composer network logLevel CLI unit tests', () => {
             });
     });
 
-    it('should set the loglevel', () => {
+    it('should set the logLevel', () => {
         let argv = {
             card:'cardname' ,
             newlevel: 'DEBUG'
