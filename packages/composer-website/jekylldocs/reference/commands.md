@@ -30,6 +30,28 @@ Create a Business Network Archive from a directory on disk: [composer archive cr
 
 Verify the contents of a Business Network Archive on disk: [composer archive list](./composer.archive.list.html)
 
+## Business Network Card Management
+
+`composer card create`
+
+Creates a business network card from a connection profile, business network name, and certificates: [composer card create](./composer.card.create.html)
+
+`composer card delete`
+
+Deletes a business network card which you have imported locally: [composer card delete](./composer.card.delete.html)
+
+`composer card import`
+
+Imports a created card into your local wallet: [composer card import](./composer.card.import.html)
+
+`composer card export`
+
+Exports and packages a card from your wallet: [composer card export](./composer.card.export.html)
+
+`composer card list`
+
+Lists all cards currently in your wallet: [composer card list](./composer.card.list.html)
+
 ## Business Network management
 
 `composer network deploy`

@@ -11,7 +11,6 @@ excerpt: Hyperledger Composer Transaction Submit Command
 ---
 
 The `composer transaction submit` command submits a transaction to a business network.
-<!-- There will be a link to a conceptual topic about transactions here when it's written. -->
 
 ---
 
@@ -24,37 +23,15 @@ composer transaction submit [options]
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+  -c, --card                   The name of the business network card to use [string] [required]
   --data, -d                   Transactions JSON object as a string  [string] [required]
 ```
 ---
 ## Options
 
-`--connectionProfileName, -p`
-
-The connection profile name.  
-Example: `defaultProfile`
-
-`--businessNetworkName, -n`
-
-The name of the deployed Business Network to connect to.  
-Example:
-`digitalproperty-network`
-
-`--enrollId, -i`
-
-The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: `maeid1`
-
-`--enrollSecret, -s`
-
-The enrollment secret of the identity that should be used to connect to deployed
-Business Network.  
-Example: `Xurw3yU9zI0l`
+`--card, -c`
+The name of the business network card to use. The business network card is used to determine connection and business network details.
+Example: `admin@tutorial-network`
 
 `--data, -d`
 

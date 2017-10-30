@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Deploying and Updating Business Networks
+title: Deploying Business Networks
 category: tasks
 section: business-network
 index-order: 503
 sidebar: sidebars/accordion-toc0.md
-excerpt: How to deploy or update Business Networks
+excerpt: How to deploy a business network
 ---
 
-# Deploying and Updating Business Networks
+# Deploying Business Networks
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (.bna) file. The `composer archive create` command is used to create a business network archive file from a business network definition folder on disk.
 
