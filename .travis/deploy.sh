@@ -28,6 +28,12 @@ if [ "${SYSTEST}" != "" ]; then
     exit 0
 fi
 
+# Check that this is not the integration tests.
+if [ "${INTEST}" != "" ]; then
+    echo Not executing as running integration tests.
+    exit 0
+fi
+
 # Check that this is the main repository.
 if [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
     echo "Skipping deploy; wrong repository slug."
@@ -82,7 +88,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
-    lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish --tag=unstable 2>&1
+    lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag=unstable 2>&1
 
 	# quick check to see if the latest npm module has been published
 	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
@@ -119,7 +125,7 @@ else
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
-    lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish 2>&1
+    lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish 2>&1
 
 	# quick check to see if the latest npm module has been published
 	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
