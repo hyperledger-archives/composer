@@ -637,7 +637,7 @@ describe('BusinessNetworkConnector', () => {
                     }
                     resolve(result);
                 });
-            }).should.be.rejectedWith(/The filter field value is not specified/);
+            }).should.be.rejectedWith(/Unable to resolve: the filter field value is not specified/);
         });
 
         it('should handle an error when trying to retrieve a fully resolved specific Asset for a given existing id and another property in a where clause', () => {
@@ -648,7 +648,7 @@ describe('BusinessNetworkConnector', () => {
                     }
                     resolve(result);
                 });
-            }).should.be.rejectedWith(/Only one id field should be supported here/);
+            }).should.be.rejectedWith(/Unable to resolve: only one id field is supported/);
         });
 
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {

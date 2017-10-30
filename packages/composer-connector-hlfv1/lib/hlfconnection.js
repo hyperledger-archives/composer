@@ -311,7 +311,8 @@ class HLFConnection extends Connection {
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
-     * @returns {Promise} a promise for install completion
+     * @returns {Promise} a promise which resolves to true if chaincode was installed, false otherwise (if ignoring installed errors)
+     * @throws {Error} if chaincode was not installed and told not to ignore this scenario
      */
     install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
@@ -370,15 +371,21 @@ class HLFConnection extends Connection {
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
                 if (installOptions && installOptions.ignoreCCInstalled) {
-                    this._validateResponses(results[0], false, /chaincode .+ exists/);
+                    let errorIgnored = this._validateResponses(results[0], false, /chaincode .+ exists/);
                     LOG.debug(method, 'chaincode installed, or already installed');
+
+                    // if the error was ignored then no chaincode was installed
+                    return !errorIgnored;
                 } else {
                     this._validateResponses(results[0], false);
                     LOG.debug(method, 'chaincode installed');
+                    return true;
                 }
             })
-            .then(() => {
-                LOG.exit(method);
+            .then((chaincodeInstalled) => {
+                LOG.exit(method, chaincodeInstalled);
+                return chaincodeInstalled;
+
             })
             .catch((error) => {
                 const newError = new Error('Error trying install composer runtime. ' + error);
@@ -525,9 +532,11 @@ class HLFConnection extends Connection {
         }
 
         LOG.debug(method, 'installing composer runtime chaincode');
+        let chaincodeInstalled;
         return this.install(securityContext, businessNetworkIdentifier, {ignoreCCInstalled: true})
-            .then(() => {
+            .then((chaincodeInstalled_) => {
                 // check to see if the chaincode is already instantiated
+                chaincodeInstalled = chaincodeInstalled_;
                 return this.channel.queryInstantiatedChaincodes();
             })
             .then((queryResults) => {
@@ -537,6 +546,10 @@ class HLFConnection extends Connection {
                 });
                 if (alreadyInstantiated) {
                     LOG.debug(method, 'chaincode already instantiated');
+                    if (!chaincodeInstalled) {
+                        // chaincode was not installed so must have been installed already.
+                        throw new Error('Business network has already been deployed or undeployed and cannot be deployed again.');
+                    }
                     return Promise.resolve();
                 }
                 return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
@@ -558,6 +571,7 @@ class HLFConnection extends Connection {
      * @param {any} responses the responses from the install, instantiate or invoke
      * @param {boolean} isProposal true is the responses are from a proposal
      * @param {regexp} pattern optional regular expression for message which isn't an error
+     * @return {boolean} true if error was ignored as per pattern request, false otherwise
      * @throws if not valid
      */
     _validateResponses(responses, isProposal, pattern) {
@@ -568,6 +582,7 @@ class HLFConnection extends Connection {
             throw new Error('No results were returned from the request');
         }
 
+        let errorsIgnored = false;
         responses.forEach((responseContent) => {
             if (responseContent instanceof Error) {
                 // check to see if we should ignore the error, this also means we cannot verify the proposal
@@ -575,6 +590,7 @@ class HLFConnection extends Connection {
                 if (!pattern || !pattern.test(responseContent.message)) {
                     throw responseContent;
                 }
+                errorsIgnored = true;
             } else {
 
                 // not an error, if it is from a proposal, verify the response
@@ -588,7 +604,6 @@ class HLFConnection extends Connection {
                     throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
                 }
             }
-
         });
 
         // if it was a proposal and all the responses were good, check that they compare
@@ -598,7 +613,8 @@ class HLFConnection extends Connection {
         if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
             LOG.warn('Peers do not agree, Read Write sets differ');
         }
-        LOG.exit(method);
+        LOG.exit(method, errorsIgnored);
+        return errorsIgnored;
     }
 
     /**

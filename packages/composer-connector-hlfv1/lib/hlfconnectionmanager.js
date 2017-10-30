@@ -14,9 +14,11 @@
 
 'use strict';
 
+const composerUtil = require('composer-common').Util;
 const Logger = require('composer-common').Logger;
 const util = require('util');
 const fs = require('fs');
+const path = require('path');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -245,8 +247,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('The peers array has not been specified in the connection profile');
         } else if (!profileDefinition.peers.length) {
             throw new Error('No peer URLs have been specified in the connection profile');
-        }  else if (!wallet && !profileDefinition.keyValStore) {
-            throw new Error('No key value store directory or wallet has been specified');
+        }  else if (!wallet && !profileDefinition.keyValStore && !profileDefinition.cardName) {
+            throw new Error('No key value store directory, wallet or card name has been specified');
         } else if (!profileDefinition.ca) {
             throw new Error('The certificate authority URL has not been specified in the connection profile');
         } else if (!profileDefinition.channel) {
@@ -263,53 +265,74 @@ class HLFConnectionManager extends ConnectionManager {
      *
      * @param {Client} client the fabric-client
      * @param {Wallet} wallet the wallet implementation or null/undefined
-     * @param {string} keyValStorePath a path for the fileKeyValStore to use or null/undefined if a wallet specified.
+     * @param {Object} profileData The connection profile.
      * @returns {Promise} resolves to a client configured with the required stores
      *
      * @memberOf HLFConnectionManager
      */
-    _setupWallet(client, wallet, keyValStorePath) {
-        const method = '_setupWallet';
-        // If a wallet has been specified, then we want to use that.
-        //let result;
-        LOG.entry(method, client, wallet, keyValStorePath);
+    _setupClientStore(client, wallet, profileData) {
+        const method = '_setupClientStore';
+        LOG.entry(method, client, wallet, profileData);
 
         if (wallet) {
-            LOG.debug(method, 'A wallet has been specified, using wallet proxy');
-            return new HLFWalletProxy(wallet)
-                .then((store) => {
-                    let cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
-                    client.setStateStore(store);
-                    let cryptoSuite = Client.newCryptoSuite();
-                    cryptoSuite.setCryptoKeyStore(cryptostore);
-                    client.setCryptoSuite(cryptoSuite);
-                    return store;
-                })
-                .catch((error) => {
-                    LOG.error(method, error);
-                    let newError = new Error('error trying to setup a wallet. ' + error);
-                    throw newError;
-                });
-
-        } else {
-            // No wallet specified, so create a file based key value store.
-            LOG.debug(method, 'Using key value store', keyValStorePath);
-            return Client.newDefaultKeyValueStore({path: keyValStorePath})
-                .then((store) => {
-                    client.setStateStore(store);
-
-                    let cryptoSuite = Client.newCryptoSuite();
-                    cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
-                    client.setCryptoSuite(cryptoSuite);
-
-                    return store;
-                })
-                .catch((error) => {
-                    LOG.error(method, error);
-                    let newError = new Error('error trying to setup a keystore path. ' + error);
-                    throw newError;
-                });
+            return this._setupWallet(client, wallet);
         }
+
+        let storePath;
+        if (profileData.cardName) {
+            storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
+        } else {
+            storePath = profileData.keyValStore;
+        }
+
+        return this._setupFileStore(client, storePath);
+
+    }
+
+    /**
+     * Link a wallet to the fabric-client store and cryptostore
+     * @param {Client} client the fabric client
+     * @param {Wallet} wallet the wallet implementation
+     * @returns {Promise} resolves to a client configured with the required stores
+     */
+    _setupWallet(client, wallet) {
+        const method = '_setupWallet';
+        LOG.entry(method, client, wallet);
+        return new HLFWalletProxy(wallet).then((store) => {
+            const cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
+            client.setStateStore(store);
+            const cryptoSuite = Client.newCryptoSuite();
+            cryptoSuite.setCryptoKeyStore(cryptostore);
+            client.setCryptoSuite(cryptoSuite);
+            return store;
+        }).catch((error) => {
+            LOG.error(method, error);
+            const newError = new Error('error trying to setup a wallet. ' + error);
+            throw newError;
+        });
+    }
+
+    /**
+     * Configure the Fabric client with a file-based store.
+     * @param {Client} client The Fabric client
+     * @param {String} keyValStorePath File system location to use for the store
+     * @returns {Promise} resolves to a client configured with the required stores
+     */
+    _setupFileStore(client, keyValStorePath) {
+        const method = '_setupFileStore';
+        LOG.entry(method, client, keyValStorePath);
+        return Client.newDefaultKeyValueStore({path: keyValStorePath}).then((store) => {
+            client.setStateStore(store);
+            const cryptoSuite = Client.newCryptoSuite();
+            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
+            client.setCryptoSuite(cryptoSuite);
+            return store;
+        })
+        .catch((error) => {
+            LOG.error(method, error);
+            const newError = new Error('error trying to setup a keystore path. ' + error);
+            throw newError;
+        });
     }
 
     /**
@@ -398,7 +421,7 @@ class HLFConnectionManager extends ConnectionManager {
 
         let mspID = connectionOptions.mspID;
         const client = HLFConnectionManager.createClient();
-        return this._setupWallet(client, wallet, connectionOptions.keyValStore)
+        return this._setupClientStore(client, wallet, connectionOptions)
             .then(() => {
                 return client.createUser({
                     username: id,
@@ -492,7 +515,7 @@ class HLFConnectionManager extends ConnectionManager {
         });
 
         // Set up the wallet.
-        return this._setupWallet(client, wallet, connectOptions.keyValStore)
+        return this._setupClientStore(client, wallet, connectOptions)
             .then(() => {
 
                 // Create a CA client.
@@ -515,21 +538,25 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {String} connectionProfileName - Name of the connection profile.
      * @param {Object} connectionOptions - connection options loaded from the profile.
      * @param {String} id - Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>, or
+     * {@link null} if the named identity does not exist.
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
         const method = 'exportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
         const client = HLFConnectionManager.createClient();
-        return this._setupWallet(client, connectionOptions.wallet, connectionOptions.keyValStore)
+        return this._setupClientStore(client, connectionOptions.wallet, connectionOptions)
             .then(() => {
                 return client.getUserContext(id, true);
             })
             .then((user) => {
-                const result = {
-                    certificate: user.getIdentity()._certificate,
-                    privateKey: user.getSigningIdentity()._signer._key.toBytes()
-                };
+                let result = null;
+                if (user) {
+                    result = {
+                        certificate: user.getIdentity()._certificate,
+                        privateKey: user.getSigningIdentity()._signer._key.toBytes()
+                    };
+                }
                 LOG.exit(method, result);
                 return result;
             });

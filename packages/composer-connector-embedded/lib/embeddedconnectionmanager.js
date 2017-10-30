@@ -80,7 +80,8 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @param {String} connectionProfileName - Name of the connection profile.
      * @param {Object} connectionOptions - connection options loaded from the profile.
      * @param {String} id - Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>, or
+     * {@link null} if the named identity does not exist.
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
         return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
@@ -88,6 +89,10 @@ class EmbeddedConnectionManager extends ConnectionManager {
                 return identities.get(id);
             })
             .then((identity) => {
+                if (!identity) {
+                    return null;
+                }
+
                 // Fake up a private key is none is present
                 const privateKey = identity.privateKey ||
                     '-----BEGIN PRIVATE KEY-----\n' +

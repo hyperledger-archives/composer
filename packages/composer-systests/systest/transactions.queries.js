@@ -26,10 +26,6 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('Transaction (query specific) system tests', () => {
-    let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
-    });
 
     let businessNetworkDefinition;
     let client;
@@ -119,7 +115,6 @@ describe('Transaction (query specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition, true)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-queries')
@@ -146,15 +141,8 @@ describe('Transaction (query specific) system tests', () => {
                 participantsAsJSON.sort(function (a, b) {
                     return a.participantId.localeCompare(b.participantId);
                 });
-            });
-    });
-
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
-    });
-
-    beforeEach(function () {
-        return client.getAssetRegistry('systest.transactions.queries.SampleAsset')
+                return client.getAssetRegistry('systest.transactions.queries.SampleAsset');
+            })
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
             })
@@ -164,6 +152,10 @@ describe('Transaction (query specific) system tests', () => {
             .then((participantRegistry) => {
                 return participantRegistry.addAll(participantsAsResources);
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     ['assets', 'participants'].forEach((type) => {
