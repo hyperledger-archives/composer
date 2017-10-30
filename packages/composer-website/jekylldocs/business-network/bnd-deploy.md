@@ -18,7 +18,7 @@ For example:
 
     composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna
     -i <Your EnrollmentID> -s <Your EnrollmentSecret>
-    -A admin -S
+    -A admin -S adminpw
 
 To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
 
