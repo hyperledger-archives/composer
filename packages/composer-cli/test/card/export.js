@@ -57,9 +57,9 @@ describe('composer card import CLI', function() {
             name : 'CARD_NAME'
         };
 
-        adminConnectionStub.getCard.resolves(testCard);
+        adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(adminConnectionStub.getCard);
+            sinon.assert.calledOnce(adminConnectionStub.exportCard);
             sinon.assert.calledWith(consoleLogSpy, sinon.match('CARD_NAME'));
         });
     });
