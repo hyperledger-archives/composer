@@ -44,20 +44,10 @@ class Download {
 
         let businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
-<<<<<<< HEAD
 
         spinner = ora('Downloading deployed Business Network Archive').start();
 
         return businessNetworkConnection.connect(cardName)
-=======
-        return Promise.resolve()
-        .then (() => {
-            spinner = ora('Downloading deployed Business Network Archive').start();
-
-            return businessNetworkConnection.connect(cardName);
-
-        })
->>>>>>> code for the network cli updates
         .then((result) => {
             businessNetworkDefinition = result;
             return businessNetworkConnection.disconnect();

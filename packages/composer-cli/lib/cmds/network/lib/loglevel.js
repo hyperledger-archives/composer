@@ -36,17 +36,8 @@ class LogLevel {
         let newlevel = argv.newlevel;
         let cardName = argv.card;
 
-<<<<<<< HEAD
         adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.connect(cardName)
-=======
-
-        return Promise.resolve()
-        .then(() => {
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(cardName);
-        })
->>>>>>> code for the network cli updates
         .then(() => {
             if (newlevel) {
                 return adminConnection.setLogLevel(newlevel);
