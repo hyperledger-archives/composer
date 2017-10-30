@@ -125,9 +125,8 @@ describe('InstanceGenerator', () => {
                 o MyAsset[] theValues
             }`);
             resource.theValues.should.be.a('Array').and.have.lengthOf(0);
-            // resource.theValues[0].should.be.a('String');
         });
-        it('should return an empty array with sample generator, when empty array is recursive ', () => {
+        it('should throw an error when field is recursive ', () => {
             try {
 
                 test(`namespace org.acme.test
@@ -140,7 +139,6 @@ describe('InstanceGenerator', () => {
                 error.should.match(/Model is recursive./);
             }
 
-            // resource.theValues[0].should.be.a('String');
         });
         it('should generate a default value for a date/time property', () => {
             let resource = test(`namespace org.acme.test
