@@ -129,9 +129,20 @@ class AdminConnection {
             const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
             name = card.getUserName() + '@' + locationName;
         }
-        return this.cardStore.put(name, card).then(() => {
-            return name;
-        });
+        let connectionProfileData;
+        return this.cardStore.put(name, card)
+            .then(() => {
+                connectionProfileData = card.getConnectionProfile();
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            })
+            .then((connectionManager)=>{
+                let certificate = card.getCredentials().certificate;
+                let privateKey = card.getCredentials().privateKey;
+                return connectionManager.importIdentity(connectionProfileData.name,connectionProfileData, name.getUserName(), certificate, privateKey);
+            })
+            .then( ()=>{
+                return name;
+            });
     }
 
     /**
