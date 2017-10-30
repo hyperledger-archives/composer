@@ -64,7 +64,7 @@ You can use additional options to the [`composer network deploy`](../reference/c
 
 If the business network administrator has an enrollment ID and enrollment secret, you can use the `-A` (business network administrator) and `-S` (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing `admin` enrollment ID:
 
-    composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -S
+    composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -S adminpw
 
 If the business network administrator already has a certificate, you can use the `-A` (business network administrator) and `-C` (business network administrator certificate file) flags. For example, the following command will create a business network administrator for the specified certificate file:
 
