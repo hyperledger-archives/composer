@@ -145,6 +145,7 @@ describe('AdminConnection', () => {
         adminConnection.securityContext = mockSecurityContext;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
+        sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs(testProfileName, sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs(testProfileName).resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
@@ -960,8 +961,9 @@ describe('AdminConnection', () => {
                 userName: 'user',
                 businessNetwork: 'penguin-network'
             };
-            const connection = { name: 'connectionName' };
-
+            const connection = config;
+            connection.card='user@penguin-network';
+            connection.name='connectionName';
             peerAdminCard = new IdCard(peerAdminMetadata, connection);
             peerAdminCardExpectedName = peerAdminCard.getUserName() + '@' + peerAdminCard.getConnectionProfile().name;
 
@@ -1048,6 +1050,42 @@ describe('AdminConnection', () => {
                 }).then(cardMap => {
                     cardMap.size.should.equal(0);
                 });
+            });
+        });
+
+        describe('#exportCard', ()=> {
+
+            it('Card exists, but no credentials, call to export identity is correct executed',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                mockConnectionManager.exportIdentity.resolves({ certificate: 'String', privateKey: 'String' });
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                sinon.spy(userCard,'setCredentials');
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('user');
+                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
+                    sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
+                });
+
+            });
+
+            it('Card exists, but with credentials',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                userCard.setCredentials({ certificate: 'String', privateKey: 'String' });
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('user');
+                });
+
             });
         });
     });

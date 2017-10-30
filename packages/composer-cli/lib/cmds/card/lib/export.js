@@ -34,7 +34,7 @@ class Export {
         let fileName = args.file;
 
         const adminConnection = cmdUtil.createAdminConnection();
-        return adminConnection.getCard(cardName)
+        return adminConnection.exportCard(cardName)
         .then((card) =>{
             return Export.writeCardToFile(fileName,card);
         })

@@ -23,7 +23,9 @@ module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     connectionProfileFile: {alias: 'j', required: false, describe: 'Filename of the connection profile json file', type: 'string' },
     enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    certificateFile: { alias: 'c', required: false, describe: 'File containing the certificate', type: 'string' },
+    privateKeyFile: { alias: 'k', required: false, describe: 'File containing the private key', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
