@@ -19,11 +19,7 @@ const logLevel = require ('./lib/loglevel.js');
 module.exports.command = 'loglevel [options]';
 module.exports.describe = 'Change the logging level of a business network';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
-    newlevel: { alias: 'l', optional: true, describe: 'the new logging level (INFO/WARNING/ERROR/DEBUG)', type: 'string'/*, choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG'] */},
-    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    newlevel: { alias: 'l', optional: true, describe: 'the new logging level', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG'] },
     card: { alias: 'c', required: false, description: 'The cardname to use to change the log level the network', type:'string'}
 };
 

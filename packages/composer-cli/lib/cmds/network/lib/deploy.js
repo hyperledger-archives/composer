@@ -19,14 +19,10 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const LogLevel = require('./loglevel');
 const ora = require('ora');
 
 /**
- * <p>
  * Composer deploy command
- * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Deploy {
@@ -43,50 +39,18 @@ class Deploy {
                                   ? true
                                   : false;
         let businessNetworkDefinition;
-
         let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
         let businessNetworkName;
         let spinner;
-        let loglevel;
-
+        let logLevel = argv.loglevel;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
 
-        if (argv.loglevel) {
-            // validate log level as yargs cannot at this time
-            // https://github.com/yargs/yargs/issues/849
-            loglevel = argv.loglevel.toUpperCase();
-            if (!LogLevel.validLogLevel(loglevel)) {
-                return Promise.reject(new Error('loglevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
-            }
-        }
 
-        return (() => {
-            console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
-
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then (() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            let archiveFileContents = null;
+        console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
+        let archiveFileContents = null;
             // Read archive file contents
+        return Promise.resolve().then(()=>{
+            // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
         })
@@ -100,11 +64,9 @@ class Deploy {
             adminConnection = cmdUtil.createAdminConnection();
             // if we are performing an update we have to actually connect to the network
             // we want to update!
-            if (!usingCard){
-                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
-            } else {
-                return adminConnection.connect(cardName, updateBusinessNetwork);
-            }
+
+            return adminConnection.connect(cardName, updateBusinessNetwork);
+
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {
@@ -112,8 +74,8 @@ class Deploy {
 
                 // Build the deploy options.
                 let deployOptions = cmdUtil.parseOptions(argv);
-                if (loglevel) {
-                    deployOptions.logLevel = loglevel;
+                if (logLevel) {
+                    deployOptions.logLevel = logLevel;
                 }
 
                 // Build the bootstrap tranactions.
@@ -139,11 +101,9 @@ class Deploy {
 
             return result;
         }).catch((error) => {
-
             if (spinner) {
                 spinner.fail();
             }
-
             console.log();
 
             throw error;

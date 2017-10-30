@@ -19,7 +19,6 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const LogLevel = require('../../network/lib/loglevel');
 const ora = require('ora');
 
 /**
@@ -46,26 +45,15 @@ class Start {
         let adminConnection;
         let businessNetworkName;
         let spinner;
-        let loglevel;
+        let logLevel = argv.loglevel;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
 
-        if (argv.loglevel) {
-            // validate log level as yargs cannot at this time
-            // https://github.com/yargs/yargs/issues/849
-            loglevel = argv.loglevel.toUpperCase();
-            if (!LogLevel.validLogLevel(loglevel)) {
-                return Promise.reject(new Error('loglevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
-            }
-        }
 
-        return (() => {
-            console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
-            let archiveFileContents = null;
+        console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
+        let archiveFileContents = null;
             // Read archive file contents
-            archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })()
+        archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
+        return BusinessNetworkDefinition.fromArchive(archiveFileContents)
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
@@ -74,11 +62,8 @@ class Start {
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
             adminConnection = cmdUtil.createAdminConnection();
-            if (!usingCard){
-                return adminConnection.connect(argv.connectionProfileName, argv.startId, argv.startSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
-            } else {
-                return adminConnection.connect(cardName, updateBusinessNetwork );
-            }
+
+            return adminConnection.connect(cardName, updateBusinessNetwork );
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {
@@ -86,8 +71,8 @@ class Start {
 
                 // Build the start options.
                 let startOptions = cmdUtil.parseOptions(argv);
-                if (loglevel) {
-                    startOptions.logLevel = loglevel;
+                if (logLevel) {
+                    startOptions.logLevel = logLevel;
                 }
 
                 // Build the bootstrap tranactions.
