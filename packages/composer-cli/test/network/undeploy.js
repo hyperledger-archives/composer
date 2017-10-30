@@ -67,6 +67,13 @@ describe('composer undeploy network CLI unit tests', function () {
 
             });
         });
+        it('error path  undeploy method fails', ()=>{
+            let argv = {card:'cardname'};
+            mockAdminConnection.undeploy.rejects(new Error('computer says no'));
 
+
+            return Undeploy.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
     });
 });

@@ -65,7 +65,14 @@ describe('composer upgrade runtime CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.upgrade);
             });
         });
+        it('error path  upgrade method fails', ()=>{
+            let argv = {card:'cardname'};
+            mockAdminConnection.upgrade.rejects(new Error('computer says no'));
 
+
+            return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
     });
 
 });
