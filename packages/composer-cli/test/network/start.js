@@ -207,7 +207,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG' });
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, { bootstrapTransactions: [], loglevel: 'DEBUG' });
             });
         });
 

@@ -35,7 +35,6 @@ class Reset {
         let cardName = argv.card;
         let spinner;
 
-<<<<<<< HEAD
 
         adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.connect(cardName)
@@ -50,30 +49,11 @@ class Reset {
                 spinner.succeed();
                 return result;
             }).catch((error) => {
-                if (spinner) {
-                    spinner.fail();
-                }
+
+                spinner.fail();
+
                 throw error;
             });
-=======
-        return Promise.resolve()
-            .then(() => {
-                adminConnection = cmdUtil.createAdminConnection();
-                return adminConnection.connect(cardName);
-            })
-          .then((result) => {
-              spinner = ora('Resetting business network definition. This may take some seconds...').start();
-              return adminConnection.reset();
-          }).then((result) => {
-              spinner.succeed();
-              return result;
-          }).catch((error) => {
-              if (spinner) {
-                  spinner.fail();
-              }
-              throw error;
-          });
->>>>>>> code for the network cli updates
     }
 
 }

@@ -42,22 +42,13 @@ class Deploy {
         let adminConnection;
         let businessNetworkName;
         let spinner;
-<<<<<<< HEAD
         let logLevel = argv.loglevel;
         let cardName = argv.card;
 
 
         console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
-=======
-        let loglevel;
-        let cardName = argv.card;
 
-        return  Promise.resolve()
-        .then (() => {
-            console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
-            let archiveFileContents = null;
->>>>>>> code for the network cli updates
             // Read archive file contents
         return Promise.resolve().then(()=>{
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
@@ -86,6 +77,7 @@ class Deploy {
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (logLevel) {
                     deployOptions.logLevel = logLevel;
+
                 }
 
                 // Build the bootstrap tranactions.
