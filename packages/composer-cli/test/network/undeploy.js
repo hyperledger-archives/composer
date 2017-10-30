@@ -54,17 +54,15 @@ describe('composer undeploy network CLI unit tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'someOtherProfile'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                       ,archiveFile: 'testArchiveFile.zip'};
+
 
             return Undeploy.handler(argv)
             .then ((result) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.undeploy);
 
             });

@@ -19,7 +19,6 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const LogLevel = require('./loglevel');
 const ora = require('ora');
 
 /**
@@ -43,7 +42,7 @@ class Deploy {
         let adminConnection;
         let businessNetworkName;
         let spinner;
-        let loglevel;
+        let loglevel = argv.loglevel;
         let cardName = argv.card;
 
         return  Promise.resolve()
@@ -75,7 +74,7 @@ class Deploy {
                 // Build the deploy options.
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (loglevel) {
-                    deployOptions.logLevel = loglevel;
+                    deployOptions.loglevel = loglevel;
                 }
 
                 // Build the bootstrap tranactions.

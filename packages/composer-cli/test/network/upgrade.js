@@ -52,10 +52,8 @@ describe('composer upgrade runtime CLI unit tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
-            let argv = {upgradeId: 'PeerAdmin'
-                       ,upgradeSecret: 'Anything'
-                       ,businessNetworkName: 'org-acme-biznet'
-                       ,connectionProfileName: 'testProfile'};
+            let argv = {card:'cardname'
+                       ,businessNetworkName: 'org-acme-biznet'};
 
 
             return InstallCmd.handler(argv)
@@ -63,7 +61,7 @@ describe('composer upgrade runtime CLI unit tests', function () {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.upgrade);
             });
         });

@@ -49,6 +49,7 @@ describe('composer deploy network CLI unit tests', function () {
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
+        mockAdminConnection.getCard.withArgs('cardname').resolves();
 
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
@@ -68,12 +69,10 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, optional parameter -O /path/to/options.json specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
                        ,optionsFile: '/path/to/options.json'};
-            let connectionProfileName = argv.connectionProfileName;
+
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             const optionsObject = {
@@ -102,7 +101,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
@@ -114,12 +113,9 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, optional parameter -o endorsementPolicyFile= specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,option: 'endorsementPolicyFile=/path/to/some/file.json'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,option: 'endorsementPolicyFile=/path/to/some/file.json'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -133,7 +129,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
@@ -146,12 +142,9 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, optional parameter -o endorsementPolicy= specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -165,7 +158,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
                     {
@@ -177,12 +170,9 @@ describe('composer deploy network CLI unit tests', function () {
 
 
         it('Good path, all parms correctly specified.', function () {
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'};
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'};
-            let connectionProfileName = argv.connectionProfileName;
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -196,7 +186,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
             });
@@ -204,12 +194,9 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, all parms correctly specified, including optional loglevel.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
+            let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
                        ,loglevel: 'DEBUG'};
-            let connectionProfileName = argv.connectionProfileName;
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -223,21 +210,16 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG'});
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], loglevel: 'DEBUG'});
             });
         });
 
         it('Good path, no enrollment secret, all other parms correctly specified.', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
-
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -251,7 +233,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
             });
@@ -267,15 +249,10 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, network administrator specified', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
 
-            let argv = {enrollId: 'WebAppAdmin'
-                        ,archiveFile: 'testArchiveFile.zip'
-                        ,connectionProfileName: 'testProfile'
+            let argv = {card:'cardname'
                         ,networkAdmin: ['admin1']
                         ,networkAdminEnrollSecret: [true]};
-            let connectionProfileName = argv.connectionProfileName;
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -289,7 +266,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 const deployOptions = mockAdminConnection.deploy.args[0][1];
                 sanitize(deployOptions.bootstrapTransactions);
@@ -315,16 +292,10 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, network administrator and bootstrap transactions specified', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
-
-            let argv = {enrollId: 'WebAppAdmin'
-                                    ,archiveFile: 'testArchiveFile.zip'
-                                    ,connectionProfileName: 'testProfile'
-                                    ,networkAdmin: ['admin1']
-                                    ,networkAdminEnrollSecret: [true]
-                                    ,optionsFile: '/path/to/options.json'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,networkAdmin: ['admin1']
+                        ,networkAdminEnrollSecret: [true]
+                        ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             const optionsObject = {
@@ -347,7 +318,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 const deployOptions = mockAdminConnection.deploy.args[0][1];
                 sanitize(deployOptions.bootstrapTransactions);
@@ -374,15 +345,6 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('show throw an error if loglevel not valid', function() {
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,loglevel: 'BAD'
-                       ,archiveFile: 'testArchiveFile.zip'};
-            return DeployCmd.handler(argv)
-                .should.be.rejectedWith(/or not one of/);
-
-        });
     });
 
     describe('Deploy getArchiveFileContents() method tests', function () {

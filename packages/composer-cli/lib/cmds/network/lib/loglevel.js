@@ -33,7 +33,7 @@ class LogLevel {
     static handler(argv) {
         let adminConnection;
         let businessNetworkName;
-        let newlevel;
+        let newlevel =argv.newlevel;
         let cardName = argv.card;
 
 

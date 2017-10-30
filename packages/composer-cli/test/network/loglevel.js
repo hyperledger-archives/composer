@@ -24,10 +24,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const ENROLL_ID = 'SuccessKid';
-const ENROLL_SECRET = 'SuccessKidWin';
-
 describe('composer network logLevel CLI unit tests', () => {
 
     let sandbox;
@@ -47,27 +43,21 @@ describe('composer network logLevel CLI unit tests', () => {
 
     it('should query the current loglevel', () => {
         let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
-            connectionProfileName: 'someOtherProfile'
+            card:'cardname'
         };
 
         return LogLevel.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'someOtherProfile', argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.getLogLevel);
             });
     });
 
     it('should set the loglevel', () => {
         let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
-            connectionProfileName: 'someOtherProfile',
+            card:'cardname' ,
             newlevel: 'DEBUG'
         };
 
@@ -75,7 +65,7 @@ describe('composer network logLevel CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'someOtherProfile', argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.setLogLevel);
                 sinon.assert.calledWith(mockAdminConnection.setLogLevel, 'DEBUG');
             });
