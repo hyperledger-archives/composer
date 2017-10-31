@@ -20,17 +20,17 @@ do
   echo "${file}"
   BASENAME="$(basename -s .json ${file})"
   ((INDEX++))
-  ${DIR}/apigen-opus/bin/cli1.js -i jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api-doc-inline --context "{\"index\":\"${INDEX}\"}"
+  ${DIR}/apigen-opus/bin/cli1.js -i jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"${INDEX}\"}"
 done
 
 # TODO, create the template a class index.
 # This can be done by merging the json data from each class, and using a different template
 cd ${DIR}
 node ./scripts/merge.js
-${DIR}/apigen-opus/bin/cli1.js -i allData -t classindex.njk -o ${DIR}/jekylldocs/api-doc-inline --context "{\"index\":\"1205\"}"
+${DIR}/apigen-opus/bin/cli1.js -i allData -t classindex.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"1205\"}"
 
 
 # Copy the Main index doc into place
 
-cp ${DIR}/scripts/api-doc-index.md.tpl ${DIR}/jekylldocs/api-doc-inline/api-doc-index.md
+cp ${DIR}/scripts/api-doc-index.md.tpl ${DIR}/jekylldocs/api/api-doc-index.md
 # all done
