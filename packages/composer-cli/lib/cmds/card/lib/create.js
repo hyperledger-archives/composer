@@ -25,21 +25,33 @@ const path = require('path');
 class Create {
   /**
     * Command implementation.
-    * @param {Object} args argument list from composer command
+    * @param {Object} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
-    static handler(args) {
+    static handler(argv) {
 
-        let profileFile  = args.connectionProfileFile;
-        let businessNetworkName = args.businessNetworkName;
-        let fileName = args.file;
+        let profileFile  = argv.connectionProfileFile;
+        let user = argv.user;
+
+        let businessNetworkName = argv.businessNetworkName || '';
+        let fileName = argv.file || '';
+        let enrollSecret = argv.enrollSecret || '';
+        let certificate = argv.certificate || '';
+        let privateKey = argv.privateKey || '';
+        let roles = argv.roles || '';
+
+        // user & profileFile are required, others are optional
+
 
         let metadata= {
-            userName : args.enrollId,
+            userName : user,
             version : 1,
-            enrollmentSecret:args.enrollSecret,
-            businessNetwork : businessNetworkName
+            enrollmentSecret: enrollSecret,
+            businessNetwork : businessNetworkName,
+            roles : roles
         };
+
+        //
         const filePath = path.resolve(profileFile);
         return Promise.resolve()
             .then( ()=>{
@@ -51,12 +63,51 @@ class Create {
                     profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
                 }
 
+                // setup the id card with the meta data
                 let idCard = new IdCard(metadata,profileData);
+
+                // certificates & privateKey
+                if (certificate && privateKey){
+                    let certFile = this.readCredentialFile(path.resolve(certificate));
+                    let keyFile =  this.readCredentialFile(path.resolve(privateKey));
+                    idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
+                }
+
+                // handle the filename
+                // Default is userName@businessNetworkName.card if the card includes a business network name; otherwise userName@connectionProfileName.card.
+                if (fileName==='') {
+                    if (businessNetworkName!==''){
+                        fileName = user+'@'+businessNetworkName+'.card';
+                    } else {
+                        fileName = user+'@'+profileData.name+'.card';
+                    }
+                }
+
+                // finally write out the card file
                 return Export.writeCardToFile(fileName,idCard);
             })
             .then(() => {
-                console.log('Successfully created business network card');
+                console.log('Successfully created business network card to '+fileName);
             });
+    }
+
+    /**
+     * Read a file from disc and return the result or throw an error.
+     * @param {String} filePath file to load
+     * @return {String} with contents or throws an error
+     */
+    static readCredentialFile(filePath){
+        console.log(filePath);
+        let content='';
+        try {
+            content = fs.readFileSync(filePath,'utf8');
+        } catch (cause) {
+            const error = new Error(`Unable to read file: ${filePath}`);
+            error.cause = cause;
+            throw error;
+        }
+
+        return content;
     }
 
     /**
@@ -75,7 +126,7 @@ class Create {
             return Promise.reject(error);
         }
 
-        return JSON.parse(content);
+        return Promise.resolve(JSON.parse(content));
     }
 
 }
