@@ -237,11 +237,11 @@ class TestUtil {
                                 'connection': {
                                     'timeout': {
                                         'peer': {
-                                            'endorser': '30s',
-                                            'eventHub': '30s',
-                                            'eventReg': '30s'
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer': '30s'
+                                        'orderer': '300'
                                     }
                                 },
                                 'credentialStore': {
@@ -299,7 +299,6 @@ class TestUtil {
                                     'eventUrl': 'grpcs://localhost:7053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org1.example.com',
-                                        'request-timeout': 300 * 1000
                                     },
                                     'tlsCACerts': {
                                         'path': './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
@@ -310,7 +309,6 @@ class TestUtil {
                                     'eventUrl': 'grpcs://localhost:8053',
                                     'grpcOptions': {
                                         'ssl-target-name-override': 'peer0.org2.example.com',
-                                        'request-timeout': 300 * 1000
                                     },
                                     'tlsCACerts': {
                                         'path': './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
@@ -320,10 +318,16 @@ class TestUtil {
                             'certificateAuthorities': {
                                 'ca.org1.example.com': {
                                     'url': 'https://localhost:7054',
+                                    'httpOptions': {
+                                        'verify' : false
+                                    },
                                     'caName': 'ca.org1.example.com'
                                 },
                                 'ca.org2.example.com': {
                                     'url': 'https://localhost:8054',
+                                    'httpOptions': {
+                                        'verify' : false
+                                    },
                                     'caName': 'ca.org2.example.com'
                                 }
                             }
