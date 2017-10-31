@@ -38,6 +38,15 @@ class MockCheckOverFlowDirective {
     @Input() public expanded: boolean;
 }
 
+@Directive({
+    selector: '[ngbTooltip]'
+})
+class MockToolTipDirective {
+    @Input() public ngbTooltip: string;
+    @Input() public placement: string;
+    @Input() public container: string;
+}
+
 describe(`RegistryComponent`, () => {
     let component: RegistryComponent;
     let fixture: ComponentFixture<RegistryComponent>;
@@ -80,6 +89,7 @@ describe(`RegistryComponent`, () => {
             ],
             declarations: [
                 MockCheckOverFlowDirective,
+                MockToolTipDirective,
                 RegistryComponent,
             ],
             providers: [
@@ -316,7 +326,7 @@ describe(`RegistryComponent`, () => {
             tick();
             tick();
             component.loadResources.should.be.called;
-            mockNgbModalRef.componentInstance.confirmMessage.should.equal('Please confirm that you want to delete Asset: ' + mockResource.getIdentifier());
+            mockNgbModalRef.componentInstance.deleteMessage.should.equal('This action will be recorded in the Historian, and cannot be reversed. Are you sure you want to delete?');
         }));
 
         it('should create a new error with the alert service', fakeAsync(() => {
@@ -325,7 +335,6 @@ describe(`RegistryComponent`, () => {
             component.openDeleteResourceModal(mockResource);
             tick();
             tick();
-            mockNgbModalRef.componentInstance.confirmMessage.should.equal('Please confirm that you want to delete Asset: ' + mockResource.getIdentifier());
             mockAlertService.errorStatus$.next.should.be.called;
             mockAlertService.errorStatus$.next.should.be
                 .calledWith('Removing the selected item from the registry failed:error message');

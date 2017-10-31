@@ -146,6 +146,13 @@ describe('Select', () => {
             new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (dob == "2017-07-24")')).validate();
             new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE ("2017-07-24" == dob)')).validate();
             new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE ("2017-07-24" > dob)')).validate();
+
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS "moo")')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE ("moo" CONTAINS stringValues)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS ["foo","moo"])')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (["foo","moo"] CONTAINS stringValues)')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == "foo"))')).validate();
+            new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE ((value == "foo") CONTAINS conceptValues)')).validate();
         });
 
         it('should throw for arrays', () => {
@@ -202,10 +209,28 @@ describe('Select', () => {
             }).should.throw(/Property foo does not exist on org.acme.Car/);
         });
 
-        it('should throw on missing property', () => {
+        it('should throw on missing nested property', () => {
             (() => {
                 new Select(mockQuery, toSelectAst('SELECT org.acme.Driver WHERE (address.goo == 10)')).validate();
             }).should.throw(/Property goo does not exist on org.acme.Address/);
+        });
+
+        it('should throw on missing nested property in contains', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (LULZ == "moo"))')).validate();
+            }).should.throw(/Property LULZ does not exist on org.acme.TestConcept/);
+        });
+
+        it('should throw on nested contains in contains', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value CONTAINS "moo"))')).validate();
+            }).should.throw(/A CONTAINS expression cannot be nested within another CONTAINS expression/);
+        });
+
+        it('should throw on invalid contains', () => {
+            (() => {
+                new Select(mockQuery, toSelectAst('SELECT org.acme.TestAsset WHERE ("moo" CONTAINS "foo")')).validate();
+            }).should.throw(/A property name is required on one side of a CONTAINS expression/);
         });
 
         it('should throw for concept resources', () => {

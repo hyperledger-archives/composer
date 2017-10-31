@@ -18,7 +18,7 @@ import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { AboutComponent } from './about';
-import { BasicModalsModule } from './basic-modals/basic-models.module';
+import { BasicModalsModule } from './basic-modals/basic-modals.module';
 import { WelcomeComponent } from './welcome';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';

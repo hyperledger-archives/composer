@@ -1,6 +1,6 @@
 {
   "name": "composer-admin",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "Hyperledger Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
   "engines": {
     "node": ">=6",
@@ -41,8 +41,8 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "composer-common": "0.14.2",
-    "composer-connector-hlfv1": "0.14.2"
+    "composer-common": "0.14.3",
+    "composer-connector-hlfv1": "0.14.3"
   },
   "license-check-config": {
     "src": [

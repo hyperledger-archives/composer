@@ -122,6 +122,13 @@ describe('EmbeddedConnectionManager', () => {
                     credentials.privateKey.should.be.a('String').that.is.not.empty;
                 });
         });
+
+        it('return null for non-existent identity', function() {
+            const identity = 'conga';
+            mockIdentitiesDataCollection.get.withArgs(identity).resolves(null);
+            return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity)
+                .should.eventually.be.null;
+        });
     });
 
     describe('#connect', () => {
