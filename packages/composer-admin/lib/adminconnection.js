@@ -182,14 +182,19 @@ class AdminConnection {
                     return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
                         .then((connectionManager)=>{
                             return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
-                        }).
-                        then( (result)=>{
-                            //{ certificate: String, privateKey: String }
-                            card.setCredentials(result);
-
-                            // put back the card, so that it has the ceritificates sotre
-                            return this.cardStore.put(cardName,card);
-
+                        })
+                        .then( (result)=>{
+                            if (result){
+                                //{ certificate: String, privateKey: String }
+                                card.setCredentials(result);
+                                // put back the card, so that it has the ceritificates sotre
+                                return this.cardStore.put(cardName,card);
+                            } else {
+                                if(!card.getEnrollmentCredentials()){
+                                    // no secret either!
+                                    throw new Error(`Card ${cardName} has no credentials or secret so is invalid`);
+                                }
+                            }
                         }).then(()=>{
                             return card;
                         });

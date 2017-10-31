@@ -1101,6 +1101,42 @@ describe('AdminConnection', () => {
                 });
 
             });
+
+            it('Card exists, but with no credentials or secret',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).should.eventually.be.rejectedWith(/no credentials or secret so is invalid/);
+
+            });
+
+            it('Card exists, but with no credentials but does have secret',()=>{
+                mockConnectionManager.exportIdentity = sinon.stub();
+                adminConnection.connection = mockConnection;
+                adminConnection.securityContext = mockSecurityContext;
+
+                const connection = config;
+                connection.card='user@penguin-network';
+                connection.name='connectionName';
+                const userMetadata = {
+                    userName: 'user',
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'humbolt'
+                };
+                userCard = new IdCard(userMetadata, connection);
+
+
+                return cardStore.put(userCardExpectedName, userCard).then(() => {
+                    return adminConnection.exportCard(userCardExpectedName);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.deep.equal('user');
+                });
+
+            });
         });
     });
 
