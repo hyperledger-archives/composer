@@ -30,35 +30,33 @@ class Create {
     */
     static handler(argv) {
 
-        let profileFile  = argv.connectionProfileFile;
-        let user = argv.user;
+        // set if the options have been given into the metadata
+        let metadata= { version:1,
+            userName : argv.user };
 
-        let businessNetworkName = argv.businessNetworkName || '';
-        let fileName = argv.file || '';
-        let enrollSecret = argv.enrollSecret || '';
-        let certificate = argv.certificate || '';
-        let privateKey = argv.privateKey || '';
-        let roles = argv.roles || '';
+        if (argv.role){
+            metadata.roles = argv.role;
+        }
 
-        // user & profileFile are required, others are optional
+        if (argv.enrollSecret){
+            metadata.enrollmentSecret = argv.enrollSecret;
+        }
 
+        if (argv.businessNetworkName){
+            metadata.businessNetwork = argv.businessNetworkName;
+        }
 
-        let metadata= {
-            userName : user,
-            version : 1,
-            enrollmentSecret: enrollSecret,
-            businessNetwork : businessNetworkName,
-            roles : roles
-        };
+        // used in confirmation message so define here
+        let fileName = argv.file;
 
-        //
-        const filePath = path.resolve(profileFile);
+        // handle the connection profile - read from a file
+        // start the promise chain to all sync errors are converted to rejected promises
         return Promise.resolve()
             .then( ()=>{
-                return this.readJsonFromFile(filePath);
-            })
-            .then((profileData) =>{
-                // if there is no name, take the name from the directory the profilefile is in
+                const filePath = path.resolve(argv.connectionProfileFile);
+                let profileData = JSON.parse(this.readFile(filePath));
+
+                // if there is no name, take the name from the directory the profile file is in
                 if (!profileData.name){
                     profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
                 }
@@ -67,19 +65,21 @@ class Create {
                 let idCard = new IdCard(metadata,profileData);
 
                 // certificates & privateKey
-                if (certificate && privateKey){
-                    let certFile = this.readCredentialFile(path.resolve(certificate));
-                    let keyFile =  this.readCredentialFile(path.resolve(privateKey));
+                // YARGS command spec logic will have enforced the correct set of options
+                if (argv.certificate && argv.privateKey){
+                    let certFile = this.readFile(path.resolve(argv.certificate));
+                    let keyFile =  this.readFile(path.resolve(argv.privateKey));
                     idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
                 }
 
                 // handle the filename
-                // Default is userName@businessNetworkName.card if the card includes a business network name; otherwise userName@connectionProfileName.card.
-                if (fileName==='') {
-                    if (businessNetworkName!==''){
-                        fileName = user+'@'+businessNetworkName+'.card';
+                // Default is userName@businessNetworkName.card if the card includes a business network name;
+                // otherwise userName@connectionProfileName.card.
+                if (!fileName) {
+                    if (metadata.hasOwnProperty('businessNetwork')){
+                        fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
                     } else {
-                        fileName = user+'@'+profileData.name+'.card';
+                        fileName = metadata.userName+'@'+ profileData.name +'.card';
                     }
                 }
 
@@ -96,8 +96,7 @@ class Create {
      * @param {String} filePath file to load
      * @return {String} with contents or throws an error
      */
-    static readCredentialFile(filePath){
-        console.log(filePath);
+    static readFile(filePath){
         let content='';
         try {
             content = fs.readFileSync(filePath,'utf8');
@@ -108,25 +107,6 @@ class Create {
         }
 
         return content;
-    }
-
-    /**
-     * Read a json file (that in this case has the connection profile)
-     * @param {String} filePath absolute or relative (to current working directory) file name
-     * @return {Promise} Resolves with a JSON object
-     */
-    static readJsonFromFile(filePath) {
-
-        let content='';
-        try {
-            content = fs.readFileSync(filePath,'utf8');
-        } catch (cause) {
-            const error = new Error(`Unable to read JSON file: ${filePath}`);
-            error.cause = cause;
-            return Promise.reject(error);
-        }
-
-        return Promise.resolve(JSON.parse(content));
     }
 
 }

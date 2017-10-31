@@ -27,7 +27,7 @@ const sinon = require('sinon');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('composer card import CLI', function() {
+describe('composer card create CLI', function() {
     const sandbox = sinon.sandbox.create();
     const cardFileName = '/TestCard.card';
     let cardBuffer;
@@ -52,7 +52,7 @@ describe('composer card import CLI', function() {
     });
 
     it('should create a valid card file with (secret) supplied details', function() {
-        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName);
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
@@ -65,12 +65,13 @@ describe('composer card import CLI', function() {
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
 
     it('create card with minimal options - user and profile',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
@@ -81,12 +82,13 @@ describe('composer card import CLI', function() {
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
 
     it('create card with minimal options & with the profile having no name',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({anonymus:'network'});
         const args = {
@@ -97,6 +99,7 @@ describe('composer card import CLI', function() {
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
@@ -104,7 +107,7 @@ describe('composer card import CLI', function() {
 
 
     it('create card with certificate and private key',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
@@ -119,12 +122,13 @@ describe('composer card import CLI', function() {
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledThrice(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
 
     it('create card with roles',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
@@ -138,12 +142,13 @@ describe('composer card import CLI', function() {
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
 
     it('error case - check with connection profile file read fail',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/notexist/)).throws(new Error('read failure'));
 
@@ -157,7 +162,7 @@ describe('composer card import CLI', function() {
     });
 
     it('error case - check with certificate file read fail',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).throws(new Error('read failure'));
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
@@ -173,7 +178,7 @@ describe('composer card import CLI', function() {
     });
 
     it('error case - check with certificate file read fail',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
         readFileStub.withArgs(sinon.match(/keyfile/)).throws(new Error('read failure'));
@@ -189,15 +194,15 @@ describe('composer card import CLI', function() {
     });
 
     it('write valid card with default filename - based on network name',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
-        sandbox.stub(JSON, 'parse').returns({name:'network'});
+
         const args = {
             connectionProfileFile: 'filename',
             businessNetworkName: 'penguin-network',
             user:'fred'
         };
-
+        sandbox.stub(JSON, 'parse').returns({name:args.businessNetworkName});
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.writeFileSync,sinon.match(/fred@penguin-network.card/),sinon.match.any);
@@ -205,7 +210,7 @@ describe('composer card import CLI', function() {
         });
     });
     it('write valid card with default filename - based on profile name',()=>{
-        sandbox.stub(fs, 'writeFileSync').returns(cardBuffer);
+        sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {

@@ -15,19 +15,22 @@
 'use strict';
 
 const Create = require ('./lib/create.js');
-const permittedRoles = ['peeradmin','channeladmin','issuer'];
-
 const checkFn = (argv,options)=>{
 
-    if (argv.roles){
-        let r = argv.roles.toLowerCase().split(',');
-        let valid = r.every((e)=>{
-            return permittedRoles.includes(e);
-        });
-        if(!valid) {
-            throw new Error('Invalid role given :'+argv.roles);
+
+    if (!argv.s){
+        // no secret given, so both certificate and key are a must
+        if (!(argv.c && argv.k)){
+            throw new Error('privateKey and certificate should both be specified');
+        }
+
+    } else {
+        // we have a secret, so if any of the certificate are given this is wrong
+        if (argv.c  || argv.k){
+            throw new Error('Either the enrollSecret or the privateKey and certificate combination should be specified');
         }
     }
+
     return true;
 };
 
@@ -44,12 +47,15 @@ module.exports.builder = function (yargs) {
         enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
         certificate: { alias: 'c', required: false, describe:'File containing the user\'s certificate.', type: 'string'},
         privateKey: { alias: 'k', required: false, describe:'File containing the user\'s private key', type: 'string'},
-        roles: { alias: 'r', required: false, describe:'Comma-separated list of role names for this card. Used only for special administrative roles: PeerAdmin, ChannelAdmin, Issuer', type: 'string'}
+        role: { alias: 'r', required: false, describe:'The role for this card can, specify as many as needed',
+            choices:['PeerAdmin','ChannelAdmin','Issuer']}
     });
 
-    yargs.group(['f','n','j','u','s','c','k','r'],'Card options');
+    // enforce the option after these options
+    yargs.requiresArg(['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey','roles']);
 
-    yargs.conflicts('s',['c','k']);
+    // grouping for the card options - moves them away from the standard --version etc.
+    yargs.group(['f','n','j','u','s','c','k','r'],'Card options');
 
     yargs.check(checkFn);
 

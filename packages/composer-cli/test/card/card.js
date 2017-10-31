@@ -51,19 +51,38 @@ describe('composer participant cmd launcher unit tests', function () {
     });
 
     it('should drive the yargs builder check fn correctly',()=>{
-        cardCommand._checkFn({somethingelse:'PeerAdmin'},{}).should.equal(true);
-        cardCommand._checkFn({roles:'PeerAdmin'},{}).should.equal(true);
-        cardCommand._checkFn({roles:'PeerAdmin,ChannelAdmin'},{}).should.equal(true);
-        cardCommand._checkFn({roles:'Issuer,PeerAdmin,ChannelAdmin'},{}).should.equal(true);
-
-        (()=>{
-            cardCommand._checkFn({roles:'Fred'},{});
-        }).should.throw(/Invalid role given/);
-
-        (()=>{
-            cardCommand._checkFn({roles:'ChannelAdmin,Fred'},{});
-        }).should.throw(/Invalid role given/);
+        cardCommand._checkFn({s:'secret',somethingelse:'PeerAdmin'},{}).should.equal(true);
+        cardCommand._checkFn({s:'secret',roles:'PeerAdmin'},{}).should.equal(true);
+        cardCommand._checkFn({s:'secret',roles:'PeerAdmin,ChannelAdmin'},{}).should.equal(true);
+        cardCommand._checkFn({s:'secret',roles:'Issuer,PeerAdmin,ChannelAdmin'},{}).should.equal(true);
     });
+
+    it('should enforce that both key and cert should be given together',()=>{
+        (()=>{
+            cardCommand._checkFn({k:'key'});
+        }).should.throw(/privateKey and certificate should both be specified/);
+        (()=>{
+            cardCommand._checkFn({c:'cert'});
+        }).should.throw(/privateKey and certificate should both be specified/);
+
+        cardCommand._checkFn({k:'key',c:'cert'}).should.equal(true);
+
+    });
+
+    it('should allow a secret to be specified but with a certificate or private key file', ()=>{
+        (()=>{
+            cardCommand._checkFn({s:'secret',k:'key'});
+        }).should.throw(/Either the enrollSecret or the privateKey and certificate combination should be specified/);
+        (()=>{
+            cardCommand._checkFn({s:'secret',c:'cert'});
+        }).should.throw(/Either the enrollSecret or the privateKey and certificate combination should be specified/);
+        (()=>{
+            cardCommand._checkFn({s:'secret',k:'key',c:'cert'});
+        }).should.throw(/Either the enrollSecret or the privateKey and certificate combination should be specified/);
+
+    });
+
+
 
 
 
