@@ -42,8 +42,6 @@ global.hfc = {
 
 
 const Client = require('fabric-client');
-const FabricCAClientImpl = require('fabric-ca-client');
-
 const ConnectionManager = require('composer-common').ConnectionManager;
 const HLFConnection = require('./hlfconnection');
 const HLFWalletProxy = require('./hlfwalletproxy');
@@ -74,48 +72,21 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Create a new CA client. TO BE REMOVED AS IT SHOULD COME FROM NODE_SDK
-     * @param {string} caURL The CA URL.
-     * @param {object} tlsOpts the tls options
-     * @param {string} caName The name of the CA
-     * @param {any} cryptosuite The cryptosuite to use
-     * @return {FabricCAClientImpl} A new CA client.
-     */
-    static createCAClient(caURL, tlsOpts, caName, cryptosuite) {
-        return new FabricCAClientImpl(caURL, tlsOpts, caName, cryptosuite);
-    }
-
-    /**
-     * TODO: should already be available in sdk, just isn't in NPM yet.
-     *
+     * Create a new HLF Connection.
      *
      * @static
-     * @param {any} client client
-     * @param {any} cryptosuite suite
-     * @returns {object} caClient
-     * @memberof HLFConnectionManager
-     */
-    static parseCA_CCP(client, cryptosuite) {
-        let networkConfig = client._network_config;
-        let clientConfig = networkConfig.getClientConfig();
-        if (clientConfig && clientConfig.organization) {
-            let orgConfig = networkConfig.getOrganization(clientConfig.organization);
-            if (orgConfig) {
-                let cas = orgConfig.getCertificateAuthorities();
-                if (cas.length > 0) {
-                    let ca = cas[0];
-                    let tlsOpts = null;
-                    if (ca.getTlsCACerts()) {
-                        tlsOpts = {
-                            trustedRoots: [ca.getTlsCACerts()], //TODO handle non existent
-                            verify: ca.getConnectionOptions().verify //TODO handle non existent
-                        };
-                    }
-                    return HLFConnectionManager.createCAClient(ca.getUrl(), tlsOpts, (ca.getName() || null), cryptosuite);
-                }
-            }
-        }
+     * @param {HLFConnectionManager} connectionManager this connection manager creating the connection
+     * @param {string} connectionProfile the name of the connection profile
+     * @param {string} businessNetworkIdentifier the name of the business network identifier or null if there isn't one
+     * @param {any} connectOptions the connection profile itself in case of any further connection specific options
+     * @param {Client} client the node sdk client
+     * @param {Channel} channel the node sdk channel to be used created from the profile
+     * @param {FabricCAClientImpl} caClient the node sdk ca lient created from the profile
+     * @returns {HLFConnection} connection
 
+     */
+    static createHLFConnection(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
+        return new HLFConnection(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
     }
 
     /**
@@ -172,28 +143,6 @@ class HLFConnectionManager extends ConnectionManager {
                     let newError = new Error('error trying to setup a keystore path. ' + error);
                     throw newError;
                 });
-
-            /*
-            //TODO: Surely the Node SDK Should be doing this ?
-            let clientConfig = client._network_config.getClientConfig();
-            // No wallet specified, so create a file based key value store.
-            //LOG.debug(method, 'Using key value store', keyValStorePath);
-            return Client.newDefaultKeyValueStore({path: clientConfig.credentialStore.path})
-                .then((store) => {
-                    client.setStateStore(store);
-
-                    let cryptoSuite = Client.newCryptoSuite();
-                    cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: clientConfig.credentialStore.cryptoStore.path}));
-                    client.setCryptoSuite(cryptoSuite);
-
-                    return store;
-                })
-                .catch((error) => {
-                    LOG.error(method, error);
-                    let newError = new Error('error trying to setup a keystore path. ' + error);
-                    throw newError;
-                });
-                */
         }
     }
 
@@ -225,10 +174,10 @@ class HLFConnectionManager extends ConnectionManager {
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         const client = HLFConnectionManager.createClient(connectionOptions);
-        const caClient = HLFConnectionManager.parseCA_CCP(client, client.getCryptoSuite());
+        const caClient = client.getCertificateAuthority();
 
-        // TODO need a better way to determine the name of the caClient that has been instantiated.
-        let caName = caClient._fabricCAClient._caName;
+        let caName = caClient.getCaName();
+        caName = caName ? caName : 'default';
         return caClient.enroll(options)
             .then((enrollment) => {
                 enrollment.caName = caName;
@@ -275,7 +224,8 @@ class HLFConnectionManager extends ConnectionManager {
         let wallet = connectionOptions.wallet || Wallet.getWallet();
 
         let client = HLFConnectionManager.createClient(connectionOptions);
-        const mspID = HLFConnection.getMspId(client);
+        const mspID = client.getMspid();
+        //TODO check if mspId, organisation is defined
         return this._setupWallet(client, wallet)
             .then(() => {
                 return client.createUser({
@@ -289,10 +239,6 @@ class HLFConnectionManager extends ConnectionManager {
             })
             .then(() => {
                 LOG.exit(method);
-            })
-            .catch((error) => {
-                LOG.error(method, error);
-                throw error;
             });
     }
 
@@ -321,7 +267,8 @@ class HLFConnectionManager extends ConnectionManager {
         // Create a new client instance.
         const client = HLFConnectionManager.createClient(connectOptions);
 
-        // find a channel
+        // TODO: check mspId and organisation have been defined
+        // TODO: find a channel, should be provided by node sdk
         let channelNames = Object.keys(client._network_config._network_config.channels);
         const channel = client.getChannel(channelNames[0]);
 
@@ -330,17 +277,12 @@ class HLFConnectionManager extends ConnectionManager {
             .then(() => {
 
                 // Create a CA client.
-                const caClient = HLFConnectionManager.parseCA_CCP(client, client.getCryptoSuite());
+                const caClient = client.getCertificateAuthority();
 
                 // Now we can create the connection.
-                let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, /*eventHubs,*/ caClient);
+                let connection = HLFConnectionManager.createHLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
                 LOG.exit(method, connection);
                 return connection;
-
-            })
-            .catch((error) => {
-                LOG.error(method, error);
-                throw error;
             });
     }
 

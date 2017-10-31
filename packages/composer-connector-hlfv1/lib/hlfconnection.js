@@ -54,83 +54,6 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * TODO: Temp code to work around node sdk missing stuff
-     *
-     * @static
-     * @param {any} client  client
-     * @returns {any} any
-     */
-    static getOrgConfig(client) {
-        let networkConfig = client._network_config;
-        let clientConfig = networkConfig.getClientConfig();
-        let orgConfig;
-        if (clientConfig && clientConfig.organization) {
-            orgConfig = networkConfig.getOrganization(clientConfig.organization);
-        }
-        return orgConfig;
-    }
-
-    /**
-     * TODO: Temp code to work around node sdk missing stuff
-     *
-     * @static
-     * @param {any} client  client
-     * @returns {any} any
-     */
-    static getInstallPeers(client) {
-        let installPeers = [];
-        let orgConfig = HLFConnection.getOrgConfig(client);
-        if (orgConfig) {
-            let peers = orgConfig.getPeers();
-            peers.forEach((peer) => {
-                //TODO: Need to be able to determine if it is a 'endorsingPeer' or a 'chaincodeQuery' peer
-                // but can't at the moment, so will just all them all.
-                installPeers.push(peer);
-            });
-        }
-        return installPeers;
-    }
-
-    /**
-     * TODO: get MSPid
-     *
-     * @static
-     * @param {any} client client
-     * @returns {string} mspid
-     * @memberof HLFConnection
-     */
-    static getMspId(client) {
-        let orgConfig = HLFConnection.getOrgConfig(client);
-        if (orgConfig) {
-            return orgConfig.getMspid();
-        }
-        return null;
-    }
-
-    /**
-     *
-     * TODO: Get Event Hubs. Have to do it just after login/enroll
-     * creation of eventhub object requires a user context. That check should be moved to connect.
-     * as this is not ideal.
-     *
-     * @static
-     * @param {any} client client
-     * @returns {any} hubs
-     * @memberof HLFConnection
-     */
-    static getEventHubs(client) {
-        let eventHubs = [];
-        let orgConfig = HLFConnection.getOrgConfig(client);
-        if (orgConfig) {
-            let peers = orgConfig.getPeers();
-            peers.forEach((peer) => {
-                eventHubs.push(client.getEventHub(peer.getName()));
-            });
-        }
-        return eventHubs;
-    }
-
-    /**
      * Constructor.
      * @param {ConnectionManager} connectionManager The owning connection manager.
      * @param {string} connectionProfile The name of the connection profile associated with this connection
@@ -158,7 +81,6 @@ class HLFConnection extends Connection {
         }
 
         // Save all the arguments away for later.
-        //this.connectOptions = connectOptions;
         this.client = client;
         this.channel = channel;
         this.ccEvents = [];
@@ -238,7 +160,7 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate, HLFConnection.getMspId(this.client));
+                return user.setEnrollment(enrollment.key, enrollment.certificate, this.client.getMspid());
             })
             .then(() => {
 
@@ -269,8 +191,10 @@ class HLFConnection extends Connection {
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
-        this.eventHubs = HLFConnection.getEventHubs(this.client);
 
+        //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
+        //we want the eventhubs for all peers in a channel that have the eventSource role
+        this.eventHubs = this.client.getEventHubsForOrg();
         this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
         });
@@ -417,7 +341,7 @@ class HLFConnection extends Connection {
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: businessNetworkIdentifier,
                     txId: txId,
-                    targets: HLFConnection.getInstallPeers(this.client) //TODO: Node sdk should do this for me.
+                    channelNames: this.channel.getName() // this will drive getting all the Peers to install on
                 };
 
                 return this.client.installChaincode(request);
@@ -527,6 +451,7 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+
                 eventPromises = this._prepareForCommit(finalTxId);
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
@@ -536,12 +461,11 @@ class HLFConnection extends Connection {
 
             })
             .then((response) => {
-
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
                     this._cancelCommitListeners(finalTxId);
-                    throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
+                    throw new Error(`Failed to send peer responses for transaction '${finalTxId}' to orderer. Response status '${response.status}'`);
                 }
                 return Promise.all(eventPromises);
 
@@ -779,6 +703,13 @@ class HLFConnection extends Connection {
             }
         });
 
+        // determine all the queryChaincode Peers in our organisation which are on the channel
+        const channelPeersForOrg = this.client.getPeersForOrgOnChannel(this.channel.getName());
+        const queryPeers = channelPeersForOrg.filter(peer => peer.isInRole('chaincodeQuery'));
+        if (!queryPeers || queryPeers.length === 0) {
+            throw new Error('No peers have been defined that can be chaincode queried');
+        }
+
         let txId = this.client.newTransactionID();
 
         // Submit the query request.
@@ -787,7 +718,8 @@ class HLFConnection extends Connection {
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
             fcn: functionName,
-            args: args
+            args: args,
+            targets: [queryPeers[0]]  //TODO: maybe round robin or have some sort of failover default of node sdk is to send to all chaincodeQuery Peers
         };
         return this.channel.queryByChaincode(request)
             .then((payloads) => {
@@ -861,7 +793,7 @@ class HLFConnection extends Connection {
                     fcn: functionName,
                     args: args
                 };
-                return this.channel.sendTransactionProposal(request);
+                return this.channel.sendTransactionProposal(request);  // node sdk will target all peers on the channel that are endorsingPeer
             })
             .then((results) => {
                 // Validate the endorsement results.
@@ -1018,42 +950,6 @@ class HLFConnection extends Connection {
     }
 
    /**
-     * wait for events from the peers associated with the provided transaction id.
-     * @private
-     * @param {string} txObj the transaction id to listen for events on
-     * @returns {Promise} A promise which resolves when all the events are received or rejected
-     * if an event is not received within the given timeout period
-     *
-     */
-    _waitForCommit(txObj) {
-        const txId = txObj.getTransactionID().toString();
-        const method = '_waitForCommit';
-        LOG.entry(method, txId);
-        let eventPromises = [];
-        this.eventHubs.forEach((eh) => {
-            let txPromise = new Promise((resolve, reject) => {
-                const handle = setTimeout(() => {
-                    reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, this.commitTimeout);
-                eh.registerTxEvent(txId, (tx, code) => {
-                    clearTimeout(handle);
-                    eh.unregisterTxEvent(txId);
-                    if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-            eventPromises.push(txPromise);
-        });
-        return Promise.all(eventPromises)
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
-
-   /**
      * Prepare to wait for events from the peers associated with the provided transaction id.
      * @private
      * @param {string} txObj the transaction id to listen for events on
@@ -1170,7 +1066,7 @@ class HLFConnection extends Connection {
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
                     this._cancelCommitListeners(txId);
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    throw new Error(`Failed to send peer responses for transaction '${txId}' to orderer. Response status '${response.status}'`);
                 }
                 return Promise.all(eventPromises);
 
