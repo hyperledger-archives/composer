@@ -16,6 +16,18 @@
 
 const Add = require ('./lib/add.js');
 
+const checkFn = (argv,options)=>{
+    if (Array.isArray(argv.card)){
+        throw new Error('Please specify --card or -c only once');
+    }
+    if (Array.isArray(argv.data)){
+        throw new Error('Please specify --data or -d only once');
+    }
+    return true;
+};
+
+module.exports._checkFn = checkFn;
+
 module.exports.command = 'add [options]';
 module.exports.describe = 'Add a new participant to a participant registry';
 module.exports.builder = (yargs) =>{
@@ -27,15 +39,7 @@ module.exports.builder = (yargs) =>{
 
     yargs.strict();
 
-    yargs.check((argv,options)=>{
-        if (Array.isArray(argv.card)){
-            throw new Error('Please specify --card or -c only once');
-        }
-        if (Array.isArray(argv.data)){
-            throw new Error('Please specify --data or -d only once');
-        }
-        return true;
-    });
+    yargs.check(checkFn);
 
     yargs.group(['card','data'],'Participant options');
 
