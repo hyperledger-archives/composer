@@ -56,37 +56,31 @@ export class ResourceComponent implements OnInit {
     };
 
     constructor(public activeModal: NgbActiveModal,
-                private clientService: ClientService,
-                private initializationService: InitializationService) {
+                private clientService: ClientService) {
     }
 
-    ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
-        .then(() => {
+    ngOnInit() {
+        // Determine what resource declaration we are using and stub json decription
+        let introspector = this.clientService.getBusinessNetwork().getIntrospector();
+        let modelClassDeclarations = introspector.getClassDeclarations();
 
-            // Determine what resource declaration we are using and stub json decription
-            let introspector = this.clientService.getBusinessNetwork().getIntrospector();
-            let modelClassDeclarations = introspector.getClassDeclarations();
+        modelClassDeclarations.forEach((modelClassDeclaration) => {
+            if (this.registryId === modelClassDeclaration.getFullyQualifiedName()) {
 
-            modelClassDeclarations.forEach((modelClassDeclaration) => {
-                if (this.registryId === modelClassDeclaration.getFullyQualifiedName()) {
+                // Set resource declaration
+                this.resourceDeclaration = modelClassDeclaration;
+                this.resourceType = this.retrieveResourceType(modelClassDeclaration);
 
-                    // Set resource declaration
-                    this.resourceDeclaration = modelClassDeclaration;
-                    this.resourceType = this.retrieveResourceType(modelClassDeclaration);
-
-                    if (this.editMode()) {
-                        this.resourceAction = 'Update';
-                        let serializer = this.clientService.getBusinessNetwork().getSerializer();
-                        this.resourceDefinition = JSON.stringify(serializer.toJSON(this.resource), null, 2);
-                    } else {
-                        // Stub out json definition
-                        this.resourceAction = 'Create New';
-                        this.generateResource();
-                    }
+                if (this.editMode()) {
+                    this.resourceAction = 'Update';
+                    let serializer = this.clientService.getBusinessNetwork().getSerializer();
+                    this.resourceDefinition = JSON.stringify(serializer.toJSON(this.resource), null, 2);
+                } else {
+                    // Stub out json definition
+                    this.resourceAction = 'Create New';
+                    this.generateResource();
                 }
-            });
-
+            }
         });
     }
 
@@ -112,7 +106,7 @@ export class ResourceComponent implements OnInit {
     /**
      * Generate the json description of a resource
      */
-    private generateResource(withSampleData?: boolean): void {
+    private generateResource(withSampleData ?: boolean): void {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let factory = businessNetworkDefinition.getFactory();
         let idx = Math.round(Math.random() * 9999).toString();
@@ -152,25 +146,25 @@ export class ResourceComponent implements OnInit {
     private addOrUpdateResource(): void {
         this.actionInProgress = true;
         return this.retrieveResourceRegistry(this.resourceType)
-        .then((registry) => {
-            let json = JSON.parse(this.resourceDefinition);
-            let serializer = this.clientService.getBusinessNetwork().getSerializer();
-            let resource = serializer.fromJSON(json);
-            resource.validate();
-            if (this.editMode()) {
-                return registry.update(resource);
-            } else {
-                return registry.add(resource);
-            }
-        })
-        .then(() => {
-            this.actionInProgress = false;
-            this.activeModal.close();
-        })
-        .catch((error) => {
-            this.definitionError = error.toString();
-            this.actionInProgress = false;
-        });
+            .then((registry) => {
+                let json = JSON.parse(this.resourceDefinition);
+                let serializer = this.clientService.getBusinessNetwork().getSerializer();
+                let resource = serializer.fromJSON(json);
+                resource.validate();
+                if (this.editMode()) {
+                    return registry.update(resource);
+                } else {
+                    return registry.add(resource);
+                }
+            })
+            .then(() => {
+                this.actionInProgress = false;
+                this.activeModal.close();
+            })
+            .catch((error) => {
+                this.definitionError = error.toString();
+                this.actionInProgress = false;
+            });
     }
 
     /**
@@ -213,7 +207,5 @@ export class ResourceComponent implements OnInit {
         };
 
         return types[type]();
-
     }
-
 }

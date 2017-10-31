@@ -1,6 +1,6 @@
 <div *ngIf="_registry" class="resource-header">
     <div class="resource-header-left">
-        <h1>{{_registry.name}}</h1>
+        <h1 *ngIf="!isHistorian()">{{_registry.name}}</h1>
     </div>
     <div *ngIf="!isHistorian()">
         <button type="button" class="registry" (click)="openNewResourceModal()">
@@ -48,22 +48,20 @@
     <table *ngIf="resources && resources.length > 0 && isHistorian()">
         <thead [ngClass]="{'tbody-scrolled' : tableScrolled}">
         <tr>
-            <th class="width-30">ID</th>
-            <th class="width-10">Time</th>
-            <th class="width-20">Participant ID</th>
-            <th class="width-20">Transaction Type</th>
-            <th class="width-10"></th>
+            <th class="normal-column">Date, Time</th>
+            <th class="normal-column">Entry Type</th>
+            <th class="normal-column">Participant</th>
+            <th class="narrow-column"></th>
         </tr>
         </thead>
         <tbody id="transactiontbody" checkScroll (hasScroll)="updateTableScroll($event)">
         <tr *ngFor="let resource of resources">
-            <td class="width-30 truncate-text">{{ resource.getIdentifier() }}</td>
-            <td class="width-10 truncate-text">{{ resource.transactionTimestamp | date:'HH:mm:ss' }}</td>
-            <td class="width-20 truncate-text">{{ resource.participantInvoking ?
-                resource.participantInvoking.$identifier : 'none' }}
+            <td class="normal-column truncate-text">{{ resource.transactionTimestamp | date:'y-MM-dd, HH:mm:ss' }}</td>
+            <td class="normal-column truncate-text"><span placement="top" container="body" ngbTooltip="{{resource.transactionType || null}}">{{ resource.transactionType ? resource.transactionType.substring(resource.transactionType.lastIndexOf('.') + 1) : 'TBC' }}</span></td>
+            <td class="normal-column truncate-text"><span placement="top" container="body" ngbTooltip="{{resource.participantInvoking ? resource.participantInvoking.$namespace + '.' + resource.participantInvoking.$type : null}}">{{ resource.participantInvoking ?
+                resource.participantInvoking.$identifier + ' (' + resource.participantInvoking.$type + ')'  : 'none' }}</span>
             </td>
-            <td class="width-20 truncate-text">{{ resource.transactionType || 'TBC' }}</td>
-            <td class="width-10 truncate-text"><a href="#" (click)="viewTransactionData(resource)">view record</a></td>
+            <td class="narrow-column"><a href="#" (click)="viewTransactionData(resource)">view record</a></td>
         </tr>
         </tbody>
     </table>

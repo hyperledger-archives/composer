@@ -64,6 +64,17 @@ describe('QueryAnalyzer', () => {
             o String vin
             --> Driver driver
         }
+
+        concept TestConcept {
+            o String value
+        }
+
+        asset TestAsset identified by assetId {
+            o String assetId
+            o String[] stringValues
+            o TestConcept conceptValue
+            o TestConcept[] conceptValues
+        }
         `, 'test');
 
         mockQuery = sinon.createStubInstance(Query);
@@ -285,6 +296,96 @@ describe('QueryAnalyzer', () => {
                 result.should.not.be.null;
                 result.length.should.equal(0);
             }).should.throw(/Unrecognised type/);
+        });
+
+        it('should process select with a contains and a literal value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS "foo")', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should process select with a contains and an array value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS ["foo", "bar"])', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should process select with a contains and a parameter value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS _$inputStringValue)', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should process select with a contains and a nested expression', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == "foo"))', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should process select with a contains and a nested expression with a parameter value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == _$inputStringValue))', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should process select with a contains and a nested expression with a reversed parameter value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE ((value == _$inputStringValue) CONTAINS conceptValues)', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(2);
+        });
+
+        it('should throw for a select with a contains without a property name', () => {
+            (() => {
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE ("foo" CONTAINS "moo")', { startRule: 'SelectStatement' });
+                const select = new Select(mockQuery, ast);
+                mockQuery.getSelect.returns(select);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
+                queryAnalyzer.visit(mockQuery, {});
+            }).should.throw(/A property name is required on one side of a CONTAINS expression/);
+        });
+
+        it('should throw for a select with a contains and an invalid nested expression with a parameter value', () => {
+            (() => {
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (LULZ == _$inputStringValue))', { startRule: 'SelectStatement' });
+                const select = new Select(mockQuery, ast);
+                mockQuery.getSelect.returns(select);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
+                queryAnalyzer.visit(mockQuery, {});
+            }).should.throw(/Property LULZ does not exist/);
+        });
+
+        it('should throw for a select with a contains and an invalid nested contains', () => {
+            (() => {
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value CONTAINS "blah"))', { startRule: 'SelectStatement' });
+                const select = new Select(mockQuery, ast);
+                mockQuery.getSelect.returns(select);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
+                queryAnalyzer.visit(mockQuery, {});
+            }).should.throw(/A CONTAINS expression cannot be nested within another CONTAINS expression/);
         });
 
     });
