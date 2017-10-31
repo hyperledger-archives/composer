@@ -41,13 +41,14 @@ class Download {
         let businessNetworkDefinition;
         let businessNetworkName;
         let spinner;
-
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
         let businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
         return (() => {
 
 
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -64,11 +65,15 @@ class Download {
         })()
         .then (() => {
             spinner = ora('Downloading deployed Business Network Archive').start();
-            return businessNetworkConnection.connect(argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret)
-                .then((result) => {
-                    businessNetworkDefinition = result;
-                    return businessNetworkConnection.disconnect();
-                });
+            if (!usingCard){
+                return businessNetworkConnection.connect(argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+            } else {
+                return businessNetworkConnection.connect(cardName);
+            }
+        })
+        .then((result) => {
+            businessNetworkDefinition = result;
+            return businessNetworkConnection.disconnect();
         })
         .then (() => {
             spinner.succeed();

@@ -14,18 +14,18 @@
 
 'use strict';
 
-const Ping = require ('./lib/ping.js');
+const Create = require ('./lib/create.js');
 
-module.exports.command = 'ping [options]';
-module.exports.describe = 'Test a connection to a business network';
+module.exports.command = 'create [options]';
+module.exports.describe = 'Creates a business network card from individual components';
 module.exports.builder = {
-    businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: false, describe: 'The connection profile name', type: 'string' },
+    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
+    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
+    connectionProfileFile: {alias: 'j', required: false, describe: 'Filename of the connection profile json file', type: 'string' },
     enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to ping the network', type:'string'}
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Ping.handler(argv);
+    return argv.thePromise = Create.handler(argv);
 };

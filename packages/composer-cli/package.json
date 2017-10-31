@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "nyc mocha --recursive -t 10000"
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
+    "nyc": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -54,7 +56,7 @@
     "prompt": "1.0.0",
     "sanitize-filename": "1.6.1",
     "shelljs": "0.7.7",
-    "yargs": "8.0.1"
+    "yargs": "10.0.3"
   },
   "license-check-config": {
     "src": [
@@ -75,7 +77,9 @@
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "lib/shellcmds/**",
+      "shell.js"
     ],
     "reporter": [
       "text-summary",

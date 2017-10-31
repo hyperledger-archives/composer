@@ -228,6 +228,11 @@ describe('BusinessNetworkConnection', () => {
                 ev2.getIdentifier().should.equal('event2');
             });
         });
+
+        it('should fail with the wrong number of arguments', ()=>{
+            return businessNetworkConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
+
+        });
     });
 
     describe('#connectWithCard',()=>{
@@ -264,8 +269,11 @@ describe('BusinessNetworkConnection', () => {
             sandbox.reset();
         });
 
-        it('Connect with existing card name',()=>{
-            return businessNetworkConnection.connectWithCard('cardName')
+
+        it('Correct with with existing card name & additional options',()=>{
+
+
+            return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
                 .then((result)=>{
                     sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
                 });
@@ -273,7 +281,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should add card name to connection profile additional options when additional options not specified', () => {
             const cardName = 'CARD_NAME';
-            return businessNetworkConnection.connectWithCard(cardName)
+            return businessNetworkConnection.connect(cardName)
                 .then(result => {
                     sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
                         sinon.match.any,
@@ -284,7 +292,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should override cardName property specified in additional options', () => {
             const cardName = 'CARD_NAME';
-            return businessNetworkConnection.connectWithCard(cardName, { cardName: 'WRONG' })
+            return businessNetworkConnection.connect(cardName, { cardName: 'WRONG' })
                 .then(result => {
                     sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
                         sinon.match.any,

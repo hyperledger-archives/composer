@@ -35,19 +35,7 @@ let results = yargs
     .alias('v', 'version')
     .version(version)
     .describe('v', 'show version information')
-    .command(
-    {
-        command: 'shell',
-        aliases: ['shell', 'i'],
-        desc: 'Interactive shell',
-        builder: (yargs) => yargs,
-        handler: (argv) => {
-            console.log('Starting shell...');
-            argv.thePromise = require('./shell.js').shell();
-        }
-    }
 
-    )
     .argv;
 
 if (typeof(results.thePromise) !== 'undefined'){
@@ -56,6 +44,7 @@ if (typeof(results.thePromise) !== 'undefined'){
         console.log(chalk.green('\nCommand succeeded\n'));
         process.exit(0);
     }).catch((error) => {
+        console.log(error.stack);
         console.log(error+chalk.red('\nCommand failed\n'));
         process.exit(1);
     });

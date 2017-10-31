@@ -37,6 +37,8 @@ class LogLevel {
         let connectionProfileName;
         let businessNetworkName;
         let newlevel;
+        let cardName = argv.card;
+        let usingCard = !(cardName===undefined);
 
         if (argv.newlevel) {
             // validate log level as yargs cannot at this time
@@ -48,7 +50,7 @@ class LogLevel {
         }
 
         return (() => {
-            if (!argv.enrollSecret) {
+            if (!argv.enrollSecret && !usingCard) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
                     description: 'What is the enrollment secret of the user?',
@@ -69,7 +71,11 @@ class LogLevel {
             businessNetworkName = argv.businessNetworkName;
             connectionProfileName = argv.connectionProfileName;
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, businessNetworkName);
+            if (!usingCard){
+                return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, businessNetworkName);
+            } else {
+                return adminConnection.connect(cardName);
+            }
         })
         .then(() => {
             if (newlevel) {
