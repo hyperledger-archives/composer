@@ -13,7 +13,7 @@ node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir $
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-admin/lib  --outputDir ${DIR}/jsondata
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-runtime/lib/api  --outputDir ${DIR}/jsondata
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-common/lib  --outputDir ${DIR}/jsondata
-
+node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --single ${DIR}/../composer-runtime/lib/api.js  --outputDir ${DIR}/jsondata
 # for each json file process using the class template
 for file in ${DIR}/jsondata/*.json
 do

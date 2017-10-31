@@ -20,7 +20,7 @@ const LOG = Logger.getLog('ParticipantRegistry');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#getParticipantRegistry getParticipantRegistry}
+ * You must use the {@link runtime-api#getParticipantRegistry getParticipantRegistry}
  * method instead.
  *
  * @class ParticipantRegistry
@@ -60,7 +60,7 @@ class ParticipantRegistry {
          * @public
          * @method module:composer-runtime.ParticipantRegistry#getAll
          * @return {Promise} A promise. The promise is resolved with an array of
-         * {@link Resource} instances representing all of the participants stored in this
+         * {@link common-Resource} instances representing all of the participants stored in this
          * participant registry. If the participant registry does not exist, or the current
          * user does not have access to the participant registry, then the promise will
          * be rejected with an error that describes the problem.
@@ -89,7 +89,7 @@ class ParticipantRegistry {
          * @public
          * @method module:composer-runtime.ParticipantRegistry#get
          * @param {string} id The ID of the participant.
-         * @return {Promise} A promise. The promise is resolved with a {@link Resource}
+         * @return {Promise} A promise. The promise is resolved with a {@link common-Resource}
          * instance representing the specified participant in this participant registry. If the
          * specified participant does not exist, or the current user does not have access
          * to the specified participant, then the promise will be rejected with an error

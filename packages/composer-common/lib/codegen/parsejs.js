@@ -34,6 +34,7 @@ program
     .usage('[options]')
     .option('-o, --outputDir <outputDir>', 'Output directory')
     .option('-i, --inputDir <inputDir>', 'Input source directory')
+    .option('-s, --single <singlefile>', 'Single file to process')
     .option('-f, --format <format>', 'Format of code to generate. Defaults to PlantUML.', 'PlantUML')
     .option('-p, --private', 'Include classes that have the @private JSDoc annotation')
     .parse(process.argv);
@@ -52,10 +53,18 @@ case 'JSON':
     break;
 }
 
-console.log('Input dir ' + program.inputDir);
 
-// Loop through all the files in the input directory
-processDirectory(program.inputDir,fileProcessor);
+if (program.inputDir){
+    // Loop through all the files in the input directory
+    console.log('Input dir ' + program.inputDir);
+    processDirectory(program.inputDir,fileProcessor);
+}
+else if (program.single){
+    console.log('Single file '+program.single);
+    processFile(path.resolve(program.single),fileProcessor);
+} else {
+    console.log('no file option given');
+}
 
 /**
  * Processes all the Javascript files within a directory.

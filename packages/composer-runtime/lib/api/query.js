@@ -20,7 +20,7 @@ const LOG = Logger.getLog('Query');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#buildQuery buildQuery}
+ * You must use the {@link runtime-api#buildQuery buildQuery}
  * method instead.
  *
  * @class Query
