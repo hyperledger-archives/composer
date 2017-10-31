@@ -1,9 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { BusinessNetworkDefinition, ModelFile, AclFile } from 'composer-common';
 import { AlertService } from '../../basic-modals/alert.service';
-import { ClientService } from '../../services/client.service';
+import { FileService } from '../../services/file.service';
 
 @Component({
     selector: 'add-file-modal',
@@ -34,7 +33,7 @@ export class AddFileComponent {
 
     constructor(private alertService: AlertService,
                 private activeModal: NgbActiveModal,
-                private clientService: ClientService) {
+                private fileService: FileService) {
     }
 
     queryExists() {
@@ -73,35 +72,35 @@ export class AddFileComponent {
     fileAccepted(file: File) {
         let type = file.name.substr(file.name.lastIndexOf('.') + 1);
         this.getDataBuffer(file)
-        .then((data) => {
-            switch (type) {
-                case 'js':
-                    this.expandInput = true;
-                    this.createScript(file, data);
-                    break;
-                case 'cto':
-                    this.expandInput = true;
-                    this.createModel(file, data);
-                    break;
-                case 'md':
-                    this.expandInput = true;
-                    this.createReadme(data);
-                    break;
-                case 'acl':
-                    this.expandInput = true;
-                    this.createRules(data);
-                    break;
-                case 'qry':
-                    this.expandInput = true;
-                    this.createQuery(data);
-                    break;
-                default:
-                    throw new Error('Unexpected File Type: ' + type);
-            }
-        })
-        .catch((err) => {
-            this.fileRejected(err);
-        });
+            .then((data) => {
+                switch (type) {
+                    case 'js':
+                        this.expandInput = true;
+                        this.createScript(file, data);
+                        break;
+                    case 'cto':
+                        this.expandInput = true;
+                        this.createModel(file, data);
+                        break;
+                    case 'md':
+                        this.expandInput = true;
+                        this.createReadme(data);
+                        break;
+                    case 'acl':
+                        this.expandInput = true;
+                        this.createRules(data);
+                        break;
+                    case 'qry':
+                        this.expandInput = true;
+                        this.createQuery(data);
+                        break;
+                    default:
+                        throw new Error('Unexpected File Type: ' + type);
+                }
+            })
+            .catch((err) => {
+                this.fileRejected(err);
+            });
     }
 
     getDataBuffer(file: File) {
@@ -122,14 +121,14 @@ export class AddFileComponent {
     createScript(file: File, dataBuffer) {
         this.fileType = 'js';
         let filename = (file && file.name) ? 'lib/' + file.name : this.addScriptFileName;
-        this.currentFile = this.clientService.createScriptFile(filename, 'JS', dataBuffer.toString());
+        this.currentFile = this.fileService.createScriptFile(filename, 'JS', dataBuffer.toString());
         this.currentFileName = this.currentFile.getIdentifier();
     }
 
     createModel(file: File, dataBuffer) {
         this.fileType = 'cto';
         let filename = (file && file.name) ? 'models/' + file.name : this.addModelFileName;
-        this.currentFile = this.clientService.createModelFile(dataBuffer.toString(), filename);
+        this.currentFile = this.fileService.createModelFile(dataBuffer.toString(), filename);
         this.currentFileName = this.currentFile.getName();
     }
 
@@ -142,14 +141,14 @@ export class AddFileComponent {
     createRules(dataBuffer) {
         this.fileType = 'acl';
         let filename = 'permissions.acl';
-        this.currentFile = this.clientService.createAclFile(filename, dataBuffer.toString());
+        this.currentFile = this.fileService.createAclFile(filename, dataBuffer.toString());
         this.currentFileName = filename;
     }
 
     createQuery(dataBuffer) {
         this.fileType = 'qry';
         let filename = 'queries.qry';
-        this.currentFile = this.clientService.createQueryFile(filename, dataBuffer.toString());
+        this.currentFile = this.fileService.createQueryFile(filename, dataBuffer.toString());
         this.currentFileName = filename;
     }
 
@@ -166,23 +165,23 @@ export class AddFileComponent {
                 `/**
  * New script file
  */`;
-            let existingScripts = this.clientService.getScripts();
+            let existingScripts = this.fileService.getScripts();
             let increment = 0;
 
             let scriptName = this.addScriptFileName + this.addScriptFileExtension;
 
-            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+            while (existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1) {
                 scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
                 increment++;
             }
-            this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
+            this.currentFile = this.fileService.createScriptFile(scriptName, 'JS', code);
             this.currentFileName = scriptName;
         } else if (this.fileType === 'cto') {
-            let existingModels = this.clientService.getModelFiles();
+            let existingModels = this.fileService.getModelFiles();
             let increment = 0;
 
             let newModelNamespace = this.addModelNamespace;
-            while ( existingModels.findIndex((file) => file.getNamespace() === newModelNamespace) !== -1 ) {
+            while (existingModels.findIndex((file) => file.getNamespace() === newModelNamespace) !== -1) {
                 newModelNamespace = this.addModelNamespace + increment;
                 increment++;
             }
@@ -195,7 +194,7 @@ export class AddFileComponent {
 namespace ${newModelNamespace}`;
 
             let fileName = this.addModelPath + newModelNamespace + this.addModelFileExtension;
-            this.currentFile = this.clientService.createModelFile(code, fileName);
+            this.currentFile = this.fileService.createModelFile(code, fileName);
             this.currentFileName = fileName;
         } else if (this.fileType === 'qry') {
             let code =
@@ -203,7 +202,7 @@ namespace ${newModelNamespace}`;
  * New query file
  */`;
             this.currentFileName = 'queries.qry';
-            this.currentFile = this.clientService.createQueryFile(this.currentFileName, code);
+            this.currentFile = this.fileService.createQueryFile(this.currentFileName, code);
         } else {
             let code =
                 `/**
@@ -217,7 +216,7 @@ namespace ${newModelNamespace}`;
      action: ALLOW
  }`;
             this.currentFileName = 'permissions.acl';
-            this.currentFile = this.clientService.createAclFile(this.currentFileName, code);
+            this.currentFile = this.fileService.createAclFile(this.currentFileName, code);
         }
     }
 }

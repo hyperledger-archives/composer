@@ -3,9 +3,10 @@ import { Http, RequestOptions, URLSearchParams } from '@angular/http';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
+import { FileService } from './file.service';
 import { AlertService } from '../basic-modals/alert.service';
 
-import { BusinessNetworkDefinition, IdCard } from 'composer-common';
+import { BusinessNetworkDefinition } from 'composer-common';
 import { IdentityCardService } from './identity-card.service';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class SampleBusinessNetworkService {
                 private clientService: ClientService,
                 private alertService: AlertService,
                 private identityCardService: IdentityCardService,
+                private fileService: FileService,
                 private http: Http) {
     }
 
@@ -196,8 +198,8 @@ export class SampleBusinessNetworkService {
     }
 
     public updateBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        let currentBusinessNetworkName = this.clientService.getBusinessNetworkName();
-        let currentBusinessNetworkDescription = this.clientService.getBusinessNetworkDescription();
+        let currentBusinessNetworkName = this.fileService.getBusinessNetworkName();
+        let currentBusinessNetworkDescription = this.fileService.getBusinessNetworkDescription();
 
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = currentBusinessNetworkName;
