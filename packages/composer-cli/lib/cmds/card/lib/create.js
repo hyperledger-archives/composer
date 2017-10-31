@@ -57,8 +57,15 @@ class Create {
                 let profileData = JSON.parse(this.readFile(filePath));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // setup the id card with the meta data and profileData
                 let idCard = new IdCard(metadata,profileData);
+=======
+                // if there is no name, take the name from the directory the profile file is in
+                if (!profileData.name){
+                    profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
+                }
+>>>>>>> refactor based on review comments
 
                 // certificates & privateKey
                 // YARGS command spec logic will have enforced the correct set of options
@@ -80,20 +87,26 @@ class Create {
                 let idCard = new IdCard(metadata,profileData);
 
                 // certificates & privateKey
-                if (certificate && privateKey){
-                    let certFile = this.readCredentialFile(path.resolve(certificate));
-                    let keyFile =  this.readCredentialFile(path.resolve(privateKey));
+                // YARGS command spec logic will have enforced the correct set of options
+                if (argv.certificate && argv.privateKey){
+                    let certFile = this.readFile(path.resolve(argv.certificate));
+                    let keyFile =  this.readFile(path.resolve(argv.privateKey));
                     idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
                 }
 
                 // handle the filename
-                // Default is userName@businessNetworkName.card if the card includes a business network name; otherwise userName@connectionProfileName.card.
-                if (fileName==='') {
-                    if (businessNetworkName!==''){
-                        fileName = user+'@'+businessNetworkName+'.card';
+                // Default is userName@businessNetworkName.card if the card includes a business network name;
+                // otherwise userName@connectionProfileName.card.
+                if (!fileName) {
+                    if (metadata.hasOwnProperty('businessNetwork')){
+                        fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
                     } else {
+<<<<<<< HEAD
                         fileName = user+'@'+profileData.name+'.card';
 >>>>>>> create command - impl & unit test
+=======
+                        fileName = metadata.userName+'@'+ profileData.name +'.card';
+>>>>>>> refactor based on review comments
                     }
                 }
 
@@ -112,8 +125,7 @@ class Create {
 <<<<<<< HEAD
 =======
      */
-    static readCredentialFile(filePath){
-        console.log(filePath);
+    static readFile(filePath){
         let content='';
         try {
             content = fs.readFileSync(filePath,'utf8');
@@ -126,6 +138,7 @@ class Create {
         return content;
     }
 
+<<<<<<< HEAD
     /**
      * Read a json file (that in this case has the connection profile)
      * @param {String} filePath absolute or relative (to current working directory) file name
@@ -149,6 +162,8 @@ class Create {
 >>>>>>> create command - impl & unit test
     }
 
+=======
+>>>>>>> refactor based on review comments
 }
 
 module.exports = Create;
