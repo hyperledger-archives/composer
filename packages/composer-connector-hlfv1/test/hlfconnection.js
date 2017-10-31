@@ -81,7 +81,7 @@ describe('HLFConnection', () => {
         mockEventHubDef = {
             'eventURL': 'http://localhost:7053'
         };
-        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, mockCAClient);
     });
 
     afterEach(() => {
@@ -107,67 +107,37 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#createEventHub', () => {
-
-        it('should call new event hub', () => {
-            (() => {
-                HLFConnection.createEventHub(mockClient);
-            }).should.throw(/The clientContext has not been properly initialized, missing userContext/);
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw if connectOptions not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', null, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', null, mockClient, mockChannel, mockCAClient);
             }).should.throw(/connectOptions not specified/);
         });
 
         it('should throw if client not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, null, mockChannel, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, null, mockChannel, mockCAClient);
             }).should.throw(/client not specified/);
         });
 
         it('should throw if channel not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, null, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, null, mockCAClient);
             }).should.throw(/channel not specified/);
-        });
-
-        it('should throw if eventHubDefs not specified', () => {
-            (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, null, mockCAClient);
-            }).should.throw(/eventHubDefs not specified or not an array/);
-        });
-
-        it('should throw if eventHubDefs not an array', () => {
-            (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, mockEventHubDef, mockCAClient);
-            }).should.throw(/eventHubDefs not specified or not an array/);
         });
 
 
         it('should throw if caClient not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, [mockEventHubDef], null);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, null);
             }).should.throw(/caClient not specified/);
         });
     });
 
-    describe('#getConnectionOptions', () => {
-
-        it('should return the connection options', () => {
-            connection.getConnectionOptions().should.deep.equal(connectOptions);
-        });
-
-    });
-
     describe('#_connectToEventHubs', () => {
         beforeEach(() => {
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
         });
 
         it('should ignore a disconnected event hub on process exit', () => {
@@ -217,7 +187,7 @@ describe('HLFConnection', () => {
 
     describe('#disconnect', () => {
         beforeEach(() => {
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             mockEventHub.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('events');
         });
 
@@ -318,6 +288,7 @@ describe('HLFConnection', () => {
         });
 
         it('should enroll and store the user context using the CA client', () => {
+            mockClient.getMspid.returns('suchmsp');
             mockCAClient.enroll.withArgs({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' }).resolves({
                 key: 'suchkey',
                 certificate: 'suchcert'
@@ -343,7 +314,7 @@ describe('HLFConnection', () => {
 
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
         });
 
         it('should throw if identity not specified', () => {
@@ -387,8 +358,9 @@ describe('HLFConnection', () => {
 
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             sandbox.stub(connection, '_initializeChannel').resolves();
+
             connection._connectToEventHubs();
         });
 
@@ -424,6 +396,7 @@ describe('HLFConnection', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
             sandbox.stub(connection.fs, 'copy').resolves();
             sandbox.stub(connection.fs, 'outputFile').resolves();
+            mockClient.getPeersForOrg.returns([mockPeer]);
 
             // This is the install proposal and response (from the peers).
             const proposalResponses = [{
@@ -461,6 +434,7 @@ describe('HLFConnection', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
             sandbox.stub(connection.fs, 'copy').resolves();
             sandbox.stub(connection.fs, 'outputFile').resolves();
+            mockClient.getPeersForOrg.returns([mockPeer]);
 
             // This is the install proposal and response (from the peers).
             const proposalResponses = [{
@@ -570,6 +544,7 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -588,18 +563,7 @@ describe('HLFConnection', () => {
         // TODO: should extract out _waitForEvents
         it('should request an event timeout based on connection settings', () => {
             connectOptions = {
-                orderers: [
-                    'grpc://localhost:7050'
-                ],
-                peers: [ {
-                    requestURL: 'grpc://localhost:7051',
-                    eventURL: 'grpc://localhost:7053'
-                }],
-                ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
-                channel: 'testchainid',
-                mspID: 'suchmsp',
-                timeout: 22
+                'x-commitTimeout': 22
             };
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             sandbox.stub(connection, '_validateResponses').returns();
@@ -882,7 +846,7 @@ describe('HLFConnection', () => {
         });
 
         // TODO: should extract out _waitForEvents
-        it('should throw an error if the orderer throws an error', () => {
+        it('should throw an error if the orderer responds with an error', () => {
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -900,7 +864,7 @@ describe('HLFConnection', () => {
             // This is the event hub response.
             //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -1109,7 +1073,9 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
+            mockClient.getPeersForOrg.returns([mockPeer]);
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
@@ -1127,18 +1093,7 @@ describe('HLFConnection', () => {
         // TODO: should extract out _waitForEvents
         it('should request an event timeout based on connection settings', () => {
             connectOptions = {
-                orderers: [
-                    'grpc://localhost:7050'
-                ],
-                peers: [ {
-                    requestURL: 'grpc://localhost:7051',
-                    eventURL: 'grpc://localhost:7053'
-                }],
-                ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
-                channel: 'testchainid',
-                mspID: 'suchmsp',
-                timeout: 22
+                'x-commitTimeout': 22
             };
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             sandbox.stub(connection, '_validateResponses').returns();
@@ -1633,7 +1588,8 @@ describe('HLFConnection', () => {
         });
 
         // TODO: should extract out _waitForEvents
-        it('should throw an error if the commit throws an error', () => {
+
+        it('should throw an error if a commit fails', () => {
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1647,13 +1603,13 @@ describe('HLFConnection', () => {
             mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
-                status: 'FAILURE'
+                status: 'SUCCESS'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.eventually.be.rejectedWith(/Peer has rejected transaction/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -1685,6 +1641,7 @@ describe('HLFConnection', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -1717,8 +1674,6 @@ describe('HLFConnection', () => {
 
     });
 
-
-
     describe('#upgrade', () => {
 
         beforeEach(() => {
@@ -1726,6 +1681,7 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -1790,7 +1746,7 @@ describe('HLFConnection', () => {
         });
 
         // TODO: should extract out _waitForEvents
-        it('should throw an error if the orderer throws an error', () => {
+        it('should throw an error if the orderer responds with an error', () => {
             sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
@@ -1807,7 +1763,7 @@ describe('HLFConnection', () => {
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             return connection.upgrade(mockSecurityContext)
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -1959,6 +1915,7 @@ describe('HLFConnection', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -2000,6 +1957,7 @@ describe('HLFConnection', () => {
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -2062,6 +2020,7 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
+            mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
         });
 
@@ -2161,18 +2120,7 @@ describe('HLFConnection', () => {
         //TODO: Should extract out _waitForEvents
         it('should set the timeout to value specified in connection profile', () => {
             connectOptions = {
-                orderers: [
-                    'grpc://localhost:7050'
-                ],
-                peers: [ {
-                    requestURL: 'grpc://localhost:7051',
-                    eventURL: 'grpc://localhost:7053'
-                }],
-                ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
-                channel: 'testchainid',
-                mspID: 'suchmsp',
-                timeout: 38
+                'x-commitTimeout': 38
             };
             connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             sandbox.stub(connection, '_validateResponses').returns();
@@ -2485,6 +2433,7 @@ describe('HLFConnection', () => {
         });
     });
 
+    // Already fixed upstream.
     describe('#createTransactionID', ()=>{
 
         beforeEach(() => {
