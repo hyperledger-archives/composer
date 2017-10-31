@@ -24,7 +24,7 @@ export class UpdateComponent extends ImportComponent {
     }
 
     onShow(): Promise<void> {
-        this.networkName = this.clientService.getBusinessNetworkName();
+        this.networkName = this.clientService.getBusinessNetwork().getName();
         return super.onShow();
     }
 

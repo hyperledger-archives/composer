@@ -125,19 +125,35 @@ export class ResourceComponent implements OnInit {
                 id,
                 generateParameters);
             let serializer = this.clientService.getBusinessNetwork().getSerializer();
-
             const serializeValidationOptions = {
                 validate: false
             };
-
-            let json = serializer.toJSON(resource, serializeValidationOptions);
-            this.resourceDefinition = JSON.stringify(json, null, 2);
+            let replacementJSON = serializer.toJSON(resource, serializeValidationOptions);
+            let existingJSON = JSON.parse(this.resourceDefinition);
+            if (existingJSON) {
+                this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
+            } else {
+              // Initial popup, no previous data to protect
+              this.resourceDefinition = JSON.stringify(replacementJSON, null, 2);
+            }
             this.onDefinitionChanged();
         } catch (error) {
             // We can't generate a sample instance for some reason.
             this.definitionError = error.toString();
-            this.resourceDefinition = '';
         }
+    }
+
+    private updateExistingJSON(previousJSON, toUpdateWithJSON): object {
+        for (let key in toUpdateWithJSON) {
+            if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
+                if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
+                    toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
+                } else if (previousJSON[key].toString().length > 0 && previousJSON[key] !== 0) {
+                    toUpdateWithJSON[key] = previousJSON[key];
+                }
+            }
+        }
+        return toUpdateWithJSON;
     }
 
     /**
