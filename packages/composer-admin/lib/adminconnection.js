@@ -129,9 +129,25 @@ class AdminConnection {
             const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
             name = card.getUserName() + '@' + locationName;
         }
-        return this.cardStore.put(name, card).then(() => {
-            return name;
-        });
+        let connectionProfileData;
+        return this.cardStore.put(name, card)
+            .then(() => {
+                connectionProfileData = card.getConnectionProfile();
+                connectionProfileData.cardName=name;
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            })
+            .then((connectionManager)=>{
+                let certificate = card.getCredentials().certificate;
+                let privateKey = card.getCredentials().privateKey;
+                if (certificate && privateKey){
+                    return connectionManager.importIdentity(connectionProfileData.name,connectionProfileData, card.getUserName(), certificate, privateKey);
+                } else {
+                    return; // use secret
+                }
+            })
+            .then( ()=>{
+                return name;
+            });
     }
 
     /**
@@ -143,6 +159,49 @@ class AdminConnection {
         return this.cardStore.get(cardName);
     }
 
+    /** Exports an network card.
+     * Should the card not actually contain the certificates in the card, a exportIdentity will be
+     * performed to get the details of the cards
+     * @private
+     * @param {String} cardName The name of the card that needs to be exported
+     * @return {Promise} resolved with an instance of the network id card populated
+     */
+    exportCard(cardName) {
+        let card;
+        return this.cardStore.get(cardName)
+            .then((result)=>{
+                card=result;
+                let credentials = card.getCredentials();
+                //anything set? if so don't go and get the credentials again
+                if (Object.keys(credentials).length!==0){
+                    return card;
+                } else {
+                    // check to make sure the credentials are present and if not then extract them.
+                    let connectionProfileData = card.getConnectionProfile();
+                    connectionProfileData.cardName = cardName;
+                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+                        .then((connectionManager)=>{
+                            return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+                        })
+                        .then( (result)=>{
+                            if (result){
+                                //{ certificate: String, privateKey: String }
+                                card.setCredentials(result);
+                                // put back the card, so that it has the ceritificates sotre
+                                return this.cardStore.put(cardName,card);
+                            } else {
+                                if(!card.getEnrollmentCredentials()){
+                                    // no secret either!
+                                    throw new Error(`Card ${cardName} has no credentials or secret so is invalid`);
+                                }
+                            }
+                        }).then(()=>{
+                            return card;
+                        });
+                }
+            });
+
+    }
     /**
      * List all Business Network cards.
      * @private

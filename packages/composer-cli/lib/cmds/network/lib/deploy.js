@@ -48,6 +48,7 @@ class Deploy {
 
         console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
+
             // Read archive file contents
         return Promise.resolve().then(()=>{
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
@@ -76,6 +77,7 @@ class Deploy {
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (logLevel) {
                     deployOptions.logLevel = logLevel;
+
                 }
 
                 // Build the bootstrap tranactions.

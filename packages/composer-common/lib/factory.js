@@ -50,6 +50,7 @@ class Factory {
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link Hyperledger-Composer}</strong>
      * </p>
+     *
      * @param {ModelManager} modelManager - The ModelManager to use for this registry
      */
     constructor(modelManager) {
