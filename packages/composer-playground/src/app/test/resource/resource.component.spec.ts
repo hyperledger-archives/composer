@@ -2,17 +2,14 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement, Component, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TransactionComponent } from './transaction.component';
-import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 
 import {
     Resource,
@@ -23,7 +20,6 @@ import {
     ParticipantDeclaration,
     TransactionDeclaration,
     ClassDeclaration,
-    Property,
     Factory,
     ModelFile
 } from 'composer-common';
@@ -50,7 +46,6 @@ describe('ResourceComponent', () => {
 
     let mockNgbActiveModal;
     let mockClientService;
-    let mockInitializationService;
 
     let mockBusinessNetworkConnection;
     let mockBusinessNetwork;
@@ -66,11 +61,9 @@ describe('ResourceComponent', () => {
 
         mockNgbActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
 
         mockNgbActiveModal.open = sandbox.stub();
         mockNgbActiveModal.close = sandbox.stub();
-        mockInitializationService.initialize.returns(Promise.resolve());
 
         mockResource = sinon.createStubInstance(Resource);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -95,8 +88,7 @@ describe('ResourceComponent', () => {
             ],
             providers: [
                 {provide: NgbActiveModal, useValue: mockNgbActiveModal},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: InitializationService, useValue: mockInitializationService}
+                {provide: ClientService, useValue: mockClientService}
             ]
         });
         fixture = TestBed.createComponent(ResourceComponent);

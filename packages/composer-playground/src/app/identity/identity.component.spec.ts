@@ -70,7 +70,7 @@ describe(`IdentityComponent`, () => {
         }));
         mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
-        mockClientService.getMetaData.returns({
+        mockClientService.getBusinessNetwork.returns({
             getName: sinon.stub().returns('name')
         });
 
@@ -111,7 +111,7 @@ describe(`IdentityComponent`, () => {
 
     describe('load all identities', () => {
         it('should load the identities', fakeAsync(() => {
-            mockClientService.getMetaData.returns({getName: sinon.stub().returns('myNetwork')});
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('myNetwork')});
             let myIdentityMock = sinon.stub(component, 'loadMyIdentities');
 
             mockIdentityCardService.getCurrentIdentityCard.returns({

@@ -18,8 +18,7 @@ import { FooterModule } from '../footer/footer.module';
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, PerfectScrollbarModule, CodemirrorModule, DirectivesModule, FileImporterModule, ImportModule, EditorRoutingModule, FooterModule],
     entryComponents: [AddFileComponent],
-    declarations: [EditorComponent, EditorFileComponent, AddFileComponent],
-    providers: [EditorService]
+    declarations: [EditorComponent, EditorFileComponent, AddFileComponent]
 })
 
 export class EditorModule {

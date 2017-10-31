@@ -22,7 +22,7 @@ const InvalidQueryException = require('./invalidqueryexception');
 const Globalize = require('../globalize');
 
 const BOOLEAN_OPERATORS = ['==', '!='];
-const OPERATORS = ['>', '>=', '==', '!=', '<=', '<'];
+const OPERATORS = ['>', '>=', '==', '!=', '<=', '<', 'CONTAINS'];
 
 /**
  * The query validator visits the AST for a WHERE and checks that all the model references exist
@@ -59,6 +59,8 @@ class WhereAstValidator {
             result = this.visitIdentifier(thing, parameters);
         } else if (thing.type === 'Literal') {
             result = this.visitLiteral(thing, parameters);
+        } else if (thing.type === 'ArrayExpression') {
+            result = this.visitArrayExpression(thing, parameters);
         } else if (thing.type === 'MemberExpression') {
             result = this.visitMemberExpression(thing, parameters);
         } else {
@@ -84,6 +86,8 @@ class WhereAstValidator {
         const arrayCombinationOperators = ['AND', 'OR'];
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             this.visitArrayCombinationOperator(ast, parameters);
+        } else if (ast.operator === 'CONTAINS') {
+            this.visitContainsOperator(ast, parameters);
         } else {
             this.visitConditionOperator(ast, parameters);
         }
@@ -112,6 +116,55 @@ class WhereAstValidator {
     }
 
     /**
+     * Visitor design pattern; handle an contains operator.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitContainsOperator(ast, parameters) {
+        const method = 'visitContainsOperator';
+        LOG.entry(method, ast, parameters);
+
+        // Check we haven't already entered a scope - let's keep it simple!
+        if (parameters.validationDisabled) {
+            throw new Error('A CONTAINS expression cannot be nested within another CONTAINS expression');
+        }
+
+        // Disable validation.
+        parameters.validationDisabled = true;
+
+        // Resolve both the left and right sides of the expression.
+        let left = this.visit(ast.left, parameters);
+        let right = this.visit(ast.right, parameters);
+
+        // Enable validation again.
+        parameters.validationDisabled = false;
+
+        // Initialize the scopes array.
+        parameters.scopes = parameters.scopes || [];
+
+        // Look for a scope name.
+        if (typeof left === 'string' && !left.startsWith('_$')) {
+            parameters.scopes.push(left);
+        } else if (typeof right === 'string' && !right.startsWith('_$')) {
+            parameters.scopes.push(right);
+        } else {
+            throw new Error('A property name is required on one side of a CONTAINS expression');
+        }
+
+        // Re-resolve both the left and right sides of the expression.
+        left = this.visit(ast.left, parameters);
+        right = this.visit(ast.right, parameters);
+
+        // Pop the scope name off again.
+        parameters.scopes.pop();
+
+        LOG.exit(method);
+        return null;
+    }
+
+    /**
      * Visitor design pattern; handle a condition operator.
      * Condition operators are operators that compare two pieces of data, such
      * as '>=' and '!='.
@@ -123,32 +176,37 @@ class WhereAstValidator {
     visitConditionOperator(ast, parameters) {
         const method = 'visitConditionOperator';
         LOG.entry(method, ast, parameters);
+
+        // Resolve both the left and right sides of the expression.
         const left = this.visit(ast.left, parameters);
         const right = this.visit(ast.right, parameters);
 
-        // console.log('ast: ' + JSON.stringify(ast));
-        // console.log('left: ' + JSON.stringify(left));
-        // console.log('right: ' + JSON.stringify(right));
+        // Bypass the following validation if required. This will be set during
+        // the first pass of a CONTAINS when we are trying to figure out the name
+        // of the current scope so we can correctly validate model references.
+        if (parameters.validationDisabled) {
+            LOG.exit(method);
+            return null;
+        }
 
         if (typeof left === 'string') {
-
             if (!left.startsWith('_$')) {
-                const property = this.verifyProperty(left);
+                const property = this.verifyProperty(left, parameters);
                 this.verifyOperator(property, ast.operator);
             }
-            if (right.type === 'Literal') {
-                const property = this.verifyProperty(left);
+            if (right && right.type === 'Literal') {
+                const property = this.verifyProperty(left, parameters);
                 this.verifyTypeCompatibility(property, right.value);
             }
         }
 
         if (typeof right === 'string') {
             if (!right.startsWith('_$')) {
-                const property = this.verifyProperty(right);
+                const property = this.verifyProperty(right, parameters);
                 this.verifyOperator(property, ast.operator);
             }
-            if (left.type === 'Literal') {
-                const property = this.verifyProperty(right);
+            if (left && left.type === 'Literal') {
+                const property = this.verifyProperty(right, parameters);
                 this.verifyTypeCompatibility(property, left.value);
             }
         }
@@ -161,13 +219,21 @@ class WhereAstValidator {
     /**
      * Checks that a property exists on the class declaration
      * @param {string} propertyName The property path
+     * @param {object} parameters The parameters
      * @throws {IllegalModelException} if property path does not resolve to a property
      * @returns {Property} the property
      * @private
      */
-    verifyProperty(propertyName) {
+    verifyProperty(propertyName, parameters) {
 
-        const property = this.classDeclaration.getNestedProperty(propertyName);
+        // If we have entered a scope, for example a CONTAINS, then we need
+        // to prepend the current scope to the property name.
+        let actualPropertyName = propertyName;
+        if (parameters.scopes && parameters.scopes.length) {
+            actualPropertyName = parameters.scopes.concat(propertyName).join('.');
+        }
+
+        const property = this.classDeclaration.getNestedProperty(actualPropertyName);
         if (!property) {
             throw new IllegalModelException('Property ' + propertyName + ' not found on type ' + this.classDeclaration, this.classDeclaration.getModelFile(), this.classDeclaration. ast.location);
         }
@@ -206,11 +272,7 @@ class WhereAstValidator {
      */
     verifyTypeCompatibility(property, value) {
 
-        // console.log('property: ' + property);
-        // console.log('value: ' + value);
-
         let dataType = typeof value;
-        // console.log('dataType: ' + dataType);
 
         if (dataType === 'undefined' || dataType === 'symbol') {
             WhereAstValidator.reportIncompatibleType(this.classDeclaration, property, value);
@@ -218,6 +280,7 @@ class WhereAstValidator {
 
         let invalid = false;
 
+        // Arrays of concepts can't currently be specified as literal values.
         if (property.isArray()) {
             WhereAstValidator.reportUnsupportedType(this.classDeclaration, property, value);
         }
@@ -298,6 +361,23 @@ class WhereAstValidator {
         LOG.entry(method, ast, parameters);
         LOG.exit(method);
         return ast;
+    }
+
+    /**
+     * Visitor design pattern; handle an array expression.
+     * @param {Object} ast The abstract syntax tree being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitArrayExpression(ast, parameters) {
+        const method = 'visitArrayExpression';
+        LOG.entry(method, ast, parameters);
+        const selector = ast.elements.map((element) => {
+            return this.visit(element, parameters);
+        });
+        LOG.exit(method, selector);
+        return selector;
     }
 
     /**
