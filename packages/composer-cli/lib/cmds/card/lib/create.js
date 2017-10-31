@@ -56,6 +56,7 @@ class Create {
                 const filePath = path.resolve(argv.connectionProfileFile);
                 let profileData = JSON.parse(this.readFile(filePath));
 
+<<<<<<< HEAD
                 // setup the id card with the meta data and profileData
                 let idCard = new IdCard(metadata,profileData);
 
@@ -74,6 +75,25 @@ class Create {
                         fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
                     } else {
                         fileName = metadata.userName+'@'+ profileData.name +'.card';
+=======
+                // setup the id card with the meta data
+                let idCard = new IdCard(metadata,profileData);
+
+                // certificates & privateKey
+                if (certificate && privateKey){
+                    let certFile = this.readCredentialFile(path.resolve(certificate));
+                    let keyFile =  this.readCredentialFile(path.resolve(privateKey));
+                    idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
+                }
+
+                // handle the filename
+                // Default is userName@businessNetworkName.card if the card includes a business network name; otherwise userName@connectionProfileName.card.
+                if (fileName==='') {
+                    if (businessNetworkName!==''){
+                        fileName = user+'@'+businessNetworkName+'.card';
+                    } else {
+                        fileName = user+'@'+profileData.name+'.card';
+>>>>>>> create command - impl & unit test
                     }
                 }
 
@@ -89,6 +109,28 @@ class Create {
      * Read a file from disc and return the result or throw an error.
      * @param {String} filePath file to load
      * @return {String} with contents or throws an error
+<<<<<<< HEAD
+=======
+     */
+    static readCredentialFile(filePath){
+        console.log(filePath);
+        let content='';
+        try {
+            content = fs.readFileSync(filePath,'utf8');
+        } catch (cause) {
+            const error = new Error(`Unable to read file: ${filePath}`);
+            error.cause = cause;
+            throw error;
+        }
+
+        return content;
+    }
+
+    /**
+     * Read a json file (that in this case has the connection profile)
+     * @param {String} filePath absolute or relative (to current working directory) file name
+     * @return {Promise} Resolves with a JSON object
+>>>>>>> create command - impl & unit test
      */
     static readFile(filePath){
         let content='';
@@ -100,7 +142,11 @@ class Create {
             throw error;
         }
 
+<<<<<<< HEAD
         return content;
+=======
+        return Promise.resolve(JSON.parse(content));
+>>>>>>> create command - impl & unit test
     }
 
 }
