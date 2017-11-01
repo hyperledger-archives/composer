@@ -172,12 +172,12 @@ class Registry extends EventEmitter {
      * with an error.
      */
     add(resource, options) {
-
-        return Promise.resolve().then(() => {
-            if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');
-            }
-        })
+        if (this.type === resource.getClassDeclaration().getSystemType()){
+            return Promise.resolve().then(() => {
+                if (!(resource instanceof Resource)) {
+                    throw new Error('Expected a Resource or Concept.');
+                }
+            })
             .then(() => {
                 return this.accessController.check(resource, 'CREATE');
             })
@@ -196,6 +196,10 @@ class Registry extends EventEmitter {
                     resource: resource
                 });
             });
+        }else{
+            throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type
+        );
+        }
     }
 
     /**
