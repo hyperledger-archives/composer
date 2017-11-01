@@ -224,7 +224,7 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 --> MyAsset theValue
             }`);
-            resource.theValue.getIdentifier().should.match(/^assetId:\d{4}$/);
+            resource.theValue.getIdentifier().should.match(/^\d{4}$/);
         });
 
         it('should generate a default value for a relationship array property', () => {
@@ -234,7 +234,7 @@ describe('InstanceGenerator', () => {
                 --> MyAsset[] theValues
             }`);
             resource.theValues.should.be.a('Array').and.have.lengthOf(1);
-            resource.theValues[0].getIdentifier().should.match(/^assetId:\d{4}$/);
+            resource.theValues[0].getIdentifier().should.match(/^\d{4}$/);
         });
 
         it('should generate a default value for a resource property', () => {
@@ -247,7 +247,7 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o MyInnerAsset theValue
             }`);
-            resource.theValue.getIdentifier().should.match(/^innerAssetId:\d{4}$/);
+            resource.theValue.getIdentifier().should.match(/^\d{4}$/);
             resource.theValue.theValue.should.be.a('string');
         });
 
@@ -262,7 +262,7 @@ describe('InstanceGenerator', () => {
                 o MyInnerAsset[] theValues
             }`);
             resource.theValues.should.be.a('Array').and.have.lengthOf(1);
-            resource.theValues[0].getIdentifier().should.match(/^innerAssetId:\d{4}$/);
+            resource.theValues[0].getIdentifier().should.match(/^\d{4}$/);
             resource.theValues[0].theValue.should.be.a('string');
         });
 
