@@ -15,8 +15,8 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-const Export = require('../../card/lib/export');
-const IdCard = require('composer-common').IdCard;
+const Create = require('../../card/lib/create');
+
 /**
  * <p>
  * Composer "identity issue" command
@@ -62,8 +62,8 @@ class IssueCard {
                     businessNetwork : issuingCard.getBusinessNetworkName()
                 };
 
-                let idCard = new IdCard(metadata,issuingCard.getConnectionProfile());
-                return Export.writeCardToFile(argv.file,idCard);
+                // re-use the logic in the create command to create the id card
+                return Create.createCard(metadata,issuingCard.getConnectionProfile(),argv);
             });
     }
 

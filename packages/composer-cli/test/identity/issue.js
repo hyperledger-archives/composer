@@ -39,56 +39,48 @@ describe('composer identity issue CLI unit tests', () => {
     let mockBusinessNetworkConnection;
     let mockAdminConnection;
     let mockIdCard;
+    let cardBuffer;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
         mockIdCard = sinon.createStubInstance(IdCard);
-        mockBusinessNetworkConnection.connect.resolves();
+        mockIdCard.toArchive.resolves(cardBuffer);
+        mockIdCard.getConnectionProfile.returns({name:'profilename'});
+        mockIdCard.getBusinessNetworkName.returns('penguin-network');
+        mockBusinessNetworkConnection.connect.withArgs('cardname').resolves();
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', sinon.match.object).resolves({
             userID: 'dogeid1',
             userSecret: 'suchsecret'
         });
+        sandbox.stub(fs,'writeFileSync');
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+
+        // consoleLogSpy = sandbox.spy(console, 'log');
+        // sandbox.stub(process, 'exit');
+
         mockAdminConnection.getCard.returns(mockIdCard);
 
-        sandbox.stub(process, 'exit');
+
+
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    it('test the yargs builder function', ()=>{
-        let mockYargs = {options:()=>{},conflicts:()=>{},check:()=>{},group:()=>{}};
-
-        sinon.stub(mockYargs,'options').returns();
-        sinon.stub(mockYargs,'conflicts').returns();
-        sinon.spy(mockYargs,'check');
-        sinon.stub(mockYargs,'group').returns();
-
-        Issue.builder(mockYargs);
-        sinon.assert.calledOnce(mockYargs.options);
-        sinon.assert.calledOnce(mockYargs.conflicts);
-        sinon.assert.calledOnce(mockYargs.check);
-        sinon.assert.calledThrice(mockYargs.group);
-    });
-
     it('should issue a new identity using the specified profile', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1'
         };
         return Issue.handler(argv)
             .then((res) => {
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
 
@@ -97,10 +89,7 @@ describe('composer identity issue CLI unit tests', () => {
 
     it('should handle optional arguments', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             option: ['opt1=value1', 'opt2=value2']
@@ -108,8 +97,8 @@ describe('composer identity issue CLI unit tests', () => {
         return Issue.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { opt1: 'value1', opt2: 'value2', issuer: false });
 
@@ -118,10 +107,7 @@ describe('composer identity issue CLI unit tests', () => {
 
     it('should handle optional arguments file', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             optionsFile: '/path/to/options.json'
@@ -137,33 +123,14 @@ describe('composer identity issue CLI unit tests', () => {
         return Issue.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { affiliation: 'example.com', role: 'admin', issuer: false });
             });
     });
 
 
-    it('should prompt for the enrollment secret if not specified', () => {
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            newUserId: 'dogeid1',
-            participantId: 'org.doge.Doge#DOGE_1'
-        };
-        return Issue.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-
-            });
-    });
 
     it('should issue a new identity with issuer priviledges', () => {
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true }).resolves({
@@ -171,10 +138,7 @@ describe('composer identity issue CLI unit tests', () => {
             userSecret: 'suchsecret'
         });
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             issuer: true
@@ -182,8 +146,8 @@ describe('composer identity issue CLI unit tests', () => {
         return Issue.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true });
 
@@ -205,7 +169,7 @@ describe('composer identity issue CLI unit tests', () => {
 
     it('should issue a new card using the specified profile', () => {
         let argv = {
-            c: 'cardname',card:'cardname',   // needed as yargs would do this
+            card:'cardname',   // needed as yargs would do this
             file: 'filename',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1'
