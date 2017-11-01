@@ -62,7 +62,7 @@ class Submit {
             businessNetworkName = argv.businessNetworkName;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
             if (!usingCard){
-                return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+                return businessNetworkConnection.connectWithDetails(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
             } else {
                 return businessNetworkConnection.connect(cardName);
             }

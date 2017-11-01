@@ -210,10 +210,10 @@ describe('AdminConnection', () => {
         });
     });
 
-    describe('#connect', () => {
+    describe('#connectWithDetails', () => {
 
         it('should connect, login and ping if business network specified', () => {
-            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
+            return adminConnection.connectWithDetails(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.login);
                     sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
@@ -223,18 +223,13 @@ describe('AdminConnection', () => {
         });
 
         it('should connect and login if business network not specified', () => {
-            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d')
+            return adminConnection.connectWithDetails(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.login);
                     sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
                     sinon.assert.notCalled(mockConnection.ping);
                 });
         });
-
-        it('should error if wrong number of arguments given', () => {
-            return adminConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
-        });
-
     });
 
     describe('#connectWithCard', () =>{
@@ -323,12 +318,11 @@ describe('AdminConnection', () => {
     });
 
     describe('#disconnect', () => {
-        it('should set connection and security context to null', () => {
-            let adminConnection = new AdminConnection();
-
-            sinon.stub(adminConnection, '_connectWithCard').resolves(mockConnection);
-            return adminConnection.connect('fakeCard')
+        it('should set connection and security context to null if connection is set', () => {
+            return adminConnection.connectWithDetails(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
             .then(() => {
+                adminConnection.connection.should.not.be.null;
+                adminConnection.securityContext.should.not.be.null;
                 return adminConnection.disconnect();
             })
             .then(() => {
@@ -339,20 +333,8 @@ describe('AdminConnection', () => {
 
         it('should not fail when no connection is set', () => {
             let adminConnection = new AdminConnection();
-            return adminConnection.disconnect();
+            return adminConnection.disconnect().should.not.be.rejected;
         });
-
-        it('should connect, login and ping if business network specified, and then disconnect', () => {
-            return adminConnection.connect(testProfileName, 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.login);
-                    sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
-                    sinon.assert.calledOnce(mockConnection.ping);
-                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
-                    adminConnection.disconnect();
-                });
-        });
-
     });
 
     describe('#install', () => {

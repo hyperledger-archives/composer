@@ -67,8 +67,8 @@ describe('composer identity bind CLI unit tests', () => {
         return Bind.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, 'org.doge.Doge#DOGE_1', pem);
             });
@@ -86,8 +86,8 @@ describe('composer identity bind CLI unit tests', () => {
         return Bind.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, 'org.doge.Doge#DOGE_1', pem);
             });

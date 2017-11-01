@@ -79,8 +79,8 @@ describe('composer transaction submit CLI unit tests', () => {
             return Submit.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);

@@ -51,11 +51,9 @@ class AdminConnection {
     /**
      * Create an instance of the AdminConnection class.
      * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
-     * @param {Object} [options.fs] - specify an fs implementation to use.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
     constructor(options) {
-        // @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
 
         const method = 'constructor';
         LOG.entry(method, options);
@@ -112,6 +110,7 @@ class AdminConnection {
      * @param {string} connectionProfile - The name of the connection profile
      * @param {Object} data - The connection profile data
      * @return {Promise} A promise that indicates that the connection profile is deployed
+     * @private
      */
     createProfile(connectionProfile, data) {
         return this.connectionProfileManager.getConnectionProfileStore().save(connectionProfile, data);
@@ -119,7 +118,6 @@ class AdminConnection {
 
     /**
      * Import a business network card.
-     * @private
      * @param {IdCard} card The card to import
      * @param {String} [name] Name by which this card should be referred
      * @return {Promise} Resolved with the name by which the card is referred as a {@link String}.
@@ -162,7 +160,6 @@ class AdminConnection {
     /** Exports an network card.
      * Should the card not actually contain the certificates in the card, a exportIdentity will be
      * performed to get the details of the cards
-     * @private
      * @param {String} cardName The name of the card that needs to be exported
      * @return {Promise} resolved with an instance of the network id card populated
      */
@@ -204,7 +201,6 @@ class AdminConnection {
     }
     /**
      * List all Business Network cards.
-     * @private
      * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
      */
     getAllCards() {
@@ -213,7 +209,6 @@ class AdminConnection {
 
     /**
      * Delete an existing card.
-     * @private
      * @param {String} name Name of the card to delete.
      * @returns {Promise} Resolves if an existing card was deleted; rejected otherwise.
      */
@@ -236,6 +231,7 @@ class AdminConnection {
      * });
      * @param {string} connectionProfile - The name of the connection profile
      * @return {Promise} A promise that indicates that the connection profile is deployed
+     * @private
      */
     deleteProfile(connectionProfile) {
         return this.connectionProfileManager.getConnectionProfileStore().delete(connectionProfile);
@@ -254,6 +250,7 @@ class AdminConnection {
      *   });
      * @param {string} connectionProfile - The name of the connection profile
      * @return {Promise} A promise that is resolved with the connection profile data.
+     * @private
      */
     getProfile(connectionProfile) {
         return this.connectionProfileManager.getConnectionProfileStore().load(connectionProfile);
@@ -273,6 +270,7 @@ class AdminConnection {
      *     }
      *   });
      * @return {Promise} A promise that is resolved with the connection profile data.
+     * @private
      */
     getAllProfiles() {
         return this.connectionProfileManager.getConnectionProfileStore().loadAll();
@@ -302,7 +300,7 @@ class AdminConnection {
      * @return {Promise} A promise that indicates the connection is complete
      * @private
      */
-    _connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
+    connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
@@ -314,60 +312,6 @@ class AdminConnection {
                     return this.ping(this.securityContext);
                 }
             });
-    }
-
-     /**
-     * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile.
-     * EITHER, the cardName, and updateflag , OR
-     * the connectionProfile, enrollmentID, enrollmentSecret and businessNetworkIdentifier
-     * Should be specified. NOT both
-     * @example
-     * // Connect to Hyperledger Fabric
-     * var adminConnection = new AdminConnection();
-     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(){
-     *     // Connected.
-     * })
-     * .catch(function(error){
-     *     // Add optional error handling here.
-     * });
-     * // Connect to Hyperledger Fabric
-     * var adminConnection = new AdminConnection();
-     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(){
-     *     // Connected.
-     * })
-     * .catch(function(error){
-     *     // Add optional error handling here.
-     * });
-     *
-     * @param {string} connectionProfile - The name of the connection profile
-     * @param {string} enrollmentID the enrollment ID of the user
-     * @param {string} enrollmentSecret the enrollment secret of the user
-     * @param {string} businessNetworkIdentifier the id of the network (for update) or null
-     * @param {String} cardName - The name of the business network card
-     * @param {boolean} update true if this is for an update operation
-     * @return {Promise} A promise that indicates the connection is complete
-     */
-    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier,cardName,update){
-
-        if (arguments.length===1){
-            const _cardName = arguments[0];
-            const _update = false;
-            return this._connectWithCard(_cardName,_update);
-        } else  if (arguments.length===2){
-
-            const _cardName = arguments[0];
-            const _update = arguments[1];
-            return this._connectWithCard(_cardName,_update);
-        } else if (arguments.length === 3){
-            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,null);
-        } else  if (arguments.length === 4){
-            return this._connectWithDetails(connectionProfile,enrollmentID,enrollmentSecret,businessNetworkIdentifier);
-        } else {
-            return Promise.reject(new Error('Incorrect number of arguments'));
-        }
     }
 
     /**
@@ -387,10 +331,9 @@ class AdminConnection {
      * });
      * @param {String} cardName - The name of the business network card
      * @param {boolean} update true if this is for an update operation
-     * @private
      * @return {Promise} A promise that indicates the connection is complete
      */
-    _connectWithCard(cardName, update) {
+    connect(cardName, update) {
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 
@@ -947,6 +890,7 @@ class AdminConnection {
      * @param {string} certificate The signer cert in PEM format
      * @param {string} privateKey The private key in PEM format
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @private
      */
     importIdentity(connectionProfile, id, certificate, privateKey) {
         let savedConnectionManager;
@@ -987,6 +931,7 @@ class AdminConnection {
      * @param {string} enrollmentID The ID to enroll
      * @param {string} enrollmentSecret The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @private
      */
     requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
         let savedConnectionManager;
@@ -1008,6 +953,7 @@ class AdminConnection {
      * @param {String} connectionProfileName Name of the connection profile.
      * @param {String} id Name of the identity.
      * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @private
      */
     exportIdentity(connectionProfileName, id) {
         let savedConnectionManager;

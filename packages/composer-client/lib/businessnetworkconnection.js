@@ -50,8 +50,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * Create an instance of the BusinessNetworkConnection class.
      * must be called to connect to a deployed BusinessNetworkDefinition.
      * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
-     * @param {Object} [options.fs] - specify an fs implementation to use.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
     constructor(options) {
         super();
@@ -396,19 +395,10 @@ class BusinessNetworkConnection extends EventEmitter {
 
     /**
      * Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.
-     * EITHER, the cardName, and additional connect options, OR
-     * the connectionProfile, businessNetwork, enrollmentID, enrollmentSecret and additional connect options
-     * Should be specified. NOT both
      * @example
      * // Connect and log in to HLF
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     // Connected
-     * });
-     * // Connect and log in to HLF
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('cardName')
      * .then(function(businessNetworkDefinition){
      *     // Connected
      * });
@@ -417,51 +407,12 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {string} enrollmentID the enrolment ID of the user
      * @param {string} enrollmentSecret the enrolment secret of the user
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * @param {String} cardName  businessNetworkCard Name (must have been imported already)
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
-     */
-    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions,cardName){
-
-        let _cardName;
-        if (arguments.length===1){
-            _cardName = arguments[0];
-            return this._connectWithCard(_cardName);
-        } else if (arguments.length===2){
-            cardName = arguments[0];
-            additionalConnectOptions=arguments[1];
-            return this._connectWithCard(cardName,additionalConnectOptions);
-        } else if (arguments.length === 4){
-            return this._connectWithDetails(connectionProfile,businessNetwork,enrollmentID,enrollmentSecret);
-        } else  if (arguments.length === 5){
-            return this._connectWithDetails(connectionProfile,businessNetwork,enrollmentID,enrollmentSecret,additionalConnectOptions);
-        } else {
-            return Promise.reject(new Error('Incorrect number of arguments'));
-        }
-    }
-
-
-    /**
-     * Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.
-     * @example
-     * // Connect and log in to HLF
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     // Connected
-     * });
-     * @param {string} connectionProfile - The name of the connection profile
-     * @param {string} businessNetwork - The identifier of the business network
-     * @param {string} enrollmentID the enrolment ID of the user
-     * @param {string} enrollmentSecret the enrolment secret of the user
-     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * at runtime that override options set in the connection profile.
-     * which will override those in the specified connection profile.
      * @private
-     * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    _connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+    connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
         const method = '_connect';
         LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
 
@@ -482,14 +433,13 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(businessNetworkDefinition){
      *     // Connected
      * });
-     * @private
      * @param {String} cardName  businessNetworkCard Name (must have been imported already)
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    _connectWithCard(cardName,additionalConnectOptions){
+    connect(cardName,additionalConnectOptions){
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 

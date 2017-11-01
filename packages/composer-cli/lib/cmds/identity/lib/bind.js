@@ -68,7 +68,7 @@ class Bind {
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            return businessNetworkConnection.connectWithDetails(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
         })
         .then(() => {
             return businessNetworkConnection.bindIdentity(participantId, certificate);

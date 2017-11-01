@@ -11,10 +11,15 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.14.3 {25f10e3ea34abac22d3a0fdaaf50fee0} 2017-10-31
+- Remove importIdentity, requestIdentity and exportIdentity from AdminConnection public API
+- Remove connect profile functions from AdminConnection public API
+- Add card function to AdminConnection public API
+- Update constructor documentation for cards instead of connection profiles
+- Remove backwards compatible parameters from AdminConnection.connect
 
 Version 0.14.1 {4d2de763c61ba58a8b8a80c83bf9e84a} 2017-10-23
  - Update to have connectWithCard
-
 
 Version 0.14.0 {5015f90c6a6e75089ddcdac7d0470f6e} 2017-10-9
  - Update set/getloglrvel and resetNetwork
