@@ -177,5 +177,5 @@ What we need to do here is create a 'serializer'.  This is able to create a reso
 
 ## References
 
-* [**JavaScript API Documentation**](../api-doc-inline/api-doc-index.html)
+* [**JavaScript API Documentation**](../api/api-doc-index.html)
 * [**Promises tutorial**](https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics)

@@ -20,6 +20,7 @@
 * @extends Error
 * @class
 * @memberof module:composer-common
+* @public
 */
 class BaseException extends Error {
 

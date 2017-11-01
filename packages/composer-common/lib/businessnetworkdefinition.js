@@ -68,7 +68,7 @@ class BusinessNetworkDefinition {
      * Create the BusinessNetworkDefinition.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link BusinessNetworkDefinition.fromArchive}</strong>
+     * retrieve instances from {@link BusinessNetworkDefinition#fromArchive}</strong>
      * </p>
      * @param {String} identifier  - the identifier of the business network. The
      * identifier is formed from a business network name + '@' + version. The

@@ -19,7 +19,7 @@ const BaseException = require('../baseexception');
 /**
  * Exception thrown when a resource fails to model against the model
  * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @see See {@link  BaseException}
  * @class
  * @memberof module:composer-common
  */
