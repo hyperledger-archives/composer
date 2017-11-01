@@ -87,7 +87,6 @@ class IdCard {
             throw new Error('Required metadata field not found: userName');
         }
         if (!(connectionProfile && connectionProfile.name)) {
-            // console.log('FYI - no connection profile name given');
             throw new Error('Required connection field not found: name');
         }
         this.metadata = metadata;

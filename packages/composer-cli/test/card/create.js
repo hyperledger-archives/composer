@@ -96,12 +96,7 @@ describe('composer card create CLI', function() {
             user:'fred'
         };
 
-        return CreateCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(fs.readFileSync);
-            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
-            sinon.assert.calledOnce(fs.writeFileSync);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
-        });
+        return CreateCmd.handler(args).should.be.rejectedWith(/Required connection field not found: name/);
     });
 
 

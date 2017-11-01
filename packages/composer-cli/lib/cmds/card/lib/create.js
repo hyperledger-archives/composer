@@ -56,12 +56,7 @@ class Create {
                 const filePath = path.resolve(argv.connectionProfileFile);
                 let profileData = JSON.parse(this.readFile(filePath));
 
-                // if there is no name, take the name from the directory the profile file is in
-                if (!profileData.name){
-                    profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
-                }
-
-                // setup the id card with the meta data
+                // setup the id card with the meta data and profileData
                 let idCard = new IdCard(metadata,profileData);
 
                 // certificates & privateKey
@@ -71,7 +66,6 @@ class Create {
                     let keyFile =  this.readFile(path.resolve(argv.privateKey));
                     idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
                 }
-
                 // handle the filename
                 // Default is userName@businessNetworkName.card if the card includes a business network name;
                 // otherwise userName@connectionProfileName.card.
