@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -10,7 +10,7 @@
   "scripts": {
     "jsdocpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "doc": "npm run apiref && ./scripts/generate-uml.sh && npm run jsdocpub",
-    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.1.sh",
+    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.sh ",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
@@ -32,10 +32,10 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "0.14.2",
-    "composer-client": "0.14.2",
-    "composer-common": "0.14.2",
-    "composer-runtime": "0.14.2",
+    "composer-admin": "0.14.3",
+    "composer-client": "0.14.3",
+    "composer-common": "0.14.3",
+    "composer-runtime": "0.14.3",
     "jsdoc": "3.4.3",
     "mkdirp": "0.5.1",
     "node-plantuml": "0.5.0",

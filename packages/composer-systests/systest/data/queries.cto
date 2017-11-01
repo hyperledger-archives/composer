@@ -13,6 +13,7 @@ enum SampleEnum {
 
 concept SampleConcept {
     o String stringValue
+    o String[] stringArrayValue
     o Double doubleValue
     o Integer integerValue
     o Long longValue
@@ -25,7 +26,9 @@ asset SampleAsset identified by assetId {
   o String assetId
   --> SampleParticipant participant
   o SampleConcept conceptValue
+  o SampleConcept[] conceptArrayValue
   o String stringValue
+  o String[] stringArrayValue
   o Double doubleValue
   o Integer integerValue
   o Long longValue
@@ -38,7 +41,9 @@ participant SampleParticipant identified by participantId {
   o String participantId
   --> SampleAsset asset
   o SampleConcept conceptValue
+  o SampleConcept[] conceptArrayValue
   o String stringValue
+  o String[] stringArrayValue
   o Double doubleValue
   o Integer integerValue
   o Long longValue
@@ -51,7 +56,9 @@ transaction SampleTransaction {
   --> SampleAsset asset
   --> SampleParticipant participant
   o SampleConcept conceptValue
+  o SampleConcept[] conceptArrayValue
   o String stringValue
+  o String[] stringArrayValue
   o Double doubleValue
   o Integer integerValue
   o Long longValue

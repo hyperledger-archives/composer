@@ -19,23 +19,15 @@ const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Query');
 
 /**
+ * The Query class represents a built query. A built query has been parsed and validated.
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-client#BusinessNetworkConnection.buildQuery buildQuery}
+ * You must use the {@link client-BusinessNetworkConnection#buildQuery buildQuery}
  * method instead.
  *
  * @class Query
  * @classdesc A query represents a built query.
  * @memberof module:composer-client
  * @public
- */
-
-/**
- * The Query class represents a built query. A built query has been parsed and validated.
- * Do not attempt to create an instance of this class.
- * You must use the {@link module:composer-client#BusinessNetworkConnection.buildQuery buildQuery}
- * method instead.
- * @class
- * @memberof module:composer-client
  */
 class Query {
 

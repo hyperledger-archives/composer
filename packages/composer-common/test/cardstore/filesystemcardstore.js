@@ -59,19 +59,6 @@ describe('FileSystemCardStore', function() {
         });
     });
 
-    describe('#_defaultStorePath', function() {
-        it('should handle undefined homedir function', function() {
-            FileSystemCardStore._defaultStorePath(undefined).should.be.a('String').that.is.not.empty;
-        });
-
-        it('should handle empty value returned from homedir function', function() {
-            const homedir = () => {
-                return null;
-            };
-            FileSystemCardStore._defaultStorePath(homedir).should.be.a('String').that.is.not.empty;
-        });
-    });
-
     describe('#get', function() {
         it('should get a valid identity card', function() {
             const options = { storePath: testStorePath };
@@ -139,6 +126,13 @@ describe('FileSystemCardStore', function() {
                     .should.eventually.be.an.instanceof(IdCard)
                     .that.deep.equals(minimalCard);
             });
+        });
+
+        it('should throw on duplicate card', function() {
+            const cardName = 'minimal';
+            return cardStore.put(cardName, minimalCard).then(() => {
+                return cardStore.put(cardName, minimalCard);
+            }).should.be.rejectedWith(cardName);
         });
     });
 

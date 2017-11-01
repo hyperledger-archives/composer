@@ -20,7 +20,7 @@
               <span>Use it yourself</span>
             </ng-template>
             <ng-template ngbPanelContent>
-                <p>Just add the ID card to your wallet to start using the new identity yourself</p>
+                <p>Just add the business network card to your wallet to start using the new identity yourself</p>
                 <div class="actions">
                   <button type="button" class="primary" (click)="addToWallet();">Add to wallet</button>
                 </div>
@@ -34,9 +34,9 @@
                   <span>Send it to someone else (Playground)</span>
                 </ng-template>
             <ng-template ngbPanelContent>
-                <p>Another Playground user can import the ID card to their wallet to start using the new identity</p>
+                <p>Another Playground user can import the business network card to their wallet to start using the new identity</p>
                 <div class="actions">
-                  <button type="button" class="primary" (click)="export();">Export ID card</button>
+                  <button type="button" class="primary" (click)="export();">Export Business Network Card</button>
                 </div>
             </ng-template>
           </ngb-panel>
@@ -49,7 +49,7 @@
                 </ng-template>
               <ng-template ngbPanelContent>
                   <p>A Composer command line user will need to enroll the new identity using the secret shown below</p>
-                  
+
                   <dl class="enrollment-credentials">
                     <dt>User ID</dt>
                     <dd>{{userID}}</dd>

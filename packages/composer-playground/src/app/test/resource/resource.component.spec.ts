@@ -2,17 +2,14 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement, Component, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TransactionComponent } from './transaction.component';
-import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 
 import {
     Resource,
@@ -23,7 +20,6 @@ import {
     ParticipantDeclaration,
     TransactionDeclaration,
     ClassDeclaration,
-    Property,
     Factory,
     ModelFile
 } from 'composer-common';
@@ -50,7 +46,6 @@ describe('ResourceComponent', () => {
 
     let mockNgbActiveModal;
     let mockClientService;
-    let mockInitializationService;
 
     let mockBusinessNetworkConnection;
     let mockBusinessNetwork;
@@ -66,11 +61,9 @@ describe('ResourceComponent', () => {
 
         mockNgbActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
 
         mockNgbActiveModal.open = sandbox.stub();
         mockNgbActiveModal.close = sandbox.stub();
-        mockInitializationService.initialize.returns(Promise.resolve());
 
         mockResource = sinon.createStubInstance(Resource);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
@@ -95,8 +88,7 @@ describe('ResourceComponent', () => {
             ],
             providers: [
                 {provide: NgbActiveModal, useValue: mockNgbActiveModal},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: InitializationService, useValue: mockInitializationService}
+                {provide: ClientService, useValue: mockClientService}
             ]
         });
         fixture = TestBed.createComponent(ResourceComponent);
@@ -183,6 +175,7 @@ describe('ResourceComponent', () => {
         let mockClassDeclaration;
         let mockModelFile;
         beforeEach(() => {
+            component['updateExistingJSON'] = sandbox.stub();
             mockModelFile = sinon.createStubInstance(ModelFile);
             mockModelFile.getName.returns('model.cto');
             mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
@@ -192,7 +185,7 @@ describe('ResourceComponent', () => {
 
         });
 
-        it('should generate a valid resource', () => {
+        it('should generate a valid resource with undefined', () => {
 
             mockSerializer.toJSON.returns({$class: 'com.org'});
             mockSerializer.fromJSON.returns(mockResource);
@@ -222,6 +215,78 @@ describe('ResourceComponent', () => {
                                                             allowEmptyId: true
                                                          });
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
+        });
+
+        it('should generate a valid resource with true', () => {
+
+            mockSerializer.toJSON.returns({$class: 'com.org'});
+            mockSerializer.fromJSON.returns(mockResource);
+            mockResource.validate = sandbox.stub();
+            component['resourceDeclaration'] = mockClassDeclaration;
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateResource'](true);
+
+            // should not result in definitionError
+            should.not.exist(component['definitionError']);
+
+            // resourceDefinition should be set as per serializer.toJSON output
+            component['resourceDefinition'].should.equal('{\n  "$class": "com.org"\n}');
+
+            // We use the following internal calls
+            mockFactory.newResource.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
+        });
+
+        it('should generate a valid resource with false', () => {
+
+            mockSerializer.toJSON.returns({$class: 'com.org'});
+            mockSerializer.fromJSON.returns(mockResource);
+            mockResource.validate = sandbox.stub();
+            component['resourceDeclaration'] = mockClassDeclaration;
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateResource'](false);
+
+            // should not result in definitionError
+            should.not.exist(component['definitionError']);
+
+            // resourceDefinition should be set as per serializer.toJSON output
+            component['resourceDefinition'].should.equal('{\n  "$class": "com.org"\n}');
+
+            // We use the following internal calls
+            mockFactory.newResource.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
+        });
+
+        it('should generate a valid resource when existing data exists adding extra data and preserving previous field values', () => {
+            mockSerializer.toJSON.returns({$class: '', someField: '', optionalField: 'optional value'});
+            mockSerializer.fromJSON.returns(mockResource);
+            mockResource.validate = sandbox.stub();
+            component['resourceDeclaration'] = mockClassDeclaration;
+
+            component['resourceDefinition'] = JSON.stringify({$class: 'com.org', someField: 'some value'});
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateResource']();
+
+            // We use the following internal calls
+            mockFactory.newResource.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.be.calledWith({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+
         });
 
         it('should set definitionError on serializer fail', () => {
@@ -260,6 +325,36 @@ describe('ResourceComponent', () => {
 
             // should be in error state
             should.exist(component['definitionError']);
+        });
+    });
+
+    describe('#updateExistingJSON', () => {
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and are not blank', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: ''}, {$class: '', someField: 'not blank', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'not blank');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and ignoring fields from the first that do not exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value', anotherField: 'another field'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+            result.should.not.have.property('anotherField');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second including individual values in fields of sub objects', () => {
+            let spy = sinon.spy(component['updateExistingJSON']);
+            let result = component['updateExistingJSON']({objectField: {subProperty: 'value to keep'}}, {objectField: {subProperty: 'value to discard', optionalSubProperty: 'value that exists in second object not first'}});
+            result.should.deep.equal({objectField: {subProperty: 'value to keep', optionalSubProperty: 'value that exists in second object not first'}});
         });
     });
 

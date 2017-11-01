@@ -42,7 +42,7 @@ const newErrorWithCause = (message, cause) => {
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
  * <p>
- * Instances of this class should be created using {@link IdCard.fromArchive}.
+ * Instances of this class should be created using {@link IdCard#fromArchive}.
  * @private
  * @class
  * @memberof module:composer-common
@@ -53,7 +53,7 @@ class IdCard {
      * Create the IdCard.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link IdCard.fromArchive}</strong>
+     * retrieve instances from {@link IdCard#fromArchive}</strong>
      * @private
      * @param {Object} metadata - metadata associated with the card.
      * @param {Object} connectionProfile - connection profile associated with the card.
@@ -131,7 +131,7 @@ class IdCard {
      * @return {Object} connection profile.
      */
     getConnectionProfile() {
-        return this.connectionProfile;
+        return Object.assign({}, this.connectionProfile);
     }
 
     /**
@@ -167,7 +167,7 @@ class IdCard {
      * <p>
      * For an ID/secret enrollment scheme, the credentials are expected to be of the form:
      * <em>{ secret: String }</em>.
-     * @return {Object} enrollment credentials, or {@link null} if none exist.
+     * @return {Object} enrollment credentials, or null if none exist.
      */
     getEnrollmentCredentials() {
         const secret = this.metadata.enrollmentSecret;
@@ -267,7 +267,7 @@ class IdCard {
      * for other valid values.
      * @param {Object} [options] - JSZip generation options.
      * @param {String} [options.type] - type of the resulting ZIP file data.
-     * @return {Promise} Promise of the generated ZIP file; by default an {@link ArrayBuffer}.
+     * @return {Promise} Promise of the generated ZIP file; by default an ArrayBuffer.
      */
     toArchive(options) {
         const method = 'fromArchive';

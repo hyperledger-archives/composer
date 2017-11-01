@@ -20,20 +20,13 @@ const LOG = Logger.getLog('AssetRegistry');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#getAssetRegistry getAssetRegistry}
+ * You must use the {@link runtime-api#getAssetRegistry getAssetRegistry}
  * method instead.
  *
  * @class AssetRegistry
  * @classdesc An asset registry manages a set of assets.
  * @memberof module:composer-runtime
  * @public
- */
-
-/**
- * A class that represents an asset registry in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
  */
 class AssetRegistry {
 
@@ -67,7 +60,7 @@ class AssetRegistry {
          * @public
          * @method module:composer-runtime.AssetRegistry#getAll
          * @return {Promise} A promise. The promise is resolved with an array of
-         * {@link Resource} instances representing all of the assets stored in this
+         * {@link common-Resource} instances representing all of the assets stored in this
          * asset registry. If the asset registry does not exist, or the current
          * user does not have access to the asset registry, then the promise will
          * be rejected with an error that describes the problem.
@@ -96,7 +89,7 @@ class AssetRegistry {
          * @public
          * @method module:composer-runtime.AssetRegistry#get
          * @param {string} id The ID of the asset.
-         * @return {Promise} A promise. The promise is resolved with a {@link Resource}
+         * @return {Promise} A promise. The promise is resolved with a {@link common-Resource}
          * instance representing the specified asset in this asset registry. If the
          * specified asset does not exist, or the current user does not have access
          * to the specified asset, then the promise will be rejected with an error
