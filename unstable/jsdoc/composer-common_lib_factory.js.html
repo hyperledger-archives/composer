@@ -367,6 +367,7 @@ class Factory {
         const generateParams = this.parseGenerateOptions(clientOptions);
         if (generateParams) {
             generateParams.stack = new TypedStack(newObject);
+            generateParams.seen = [newObject.getFullyQualifiedType()];
             const visitor = new InstanceGenerator();
             classDeclaration.accept(visitor, generateParams);
         }
