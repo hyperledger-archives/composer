@@ -282,7 +282,7 @@ class Composer {
                 return assetRegistry.get(expectedResource.getIdentifier());
             })
             .then((actualResource) => {
-                this.compareResources(expectedResource, actualResource);
+                this.compareResources(actualResource, expectedResource);
             });
         }, Promise.resolve())
             .catch((error) => {
@@ -405,7 +405,7 @@ class Composer {
                 return participantRegistry.get(expectedResource.getIdentifier());
             })
             .then((actualResource) => {
-                this.compareResources(expectedResource, actualResource);
+                this.compareResources(actualResource, expectedResource);
             });
         }, Promise.resolve())
             .catch((error) => {
