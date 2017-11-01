@@ -20,7 +20,7 @@ const Globalize = require('./globalize');
 /**
  * Error thrown when a Composer type does not exist.
  * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @see see {@link BaseException}
  * @class
  * @memberof module:composer-common
  */

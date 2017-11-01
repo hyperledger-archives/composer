@@ -24,7 +24,7 @@ const Globalize = require('../globalize');
  * a pointer that points at an instance of org.acme.Vehicle with the id
  * ABC.
  * @extends Identifiable
- * @see See [Identifiable]{@link module:composer-common.Identifiable}
+ * @see See {@link Identifiable}
  * @class
  * @memberof module:composer-common
  */

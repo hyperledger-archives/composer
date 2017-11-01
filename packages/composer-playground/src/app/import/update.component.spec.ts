@@ -16,7 +16,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { UpdateComponent } from './update.component';
 import { ActiveDrawer } from '../common/drawer';
-import { ModelManager, BusinessNetworkDefinition, AssetDeclaration, ParticipantDeclaration, TransactionDeclaration } from 'composer-common';
+import {
+    ModelManager,
+    BusinessNetworkDefinition,
+    AssetDeclaration,
+    ParticipantDeclaration,
+    TransactionDeclaration
+} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -161,7 +167,7 @@ describe('UpdateComponent', () => {
 
     describe('onShow', () => {
         it('should get the list of sample networks', fakeAsync(() => {
-            mockClientService.getBusinessNetworkName.returns('my-network');
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
             let selectNetworkStub = sinon.stub(component, 'selectNetwork');
             let addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
             mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
@@ -178,6 +184,7 @@ describe('UpdateComponent', () => {
         }));
 
         it('should handle error', fakeAsync(() => {
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
             mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
 
             component.onShow();
@@ -222,22 +229,22 @@ describe('UpdateComponent', () => {
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
-          let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
-          mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
-          mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
-          mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
-          mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-          mockBusinessNetworkService.getChosenSample.returns(Promise.resolve(mockBusinessNetworkDefinition));
-          component.selectNetwork('bob');
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
+            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve(mockBusinessNetworkDefinition));
+            component.selectNetwork('bob');
 
-          tick();
+            tick();
 
-          component['chosenNetwork'];
-          component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
-          component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
-          component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
-          component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
-          mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
+            component['chosenNetwork'];
+            component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
         }));
 
         it('should select the empty network', () => {

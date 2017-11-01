@@ -29,7 +29,7 @@ const REGISTRY_TYPE = 'Asset';
  *
  * Details of these are in the system model.
  * @extends Registry
- * @see See [Registry]{@link module:composer-client.Registry}
+ * @see See {@link Registry}
  * @class
  * @memberof module:composer-client
  */

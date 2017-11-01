@@ -16,6 +16,7 @@ import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
 import { ViewTransactionComponent } from './test/view-transaction';
+import { FileService } from './services/file.service';
 
 import { IdCard } from 'composer-common';
 
@@ -59,7 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
                 private aboutService: AboutService,
-                private configService: ConfigService) {
+                private configService: ConfigService,
+                private fileService: FileService) {
     }
 
     ngOnInit(): Promise<void> {
@@ -97,6 +99,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logout() {
         this.clientService.disconnect();
         this.identityService.setLoggedIn(false);
+        this.fileService.deleteAllFiles();
         this.composerBanner = ['Hyperledger', 'Composer Playground'];
         this.showWelcome = false;
 
@@ -118,7 +121,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     let card: IdCard = this.identityCardService.getCurrentIdentityCard();
                     let connectionProfile = card.getConnectionProfile();
                     let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
-                    let busNetName = this.clientService.getBusinessNetworkName();
+                    let busNetName = this.clientService.getBusinessNetwork().getName();
                     this.composerBanner = [profileName, busNetName];
                 });
         }

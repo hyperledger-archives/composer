@@ -37,7 +37,6 @@ export class CredentialsComponent implements AfterViewInit {
     ngAfterViewInit() {
         this.credentialsForm.control.valueChanges
             .subscribe(() => {
-                console.log('banana');
                 this.validContents();
             });
     }

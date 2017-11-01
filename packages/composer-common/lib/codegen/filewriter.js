@@ -26,7 +26,7 @@ const Writer = require('./writer');
  *
  * @private
  * @extends Writer
- * @see See [Writer]{@link module:composer-common.Writer}
+ * @see See {@link Writer}
  * @class
  * @memberof module:composer-common
  */

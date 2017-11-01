@@ -380,8 +380,6 @@ describe('CredentialsComponent', () => {
             fixture.detectChanges();
 
             fixture.whenStable().then(() => {
-                console.log(component.credentialsForm.control);
-                // component.credentialsForm.control.controls['userId'].setValue('newValue');
                 validStub.should.have.been.called;
             });
         }));

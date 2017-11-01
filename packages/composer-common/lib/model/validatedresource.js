@@ -22,7 +22,7 @@ const Resource = require('./resource');
  * changes (or the whole instance) do not violate the structure of
  * the type information associated with the instance.
  * @extends Resource
- * @see See [Resource]{@link module:composer-common.Resource}
+ * @see See {@link Resource}
  * @class
  * @memberof module:composer-common
  */
