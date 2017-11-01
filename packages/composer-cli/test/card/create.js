@@ -17,6 +17,7 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
+
 const IdCard = require('composer-common').IdCard;
 const CreateCmd = require('../../lib/cmds/card/createCommand.js');
 
@@ -26,7 +27,7 @@ const sinon = require('sinon');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('composer card import CLI', function() {
+describe('composer card create CLI', function() {
     const sandbox = sinon.sandbox.create();
     const cardFileName = '/TestCard.card';
     let cardBuffer;
@@ -50,24 +51,173 @@ describe('composer card import CLI', function() {
         sandbox.restore();
     });
 
-    it('should create a valid card file with supplied details', function() {
-        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).returns(cardBuffer);
+    it('should create a valid card file with (secret) supplied details', function() {
+        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName);
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
             connectionProfileFile: 'filename',
-            businessNetworkName : 'network',
             file: 'filename',
             enrollSecret:'password',
-            enrollId:'fred'
+            user:'fred'
         };
 
         return CreateCmd.handler(args).then(() => {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Successfully created business network card'));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
 
+    it('create card with minimal options - user and profile',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
+
+    it('create card with minimal options & with the profile having no name',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+        sandbox.stub(JSON, 'parse').returns({anonymus:'network'});
+        const args = {
+            connectionProfileFile: '/fred/filename',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).should.be.rejectedWith(/Required connection field not found: name/);
+    });
+
+
+
+    it('create card with certificate and private key',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            certificate : 'certfile',
+            privateKey:'keyfile',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledThrice(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
+
+    it('create card with roles',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            roles : 'PeerAdmin,Issuer,ChannelAdmin',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
+
+    it('error case - check with connection profile file read fail',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/notexist/)).throws(new Error('read failure'));
+
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'notexist',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).should.be.rejectedWith(/Unable to read/);
+    });
+
+    it('error case - check with certificate file read fail',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/certfile/)).throws(new Error('read failure'));
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            certificate : 'certfile',
+            privateKey:'keyfile',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).should.be.rejectedWith(/Unable to read/);
+    });
+
+    it('error case - check with certificate file read fail',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
+        readFileStub.withArgs(sinon.match(/keyfile/)).throws(new Error('read failure'));
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            certificate : 'certfile',
+            privateKey:'keyfile',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).should.be.rejectedWith(/Unable to read/);
+    });
+
+    it('write valid card with default filename - based on network name',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+
+        const args = {
+            connectionProfileFile: 'filename',
+            businessNetworkName: 'penguin-network',
+            user:'fred'
+        };
+        sandbox.stub(JSON, 'parse').returns({name:args.businessNetworkName});
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.writeFileSync,sinon.match(/fred@penguin-network.card/),sinon.match.any);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
+    it('write valid card with default filename - based on profile name',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.writeFileSync,sinon.match(/fred@network.card/),sinon.match.any);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
 
 });

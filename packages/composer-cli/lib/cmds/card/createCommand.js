@@ -15,17 +15,50 @@
 'use strict';
 
 const Create = require ('./lib/create.js');
+const checkFn = (argv,options)=>{
+
+
+    if (!argv.s){
+        // no secret given, so both certificate and key are a must
+        if (!(argv.c && argv.k)){
+            throw new Error('privateKey and certificate should both be specified');
+        }
+
+    } else {
+        // we have a secret, so if any of the certificate are given this is wrong
+        if (argv.c  || argv.k){
+            throw new Error('Either the enrollSecret or the privateKey and certificate combination should be specified');
+        }
+    }
+
+    return true;
+};
+
+module.exports._checkFn =checkFn;
 
 module.exports.command = 'create [options]';
 module.exports.describe = 'Creates a business network card from individual components';
-module.exports.builder = {
-    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileFile: {alias: 'j', required: false, describe: 'Filename of the connection profile json file', type: 'string' },
-    enrollId: { alias: 'i', required: false, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    certificateFile: { alias: 'c', required: false, describe: 'File containing the certificate', type: 'string' },
-    privateKeyFile: { alias: 'k', required: false, describe: 'File containing the private key', type: 'string' }
+module.exports.builder = function (yargs) {
+    yargs.options({
+        file: {alias: 'f', required: false, describe: 'File name of the card archive to be created', type: 'string' },
+        businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
+        connectionProfileFile: {alias: 'j', required: true, describe: 'Filename of the connection profile json file', type: 'string' },
+        user: { alias: 'u', required: true, describe: 'The name of the identity for the card', type: 'string' },
+        enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+        certificate: { alias: 'c', required: false, describe:'File containing the user\'s certificate.', type: 'string'},
+        privateKey: { alias: 'k', required: false, describe:'File containing the user\'s private key', type: 'string'},
+        role: { alias: 'r', required: false, describe:'The role for this card can, specify as many as needed',
+            choices:['PeerAdmin','ChannelAdmin']}
+    });
+
+    // enforce the option after these options
+    yargs.requiresArg(['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey','roles']);
+
+    // grouping for the card options - moves them away from the standard --version etc.
+    yargs.group(['f','n','j','u','s','c','k','r'],'Card options');
+
+    yargs.check(checkFn);
+
 };
 
 module.exports.handler = (argv) => {

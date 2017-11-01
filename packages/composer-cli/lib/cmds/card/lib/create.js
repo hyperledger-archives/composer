@@ -25,57 +25,82 @@ const path = require('path');
 class Create {
   /**
     * Command implementation.
-    * @param {Object} args argument list from composer command
+    * @param {Object} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
-    static handler(args) {
+    static handler(argv) {
 
-        let profileFile  = args.connectionProfileFile;
-        let businessNetworkName = args.businessNetworkName;
-        let fileName = args.file;
+        // set if the options have been given into the metadata
+        let metadata= { version:1,
+            userName : argv.user };
 
-        let metadata= {
-            userName : args.enrollId,
-            version : 1,
-            enrollmentSecret:args.enrollSecret,
-            businessNetwork : businessNetworkName
-        };
-        const filePath = path.resolve(profileFile);
+        if (argv.role){
+            metadata.roles = argv.role;
+        }
+
+        if (argv.enrollSecret){
+            metadata.enrollmentSecret = argv.enrollSecret;
+        }
+
+        if (argv.businessNetworkName){
+            metadata.businessNetwork = argv.businessNetworkName;
+        }
+
+        // used in confirmation message so define here
+        let fileName = argv.file;
+
+        // handle the connection profile - read from a file
+        // start the promise chain to all sync errors are converted to rejected promises
         return Promise.resolve()
             .then( ()=>{
-                return this.readJsonFromFile(filePath);
-            })
-            .then((profileData) =>{
-                // if there is no name, take the name from the directory the profilefile is in
-                if (!profileData.name){
-                    profileData.name =  path.parse(filePath).dir.split(path.sep).slice(-1)[0];
+                const filePath = path.resolve(argv.connectionProfileFile);
+                let profileData = JSON.parse(this.readFile(filePath));
+
+                // setup the id card with the meta data and profileData
+                let idCard = new IdCard(metadata,profileData);
+
+                // certificates & privateKey
+                // YARGS command spec logic will have enforced the correct set of options
+                if (argv.certificate && argv.privateKey){
+                    let certFile = this.readFile(path.resolve(argv.certificate));
+                    let keyFile =  this.readFile(path.resolve(argv.privateKey));
+                    idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
+                }
+                // handle the filename
+                // Default is userName@businessNetworkName.card if the card includes a business network name;
+                // otherwise userName@connectionProfileName.card.
+                if (!fileName) {
+                    if (metadata.hasOwnProperty('businessNetwork')){
+                        fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
+                    } else {
+                        fileName = metadata.userName+'@'+ profileData.name +'.card';
+                    }
                 }
 
-                let idCard = new IdCard(metadata,profileData);
+                // finally write out the card file
                 return Export.writeCardToFile(fileName,idCard);
             })
             .then(() => {
-                console.log('Successfully created business network card');
+                console.log('Successfully created business network card to '+fileName);
             });
     }
 
     /**
-     * Read a json file (that in this case has the connection profile)
-     * @param {String} filePath absolute or relative (to current working directory) file name
-     * @return {Promise} Resolves with a JSON object
+     * Read a file from disc and return the result or throw an error.
+     * @param {String} filePath file to load
+     * @return {String} with contents or throws an error
      */
-    static readJsonFromFile(filePath) {
-
+    static readFile(filePath){
         let content='';
         try {
             content = fs.readFileSync(filePath,'utf8');
         } catch (cause) {
-            const error = new Error(`Unable to read JSON file: ${filePath}`);
+            const error = new Error(`Unable to read file: ${filePath}`);
             error.cause = cause;
-            return Promise.reject(error);
+            throw error;
         }
 
-        return JSON.parse(content);
+        return content;
     }
 
 }
