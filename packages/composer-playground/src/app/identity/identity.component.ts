@@ -42,7 +42,7 @@ export class IdentityComponent implements OnInit {
         this.loadMyIdentities();
         return this.clientService.ensureConnected()
             .then(() => {
-                this.businessNetworkName = this.clientService.getMetaData().getName();
+                this.businessNetworkName = this.clientService.getBusinessNetwork().getName();
                 return this.clientService.getBusinessNetworkConnection().getIdentityRegistry();
             }).then((registry) => {
                 return registry.getAll();

@@ -23,7 +23,7 @@ const ClassDeclaration = require('./classdeclaration');
  * identifying field.
  * @private
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
+ * @see See  {@link  ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

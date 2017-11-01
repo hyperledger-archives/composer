@@ -9,11 +9,7 @@ import { IdentityCardService } from './identity-card.service';
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
 import { BusinessNetworkDefinition, AclFile, Serializer, Factory, ModelManager } from 'composer-common';
-
-import * as sinon from 'sinon';
-import * as chai from 'chai';
-
-let should = chai.should();
+import { FileService } from './file.service';
 
 import {
     HttpModule,
@@ -22,6 +18,11 @@ import {
     XHRBackend
 } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
+
+import * as sinon from 'sinon';
+import * as chai from 'chai';
+
+let should = chai.should();
 
 describe('SampleBusinessNetworkService', () => {
 
@@ -32,6 +33,7 @@ describe('SampleBusinessNetworkService', () => {
     let businessNetworkMock;
     let sandbox;
     let identityCardMock;
+    let mockFileService;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -41,6 +43,7 @@ describe('SampleBusinessNetworkService', () => {
         aclFileMock = sinon.createStubInstance(AclFile);
         alertMock = sinon.createStubInstance(AlertService);
         businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockFileService = sinon.createStubInstance(FileService);
 
         const modelManager = new ModelManager();
         const factory = new Factory(modelManager);
@@ -56,6 +59,7 @@ describe('SampleBusinessNetworkService', () => {
                 {provide: AlertService, useValue: alertMock},
                 {provide: AdminService, useValue: adminMock},
                 {provide: ClientService, useValue: clientMock},
+                {provide: FileService, useValue: mockFileService},
                 {provide: AclFile, useValue: aclFileMock},
                 {provide: XHRBackend, useClass: MockBackend},
                 {provide: IdentityCardService, useValue: identityCardMock}]
@@ -189,12 +193,6 @@ describe('SampleBusinessNetworkService', () => {
             const bootstrapTransactions = service.generateBootstrapTransactions(businessNetworkMock, 'doggoship1', {certificate: 'myCert'});
             sanitize(bootstrapTransactions);
 
-            console.log('ACTUAL', bootstrapTransactions[1]);
-            console.log('EXPECTED', {
-                $class: 'org.hyperledger.composer.system.BindIdentity',
-                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#doggoship1',
-                certficate: 'myCert'
-            });
             bootstrapTransactions.should.deep.equal([
                 {
                     $class: 'org.hyperledger.composer.system.AddParticipant',
@@ -514,8 +512,8 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.update.returns(Promise.resolve());
             adminMock.connect.returns(Promise.resolve());
             clientMock.refresh.returns(Promise.resolve());
-            clientMock.getBusinessNetworkName.returns('myNetwork');
-            clientMock.getBusinessNetworkDescription.returns('myDescription');
+            mockFileService.getBusinessNetworkName.returns('myNetwork');
+            mockFileService.getBusinessNetworkDescription.returns('myDescription');
 
             let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('newname')});
 
@@ -539,8 +537,8 @@ describe('SampleBusinessNetworkService', () => {
         })));
 
         it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            clientMock.getBusinessNetworkName.returns('myNetwork');
-            clientMock.getBusinessNetworkDescription.returns('myDescription');
+            mockFileService.getBusinessNetworkName.returns('myNetwork');
+            mockFileService.getBusinessNetworkDescription.returns('myDescription');
 
             let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub()});
 

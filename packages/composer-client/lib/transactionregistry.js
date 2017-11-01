@@ -23,7 +23,7 @@ const REGISTRY_TYPE = 'Transaction';
  * The TransactionRegistry is used to store a set of transactions on the blockchain.
  * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p>
  * @extends Registry
- * @see See [Registry]{@link module:composer-client.Registry}
+ * @see See {@link Registry}
  * @class
  * @memberof module:composer-client
  */

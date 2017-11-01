@@ -217,6 +217,30 @@ describe('JavascriptParser', () => {
 
             const parser = new JavascriptParser(contents);
             parser.getFunctions().should.deep.equal([{
+                'commentData': { 'description': 'Get the Animals, but do not resolve contained relationships',
+                    'tags':
+                    [ { 'title': 'query', 'description': null },
+                        { 'title': 'param', 'description': 'the email of the farmer',  'type':  {
+                            'name': 'String',
+                            'type': 'NameExpression'
+                        },
+                            'name': 'farmerId' },
+                        { 'title': 'returns',
+                            'description': 'the animals that belong to the farmer',
+                            'type': {
+                                'applications': [
+                                    {
+                                        'name': 'Animal',
+                                        'type': 'NameExpression'
+                                    }
+                                ],
+                                'expression': {
+                                    'name': 'Array',
+                                    'type': 'NameExpression'
+                                },
+                                'type': 'TypeApplication'
+                            }
+                        } ] },
                 'decorators': [
                     'query',
                     'param',
@@ -318,9 +342,6 @@ describe('JavascriptParser', () => {
             funcs[4].decorators[0].should.equal('transaction');
         });
 
-        it('unusual circumstances', () =>{
-            JavascriptParser.findCommentBefore(50,100,100,[{start:220,end:40},{start:220,end:40}]);
-        });
     });
 
     describe('#getDecorators', () => {

@@ -30,9 +30,10 @@ const Identifiable = require('./identifiable');
  * other domain classes that can be serialized for long-term persistent storage.
  * </p>
  * @extends Identifiable
- * @see See [Resource]{@link module:composer-common.Resource}
+ * @see See {@link Resource}
  * @class
  * @memberof module:composer-common
+ * @public
  */
 class Resource extends Identifiable {
     /**
