@@ -29,7 +29,7 @@ const LOG = Logger.getLog('Api');
  * class are made available as global functions which can be called by transaction
  * processor functions. The transaction processor API should expose no internal
  * properties or internal methods which could be accessed or misused.
- * @private
+ *
  * @class
  * @memberof module:composer-runtime
  */

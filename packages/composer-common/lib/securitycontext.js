@@ -26,8 +26,7 @@ class SecurityContext {
 
     /**
      * Create the SecurityContext.
-     * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances by calling {@link Composer#login login}</strong>
+     * <strong>Note: Only to be called by framework code. </strong>
      * </p>
      * @param {Connection} connection The owning connection.
      * @param {string} user The user identifier.

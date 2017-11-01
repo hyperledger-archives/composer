@@ -20,7 +20,7 @@ const LOG = Logger.getLog('Serializer');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#getSerializer getSerializer}
+ * You must use the {@link runtime-api#getSerializer getSerializer}
  * method instead.
  *
  * @class Serializer
@@ -28,13 +28,6 @@ const LOG = Logger.getLog('Serializer');
  * and relationships to and from a JSON serialization format.
  * @memberof module:composer-runtime
  * @public
- */
-
-/**
- * A class that represents a serializer in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
  */
 class Serializer {
 
@@ -48,7 +41,7 @@ class Serializer {
         LOG.entry(method, serializer);
 
         /**
-         * Convert a {@link Resource} to a JavaScript object suitable for long-term
+         * Convert a {@link common-Resource} to a JavaScript object suitable for long-term
          * peristent storage.
          * @example
          * // Get the serializer.
@@ -74,10 +67,9 @@ class Serializer {
         };
 
         /**
-         * Create a {@link Resource} from a JavaScript object representation.
+         * Create a {@link common-Resource} from a JavaScript object representation.
          * The JavaScript object should have been created by calling the
-         * {@link Serializer#toJSON toJSON} API.
-         * The {@link Resource} is populated based on the JavaScript object.
+         * {@link runtime-Serializer#toJSON toJSON} api
          * @example
          * // Get the serializer.
          * var serializer = getSerializer();

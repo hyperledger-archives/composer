@@ -35,7 +35,7 @@ class Serializer {
     /**
      * Create a Serializer.
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Composer}</strong>
+     * retrieve instances from {@link BusinessNetworkDefinition}</strong>
      * </p>
      * @param {Factory} factory - The Factory to use to create instances
      * @param {ModelManager} modelManager - The ModelManager to use for validation etc.

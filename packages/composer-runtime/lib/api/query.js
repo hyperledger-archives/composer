@@ -20,20 +20,13 @@ const LOG = Logger.getLog('Query');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#buildQuery buildQuery}
+ * You must use the {@link runtime-api#buildQuery buildQuery}
  * method instead.
  *
  * @class Query
  * @classdesc A query represents a built query.
  * @memberof module:composer-runtime
  * @public
- */
-
-/**
- * A class that represents a built query in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
  */
 class Query {
 

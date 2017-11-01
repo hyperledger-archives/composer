@@ -48,7 +48,7 @@ class Factory {
      * Create the factory.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Hyperledger-Composer}</strong>
+     * retrieve instances from {@link BusinessNetworkDefinition}</strong>
      * </p>
      * @param {ModelManager} modelManager - The ModelManager to use for this registry
      */
