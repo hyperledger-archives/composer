@@ -48,7 +48,7 @@ module.exports.builder = function (yargs) {
         certificate: { alias: 'c', required: false, describe:'File containing the user\'s certificate.', type: 'string'},
         privateKey: { alias: 'k', required: false, describe:'File containing the user\'s private key', type: 'string'},
         role: { alias: 'r', required: false, describe:'The role for this card can, specify as many as needed',
-            choices:['PeerAdmin','ChannelAdmin','Issuer']}
+            choices:['PeerAdmin','ChannelAdmin']}
     });
 
     // enforce the option after these options
