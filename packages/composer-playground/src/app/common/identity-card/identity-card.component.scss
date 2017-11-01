@@ -81,6 +81,9 @@
             .user-name {
                 font-weight: 600;
                 margin: $space-medium 0 $space-smedium 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
             }
 
             .image-placeholder {
@@ -160,6 +163,7 @@
             p {
                 text-overflow: ellipsis;
                 overflow: hidden;
+                white-space: nowrap;
 
                 &.none {
                     color: $fifth-highlight;

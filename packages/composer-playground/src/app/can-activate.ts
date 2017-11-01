@@ -1,22 +1,36 @@
-import { Injectable }             from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { IdentityService } from './services/identity.service';
+import { IdentityCardService } from './services/identity-card.service';
+import { InitializationService } from './services/initialization.service';
 
 @Injectable()
 export class CanActivateViaLogin implements CanActivate {
 
-    constructor(private identityService: IdentityService,
+    private isloaded = false;
+
+    constructor(private identityCardService: IdentityCardService,
+                private initializationService: InitializationService,
                 private router: Router) {
 
     }
 
     canActivate(): boolean {
-        let loggedIn = this.identityService.getLoggedIn();
-        if (loggedIn) {
-            return true;
+        let loadingPromise;
+        if (this.isloaded) {
+            loadingPromise = Promise.resolve();
         } else {
-            this.router.navigate(['login']);
-            return false;
+            loadingPromise = this.initializationService.initialize();
         }
+
+        return loadingPromise.then(() => {
+            this.isloaded = true;
+            let cardRef = this.identityCardService.getCurrentCardRef();
+            if (cardRef) {
+                return true;
+            } else {
+                this.router.navigate(['login']);
+                return false;
+            }
+        });
     }
 }

@@ -39,7 +39,7 @@ class ConnectionProfileManager {
      * modules that can load connection managers.
      * @param {Object} module The module that can load connector modules.
      */
-    static registerConnectionManagerLoader(module) {
+    static registerConnectionManagerLoader (module) {
         connectionManagerLoaders.push(module);
     }
 
@@ -48,31 +48,8 @@ class ConnectionProfileManager {
      * @param {string} type - the profile type identifier of the ConnectionManager
      * @param {function} ctor - the constructor of the ConnectionManager
      */
-    static registerConnectionManager(type, ctor) {
+    static registerConnectionManager (type, ctor) {
         connectionManagerClasses[type] = ctor;
-    }
-
-    /**
-     * Create the ConnectionManager and attach a file system
-     * @param {ConnectionProfileStore} connectionProfileStore - Node.js FS implementation, for example BrowserFS
-     */
-    constructor(connectionProfileStore) {
-        LOG.info('constructor','Created a new ConnectionProfileManager', connectionProfileStore);
-
-        if(!connectionProfileStore) {
-            throw new Error('Must create ConnectionProfileManager with a ConnectionProfileStore implementation.');
-        }
-
-        this.connectionProfileStore = connectionProfileStore;
-    }
-
-    /**
-     * Returns the ConnectionProfileStore associated with this
-     * instance.
-     * @return {ConnectionProfileStore} the associated store.
-     */
-    getConnectionProfileStore() {
-        return this.connectionProfileStore;
     }
 
     /**
@@ -80,108 +57,90 @@ class ConnectionProfileManager {
      * @param {string} type - the profile type identifier of the ConnectionManager
      * @param {ConnectionManager} connectionManager - the instance
      */
-    addConnectionManager(type, connectionManager) {
-        LOG.info('addConnectionManager','Adding a new connection manager', type);
+    addConnectionManager (type, connectionManager) {
+        LOG.info('addConnectionManager', 'Adding a new connection manager', type);
         connectionManagers[type] = connectionManager;
     }
 
     /**
-     * Retrieves the ConnectionManager for the given connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile
-     * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
-     * object once the connection is established, or rejected with a connection error.
-     */
-    getConnectionManager(connectionProfile) {
-        const METHOD = 'getConnectionManager';
-        LOG.info(METHOD,'Looking up a connection manager for profile', connectionProfile);
-
-        return this.connectionProfileStore.load(connectionProfile)
-        .then((data) => {
-            LOG.debug(METHOD,data);
-            return this.getConnectionManagerByType(data.type);
-        });
-    }
-
-   /**
      * Retrieves the ConnectionManager for the given connection type.
      *
      * @param {string} connectionType The type of the connection type
      * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
      * object once the connection is established, or rejected with a connection error.
      */
-    getConnectionManagerByType(connectionType) {
+    getConnectionManagerByType (connectionType) {
         const METHOD = 'getConnectionManagerByType';
-        LOG.info(METHOD,'Looking up a connection manager for type', connectionType);
+        LOG.info(METHOD, 'Looking up a connection manager for type', connectionType);
         let errorList = [];
 
         return Promise.resolve()
-        .then(() => {
-            let connectionManager  = connectionManagers[connectionType];
-            if(!connectionManager) {
-                const mod = `composer-connector-${connectionType}`;
-                LOG.debug(METHOD,'Looking for module',mod);
-                try {
-                    // Check for the connection manager class registered using
-                    // registerConnectionManager (used by the web connector).
-                    let connectionManagerClass = connectionManagerClasses[connectionType];
-                    if (connectionManagerClass) {
-                        connectionManager = new(connectionManagerClass)(this);
-                    } else {
-                        // Not registered using registerConnectionManager, we now
-                        // need to search for the connector module in our module
-                        // and all of the parent modules (the ones who required
-                        // us) as we do not depend on any connector modules.
-                        let curmod = module;
-                        while (curmod) {
-                            try {
-                                connectionManager = new(curmod.require(mod))(this);
-                                break;
-                            } catch (e) {
-                                errorList.push(e.message);
-                                LOG.info(METHOD,'No yet located the module ',e.message);
-                                // Continue to search the parent.
-                            }
-                            curmod = curmod.parent;
-                        }
-
-                        LOG.info(METHOD,'Using this connection manager ',connectionManager);
-                        if (!connectionManager) {
-                            connectionManagerLoaders.some((connectionManagerLoader) => {
+            .then(() => {
+                let connectionManager = connectionManagers[connectionType];
+                if (!connectionManager) {
+                    const mod = `composer-connector-${connectionType}`;
+                    LOG.debug(METHOD, 'Looking for module', mod);
+                    try {
+                        // Check for the connection manager class registered using
+                        // registerConnectionManager (used by the web connector).
+                        let connectionManagerClass = connectionManagerClasses[connectionType];
+                        if (connectionManagerClass) {
+                            connectionManager = new (connectionManagerClass)(this);
+                        } else {
+                            // Not registered using registerConnectionManager, we now
+                            // need to search for the connector module in our module
+                            // and all of the parent modules (the ones who required
+                            // us) as we do not depend on any connector modules.
+                            let curmod = module;
+                            while (curmod) {
                                 try {
-                                    connectionManager = new(connectionManagerLoader.require(mod))(this);
-                                    return true;
+                                    connectionManager = new (curmod.require(mod))(this);
+                                    break;
                                 } catch (e) {
-                                    // Search the next one.
                                     errorList.push(e.message);
-                                    LOG.info(METHOD,e);
-                                    return false;
+                                    LOG.info(METHOD, 'No yet located the module ', e.message);
+                                    // Continue to search the parent.
                                 }
-                            });
+                                curmod = curmod.parent;
+                            }
+
+                            LOG.info(METHOD, 'Using this connection manager ', connectionManager);
+                            if (!connectionManager) {
+                                connectionManagerLoaders.some((connectionManagerLoader) => {
+                                    try {
+                                        connectionManager = new (connectionManagerLoader.require(mod))(this);
+                                        return true;
+                                    } catch (e) {
+                                        // Search the next one.
+                                        errorList.push(e.message);
+                                        LOG.info(METHOD, e);
+                                        return false;
+                                    }
+                                });
+                            }
+                            if (!connectionManager) {
+                                LOG.verbose(METHOD, 'not located the module - final try ');
+                                // We still didn't find it, so try plain old require
+                                // one last time.
+                                connectionManager = new (require(mod))(this);
+                            }
                         }
-                        if (!connectionManager) {
-                            LOG.verbose(METHOD,'not located the module - final try ');
-                            // We still didn't find it, so try plain old require
-                            // one last time.
-                            connectionManager = new(require(mod))(this);
-                        }
+
+                    } catch (e) {
+                        // takes the error list, and filters out duplicate lines
+                        errorList.push(e.message);
+                        errorList.filter((element, index, self) => {
+                            return index === self.indexOf(element);
+                        });
+
+                        const newError = new Error(`Failed to load connector module "${mod}" for connection type "${connectionType}". ${errorList.join('-')}`);
+                        LOG.error(METHOD, newError);
+                        throw newError;
                     }
-
-                } catch (e) {
-                    // takes the error list, and filters out duplicate lines
-                    errorList.push(e.message);
-                    errorList.filter((element, index, self)=>{
-                        return index === self.indexOf(element);
-                    });
-
-                    const newError = new Error(`Failed to load connector module "${mod}" for connection type "${connectionType}". ${errorList.join('-')}`);
-                    LOG.error(METHOD, newError);
-                    throw newError;
+                    connectionManagers[connectionType] = connectionManager;
                 }
-                connectionManagers[connectionType] = connectionManager;
-            }
-            return connectionManager;
-        });
+                return connectionManager;
+            });
     }
 
     /**
@@ -195,20 +154,12 @@ class ConnectionProfileManager {
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
-        LOG.info('connect','Connecting using ' + connectionProfile, businessNetworkIdentifier);
+    connect (connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
+        LOG.info('connect', 'Connecting using ' + connectionProfile, businessNetworkIdentifier);
 
-        let connectOptions;
-        return this.connectionProfileStore.load(connectionProfile)
-            .then((connectOptions_) => {
-                connectOptions = connectOptions_;
-                if (additionalConnectOptions) {
-                    connectOptions = Object.assign(connectOptions, additionalConnectOptions);
-                }
-                return this.getConnectionManager(connectionProfile);
-            })
+        return this.getConnectionManagerByType(additionalConnectOptions.type)
             .then((connectionManager) => {
-                return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
+                return connectionManager.connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions);
             });
     }
 
@@ -223,26 +174,26 @@ class ConnectionProfileManager {
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connectWithData(connectionProfileData, businessNetworkIdentifier, additionalConnectOptions) {
+    connectWithData (connectionProfileData, businessNetworkIdentifier, additionalConnectOptions) {
         let connectOptions = connectionProfileData;
 
-        return Promise.resolve().then( ()=>{
+        return Promise.resolve().then(() => {
             if (additionalConnectOptions) {
                 connectOptions = Object.assign(connectOptions, additionalConnectOptions);
             }
             return this.getConnectionManagerByType(connectOptions.type);
         })
-        .then((connectionManager) => {
-            // todo - this connect is duplicating values
-            return connectionManager.connect(connectOptions.name, businessNetworkIdentifier, connectOptions);
-        });
+            .then((connectionManager) => {
+                // todo - this connect is duplicating values
+                return connectionManager.connect(connectOptions.name, businessNetworkIdentifier, connectOptions);
+            });
 
     }
 
     /**
      * Clear the static object containing all the connection managers
      */
-    static removeAllConnectionManagers() {
+    static removeAllConnectionManagers () {
         connectionManagerLoaders.length = 0;
         Object.keys(connectionManagerClasses).forEach((key) => {
             connectionManagerClasses[key] = null;

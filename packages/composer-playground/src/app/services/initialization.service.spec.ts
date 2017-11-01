@@ -2,11 +2,9 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { TestBed, async, inject, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import {
     HttpModule,
-    Response,
-    ResponseOptions,
     XHRBackend
 } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
@@ -15,7 +13,6 @@ import { InitializationService } from './initialization.service';
 
 import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileService } from './connectionprofile.service';
 import { ConfigService } from './config.service';
 import { IdCard } from 'composer-common';
 
@@ -24,7 +21,6 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
-import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 
 describe('InitializationService', () => {
@@ -72,8 +68,6 @@ describe('InitializationService', () => {
 
     let mockClientService;
     let mockAlertService;
-    let mockConnectionProfileService;
-    let mockIdentityService;
     let mockIdentityCardService;
     let mockConfigService;
 
@@ -81,8 +75,6 @@ describe('InitializationService', () => {
 
         mockClientService = sinon.createStubInstance(ClientService);
         mockAlertService = sinon.createStubInstance(AlertService);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-        mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockConfigService = sinon.createStubInstance(ConfigService);
 
@@ -95,8 +87,6 @@ describe('InitializationService', () => {
                 InitializationService,
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: XHRBackend, useClass: MockBackend},
                 {provide: ConfigService, useValue: mockConfigService}
@@ -125,8 +115,6 @@ describe('InitializationService', () => {
         it('should initialize', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             mockConfigService.loadConfig.returns(Promise.resolve({}));
 
-            mockIdentityService.getLoggedIn.returns(false);
-
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 
             mockIdentityCardService.addInitialIdentityCards.returns(Promise.resolve(['cardRef']));
@@ -142,8 +130,6 @@ describe('InitializationService', () => {
 
         it('should initialize with config data', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             mockConfigService.loadConfig.returns(Promise.resolve(mockConfig));
-
-            mockIdentityService.getLoggedIn.returns(false);
 
             mockIdentityCardService.loadIdentityCards.returns(Promise.resolve());
 

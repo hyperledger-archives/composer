@@ -140,11 +140,11 @@ describe(`IdentityComponent`, () => {
             myIdentityMock.should.have.been.called;
 
             mockIdentityCardService.getCurrentIdentityCard.should.have.been.called;
-            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name : 'myProfile'});
+            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name: 'myProfile'});
             mockIdentityCardService.getCardRefFromIdentity.should.have.been.calledTwice;
             mockIdentityCardService.getCardRefFromIdentity.firstCall.should.have.been.calledWith('idOne', 'myNetwork', 'qpn');
             mockIdentityCardService.getCardRefFromIdentity.secondCall.should.have.been.calledWith('idTwo', 'myNetwork', 'qpn');
-            component['allIdentities'].should.deep.equal([{name: 'idOne', ref : '1234'}, {name: 'idTwo', ref: '4321'}]);
+            component['allIdentities'].should.deep.equal([{name: 'idOne', ref: '1234'}, {name: 'idTwo', ref: '4321'}]);
         }));
 
         it('should give an alert if there is an error', fakeAsync(() => {
@@ -369,28 +369,33 @@ describe(`IdentityComponent`, () => {
     });
 
     describe('showNewId', () => {
-        let mockAddCardToWallet;
         let mockExportIdentity;
 
         beforeEach(() => {
             mockModal.open.reset();
-
-            mockAddCardToWallet = sinon.stub(component, 'addCardToWallet');
             mockExportIdentity = sinon.stub(component, 'exportIdentity');
         });
 
         it('should add card to wallet when add option selected', fakeAsync(() => {
             mockModal.open.returns({
                 componentInstance: {},
-                result: Promise.resolve({card: 'myCard', choice: 'add'})
+                result: Promise.resolve({cardRef: '1234', choice: 'add'})
             });
+
+            mockIdentityCardService.getIdentityCard.returns(mockCard);
 
             component.showNewId({userID: 'myId', userSecret: 'mySecret'});
 
             tick();
 
             mockModal.open.should.have.been.called;
-            mockAddCardToWallet.should.have.been.calledWith('myCard');
+            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('1234');
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'ID Card added to wallet',
+                text: 'The ID card myName was successfully added to your wallet',
+                icon: '#icon-role_24'
+            });
+
             mockExportIdentity.should.not.have.been.called;
         }));
 
@@ -405,7 +410,7 @@ describe(`IdentityComponent`, () => {
             tick();
 
             mockModal.open.should.have.been.called;
-            mockAddCardToWallet.should.not.have.been.called;
+            mockAlertService.successStatus$.next.should.not.have.been.called;
             mockExportIdentity.should.have.been.calledWith('myCard');
         }));
 
@@ -420,7 +425,7 @@ describe(`IdentityComponent`, () => {
             tick();
 
             mockModal.open.should.have.been.called;
-            mockAddCardToWallet.should.not.have.been.called;
+            mockAlertService.successStatus$.next.should.not.have.been.called;
             mockExportIdentity.should.not.have.been.called;
         }));
 
@@ -435,27 +440,8 @@ describe(`IdentityComponent`, () => {
             tick();
 
             mockModal.open.should.have.been.called;
-            mockAddCardToWallet.should.not.have.been.called;
+            mockAlertService.successStatus$.next.should.not.have.been.called;
             mockExportIdentity.should.not.have.been.called;
-        }));
-    });
-
-    describe('addCardToWallet', () => {
-        it('should add idcard to wallet', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.resolve('cardref'));
-            mockIdentityCardService.getIdentityCard.returns(mockCard);
-
-            component.addCardToWallet(mockCard);
-
-            tick();
-
-            mockIdentityCardService.addIdentityCard.should.have.been.calledWith(mockCard);
-            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
-            mockAlertService.successStatus$.next.should.have.been.calledWith({
-                title: 'ID Card added to wallet',
-                text: 'The ID card myName was successfully added to your wallet',
-                icon: '#icon-role_24'
-            });
         }));
     });
 
@@ -469,7 +455,7 @@ describe(`IdentityComponent`, () => {
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', 'myNetwork', 'mySecret', {name: 'myProfile'});
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', null, 'myNetwork', 'mySecret', {name: 'myProfile'});
             mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card added to wallet',
@@ -515,7 +501,7 @@ describe(`IdentityComponent`, () => {
 
             component['currentIdentity'].should.equal('1234');
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('1234');
-            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
             mockAlertService.busyStatus$.next.should.have.been.calledTwice;
             loadAllIdentities.should.have.been.called;
         }));

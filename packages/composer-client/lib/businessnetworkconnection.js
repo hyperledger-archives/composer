@@ -16,12 +16,9 @@
 
 const AssetRegistry = require('./assetregistry');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
 const EventEmitter = require('events');
 const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const Historian = require('./historian');
 const IdentityRegistry = require('./identityregistry');
 const Logger = require('composer-common').Logger;
@@ -52,32 +49,15 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {Object} [options] - an optional set of options to configure the instance.
      * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
-    constructor(options) {
+    constructor (options) {
         super();
         const method = 'constructor';
         LOG.entry(method, options);
         options = options || {};
-        let connectionProfileStore;
-        if (options.connectionProfileStore) {
-            LOG.debug(method, 'Using connection profile store from options');
-            connectionProfileStore = options.connectionProfileStore;
-        } else {
-            LOG.debug(method, 'Creating new file system connection profile store');
-            connectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
-        }
-        if (process.env.COMPOSER_CONFIG) {
-            LOG.debug(method, 'Enabling environment connection profile store');
-            const envConnectionProfileStore = new EnvConnectionProfileStore();
-            connectionProfileStore = new ComboConnectionProfileStore(
-                connectionProfileStore,
-                envConnectionProfileStore
-            );
-        }
 
-        this.cardStore = options.cardStore || new FileSystemCardStore({ fs: options.fs || fs });
+        this.cardStore = options.cardStore || new FileSystemCardStore({fs : options.fs || fs});
 
-        this.connectionProfileStore = connectionProfileStore;
-        this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
+        this.connectionProfileManager = new ConnectionProfileManager();
         this.connection = null;
         this.securityContext = null;
         this.businessNetwork = null;
@@ -99,7 +79,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * });
      * @returns {BusinessNetworkDefinition} the business network
      */
-    getBusinessNetwork() {
+    getBusinessNetwork () {
         return this.businessNetwork;
     }
 
@@ -119,10 +99,10 @@ class BusinessNetworkConnection extends EventEmitter {
      * asset registries
      * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      */
-    getAllAssetRegistries(includeSystem) {
+    getAllAssetRegistries (includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
-        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
+        return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
     /**
@@ -141,9 +121,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with the existing asset
      * registry, or rejected if the asset registry does not exist.
      */
-    getAssetRegistry(id) {
+    getAssetRegistry (id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -164,9 +144,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with a boolean indicating whether the asset
      * registry exists.
      */
-    assetRegistryExists(id) {
+    assetRegistryExists (id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -183,9 +163,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with the new asset
      * registry after it has been added.
      */
-    addAssetRegistry(id, name) {
+    addAssetRegistry (id, name) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -205,10 +185,10 @@ class BusinessNetworkConnection extends EventEmitter {
      * participant registries
      * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      */
-    getAllParticipantRegistries(includeSystem) {
+    getAllParticipantRegistries (includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
-        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
+        return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
     /**
@@ -227,12 +207,12 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with the existing participant
      * registry, or rejected if the participant registry does not exist.
      */
-    getParticipantRegistry(id) {
+    getParticipantRegistry (id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
-     /**
+    /**
      * Determine whether a participant registry exists.
      * @example
      * // Determine whether an asset registry exists
@@ -250,9 +230,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with a boolean indicating whether the participant
      * registry exists.
      */
-    participantRegistryExists(id) {
+    participantRegistryExists (id) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -269,9 +249,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with the new participant
      * registry after it has been added.
      */
-    addParticipantRegistry(id, name) {
+    addParticipantRegistry (id, name) {
         Util.securityCheck(this.securityContext);
-        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -289,9 +269,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {string} id - The unique identifier of the transaction registry
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
-    getTransactionRegistry(id) {
+    getTransactionRegistry (id) {
         Util.securityCheck(this.securityContext);
-        return TransactionRegistry.getTransactionRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return TransactionRegistry.getTransactionRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
@@ -309,10 +289,10 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
      * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
      */
-    getAllTransactionRegistries(includeSystem) {
+    getAllTransactionRegistries (includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
-        return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this,sysReg);
+        return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
 
@@ -334,9 +314,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} - A promise that will be resolved with a boolean indicating whether the transaction
      * registry exists.
      */
-    transactionRegistryExists(id) {
+    transactionRegistryExists (id) {
         Util.securityCheck(this.securityContext);
-        return TransactionRegistry.transactionRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(),this);
+        return TransactionRegistry.transactionRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
 
@@ -354,7 +334,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * });
      * @return {Promise} - A promise that will be resolved to the {@link Historian}
      */
-    getHistorian() {
+    getHistorian () {
         Util.securityCheck(this.securityContext);
         return Historian
             .getHistorian(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
@@ -381,7 +361,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * });
      * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
      */
-    getIdentityRegistry() {
+    getIdentityRegistry () {
         Util.securityCheck(this.securityContext);
         return IdentityRegistry
             .getIdentityRegistry(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
@@ -413,14 +393,14 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      * @private
      */
-    connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+    connectWithDetails (connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
         const method = '_connect';
         LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
 
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
                 LOG.exit(method);
-                return this._connectionLogin(connection,enrollmentID, enrollmentSecret);
+                return this._connectionLogin(connection, enrollmentID, enrollmentSecret);
             });
 
     }
@@ -440,12 +420,12 @@ class BusinessNetworkConnection extends EventEmitter {
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    connect(cardName,additionalConnectOptions){
+    connect (cardName, additionalConnectOptions) {
         const method = 'connectWithCard';
-        LOG.entry(method,cardName);
+        LOG.entry(method, cardName);
 
         return this.cardStore.get(cardName)
-            .then((retrievedCard)=>{
+            .then((retrievedCard) => {
                 this.card = retrievedCard;
                 if (!additionalConnectOptions) {
                     additionalConnectOptions = {};
@@ -457,13 +437,13 @@ class BusinessNetworkConnection extends EventEmitter {
                 LOG.exit(method);
 
                 let secret = this.card.getEnrollmentCredentials();
-                if (!secret){
-                    secret='na';
+                if (!secret) {
+                    secret = 'na';
                 } else {
-                    secret=secret.secret;
+                    secret = secret.secret;
                 }
 
-                return this._connectionLogin(connection,this.card.getUserName(),secret);
+                return this._connectionLogin(connection, this.card.getUserName(), secret);
 
             });
 
@@ -475,7 +455,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * network card was not used.
      * @private
      */
-    getCard() {
+    getCard () {
         return this.card;
     }
 
@@ -488,39 +468,39 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} resolved promise to a BusinessNetworkDefinition when complete
      *
      */
-    _connectionLogin(connection,enrollId,enrollmentSecret){
+    _connectionLogin (connection, enrollId, enrollmentSecret) {
         const method = '_connectionLogin';
         LOG.entry(method);
 
         return Promise.resolve()
-             .then(() =>{
-                 connection.on('events', (events) => {
-                     events.forEach((event) => {
-                         let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
-                         this.emit('event', serializedEvent);
-                     });
-                 });
-                 this.connection = connection;
-                 return connection.login(enrollId,enrollmentSecret);
-             })
-         .then((securityContext) => {
-             this.securityContext = securityContext;
-             return this.ping();
-         })
-          .then(() => {
-              return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
-          })
-          .then((buffer) => {
-              let businessNetworkJSON = JSON.parse(buffer.toString());
-              let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
-              return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-          })
-          .then((businessNetwork) => {
-              this.businessNetwork = businessNetwork;
-              this.dynamicQueryFile = this.businessNetwork.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
-              LOG.exit(method);
-              return this.businessNetwork;
-          });
+            .then(() => {
+                connection.on('events', (events) => {
+                    events.forEach((event) => {
+                        let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
+                        this.emit('event', serializedEvent);
+                    });
+                });
+                this.connection = connection;
+                return connection.login(enrollId, enrollmentSecret);
+            })
+            .then((securityContext) => {
+                this.securityContext = securityContext;
+                return this.ping();
+            })
+            .then(() => {
+                return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
+            })
+            .then((buffer) => {
+                let businessNetworkJSON = JSON.parse(buffer.toString());
+                let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+            })
+            .then((businessNetwork) => {
+                this.businessNetwork = businessNetwork;
+                this.dynamicQueryFile = this.businessNetwork.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
+                LOG.exit(method);
+                return this.businessNetwork;
+            });
     }
 
     /**
@@ -538,21 +518,21 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {String} fullyQualifiedName The fully qualified name of the resources
      * @return {Promise} resolved with the registry that this fqn could be found in by default
      */
-    getRegistry(fullyQualifiedName) {
+    getRegistry (fullyQualifiedName) {
         Util.securityCheck(this.securityContext);
-        let businessNetwork= this.getBusinessNetwork();
+        let businessNetwork = this.getBusinessNetwork();
         let type = businessNetwork.getModelManager().getType(fullyQualifiedName).getSystemType();
         return Registry.getRegistry(this.securityContext, type, fullyQualifiedName)
-        .then((registry) => {
-            switch (type) {
-            case 'Transaction':
-                return new TransactionRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
-            case 'Asset':
-                return new AssetRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
-            case 'Participant':
-                return new ParticipantRegistry(registry.id, registry.name, this.securityContext,  businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
-            }
-        });
+            .then((registry) => {
+                switch (type) {
+                case 'Transaction':
+                    return new TransactionRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                case 'Asset':
+                    return new AssetRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                case 'Participant':
+                    return new ParticipantRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                }
+            });
 
     }
 
@@ -571,7 +551,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise that will be resolved when the connection is
      * terminated.
      */
-    disconnect() {
+    disconnect () {
         const method = 'disconnect';
         LOG.entry(method);
         if (!this.connection) {
@@ -606,11 +586,11 @@ class BusinessNetworkConnection extends EventEmitter {
      *     // Submitted a transaction.
      * });
      * @param {Resource} transaction - The transaction to submit. Use {@link
-     * common-Factory#newTransaction newTransaction} to create this object.
+        * common-Factory#newTransaction newTransaction} to create this object.
      * @return {Promise} A promise that will be fulfilled when the transaction has
      * been processed.
      */
-    submitTransaction(transaction) {
+    submitTransaction (transaction) {
         Util.securityCheck(this.securityContext);
         if (!transaction) {
             throw new Error('transaction not specified');
@@ -621,12 +601,12 @@ class BusinessNetworkConnection extends EventEmitter {
         }
 
         return Util.createTransactionId(this.securityContext)
-        .then ((id)=>{
-            transaction.setIdentifier(id.idStr);
-            transaction.timestamp = new Date();
-            let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-            return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId:id.id});
-        });
+            .then((id) => {
+                transaction.setIdentifier(id.idStr);
+                transaction.timestamp = new Date();
+                let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
+                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId : id.id});
+            });
 
     }
 
@@ -656,7 +636,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {string} query The query string, written using the Composer query language.
      * @return {Query} The built query, which can be passed in a call to query.
      */
-    buildQuery(query) {
+    buildQuery (query) {
         const method = 'buildQuery';
         LOG.entry(method, query);
         const builtQuery = this.dynamicQueryFile.buildQuery('Dynamic query', 'Dynamic query', query);
@@ -693,7 +673,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * {@link module:composer-common.Resource Resource} representing the
      * resources returned by the query.
      */
-    query(query, parameters) {
+    query (query, parameters) {
         const method = 'query';
         LOG.entry(method, query, parameters);
         let queryType, identifier;
@@ -736,7 +716,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
-    ping() {
+    ping () {
         const method = 'ping';
         LOG.entry(method);
         return this.pingInner()
@@ -763,7 +743,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
-    pingInner() {
+    pingInner () {
         const method = 'pingInner';
         LOG.entry(method);
         Util.securityCheck(this.securityContext);
@@ -780,13 +760,13 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise that will be fulfilled when the connection has
      * been tested. The promise will be rejected if the version is incompatible.
      */
-    activate() {
+    activate () {
         const method = 'activate';
         LOG.entry(method);
         const json = {
-            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId: uuid.v4(),
-            timestamp: new Date().toISOString()
+            $class : 'org.hyperledger.composer.system.ActivateCurrentIdentity',
+            transactionId : uuid.v4(),
+            timestamp : new Date().toISOString()
         };
         return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
             .then(() => {
@@ -809,7 +789,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    issueIdentity(participant, identityName, options) {
+    issueIdentity (participant, identityName, options) {
         const method = 'issueIdentity';
         LOG.entry(method, participant, identityName);
         if (!participant) {
@@ -860,7 +840,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    bindIdentity(participant, certificate) {
+    bindIdentity (participant, certificate) {
         const method = 'bindIdentity';
         LOG.entry(method, participant, certificate);
         if (!participant) {
@@ -895,7 +875,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * the participant does not exist, or if the identity is not mapped to the
      * participant.
      */
-    revokeIdentity(identity) {
+    revokeIdentity (identity) {
         const method = 'revokeIdentity';
         LOG.entry(method, identity);
         if (!identity) {
@@ -916,9 +896,9 @@ class BusinessNetworkConnection extends EventEmitter {
         // It is not currently possible to revoke the certificate, so we just call
         // the runtime to remove the mapping.
         return this.submitTransaction(transaction)
-          .then(() => {
-              LOG.exit(method);
-          });
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
 }

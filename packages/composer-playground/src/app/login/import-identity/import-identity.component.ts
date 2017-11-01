@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ActiveDrawer, DrawerService } from '../../common/drawer';
 
 import { IdCard } from 'composer-common';
+import { IdentityCardService } from '../../services/identity-card.service';
 
 @Component({
     selector: 'import-identity',
@@ -17,9 +18,13 @@ export class ImportIdentityComponent {
     private supportedFileTypes: string[] = ['.card'];
 
     private identityCard: IdCard;
+    private cardName: string;
+    private cardNameValid: boolean = true;
 
     constructor(public activeDrawer: ActiveDrawer,
-                public drawerService: DrawerService) {}
+                public drawerService: DrawerService,
+                private identityCardService: IdentityCardService) {
+    }
 
     removeFile() {
         this.expandInput = false;
@@ -59,6 +64,23 @@ export class ImportIdentityComponent {
     }
 
     private import() {
-        this.activeDrawer.close(this.identityCard);
+        return this.identityCardService.addIdentityCard(this.identityCard, this.cardName)
+            .then((cardRef) => {
+                this.activeDrawer.close(cardRef);
+            })
+            .catch((error) => {
+                if (error.message.startsWith('Card already exists: ')) {
+                    this.cardNameValid = false;
+                } else {
+                    this.activeDrawer.dismiss(error);
+                }
+            });
+    }
+
+    private setCardName(name) {
+        if (this.cardName !== name) {
+            this.cardName = name;
+            this.cardNameValid = true;
+        }
     }
 }

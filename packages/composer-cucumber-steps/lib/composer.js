@@ -23,6 +23,7 @@ const path = require('path');
 const RelationshipDeclaration = require('composer-common').RelationshipDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const thenifyAll = require('thenify-all');
+const IdCard = require('composer-common').IdCard;
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
 require('chai').should();
@@ -39,13 +40,13 @@ class Composer {
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
      */
-    constructor(uri, errorExpected) {
+    constructor (uri, errorExpected) {
         this.adminConnection = null;
         this.businessNetworkConnection = null;
         this.businessNetworkDefinition = null;
         this.factory = null;
         this.introspector = null;
-        this.identities = {};
+        this.cards = {};
         this.events = [];
         this.uri = uri;
         this.errorExpected = errorExpected;
@@ -57,7 +58,7 @@ class Composer {
      * scenario, otherwise it is stored for later testing.
      * @param {Error} error The error to handle.
      */
-    handleError(error) {
+    handleError (error) {
         if (!this.errorExpected) {
             throw error;
         } else if (this.error) {
@@ -71,7 +72,7 @@ class Composer {
      * and optionally validates the error message against a regular expression.
      * @param {RegExp} [regex] Optional regular expression.
      */
-    testError(regex) {
+    testError (regex) {
         if (!this.error) {
             throw new Error('an error was expected, but no errors have been thrown');
         } else if (regex) {
@@ -84,7 +85,7 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    initialize() {
+    initialize () {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
         return this.createAdminConnection()
             .then((adminConnection) => {
@@ -97,7 +98,7 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    destroy() {
+    destroy () {
         return this.businessNetworkConnection.disconnect()
             .then(() => {
                 return this.adminConnection.disconnect();
@@ -112,38 +113,68 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    deploy(businessNetworkDefinitionPath) {
+    deploy (businessNetworkDefinitionPath) {
+        let card;
         return this.loadBusinessNetworkDefinition(businessNetworkDefinitionPath)
             .then((businessNetworkDefinition) => {
                 this.businessNetworkDefinition = businessNetworkDefinition;
                 this.factory = this.businessNetworkDefinition.getFactory();
                 this.introspector = this.businessNetworkDefinition.getIntrospector();
                 this.serializer = this.businessNetworkDefinition.getSerializer();
-                return this.adminConnection.deploy(businessNetworkDefinition);
+
+                card = this.createBusinessNetworkCard(this.businessNetworkDefinition.getName(), 'networkAdmin');
+                return this.adminConnection.importCard('networkAdmin', card);
             })
             .then(() => {
-                return this.createBusinessNetworkConnection(this.businessNetworkDefinition.getName());
+                return this.adminConnection.deploy(this.businessNetworkDefinition);
+            })
+            .then(() => {
+                return this.createBusinessNetworkConnection('networkAdmin');
             })
             .then((businessNetworkConnection) => {
                 this.businessNetworkConnection = businessNetworkConnection;
+            })
+            .catch((error) => {
+                console.log('BOB', error);
+                throw error;
             });
     }
 
     /**
-     * Create an admin connection and configure a connection profile for use with the
-     * embedded runtime.
-     * @param {string} [userID] Optional user ID to use, defaults to "admin".
-     * @param {string} [userSecret] Optional user secret to use, defaults to "adminpw".
+     * Create a business network card
+     * @param {string} [businessNetworkIdentifier] Optional business network identifier
+     * @param {string} [userID] Optional user id, defaults to "admin"
+     * @param {object} [secret] Optional secret, defaults to "adminpw"
+     * @return {IdCard} An id card
+     */
+    createBusinessNetworkCard (businessNetworkIdentifier, userID, secret) {
+        let userid = userID || 'admin';
+        let userSecret = secret || 'adminpw';
+        let metaData = {
+            userName : userid,
+            enrollmentSecret : userSecret
+        };
+
+        if (businessNetworkIdentifier) {
+            metaData.businessNetwork = businessNetworkIdentifier;
+        }
+
+        let idCard = new IdCard(metaData, {name : 'defaultProfile', type : 'embedded'});
+
+        return idCard;
+    }
+
+    /**
+     * Create an admin connection, import the card and connect
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    createAdminConnection(userID, userSecret) {
-        userID = userID || 'admin';
-        userSecret = userSecret || 'adminpw';
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', { type : 'embedded' })
+    createAdminConnection () {
+        const adminConnection = new AdminConnection({fs : bfs_fs});
+        let card = this.createBusinessNetworkCard();
+        return adminConnection.importCard('PeerAdminCard', card)
             .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', userID, userSecret);
+                return adminConnection.connect('PeerAdminCard');
             })
             .then(() => {
                 return adminConnection;
@@ -157,7 +188,7 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    loadBusinessNetworkDefinition(businessNetworkDefinitionPath) {
+    loadBusinessNetworkDefinition (businessNetworkDefinitionPath) {
         const directory = path.dirname(this.uri);
         const resolvedPath = path.resolve(directory, businessNetworkDefinitionPath);
         return fs.lstat(resolvedPath)
@@ -175,21 +206,17 @@ class Composer {
     /**
      * Create an business network connection to a deployed business network and subscribe
      * to all events published by that business network.
-     * @param {string} businessNetworkIdentifier The business network to connect to.
-     * @param {string} [userID] Optional user ID to use, defaults to "admin".
-     * @param {string} [userSecret] Optional user secret to use, defaults to "adminpw".
+     * @param {string} [cardName] The card name to connect with
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    createBusinessNetworkConnection(businessNetworkIdentifier, userID, userSecret) {
-        userID = userID || 'admin';
-        userSecret = userSecret || 'adminpw';
-        const businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
+    createBusinessNetworkConnection (cardName) {
+        const businessNetworkConnection = new BusinessNetworkConnection({fs : bfs_fs});
         businessNetworkConnection.on('event', (event) => {
 
             this.events.push(event);
         });
-        return businessNetworkConnection.connectWithDetails('defaultProfile', businessNetworkIdentifier, userID, userSecret)
+        return businessNetworkConnection.connect(cardName)
             .then(() => {
                 return businessNetworkConnection;
             });
@@ -203,15 +230,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    addAssets(namespace, name, table) {
+    addAssets (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getAssetRegistry(resource.getFullyQualifiedType());
             })
-            .then((assetRegistry) => {
-                return assetRegistry.add(resource);
-            });
+                .then((assetRegistry) => {
+                    return assetRegistry.add(resource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -226,15 +253,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    updateAssets(namespace, name, table) {
+    updateAssets (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getAssetRegistry(resource.getFullyQualifiedType());
             })
-            .then((assetRegistry) => {
-                return assetRegistry.update(resource);
-            });
+                .then((assetRegistry) => {
+                    return assetRegistry.update(resource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -249,15 +276,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    removeAssets(namespace, name, table) {
+    removeAssets (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getAssetRegistry(resource.getFullyQualifiedType());
             })
-            .then((assetRegistry) => {
-                return assetRegistry.remove(resource.getIdentifier());
-            });
+                .then((assetRegistry) => {
+                    return assetRegistry.remove(resource.getIdentifier());
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -272,18 +299,18 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    testAssets(namespace, name, table) {
+    testAssets (namespace, name, table) {
         const expectedResources = this.convertInputToResources(namespace, name, table);
         return expectedResources.reduce((promise, expectedResource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getAssetRegistry(expectedResource.getFullyQualifiedType());
             })
-            .then((assetRegistry) => {
-                return assetRegistry.get(expectedResource.getIdentifier());
-            })
-            .then((actualResource) => {
-                this.compareResources(actualResource, expectedResource);
-            });
+                .then((assetRegistry) => {
+                    return assetRegistry.get(expectedResource.getIdentifier());
+                })
+                .then((actualResource) => {
+                    this.compareResources(actualResource, expectedResource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -298,20 +325,20 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    testNoAssets(namespace, name, table) {
+    testNoAssets (namespace, name, table) {
         const expectedResources = this.convertInputToResources(namespace, name, table);
         return expectedResources.reduce((promise, expectedResource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getAssetRegistry(expectedResource.getFullyQualifiedType());
             })
-            .then((assetRegistry) => {
-                return assetRegistry.exists(expectedResource.getIdentifier());
-            })
-            .then((exists) => {
-                if (exists) {
-                    throw new Error('the asset with ID ' + expectedResource.getIdentifier() + ' exists');
-                }
-            });
+                .then((assetRegistry) => {
+                    return assetRegistry.exists(expectedResource.getIdentifier());
+                })
+                .then((exists) => {
+                    if (exists) {
+                        throw new Error('the asset with ID ' + expectedResource.getIdentifier() + ' exists');
+                    }
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -326,15 +353,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    addParticipants(namespace, name, table) {
+    addParticipants (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getParticipantRegistry(resource.getFullyQualifiedType());
             })
-            .then((participantRegistry) => {
-                return participantRegistry.add(resource);
-            });
+                .then((participantRegistry) => {
+                    return participantRegistry.add(resource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -349,15 +376,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    updateParticipants(namespace, name, table) {
+    updateParticipants (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getParticipantRegistry(resource.getFullyQualifiedType());
             })
-            .then((participantRegistry) => {
-                return participantRegistry.update(resource);
-            });
+                .then((participantRegistry) => {
+                    return participantRegistry.update(resource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -372,15 +399,15 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    removeParticipants(namespace, name, table) {
+    removeParticipants (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getParticipantRegistry(resource.getFullyQualifiedType());
             })
-            .then((participantRegistry) => {
-                return participantRegistry.remove(resource.getIdentifier());
-            });
+                .then((participantRegistry) => {
+                    return participantRegistry.remove(resource.getIdentifier());
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -395,18 +422,18 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    testParticipants(namespace, name, table) {
+    testParticipants (namespace, name, table) {
         const expectedResources = this.convertInputToResources(namespace, name, table);
         return expectedResources.reduce((promise, expectedResource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getParticipantRegistry(expectedResource.getFullyQualifiedType());
             })
-            .then((participantRegistry) => {
-                return participantRegistry.get(expectedResource.getIdentifier());
-            })
-            .then((actualResource) => {
-                this.compareResources(actualResource, expectedResource);
-            });
+                .then((participantRegistry) => {
+                    return participantRegistry.get(expectedResource.getIdentifier());
+                })
+                .then((actualResource) => {
+                    this.compareResources(actualResource, expectedResource);
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -421,20 +448,20 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    testNoParticipants(namespace, name, table) {
+    testNoParticipants (namespace, name, table) {
         const expectedResources = this.convertInputToResources(namespace, name, table);
         return expectedResources.reduce((promise, expectedResource) => {
             return promise.then(() => {
                 return this.businessNetworkConnection.getParticipantRegistry(expectedResource.getFullyQualifiedType());
             })
-            .then((participantRegistry) => {
-                return participantRegistry.exists(expectedResource.getIdentifier());
-            })
-            .then((exists) => {
-                if (exists) {
-                    throw new Error('the participant with ID ' + expectedResource.getIdentifier() + ' exists');
-                }
-            });
+                .then((participantRegistry) => {
+                    return participantRegistry.exists(expectedResource.getIdentifier());
+                })
+                .then((exists) => {
+                    if (exists) {
+                        throw new Error('the participant with ID ' + expectedResource.getIdentifier() + ' exists');
+                    }
+                });
         }, Promise.resolve())
             .catch((error) => {
                 this.handleError(error);
@@ -449,7 +476,7 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    submitTransactions(namespace, name, table) {
+    submitTransactions (namespace, name, table) {
         const resources = this.convertInputToResources(namespace, name, table);
         return resources.reduce((promise, resource) => {
             return promise.then(() => {
@@ -467,7 +494,7 @@ class Composer {
      * @param {string} name The name of the type of event to test.
      * @param {DataTable} table The list of expected events to test.
      */
-    testEvents(namespace, name, table) {
+    testEvents (namespace, name, table) {
         const expectedResources = this.convertInputToResources(namespace, name, table);
         try {
             expectedResources.forEach((expectedResource) => {
@@ -495,10 +522,12 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    issueIdentity(participant, userID) {
+    issueIdentity (participant, userID) {
         return this.businessNetworkConnection.issueIdentity(participant, userID)
             .then((identity) => {
-                this.identities[userID] = identity;
+                let networkName = this.businessNetworkConnection.getBusinessNetwork().getName();
+                let card = this.createBusinessNetworkCard(networkName, identity.userID, identity.userSecret);
+                return this.adminConnection.importCard(identity.userID, card);
             })
             .catch((error) => {
                 this.handleError(error);
@@ -511,17 +540,19 @@ class Composer {
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    useIdentity(userID) {
-        const identity = this.identities[userID];
+    useIdentity (userID) {
         return Promise.resolve()
             .then(() => {
-                if (!identity) {
-                    throw new Error('no such identity for ' + userID);
+                return this.adminConnection.hasCard(userID);
+            })
+            .then((hasCard) => {
+                if (!hasCard) {
+                    throw new Error('no such card for ' + userID);
                 }
                 return this.businessNetworkConnection.disconnect();
             })
             .then(() => {
-                return this.createBusinessNetworkConnection(this.businessNetworkDefinition.getName(), identity.userID, identity.userSecret);
+                return this.createBusinessNetworkConnection(userID);
             })
             .then((businessNetworkConnection) => {
                 this.businessNetworkConnection = businessNetworkConnection;
@@ -538,7 +569,7 @@ class Composer {
      * @param {DataTable} table The Cucumber data table.
      * @return {Resource[]} An array of resources generated from the Cucumber data table.
      */
-    convertInputToResources(namespace, name, table) {
+    convertInputToResources (namespace, name, table) {
         if (typeof table === 'string') {
             return this.convertStringToResources(table);
         } else {
@@ -551,10 +582,10 @@ class Composer {
      * @param {string} string The Cucumber doc string.
      * @return {Resource[]} An array of resources generated from the Cucumber data table.
      */
-    convertStringToResources(string) {
+    convertStringToResources (string) {
         let data = JSON.parse(string);
         if (!Array.isArray(data)) {
-            data = [ data ];
+            data = [data];
         }
         return data.map((element) => {
             return this.serializer.fromJSON(element);
@@ -568,7 +599,7 @@ class Composer {
      * @param {DataTable} table The Cucumber data table.
      * @return {Resource[]} An array of resources generated from the Cucumber data table.
      */
-    convertTableToResources(namespace, name, table) {
+    convertTableToResources (namespace, name, table) {
         const fqn = namespace + '.' + name;
         const classDeclaration = this.introspector.getClassDeclaration(fqn);
         const isEvent = (classDeclaration instanceof EventDeclaration);
@@ -610,19 +641,19 @@ class Composer {
      * @param {String} type - model type.
      * @return {*} correctly typed value.
      */
-    convertValueToType(value, type) {
-        switch(type) {
-        case 'Boolean':
-            return new Boolean(value).valueOf();
-        case 'DateTime':
-            return new Date(value);
-        case 'Double':
-            return Number.parseFloat(value);
-        case 'Integer':
-        case 'Long':
-            return Number.parseInt(value);
-        default:
-            return value;
+    convertValueToType (value, type) {
+        switch (type) {
+            case 'Boolean':
+                return new Boolean(value).valueOf();
+            case 'DateTime':
+                return new Date(value);
+            case 'Double':
+                return Number.parseFloat(value);
+            case 'Integer':
+            case 'Long':
+                return Number.parseInt(value);
+            default:
+                return value;
         }
     }
 
@@ -631,7 +662,7 @@ class Composer {
      * @param {Resource} actualResource The actual resource.
      * @param {Resource} expectedResource The expected resource.
      */
-    compareResources(actualResource, expectedResource) {
+    compareResources (actualResource, expectedResource) {
         const classDeclaration = expectedResource.getClassDeclaration();
         const isEvent = (classDeclaration instanceof EventDeclaration);
         const identifierFieldName = classDeclaration.getIdentifierFieldName();

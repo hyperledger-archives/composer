@@ -34,6 +34,17 @@
                                    placeholder="eg Track the exchange of Commodities between traders on a blockchain"></textarea>
                     </td>
                 </tr>
+                <tr>
+                    <th><label for="import-cardName"><h3>Give the network admin card that will be created a name</h3></label>
+                    </th>
+                    <td>
+                        <input [ngClass]="{'error-underline': !cardNameValid}" type="text"
+                               id="import-cardName" [ngModel]="cardName"
+                               (ngModelChange)="setCardName($event)"
+                               placeholder="eg. admin@{{networkName}}">
+                        <div *ngIf="!cardNameValid" class="error-message">The card name must be unique</div>
+                    </td>
+                </tr>
             </table>
         </div>
     </section>

@@ -2,8 +2,6 @@ import { Component, NgZone } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
 
-import { IdentityCardStorageService } from '../services/identity-card-storage.service';
-
 @Component({
     selector: 'version-check-modal',
     templateUrl: './version-check.component.html',
@@ -13,12 +11,11 @@ export class VersionCheckComponent {
 
     constructor(public activeModal: NgbActiveModal,
                 private zone: NgZone,
-                private localStorageService: LocalStorageService,
-                private identityCardStorageService: IdentityCardStorageService) {
+                private localStorageService: LocalStorageService) {
     }
 
     public clearLocalStorage() {
-        if (this.localStorageService.clearAll() && this.identityCardStorageService.clearAll()) {
+        if (this.localStorageService.clearAll()) {
             this.zone.runOutsideAngular(() => {
                 location.reload();
             });

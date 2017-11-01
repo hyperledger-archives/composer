@@ -19,19 +19,19 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const argv = require('yargs')
     .option('p', {
-        alias: 'port',
-        demand: false,
-        default: process.env.PORT || 15699,
-        type: 'number',
-        describe: 'The port to start the connector server on'
+        alias : 'port',
+        demand : false,
+        default : process.env.PORT || 15699,
+        type : 'number',
+        describe : 'The port to start the connector server on'
     })
     .argv;
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const ConnectorServer = require('.');
 const ConsoleLogger = require('composer-common').ConsoleLogger;
 const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const io = require('socket.io')(argv.port);
 const Logger = require('composer-common').Logger;
 
@@ -41,13 +41,13 @@ const LOG = Logger.getLog('ConnectorServer');
 
 const method = 'main';
 
-const connectionProfileStore = new FSConnectionProfileStore(fs);
-const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
+const cardStore = new FileSystemCardStore(fs);
+const connectionProfileManager = new ConnectionProfileManager();
 
 LOG.info('main', `Connector server started on port ${argv.port}`);
 io.on('connect', (socket) => {
     LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
-    new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
+    new ConnectorServer(cardStore, connectionProfileManager, socket);
 });
 io.on('disconnect', (socket) => {
     LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);

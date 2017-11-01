@@ -15,7 +15,6 @@
 'use strict';
 
 const Container = require('composer-runtime').Container;
-const uuidv4 = require('uuid');
 const version = require('../package.json').version;
 const WebLoggingService = require('./webloggingservice');
 
@@ -27,11 +26,11 @@ class WebContainer extends Container {
 
     /**
      * Constructor.
-     * @param {string} [uuid] The UUID to use.
+     * @param {string} [name] The name to use.
      */
-    constructor(uuid) {
+    constructor(name) {
         super();
-        this.uuid = uuid || uuidv4.v4();
+        this.name = name;
         this.loggingService = new WebLoggingService();
     }
 
@@ -52,11 +51,11 @@ class WebContainer extends Container {
     }
 
     /**
-     * Get the UUID of the chaincode container.
-     * @return {string} The UUID of the chaincode container.
+     * Get the name of the chaincode container.
+     * @return {string} The name of the chaincode container.
      */
-    getUUID() {
-        return this.uuid;
+    getName() {
+        return this.name;
     }
 
 }

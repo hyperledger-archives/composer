@@ -14,11 +14,12 @@
 
 'use strict';
 
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const ConnectorServer = require('..');
 const SecurityContext = require('composer-common').SecurityContext;
 const uuid = require('uuid');
@@ -29,19 +30,18 @@ const sinon = require('sinon');
 
 describe('ConnectorServer', () => {
 
+    const cardName = 'myCard';
+    const card = new IdCard({userName : 'banana'}, {name : 'profileOne'});
+    const cardOne = new IdCard({userName : 'bob'}, {name : 'profileTwo'});
+
     const connectionProfile = 'defaultProfile';
     const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionOptions = {
-        type: 'embedded',
-        prop1: 'value1',
-        prop2: 'value2'
+        type : 'embedded',
+        prop1 : 'value1',
+        prop2 : 'value2'
     };
-    const existingConnectionOptions = {
-        prop1: 'valueA',
-        prop2: 'valueB',
-        prop3: 'valueC'
-    };
-    const mergedConnectionOptions = Object.assign({}, existingConnectionOptions, connectionOptions);
+
     const connectionID = 'f93cb63a-ba19-40c7-b68e-dad0959d9e8b';
     const enrollmentID = 'alice1';
     const enrollmentSecret = 'suchs3cret';
@@ -49,7 +49,7 @@ describe('ConnectorServer', () => {
     const invalidID = '8f98ce55-423c-49bf-a036-969f0667776d';
 
     let mockConnectionProfileManager;
-    let mockConnectionProfileStore;
+    let mockBusinessNetworkCardStore;
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
@@ -61,18 +61,16 @@ describe('ConnectorServer', () => {
     beforeEach(() => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileManager.connect.throws(new Error('unexpected call'));
-        mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
-        mockConnectionProfileStore.load.throws(new Error('unexpected call'));
-        mockConnectionProfileStore.save.throws(new Error('unexpected call'));
+        mockBusinessNetworkCardStore = sinon.createStubInstance(BusinessNetworkCardStore);
         mockSocket = {
-            on: sinon.stub(),
-            emit: sinon.stub()
+            on : sinon.stub(),
+            emit : sinon.stub()
         };
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        connectorServer = new ConnectorServer(mockConnectionProfileStore, mockConnectionProfileManager, mockSocket);
+        connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
         sandbox = sinon.sandbox.create();
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
     });
@@ -104,8 +102,14 @@ describe('ConnectorServer', () => {
     describe('#constructor', () => {
 
         it('should register handlers for all exposed functions', () => {
-            const functions = mockSocket.on.args.map((args) => { return args[0]; });
+            const functions = mockSocket.on.args.map((args) => {
+                return args[0];
+            });
             functions.sort().should.deep.equal([
+                '/api/businessNetworkCardStoreGet',
+                '/api/businessNetworkCardStoreGetAll',
+                '/api/businessNetworkCardStorePut',
+                '/api/businessNetworkCardStoreDelete',
                 '/api/connectionCreateIdentity',
                 '/api/connectionDeploy',
                 '/api/connectionDisconnect',
@@ -116,10 +120,6 @@ describe('ConnectorServer', () => {
                 '/api/connectionManagerConnect',
                 '/api/connectionManagerImportIdentity',
                 '/api/connectionPing',
-                '/api/connectionProfileStoreDelete',
-                '/api/connectionProfileStoreLoad',
-                '/api/connectionProfileStoreLoadAll',
-                '/api/connectionProfileStoreSave',
                 '/api/connectionQueryChainCode',
                 '/api/connectionStart',
                 '/api/connectionUndeploy',
@@ -136,7 +136,7 @@ describe('ConnectorServer', () => {
         it('should not register handlers for anything that is not a property', () => {
             ConnectorServer.prototype.foo = 'bar';
             try {
-                connectorServer = new ConnectorServer(mockConnectionProfileStore, mockConnectionProfileManager, mockSocket);
+                connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
                 mockSocket.on.args.forEach((args) => {
                     args[1].should.be.a('function');
                 });
@@ -147,24 +147,23 @@ describe('ConnectorServer', () => {
 
     });
 
-    describe('#connectionProfileStoreLoad', () => {
-
-        it('should load a connection profile', () => {
-            mockConnectionProfileStore.load.withArgs(connectionProfile).resolves(connectionOptions);
+    describe('#businessNetworkCardStoreGet', () => {
+        it('should get a business network card', () => {
+            mockBusinessNetworkCardStore.get.withArgs(cardName).resolves(card);
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreLoad(connectionProfile, cb)
+            return connectorServer.businessNetworkCardStoreGet(cardName, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.load);
-                    sinon.assert.calledWith(mockConnectionProfileStore.load, connectionProfile);
+                    sinon.assert.calledOnce(mockBusinessNetworkCardStore.get);
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.get, cardName);
                     sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null, connectionOptions);
+                    sinon.assert.calledWith(cb, null, card);
                 });
         });
 
-        it('should handle errors loading a connection profile', () => {
-            mockConnectionProfileStore.load.withArgs(connectionProfile).rejects(new Error('such error'));
+        it('should handle errors loading a card', () => {
+            mockBusinessNetworkCardStore.get.withArgs(cardName).rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreLoad(connectionProfile, cb)
+            return connectorServer.businessNetworkCardStoreGet(cardName, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -173,27 +172,26 @@ describe('ConnectorServer', () => {
                     serializedError.stack.should.be.a('string');
                 });
         });
-
     });
 
-    describe('#connectionProfileStoreSave', () => {
+    describe('#businessNetworkCardPut', () => {
 
-        it('should save a connection profile', () => {
-            mockConnectionProfileStore.save.withArgs(connectionProfile, connectionOptions).resolves();
+        it('should put a card', () => {
+            mockBusinessNetworkCardStore.put.withArgs(cardName, card).resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreSave(connectionProfile, connectionOptions, cb)
+            return connectorServer.businessNetworkCardStorePut(cardName, card, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, connectionProfile, connectionOptions);
+                    sinon.assert.calledOnce(mockBusinessNetworkCardStore.put);
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.put, cardName, card);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
         });
 
-        it('should handle errors saving a connection profile', () => {
-            mockConnectionProfileStore.save.withArgs(connectionProfile, connectionOptions).rejects(new Error('such error'));
+        it('should handle errors putting a card', () => {
+            mockBusinessNetworkCardStore.put.withArgs(cardName, card).rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreSave(connectionProfile, connectionOptions, cb)
+            return connectorServer.businessNetworkCardStorePut(cardName, card, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -202,27 +200,36 @@ describe('ConnectorServer', () => {
                     serializedError.stack.should.be.a('string');
                 });
         });
-
     });
 
-    describe('#connectionProfileStoreLoadAll', () => {
+    describe('#businessNetworkCardGetAll', () => {
 
-        it('should load a connection profile', () => {
-            mockConnectionProfileStore.loadAll.withArgs().resolves([ connectionOptions, existingConnectionOptions ]);
+        it('should get all cards', () => {
+            let myMap = new Map();
+            myMap.set('cardOne', card);
+            myMap.set('cardTwo', cardOne);
+            mockBusinessNetworkCardStore.getAll.withArgs().resolves(myMap);
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreLoadAll(cb)
+            return connectorServer.businessNetworkCardStoreGetAll(cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.loadAll);
-                    sinon.assert.calledWith(mockConnectionProfileStore.loadAll);
+                    sinon.assert.calledOnce(mockBusinessNetworkCardStore.getAll);
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getAll);
                     sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null, [ connectionOptions, existingConnectionOptions ]);
+
+                    let cardObject = {};
+
+                    myMap.forEach((card, cardName) => {
+                        cardObject[cardName] = card;
+                    });
+
+                    sinon.assert.calledWith(cb, null, cardObject);
                 });
         });
 
-        it('should handle errors loading a connection profile', () => {
-            mockConnectionProfileStore.loadAll.withArgs().rejects(new Error('such error'));
+        it('should handle errors getting all cards', () => {
+            mockBusinessNetworkCardStore.getAll.withArgs().rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreLoadAll(cb)
+            return connectorServer.businessNetworkCardStoreGetAll(cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -231,27 +238,26 @@ describe('ConnectorServer', () => {
                     serializedError.stack.should.be.a('string');
                 });
         });
-
     });
 
-    describe('#connectionProfileStoreDelete', () => {
+    describe('#businessNetworkCardsDelete', () => {
 
-        it('should delete a connection profile', () => {
-            mockConnectionProfileStore.delete.withArgs(connectionProfile).resolves();
+        it('should delete a card', () => {
+            mockBusinessNetworkCardStore.delete.withArgs(cardName).resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreDelete(connectionProfile, cb)
+            return connectorServer.businessNetworkCardStoreDelete(cardName, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.delete);
-                    sinon.assert.calledWith(mockConnectionProfileStore.delete, connectionProfile);
+                    sinon.assert.calledOnce(mockBusinessNetworkCardStore.delete);
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.delete, cardName);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
         });
 
-        it('should handle errors deleting a connection profile', () => {
-            mockConnectionProfileStore.delete.withArgs(connectionProfile).rejects(new Error('such error'));
+        it('should handle errors deleting a card', () => {
+            mockBusinessNetworkCardStore.delete.withArgs(cardName).rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionProfileStoreDelete(connectionProfile, cb)
+            return connectorServer.businessNetworkCardStoreDelete(cardName, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -260,13 +266,12 @@ describe('ConnectorServer', () => {
                     serializedError.stack.should.be.a('string');
                 });
         });
-
     });
 
     describe('#connectionManagerImportIdentity', () => {
 
         it('should import an identity', () => {
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.resolves();
             const cb = sinon.stub();
             return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
@@ -279,7 +284,7 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle errors importing an identity', () => {
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
             return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
@@ -294,11 +299,11 @@ describe('ConnectorServer', () => {
 
     });
 
-    describe('#connectionManagerExportIdentity', function() {
-        it('should export an identity', function() {
+    describe('#connectionManagerExportIdentity', function () {
+        it('should export an identity', function () {
             const id = 'bob1';
-            const expected = { key: 'value' };
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            const expected = {key : 'value'};
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.exportIdentity.withArgs(connectionProfile, connectionOptions, id).resolves(expected);
             const callback = sinon.stub();
             return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, id, callback)
@@ -308,9 +313,9 @@ describe('ConnectorServer', () => {
                 });
         });
 
-        it('should handle errors exporting an identity', function() {
+        it('should handle errors exporting an identity', function () {
             const expected = new Error('export error');
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.exportIdentity.rejects(expected);
             const callback = sinon.stub();
             return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, 'bob1', callback)
@@ -355,34 +360,12 @@ describe('ConnectorServer', () => {
 
     describe('#connectionManagerConnect', () => {
 
-        it('should connect and handle a connection profile that does not already exist', () => {
-            mockConnectionProfileStore.load.withArgs(connectionProfile, connectionOptions).rejects(new Error('no such profile'));
-            mockConnectionProfileStore.save.withArgs(connectionProfile, connectionOptions).resolves();
+        it('should connect', () => {
             mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).resolves(mockConnection);
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
             return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, connectionProfile, connectionOptions);
-                    sinon.assert.calledOnce(mockConnectionProfileManager.connect);
-                    sinon.assert.calledWith(mockConnectionProfileManager.connect, connectionProfile, businessNetworkIdentifier);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null, connectionID);
-                    connectorServer.connections[connectionID].should.equal(mockConnection);
-                });
-        });
-
-        it('should connect and merge options with a connection profile that already exists', () => {
-            mockConnectionProfileStore.load.withArgs(connectionProfile, connectionOptions).resolves(existingConnectionOptions);
-            mockConnectionProfileStore.save.withArgs(connectionProfile, mergedConnectionOptions).resolves();
-            mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).resolves(mockConnection);
-            sandbox.stub(uuid, 'v4').returns(connectionID);
-            const cb = sinon.stub();
-            return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, connectionProfile, mergedConnectionOptions);
                     sinon.assert.calledOnce(mockConnectionProfileManager.connect);
                     sinon.assert.calledWith(mockConnectionProfileManager.connect, connectionProfile, businessNetworkIdentifier);
                     sinon.assert.calledOnce(cb);
@@ -392,8 +375,6 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle connection errors', () => {
-            mockConnectionProfileStore.load.withArgs(connectionProfile, connectionOptions).rejects(new Error('no such profile'));
-            mockConnectionProfileStore.save.withArgs(connectionProfile, connectionOptions).resolves();
             mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).rejects(new Error('connection error'));
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
@@ -571,13 +552,13 @@ describe('ConnectorServer', () => {
         });
 
         it('should start', () => {
-            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }).resolves();
+            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 });
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -585,7 +566,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -597,7 +578,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -610,7 +591,7 @@ describe('ConnectorServer', () => {
         it('should handle start errors', () => {
             mockConnection.start.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -630,13 +611,13 @@ describe('ConnectorServer', () => {
         });
 
         it('should deploy', () => {
-            mockConnection.deploy.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }).resolves();
+            mockConnection.deploy.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', { opt: 1 });
+                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -644,7 +625,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionDeploy(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -656,7 +637,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionDeploy(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -669,7 +650,7 @@ describe('ConnectorServer', () => {
         it('should handle deploy errors', () => {
             mockConnection.deploy.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', { opt: 1 }, cb)
+            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -863,7 +844,7 @@ describe('ConnectorServer', () => {
     describe('#connectionQueryChainCode', () => {
 
         const functionName = 'func1';
-        const args = [ 'arg1', 'arg2', 'arg3' ];
+        const args = ['arg1', 'arg2', 'arg3'];
 
         beforeEach(() => {
             connectorServer.connections[connectionID] = mockConnection;
@@ -924,7 +905,7 @@ describe('ConnectorServer', () => {
     describe('#connectionInvokeChainCode', () => {
 
         const functionName = 'func1';
-        const args = [ 'arg1', 'arg2', 'arg3' ];
+        const args = ['arg1', 'arg2', 'arg3'];
 
         beforeEach(() => {
             connectorServer.connections[connectionID] = mockConnection;
@@ -1011,12 +992,12 @@ describe('ConnectorServer', () => {
 
         const userID = 'bob1';
         const options = {
-            prop1: 'value1',
-            prop2: 'value2',
+            prop1 : 'value1',
+            prop2 : 'value2',
         };
         const result = {
-            userID: userID,
-            userSecret: 'wows3cret'
+            userID : userID,
+            userSecret : 'wows3cret'
         };
 
         beforeEach(() => {
@@ -1144,49 +1125,49 @@ describe('ConnectorServer', () => {
             mockConnection.createTransactionId.withArgs(mockSecurityContext).resolves(['42']);
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)
-                        .then(() => {
-                            sinon.assert.calledOnce(mockConnection.createTransactionId);
-                            sinon.assert.calledWith(mockConnection.createTransactionId, mockSecurityContext);
-                            sinon.assert.calledOnce(cb);
-                            sinon.assert.calledWith(cb, null, ['42']);
-                        });
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.createTransactionId);
+                    sinon.assert.calledWith(mockConnection.createTransactionId, mockSecurityContext);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, ['42']);
+                });
         });
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(invalidID, securityContextID, cb)
-                        .then(() => {
-                            sinon.assert.calledOnce(cb);
-                            const serializedError = cb.args[0][0];
-                            serializedError.name.should.equal('Error');
-                            serializedError.message.should.match(/No connection found with ID/);
-                            serializedError.stack.should.be.a('string');
-                        });
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.match(/No connection found with ID/);
+                    serializedError.stack.should.be.a('string');
+                });
         });
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(connectionID, invalidID, cb)
-                        .then(() => {
-                            sinon.assert.calledOnce(cb);
-                            const serializedError = cb.args[0][0];
-                            serializedError.name.should.equal('Error');
-                            serializedError.message.should.match(/No security context found with ID/);
-                            serializedError.stack.should.be.a('string');
-                        });
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.match(/No security context found with ID/);
+                    serializedError.stack.should.be.a('string');
+                });
         });
 
         it('should handle errors when creating transaction id', () => {
             mockConnection.createTransactionId.rejects(new Error('such error'));
             const cb = sinon.stub();
             return connectorServer.connectionCreateTransactionId(connectionID, securityContextID, cb)
-                        .then(() => {
-                            sinon.assert.calledOnce(cb);
-                            const serializedError = cb.args[0][0];
-                            serializedError.name.should.equal('Error');
-                            serializedError.message.should.equal('such error');
-                            serializedError.stack.should.be.a('string');
-                        });
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.equal('such error');
+                    serializedError.stack.should.be.a('string');
+                });
         });
 
     });

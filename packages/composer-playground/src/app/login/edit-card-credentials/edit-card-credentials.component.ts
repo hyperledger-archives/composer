@@ -30,6 +30,9 @@ export class EditCardCredentialsComponent {
     private peerAdmin: boolean = false;
     private channelAdmin: boolean = false;
 
+    private cardName: string = null;
+    private cardNameValid: boolean = true;
+
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
 
@@ -62,6 +65,10 @@ export class EditCardCredentialsComponent {
             } else if (this.addInProgress) {
                 return false;
             }
+        }
+
+        if (!this.cardNameValid) {
+            return false;
         }
 
         if (this.useParticipantCard) {
@@ -107,7 +114,7 @@ export class EditCardCredentialsComponent {
             roles.push('ChannelAdmin');
         }
 
-        return this.idCardService.createIdentityCard(this.userId, this.busNetName, this.userSecret, this.connectionProfile, credentials, roles)
+        return this.idCardService.createIdentityCard(this.userId, this.cardName, this.busNetName, this.userSecret, this.connectionProfile, credentials, roles)
             .then(() => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
@@ -119,10 +126,14 @@ export class EditCardCredentialsComponent {
                 this.idCardAdded.emit(true);
             })
             .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
                 this.addInProgress = false;
-                this.idCardAdded.emit(false);
+                this.alertService.busyStatus$.next(null);
+                if (error.message.startsWith('Card already exists: ')) {
+                    this.cardNameValid = false;
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                    this.idCardAdded.emit(false);
+                }
             });
     }
 
@@ -146,5 +157,12 @@ export class EditCardCredentialsComponent {
         }
 
         this.userId = $event.userId;
+    }
+
+    private setCardName(name) {
+        if (this.cardName !== name) {
+            this.cardName = name;
+            this.cardNameValid = true;
+        }
     }
 }

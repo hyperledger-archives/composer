@@ -18,10 +18,12 @@ export class DeployComponent extends ImportComponent {
     @Input() showCredentials: boolean;
 
     private networkNameValid: boolean = true;
+    private cardNameValid: boolean = true;
 
     private userId: string = '';
     private userSecret: string = null;
     private credentials = null;
+    private cardName: string = null;
 
     constructor(protected clientService: ClientService,
                 protected modalService: NgbModal,
@@ -35,15 +37,20 @@ export class DeployComponent extends ImportComponent {
 
         this.deployInProgress = true;
 
-        return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.networkName, this.networkDescription, this.userId, this.userSecret, this.credentials)
+        return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.cardName, this.networkName, this.networkDescription, this.userId, this.userSecret, this.credentials)
             .then(() => {
+                this.cardNameValid = true;
                 this.deployInProgress = false;
                 this.finishedSampleImport.emit({deployed: deployed});
             })
             .catch((error) => {
                 this.deployInProgress = false;
-                this.alertService.errorStatus$.next(error);
-                this.finishedSampleImport.emit({deployed: false, error: error});
+                if (error.message.startsWith('Card already exists: ')) {
+                    this.cardNameValid = false;
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                    this.finishedSampleImport.emit({deployed: false, error: error});
+                }
             });
     }
 
@@ -63,8 +70,8 @@ export class DeployComponent extends ImportComponent {
         } else {
             this.userSecret = null;
             this.credentials = {
-                certificate : $event.cert,
-                privateKey : $event.key
+                certificate: $event.cert,
+                privateKey: $event.key
             };
         }
 
@@ -72,7 +79,7 @@ export class DeployComponent extends ImportComponent {
     }
 
     isInvalidDeploy() {
-        if (!this.networkName || !this.networkNameValid || this.deployInProgress || (this.showCredentials && !this.userId)) {
+        if (!this.networkName || !this.networkNameValid || this.deployInProgress || !this.cardNameValid || (this.showCredentials && !this.userId)) {
             return true;
         }
 
@@ -86,6 +93,13 @@ export class DeployComponent extends ImportComponent {
         } else {
             let pattern = /^[a-z0-9-]+$/;
             this.networkNameValid = pattern.test(this.networkName);
+        }
+    }
+
+    private setCardName(name) {
+        if (this.cardName !== name) {
+            this.cardName = name;
+            this.cardNameValid = true;
         }
     }
 }

@@ -5,7 +5,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from './services/client.service';
 import { AlertService } from './basic-modals/alert.service';
-import { IdentityService } from './services/identity.service';
 import { IdentityCardService } from './services/identity-card.service';
 import { InitializationService } from './services/initialization.service';
 import { BusyComponent } from './basic-modals/busy';
@@ -53,7 +52,6 @@ export class AppComponent implements OnInit, OnDestroy {
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private clientService: ClientService,
-                private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private initializationService: InitializationService,
                 private alertService: AlertService,
@@ -98,12 +96,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
     logout() {
         this.clientService.disconnect();
-        this.identityService.setLoggedIn(false);
-        this.fileService.deleteAllFiles();
-        this.composerBanner = ['Hyperledger', 'Composer Playground'];
-        this.showWelcome = false;
+        this.identityCardService.setCurrentIdentityCard(null)
+            .then(() => {
+                this.fileService.deleteAllFiles();
+                this.composerBanner = ['Hyperledger', 'Composer Playground'];
+                this.showWelcome = false;
 
-        return this.router.navigate(['/login']);
+                return this.router.navigate(['/login']);
+            });
     }
 
     processRouteEvent(event): Promise<void> {

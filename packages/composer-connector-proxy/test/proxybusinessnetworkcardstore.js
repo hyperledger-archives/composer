@@ -14,8 +14,11 @@
 
 'use strict';
 
-/* const ProxyConnectionProfileStore = */ require('..');
+/* const ProxyBusinessNetworkCardStore = */
+require('..');
 const serializerr = require('serializerr');
+
+const IdCard = require('composer-common').IdCard;
 
 const chai = require('chai');
 chai.should();
@@ -23,91 +26,81 @@ chai.use(require('chai-as-promised'));
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-describe('ProxyConnectionProfileStore', () => {
+describe('ProxyBusinessNetworkCardStore', () => {
 
-    const connectionProfile = 'defaultProfile';
-    const connectionOptions = {
-        type: 'embedded'
-    };
-    const otherConnectionOptions = {
-        type: 'web'
-    };
+    const cardName = 'myCard';
+    const card = new IdCard({userName : 'banana'}, {name : 'profileOne'});
+    const cardOne = new IdCard({userName : 'bob'}, {name : 'profileTwo'});
+
     const serializedError = serializerr(new TypeError('such type error'));
 
     let mockSocketFactory;
     let mockSocket;
-    let ProxyConnectionProfileStore;
+    let ProxyBusinessNetworkCardStore;
 
-    let connectionProfileStore;
+    let businessNetworkCardStore;
 
     beforeEach(() => {
         mockSocket = {
-            emit: sinon.stub(),
-            once: sinon.stub(),
-            on: sinon.stub()
+            emit : sinon.stub(),
+            once : sinon.stub(),
+            on : sinon.stub()
         };
-        // mockSocket.emit.throws(new Error('unexpected call'));
-        // mockSocket.once.throws(new Error('unexpected call'));
-        // mockSocket.on.throws(new Error('unexpected call'));
+
         mockSocketFactory = sinon.stub().returns(mockSocket);
-        ProxyConnectionProfileStore = proxyquire('../lib/proxyconnectionprofilestore', {
-            'socket.io-client': mockSocketFactory
+        ProxyBusinessNetworkCardStore = proxyquire('../lib/proxybusinessnetworkcardstore', {
+            'socket.io-client' : mockSocketFactory
         });
     });
 
     describe('#setConnectorServerURL', () => {
-
         it('should change the URL used to connect to the connector server', () => {
-            ProxyConnectionProfileStore.setConnectorServerURL('http://blah.com:2393');
+            ProxyBusinessNetworkCardStore.setConnectorServerURL('http://blah.com:2393');
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            new ProxyConnectionProfileStore();
+            new ProxyBusinessNetworkCardStore();
             sinon.assert.calledOnce(mockSocketFactory);
             sinon.assert.calledWith(mockSocketFactory, 'http://blah.com:2393');
         });
-
     });
 
     describe('#constructor', () => {
-
-        let connectionProfileStore;
+        let businessNetworkCardStore;
 
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionProfileStore = new ProxyConnectionProfileStore();
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
         });
 
         it('should create a new socket connection and listen for a connect event', () => {
             sinon.assert.calledOnce(mockSocketFactory);
             sinon.assert.calledWith(mockSocketFactory, 'http://localhost:15699');
             // Trigger the connect callback.
-            connectionProfileStore.connected.should.be.false;
+            businessNetworkCardStore.connected.should.be.false;
             mockSocket.on.args[0][0].should.equal('connect');
             mockSocket.on.args[0][1]();
-            connectionProfileStore.connected.should.be.true;
+            businessNetworkCardStore.connected.should.be.true;
         });
 
         it('should create a new socket connection and listen for a disconnect event', () => {
             sinon.assert.calledOnce(mockSocketFactory);
             sinon.assert.calledWith(mockSocketFactory, 'http://localhost:15699');
             // Trigger the disconnect callback.
-            connectionProfileStore.connected = true;
+            businessNetworkCardStore.connected = true;
             mockSocket.on.args[1][0].should.equal('disconnect');
             mockSocket.on.args[1][1]();
-            connectionProfileStore.connected.should.be.false;
+            businessNetworkCardStore.connected.should.be.false;
         });
-
     });
 
     describe('#ensureConnected', () => {
-
         let connectionManager;
 
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionManager = new ProxyConnectionProfileStore();
+            connectionManager = new ProxyBusinessNetworkCardStore();
         });
 
         it('should do nothing if already connected', () => {
@@ -124,117 +117,116 @@ describe('ProxyConnectionProfileStore', () => {
                     sinon.assert.calledWith(mockSocket.once, 'connect');
                 });
         });
-
     });
 
-    describe('#load', () => {
-
+    describe('#get', () => {
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionProfileStore = new ProxyConnectionProfileStore();
-            connectionProfileStore.connected = true;
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
+            businessNetworkCardStore.connected = true;
         });
 
         it('should send a load call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreLoad', connectionProfile, sinon.match.func).yields(null, connectionOptions);
-            return connectionProfileStore.load(connectionProfile)
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreGet', cardName, sinon.match.func).yields(null, card);
+            return businessNetworkCardStore.get(cardName)
                 .then((result) => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionProfileStoreLoad', connectionProfile, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/businessNetworkCardStoreGet', cardName, sinon.match.func);
                     sinon.assert.calledTwice(mockSocket.on);
-                    result.should.deep.equal(connectionOptions);
+                    result.should.deep.equal(card);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreLoad', connectionProfile, sinon.match.func).yields(serializedError);
-            return connectionProfileStore.load(connectionProfile)
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreGet', cardName, sinon.match.func).yields(serializedError);
+            return businessNetworkCardStore.get(cardName)
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 
     });
 
-    describe('#save', () => {
-
+    describe('#put', () => {
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionProfileStore = new ProxyConnectionProfileStore();
-            connectionProfileStore.connected = true;
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
+            businessNetworkCardStore.connected = true;
         });
 
-        it('should send a save call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreSave', connectionProfile, connectionOptions, sinon.match.func).yields(null);
-            return connectionProfileStore.save(connectionProfile, connectionOptions)
+        it('should send a put call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/businessNetworkCardStorePut', cardName, card, sinon.match.func).yields(null);
+            return businessNetworkCardStore.put(cardName, card)
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionProfileStoreSave', connectionProfile, connectionOptions, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/businessNetworkCardStorePut', cardName, card, sinon.match.func);
                     sinon.assert.calledTwice(mockSocket.on);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreSave', connectionProfile, connectionOptions, sinon.match.func).yields(serializedError);
-            return connectionProfileStore.save(connectionProfile, connectionOptions)
+            mockSocket.emit.withArgs('/api/businessNetworkCardStorePut', cardName, card, sinon.match.func).yields(serializedError);
+            return businessNetworkCardStore.put(cardName, card)
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 
     });
 
-    describe('#loadAll', () => {
-
+    describe('#getAll', () => {
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionProfileStore = new ProxyConnectionProfileStore();
-            connectionProfileStore.connected = true;
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
+            businessNetworkCardStore.connected = true;
         });
 
-        it('should send a loadAll call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreLoadAll', sinon.match.func).yields(null, [ connectionOptions, otherConnectionOptions ]);
-            return connectionProfileStore.loadAll()
+        it('should send a getAll call to the connector server', () => {
+            let cardObject = {
+                'cardOne' : card,
+                'cardTwo' : cardOne
+            };
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreGetAll', sinon.match.func).yields(null, cardObject);
+            return businessNetworkCardStore.getAll()
                 .then((result) => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionProfileStoreLoadAll', sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/businessNetworkCardStoreGetAll', sinon.match.func);
                     sinon.assert.calledTwice(mockSocket.on);
-                    result.should.deep.equal([ connectionOptions, otherConnectionOptions ]);
+
+                    result.size.should.equal(2);
+                    result.get('cardOne').should.deep.equal(card);
+                    result.get('cardTwo').should.deep.equal(cardOne);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreLoadAll', sinon.match.func).yields(serializedError);
-            return connectionProfileStore.loadAll()
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreGetAll', sinon.match.func).yields(serializedError);
+            return businessNetworkCardStore.getAll()
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
-
     });
 
     describe('#delete', () => {
-
         beforeEach(() => {
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
-            connectionProfileStore = new ProxyConnectionProfileStore();
-            connectionProfileStore.connected = true;
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
+            businessNetworkCardStore.connected = true;
         });
 
         it('should send a delete call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreDelete', connectionProfile, sinon.match.func).yields(null);
-            return connectionProfileStore.delete(connectionProfile)
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreDelete', cardName, sinon.match.func).yields(null);
+            return businessNetworkCardStore.delete(cardName)
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionProfileStoreDelete', connectionProfile, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/businessNetworkCardStoreDelete', cardName, sinon.match.func);
                     sinon.assert.calledTwice(mockSocket.on);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionProfileStoreDelete', connectionProfile, sinon.match.func).yields(serializedError);
-            return connectionProfileStore.delete(connectionProfile)
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreDelete', cardName, sinon.match.func).yields(serializedError);
+            return businessNetworkCardStore.delete(cardName)
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
-
     });
-
 });

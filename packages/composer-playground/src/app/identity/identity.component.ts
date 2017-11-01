@@ -112,22 +112,15 @@ export class IdentityComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     if (result.choice === 'add') {
-                        return this.addCardToWallet(result.card);
+                        this.alertService.successStatus$.next({
+                            title: 'ID Card added to wallet',
+                            text: 'The ID card ' + this.identityCardService.getIdentityCard(result.cardRef).getUserName() + ' was successfully added to your wallet',
+                            icon: '#icon-role_24'
+                        });
                     } else if (result.choice === 'export') {
                         return this.exportIdentity(result.card);
                     }
                 }
-            });
-    }
-
-    addCardToWallet(card: IdCard): Promise<any> {
-        return this.identityCardService.addIdentityCard(card)
-            .then((cardRef: string) => {
-                this.alertService.successStatus$.next({
-                    title: 'ID Card added to wallet',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
-                    icon: '#icon-role_24'
-                });
             });
     }
 
@@ -136,7 +129,7 @@ export class IdentityComponent implements OnInit {
         let connectionProfile = currentCard.getConnectionProfile();
         let businessNetworkName = currentCard.getBusinessNetworkName();
 
-        return this.identityCardService.createIdentityCard(identity.userID, businessNetworkName, identity.userSecret, connectionProfile)
+        return this.identityCardService.createIdentityCard(identity.userID, null, businessNetworkName, identity.userSecret, connectionProfile)
             .then((cardRef: string) => {
                 this.alertService.successStatus$.next({
                     title: 'ID Card added to wallet',
@@ -169,7 +162,7 @@ export class IdentityComponent implements OnInit {
                     title: 'Reconnecting...',
                     text: 'Using identity ' + this.currentIdentity
                 });
-                return this.clientService.ensureConnected(null, true);
+                return this.clientService.ensureConnected(true);
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);

@@ -4,6 +4,7 @@
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Component, Directive, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityIssuedComponent } from './identity-issued.component';
@@ -65,6 +66,7 @@ describe('IdentityIssuedComponent', () => {
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
 
         TestBed.configureTestingModule({
+            imports: [FormsModule],
             declarations: [
                 IdentityIssuedComponent,
                 MockClipboardDirective,
@@ -103,11 +105,35 @@ describe('IdentityIssuedComponent', () => {
     });
 
     describe('addToWallet', () => {
-        it('should close the modal with the add to wallet option', () => {
+        it('should close the modal with the add to wallet option', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.resolve('1234'));
             component.addToWallet();
 
-            mockActiveModal.close.should.have.been.calledWith({card: undefined, choice: 'add'});
-        });
+            tick();
+
+            mockActiveModal.close.should.have.been.calledWith({cardRef: '1234', choice: 'add'});
+        }));
+
+        it('should handle error with card name', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'Card already exists: bob'}));
+            component.addToWallet();
+
+            tick();
+
+            mockActiveModal.close.should.not.have.been.called;
+            mockActiveModal.dismiss.should.not.have.been.called;
+
+            component['cardNameValid'].should.equal(false);
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'some error'}));
+            component.addToWallet();
+
+            tick();
+
+            mockActiveModal.dismiss.should.have.been.calledWith({message: 'some error'});
+        }));
     });
 
     describe('export', () => {
@@ -115,6 +141,24 @@ describe('IdentityIssuedComponent', () => {
             component.export();
 
             mockActiveModal.close.should.have.been.calledWith({card: undefined, choice: 'export'});
+        });
+    });
+
+    describe('setCardName', () => {
+        it('should set the card name and cardNameValid to true', () => {
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(true);
+        });
+
+        it('should not set the card name if it hasn\'t changed and not update cardNameValid', () => {
+            component['cardNameValid'] = false;
+            component['cardName'] = 'myCardName';
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(false);
         });
     });
 });

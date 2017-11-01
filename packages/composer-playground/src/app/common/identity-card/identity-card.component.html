@@ -16,7 +16,7 @@
                 </svg>
             </div>
         </div>
-        <div class="user-name">{{identity.getUserName()}}</div>
+        <div class="user-name" title="{{cardRef}}">{{cardRef}}</div>
     </section>
     <section *ngIf="!preview && identity" class="actions">
         <button [disabled]="indestructible" type="button" class="action circular delete"
@@ -46,6 +46,10 @@
     <section *ngIf="preview" class="connection-profile-details">
         <h3>Connection Profile</h3>
         <p>{{identity.getConnectionProfile().name}}</p>
+    </section>
+    <section *ngIf="identity" class="business-network-details">
+        <h3>User ID</h3>
+        <p title="{{identity.getUserName()}}">{{identity.getUserName()}}</p>
     </section>
     <section *ngIf="identity" class="business-network-details">
         <h3>Business Network</h3>

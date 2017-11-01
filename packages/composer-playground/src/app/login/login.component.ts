@@ -38,8 +38,7 @@ export class LoginComponent implements OnInit {
     private showSubScreen: boolean = false;
     private showCredentials: boolean = true;
 
-    constructor(private identityService: IdentityService,
-                private router: Router,
+    constructor(private router: Router,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private identityCardService: IdentityCardService,
@@ -131,10 +130,9 @@ export class LoginComponent implements OnInit {
 
         return this.identityCardService.setCurrentIdentityCard(cardRef)
             .then(() => {
-                return this.clientService.ensureConnected(businessNetworkName, true);
+                return this.clientService.ensureConnected(true);
             })
             .then(() => {
-                this.identityService.setLoggedIn(true);
                 return this.router.navigate(['editor']);
             })
             .catch((error) => {
@@ -159,7 +157,7 @@ export class LoginComponent implements OnInit {
 
             })
             .then((businessNetworkDefinition) => {
-                return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'my-basic-sample', 'The Composer basic sample network', null, null, null);
+                return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network', null, null, null);
             })
             .then((cardRef: string) => {
                 this.alertService.busyStatus$.next({
@@ -235,9 +233,7 @@ export class LoginComponent implements OnInit {
     }
 
     importIdentity() {
-        this.drawerService.open(ImportIdentityComponent).result.then((result) => {
-            return this.identityCardService.addIdentityCard(result);
-        }).then((cardRef: string) => {
+        this.drawerService.open(ImportIdentityComponent).result.then((cardRef) => {
             this.alertService.successStatus$.next({
                 title: 'ID Card imported',
                 text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully imported',

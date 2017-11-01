@@ -14,7 +14,8 @@
 
 'use strict';
 
-const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
+const IdCard = require('composer-common').IdCard;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const ProxyUtil = require('./proxyutil');
 const socketIOClient = require('socket.io-client');
 const Logger = require('composer-common').Logger;
@@ -24,25 +25,23 @@ const LOG = Logger.getLog('ProxyConnectionProfileStore');
 let connectorServerURL = 'http://localhost:15699';
 
 /**
- * Manages persistence of connection profiles by communicating with a real connection
- * profile store in the connector server over the socket.io transport.
+ * Manages persistence of business network cards by communicating with a real
+ * business network card store in the connector server over the socket.io transport.
  */
-class ProxyConnectionProfileStore extends ConnectionProfileStore {
+class ProxyBusinessNetworkCardStore extends BusinessNetworkCardStore {
 
     /**
      * Set the connector server URL to use.
      * @param {string} url The connector server URL to use.
      */
-    static setConnectorServerURL(url) {
+    static setConnectorServerURL (url) {
         connectorServerURL = url;
     }
 
     /**
-     * Creates a new ProxyConnectionManager
-     * @param {ConnectionProfileManager} connectionProfileManager
-     * - the ConnectionProfileManager used to manage access connection profiles.
+     * Creates a new ProxyBusinessNetworkCardStore
      */
-    constructor() {
+    constructor () {
         super();
         this.connected = false;
         this.socket = socketIOClient(connectorServerURL);
@@ -60,7 +59,7 @@ class ProxyConnectionProfileStore extends ConnectionProfileStore {
      * are connected to the connector server, or rejected with an
      * error.
      */
-    ensureConnected() {
+    ensureConnected () {
         if (this.connected) {
             return Promise.resolve();
         }
@@ -72,19 +71,47 @@ class ProxyConnectionProfileStore extends ConnectionProfileStore {
     }
 
     /**
-     * Loads connectOptions for a given connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile to load
-     * @return {Promise} A promise that is resolved with a JS Object for the
-     * data in the connection profile.
+     * Gets a card from the store.
+     * @abstract
+     * @param {String} cardName The name of the card to get
+     * @return {Promise} A promise that is resolved with a {@link IdCard}.
      */
-    load(connectionProfile) {
-        const method = 'load';
-        LOG.entry(method, connectionProfile);
+    get (cardName) {
+        const method = 'get';
+        LOG.entry(method, cardName);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionProfileStoreLoad', connectionProfile, (error, result) => {
+                    this.socket.emit('/api/businessNetworkCardStoreGet', cardName, (error, result) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+
+                        let cardProperties = result;
+                        let idCard = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
+                        idCard.setCredentials(cardProperties.credentials);
+
+                        LOG.exit(method, idCard);
+                        resolve(idCard);
+                    });
+                });
+            });
+    }
+
+    /**
+     * Puts a card in the store. It is an error to put a card name that already exists
+     * in the store.
+     * @param {String} cardName The name of the card to save
+     * @param {IdCard} card The card
+     * @return {Promise} A promise that resolves once the data is written
+     */
+    put (cardName, card) {
+        const method = 'put';
+        LOG.entry(method, cardName, card);
+        return this.ensureConnected()
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/businessNetworkCardStorePut', cardName, card, (error, result) => {
                         if (error) {
                             return reject(ProxyUtil.inflaterr(error));
                         }
@@ -96,71 +123,52 @@ class ProxyConnectionProfileStore extends ConnectionProfileStore {
     }
 
     /**
-     * Save connectOptions for a given connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile to save
-     * @param {Object} connectOptions The connection options object
-     * @return {Promise} A promise that once the data is written
+     * Gets all cards from the store.
+     * @return {Promise} A promise that is resolved with a {@link Map} where
+     * the keys are identity card names and the values are {@link IdCard} objects.
      */
-    save(connectionProfile, connectOptions) {
-        const method = 'save';
-        LOG.entry(method, connectionProfile, connectOptions);
-        return this.ensureConnected()
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionProfileStoreSave', connectionProfile, connectOptions, (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        LOG.exit(method);
-                        resolve();
-                    });
-                });
-            });
-    }
-
-    /**
-     * Loads all of the connection profiles.
-     *
-     * @return {Promise} A promise that is resolved with a JS Object where the
-     * keys are the connection profiles, and the values are the connection options.
-     */
-    loadAll() {
-        const method = 'loadAll';
+    getAll () {
+        const method = 'getAll';
         LOG.entry(method);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionProfileStoreLoadAll', (error, result) => {
+                    this.socket.emit('/api/businessNetworkCardStoreGetAll', (error, result) => {
                         if (error) {
                             return reject(ProxyUtil.inflaterr(error));
                         }
-                        LOG.exit(method, result);
-                        resolve(result);
+                        let resultMap = new Map();
+
+                        Object.keys(result).forEach((key) => {
+                            let cardProperties = result[key];
+                            let idCard = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
+                            idCard.setCredentials(cardProperties.credentials);
+                            resultMap.set(key, idCard);
+                        });
+                        LOG.exit(method, resultMap);
+                        resolve(resultMap);
                     });
                 });
             });
     }
 
     /**
-     * Delete the given connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile to delete
-     * @return {Promise} A promise that is resolved when the connection profile
-     * is deleted.
+     * Delete a specific card from the store.
+     * @param {String} cardName The name of the card to delete
+     * @return {Promise} A promise that resolves when the card is deleted.
      */
-    delete(connectionProfile) {
+    delete (cardName) {
         const method = 'delete';
-        LOG.entry(method, connectionProfile);
+        LOG.entry(method);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionProfileStoreDelete', connectionProfile, (error) => {
+                    this.socket.emit('/api/businessNetworkCardStoreDelete', cardName, (error, result) => {
                         if (error) {
                             return reject(ProxyUtil.inflaterr(error));
                         }
-                        LOG.exit(method);
-                        resolve();
+                        LOG.exit(method, result);
+                        resolve(result);
                     });
                 });
             });
@@ -168,4 +176,4 @@ class ProxyConnectionProfileStore extends ConnectionProfileStore {
 
 }
 
-module.exports = ProxyConnectionProfileStore;
+module.exports = ProxyBusinessNetworkCardStore;

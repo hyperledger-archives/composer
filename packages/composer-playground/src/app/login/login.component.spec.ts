@@ -11,11 +11,8 @@ import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject } from 'rxjs/Rx';
-
-import { IdentityService } from '../services/identity.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
@@ -108,6 +105,7 @@ class MockFooterComponent {
 class MockIdentityCardComponent {
     @Input() identity: any;
     @Input() indestructible: any;
+    @Input() cardRef: string;
 }
 
 @Component({
@@ -138,10 +136,8 @@ describe(`LoginComponent`, () => {
     let fixture: ComponentFixture<LoginComponent>;
 
     let mockAdminService;
-    let mockIdentityService;
     let mockIdentityCardService;
     let mockClientService;
-    let mockConnectionProfileService;
     let mockInitializationService;
     let mockSampleBusinessNetworkService;
     let routerStub;
@@ -152,11 +148,8 @@ describe(`LoginComponent`, () => {
     let businessNetworkMock;
 
     beforeEach(() => {
-
-        mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockSampleBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -183,10 +176,8 @@ describe(`LoginComponent`, () => {
                 MockTutorialLinkComponent
             ],
             providers: [
-                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
@@ -355,8 +346,7 @@ describe(`LoginComponent`, () => {
             tick();
 
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('myCardRef');
-            mockClientService.ensureConnected.should.have.been.calledWith('myNetwork', true);
-            mockIdentityService.setLoggedIn.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
             routerStub.navigate.should.have.been.calledWith(['editor']);
         }));
@@ -371,7 +361,6 @@ describe(`LoginComponent`, () => {
 
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('myCardRef');
             mockClientService.ensureConnected.should.not.have.been.called;
-            mockIdentityService.setLoggedIn.should.not.have.been.called;
 
             routerStub.navigate.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
@@ -583,7 +572,6 @@ describe(`LoginComponent`, () => {
         });
 
         it('should import an identity card', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.resolve());
             let mockIdCard = sinon.createStubInstance(IdCard);
             mockIdentityCardService.getIdentityCard.returns(mockIdCard);
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
@@ -598,7 +586,9 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should handle errors', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.reject('some error'));
+            mockDrawer.open.returns({
+                result: Promise.reject('some error')
+            });
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
 
             component.importIdentity();
@@ -775,7 +765,7 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
             mockSampleBusinessNetworkService.getSampleList.should.have.been.called;
             mockSampleBusinessNetworkService.getChosenSample.should.have.been.calledWith({name: 'mySample'});
-            mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'my-basic-sample', 'The Composer basic sample network');
+            mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network');
             changeIdentityStub.should.have.been.calledWith('myNewCardRef');
         }));
     });

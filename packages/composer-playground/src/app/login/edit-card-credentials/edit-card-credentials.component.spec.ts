@@ -111,6 +111,7 @@ describe('EditCardCredentialsComponent', () => {
             component['connectionProfile'] = {theProfile: 'muchProfile'};
             component['addInProgress'] = false;
             component['useCerts'] = false;
+            component['cardName'] = 'myCardName';
         });
 
         it('should set busy status upon entry', fakeAsync(() => {
@@ -135,7 +136,7 @@ describe('EditCardCredentialsComponent', () => {
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', 'suchSecret', {theProfile: 'muchProfile'}, null, []);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'myCardName', 'network', 'suchSecret', {theProfile: 'muchProfile'}, null, []);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',
@@ -162,7 +163,7 @@ describe('EditCardCredentialsComponent', () => {
                 privateKey: 'my-private-cert'
             };
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'network', null, {theProfile: 'muchProfile'}, certs, []);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'myCardName', 'network', null, {theProfile: 'muchProfile'}, certs, []);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',
@@ -183,7 +184,7 @@ describe('EditCardCredentialsComponent', () => {
 
             tick();
 
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', null, 'suchSecret', {theProfile: 'muchProfile'}, null, ['PeerAdmin', 'ChannelAdmin']);
+            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('bob', 'myCardName', null, 'suchSecret', {theProfile: 'muchProfile'}, null, ['PeerAdmin', 'ChannelAdmin']);
             mockAlertService.successStatus$.next.should.have.been.calledWith({
                 title: 'ID Card Added',
                 text: 'The ID card was successfully added to My Wallet.',
@@ -193,7 +194,7 @@ describe('EditCardCredentialsComponent', () => {
         }));
 
         it('should handle an error from createIdentityCard(~) inform the user', fakeAsync(() => {
-            mockIdentityCardService.createIdentityCard.returns(Promise.reject('test error'));
+            mockIdentityCardService.createIdentityCard.returns(Promise.reject({message: 'test error'}));
             let spy = sinon.spy(component.idCardAdded, 'emit');
 
             component.addIdentityCard();
@@ -201,8 +202,22 @@ describe('EditCardCredentialsComponent', () => {
             tick();
 
             component['addInProgress'].should.be.false;
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('test error');
+            mockAlertService.errorStatus$.next.should.have.been.calledWith({message: 'test error'});
             spy.should.have.been.calledWith(false);
+        }));
+
+        it('should handle an error from createIdentityCard(~) with cardName and inform the user', fakeAsync(() => {
+            mockIdentityCardService.createIdentityCard.returns(Promise.reject({message: 'Card already exists: bob'}));
+            let spy = sinon.spy(component.idCardAdded, 'emit');
+
+            component.addIdentityCard();
+
+            tick();
+
+            component['addInProgress'].should.be.false;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            spy.should.not.have.been.called;
+            component['cardNameValid'].should.equal(false);
         }));
     });
 
@@ -281,6 +296,20 @@ describe('EditCardCredentialsComponent', () => {
             component['peerAdmin'] = false;
             component['channelAdmin'] = false;
             component['useParticipantCard'] = false;
+
+            component['validContents']().should.be.false;
+        });
+
+        it('it should not validate if card name is invalid', () => {
+            // Certs path
+            component['useCerts'] = true;
+            component['addInProgress'] = false;
+            component['addedPublicCertificate'] = 'publicKey';
+            component['addedPrivateCertificate'] = 'privateKey';
+            component['userId'] = 'userID';
+            component['busNetName'] = 'my-network';
+            component['useParticipantCard'] = true;
+            component['cardNameValid'] = false;
 
             component['validContents']().should.be.false;
         });
@@ -457,6 +486,24 @@ describe('EditCardCredentialsComponent', () => {
             component['addedPublicCertificate'].should.equal('myCert');
 
             should.not.exist(component['userSecret']);
+        });
+    });
+
+    describe('setCardName', () => {
+        it('should set the card name and cardNameValid to true', () => {
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(true);
+        });
+
+        it('should not set the card name if it hasn\'t changed and not update cardNameValid', () => {
+            component['cardNameValid'] = false;
+            component['cardName'] = 'myCardName';
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(false);
         });
     });
 });

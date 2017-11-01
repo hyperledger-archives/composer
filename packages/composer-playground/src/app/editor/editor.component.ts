@@ -429,7 +429,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             })
             .then(() => {
                 this.deploying = false;
-                return this.clientService.refresh(this.fileService.getBusinessNetworkName());
+                return this.clientService.refresh();
             })
             .then(() => {
                 this.updatePackageInfo();
