@@ -22,6 +22,7 @@ import {
     ClassDeclaration,
     Factory,
     ModelFile
+
 } from 'composer-common';
 
 import { BusinessNetworkConnection, AssetRegistry } from 'composer-client';
@@ -174,6 +175,7 @@ describe('ResourceComponent', () => {
     describe('#generateResource', () => {
         let mockClassDeclaration;
         let mockModelFile;
+        let mockValidator;
         beforeEach(() => {
             component['updateExistingJSON'] = sandbox.stub();
             mockModelFile = sinon.createStubInstance(ModelFile);
@@ -182,11 +184,15 @@ describe('ResourceComponent', () => {
             mockClassDeclaration.getModelFile.returns(mockModelFile);
             mockClassDeclaration.getName.returns('class.declaration');
             mockClassDeclaration.getIdentifierFieldName.returns('resourceId');
-
         });
 
-        it('should generate a valid resource with undefined', () => {
-
+        it('should generate a valid resource with an empty ID', () => {
+            let mockField = {
+                getValidator: () => {
+                    return true;
+                }
+            };
+            mockClassDeclaration.getOwnProperty.returns(mockField);
             mockSerializer.toJSON.returns({$class: 'com.org'});
             mockSerializer.fromJSON.returns(mockResource);
             mockResource.validate = sandbox.stub();
@@ -289,7 +295,51 @@ describe('ResourceComponent', () => {
 
         });
 
+        it('should generate a valid resource with a random 4-digit ID', () => {
+            let mockField = {
+                getValidator: () => {
+                    return false;
+                }
+            };
+            mockClassDeclaration.getOwnProperty.returns(mockField);
+            mockSerializer.toJSON.returns({$class: 'com.org'});
+            mockSerializer.fromJSON.returns(mockResource);
+            mockResource.validate = sandbox.stub();
+            component['resourceDeclaration'] = mockClassDeclaration;
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateResource']();
+
+            // should not result in definitionError
+            should.not.exist(component['definitionError']);
+
+            // resourceDefinition should be set as per serializer.toJSON output
+            component['resourceDefinition'].should.equal('{\n  "$class": "com.org"\n}');
+
+            // We use the following internal calls
+            mockFactory.newResource.should.be.calledWith(undefined,
+                                                        'class.declaration',
+                                                        sinon.match(/[0-9]{4}/),
+                                                        {
+                                                        generate: 'empty',
+                                                        includeOptionalFields: false,
+                                                        disableValidation: true,
+                                                        allowEmptyId: true
+                                                        });
+            component.onDefinitionChanged.should.be.calledOn;
+        });
+
         it('should set definitionError on serializer fail', () => {
+            let mockField = {
+                getValidator: () => {
+                    return false;
+                }
+            };
+            mockClassDeclaration.getOwnProperty.returns(mockField);
+
             component['resourceDeclaration'] = mockClassDeclaration;
 
             // Set serializer to throw
@@ -308,6 +358,13 @@ describe('ResourceComponent', () => {
         });
 
         it('should set definitionError on validation fail', () => {
+            let mockField = {
+                getValidator: () => {
+                    return false;
+                }
+            };
+            mockClassDeclaration.getOwnProperty.returns(mockField);
+
             mockSerializer.toJSON.returns({$class: 'com.org'});
             mockSerializer.fromJSON.returns(mockResource);
             component['resourceDeclaration'] = mockClassDeclaration;

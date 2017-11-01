@@ -7,7 +7,8 @@ import {
     ClassDeclaration,
     AssetDeclaration,
     ParticipantDeclaration,
-    TransactionDeclaration
+    TransactionDeclaration,
+    Field
 } from 'composer-common';
 import leftPad = require('left-pad');
 
@@ -104,14 +105,28 @@ export class ResourceComponent implements OnInit {
     }
 
     /**
+     * Returns true if the Identifying field of the Class that is being created has
+     * a validator associated with it ie. its ID field must conform to a regex
+     */
+    private idFieldHasRegex() {
+        // a non-null validator on an identifying field returns true
+        let idf: Field = this.resourceDeclaration.getOwnProperty(this.resourceDeclaration.getIdentifierFieldName());
+        return idf.getValidator() ? true : false;
+    }
+
+    /**
      * Generate the json description of a resource
      */
     private generateResource(withSampleData ?: boolean): void {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let factory = businessNetworkDefinition.getFactory();
-        let idx = Math.round(Math.random() * 9999).toString();
-        idx = leftPad(idx, 4, '0');
+
         let id = '';
+        if (!this.idFieldHasRegex()) {
+            let idx = Math.round(Math.random() * 9999).toString();
+            id = leftPad(idx, 4, '0');
+        }
+
         try {
             const generateParameters = {
                 generate: withSampleData ? 'sample' : 'empty',
