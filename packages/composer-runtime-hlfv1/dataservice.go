@@ -22,6 +22,8 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
+import "time"
+
 // This is the object type used to form composite keys for the collection of collections.
 const collectionObjectType = "$syscollections"
 
@@ -76,6 +78,10 @@ func NewDataService(vm *duktape.Context, context *Context, stub shim.ChaincodeSt
 // createCollection creates a collection of objects in the world state.
 func (dataService *DataService) createCollection(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataService.createCollection", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.createCollection total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataService.createCollection", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -154,6 +160,10 @@ func (dataService *DataService) createCollection(vm *duktape.Context) (result in
 // deleteCollection deletes a collection of objects in the world state.
 func (dataService *DataService) deleteCollection(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataService.deleteCollection", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.deleteCollection total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataService.deleteCollection", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -206,6 +216,10 @@ func (dataService *DataService) deleteCollection(vm *duktape.Context) (result in
 // getCollection retrieves an existing collection from the world state.
 func (dataService *DataService) getCollection(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataService.getCollection", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.getCollection total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+	
 	defer func() { logger.Debug("Exiting DataService.getCollection", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -223,6 +237,8 @@ func (dataService *DataService) getCollection(vm *duktape.Context) (result int) 
 		}
 		return 0
 	}
+
+	increment := time.Now();
 
 	// Get the collection.
 	value, err := dataService.Stub.GetState(key)
@@ -242,8 +258,14 @@ func (dataService *DataService) getCollection(vm *duktape.Context) (result int) 
 		return 0
 	}
 
+	logger.Debug("@perf DataService.getCollection getState duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Create the new data collection.
 	NewDataCollection(vm, dataService, dataService.Stub, id)
+
+	logger.Debug("@perf DataService.getCollection NewDataCollection duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
 
 	// Call the callback.
 	vm.PushGlobalStash()
@@ -254,12 +276,18 @@ func (dataService *DataService) getCollection(vm *duktape.Context) (result int) 
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+	
+	logger.Debug("@perf DataService.getCollection callback duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
 	return 0
 }
 
 // existsCollection checks to see if a collection exists in the world state.
 func (dataService *DataService) existsCollection(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataService.existsCollection", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.existsCollection total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataService.existsCollection", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -278,6 +306,8 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 		return 0
 	}
 
+	increment := time.Now();
+
 	// Get the collection.
 	value, err := dataService.Stub.GetState(key)
 	if err != nil {
@@ -289,6 +319,9 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 		return 0
 	}
 
+	logger.Debug("@perf DataService.existsCollection GetState duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "dataCollection")
@@ -298,12 +331,18 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+
+	logger.Debug("@perf DataService.existsCollection callback duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
 	return 0
 }
 
 // executeQuery executes a query against the data in the world state.
 func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataService.executeQuery", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.executeQuery total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataService.executeQuery", result) }()
 
 	// argument 0 is the CouchDB queryString
@@ -312,6 +351,8 @@ func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
 
 	// argument 1 is the callback function (err,response)
 	vm.RequireFunction(1)
+
+	increment := time.Now()
 
 	resultsIterator, err := dataService.Stub.GetQueryResult(queryString)
 	if err != nil {
@@ -325,6 +366,9 @@ func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
 	defer resultsIterator.Close()
 
 	logger.Debug("Got an iterator", resultsIterator)
+
+	logger.Debug("@perf DataService.executeQuery GetQueryResult duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
 
 	arrIdx := vm.PushArray()
 	arrNum := uint(0)
@@ -350,6 +394,9 @@ func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
 		arrNum++
 	}
 
+	logger.Debug("@perf DataService.executeQuery resultsIterator.HasNext() duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(1)
 	vm.PushNull() // no error
@@ -357,13 +404,22 @@ func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+
+	logger.Debug("@perf DataService.executeQuery callback execution duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	
 	return 0
 }
 
 // clearCollection is called to clear all objects from a collection.
 func (dataService *DataService) clearCollection(collectionID string) (err error) {
 	logger.Debug("Entering DataService.clearCollection", collectionID)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataService.clearCollection total duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataService.clearCollection", err) }()
+
+	increment := time.Now();
 
 	// We look for all objects in this collection by performing a partial query.
 	// The objects are stored with composite keys of collectionID + objectID.
@@ -371,6 +427,9 @@ func (dataService *DataService) clearCollection(collectionID string) (err error)
 	if err != nil {
 		return err
 	}
+
+	logger.Debug("@perf DataService.getCollection GetStateByPartialCompositeKey duration for txnId [", dataService.Stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
 
 	// Must close iterator to free resources.
 	defer iterator.Close()
