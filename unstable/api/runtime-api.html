@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Api (Runtime API) | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Api (Runtime API)</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html">Introduction</a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html">Installing</a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html">Tutorials</a></p>
+
+<ul>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
+<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html">Using Playground</a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html">Developing Business Networks</a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html">Developing Applications</a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html">Managing a Deployed Business Network</a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html">Diagnosing Problems</a></p></li>
+<li><p><a href="../reference/reference-index.html">Reference</a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html">Support</a></p></li>
+<li><p><a href="../api/api-doc-index.html">API Reference</a></p>
+
+<ul>
+<li><a href="../api/allData.html">API Class Index</a></li>
+<li><a href="../api/admin-adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api/client-assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api/client-businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api/client-historian.html">Historian (Client API)</a></li>
+<li><a href="../api/client-identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api/client-participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api/client-query.html">Query (Client API)</a></li>
+<li><a href="../api/client-registry.html">Registry (Client API)</a></li>
+<li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
+<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
+<li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
+<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api/common-resource.html">Resource (Common API)</a></li>
+<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
+<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
+<li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-typed.html">Typed (Common API)</a></li>
+<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
+<li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
+<li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
+<li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
+<li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
+<li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
+<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
+<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
+<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+
+<h1 id="api">Api</h1>
+
+<p>A class that contains the root of the transaction processor API. Methods in this
+class are made available as global functions which can be called by transaction
+processor functions. The transaction processor API should expose no internal
+properties or internal methods which could be accessed or misused.</p>
+
+<h3 id="details">Details</h3>
+
+<ul>
+<li><strong>Module</strong> runtime</li>
+</ul>
+
+<h3 id="see-also">See also</h3>
+
+<h2 id="method-summary">Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#buildquery">buildQuery</a></td>
+<td style="text-align: left"><code>Query</code></td>
+<td style="text-align: left">Build a query ready for later execution. The specified query string must be written in the Composer query language.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#emit">emit</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Emit an event defined in the transaction</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getassetregistry">getAssetRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get an existing asset registry using the unique identifier of the asset registry. An asset registry can be used to retrieve, update, or delete existing assets, or create new assets.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getcurrentparticipant">getCurrentParticipant</a></td>
+<td style="text-align: left"><code>module:composer-common.Resource</code></td>
+<td style="text-align: left">Get the current participant. The current participant is determined by the identity that was used to submit the current transaction.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getfactory">getFactory</a></td>
+<td style="text-align: left"><code>module:composer-runtime.Factory</code></td>
+<td style="text-align: left">Get the factory. The factory can be used to create new instances of assets, participants, and transactions for storing in registries. The factory can also be used for creating relationships to assets, particpants, and transactions.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparticipantregistry">getParticipantRegistry</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get an existing participant registry using the unique identifier of the participant registry. An participant registry can be used to retrieve, update, or delete existing participants, or create new participants.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getserializer">getSerializer</a></td>
+<td style="text-align: left"><code>module:composer-common.Serializer</code></td>
+<td style="text-align: left">Get the serializer. The serializer can be used to create new instances of assets, participants, and transactions from a JavaScript object, or to create a JavaScript object suitable for long-lived persistence.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#post">post</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Post a typed instance to a HTTP URL</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#query">query</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery.</td>
+</tr>
+</tbody></table>
+
+<h1 id="method-details">Method Details</h1>
+
+<h2 id="getfactory">getFactory</h2>
+
+<p><em>module:composer-runtime.Factory getFactory(  )</em></p>
+
+<p>Get the factory. The factory can be used to create new instances of assets, participants, and transactions for storing in registries. The factory can also be used for creating relationships to assets, particpants, and transactions.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the factory.</span>
+<span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>module:composer-runtime.Factory</code> - The factory.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the factory.</span>
+<span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="getserializer">getSerializer</h2>
+
+<p><em>module:composer-common.Serializer getSerializer(  )</em></p>
+
+<p>Get the serializer. The serializer can be used to create new instances of assets, participants, and transactions from a JavaScript object, or to create a JavaScript object suitable for long-lived persistence.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the serializer.</span>
+<span class="kd">var</span> <span class="nx">ser</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>module:composer-common.Serializer</code> - The serializer.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the serializer.</span>
+<span class="kd">var</span> <span class="nx">ser</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="getassetregistry">getAssetRegistry</h2>
+
+<p><em>Promise getAssetRegistry( string id )</em></p>
+
+<p>Get an existing asset registry using the unique identifier of the asset registry. An asset registry can be used to retrieve, update, or delete existing assets, or create new assets.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Call methods on the vehicle asset registry.</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise. The promise is resolved with an {@link module:composer-runtime.AssetRegistry AssetRegistry} instance representing the asset registry if it exists. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>id</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The ID of the asset registry.</td>
+</tr>
+</tbody></table>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Call methods on the vehicle asset registry.</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h2 id="getparticipantregistry">getParticipantRegistry</h2>
+
+<p><em>Promise getParticipantRegistry( string id )</em></p>
+
+<p>Get an existing participant registry using the unique identifier of the participant registry. An participant registry can be used to retrieve, update, or delete existing participants, or create new participants.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Call methods on the driver participant registry.</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise. The promise is resolved with an {@link module:composer-runtime.ParticipantRegistry ParticipantRegistry} instance representing the participant registry if it exists. If the participant registry does not exist, or the current user does not have access to the participant registry, then the promise will be rejected with an error that describes the problem.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>id</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The ID of the participant registry.</td>
+</tr>
+</tbody></table>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Call methods on the driver participant registry.</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h2 id="getcurrentparticipant">getCurrentParticipant</h2>
+
+<p><em>module:composer-common.Resource getCurrentParticipant(  )</em></p>
+
+<p>Get the current participant. The current participant is determined by the identity that was used to submit the current transaction.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current participant.</span>
+<span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+<span class="c1">// Check to see if the current participant is a driver.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Throw an error as the current participant is not a driver.</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not a driver'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// Check to see if the current participant is the first driver.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Throw an error as the current participant is not a driver.</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not the first driver'</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>module:composer-common.Resource</code> - The current participant, or null if the transaction was submitted using an identity that does not map to a participant.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current participant.</span>
+<span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+<span class="c1">// Check to see if the current participant is a driver.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Throw an error as the current participant is not a driver.</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not a driver'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// Check to see if the current participant is the first driver.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Throw an error as the current participant is not a driver.</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not the first driver'</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="post">post</h2>
+
+<p><em>Promise post( string url, Typed typed, object options )</em></p>
+
+<p>Post a typed instance to a HTTP URL</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise. The promise is resolved with a HttpResponse that represents the result of the HTTP POST.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>url</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The URL to post the data to</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>typed</strong></td>
+<td style="text-align: left">Typed</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The typed instance to be posted. The instance will be serialized to JSON.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left">object</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The options that are passed to Serializer.toJSON</td>
+</tr>
+</tbody></table>
+
+<h2 id="emit">emit</h2>
+
+<p><em>void emit( Resource event )</em></p>
+
+<p>Emit an event defined in the transaction</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>event</strong></td>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The event to be emitted</td>
+</tr>
+</tbody></table>
+
+<h2 id="buildquery">buildQuery</h2>
+
+<p><em>Query buildQuery( string query )</em></p>
+
+<p>Build a query ready for later execution. The specified query string must be written in the Composer query language.
+This functionality is Blockchain platform dependent. For example, when a Composer business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be configured with the CouchDB database for the world state.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Build a query.</span>
+<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
+<span class="c1">// Execute the query.</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// Process each asset.</span>
+    <span class="p">});</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Query</code> - The built query, which can be passed in a call to query.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>query</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The query string, written using the Composer query language.</td>
+</tr>
+</tbody></table>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Build a query.</span>
+<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
+<span class="c1">// Execute the query.</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// Process each asset.</span>
+    <span class="p">});</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h2 id="query">query</h2>
+
+<p><em>Promise query( string; Query query, [Object parameters] )</em></p>
+
+<p>Execute a query defined in a Composer query file, or execute a query built with buildQuery.
+This functionality is Blockchain platform dependent. For example, when a Composer business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be configured with the CouchDB database for the world state.</p>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Execute the query.</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'Q1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// Process each asset.</span>
+    <span class="p">});</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>query</strong></td>
+<td style="text-align: left">string; Query</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The name of the query, or a built query.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>parameters</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">The parameters for the query.</td>
+</tr>
+</tbody></table>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Execute the query.</span>
+<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'Q1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// Process each asset.</span>
+    <span class="p">});</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
