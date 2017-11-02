@@ -76,7 +76,6 @@
     },
     "dependencies": {
         "@ng-bootstrap/ng-bootstrap": "1.0.0-beta.2",
-        "cheerio": "0.22.0",
         "composer-common": "0.14.4",
         "composer-playground-api": "0.14.4",
         "express": "4.15.2",
