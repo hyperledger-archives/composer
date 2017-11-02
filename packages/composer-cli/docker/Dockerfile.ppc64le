@@ -1,4 +1,4 @@
-FROM ppc64le/node:6.11
+FROM ppc64le/node:8-8-alpine
 
 # Reset npm logging to default level.
 ENV NPM_CONFIG_LOGLEVEL warn

@@ -3,8 +3,8 @@
     "version": "0.14.4",
     "description": "A test harness/UI for the web runtime container for Hyperledger Composer",
     "engines": {
-        "node": ">=6",
-        "npm": ">=3"
+        "node": ">=8",
+        "npm": ">=5"
     },
     "bin": {
         "composer-playground": "cli.js"

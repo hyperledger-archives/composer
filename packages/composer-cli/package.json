@@ -3,8 +3,8 @@
   "version": "0.14.4",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "bin": {
     "composer": "cli.js"

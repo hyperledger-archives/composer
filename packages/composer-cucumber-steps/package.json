@@ -30,7 +30,7 @@
     "chai-as-promised": "6.0.0",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
-    "jsdoc": "3.4.3",
+    "jsdoc": "3.5.5",
     "license-check": "1.1.5",
     "mocha": "3.4.2",
     "nyc": "11.1.0"

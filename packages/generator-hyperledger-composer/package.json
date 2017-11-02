@@ -3,8 +3,8 @@
   "version": "0.14.4",
   "description": "Generates projects from Hyperledger Composer business network definitions",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "keywords": [
     "yeoman-generator"
