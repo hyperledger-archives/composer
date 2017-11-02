@@ -6,7 +6,7 @@ class AssetRegistry extends Registry {
    + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class BusinessNetworkConnection extends EventEmitter {
-   + void constructor(Object,ConnectionProfileStore,Object) 
+   + void constructor(Object,BusinessNetworkCardStore) 
    + BusinessNetworkDefinition getBusinessNetwork() 
    + Promise getAllAssetRegistries(boolean) 
    + Promise getAssetRegistry(string) 
@@ -21,7 +21,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise transactionRegistryExists(string) 
    + Promise getHistorian() 
    + Promise getIdentityRegistry() 
-   + Promise connect(string,string,string,string,Object,String) 
+   + Promise connect(String,Object) 
    + Promise getRegistry(String) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 

@@ -141,7 +141,7 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
-    describe('#connect', () => {
+    describe('#connectWithDetails', () => {
 
         it('should create a connection and download the business network archive', () => {
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
@@ -153,7 +153,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
-            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
+            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
             .then((result) => {
                 sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
                 sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
@@ -181,7 +181,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
-            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
             .then((result) => {
                 sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
                 sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork', { some: 'other', options: true });
@@ -215,7 +215,7 @@ describe('BusinessNetworkConnection', () => {
                 { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
             ]);
 
-            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
             .then((result) => {
                 sinon.assert.calledTwice(cb); // two events
                 const ev1 = cb.args[0][0];
@@ -228,14 +228,9 @@ describe('BusinessNetworkConnection', () => {
                 ev2.getIdentifier().should.equal('event2');
             });
         });
-
-        it('should fail with the wrong number of arguments', ()=>{
-            return businessNetworkConnection.connect().should.be.rejectedWith(/Incorrect number of arguments/);
-
-        });
     });
 
-    describe('#connectWithCard',()=>{
+    describe('#connect',()=>{
         const userName = 'FredBloggs';
         const enrollmentSecret = 'password';
         const keyValStore = '/conga/conga/conga';
