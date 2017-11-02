@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: InvalidQueryException</title>
+	<title>Hyperledger Composer Class: Api</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,18 +79,18 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: InvalidQueryException</h1>
+	<h1 class="page-title">Class: Api</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
+            <span class="ancestors"><a href="module-composer-runtime.html">composer-runtime</a>.</span>
         
-        InvalidQueryException
+        Api
         </h2>
         
-            <div class="class-description"><p>Exception thrown for invalid queries</p></div>
+            <div class="class-description"><p>A class that contains the root of the transaction processor API. Methods in this<br>class are made available as global functions which can be called by transaction<br>processor functions. The transaction processor API should expose no internal<br>properties or internal methods which could be accessed or misused.</p></div>
         
     
 </header>
@@ -102,7 +102,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="InvalidQueryException"><span class="type-signature"></span>new InvalidQueryException(message [, queryFile] [, fileLocation])</h4>
+    <h4 class="name" id="Api"><span class="type-signature"></span>new Api(context)</h4>
     
     
 </dt>
@@ -110,7 +110,7 @@
 
     
     <div class="description">
-        <p>Create an InvalidQueryException.</p>
+        <p>Constructor.</p>
     </div>
     
 
@@ -133,8 +133,6 @@
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
         
 
@@ -147,132 +145,13 @@
 
         <tr>
             
-                <td class="name"><code>message</code></td>
+                <td class="name"><code>context</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>the message for the exception</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queryFile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">QueryFile</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>the optional queryFile associated with the exception</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fileLocation</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>location details of the error within the model file.</p>
-                <h6 class="method-params-label method-subparams-label">Properties</h6>
-                
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>start.line</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
+<span class="param-type">Context</span>
 
 
 
@@ -283,86 +162,7 @@
 
             
 
-            <td class="description last"><p>start line of the error location.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>start.column</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>start column of the error location.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>end.line</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>end line of the error location.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>end.column</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>end column of the error location.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>The transaction context.</p></td>
         </tr>
 
     
@@ -406,8 +206,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_query_invalidqueryexception.js.html">composer-common/lib/query/invalidqueryexception.js</a>,
-				 <a href="composer-common_lib_query_invalidqueryexception.js.html#sunlight-1-line-26">line 26</a>
+				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-36">line 36</a>
 			</li>
 		</ul>
 	</dd>
@@ -415,13 +215,6 @@
 
 	
 
-	
-	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li>See BaseFileException</li>
-			</ul>
-	</dd>
 	
 
 	
@@ -447,15 +240,6 @@
     </div>
 
     
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li>BaseFileException</li>
-    </ul>
-
 
     
 
@@ -467,124 +251,6 @@
 
     
 
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="getQueryFile"><span class="type-signature"></span>getQueryFile()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the query file associated with the exception or null</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_query_invalidqueryexception.js.html">composer-common/lib/query/invalidqueryexception.js</a>,
-				 <a href="composer-common_lib_query_invalidqueryexception.js.html#sunlight-1-line-62">line 62</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>the optional query file associated with the exception</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">QueryFile</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        </dl>
     
 
     
