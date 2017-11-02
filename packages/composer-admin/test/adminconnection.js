@@ -235,7 +235,7 @@ describe('AdminConnection', () => {
     describe('#connectWithCard', () =>{
 
 
-        it ('should connect, login and ping if update not specified', () => {
+        it ('should connect, login and ping if update not specified (secret based)', () => {
             sinon.spy(cardStore,'get');
 
             let mockIdCard = sinon.createStubInstance(IdCard);
@@ -256,6 +256,29 @@ describe('AdminConnection', () => {
                 sinon.assert.notCalled(mockConnection.ping);
             });
         });
+
+        it ('should connect, login and ping if update not specified (certificate based)', () => {
+            sinon.spy(cardStore,'get');
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getConnectionProfile.returns({});
+            mockIdCard.getUserName.returns('fred');
+            mockIdCard.getBusinessNetworkName.returns('network');
+            mockIdCard.getCredentials.returns({certificate:'cert',privateKey:'key'});
+            cardStore.put('testCardname',mockIdCard);
+
+            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            return adminConnection.connect('testCardname').then(()=>{
+                sinon.assert.calledOnce(cardStore.get);
+                sinon.assert.calledWith(cardStore.get,'testCardname');
+                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login,'fred','na');
+                sinon.assert.notCalled(mockConnection.ping);
+            });
+        });
+
 
         it ('should connect, login and ping if update specified', () => {
             sinon.spy(cardStore,'get');
