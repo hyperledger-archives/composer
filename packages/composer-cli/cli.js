@@ -42,7 +42,6 @@ if (typeof(results.thePromise) !== 'undefined'){
         process.exit(0);
     }).catch((error) => {
         console.log(error+chalk.red('\nCommand failed\n'));
-        console.log(error.stack);
         process.exit(1);
     });
 } else {
