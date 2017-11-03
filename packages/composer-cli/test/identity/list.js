@@ -30,10 +30,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const ENROLL_ID = 'SuccessKid';
-const ENROLL_SECRET = 'SuccessKidWin';
-
 describe('composer identity list CLI unit tests', () => {
 
     let sandbox;
@@ -84,38 +80,15 @@ describe('composer identity list CLI unit tests', () => {
 
     it('should list all identities in the business network using the specified profile', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card :'cardName',
             participantId: 'org.doge.Doge#DOGE_1',
             certificateFile: 'admin.pem'
         };
         return List.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockIdentityRegistry.getAll);
-                sinon.assert.calledWith(console.log, sinon.match(/identityId:.*eac9f8ff4e0a0df8017a40313c12bdfb9597928526d651e620598d17c9c875ca/));
-                sinon.assert.calledWith(console.log, sinon.match(/identityId:.*3b6cf18fe92474b6bc720401d5fb9590a3e2e3b67b1aa64ba7d3db85e746a3ba/));
-            });
-    });
-
-    it('should prompt for the enrollment secret if not specified', () => {
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            participantId: 'org.doge.Doge#DOGE_1',
-            certificateFile: 'admin.pem'
-        };
-        return List.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardName');
                 sinon.assert.calledOnce(mockIdentityRegistry.getAll);
                 sinon.assert.calledWith(console.log, sinon.match(/identityId:.*eac9f8ff4e0a0df8017a40313c12bdfb9597928526d651e620598d17c9c875ca/));
                 sinon.assert.calledWith(console.log, sinon.match(/identityId:.*3b6cf18fe92474b6bc720401d5fb9590a3e2e3b67b1aa64ba7d3db85e746a3ba/));
@@ -124,11 +97,9 @@ describe('composer identity list CLI unit tests', () => {
 
     it('should error if the identities cannot be listed', () => {
         mockIdentityRegistry.getAll.rejects(new Error('such error'));
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
+
         let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card :'cardName',
             participantId: 'org.doge.Doge#DOGE_1',
             certificateFile: 'admin.pem'
         };

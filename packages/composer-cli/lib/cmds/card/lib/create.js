@@ -46,9 +46,6 @@ class Create {
             metadata.businessNetwork = argv.businessNetworkName;
         }
 
-        // used in confirmation message so define here
-        let fileName = argv.file;
-
         // handle the connection profile - read from a file
         // start the promise chain to all sync errors are converted to rejected promises
         return Promise.resolve()
@@ -56,42 +53,63 @@ class Create {
                 const filePath = path.resolve(argv.connectionProfileFile);
                 let profileData = JSON.parse(this.readFile(filePath));
 
-                // setup the id card with the meta data and profileData
-                let idCard = new IdCard(metadata,profileData);
-
-                // certificates & privateKey
-                // YARGS command spec logic will have enforced the correct set of options
-                if (argv.certificate && argv.privateKey){
-                    let certFile = this.readFile(path.resolve(argv.certificate));
-                    let keyFile =  this.readFile(path.resolve(argv.privateKey));
-                    idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
-                }
-                // handle the filename
-                // Default is userName@businessNetworkName.card if the card includes a business network name;
-                // otherwise userName@connectionProfileName.card.
-                if (!fileName) {
-                    if (metadata.hasOwnProperty('businessNetwork')){
-                        fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
-                    } else {
-                        fileName = metadata.userName+'@'+ profileData.name +'.card';
-                    }
-                }
-
-                // finally write out the card file
-                return Export.writeCardToFile(fileName,idCard);
+                return this.createCard(metadata,profileData,argv);
             })
-            .then(() => {
+            .then((fileName) => {
                 console.log('Successfully created business network card to '+fileName);
             });
+    }
+
+
+    /** Creates a ID card and writes it to file
+     * factored out fn to permit it's use by other clis
+     *
+     * @param {Object} metadata the metadata object to be passed to the IDCard constructor
+     * @param {Object} profileData connection profile data for the new card
+     * @param {Object} argv arguments from the user
+     * @returns {Promise} resolved with the filename of the card when it has been written
+     */
+    static createCard(metadata,profileData,argv){
+        let fileName;
+        // setup the id card with the meta data
+        let idCard = new IdCard(metadata,profileData);
+
+        // certificates & privateKey
+        // YARGS command spec logic will have enforced the correct set of options
+        if (argv.certificate && argv.privateKey){
+            let certFile = this.readFile(path.resolve(argv.certificate));
+            let keyFile =  this.readFile(path.resolve(argv.privateKey));
+            idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
+        }
+
+        // handle the filename
+        // Default is userName@businessNetworkName.card if the card includes a business network name;
+        // otherwise userName@connectionProfileName.card.
+        if (!argv.file) {
+            if (metadata.hasOwnProperty('businessNetwork')){
+                fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
+            } else {
+                fileName = metadata.userName+'@'+ profileData.name +'.card';
+            }
+        } else {
+            fileName = argv.file;
+        }
+
+        // finally write out the card file
+        return Export.writeCardToFile(fileName,idCard)
+        .then(()=>{
+            return fileName;
+        });
     }
 
     /**
      * Read a file from disc and return the result or throw an error.
      * @param {String} filePath file to load
      * @return {String} with contents or throws an error
+
      */
     static readFile(filePath){
-        let content='';
+        let content;
         try {
             content = fs.readFileSync(filePath,'utf8');
         } catch (cause) {
@@ -102,6 +120,9 @@ class Create {
 
         return content;
     }
+
+
+
 
 }
 

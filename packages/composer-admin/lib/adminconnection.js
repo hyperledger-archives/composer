@@ -349,7 +349,13 @@ class AdminConnection {
             })
             .then((connection) => {
                 this.connection = connection;
-                return connection.login(card.getUserName(),card.getEnrollmentCredentials().secret);
+                let secret = card.getEnrollmentCredentials();
+                if (!secret){
+                    secret='na';
+                } else {
+                    secret=secret.secret;
+                }
+                return connection.login(card.getUserName(),secret);
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
