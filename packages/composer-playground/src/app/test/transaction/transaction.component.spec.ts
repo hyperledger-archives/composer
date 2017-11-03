@@ -5,28 +5,26 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By, BrowserModule } from '@angular/platform-browser';
 import { Component, Input } from '@angular/core';
-import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { TransactionComponent } from './transaction.component';
-import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 
 import {
     TransactionDeclaration,
     BusinessNetworkDefinition,
     Serializer,
     Factory,
-    Resource,
     ModelFile,
     Introspector
 } from 'composer-common';
 
-import { BusinessNetworkConnection, AssetRegistry, TransactionRegistry } from 'composer-client';
+import { BusinessNetworkConnection } from 'composer-client';
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+
 let should = chai.should();
 
 @Component({
@@ -43,7 +41,6 @@ describe('TransactionComponent', () => {
     let element: HTMLElement;
     let mockNgbActiveModal;
     let mockClientService;
-    let mockInitializationService;
     let mockTransaction;
     let mockBusinessNetwork;
     let mockBusinessNetworkConnection;
@@ -58,7 +55,6 @@ describe('TransactionComponent', () => {
         sandbox = sinon.sandbox.create();
         mockNgbActiveModal = sinon.createStubInstance(NgbActiveModal);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockSerializer = sinon.createStubInstance(Serializer);
@@ -77,7 +73,6 @@ describe('TransactionComponent', () => {
         mockBusinessNetworkConnection.submitTransaction = sandbox.stub();
         mockTransaction = sinon.createStubInstance(TransactionDeclaration);
         mockNgbActiveModal.close = sandbox.stub();
-        mockInitializationService.initialize.returns(Promise.resolve());
 
         TestBed.configureTestingModule({
             imports: [
@@ -90,11 +85,10 @@ describe('TransactionComponent', () => {
             ],
             providers: [
                 {provide: NgbActiveModal, useValue: mockNgbActiveModal},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: InitializationService, useValue: mockInitializationService}
+                {provide: ClientService, useValue: mockClientService}
             ]
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
@@ -180,6 +174,7 @@ describe('TransactionComponent', () => {
     describe('#generateTransactionDeclaration', () => {
         let mockModelFile;
         beforeEach(() => {
+            component['updateExistingJSON'] = sandbox.stub();
             mockModelFile = sinon.createStubInstance(ModelFile);
             mockModelFile.getNamespace.returns('com.test');
         });
@@ -207,6 +202,7 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
         });
 
         it('should generate valid transaction definition with false', () => {
@@ -232,6 +228,7 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
         });
 
         it('should generate valid transaction definition with true', () => {
@@ -257,6 +254,29 @@ describe('TransactionComponent', () => {
             mockFactory.newTransaction.should.be.called;
             mockSerializer.toJSON.should.be.called;
             component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.not.be.called;
+        });
+
+        it('should generate a valid transactions when existing data exists adding extra data and preserving previous field values', () => {
+            mockSerializer.toJSON.returns({$class: '', someField: '', optionalField: 'optional value'});
+            mockTransaction.getIdentifierFieldName.returns('transactionId');
+            mockTransaction.getModelFile.returns(mockModelFile);
+            mockTransaction.validate = sandbox.stub();
+            component['selectedTransaction'] = mockTransaction;
+
+            component['resourceDefinition'] = JSON.stringify({$class: 'com.org', someField: 'some value'});
+
+            // should start clean
+            should.not.exist(component['definitionError']);
+
+            // run method
+            component['generateTransactionDeclaration']();
+
+            // We use the following internal calls
+            mockFactory.newTransaction.should.be.called;
+            component.onDefinitionChanged.should.be.calledOn;
+            component['updateExistingJSON'].should.be.calledWith({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+
         });
 
         it('should remove hidden transactions', () => {
@@ -309,6 +329,36 @@ describe('TransactionComponent', () => {
 
             // should be in error state
             should.exist(component['definitionError']);
+        });
+    });
+
+    describe('#updateExistingJSON', () => {
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and are not blank', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: ''}, {$class: '', someField: 'not blank', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'not blank');
+            result.should.have.deep.property('optionalField', 'optional value');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second and ignoring fields from the first that do not exist in the second', () => {
+            let result = component['updateExistingJSON']({$class: 'com.org', someField: 'some value', anotherField: 'another field'}, {$class: '', someField: '', optionalField: 'optional value'});
+            result.should.have.deep.property('$class', 'com.org');
+            result.should.have.deep.property('someField', 'some value');
+            result.should.have.deep.property('optionalField', 'optional value');
+            result.should.not.have.property('anotherField');
+        });
+
+        it('should merge two JSON objects together keeping the data in fields from the first object if they exist in the second including individual values in fields of sub objects', () => {
+            let spy = sinon.spy(component['updateExistingJSON']);
+            let result = component['updateExistingJSON']({objectField: {subProperty: 'value to keep'}}, {objectField: {subProperty: 'value to discard', optionalSubProperty: 'value that exists in second object not first'}});
+            result.should.deep.equal({objectField: {subProperty: 'value to keep', optionalSubProperty: 'value that exists in second object not first'}});
         });
     });
 

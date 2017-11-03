@@ -25,15 +25,10 @@ export class EditCardCredentialsComponent {
     private useCerts: boolean = true;
     private addedPublicCertificate: string;
     private addedPrivateCertificate: string;
-    private formattedCert: string;
-    private formattedPrivateKey: string;
+
     private useParticipantCard: boolean = true;
     private peerAdmin: boolean = false;
     private channelAdmin: boolean = false;
-    private certFile: string;
-    private privateFile: string;
-    private fileType: string;
-    private certType: string;
 
     constructor(private idCardService: IdentityCardService,
                 private alertService: AlertService) {
@@ -42,10 +37,6 @@ export class EditCardCredentialsComponent {
 
     close() {
         this.idCardAdded.emit(false);
-    }
-
-    useCertificates(option: boolean) {
-        this.useCerts = option;
     }
 
     useParticipantCardType(option: boolean) {
@@ -101,14 +92,9 @@ export class EditCardCredentialsComponent {
             text: 'Adding ID card'
         });
 
-        if (this.useCerts) {
-            this.formattedCert = this.formatCert(this.addedPublicCertificate);
-            this.formattedPrivateKey = this.formatCert(this.addedPrivateCertificate);
-        }
-
         let credentials = this.useCerts ? {
-            certificate: this.formattedCert,
-            privateKey: this.formattedPrivateKey
+            certificate: this.addedPublicCertificate,
+            privateKey: this.addedPrivateCertificate
         } : null;
 
         let roles = [];
@@ -140,70 +126,25 @@ export class EditCardCredentialsComponent {
             });
     }
 
-    formatCert(unformatted: string) {
-        return  unformatted.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
+    updateCredentials($event) {
+        // credentials not valid yet
+        if (!$event || !$event.userId) {
+            this.userId = null;
+            this.userSecret = null;
+            this.addedPrivateCertificate = null;
+            this.addedPublicCertificate = null;
+            return;
+        }
+
+        if ($event.secret) {
+            this.useCerts = false;
+            this.userSecret = $event.secret;
+
+        } else {
+            this.addedPublicCertificate = $event.cert;
+            this.addedPrivateCertificate = $event.key;
+        }
+
+        this.userId = $event.userId;
     }
-
-    getDataBuffer(file: File) {
-        return new Promise((resolve, reject) => {
-            let fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file);
-            fileReader.onload = () => {
-                let dataBuffer = Buffer.from(fileReader.result);
-                resolve(dataBuffer);
-            };
-
-            fileReader.onerror = (err) => {
-                reject(err);
-            };
-        });
-    }
-
-    fileDetected() {
-        this.expandInput = true;
-    }
-
-    fileLeft() {
-        this.expandInput = false;
-    }
-
-    fileAccepted(file: File) {
-        this.fileType = file.name.substr(file.name.lastIndexOf('.') + 1);
-        this.getDataBuffer(file)
-        .then((data) => {
-            switch (this.fileType) {
-                case 'pem':
-                    this.expandInput = true;
-                    this.certType = data.toString().substring(0, 27);
-                    if (this.certType === '-----BEGIN CERTIFICATE-----') {
-                        this.setPublicCert(data.toString());
-                    } else if (this.certType === '-----BEGIN PRIVATE KEY-----') {
-                        this.setPrivateCert(data.toString());
-                    } else {
-                        throw new Error('Certificate content in unexpected format.');
-                    }
-                    break;
-                default:
-                    throw new Error('Unexpected file type: ' + this.fileType);
-            }
-            this.expandInput = false;
-        })
-        .catch((err) => {
-            this.fileRejected(err);
-        });
-    }
-
-    setPublicCert(cert: string) {
-        this.addedPublicCertificate = this.formatCert(cert);
-    }
-
-    setPrivateCert(cert: string) {
-        this.addedPrivateCertificate = this.formatCert(cert);
-    }
-
-    fileRejected(reason: string) {
-        this.expandInput = false;
-        this.alertService.errorStatus$.next(reason);
-    }
-
 }

@@ -1,10 +1,10 @@
 {
   "name": "composer-common",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "Hyperledger Composer Common, code that is common across client, admin and runtime.",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "main": "index.js",
   "typings": "index.d.ts",
@@ -45,7 +45,7 @@
     "chai-things": "0.2.0",
     "eslint": "3.17.1",
     "folder-zip-sync": "1.0.4",
-    "jsdoc": "3.4.3",
+    "jsdoc": "3.5.5",
     "license-check": "1.1.5",
     "mocha": "3.4.2",
     "mockery": "2.0.0",

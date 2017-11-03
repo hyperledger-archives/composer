@@ -121,14 +121,14 @@ describe('WhereAstValidator', () => {
         it('No error path',()=>{
             mockAssetDeclaration.getNestedProperty.returns(mockStringProperty);
             let wv = new WhereAstValidator(mockAssetDeclaration);
-            let result = wv.verifyProperty(mockBooleanProperty);
+            let result = wv.verifyProperty(mockBooleanProperty, {});
             result.should.equal(mockStringProperty);
         });
         it('Error path',()=>{
             mockAssetDeclaration.getNestedProperty.returns(null);
             let wv = new WhereAstValidator(mockAssetDeclaration);
             ( ()=>{
-                wv.verifyProperty(mockBooleanProperty);
+                wv.verifyProperty(mockBooleanProperty, {});
             }).should.throw(/not found/);
         });
     });

@@ -1,10 +1,10 @@
 {
   "name": "composer-connector-hlfv1",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "The Hyperledger Fabric v1.x Client connector for Hyperledger Composer",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "main": "index.js",
   "scripts": {
@@ -40,12 +40,12 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.14.2",
-    "composer-runtime-hlfv1": "0.14.2",
+    "composer-common": "0.15.0",
+    "composer-runtime-hlfv1": "0.15.0",
     "fabric-ca-client": "1.0.2",
     "fabric-client": "1.0.2",
     "fs-extra": "1.0.0",
-    "grpc": ">=1.3.5 <2.0.0",
+    "grpc": ">=1.3.5 <1.7.0",
     "semver": "5.3.0",
     "temp": "0.8.3",
     "thenify-all": "1.6.0",
@@ -55,7 +55,7 @@
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "eslint": "3.17.1",
-    "jsdoc": "3.4.3",
+    "jsdoc": "3.5.5",
     "license-check": "1.1.5",
     "mocha": "3.4.2",
     "nyc": "11.1.0",

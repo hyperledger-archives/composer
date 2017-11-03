@@ -1,10 +1,10 @@
 {
   "name": "generator-hyperledger-composer",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "Generates projects from Hyperledger Composer business network definitions",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "keywords": [
     "yeoman-generator"
@@ -15,8 +15,8 @@
     "liveNetworkTest": "mocha -t 0 test/angular-network.js"
   },
   "dependencies": {
-    "composer-client": "0.14.2",
-    "composer-common": "0.14.2",
+    "composer-client": "0.15.0",
+    "composer-common": "0.15.0",
     "shelljs": "0.7.7",
     "underscore.string": "3.3.4",
     "yeoman-generator": "0.24.1"
@@ -29,8 +29,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@angular/cli": "1.0.0-rc.0",
-    "composer-admin": "0.14.2",
-    "composer-connector-embedded": "0.14.2",
+    "composer-admin": "0.15.0",
+    "composer-connector-embedded": "0.15.0",
     "mocha": "3.4.2",
     "typings": "2.1.0",
     "yeoman-assert": "3.0.0",

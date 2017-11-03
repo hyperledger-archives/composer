@@ -28,6 +28,7 @@ The `statement` property contains the defining rules of the query, and can have 
 - `WHERE` is an optional operator which defines the conditions to be applied to the registry data.
 - `AND` is an optional operator which defines additional conditions.
 - `OR` is an optional operator which defines alternative conditions.
+- `CONTAINS` is an optional operator that defines conditions for array values
 - `ORDER BY` is an optional operator which defines the sorting or results.
 - `SKIP` is an optional operator which defines the number of results to skip.
 - `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
@@ -65,4 +66,4 @@ query Q17 {
 
 - [Applying queries to a business network.](../business-network/query.html)
 - [Emitting events from transactions.](../business-network/publishing-events.html)
-- [{{site.data.conrefs.composer_full}} API documentation.](../api-doc-inline/api-doc-index.html)
+- [{{site.data.conrefs.composer_full}} API documentation.](../api/api-doc-index.html)

@@ -24,7 +24,7 @@ const StringValidator = require('./stringvalidator');
  * (see below).
  * @private
  * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
+ * @see See  {@link  Property}
  * @class
  * @memberof module:composer-common
  */
