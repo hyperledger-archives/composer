@@ -1,4 +1,4 @@
-FROM node:6-alpine
+FROM node:8-alpine
 
 # Reset npm logging to default level.
 ENV NPM_CONFIG_LOGLEVEL warn
