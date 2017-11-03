@@ -47,6 +47,20 @@ class FileWallet extends Wallet {
    + Promise update(string,string) 
    + Promise remove(string) 
 }
+class IdCard {
+   + String getUserName() 
+   + String getDescription() 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + void setCredentials(Object) 
+   + Object getEnrollmentCredentials() 
+   + String[] getRoles() 
+   + Promise fromArchive() 
+   + Promise toArchive(Object,String) 
+   + Promise fromDirectory(String,undefined) 
+   + Promise toDirectory(String,undefined) 
+}
 class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
    + string getModelFile() 

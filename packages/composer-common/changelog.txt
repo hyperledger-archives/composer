@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.15.0 {6f648966a82295b7649628a3c9142ac6} 2017-11-03
+- Re-add IdCard to public API
+
 Version 0.14.0  {06b9fe19f8d0de36b494e9a3d3e0776f} 2017-10-16
 - Added allowEmptyId option to Factory.newResource Factory.newEvent and Factory.newTransaction
 
