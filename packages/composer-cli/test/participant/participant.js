@@ -15,6 +15,7 @@
 'use strict';
 
 const cmd = require('../../lib/cmds/participant.js');
+const addCommand = require('../../lib/cmds/participant/addCommand.js');
 const yargs = require('yargs');
 require('chai').should();
 const chai = require('chai');
@@ -30,27 +31,44 @@ describe('composer participant cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        sandbox.stub(yargs, 'commandDir').returns(yargs);
+        sandbox.stub(yargs, 'help').returns(yargs);
+        sandbox.stub(yargs, 'example').returns(yargs);
+        sandbox.stub(yargs, 'demand').returns(yargs);
+        sandbox.stub(yargs, 'wrap').returns(yargs);
+        sandbox.stub(yargs, 'strict').returns(yargs);
+        sandbox.stub(yargs, 'epilogue').returns(yargs);
+        sandbox.stub(yargs, 'alias').returns(yargs);
+        sandbox.stub(yargs, 'version').returns(yargs);
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    describe('cmd method tests', () => {
-
-        it('should have the correct command and description', function () {
-            cmd.command.should.include('participant');
-            cmd.desc.should.include('participant');
-        });
-        it('should call yargs correctly', () => {
-            sandbox.stub(yargs, 'commandDir');
-            cmd.builder(yargs);
-            sinon.assert.calledOnce(yargs.commandDir);
-            sinon.assert.calledWith(yargs.commandDir, 'participant');
-            cmd.handler();
-        });
-
+    it('should drive the yargs builder fn correctly',()=>{
+        addCommand.builder(yargs);
     });
+
+    it('should drive the yargs builder check fn correctly',()=>{
+        addCommand._checkFn({data:'notarray',d:'notarray'}).should.equal(true);
+        (()=>{addCommand._checkFn({card:['array'],c:['array']});}).should.throw(/Please specify --card or -c only once/);
+
+        addCommand._checkFn({data:'notarray',d:'notarray'}).should.equal(true);
+        (()=>{addCommand._checkFn({data:['array'],d:['array']});}).should.throw(/Please specify --data or -d only once/);
+    });
+
+    it('should have the correct command and description', function () {
+        cmd.command.should.include('participant');
+        cmd.desc.should.include('participant');
+    });
+    it('should call yargs correctly', () => {
+        cmd.builder(yargs);
+        sinon.assert.calledOnce(yargs.commandDir);
+        sinon.assert.calledWith(yargs.commandDir, 'participant');
+        cmd.handler();
+    });
+
+
 
 });
