@@ -23,7 +23,7 @@ const REGISTRY_TYPE = 'Asset';
  * The IdentityRegistry is used to store a set of identities on the blockchain.
  * <p><a href="./diagrams/identityregistry.svg"><img src="./diagrams/identityregistry.svg" style="height:100%;"/></a></p>
  * @extends Registry
- * @see See [Registry]{@link module:composer-client.Registry}
+ * @see See {@link Registry}
  * @class
  * @memberof module:composer-client
  */

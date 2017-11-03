@@ -43,7 +43,7 @@ const LOG = require('./log/logger').getLog('FSConnectionProfileStore');
  *
  * @private
  * @extends ConnectionProfileStore
- * @see See [ConnectionProfileStore]{@link module:composer-common.ConnectionProfileStore}
+ * @see See  {@link  ConnectionProfileStore}
  * @class
  * @memberof module:composer-common
  */

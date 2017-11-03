@@ -82,13 +82,35 @@ class InstanceGenerator {
      * @private
      */
     visitField(field, parameters) {
+        if(!field.isPrimitive()){
+            let type = field.getFullyQualifiedTypeName();
+            let classDeclaration = parameters.modelManager.getType(type);
+            classDeclaration = this.findConcreteSubclass(classDeclaration);
+            let fqn = classDeclaration.getFullyQualifiedName();
+
+            if (parameters.seen.includes(fqn)){
+                if (field.isArray()) {
+                    return [];
+                }
+                if (field.isOptional()) {
+                    return null;
+                }
+                throw new Error('Model is recursive.');
+            }
+            parameters.seen.push(fqn);
+        } else { parameters.seen.push('Primitve');
+        }
+        let result;
         if (field.isArray()) {
             const valueSupplier = () => this.getFieldValue(field, parameters);
-            return parameters.valueGenerator.getArray(valueSupplier);
+            result =  parameters.valueGenerator.getArray(valueSupplier);
         } else {
-            return this.getFieldValue(field, parameters);
+            result = this.getFieldValue(field, parameters);
         }
+        parameters.seen.pop();
+        return result;
     }
+
 
     /**
      * Get a value for the specified field.
@@ -195,10 +217,9 @@ class InstanceGenerator {
      * @return {String} an ID.
      */
     generateRandomId(classDeclaration) {
-        const prefix = classDeclaration.getIdentifierFieldName();
-        let index = Math.round(Math.random() * 9999).toString();
-        index = leftPad(index, 4, '0');
-        return `${prefix}:${index}`;
+        let id = Math.round(Math.random() * 9999).toString();
+        id = leftPad(id, 4, '0');
+        return id;
     }
 
 }

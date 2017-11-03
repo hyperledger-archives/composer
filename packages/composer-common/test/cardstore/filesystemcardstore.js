@@ -127,6 +127,13 @@ describe('FileSystemCardStore', function() {
                     .that.deep.equals(minimalCard);
             });
         });
+
+        it('should throw on duplicate card', function() {
+            const cardName = 'minimal';
+            return cardStore.put(cardName, minimalCard).then(() => {
+                return cardStore.put(cardName, minimalCard);
+            }).should.be.rejectedWith(cardName);
+        });
     });
 
     describe('#getAll', function() {

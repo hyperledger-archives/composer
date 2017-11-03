@@ -26,7 +26,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
  *
  * @private
  * @extends FSConnectionProfileStore
- * @see See [FSConnectionProfileStore]{@link module:composer-common.FSConnectionProfileStore}
+ * @see See {@link FSConnectionProfileStore}
  * @class
  * @memberof module:composer-common
  */

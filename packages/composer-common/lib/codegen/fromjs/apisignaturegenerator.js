@@ -65,7 +65,7 @@ class APISignatureGenerator {
                 }
                 writer.writeLine(1, func.visibility +
                 ' ' + func.returnType + ' ' + func.name +
-                paramsToString(func.methodArgs) + ' ' + throws );
+                paramsToString(func.methodArgs | []) + ' ' + throws );
             }
 
             fs.appendFileSync(program.outputDir + '/api.txt', writer.getBuffer());

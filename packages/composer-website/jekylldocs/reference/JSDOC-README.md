@@ -2,7 +2,7 @@
 layout: default
 title: API Documentation
 sidebar: sidebars/accordion-toc0.md
-excerpt: The Client, Admin, and Runtime components of Hyperledger Composer contain [JavaScript APIs](../api-doc-inline/api-doc-index.html) for application integration.
+excerpt: The Client, Admin, and Runtime components of Hyperledger Composer contain [JavaScript APIs](../api/api-doc-index.html) for application integration.
 ---
 
 # Hyperledger Composer API
