@@ -64,9 +64,7 @@ Logger.setFunctionalLogger({
 });
 
 const app = require('composer-playground-api')(argv.port, argv.test);
-const cheerio = require('cheerio');
 const express = require('express');
-const fs = require('fs');
 const isDocker = require('is-docker');
 const opener = require('opener');
 const path = require('path');
@@ -79,17 +77,6 @@ if (process.env.COMPOSER_CONFIG) {
 }
 
 const dist = path.resolve(__dirname, 'dist');
-if (process.env.USABILLA_ID) {
-  const indexFile = path.resolve(dist, 'index.html');
-  const indexHTML = fs.readFileSync(indexFile, 'utf8');
-  const usabillaTemplateFile = path.resolve(__dirname, 'usabilla.html.template');
-  const usabillaTemplate = fs.readFileSync(usabillaTemplateFile, 'utf8').replace(/%USABILLA_ID%/, process.env.USABILLA_ID);
-  const $ = cheerio.load(indexHTML);
-  $('body').append(usabillaTemplate);
-  const modifiedIndexHTML = $.html();
-  fs.writeFileSync(indexFile, modifiedIndexHTML, 'utf8');
-}
-
 app.use(express.static(dist));
 app.all('/*', (req, res, next) => {
   res.sendFile('index.html', { root: dist });

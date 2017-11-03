@@ -16,6 +16,7 @@ package main
 
 import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
+import "time"
 
 
 
@@ -41,6 +42,10 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
 	EnableLogging(stub)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf Chaincode.Init total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	logger.Debug("Entering Chaincode.Init", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Init", response.Status, response.Message, string(response.Payload))
@@ -66,13 +71,20 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
 	EnableLogging(stub)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf Chaincode.Invoke total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+
 	logger.Debug("Entering Chaincode.Invoke", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Invoke", response.Status, response.Message, string(response.Payload))
 	}()
 
 	// Get an instance of Composer from the pool, and ensure it's returned.
+	increment := time.Now()
 	composer := chaincode.ComposerPool.Get()
+	logger.Debug("@perf Chaincode.Invoke ComposerPool.Get() duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(increment))
+	increment = time.Now();
 	defer chaincode.ComposerPool.Put(composer)
 
 	// Execute the invoke function.
@@ -81,5 +93,6 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	logger.Debug("@perf Chaincode.Invoke Invoke duration [", stub.GetTxID(), "] : ", time.Now().Sub(increment))
 	return shim.Success(payload)
 }
