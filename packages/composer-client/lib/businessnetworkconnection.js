@@ -588,7 +588,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     // Submitted a transaction.
      * });
      * @param {Resource} transaction - The transaction to submit. Use {@link
-     * Factory#newTransaction newTransaction} to create this object.
+     * common-Factory#newTransaction newTransaction} to create this object.
      * @return {Promise} A promise that will be fulfilled when the transaction has
      * been processed.
      */

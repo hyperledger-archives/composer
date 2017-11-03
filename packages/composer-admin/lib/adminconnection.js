@@ -120,7 +120,7 @@ class AdminConnection {
      * Import a business network card.
      * @param {IdCard} card The card to import
      * @param {String} [name] Name by which this card should be referred
-     * @return {Promise} Resolved with the name by which the card is referred as a {@link String}.
+     * @return {Promise} Resolved with the name by which the card is referred as a  String
      */
     importCard(card, name) {
         if (!name) {
@@ -201,7 +201,7 @@ class AdminConnection {
     }
     /**
      * List all Business Network cards.
-     * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
+     * @return {Promise} resolved with a  Map of idcard objects keyed by their  String names.
      */
     getAllCards() {
         return this.cardStore.getAll();
