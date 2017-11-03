@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IssueCard = require ('./lib/issuecard.js');
+const IssueCard = require ('./lib/issue.js');
 module.exports.command = 'issue [options]';
 module.exports.describe = 'Issue a new identity to a participant in a participant registry';
 module.exports.builder =function (yargs) {
