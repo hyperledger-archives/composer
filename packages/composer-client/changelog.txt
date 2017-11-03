@@ -11,8 +11,15 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.14.2 { d80891b2e4732fc22012470e456c71f7} 2018-10-27
+Version 0.15.0 {97251fb34e6261fc64bb0b6b1d816108} 2017-11-01
+- Change BusinessNetworkConnection.connect to work exclusively with cards
+- Change BusinessNetworkConnection constructor documentation for cards instead of connection profiles
+
+Version 0.14.2 {d80891b2e4732fc22012470e456c71f7} 2018-10-27
 - Correct API scanner to tell difference between public and protected methods
+
+Version 0.14.1 {b07c61ea10d457971e7f68b80cd2110b} 2017-10-24
+- Support cardname in connect api
 
 Version 0.13.0 {78ee149d0abd107c1e61efe48436c419} 2017-09-19
 - remove deprecated apis

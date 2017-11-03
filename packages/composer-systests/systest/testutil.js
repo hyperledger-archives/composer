@@ -432,11 +432,11 @@ class TestUtil {
             enrollmentSecret = enrollmentSecret || password;
             // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-                return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
-                return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
-                return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests', network, enrollmentID, enrollmentSecret);
             }
         })
         .then(() => {
@@ -475,7 +475,7 @@ class TestUtil {
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
-                    return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -485,7 +485,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
-                    return adminConnection.connect('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -495,7 +495,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and start the network on the peers for org1 and org2.
-                    return adminConnection.connect('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, {
@@ -534,7 +534,7 @@ class TestUtil {
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network on the peers for org1.
-            return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
+            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
                 .then(() => {
                     return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
@@ -544,7 +544,7 @@ class TestUtil {
         } else if (!forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             // Connect, install the runtime and start the network.
-            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
@@ -557,7 +557,7 @@ class TestUtil {
         } else if (forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network.
-            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
                     return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
@@ -606,7 +606,7 @@ class TestUtil {
 
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy){
             const adminConnection = new AdminConnection();
-            return adminConnection.connect('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
+            return adminConnection.connectWithDetails('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
@@ -615,7 +615,7 @@ class TestUtil {
             });
         } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
             const adminConnection = new AdminConnection();
-            return adminConnection.connect('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
+            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
@@ -625,7 +625,7 @@ class TestUtil {
         } else {
 
             const adminConnection = new AdminConnection();
-            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
