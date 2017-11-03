@@ -194,6 +194,9 @@ class HLFConnection extends Connection {
 
         //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
         //we want the eventhubs for all peers in a channel that have the eventSource role
+        //This will change with channel based event messages, so have to leave it like this for now.
+        //basically even though we could get all the event hubs for a channel, you would receive all events
+        //from those peers regardless of business network.
         this.eventHubs = this.client.getEventHubsForOrg();
         this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
