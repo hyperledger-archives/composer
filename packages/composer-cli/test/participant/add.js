@@ -32,9 +32,6 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 const NAMESPACE = 'net.biz.TestNetwork';
-const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const ENROLL_ID = 'SuccessKid';
-const ENROLL_SECRET = 'SuccessKidWin';
 
 describe('composer participant add CLI unit tests', () => {
 
@@ -52,7 +49,7 @@ describe('composer participant add CLI unit tests', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         mockResource = sinon.createStubInstance(Resource);
         mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetwork);
-        mockBusinessNetworkConnection.connect.resolves();
+        mockBusinessNetworkConnection.connect.withArgs('cardname').resolves();
         mockBusinessNetwork.getSerializer.returns(mockSerializer);
         mockSerializer.fromJSON.returns(mockResource);
         mockResource.getIdentifier.returns('SuccessKid');
@@ -68,69 +65,38 @@ describe('composer participant add CLI unit tests', () => {
         sandbox.restore();
     });
 
-    it('should add a new participant using the default profile', () => {
+    it('should add a new participant using the cardname', () => {
+        mockBusinessNetworkConnection.connect.resolves();
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card: 'cardname',
             data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-
             });
     });
 
-    it('should add a new participant using the specified profile', () => {
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
-            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
-        };
-        return Add.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockParticipantRegistry.add);
-                sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-
-            });
-    });
-
-    it('should prompt for the enrollment secret if not specified', () => {
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
-        };
-        return Add.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockParticipantRegistry.add);
-                sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-
-            });
-    });
-
-    it('should error when the participant cannot be added', () => {
+    it('should error when the participant cannot be added - registry rejects', () => {
         mockParticipantRegistry.add.rejects(new Error('such error'));
+
         let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card: 'cardname',
+            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+        };
+
+        return Add.handler(argv)
+            .should.be.rejectedWith(/such error/);
+    });
+
+    it('should error when the participant cannot be added - connect rejects', () => {
+        mockBusinessNetworkConnection.connect.rejects(new Error('such error'));
+        let argv = {
+            card: 'inavlid',
             data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)

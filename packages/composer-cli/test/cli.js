@@ -65,7 +65,7 @@ describe('composer cli', () => {
         sandbox.stub(yargs, 'epilogue').returns(yargs);
         sandbox.stub(yargs, 'alias').returns(yargs);
         sandbox.stub(yargs, 'version').returns(yargs);
-        sandbox.stub(yargs, 'describe').returns(yargs);
+
         sandbox.stub(process, 'exit');
         sandbox.stub(chalk, 'green');
         sandbox.stub(chalk, 'red');
@@ -78,7 +78,7 @@ describe('composer cli', () => {
     describe('Main test', function () {
 
         it('Should set up yargs correctly', function () {
-            sandbox.stub(yargs, 'command').returns({ argv: {} });
+            sandbox.stub(yargs, 'describe').returns(yargs);
             require('../cli.js');
             sinon.assert.calledOnce(yargs.commandDir);
             sinon.assert.calledWith(yargs.commandDir, './lib/cmds');
@@ -92,19 +92,18 @@ describe('composer cli', () => {
             sinon.assert.calledOnce(yargs.alias);
             sinon.assert.calledOnce(yargs.version);
             sinon.assert.calledOnce(yargs.describe);
-            sinon.assert.calledOnce(yargs.command);
             sinon.assert.calledWith(process.exit, 0);
-            //console.log('cache keys', require.cache);
+
         });
 
         it('Should handle resolved promise', () => {
-            sandbox.stub(yargs, 'command').returns({ argv: {thePromise: new fakePromise()} });
+            sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise()} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
             require('../cli.js');
             sinon.assert.calledWith(process.exit, 0);
         });
         it('Should handle rejected promise', () => {
-            sandbox.stub(yargs, 'command').returns({ argv: {thePromise: new fakePromise()} });
+            sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise()} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
             require('../cli.js');
             sinon.assert.calledWith(process.exit, 1);

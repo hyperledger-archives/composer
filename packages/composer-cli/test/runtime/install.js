@@ -26,8 +26,6 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-const ora = require('ora');
-
 let mockAdminConnection;
 
 describe('composer install runtime CLI unit tests', function () {
@@ -54,9 +52,7 @@ describe('composer install runtime CLI unit tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
-            let argv = {installId: 'PeerAdmin'
-                       ,installSecret: 'Anything'
-                       ,businessNetworkName: 'org-acme-biznet'
+            let argv = {card:'cardname'
                        ,connectionProfileName: 'testProfile'};
 
 
@@ -65,28 +61,41 @@ describe('composer install runtime CLI unit tests', function () {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, argv.connectionProfileName, argv.installId, argv.installSecret, null);
+                sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.install);
                 sinon.assert.calledWith(mockAdminConnection.install, argv.businessNetworkName, {});
             });
         });
 
-        it('error path #1 - adminConnection is rejected.. .', ()=>{
-            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
+        it('Good path, all params correctly specified (card base)', function () {
+
+            let argv = {card:'cardname'};
+            return InstallCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                        });
+        });
+
+        it('error path #1 - creating an adminConnection is rejected.. .', ()=>{
+            let argv = {card:'cardname'};
             mockAdminConnection.connect.rejects(new Error('computer says no'));
+
+
             return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
         });
 
-        it('error path #2 - adminConnect is rejected, and the spinner as well returns empty', ()=>{
-            let argv = {'businessNetworkName':'networkname','connectionProfileName':'hlfv1','enrollId':'admin','enrollSecret':'adminpw'};
+        it('error path #2 - adminconncection.conntext is rejected,', ()=>{
+            let argv = {card:'cardname'};
             mockAdminConnection.connect.rejects(new Error('computer says no'));
-            sandbox.stub(ora,'start').returns({});
-            sandbox.stub(ora,'fail').returns();
+
 
             return InstallCmd.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
         });
+
     });
 
 });

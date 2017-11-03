@@ -36,11 +36,12 @@ class Install {
 
         let adminConnection;
         let spinner;
+        let cardName = argv.card;
 
         return (() => {
             spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.installId, argv.installSecret, null);
+            return adminConnection.connect(cardName);
         })()
         .then((result) => {
             let installOptions = cmdUtil.parseOptions(argv);
@@ -51,11 +52,7 @@ class Install {
 
             return result;
         }).catch((error) => {
-
-            if (spinner) {
-                spinner.fail();
-            }
-
+            spinner.fail();
             console.log();
 
             throw error;

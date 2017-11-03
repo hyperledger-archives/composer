@@ -78,7 +78,7 @@ class BusinessNetworkConnectionWrapper {
         debug('connect');
         this.connecting = true;
         this.connected = false;
-        this.connectionPromise = this.businessNetworkConnection.connect(
+        this.connectionPromise = this.businessNetworkConnection.connectWithDetails(
                 this.settings.connectionProfileName,
                 this.settings.businessNetworkIdentifier,
                 this.settings.participantId,

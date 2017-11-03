@@ -43,7 +43,6 @@ const newErrorWithCause = (message, cause) => {
  * as a specific user.
  * <p>
  * Instances of this class should be created using {@link IdCard#fromArchive}.
- * @private
  * @class
  * @memberof module:composer-common
  */
