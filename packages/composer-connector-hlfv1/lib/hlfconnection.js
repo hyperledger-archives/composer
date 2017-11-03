@@ -192,6 +192,7 @@ class HLFConnection extends Connection {
         const method = '_connectToEventHubs';
         LOG.entry(method);
 
+
         //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
         //we want the eventhubs for all peers in a channel that have the eventSource role
         this.eventHubs = this.client.getEventHubsForOrg();
