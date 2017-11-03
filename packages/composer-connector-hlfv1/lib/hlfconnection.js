@@ -191,6 +191,12 @@ class HLFConnection extends Connection {
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
+
+        //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
+        //we want the eventhubs for all peers in a channel that have the eventSource role
+        //This will change with channel based event messages, so have to leave it like this for now.
+        //basically even though we could get all the event hubs for a channel, you would receive all events
+        //from those peers regardless of business network.
         this.eventHubs = this.client.getEventHubsForOrg();
         this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
@@ -338,7 +344,7 @@ class HLFConnection extends Connection {
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: businessNetworkIdentifier,
                     txId: txId,
-                    targets: this.client.getPeersForOrg()
+                    channelNames: this.channel.getName() // this will drive getting all the Peers to install on
                 };
 
                 return this.client.installChaincode(request);
@@ -700,6 +706,13 @@ class HLFConnection extends Connection {
             }
         });
 
+        // determine all the queryChaincode Peers in our organisation which are on the channel
+        const channelPeersForOrg = this.client.getPeersForOrgOnChannel(this.channel.getName());
+        const queryPeers = channelPeersForOrg.filter(peer => peer.isInRole('chaincodeQuery'));
+        if (!queryPeers || queryPeers.length === 0) {
+            throw new Error('No peers have been defined that can be chaincode queried');
+        }
+
         let txId = this.client.newTransactionID();
 
         // Submit the query request.
@@ -708,7 +721,8 @@ class HLFConnection extends Connection {
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
             fcn: functionName,
-            args: args
+            args: args,
+            targets: [queryPeers[0]]  //TODO: maybe round robin or have some sort of failover default of node sdk is to send to all chaincodeQuery Peers
         };
         return this.channel.queryByChaincode(request)
             .then((payloads) => {
@@ -782,7 +796,7 @@ class HLFConnection extends Connection {
                     fcn: functionName,
                     args: args
                 };
-                return this.channel.sendTransactionProposal(request);
+                return this.channel.sendTransactionProposal(request);  // node sdk will target all peers on the channel that are endorsingPeer
             })
             .then((results) => {
                 // Validate the endorsement results.

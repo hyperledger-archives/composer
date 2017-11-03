@@ -81,6 +81,7 @@ describe('HLFConnection', () => {
         mockEventHubDef = {
             'eventURL': 'http://localhost:7053'
         };
+        mockChannel.getName.returns(connectOptions.channel);
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, mockCAClient);
     });
 
@@ -425,7 +426,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                 });
         });
@@ -463,7 +464,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                 });
         });
@@ -1180,7 +1181,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
@@ -1241,7 +1242,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
@@ -1302,7 +1303,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
@@ -1423,7 +1424,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
@@ -1479,7 +1480,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
@@ -1545,7 +1546,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                     sinon.assert.notCalled(connection._initializeChannel);
                     sinon.assert.notCalled(mockChannel.sendInstantiateProposal);
@@ -1959,6 +1960,8 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
+            mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer]);
+            mockPeer.isInRole.withArgs('chaincodeQuery').returns(true);
         });
 
         it('should throw if functionName not specified', () => {
@@ -1990,7 +1993,8 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         txId: mockTransactionID,
                         fcn: 'myfunc',
-                        args: ['arg1', 'arg2']
+                        args: ['arg1', 'arg2'],
+                        targets: [mockPeer]
                     });
                     result.equals(response).should.be.true;
                 });
