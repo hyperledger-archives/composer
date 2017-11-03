@@ -16,10 +16,13 @@
 
 const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
-
+const Admin = require('composer-admin');
+const AdminConnection = Admin.AdminConnection;
+const IdCard = require('composer-common').IdCard;
 const Issue = require('../../lib/cmds/identity/issueCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
-
+const Export = require('../../lib/cmds/card/lib/export.js');
+const Create = require('../../lib/cmds/card/lib/create');
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -35,17 +38,28 @@ describe('composer identity issue CLI unit tests', () => {
 
     let sandbox;
     let mockBusinessNetworkConnection;
+    let mockAdminConnection;
+    let testCard;
+    let cardCreateSpy;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-        mockBusinessNetworkConnection.connect.resolves();
+        mockAdminConnection = sinon.createStubInstance(AdminConnection);
+        mockBusinessNetworkConnection.connect.withArgs('cardname').resolves();
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', sinon.match.object).resolves({
             userID: 'dogeid1',
             userSecret: 'suchsecret'
         });
+        sandbox.stub(fs,'writeFileSync');
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
-        sandbox.stub(process, 'exit');
+        sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+
+        testCard = new IdCard({ userName: 'conga' , businessNetwork :'penguin-network'}, { name: 'profileName' });
+
+        cardCreateSpy = sandbox.spy(Create,'createCard');
+
+        mockAdminConnection.getCard.returns(testCard);
     });
 
     afterEach(() => {
@@ -54,29 +68,29 @@ describe('composer identity issue CLI unit tests', () => {
 
     it('should issue a new identity using the specified profile', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1'
         };
         return Issue.handler(argv)
             .then((res) => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-
+                sinon.assert.calledOnce(cardCreateSpy);
+                sinon.assert.calledWith(cardCreateSpy,{
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'suchsecret',
+                    userName: 'dogeid1',
+                    version: 1
+                },{ name: 'profileName' },sinon.match(argv));
             });
     });
 
     it('should handle optional arguments', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             option: ['opt1=value1', 'opt2=value2']
@@ -85,19 +99,22 @@ describe('composer identity issue CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { opt1: 'value1', opt2: 'value2', issuer: false });
-
+                sinon.assert.calledOnce(cardCreateSpy);
+                sinon.assert.calledWith(cardCreateSpy,{
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'suchsecret',
+                    userName: 'dogeid1',
+                    version: 1
+                },{ name: 'profileName' },sinon.match(argv));
             });
     });
 
     it('should handle optional arguments file', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             optionsFile: '/path/to/options.json'
@@ -114,32 +131,20 @@ describe('composer identity issue CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { affiliation: 'example.com', role: 'admin', issuer: false });
+                sinon.assert.calledOnce(cardCreateSpy);
+                sinon.assert.calledWith(cardCreateSpy,{
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'suchsecret',
+                    userName: 'dogeid1',
+                    version: 1
+                },{ name: 'profileName' },sinon.match(argv));
             });
     });
 
 
-    it('should prompt for the enrollment secret if not specified', () => {
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            newUserId: 'dogeid1',
-            participantId: 'org.doge.Doge#DOGE_1'
-        };
-        return Issue.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-
-            });
-    });
 
     it('should issue a new identity with issuer priviledges', () => {
         mockBusinessNetworkConnection.issueIdentity.withArgs('org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true }).resolves({
@@ -147,10 +152,7 @@ describe('composer identity issue CLI unit tests', () => {
             userSecret: 'suchsecret'
         });
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardname',
             newUserId: 'dogeid1',
             participantId: 'org.doge.Doge#DOGE_1',
             issuer: true
@@ -159,10 +161,16 @@ describe('composer identity issue CLI unit tests', () => {
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true });
-
+                sinon.assert.calledOnce(cardCreateSpy);
+                sinon.assert.calledWith(cardCreateSpy,{
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'suchsecret',
+                    userName: 'dogeid1',
+                    version: 1
+                },{ name: 'profileName' },sinon.match(argv));
             });
     });
 
@@ -177,6 +185,32 @@ describe('composer identity issue CLI unit tests', () => {
         };
         return Issue.handler(argv)
             .should.be.rejectedWith(/such error/);
+    });
+
+    it('should issue a new card using the specified profile', () => {
+        let argv = {
+            card:'cardname',
+            file: 'filename',
+            newUserId: 'dogeid1',
+            participantId: 'org.doge.Doge#DOGE_1'
+        };
+        sandbox.stub(fs,'readFileSync').resolves();
+        sandbox.stub(Export,'writeCardToFile').resolves();
+
+        return Issue.handler(argv)
+            .then((res) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
+                sinon.assert.calledOnce(cardCreateSpy);
+                sinon.assert.calledWith(cardCreateSpy,{
+                    businessNetwork: 'penguin-network',
+                    enrollmentSecret: 'suchsecret',
+                    userName: 'dogeid1',
+                    version: 1
+                },{ name: 'profileName' },sinon.match(argv));
+            });
     });
 
 });

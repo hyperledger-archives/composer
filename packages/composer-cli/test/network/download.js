@@ -76,6 +76,28 @@ describe('composer network download CLI unit tests', function () {
             });
         });
 
+        it('Good path, all parms correctly specified. No enroll secret', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,connectionProfileName: 'someOtherProfile'};
+
+            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:'usersresponse'});
+
+            return DownloadCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(fs.writeFileSync);
+                        });
+        });
+
+        it('Good path, all parms correctly specified with card.', function () {
+            let argv = {card: 'cardName'};
+            return DownloadCmd.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(fs.writeFileSync);            });
+        });
 
 
     });

@@ -73,11 +73,9 @@ describe('IdentityRegistry', () => {
         it('should invoke the chain-code and return the identity registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.resolve(
+            sandbox.stub(Registry, 'getRegistry').resolves(
                     {id: 'org.hyperledger.composer.system.Identity', name: 'doge registry'}
-                );
-            });
+            );
 
             // Invoke the getAllIdentityRegistries function.
             return IdentityRegistry
@@ -101,11 +99,7 @@ describe('IdentityRegistry', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Registry, 'getRegistry').rejects(new Error('failed to invoke chain-code'));
 
             // Invoke the getAllIdentityRegistries function.
             return IdentityRegistry

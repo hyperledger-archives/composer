@@ -16,7 +16,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
         const adminConnection = new AdminConnection({ fs: bfs_fs });
         return adminConnection.createProfile('generatorProfile',{type : 'embedded'})
         .then(() => {
-            return adminConnection.connect('generatorProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('generatorProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             const banana = fs.readFileSync(path.resolve(__dirname+'/data/', 'digitalPropertyNetwork.bna'));

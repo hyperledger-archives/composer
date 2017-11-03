@@ -14,14 +14,15 @@
 
 'use strict';
 
-const Update = require ('./lib/update.js');
+const Import = require ('./lib/export.js');
 
-module.exports.command = 'update [options]';
-module.exports.describe = 'Update a business network';
+module.exports.command = 'export [options]';
+module.exports.describe = 'Export a business network card';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to update the network', type:'string'}
+    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
+    name: {alias: 'n', required: true, describe: 'The name used to identify the card', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Update.handler(argv);
+    return argv.thePromise = Import.handler(argv);
 };

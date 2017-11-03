@@ -140,10 +140,10 @@ describe('BusinessNetworkConnectionWrapper', () => {
     describe('#connect', () => {
 
         it('should connect to the business network', () => {
-            mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.connectWithDetails.resolves(mockBusinessNetworkDefinition);
             return businessNetworkConnectionWrapper.connect()
                 .then((businessNetworkConnection) => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
                     businessNetworkConnectionWrapper.businessNetwork.should.equal(mockBusinessNetworkDefinition);
                     businessNetworkConnectionWrapper.serializer.should.equal(mockSerializer);
                     businessNetworkConnectionWrapper.modelManager.should.equal(mockModelManager);
@@ -155,7 +155,7 @@ describe('BusinessNetworkConnectionWrapper', () => {
         });
 
         it('should handle errors connecting to the business network', () => {
-            mockBusinessNetworkConnection.connect.rejects(new Error('such error'));
+            mockBusinessNetworkConnection.connectWithDetails.rejects(new Error('such error'));
             return businessNetworkConnectionWrapper.connect()
                 .should.be.rejectedWith(/such error/);
         });

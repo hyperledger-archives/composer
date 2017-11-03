@@ -50,8 +50,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * Create an instance of the BusinessNetworkConnection class.
      * must be called to connect to a deployed BusinessNetworkDefinition.
      * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
-     * @param {Object} [options.fs] - specify an fs implementation to use.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
     constructor(options) {
         super();
@@ -411,9 +410,10 @@ class BusinessNetworkConnection extends EventEmitter {
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
+     * @private
      */
-    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
-        const method = 'connect';
+    connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+        const method = '_connect';
         LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
 
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
@@ -433,14 +433,13 @@ class BusinessNetworkConnection extends EventEmitter {
      * .then(function(businessNetworkDefinition){
      *     // Connected
      * });
-     * @private
      * @param {String} cardName  businessNetworkCard Name (must have been imported already)
      * @param {Object} [additionalConnectOptions] Additional configuration options supplied
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    connectWithCard(cardName,additionalConnectOptions){
+    connect(cardName,additionalConnectOptions){
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 
@@ -589,7 +588,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     // Submitted a transaction.
      * });
      * @param {Resource} transaction - The transaction to submit. Use {@link
-     * Factory#newTransaction newTransaction} to create this object.
+     * common-Factory#newTransaction newTransaction} to create this object.
      * @return {Promise} A promise that will be fulfilled when the transaction has
      * been processed.
      */
