@@ -58,7 +58,6 @@ describe('composer network list CLI unit tests', function () {
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
         sandbox.stub(ListCmd, 'getMatchingAssets').resolves({});
-        sandbox.stub(ListCmd,'getMatchingRegistries').resolves([{id:'reg1','name':'reg1','registryType':'Asset','assets':{}},{id:'reg2','name':'reg2','registryType':'Asset','assets':{}}]);
     });
 
     afterEach(() => {
@@ -68,25 +67,30 @@ describe('composer network list CLI unit tests', function () {
     describe('List handler() method tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'someOtherProfile'
-                       ,businessNetworkName: 'testBusinessNetworkId'};
-
-
+            let argv = {card:'cardname'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            sandbox.stub(ListCmd,'getMatchingRegistries').resolves([{id:'reg1','name':'reg1','registryType':'Asset','assets':{}},{id:'reg2','name':'reg2','registryType':'Asset','assets':{}}]);
 
             return List.handler(argv)
             .then ((result) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
             });
         });
 
+        it('Good path, all parms correctly specified - single regsitry.', function () {
+            let argv = {card:'cardname'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            sandbox.stub(ListCmd,'getMatchingRegistries').resolves({id:'reg1',participants:[],'name':'reg1','registryType':'Asset','assets':[]});
 
-
-
+            return List.handler(argv)
+            .then ((result) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
+            });
+        });
     });
 
 });

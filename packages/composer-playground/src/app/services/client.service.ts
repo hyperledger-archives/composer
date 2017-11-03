@@ -122,7 +122,7 @@ export class ClientService {
 
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.getBusinessNetworkConnection().connect(connectionProfileRef, businessNetworkName, userName, enrollmentSecret);
+                return this.getBusinessNetworkConnection().connectWithDetails(connectionProfileRef, businessNetworkName, userName, enrollmentSecret);
             });
     }
 

@@ -28,7 +28,7 @@ describe('#'+NS, function() {
             type: 'embedded'
         })
         .then(function() {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(function() {
             return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
@@ -38,7 +38,7 @@ describe('#'+NS, function() {
         })
         .then(function() {
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', '<%= appname%>', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connectWithDetails('defaultProfile', '<%= appname%>', 'admin', 'Xurw3yU9zI0l');
         });
     });
 

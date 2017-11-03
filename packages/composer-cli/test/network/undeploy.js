@@ -15,7 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
-
+const IdCard = require('composer-common').IdCard;
 const Undeploy = require('../../lib/cmds/network/undeployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
@@ -33,6 +33,7 @@ let mockAdminConnection;
 describe('composer undeploy network CLI unit tests', function () {
 
     let sandbox;
+    let mockIdCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -41,6 +42,9 @@ describe('composer undeploy network CLI unit tests', function () {
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
+        mockIdCard = sinon.createStubInstance(IdCard);
+        mockIdCard.getBusinessNetworkName.returns('penguin-network');
+        mockAdminConnection.getCard.resolves(mockIdCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
@@ -54,21 +58,27 @@ describe('composer undeploy network CLI unit tests', function () {
 
         it('Good path, all parms correctly specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'someOtherProfile'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                       ,archiveFile: 'testArchiveFile.zip'};
+
 
             return Undeploy.handler(argv)
             .then ((result) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.undeploy);
 
             });
         });
+        it('error path  undeploy method fails', ()=>{
+            let argv = {card:'cardname'};
 
+            mockAdminConnection.undeploy.rejects(new Error('computer says no'));
+
+
+            return Undeploy.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
+
+        });
     });
 });
