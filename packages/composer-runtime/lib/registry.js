@@ -172,12 +172,14 @@ class Registry extends EventEmitter {
      * with an error.
      */
     add(resource, options) {
-        if (this.type === resource.getClassDeclaration().getSystemType()){
-            return Promise.resolve().then(() => {
-                if (!(resource instanceof Resource)) {
-                    throw new Error('Expected a Resource or Concept.');
-                }
-            })
+
+        return Promise.resolve().then(() => {
+            if (!(resource instanceof Resource)) {
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+            }
+        })
             .then(() => {
                 return this.accessController.check(resource, 'CREATE');
             })
@@ -196,10 +198,6 @@ class Registry extends EventEmitter {
                     resource: resource
                 });
             });
-        }else{
-            throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type
-        );
-        }
     }
 
     /**
@@ -242,21 +240,20 @@ class Registry extends EventEmitter {
     update(resource, options) {
         let id;
         let object;
+
         return Promise.resolve().then(() => {
             if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot update type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
             }
-        })
-            .then(() => {
-                options = options || {};
-                id = resource.getIdentifier();
-                object = this.serializer.toJSON(resource, {
-                    convertResourcesToRelationships: options.convertResourcesToRelationships
-                });
-                object = this.addInternalProperties(object);
+            options = options || {};
+            id = resource.getIdentifier();
+            object = this.serializer.toJSON(resource, {
+                convertResourcesToRelationships: options.convertResourcesToRelationships                });                object = this.addInternalProperties(object);
 
-                return this.dataCollection.get(id);
-            })
+            return this.dataCollection.get(id);
+        })
             .then((oldResource) => {
                 return this.serializer.fromJSON(oldResource);
             })
