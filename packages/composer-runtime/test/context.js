@@ -112,6 +112,25 @@ describe('Context', () => {
                 });
         });
 
+        it('should not load the business record twice', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            return context.loadBusinessNetworkRecord()
+                .then((businessNetworkRecord) => {
+                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    return context.loadBusinessNetworkRecord();
+                })
+                .then((businessNetworkRecord) => {
+                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledOnce(mockDataCollection.get);
+                });
+        });
+
         it('should throw an error if the business network has been undeployed', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
