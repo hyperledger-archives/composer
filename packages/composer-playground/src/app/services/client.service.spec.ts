@@ -298,8 +298,8 @@ describe('ClientService', () => {
             tick();
 
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
-            businessNetworkConMock.connect.should.have.been.calledOnce;
-            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', 'mySecret');
+            businessNetworkConMock.connectWithDetails.should.have.been.calledOnce;
+            businessNetworkConMock.connectWithDetails.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', 'mySecret');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
                 text: 'refreshing the connection to myProfile'
@@ -316,8 +316,8 @@ describe('ClientService', () => {
             tick();
 
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
-            businessNetworkConMock.connect.should.have.been.calledOnce;
-            businessNetworkConMock.connect.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', null);
+            businessNetworkConMock.connectWithDetails.should.have.been.calledOnce;
+            businessNetworkConMock.connectWithDetails.should.have.been.calledWith('xxx-myProfile', 'myNetwork', 'myUser', null);
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
                 text: 'refreshing the connection to myProfile'

@@ -1,10 +1,10 @@
 {
   "name": "composer-cli",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "bin": {
     "composer": "cli.js"
@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "nyc mocha --recursive -t 10000"
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
+    "nyc": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -41,11 +43,11 @@
   "dependencies": {
     "chalk": "1.1.3",
     "cli-table": "0.3.1",
-    "composer-admin": "0.14.3",
-    "composer-client": "0.14.3",
-    "composer-common": "0.14.3",
-    "composer-rest-server": "0.14.3",
     "figlet": "1.2.0",
+    "composer-admin": "0.15.0",
+    "composer-client": "0.15.0",
+    "composer-common": "0.15.0",
+    "composer-rest-server": "0.15.0",
     "homedir": "0.6.0",
     "mkdirp": "0.5.1",
     "npm-paths": "0.1.3",
@@ -55,7 +57,7 @@
     "prompt": "1.0.0",
     "sanitize-filename": "1.6.1",
     "shelljs": "0.7.7",
-    "yargs": "8.0.1"
+    "yargs": "10.0.3"
   },
   "license-check-config": {
     "src": [
@@ -76,7 +78,9 @@
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "lib/shellcmds/**",
+      "shell.js"
     ],
     "reporter": [
       "text-summary",
