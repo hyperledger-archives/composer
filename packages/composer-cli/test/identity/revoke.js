@@ -25,10 +25,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
-const ENROLL_ID = 'SuccessKid';
-const ENROLL_SECRET = 'SuccessKidWin';
-
 describe('composer identity revoke CLI unit tests', () => {
 
     let sandbox;
@@ -49,64 +45,23 @@ describe('composer identity revoke CLI unit tests', () => {
 
     it('should revoke an existing identity using the default profile', () => {
         let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardName',
             identityId: 'dogeid1'
         };
         return Revoke.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardName');
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
             });
     });
 
-    it('should issue a new identity using the specified profile', () => {
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
-            identityId: 'dogeid1'
-        };
-        return Revoke.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-            });
-    });
-
-    it('should prompt for the enrollment secret if not specified', () => {
-        sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
-        let argv = {
-            connectionProfileName: 'someOtherProfile',
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            identityId: 'dogeid1'
-        };
-        return Revoke.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-            });
-    });
-
-    it('should error when the new identity cannot be issued', () => {
+    it('should error when the new identity cannot be revoked', () => {
         mockBusinessNetworkConnection.revokeIdentity.withArgs('dogeid1').rejects(new Error('such error'));
         let argv = {
-            businessNetworkName: BUSINESS_NETWORK_NAME,
-            enrollId: ENROLL_ID,
-            enrollSecret: ENROLL_SECRET,
+            card:'cardName',
             identityId: 'dogeid1'
         };
         return Revoke.handler(argv)

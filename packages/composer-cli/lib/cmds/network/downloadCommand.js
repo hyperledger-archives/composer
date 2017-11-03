@@ -20,10 +20,7 @@ module.exports.command = 'download [options]';
 module.exports.describe = 'Downloads a business network from the Hyperledger Fabric, does not undeploy';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
+    card: { alias: 'c', required: false, description: 'The cardname to use to download the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {
