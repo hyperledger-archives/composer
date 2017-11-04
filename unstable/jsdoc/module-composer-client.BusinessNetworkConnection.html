@@ -202,13 +202,13 @@
 
         <tr>
             
-                <td class="name"><code>connectionProfileStore</code></td>
+                <td class="name"><code>cardStore</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ConnectionProfileStore</span>
+<span class="param-type">BusinessNetworkCardStore</span>
 
 
 
@@ -229,41 +229,7 @@
 
             
 
-            <td class="description last"><p>specify a connection profile store to use.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>specify an fs implementation to use.</p></td>
+            <td class="description last"><p>specify a card store implementation to use.</p></td>
         </tr>
 
     
@@ -506,7 +472,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-186">line 186</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-185">line 185</a>
 			</li>
 		</ul>
 	</dd>
@@ -705,7 +671,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-272">line 272</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-271">line 271</a>
 			</li>
 		</ul>
 	</dd>
@@ -880,7 +846,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-167">line 167</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-166">line 166</a>
 			</li>
 		</ul>
 	</dd>
@@ -1087,7 +1053,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-846">line 846</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-845">line 845</a>
 			</li>
 		</ul>
 	</dd>
@@ -1250,7 +1216,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-642">line 642</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-641">line 641</a>
 			</li>
 		</ul>
 	</dd>
@@ -1327,7 +1293,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
             
 <hr>
 <dt>
-    <h4 class="name" id="connect"><span class="type-signature"></span>connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret [, additionalConnectOptions])</h4>
+    <h4 class="name" id="connect"><span class="type-signature"></span>connect(cardName [, additionalConnectOptions])</h4>
     
     
 </dt>
@@ -1335,7 +1301,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
     
     <div class="description">
-        <p>Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.</p>
+        <p>Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.</p>
     </div>
     
 
@@ -1372,13 +1338,13 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
         <tr>
             
-                <td class="name"><code>connectionProfile</code></td>
+                <td class="name"><code>cardName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
 
@@ -1397,103 +1363,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
             
 
-            <td class="description last"><p>The name of the connection profile</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>businessNetwork</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The identifier of the business network</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>enrollmentID</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>the enrolment ID of the user</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>enrollmentSecret</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>the enrolment secret of the user</p></td>
+            <td class="description last"><p>businessNetworkCard Name (must have been imported already)</p></td>
         </tr>
 
     
@@ -1572,7 +1442,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-415">line 415</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-442">line 442</a>
 			</li>
 		</ul>
 	</dd>
@@ -1627,7 +1497,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
         
     <pre class="sunlight-highlight-javascript">// Connect and log in to HLF
 var businessNetwork = new BusinessNetworkConnection();
-return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
+return businessNetwork.connect(&#x27;cardName&#x27;)
 .then(function(businessNetworkDefinition){
     // Connected
 });</pre>
@@ -1695,7 +1565,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-558">line 558</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-557">line 557</a>
 			</li>
 		</ul>
 	</dd>
@@ -1883,7 +1753,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-122">line 122</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-121">line 121</a>
 			</li>
 		</ul>
 	</dd>
@@ -2073,7 +1943,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-208">line 208</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-207">line 207</a>
 			</li>
 		</ul>
 	</dd>
@@ -2263,7 +2133,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-312">line 312</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-311">line 311</a>
 			</li>
 		</ul>
 	</dd>
@@ -2441,7 +2311,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-144">line 144</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-143">line 143</a>
 			</li>
 		</ul>
 	</dd>
@@ -2569,7 +2439,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-102">line 102</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-101">line 101</a>
 			</li>
 		</ul>
 	</dd>
@@ -2695,7 +2565,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-357">line 357</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-356">line 356</a>
 			</li>
 		</ul>
 	</dd>
@@ -2823,7 +2693,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-384">line 384</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-383">line 383</a>
 			</li>
 		</ul>
 	</dd>
@@ -3001,7 +2871,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-230">line 230</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-229">line 229</a>
 			</li>
 		</ul>
 	</dd>
@@ -3179,7 +3049,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-525">line 525</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-524">line 524</a>
 			</li>
 		</ul>
 	</dd>
@@ -3354,7 +3224,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-292">line 292</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-291">line 291</a>
 			</li>
 		</ul>
 	</dd>
@@ -3676,7 +3546,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-795">line 795</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-794">line 794</a>
 			</li>
 		</ul>
 	</dd>
@@ -3838,7 +3708,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-253">line 253</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-252">line 252</a>
 			</li>
 		</ul>
 	</dd>
@@ -3968,7 +3838,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-722">line 722</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-721">line 721</a>
 			</li>
 		</ul>
 	</dd>
@@ -4192,7 +4062,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-679">line 679</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-678">line 678</a>
 			</li>
 		</ul>
 	</dd>
@@ -4376,7 +4246,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-881">line 881</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-880">line 880</a>
 			</li>
 		</ul>
 	</dd>
@@ -4493,7 +4363,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
             
 
-            <td class="description last"><p>The transaction to submit. Use {@link<br>Factory#newTransaction newTransaction} to create this object.</p></td>
+            <td class="description last"><p>The transaction to submit. Use {@link<br>common-Factory#newTransaction newTransaction} to create this object.</p></td>
         </tr>
 
     
@@ -4538,7 +4408,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-596">line 596</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-595">line 595</a>
 			</li>
 		</ul>
 	</dd>
@@ -4716,7 +4586,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-337">line 337</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-336">line 336</a>
 			</li>
 		</ul>
 	</dd>
@@ -4841,9 +4711,9 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 	</span>
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Fri Nov 3rd 2017
+		on Sat Nov 4th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

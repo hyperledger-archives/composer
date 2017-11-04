@@ -209,13 +209,13 @@
 
         <tr>
             
-                <td class="name"><code>connectionProfileStore</code></td>
+                <td class="name"><code>cardStore</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ConnectionProfileStore</span>
+<span class="param-type">BusinessNetworkCardStore</span>
 
 
 
@@ -236,41 +236,7 @@
 
             
 
-            <td class="description last"><p>specify a connection profile store to use.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>specify an fs implementation to use.</p></td>
+            <td class="description last"><p>specify a card store implementation to use.</p></td>
         </tr>
 
     
@@ -373,7 +339,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="connect"><span class="type-signature"></span>connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier)</h4>
+    <h4 class="name" id="connect"><span class="type-signature"></span>connect(cardName, update)</h4>
     
     
 </dt>
@@ -381,7 +347,8 @@
 
     
     <div class="description">
-        <p>Connects and logs in to the Hyperledger Fabric using a named connection<br>profile. The connection profile must exist in the profile store.</p>
+        <p>Connects and logs in to the Hyperledger Fabric using a named connection<br>profile.</p>
+<p>The connection profile must exist in the profile store.</p>
     </div>
     
 
@@ -416,13 +383,13 @@
 
         <tr>
             
-                <td class="name"><code>connectionProfile</code></td>
+                <td class="name"><code>cardName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
 
@@ -433,20 +400,20 @@
 
             
 
-            <td class="description last"><p>The name of the connection profile</p></td>
+            <td class="description last"><p>The name of the business network card</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>enrollmentID</code></td>
+                <td class="name"><code>update</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">boolean</span>
 
 
 
@@ -457,55 +424,7 @@
 
             
 
-            <td class="description last"><p>the enrollment ID of the user</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>enrollmentSecret</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the enrollment secret of the user</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>businessNetworkIdentifier</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the id of the network (for update) or null</p></td>
+            <td class="description last"><p>true if this is for an update operation</p></td>
         </tr>
 
     
@@ -550,7 +469,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-234">line 234</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-336">line 336</a>
 			</li>
 		</ul>
 	</dd>
@@ -621,7 +540,7 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
             
 <hr>
 <dt>
-    <h4 class="name" id="createProfile"><span class="type-signature"></span>createProfile(connectionProfile, data)</h4>
+    <h4 class="name" id="deleteCard"><span class="type-signature"></span>deleteCard(name)</h4>
     
     
 </dt>
@@ -629,7 +548,7 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
 
     
     <div class="description">
-        <p>Stores a connection profile into the profile store being used by this<br>AdminConnection.</p>
+        <p>Delete an existing card.</p>
     </div>
     
 
@@ -664,13 +583,13 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
 
         <tr>
             
-                <td class="name"><code>connectionProfile</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
 
@@ -681,31 +600,7 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
 
             
 
-            <td class="description last"><p>The name of the connection profile</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The connection profile data</p></td>
+            <td class="description last"><p>Name of the card to delete.</p></td>
         </tr>
 
     
@@ -750,7 +645,7 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-116">line 116</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-215">line 215</a>
 			</li>
 		</ul>
 	</dd>
@@ -779,7 +674,7 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
     
             
 <div class="param-desc">
-    <p>A promise that indicates that the connection profile is deployed</p>
+    <p>Resolves if an existing card was deleted; rejected otherwise.</p>
 </div>
 
 
@@ -799,203 +694,6 @@ adminConnection.connect(&#x27;testprofile&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;
 
 
         
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Create a connection profile
-var adminConnection = new AdminConnection();
-var adminOptions = {
-    type: &#x27;hlf&#x27;,
-    keyValStore: &#x27;/tmp/keyValStore&#x27;,
-    membershipServicesURL: &#x27;grpc://membersrvc:7054&#x27;,
-    peerURL: &#x27;grpc://vp0:7051&#x27;,
-    eventHubURL: &#x27;grpc://vp0:7053&#x27;
-};
-return adminConnection.createProfile(&#x27;testprofile&#x27;, adminOptions)
-.then(function(){
-    // Created profile
-})
-.catch(function(error){
-    // Add optional error handling here.
-});</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="deleteProfile"><span class="type-signature"></span>deleteProfile(connectionProfile)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Deletes the specified connection profile from the profile store being used by this<br>AdminConnection.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connectionProfile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the connection profile</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-172">line 172</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise that indicates that the connection profile is deployed</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Delete a connection profile
-var adminConnection = new AdminConnection();
-return adminConnection.deleteProfile(&#x27;testprofile&#x27;)
-.then(function(){
-    // Deleted profile
-})
-.catch(function(error){
-    // Add optional error handling here.
-});</pre>
-
 
     
 </dd>
@@ -1133,7 +831,7 @@ return adminConnection.deleteProfile(&#x27;testprofile&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-480">line 480</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-600">line 600</a>
 			</li>
 		</ul>
 	</dd>
@@ -1260,7 +958,7 @@ return adminConnection.deploy(businessNetworkDefinition)
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-263">line 263</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-383">line 383</a>
 			</li>
 		</ul>
 	</dd>
@@ -1331,7 +1029,7 @@ return adminConnection.disconnect()
             
 <hr>
 <dt>
-    <h4 class="name" id="exportIdentity"><span class="type-signature"></span>exportIdentity(connectionProfileName, id)</h4>
+    <h4 class="name" id="exportCard"><span class="type-signature"></span>exportCard(cardName)</h4>
     
     
 </dt>
@@ -1339,7 +1037,7 @@ return adminConnection.disconnect()
 
     
     <div class="description">
-        <p>Obtain the credentials associated with a given identity.</p>
+        <p>Exports an network card.<br>Should the card not actually contain the certificates in the card, a exportIdentity will be<br>performed to get the details of the cards</p>
     </div>
     
 
@@ -1374,7 +1072,7 @@ return adminConnection.disconnect()
 
         <tr>
             
-                <td class="name"><code>connectionProfileName</code></td>
+                <td class="name"><code>cardName</code></td>
             
 
             <td class="type">
@@ -1391,14 +1089,264 @@ return adminConnection.disconnect()
 
             
 
-            <td class="description last"><p>Name of the connection profile.</p></td>
+            <td class="description last"><p>The name of the card that needs to be exported</p></td>
         </tr>
 
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-166">line 166</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>resolved with an instance of the network id card populated</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getAllCards"><span class="type-signature"></span>getAllCards()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>List all Business Network cards.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-206">line 206</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>resolved with a  Map of idcard objects keyed by their  String names.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getCard"><span class="type-signature"></span>getCard(cardName)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get a specific Business Network cards</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>cardName</code></td>
             
 
             <td class="type">
@@ -1415,7 +1363,7 @@ return adminConnection.disconnect()
 
             
 
-            <td class="description last"><p>Name of the identity.</p></td>
+            <td class="description last"><p>of the card to get</p></td>
         </tr>
 
     
@@ -1460,7 +1408,7 @@ return adminConnection.disconnect()
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-842">line 842</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-156">line 156</a>
 			</li>
 		</ul>
 	</dd>
@@ -1489,7 +1437,7 @@ return adminConnection.disconnect()
     
             
 <div class="param-desc">
-    <p>Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.</p>
+    <p>promise resolved with a business network card</p>
 </div>
 
 
@@ -1517,7 +1465,7 @@ return adminConnection.disconnect()
             
 <hr>
 <dt>
-    <h4 class="name" id="getAllProfiles"><span class="type-signature"></span>getAllProfiles()</h4>
+    <h4 class="name" id="importCard"><span class="type-signature"></span>importCard(card [, name])</h4>
     
     
 </dt>
@@ -1525,133 +1473,7 @@ return adminConnection.disconnect()
 
     
     <div class="description">
-        <p>Retrieve all connection profiles from the profile store being used by this<br>AdminConnection.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-209">line 209</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise that is resolved with the connection profile data.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Retrieve all the connection profiles.
-const adminConnection = new AdminConnection();
-return adminConnection.getAllProfiles()
-  .then((profiles) =&gt; {
-    // Retrieved profiles
-    for (let profile in profiles) {
-      console.log(profile, profiles[profile]);
-    }
-  });</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getProfile"><span class="type-signature"></span>getProfile(connectionProfile)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Retrieve the specified connection profile from the profile store being<br>used by this AdminConnection.</p>
+        <p>Import a business network card.</p>
     </div>
     
 
@@ -1674,6 +1496,8 @@ return adminConnection.getAllProfiles()
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -1686,13 +1510,13 @@ return adminConnection.getAllProfiles()
 
         <tr>
             
-                <td class="name"><code>connectionProfile</code></td>
+                <td class="name"><code>card</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">IdCard</span>
 
 
 
@@ -1700,10 +1524,52 @@ return adminConnection.getAllProfiles()
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>The name of the connection profile</p></td>
+            <td class="description last"><p>The card to import</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name by which this card should be referred</p></td>
         </tr>
 
     
@@ -1748,7 +1614,7 @@ return adminConnection.getAllProfiles()
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-190">line 190</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-125">line 125</a>
 			</li>
 		</ul>
 	</dd>
@@ -1777,7 +1643,7 @@ return adminConnection.getAllProfiles()
     
             
 <div class="param-desc">
-    <p>A promise that is resolved with the connection profile data.</p>
+    <p>Resolved with the name by which the card is referred as a  String</p>
 </div>
 
 
@@ -1797,267 +1663,6 @@ return adminConnection.getAllProfiles()
 
 
         
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Retrieve the connection profile.
-const adminConnection = new AdminConnection();
-return adminConnection.getProfile(&#x27;testprofile&#x27;)
-  .then((profile) =&gt; {
-    // Retrieved profile
-    console.log(profile);
-  });</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="importIdentity"><span class="type-signature"></span>importIdentity(connectionProfile, id, certificate, privateKey)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Import an identity into a profiles' wallet. No connection needs to be established<br>for this method to succeed.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connectionProfile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of the connection profile</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The id to associate with this identity</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>certificate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The signer cert in PEM format</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>privateKey</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The private key in PEM format</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-781">line 781</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise which is resolved when the identity is imported</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Import an identity into a profiles&#x27; wallet
-var adminConnection = new AdminConnection();
-return adminConnection.importIdentity(&#x27;hlfv1&#x27;, &#x27;PeerAdmin&#x27;, certificate, privateKey)
-.then(() =&gt; {
-    // Identity imported
-    console.log(&#x27;identity imported successfully&#x27;);
-})
-.catch(function(error){
-    // Add optional error handling here.
-});</pre>
-
 
     
 </dd>
@@ -2195,7 +1800,7 @@ return adminConnection.importIdentity(&#x27;hlfv1&#x27;, &#x27;PeerAdmin&#x27;, 
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-295">line 295</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-415">line 415</a>
 			</li>
 		</ul>
 	</dd>
@@ -2322,7 +1927,7 @@ return adminConnection.install(businessNetworkDefinition.getName())
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-753">line 753</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-872">line 872</a>
 			</li>
 		</ul>
 	</dd>
@@ -2451,7 +2056,7 @@ return adminConnection.list()
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-621">line 621</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-741">line 741</a>
 			</li>
 		</ul>
 	</dd>
@@ -2509,236 +2114,6 @@ var adminConnection = new AdminConnection();
 return adminConnection.ping()
 .then(function(){
     // Connection has been tested
-})
-.catch(function(error){
-    // Add optional error handling here.
-});</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="requestIdentity"><span class="type-signature"></span>requestIdentity(connectionProfile, enrollmentID, enrollmentSecret)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Request the certificates for an identity. No connection needs to be established<br>for this method to succeed.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connectionProfile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of the connection profile</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>enrollmentID</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The ID to enroll</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>enrollmentSecret</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The secret for the ID</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-821">line 821</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>A promise which is resolved when the identity is imported</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Request the cryptographic material for am identity of a hlf v1 environment.
-var adminConnection = new AdminConnection();
-return adminConnection.requestIdentity(&#x27;hlfv1&#x27;, &#x27;admin&#x27;, &#x27;adminpw&#x27;)
-.then((response) =&gt; {
-    // Identity returned
-    console.log(&#x27;public signing certificate:&#x27;);
-    console.log(response.certificate);
-    console.log(&#x27;private key:&#x27;);
-    console.log(response.key);
-    console.log(&#x27;ca root certificate:&#x27;);
-    console.log(response.rootCertificate);
 })
 .catch(function(error){
     // Add optional error handling here.
@@ -2858,7 +2233,7 @@ return adminConnection.requestIdentity(&#x27;hlfv1&#x27;, &#x27;admin&#x27;, &#x
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-568">line 568</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-688">line 688</a>
 			</li>
 		</ul>
 	</dd>
@@ -3079,7 +2454,7 @@ return adminConnection.reset(businessNetworkDefinition)
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-443">line 443</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-563">line 563</a>
 			</li>
 		</ul>
 	</dd>
@@ -3256,7 +2631,7 @@ return adminConnection.start(businessNetworkDefinition)
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-515">line 515</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-635">line 635</a>
 			</li>
 		</ul>
 	</dd>
@@ -3432,7 +2807,7 @@ return adminConnection.undeploy(&#x27;identifier&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-540">line 540</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-660">line 660</a>
 			</li>
 		</ul>
 	</dd>
@@ -3554,9 +2929,9 @@ return adminConnection.update(businessNetworkDefinition)
 	</span>
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Fri Nov 3rd 2017
+		on Sat Nov 4th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
