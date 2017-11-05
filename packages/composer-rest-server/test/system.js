@@ -101,7 +101,7 @@ describe('System REST API unit tests', () => {
             type : 'embedded'
         })
         .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -123,7 +123,7 @@ describe('System REST API unit tests', () => {
         .then((result) => {
             app = result.app;
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Member');

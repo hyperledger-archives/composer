@@ -15,8 +15,7 @@
 'use strict';
 
 exports.command = 'card <subcommand>';
-// Set description to false for now so it does not appear in the 'composer' command help
-exports.desc = false; //'Command for managing business network cards';
+exports.desc = 'Command for managing business network cards';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('card');
