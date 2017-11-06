@@ -330,10 +330,9 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      * @param {String} cardName - The name of the business network card
-     * @param {boolean} update true if this is for an update operation
      * @return {Promise} A promise that when resolved indicates the connection is complete
      */
-    connect(cardName, update) {
+    connect(cardName) {
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 
@@ -360,7 +359,7 @@ class AdminConnection {
             .then((securityContext) => {
                 this.securityContext = securityContext;
                 this.securityContext.card = card;
-                if (update) {
+                if (card.getBusinessNetworkName()) {
                     return this.ping(this.securityContext);
                 }
             }).then(()=>{

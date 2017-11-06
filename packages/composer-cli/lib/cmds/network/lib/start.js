@@ -65,7 +65,7 @@ class Start {
             console.log();
             adminConnection = cmdUtil.createAdminConnection();
 
-            return adminConnection.connect(cardName, updateBusinessNetwork );
+            return adminConnection.connect(cardName);
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {
