@@ -115,13 +115,30 @@ describe('Registry', () => {
                 });
         });
 
-        it('should not throw or leak information about resources that cannot be accessed', () => {
+        it('should not throw or leak information about resources that cannot be accessed due to ACL rules', () => {
             mockAccessController.check.withArgs(mockResource2, 'READ').rejects(new AccessException(mockResource2, 'READ', mockParticipant));
             return registry.getAll()
                 .then((resources) => {
                     sinon.assert.calledTwice(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource1, 'READ');
                     sinon.assert.calledWith(mockAccessController.check, mockResource2, 'READ');
+                    resources.should.all.be.an.instanceOf(Resource);
+                    resources.should.deep.equal([mockResource1]);
+                });
+        });
+
+        it('should not throw or leak information about existing resources that cannot be accessed due to not being valid in the model', () => {
+            let err = new Error('serializer error');
+            let ARGS = {
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            };
+            mockSerializer.fromJSON.withArgs(ARGS).throws(err);
+
+            return registry.getAll()
+                .then((resources) => {
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource1, 'READ');
                     resources.should.all.be.an.instanceOf(Resource);
                     resources.should.deep.equal([mockResource1]);
                 });
