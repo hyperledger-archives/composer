@@ -110,7 +110,7 @@ export class ResourceComponent implements OnInit {
      */
     private idFieldHasRegex() {
         // a non-null validator on an identifying field returns true
-        let idf: Field = this.resourceDeclaration.getOwnProperty(this.resourceDeclaration.getIdentifierFieldName());
+        let idf: Field = this.resourceDeclaration.getProperty(this.resourceDeclaration.getIdentifierFieldName());
         return idf.getValidator() ? true : false;
     }
 
