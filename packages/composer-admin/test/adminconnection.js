@@ -99,6 +99,7 @@ describe('AdminConnection', () => {
     let sandbox;
     let clock;
     let cardStore;
+    let mockAdminIdCard;
 
     const config =
         {
@@ -143,6 +144,8 @@ describe('AdminConnection', () => {
         };
         adminConnection = new AdminConnection(adminConnectionOptions);
         adminConnection.securityContext = mockSecurityContext;
+        mockAdminIdCard = sinon.createStubInstance(IdCard);
+        mockSecurityContext.card = mockAdminIdCard;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
@@ -233,7 +236,6 @@ describe('AdminConnection', () => {
     });
 
     describe('#connectWithCard', () =>{
-
 
         it ('should connect, login and ping if update not specified (secret based)', () => {
             sinon.spy(cardStore,'get');
@@ -452,9 +454,9 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card:mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {});
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {card:mockAdminIdCard});
             });
         });
 
@@ -466,9 +468,9 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1,card:mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1});
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1,card:mockAdminIdCard});
             });
         });
 
@@ -845,7 +847,16 @@ describe('AdminConnection', () => {
         });
 
         it('should build the start transaction using additional modelled properties from the start options', () => {
-            const startOptions = { logLevel: 'DEBUG' };
+            const userMetadata = {
+                userName: 'user',
+                businessNetwork: 'penguin-network'
+            };
+            const connection = config;
+            connection.card='user@penguin-network';
+            connection.name='connectionName';
+            let userCard = new IdCard(userMetadata, connection);
+            userCard.setCredentials({certificate: 'card cert', privateKey: 'String' });
+            const startOptions = { logLevel: 'DEBUG' , card : userCard };
             return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
@@ -865,7 +876,7 @@ describe('AdminConnection', () => {
                             },
                             {
                                 $class: 'org.hyperledger.composer.system.BindIdentity',
-                                certificate: 'such cert',
+                                certificate: 'card cert',
                                 participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
                                 timestamp: '1970-01-01T00:00:00.000Z',
                                 transactionId: '47bc3a67-5599-4460-9745-6a291df4f879'
