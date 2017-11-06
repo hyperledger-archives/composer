@@ -141,6 +141,7 @@ class Context {
         this.engine = engine;
         this.function = null;
         this.arguments = null;
+        this.businessNetworkRecord = null;
         this.businessNetworkDefinition = null;
         this.registryManager = null;
         this.resolver = null;
@@ -184,18 +185,23 @@ class Context {
     loadBusinessNetworkRecord() {
         const method = 'loadBusinessNetworkRecord';
         LOG.entry(method);
+        if (this.businessNetworkRecord) {
+            LOG.exit(method, this.businessNetworkRecord);
+            return Promise.resolve(this.businessNetworkRecord);
+        }
         return this.getDataService().getCollection('$sysdata')
             .then((collection) => {
                 LOG.debug(method, 'Getting business network archive from the $sysdata collection');
                 return collection.get('businessnetwork');
             })
-            .then((object) => {
+            .then((businessNetworkRecord) => {
                 // check if the network has been undeployed first. if is has throw exception.
-                if (object.undeployed){
+                if (businessNetworkRecord.undeployed){
                     throw new Error('The business network has been undeployed');
                 }
-                LOG.exit(method, object);
-                return object;
+                this.businessNetworkRecord = businessNetworkRecord;
+                LOG.exit(method, businessNetworkRecord);
+                return businessNetworkRecord;
             });
     }
 
