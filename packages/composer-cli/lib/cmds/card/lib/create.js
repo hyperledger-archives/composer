@@ -76,10 +76,13 @@ class Create {
 
         // certificates & privateKey
         // YARGS command spec logic will have enforced the correct set of options
-        if (argv.certificate && argv.privateKey){
+        if (argv.certificate){
             let certFile = this.readFile(path.resolve(argv.certificate));
+            idCard.setCertificate(certFile);
+        }
+        if (argv.privateKey){
             let keyFile =  this.readFile(path.resolve(argv.privateKey));
-            idCard.setCredentials({ certificate: certFile, privateKey: keyFile });
+            idCard.setPrivateKey(keyFile);
         }
 
         // handle the filename

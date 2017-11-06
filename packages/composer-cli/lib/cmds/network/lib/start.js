@@ -20,7 +20,7 @@ const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const ora = require('ora');
-
+const Create = require('../../card/lib/create');
 /**
  * <p>
  * Composer start command
@@ -95,6 +95,36 @@ class Start {
                 return adminConnection.update(businessNetworkDefinition);
             }
         }).then((result) => {
+
+            if (!updateBusinessNetwork){
+                // need to create a card for the admin and then write it to disk for the user
+                // to import
+                // set if the options have been given into the metadata
+                let metadata= {
+                    version : 1,
+                    userName : argv.networkAdmin,
+                    businessNetwork : businessNetworkDefinition.getName()
+                };
+                // copy across any other parameters that might be used
+                let createArgs = {};
+                if (argv.file){
+                    createArgs.file = argv.file;
+                }
+
+                if (argv.networkAdminEnrollSecret){
+                    metadata.enrollmentSecret = 'adminpw';
+                } else {
+                    // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
+                    createArgs.certificate = argv.networkAdminCertificateFile;
+                }
+
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((fileName)=>{
+                    console.log('Successfully created business network card to '+fileName);
+                    return;
+                });
+            }
+            return result;
+        }).then((result)=>{
             spinner.succeed();
             console.log();
 

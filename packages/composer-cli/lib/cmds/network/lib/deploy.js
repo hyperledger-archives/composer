@@ -108,13 +108,19 @@ class Deploy {
                 let metadata= {
                     version : 1,
                     userName : argv.networkAdmin,
-                    enrollmentSecret : 'adminpw',
                     businessNetwork : businessNetworkDefinition.getName()
                 };
                 // copy across any other parameters that might be used
                 let createArgs = {};
                 if (argv.file){
                     createArgs.file = argv.file;
+                }
+
+                if (argv.networkAdminEnrollSecret){
+                    metadata.enrollmentSecret = 'adminpw';
+                } else {
+                    // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
+                    createArgs.certificate = argv.networkAdminCertificateFile;
                 }
 
                 return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((fileName)=>{
