@@ -331,7 +331,7 @@ class AdminConnection {
      * });
      * @param {String} cardName - The name of the business network card
      * @param {boolean} update true if this is for an update operation
-     * @return {Promise} A promise that indicates the connection is complete
+     * @return {Promise} A promise that when resolved indicates the connection is complete
      */
     connect(cardName, update) {
         const method = 'connectWithCard';
@@ -359,9 +359,12 @@ class AdminConnection {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
+                this.securityContext.card = card;
                 if (update) {
                     return this.ping(this.securityContext);
                 }
+            }).then(()=>{
+                return;
             });
     }
 
@@ -480,10 +483,18 @@ class AdminConnection {
         const method = '_buildStartTransaction';
         LOG.entry(method, businessNetworkDefinition, startOptions);
 
+        let identityName, identityCertificate;
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
-        let identityName, identityCertificate;
-        return this._getCurrentIdentity()
+        return Promise.resolve()
+            .then(()=>{
+
+                if (startOptions.card){
+                    return startOptions.card.getCredentials();
+                } else {
+                    return this._getCurrentIdentity();
+                }
+            })
             .then((identity) => {
 
                 // Extract the current identity name and certificate.
@@ -602,13 +613,13 @@ class AdminConnection {
         LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
 
+        deployOptions.card = this.securityContext.card;
+
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
             .then((startTransactionJSON) => {
-
                 // Now we can deploy the business network.
                 return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
-
             })
             .then(() => {
                 LOG.exit(method);
