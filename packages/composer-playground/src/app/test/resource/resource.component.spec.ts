@@ -189,7 +189,7 @@ describe('ResourceComponent', () => {
             mockClassDeclaration.getModelFile.returns(mockModelFile);
             mockClassDeclaration.getName.returns('class.declaration');
             mockClassDeclaration.getIdentifierFieldName.returns('resourceId');
-            mockClassDeclaration.getOwnProperty.returns(mockField);
+            mockClassDeclaration.getProperty.returns(mockField);
         });
 
         it('should generate a valid resource with an empty ID', () => {
