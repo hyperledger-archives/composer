@@ -22,17 +22,30 @@
                     Certificate*
                 </div>
                 <div class="value">
-                    <textarea name="addedCertificate" rows="5" [(ngModel)]="cert"></textarea>
+                    <textarea name="addedCertificate" rows="4" [(ngModel)]="cert"></textarea>
+                </div>
+            </div>
+            <div *ngIf="type !== 'ca'" class="row">
+                <div class="property">
+                  SSL Target Name Override
+                </div>
+                <div class="value">
+                    <input type="text" name="sslTargetNameOverride"[(ngModel)]="sslTargetNameOverride" />
                 </div>
             </div>
         </form>
     </section>
     <footer>
-        <button type="button" class="secondary" (click)="activeModal.dismiss();">
-            <span>Cancel</span>
+        <button type="button" class="delete" (click)="removeCertificate()" [disabled]="!cert">
+            <span>Remove</span>
         </button>
-        <button type="button" class="primary" (click)="addCertificate()" [disabled]="!cert">
-            <span>Add</span>
-        </button>
+        <div id="right-buttons" >
+          <button type="button" class="secondary" (click)="activeModal.dismiss();">
+              <span>Cancel</span>
+          </button>
+          <button type="button" class="primary" (click)="addCertificate()" [disabled]="!cert">
+              <span>Add</span>
+          </button>
+        </div>
     </footer>
 </div>

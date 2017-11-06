@@ -150,7 +150,7 @@ module.exports = (app, testMode) => {
                     if (semver.prerelease(composerVersionToUse)) {
                         composerVersionToUse = semver.inc(composerVersionToUse, 'patch');
                     }
-                    return semver.satisfies(composerVersionToUse, metadata.engines.composer);
+                    return semver.satisfies('0.14.0', metadata.engines.composer);
                 });
 
             // If we found multiple versions of the package, we want the first (newest).
@@ -314,6 +314,3 @@ module.exports = (app, testMode) => {
         });
     });
 };
-
-
-

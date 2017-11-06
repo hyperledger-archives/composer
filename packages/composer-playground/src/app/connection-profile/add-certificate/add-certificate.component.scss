@@ -36,6 +36,7 @@
             .property {
                 font-weight: 600;
                 flex-basis: 20%;
+                margin-right: 5px;
             }
             .value {
                 flex: 1;
@@ -43,5 +44,8 @@
         }
 
     }
-}
 
+    footer {
+      justify-content: space-between;
+    }
+}

@@ -26,21 +26,21 @@
                             Profile Description
                         </th>
                         <td>
-                            <input type="text" ([ngModel])="basic.description" name="description">
+                            <input type="text" [(ngModel)]="basic.description" #description="ngModel" name="description">
                         </td>
                     </tr>
                     <tr>
                         <th>
-                            Organisation*
+                            Organization*
                         </th>
                         <td>
                             <input
-                                [ngClass]="{'error-underline': organisation.invalid && (organisation.dirty || organisation.touched)}"
+                                [ngClass]="{'error-underline': organization.invalid && (organization.dirty || organization.touched)}"
                                 type="text"
-                                [(ngModel)]="basic.organisation" #organisation="ngModel" name="organisation" required>
-                            <div *ngIf="organisation.invalid && (organisation.dirty || organisation.touched)"
+                                [(ngModel)]="basic.organization" #organization="ngModel" name="organization" required>
+                            <div *ngIf="organization.invalid && (organization.dirty || organization.touched)"
                                  class="error-message">
-                                Organisation is required
+                                organization is required
                             </div>
                         </td>
                     </tr>
@@ -74,15 +74,18 @@
                     </tr>
                     <tr>
                         <th>
-                            KeyValStore*
+                            Commit Timeout
                         </th>
                         <td>
                             <input
-                                [ngClass]="{'error-underline': keyValStore.invalid && (keyValStore.dirty || keyValStore.touched)}"
                                 type="text"
-                                [(ngModel)]="basic.keyValStore" #keyValStore="ngModel" name="keyValStore" required>
-                            <div *ngIf="keyValStore.invalid && (keyValStore.dirty || keyValStore.touched)" class="error-message">
-                                KeyValStore is required
+                                [(ngModel)]="basic.commitTimeout" #commitTimeout="ngModel" name="commitTimeout"
+                                [ngClass]="{'error-underline': (commitTimeout.invalid || !isNumber(basic.commitTimeout))&& (commitTimeout.dirty || commitTimeout.touched)}" >
+                            <div *ngIf="commitTimeout.invalid && (commitTimeout.dirty || commitTimeout.touched)" class="error-message">
+                                Commit timeout is required
+                            </div>
+                            <div *ngIf="!isNumber(basic.commitTimeout) && (commitTimeout.dirty || commitTimeout.touched)" class="error-message">
+                                Commit timeout must be a number
                             </div>
                         </td>
                     </tr>
@@ -116,7 +119,7 @@
                             <td>
                                 <button type="button"
                                         class="certificate-button"
-                                        [ngClass]="{'no-cert': !orderer.tlsCACerts.pem}"
+                                        [ngClass]="{'no-cert': !orderer.tlsCACerts}"
                                         (click)="openAddCertificateModal(ordererIndex,'orderers');">
                                     <svg class="standard-icon" aria-hidden="true">
                                         <use xlink:href="#icon-data-quality_16"></use>
@@ -143,29 +146,52 @@
                     <table class="profile-info">
                         <colgroup>
                             <col span="1" style="width: 10%;">
-                            <col span="1" style="width: 8%;">
-                            <col span="1" style="width: 47.5%;">
-                            <col span="1" style="width: 34.5%;">
+                            <col span="1" style="width: 55%;">
+                            <col span="1" style="width: 35%;">
                         </colgroup>
                         <tr>
-                            <th rowspan="2">GRPC Options</th>
+                            <th rowspan="4">GRPC Options</th>
                             <th>
-                                ssl target name override
+                                GRPC max message length
                             </th>
-                            <td>
-                                <input type="text" [(ngModel)]="orderer.grpcOptions.sslTargetNameOverride" name="ordererSslTargetNameOverride{{ordererIndex}}">
-                            </td>
-                            <td>
-                                <div class="profile-buttons">
-                                    <button type="button" class="secondary" *ngIf="ordererIndex === orderers.length -1"
-                                            (click)="addOrderer()">+ Add another
-                                    </button>
-                                    <button type="button" class="secondary" *ngIf="orderers.length > 1"
-                                            (click)="removeOrderer(ordererIndex)">
-                                        Remove orderer
-                                    </button>
-                                </div>
-                            </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              <input type="text" [(ngModel)]="orderer.grpcOptions.grpcMaxSendMessageLength" #ordererGrpcMaxSendMessageLength='ngModel'
+                                     name="ordererGrpcMaxSendMessageLength{{ordererIndex}}"
+                                     [ngClass]="{'error-underline': !isNumber(orderer.grpcOptions.grpcMaxSendMessageLength) && (ordererGrpcMaxSendMessageLength.dirty || ordererGrpcMaxSendMessageLength.touched)}">
+                              <div *ngIf="!isNumber(orderer.grpcOptions.grpcMaxSendMessageLength) && (ordererGrpcMaxSendMessageLength.dirty || ordererGrpcMaxSendMessageLength.touched)"
+                                     class="error-message">
+                                     Value must be a number
+                              </div>
+                          </td>
+                          <td>
+                              <div class="profile-buttons">
+                                  <button type="button" class="secondary" *ngIf="ordererIndex === orderers.length -1"
+                                          (click)="addOrderer()">+ Add another
+                                  </button>
+                                  <button type="button" class="secondary" *ngIf="orderers.length > 1"
+                                          (click)="removeOrderer(ordererIndex)">
+                                      Remove orderer
+                                  </button>
+                              </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>
+                              GRPC http2 keep alive time
+                          </th>
+                        </tr>
+                        <tr>
+                          <td>
+                              <input type="text" [(ngModel)]="orderer.grpcOptions.grpcHttp2KeepAliveTime" #ordererGrpcHttp2KeepAliveTime='ngModel'
+                                     name="ordererGrpcHttp2KeepAliveTime{{ordererIndex}}"
+                                     [ngClass]="{'error-underline': !isNumber(orderer.grpcOptions.grpcHttp2KeepAliveTime) && (ordererGrpcHttp2KeepAliveTime.dirty || ordererGrpcHttp2KeepAliveTime.touched)}" >
+                              <div *ngIf="!isNumber(orderer.grpcOptions.grpcHttp2KeepAliveTime) && (ordererGrpcHttp2KeepAliveTime.dirty || ordererGrpcHttp2KeepAliveTime.touched)"
+                                    class="error-message">
+                                    Value must be a number
+                              </div>
+                          </td>
                         </tr>
                     </table>
                 </div>
@@ -178,8 +204,14 @@
                     <tr>
                         <th>Timeout</th>
                         <td>
-                            <input type="text" [(ngModel)]="ordererTimeout"
-                                   name="ordererTimeout"></td>
+                            <input type="text" [(ngModel)]="ordererTimeout" #ordererTimeoutField='ngModel'
+                                   name="ordererTimeoutField"
+                                   [ngClass]="{'error-underline': !isNumber(ordererTimeout) && (ordererTimeoutField.dirty || ordererTimeoutField.touched)}" >
+                            <div *ngIf="!isNumber(ordererTimeout) && (ordererTimeoutField.dirty || ordererTimeoutField.touched)"
+                                   class="error-message">
+                                   Value must be a number
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -211,7 +243,7 @@
                             <td>
                                 <button type="button"
                                         class="certificate-button"
-                                        [ngClass]="{'no-cert': !peer.tlsCACerts.pem}"
+                                        [ngClass]="{'no-cert': !peer.tlsCACerts}"
                                         (click)="openAddCertificateModal(peerIndex,'peers');">
                                     <svg class="standard-icon" aria-hidden="true">
                                         <use xlink:href="#icon-data-quality_16"></use>
@@ -253,29 +285,103 @@
                     <table class="profile-info">
                         <colgroup>
                             <col span="1" style="width: 10%;">
-                            <col span="1" style="width: 8%;">
-                            <col span="1" style="width: 47.5%;">
-                            <col span="1" style="width: 34.5%;">
+                            <col span="1" style="width: 55%;">
+                            <col span="1" style="width: 35%;">
                         </colgroup>
                         <tr>
-                            <th rowspan="2">GRPC Options</th>
+                            <th rowspan="4">GRPC Options</th>
+                            <th>GRPC max message length</th>
+                        </tr>
+                        <tr>
+                          <td class="text-below">
+                              <input type="text" [(ngModel)]="peer.grpcOptions.grpcMaxSendMessageLength" #peerGrpcMaxSendMessageLength='ngModel'
+                                     name="peerGrpcMaxSendMessageLength{{peerIndex}}"
+                                     [ngClass]="{'error-underline': !isNumber(peer.grpcOptions.grpcMaxSendMessageLength) && (peerGrpcMaxSendMessageLength.dirty || peerGrpcMaxSendMessageLength.touched)}">
+                              <div *ngIf="!isNumber(peer.grpcOptions.grpcMaxSendMessageLength) && (peerGrpcMaxSendMessageLength.dirty || peerGrpcMaxSendMessageLength.touched)"
+                                     class="error-message">
+                                     Value must be a number
+                              </div>
+                          </td>
+                          <td class="text-below">
+                              <div class="profile-buttons">
+                                  <button type="button" class="secondary" *ngIf="peerIndex === peers.length -1"
+                                          (click)="addPeer()">+ Add another
+                                  </button>
+                                  <button type="button" class="secondary" *ngIf="peers.length > 1"
+                                          (click)="removePeer(peerIndex)">
+                                      Remove peer
+                                  </button>
+                              </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>
+                              GRPC http2 keep alive time
+                          </th>
+                        </tr>
+                        <tr>
+                          <td class="text-below">
+                              <input type="text" [(ngModel)]="peer.grpcOptions.grpcHttp2KeepAliveTime" #peerGrpcHttp2KeepAliveTime='ngModel'
+                                     name="peerGrpcHttp2KeepAliveTime{{peerIndex}}"
+                                     [ngClass]="{'error-underline': !isNumber(peer.grpcOptions.grpcHttp2KeepAliveTime) && (peerGrpcHttp2KeepAliveTime.dirty || peerGrpcHttp2KeepAliveTime.touched)}" >
+                              <div *ngIf="!isNumber(peer.grpcOptions.grpcHttp2KeepAliveTime) && (peerGrpcHttp2KeepAliveTime.dirty || peerGrpcHttp2KeepAliveTime.touched)"
+                                    class="error-message">
+                                    Value must be a number
+                              </div>
+                          </td>
+                        </tr>
+                      </table>
+                      <table class="profile-info">
+                        <colgroup>
+                            <col span="1" style="width: 10%;">
+                            <col span="1" style="width: 20%;">
+                            <col span="1" style="width: 35%;">
+                            <col span="1" style="width: 35%;">
+                        </colgroup>
+                        <tr>
+                          <th rowspan="4">Roles</th>
+                          <th>
+                              Endorsing Peer
+                          </th>
+                          <td>
+                              <input type="checkbox" [(ngModel)]="peer.endorsingPeer" #peerRoleEndorsingPeer='ngModel' name="peerRoleEndorsingPeer{{peerIndex}}" id="peerRoleEndorsingPeer{{peerIndex}}" />
+                              <label for="peerRoleEndorsingPeer{{peerIndex}}" class="checkbox-label" ></label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>
+                              Chaincode Query Peer
+                          </th>
+                          <td>
+                              <input type="checkbox" [(ngModel)]="peer.chaincodeQuery" #peerRoleEndorsingPeer='ngModel' name="peerRoleChaincodeQuery{{peerIndex}}" id="peerRoleChaincodeQuery{{peerIndex}}" />
+                              <label for="peerRoleChaincodeQuery{{peerIndex}}" class="checkbox-label" ></label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>
+                              Ledger Query Peer
+                          </th>
+                          <td>
+                              <input type="checkbox" [(ngModel)]="peer.ledgerQuery" #peerRoleEndorsingPeer='ngModel' name="peerRoleLedgerQuery{{peerIndex}}" id="peerRoleLedgerQuery{{peerIndex}}" />
+                              <label for="peerRoleLedgerQuery{{peerIndex}}" class="checkbox-label" ></label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>
+                              Event Source
+                          </th>
+                          <td>
+                              <input type="checkbox" [(ngModel)]="peer.eventSource" #peerRoleEndorsingPeer='ngModel' name="peerRoleEventSource{{peerIndex}}" id="peerRoleEventSource{{peerIndex}}" />
+                              <label for="peerRoleEventSource{{peerIndex}}" class="checkbox-label" ></label>
+                          </td>
+                        </tr>
+                        <tr>
                             <th>
-                                ssl target name override
+                                Part of organisation
                             </th>
                             <td>
-                                <input type="text" [(ngModel)]="peer.grpcOptions.sslTargetNameOverride"
-                                       name="peerSslTargetNameOverride{{peerIndex}}">
-                            </td>
-                            <td>
-                                <div class="profile-buttons">
-                                    <button type="button" class="secondary" *ngIf="peerIndex === peers.length -1"
-                                            (click)="addPeer()">+ Add another
-                                    </button>
-                                    <button type="button" class="secondary" *ngIf="peers.length > 1"
-                                            (click)="removePeer(peerIndex)">
-                                        Remove peer
-                                    </button>
-                                </div>
+                                <input type="checkbox" [(ngModel)]="peer.organization" #peerOrganization='ngModel' name="peerOrganization{{peerIndex}}" id="peerOrganization{{peerIndex}}"/>
+                                <label for="peerOrganization{{peerIndex}}" class="checkbox-label" ></label>
                             </td>
                         </tr>
                     </table>
@@ -294,8 +400,13 @@
                                 endorser
                             </th>
                             <td>
-                                <input type="text" [(ngModel)]="peerTimeOut.endorser"
-                                       name="peerTimeoutEndorser">
+                                <input type="text" [(ngModel)]="peerTimeOut.endorser" #peerTimeoutEndorser="ngModel"
+                                       name="peerTimeoutEndorser"
+                                       [ngClass]="{'error-underline': !isNumber(peerTimeOut.endorser) && (peerTimeoutEndorser.dirty || peerTimeoutEndorser.touched)}" >
+                                <div *ngIf="!isNumber(peerTimeOut.endorser) && (peerTimeoutEndorser.dirty || peerTimeoutEndorser.touched)"
+                                       class="error-message">
+                                       Value must be a number
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -303,8 +414,13 @@
                                 eventHub
                             </th>
                             <td>
-                                <input type="text" [(ngModel)]="peerTimeOut.eventHub"
-                                       name="peerTimeoutEventHub">
+                                <input type="text" [(ngModel)]="peerTimeOut.eventHub" #peerTimeoutEventHub="ngModel"
+                                       name="peerTimeoutEventHub"
+                                       [ngClass]="{'error-underline': !isNumber(peerTimeOut.eventHub) && (peerTimeoutEventHub.dirty || peerTimeoutEventHub.touched)}" >
+                                <div *ngIf="!isNumber(peerTimeoutEventHub.eventHub) && (peerTimeoutEventHub.dirty || peerTimeoutEventHub.touched)"
+                                       class="error-message">
+                                       Value must be a number
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -312,8 +428,13 @@
                                 eventReg
                             </th>
                             <td>
-                                <input type="text" [(ngModel)]="peerTimeOut.eventReg"
-                                       name="peerTimeoutEventReg">
+                                <input type="text" [(ngModel)]="peerTimeOut.eventReg" #peerTimeoutEventReg="ngModel"
+                                       name="peerTimeoutEventReg"
+                                       [ngClass]="{'error-underline': !isNumber(peerTimeOut.eventReg) && (peerTimeoutEventReg.dirty || peerTimeoutEventReg.touched)}" >
+                                <div *ngIf="!isNumber(peerTimeoutEventReg.eventReg) && (peerTimeoutEventReg.dirty || peerTimeoutEventReg.touched)"
+                                       class="error-message">
+                                       Value must be a number
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -339,7 +460,7 @@
                         <td>
                             <button type="button"
                                     class="certificate-button"
-                                    [ngClass]="{'no-cert': !ca.tlsCACerts.pem}"
+                                    [ngClass]="{'no-cert': !ca.tlsCACerts}"
                                     (click)="openAddCertificateModal(0,'ca');">
                                 <svg class="standard-icon" aria-hidden="true">
                                     <use xlink:href="#icon-data-quality_16"></use>
@@ -361,13 +482,21 @@
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            Verify
+                        </th>
+                        <td>
+                            <input type="checkbox" [(ngModel)]="ca.httpOptions.verify" #caHttpOptionsVerify="ngModel" name="caHttpOptionsVerify" id="caHttpOptionsVerify" />
+                            <label for="caHttpOptionsVerify" class="checkbox-label" ></label>
+                        </td>
                 </table>
             </div>
         </section>
         <footer>
             <div>
                 <button class="secondary" (click)="stopEditing()">Cancel</button>
-                <button class="primary" type="submit" [disabled]="!connectionProfileForm.form.valid">Next</button>
+                <button class="primary" type="submit" [disabled]="!formValid(connectionProfileForm.form)" >Next</button>
             </div>
         </footer>
     </form>

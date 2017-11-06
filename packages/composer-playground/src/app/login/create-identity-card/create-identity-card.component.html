@@ -6,7 +6,7 @@
     </div>
     <div *ngIf="editingCredentials">
         <edit-card-credentials (idCardAdded)="completeCardAddition($event)"
-                      [connectionProfile]="wrappedConnectionProfile.profile"></edit-card-credentials>
+                      [connectionProfile]="wrappedConnectionProfile"></edit-card-credentials>
     </div>
     <div *ngIf="creatingIdCard" class="create-card">
         <h1>Create A Business Network Card</h1>

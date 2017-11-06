@@ -8,7 +8,7 @@ import { AlertService } from '../basic-modals/alert.service';
 
 import * as clone from 'clone';
 
-import { has } from 'lodash';
+import { has, pickBy } from 'lodash';
 
 @Component({
     selector: 'connection-profile',
@@ -40,51 +40,54 @@ export class ConnectionProfileComponent {
         name: null,
         description: null,
         version: '1.0.0',
-        organisation: 'Org1',
+        organization: 'Org1',
         mspid: 'Org1MSP',
         channel: 'composerchannel',
-        keyValStore: '/tmp/keyValStore'
+        commitTimeout: null
     };
 
     private orderers = [];
 
     private defaultOrderer = {
         name: 'orderer.example.com',
-        url: 'grpcs://localhost:7050',
+        url: 'grpc://localhost:7050',
         grpcOptions: {
-            sslTargetNameOverride: null
-        },
-        tlsCACerts: {
-            pem: null
+            sslTargetNameOverride: null,
+            grpcMaxSendMessageLength: null,
+            grpcHttp2KeepAliveTime: null
         }
     };
 
-    private ordererTimeout = '3s';
+    private ordererTimeout = '30';
 
     private peers = [];
     private defaultPeer = {
         name: 'peer.example.com',
-        url: 'grpcs://localhost:7051',
-        eventUrl: 'grpcs://localhost:7053',
+        url: 'grpc://localhost:7051',
+        eventUrl: 'grpc://localhost:7053',
         grpcOptions: {
-            sslTargetNameOverride: null
+            sslTargetNameOverride: null,
+            grpcMaxSendMessageLength: null,
+            grpcHttp2KeepAliveTime: null
         },
-        tlsCACerts: {
-            pem: null
-        }
+        organization: true,
+        endorsingPeer: true,
+        chaincodeQuery: true,
+        ledgerQuery: true,
+        eventSource: true
     };
 
     private peerTimeOut = {
-        endorser: '3s',
-        eventHub: '3s',
-        eventReg: '3s'
+        endorser: '30',
+        eventHub: '30',
+        eventReg: '30'
     };
 
     private ca = <any> {
         url: 'http://localhost:7054',
         caName: null,
-        tlsCACerts: {
-            pem: null
+        httpOptions: {
+          verify: true
         }
     };
 
@@ -99,10 +102,10 @@ export class ConnectionProfileComponent {
             this.basic.description = has(this.connectionProfileData, 'description') ? this.connectionProfileData.description : this.basic.description;
             this.basic.version = has(this.connectionProfileData, 'version') ? this.connectionProfileData.version : this.basic.version;
 
-            this.basic.organisation = has(this.connectionProfileData, 'client.organisation') ? this.connectionProfileData.client.organisation : this.basic.organisation;
-            this.basic.mspid = has(this.connectionProfileData, 'organisations') ? this.connectionProfileData.organisations[Object.keys(this.connectionProfileData.organisations)[0]].mspid : this.basic.mspid;
+            this.basic.organization = has(this.connectionProfileData, 'client.organization') ? this.connectionProfileData.client.organization : this.basic.organization;
+            this.basic.mspid = has(this.connectionProfileData, 'organizations') ? this.connectionProfileData.organizations[Object.keys(this.connectionProfileData.organizations)[0]].mspid : this.basic.mspid;
             this.basic.channel = has(this.connectionProfileData, 'channels') ? Object.keys(this.connectionProfileData.channels)[0] : this.basic.channel;
-            this.basic.keyValStore = has(this.connectionProfileData, 'client.credentialStore.path') ? this.connectionProfileData.client.credentialStore.path : this.basic.keyValStore;
+            this.basic.commitTimeout = has(this.connectionProfileData, 'x-commitTimeout') ? this.connectionProfileData['x-commitTimeout'] : this.basic.commitTimeout;
 
             this.ordererTimeout = has(this.connectionProfileData, 'client.connection.timeout.orderer') ? this.connectionProfileData.client.connection.timeout.orderer : this.ordererTimeout;
             this.peerTimeOut = has(this.connectionProfileData, 'client.connection.timeout.peer') ? this.connectionProfileData.client.connection.timeout.peer : this.peerTimeOut;
@@ -142,13 +145,34 @@ export class ConnectionProfileComponent {
         let allOrderersNames = Object.keys(allOrderers);
 
         allOrderersNames.forEach((ordererName: string) => {
-            let newOrderer = allOrderers[ordererName];
+            let newOrderer = clone(allOrderers[ordererName]);
             newOrderer.name = ordererName;
+            newOrderer.grpcOptions = {
+                sslTargetNameOverride: null,
+                grpcMaxSendMessageLength: null,
+                grpcHttp2KeepAliveTime: null
+            };
 
-            if (has(allOrderers[ordererName], 'grpcOptions.ssl-target-name-override')) {
-                newOrderer.grpcOptions = {sslTargetNameOverride: allOrderers[ordererName].grpcOptions['ssl-target-name-override']};
+            if (has(allOrderers[ordererName], 'grpcOptions')) {
+              if (has(allOrderers[ordererName].grpcOptions, 'ssl-target-name-override')) {
+                 newOrderer.grpcOptions['sslTargetNameOverride'] = allOrderers[ordererName].grpcOptions['ssl-target-name-override'];
+              } else {
+                 delete newOrderer.grpcOptions.sslTargetNameOverride;
+              }
+
+              if (has(allOrderers[ordererName].grpcOptions, 'grpc-max-send-message-length')) {
+                 newOrderer.grpcOptions['grpcMaxSendMessageLength'] = allOrderers[ordererName].grpcOptions['grpc-max-send-message-length'];
+              } else {
+                 delete newOrderer.grpcOptions.grpcMaxSendMessageLength;
+              }
+
+              if (has(allOrderers[ordererName].grpcOptions, 'grpc\.http2\.keepalive_time')) {
+                 newOrderer.grpcOptions['grpcHttp2KeepAliveTime'] = allOrderers[ordererName].grpcOptions['grpc.http2.keepalive_time'];
+              } else {
+                 delete newOrderer.grpcOptions.grpcHttp2KeepAliveTime;
+              }
             } else {
-                newOrderer.grpcOptions = {};
+              newOrderer.grpcOptions = {};
             }
 
             this.orderers.push(newOrderer);
@@ -174,13 +198,33 @@ export class ConnectionProfileComponent {
         let allPeersNames = Object.keys(allPeers);
 
         allPeersNames.forEach((peerName: string) => {
-            let newPeer = allPeers[peerName];
+            let newPeer = clone(allPeers[peerName]);
             newPeer.name = peerName;
+            newPeer.grpcOptions = {
+                sslTargetNameOverride: null,
+                grpcMaxSendMessageLength: null,
+                grpcHttp2KeepAliveTime: null
+            };
+            if (has(allPeers[peerName], 'grpcOptions')) {
+              if (has(allPeers[peerName].grpcOptions, 'ssl-target-name-override')) {
+                  newPeer.grpcOptions['sslTargetNameOverride'] = allPeers[peerName].grpcOptions['ssl-target-name-override'];
+              } else {
+                  delete newPeer.grpcOptions.sslTargetNameOverride;
+              }
 
-            if (has(allPeers[peerName], 'grpcOptions.ssl-target-name-override')) {
-                newPeer.grpcOptions = {sslTargetNameOverride: allPeers[peerName].grpcOptions['ssl-target-name-override']};
+              if (has(allPeers[peerName].grpcOptions, 'grpc-max-send-message-length')) {
+                  newPeer.grpcOptions['grpcMaxSendMessageLength'] = allPeers[peerName].grpcOptions['grpc-max-send-message-length'];
+              } else {
+                  delete newPeer.grpcOptions.grpcMaxSendMessageLength;
+              }
+
+              if (has(allPeers[peerName].grpcOptions, 'grpc\.http2\.keepalive_time')) {
+                 newPeer.grpcOptions['grpcHttp2KeepAliveTime'] = allPeers[peerName].grpcOptions['grpc.http2.keepalive_time'];
+              } else {
+                  delete newPeer.grpcOptions.grpcHttp2KeepAliveTime;
+              }
             } else {
-                newPeer.grpcOptions = {};
+              newPeer.grpcOptions = {};
             }
 
             this.peers.push(newPeer);
@@ -218,19 +262,23 @@ export class ConnectionProfileComponent {
             peers: Object(),
             channels: Object(),
             certificateAuthorities: Object(),
-            organisations: Object()
+            organizations: Object()
         };
 
         if (!(this.connectionProfileData['x-type'] === 'hlfv1')) {
             throw new Error('Unknown profile type');
         } else {
             connectionProfile['x-type'] = this.connectionProfileData['x-type'];
+            connectionProfile['x-commitTimeout'] = this.basic.commitTimeout ? this.basic.commitTimeout : 100;
             connectionProfile.name = this.basic.name;
             connectionProfile.description = this.basic.description;
+            if (!connectionProfile.description) {
+              delete connectionProfile.description;
+            }
             connectionProfile.version = this.basic.version;
 
             connectionProfile.client = {
-                organisation: this.basic.organisation,
+                organization: this.basic.organization,
                 connection: {
                     timeout: {
                         peer: this.peerTimeOut,
@@ -238,9 +286,9 @@ export class ConnectionProfileComponent {
                     }
                 },
                 credentialStore: {
-                    path: this.basic.keyValStore,
+                    path: '/Users/user/.composer-credentials',
                     cryptoStore: {
-                        path: this.basic.keyValStore
+                        path: '/Users/user/.composer-credentials'
                     },
                 }
             };
@@ -254,13 +302,23 @@ export class ConnectionProfileComponent {
                 connectionProfile.orderers[orderer.name] = orderer;
 
                 // need to edit the grpc property names as for some reason hyphens were a good idea
-                if (has(connectionProfile.orderers[orderer.name], 'grpcOptions.sslTargetNameOverride')) {
-                    connectionProfile.orderers[orderer.name].grpcOptions = {
-                        'ssl-target-name-override': connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride
-                    };
-
-                    delete connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride;
+                if (has(connectionProfile.orderers[orderer.name], 'grpcOptions.sslTargetNameOverride') && connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride) {
+                    connectionProfile.orderers[orderer.name].grpcOptions['ssl-target-name-override'] = connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride;
                 }
+
+                delete connectionProfile.orderers[orderer.name].grpcOptions.sslTargetNameOverride;
+
+                if (has(connectionProfile.orderers[orderer.name], 'grpcOptions.grpcMaxSendMessageLength') && connectionProfile.orderers[orderer.name].grpcOptions.grpcMaxSendMessageLength) {
+                    connectionProfile.orderers[orderer.name].grpcOptions['grpc-max-send-message-length'] = parseFloat(connectionProfile.orderers[orderer.name].grpcOptions.grpcMaxSendMessageLength);
+                }
+
+                delete connectionProfile.orderers[orderer.name].grpcOptions.grpcMaxSendMessageLength;
+
+                if (has(connectionProfile.orderers[orderer.name], 'grpcOptions.grpcHttp2KeepAliveTime') && connectionProfile.orderers[orderer.name].grpcOptions.grpcHttp2KeepAliveTime) {
+                    connectionProfile.orderers[orderer.name].grpcOptions['grpc.http2.keepalive_time'] = parseFloat(connectionProfile.orderers[orderer.name].grpcOptions.grpcHttp2KeepAliveTime);
+                }
+
+                delete connectionProfile.orderers[orderer.name].grpcOptions.grpcHttp2KeepAliveTime;
 
                 // remove the name property as it isn't need in this section of the connection profile
                 delete connectionProfile.orderers[orderer.name].name;
@@ -272,16 +330,33 @@ export class ConnectionProfileComponent {
                     delete peer.tlsCACerts;
                 }
 
-                connectionProfile.peers[peer.name] = peer;
+                connectionProfile.peers[peer.name] = {};
+
+                // need to copy by value not reference
+                for (let key in peer) {
+                  connectionProfile.peers[peer.name][key] = peer[key];
+                }
 
                 // need to edit the grpc property names as for some reason hyphens were a good idea
-                if (has(connectionProfile.peers[peer.name], 'grpcOptions.sslTargetNameOverride')) {
-                    connectionProfile.peers[peer.name].grpcOptions = {
-                        'ssl-target-name-override': connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride
-                    };
-
-                    delete connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride;
+                if (has(connectionProfile.peers[peer.name], 'grpcOptions.sslTargetNameOverride') && connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride) {
+                    connectionProfile.peers[peer.name].grpcOptions['ssl-target-name-override'] = connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride;
                 }
+
+                delete connectionProfile.peers[peer.name].grpcOptions.sslTargetNameOverride;
+
+                if (has(connectionProfile.peers[peer.name], 'grpcOptions.grpcMaxSendMessageLength') && connectionProfile.peers[peer.name].grpcOptions.grpcMaxSendMessageLength) {
+                    connectionProfile.peers[peer.name].grpcOptions['grpc-max-send-message-length'] = parseFloat(connectionProfile.peers[peer.name].grpcOptions.grpcMaxSendMessageLength);
+                }
+
+                delete connectionProfile.peers[peer.name].grpcOptions.grpcMaxSendMessageLength;
+
+                if (has(connectionProfile.peers[peer.name], 'grpcOptions.grpcHttp2KeepAliveTime') && connectionProfile.peers[peer.name].grpcOptions.grpcHttp2KeepAliveTime) {
+                    connectionProfile.peers[peer.name].grpcOptions['grpc.http2.keepalive_time'] = parseFloat(connectionProfile.peers[peer.name].grpcOptions.grpcHttp2KeepAliveTime);
+                }
+
+                delete connectionProfile.peers[peer.name].grpcOptions.grpcHttp2KeepAliveTime;
+
+                delete connectionProfile.peers[peer.name].organization;
 
                 // remove the name property as it isn't need in this section of the connection profile
                 delete connectionProfile.peers[peer.name].name;
@@ -306,9 +381,9 @@ export class ConnectionProfileComponent {
 
             connectionProfile.certificateAuthorities[caName] = this.ca;
 
-            connectionProfile.organisations[this.basic.organisation] = {
+            connectionProfile.organizations[this.basic.organization] = {
                 mspid: this.basic.mspid,
-                peers: Object.keys(connectionProfile.peers),
+                peers: this.peers.filter((peer) => peer.organization).map((peer) => peer.name),
                 certificateAuthorities: Object.keys(connectionProfile.certificateAuthorities)
             };
 
@@ -316,7 +391,7 @@ export class ConnectionProfileComponent {
                 return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
                     let profiles = Object.keys(connectionProfiles).sort();
                     profiles.forEach((profile) => {
-                        if (connectionProfile.name !== connectionProfiles[profile].name && connectionProfiles[profile].name === this.connectionProfileData.name) {
+                        if (connectionProfile.name !== connectionProfiles[profile].name && connectionProfiles[profile].name === this.connectionProfileData.name && this.connectionProfileData.name) {
                             return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
                         }
                     });
@@ -330,31 +405,73 @@ export class ConnectionProfileComponent {
 
     openAddCertificateModal(index, type) {
         let cert;
-        if (type === 'orderers') {
-            cert = this.orderers[index].tlsCACerts.pem;
-        } else if (type === 'peers') {
-            cert = this.peers[index].tlsCACerts.pem;
+        let sslTargetNameOverride;
+        let object;
+        let priorState;
+        if (type === 'orderers' || type === 'peers') {
+            object = this[type][index];
+
+            if (typeof object === 'undefined') {
+              let formattedType = (type === 'orderers') ? 'Orderer' : 'Peer';
+              throw new Error(formattedType + ' at index ' + index + ' does not exist.');
+            }
+
+            priorState = clone(this[type][index]);
+
+            if (!has(object, 'grpcOptions')) {
+                object.grpcOptions = {
+                  sslTargetNameOverride: null
+                };
+            } else if (!has(object.grpcOptions, 'sslTargetNameOverride')) {
+                object.grpcOptions.sslTargetNameOverride = null;
+            }
+            sslTargetNameOverride = object.grpcOptions.sslTargetNameOverride;
+
         } else if (type === 'ca') {
-            cert = this.ca.tlsCACerts.pem;
+            object = this[type];
+
+            if (typeof object === 'undefined') {
+              throw new Error('CA does not exist.');
+            }
+
+            priorState = clone(this[type]);
+        } else {
+            throw new Error('Unrecognized type ' + type);
         }
 
+        if (!has(object, 'tlsCACerts')) {
+          object['tlsCACerts'] = {};
+          object.tlsCACerts['pem'] = null;
+        } else if (!has(object.tlsCACerts, 'pem')) {
+          object.tlsCACerts['pem'] = null;
+        }
+
+        cert = object.tlsCACerts.pem;
+
         let modelRef = this.modalService.open(AddCertificateComponent);
+        modelRef.componentInstance.type = type;
         modelRef.componentInstance.cert = cert;
+        modelRef.componentInstance.sslTargetNameOverride = sslTargetNameOverride;
 
         return modelRef.result
             .then((result) => {
-                if (type === 'orderers') {
-                    this.orderers[index].tlsCACerts.pem = result;
-                } else if (type === 'peers') {
-                    this.peers[index].tlsCACerts.pem = result;
-                } else if (type === 'ca') {
-                    this.ca.tlsCACerts.pem = result;
+                if (result) {
+                  object.tlsCACerts.pem = result.cert;
+                  if (type !== 'ca') {
+                    object.grpcOptions.sslTargetNameOverride = result.sslTargetNameOverride;
+                  }
                 } else {
-                    throw new Error('Unrecognized type ' + type);
+                  delete object.tlsCACerts;
+                  if (type !== 'ca') {
+                    delete object.grpcOptions.sslTargetNameOverride;
+                  }
                 }
             }, (reason) => {
                 if (reason && reason !== 1) {
                     this.alertService.errorStatus$.next(reason);
+                } else if (!reason) {
+                  // Cancel pressed
+                  object = priorState;
                 }
             });
     }
@@ -362,5 +479,25 @@ export class ConnectionProfileComponent {
     showCertificate(cert: string) {
         this.connectionProfileService.setCertificate(cert);
         this.modalService.open(ViewCertificateComponent);
+    }
+
+    isNumber(value) {
+      if (typeof value === 'undefined') {
+        return false;
+      }
+      if (value === null || value === '') {
+        return true;
+      }
+      value = value.toString();
+      let matches = value.match(/^(\d+|\d+\.\d+)$/);
+      return matches ? true : false; // USING REGEX AS ISNAN ALLOWS NUMBERS WITH LETTERS IN LIKE 1e1000
+    }
+
+    formValid(form) {
+      let errors = document.getElementsByClassName('error-message');
+      if (errors.length > 0) {
+          return false;
+      }
+      return form.valid;
     }
 }

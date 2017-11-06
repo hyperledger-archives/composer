@@ -31,6 +31,15 @@ connection-profile {
                 td {
                     vertical-align: text-top;
                     padding: $space-smedium 0;
+
+                    input[type=checkbox] {
+                      top: 0;
+                      left: 0;
+                    }
+                }
+
+                .text-below {
+                  padding: 0;
                 }
             }
         }
@@ -40,8 +49,7 @@ connection-profile {
         padding: 0 $space-medium;
         margin-left: $space-medium;
         min-width: 0;
-
-        border: 1px solid $fifth-highlight;
+        border: 1px solid $second-highlight;
 
         svg.standard-icon {
             margin-right: 0;
@@ -51,11 +59,17 @@ connection-profile {
             border: 1px dashed $fifth-highlight;
         }
 
+        &:not(.no-cert) {
+          svg {
+              fill: #3F55AF
+          }
+        }
+
         &:hover {
-            background-color: $white;
+            background-color: $second-highlight;
             border-color: $second-highlight;
             svg {
-                fill: #3F55AF
+                fill: #FFF
             }
 
         }

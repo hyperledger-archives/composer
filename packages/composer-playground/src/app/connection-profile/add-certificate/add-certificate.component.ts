@@ -13,13 +13,15 @@ export class AddCertificateComponent {
     maxFileSize: number = 5242880;
     supportedFileTypes: string[] = ['.pem'];
     certAdded: boolean = false;
+    removeDisabled: boolean = true;
 
     @Input()
     cert: string = null;
+    sslTargetNameOverride: string = null;
+    type: string = null;
 
     constructor(private alertService: AlertService,
                 public activeModal: NgbActiveModal) {
-
     }
 
     fileDetected() {
@@ -64,6 +66,10 @@ export class AddCertificateComponent {
 
     addCertificate(): void {
         let newCert = this.cert.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
-        this.activeModal.close(newCert);
+        this.activeModal.close({cert: newCert, sslTargetNameOverride: this.sslTargetNameOverride});
+    }
+
+    removeCertificate(): void {
+      this.activeModal.close(null);
     }
 }
