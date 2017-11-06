@@ -77,7 +77,7 @@ class Deploy {
                 if (logLevel) {
                     deployOptions.logLevel = logLevel;
                 }
-
+                deployOptions.card = card;
                 // Build the bootstrap tranactions.
                 let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
 
