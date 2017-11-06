@@ -42,7 +42,7 @@ module.exports.builder = function (yargs) {
     yargs.options({
         file: {alias: 'f', required: false, describe: 'File name of the card archive to be created', type: 'string' },
         businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-        connectionProfileFile: {alias: 'j', required: true, describe: 'Filename of the connection profile json file', type: 'string' },
+        connectionProfileFile: {alias: 'p', required: true, describe: 'Filename of the connection profile json file', type: 'string' },
         user: { alias: 'u', required: true, describe: 'The name of the identity for the card', type: 'string' },
         enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
         certificate: { alias: 'c', required: false, describe:'File containing the user\'s certificate.', type: 'string'},
@@ -55,7 +55,7 @@ module.exports.builder = function (yargs) {
     yargs.requiresArg(['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey','roles']);
 
     // grouping for the card options - moves them away from the standard --version etc.
-    yargs.group(['f','n','j','u','s','c','k','r'],'Card options');
+    yargs.group(['f','n','p','u','s','c','k','r'],'Card options');
 
     yargs.check(checkFn);
 
