@@ -116,7 +116,7 @@ docker rmi $(docker images dev-* -q)
         cd ~/fabric-tools
         ./downloadFabric.sh
         ./startFabric.sh
-        ./createComposerProfile.sh
+        ./createPeerAdminCard.sh
 
     Then at the end of your development session
 
@@ -125,7 +125,7 @@ docker rmi $(docker images dev-* -q)
         ./teardownFabric.sh
 
 
-> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
+> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks.
 
 
 ## Script details
@@ -155,14 +155,14 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create {{site.data.conrefs.composer_full}} Profile**
+**Create business network card for the peer administrator**
 
 Issue from the `fabric-tools` directory
 ```
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 ```
 
-Note: this creates a {{site.data.conrefs.composer_full}} profile specifically to connect to the development fabric you've already started.
+Note: this creates and imports a business network card to connect to the development fabric you've already started.
 
 **Teardown Fabric**
 
