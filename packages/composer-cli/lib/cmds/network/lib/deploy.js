@@ -15,6 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
+const Create = require('../../card/lib/create');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
@@ -44,13 +45,16 @@ class Deploy {
         let spinner;
         let logLevel = argv.loglevel;
         let cardName = argv.card;
+        let card;
 
 
         console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
+        adminConnection = cmdUtil.createAdminConnection();
+        // Read archive file contents
+        return adminConnection.getCard(cardName)
+        .then(()=>{
 
-            // Read archive file contents
-        return Promise.resolve().then(()=>{
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
@@ -62,7 +66,7 @@ class Deploy {
             console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
-            adminConnection = cmdUtil.createAdminConnection();
+
             // if we are performing an update we have to actually connect to the network
             // we want to update!
 
@@ -96,11 +100,35 @@ class Deploy {
                 return adminConnection.update(businessNetworkDefinition);
             }
         }).then((result) => {
+
+            if (!updateBusinessNetwork){
+                // need to create a card for the admin and then write it to disk for the user
+                // to import
+                // set if the options have been given into the metadata
+                let metadata= {
+                    version : 1,
+                    userName : argv.networkAdmin,
+                    enrollmentSecret : 'adminpw',
+                    businessNetwork : businessNetworkDefinition.getName()
+                };
+                // copy across any other parameters that might be used
+                let createArgs = {};
+                if (argv.file){
+                    createArgs.file = argv.file;
+                }
+
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((fileName)=>{
+                    console.log('Successfully created business network card to '+fileName);
+                    return;
+                });
+            }
+            return result;
+        }).then((result)=>{
             spinner.succeed();
             console.log();
-
             return result;
-        }).catch((error) => {
+        })
+        .catch((error) => {
             if (spinner) {
                 spinner.fail();
             }
