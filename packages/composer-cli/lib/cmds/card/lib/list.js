@@ -17,6 +17,8 @@
 const cmdUtil = require('../../utils/cmdutils');
 const Pretty = require('prettyjson');
 const Table = require('cli-table');
+const chalk = require('chalk');
+
 /**
  * Composer "card list" command
  * @private
@@ -31,23 +33,14 @@ class List {
         if (args.name){
             return this.showCardDetails(args.name);
         } else {
-
-
-
             return cmdUtil.createAdminConnection().getAllCards().then(cardMap => {
                 this.showtable(cardMap);
-                // const cardNames = Array.from(cardMap.keys());
-                // if (cardNames.length > 0) {
-                //     console.log('The following Business Network Cards are available:\n\n' +
-                // '    ' + cardNames.join('\n    '));
-                // } else {
-                //     console.log('There are no Business Network Cards available.');
-                // }
-            });}
+            });
+        }
     }
 
-    /** show summary table
-     *
+    /** Show summary table
+     * @param {Map} cardMap  Map of the cards currently held
      */
     static showtable(cardMap){
         const cardNames = Array.from(cardMap.keys());
@@ -60,6 +53,7 @@ class List {
             cardNames.forEach((e)=>{
                 let tableLine = [];
                 let idCard = cardMap.get(e);
+                console.log(idCard);
                 tableLine.push(e);
                 tableLine.push(idCard.getUserName());
                 tableLine.push(idCard.getBusinessNetworkName());
@@ -67,6 +61,9 @@ class List {
 
             });
             console.log(table.toString());
+            console.log();
+            console.log('Issue '+chalk.blue.bold('composer card list --name <CardName>')+'  to get details of the card');
+
         } else {
             console.log('There are no Business Network Cards available.');
         }
@@ -75,6 +72,7 @@ class List {
 
     /** Show the details of a single card
      * @param {String} cardName Name of the card to show
+     * @returns {Promise} resolved when details are showed
      */
     static showCardDetails(cardName){
         return cmdUtil.createAdminConnection().getCard(cardName)
