@@ -74,7 +74,7 @@ class BusinessNetworkConnection extends EventEmitter {
             );
         }
 
-        this.cardStore = options.cardStore || new FileSystemCardStore();
+        this.cardStore = options.cardStore || new FileSystemCardStore({ fs: options.fs || fs });
 
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
