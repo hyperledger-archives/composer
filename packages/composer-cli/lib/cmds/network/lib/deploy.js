@@ -66,18 +66,16 @@ class Deploy {
             // if we are performing an update we have to actually connect to the network
             // we want to update!
 
-            return adminConnection.connect(cardName, updateBusinessNetwork);
+            return adminConnection.connect(cardName);
 
         })
-        .then((result) => {
+        .then(() => {
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
-
                 // Build the deploy options.
                 let deployOptions = cmdUtil.parseOptions(argv);
                 if (logLevel) {
                     deployOptions.logLevel = logLevel;
-
                 }
 
                 // Build the bootstrap tranactions.

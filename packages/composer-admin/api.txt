@@ -1,11 +1,11 @@
 class AdminConnection {
    + void constructor(Object,BusinessNetworkCardStore) 
-   + Promise importCard(IdCard,String) 
+   + Promise importCard(String,IdCard) 
    + Promise getCard(String) 
    + Promise exportCard(String) 
    + Promise getAllCards() 
    + Promise deleteCard(String) 
-   + Promise connect(String,boolean) 
+   + Promise connect(String) 
    + Promise disconnect() 
    + Promise install(BusinessNetworkIdentifier,Object) 
    + Promise start(BusinessNetworkDefinition,Object) 

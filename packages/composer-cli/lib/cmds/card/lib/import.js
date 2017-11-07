@@ -30,10 +30,12 @@ class Import {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
+        let cardName;
         return Import.readCardFromFile(args.file).then(card => {
+            cardName = args.name || cmdUtil.getDefaultCardName(card);
             const adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.importCard(card, args.name);
-        }).then((cardName) => {
+            return adminConnection.importCard(cardName, card);
+        }).then(() => {
             console.log('Successfully imported business network card: ' + cardName);
         });
     }
