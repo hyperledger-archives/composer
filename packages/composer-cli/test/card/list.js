@@ -17,7 +17,7 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const ListCmd = require('../../lib/cmds/card/listCommand.js');
-
+const IdCard = require('composer-common').IdCard;
 const chai = require('chai');
 const sinon = require('sinon');
 chai.should();
@@ -49,7 +49,8 @@ describe('composer card list CLI', function() {
 
     it('should succeed for some cards', function() {
         const cardName = 'CARD_NAME';
-        const cardMap = new Map([[cardName, { fake: 'card' }]]);
+        let testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
+        const cardMap = new Map([[cardName, testCard]]);
         adminConnectionStub.getAllCards.resolves(cardMap);
         const args = {};
         return ListCmd.handler(args).then(() => {
