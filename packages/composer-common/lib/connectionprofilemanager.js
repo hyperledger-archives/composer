@@ -103,6 +103,21 @@ class ConnectionProfileManager {
         });
     }
 
+    /**
+     * Retrieves the ConnectionManager for the given connection profile data
+     *
+     * @param {string} connectionProfileData The data from connection profile
+     * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
+     * object once the connection is established, or rejected with a connection error.
+     */
+    _getConnectionManager(connectionProfileData) {
+        const METHOD = '_getConnectionManager';
+        LOG.info(METHOD,'Looking up a connection manager for given profile data');
+        if(connectionProfileData) {
+            return this.getConnectionManagerByType(connectionProfileData.type);
+        }
+    }
+
    /**
      * Retrieves the ConnectionManager for the given connection type.
      *
@@ -205,7 +220,7 @@ class ConnectionProfileManager {
                 if (additionalConnectOptions) {
                     connectOptions = Object.assign(connectOptions, additionalConnectOptions);
                 }
-                return this.getConnectionManager(connectionProfile);
+                return this._getConnectionManager(connectOptions_);
             })
             .then((connectionManager) => {
                 return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
