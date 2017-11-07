@@ -168,9 +168,7 @@ class IdCard {
     setCertificate(certificate){
         const method = 'setCertificate';
         LOG.entry(method);
-
-        this.credentials.certificate = certificate;
-
+        this.credentials.certificate = certificate  || '';
         LOG.exit(method);
     }
 
@@ -181,9 +179,7 @@ class IdCard {
     setPrivateKey(privateKey){
         const method = 'setPrivateKey';
         LOG.entry(method);
-
-        this.credentials.privateKey = privateKey;
-
+        this.credentials.privateKey = privateKey || '';
         LOG.exit(method);
     }
 

@@ -304,6 +304,43 @@ describe('IdCard', function() {
         });
     });
 
+    describe('#setCertificate', function() {
+        it('should set valid certificate', function() {
+            minimalCard.setCertificate('validcertificate');
+            minimalCard.getCredentials().should.deep.equal({certificate:'validcertificate',
+            });
+        });
+
+        it('should set valid certificate but leaving private key alone', function() {
+            minimalCard.setCredentials(validCredentials);
+            minimalCard.setCertificate('validcertificate');
+            minimalCard.getCredentials().should.deep.equal({certificate:'validcertificate',privateKey: 'private-key-data'});
+        });
+
+        it('should treat null argument as empty certificate', function() {
+            minimalCard.setCertificate(null);
+            minimalCard.getCredentials().should.deep.equal({certificate:''});
+        });
+    });
+
+    describe('#setPrivateKey', function() {
+        it('should set valid privateKey', function() {
+            minimalCard.setPrivateKey('my-private-key');
+            minimalCard.getCredentials().privateKey.should.deep.equal('my-private-key');
+        });
+
+        it('should set valid privatekey but leaving certificate alone', function() {
+            minimalCard.setCredentials(validCredentials);
+            minimalCard.setPrivateKey('my-private-key');
+            minimalCard.getCredentials().should.deep.equal({ certificate: 'public-key-data',privateKey: 'my-private-key'});
+        });
+
+        it('should treat null argument as empty privateKey', function() {
+            minimalCard.setPrivateKey(null);
+            minimalCard.getCredentials().should.deep.equal({privateKey:''});
+        });
+    });
+
     describe('#fromDirectory', function() {
         const sandbox = sinon.sandbox.create();
         let readFileSpy;
