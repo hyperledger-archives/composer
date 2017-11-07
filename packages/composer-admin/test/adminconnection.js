@@ -99,6 +99,7 @@ describe('AdminConnection', () => {
     let sandbox;
     let clock;
     let cardStore;
+    let mockAdminIdCard;
 
     const config =
         {
@@ -143,6 +144,8 @@ describe('AdminConnection', () => {
         };
         adminConnection = new AdminConnection(adminConnectionOptions);
         adminConnection.securityContext = mockSecurityContext;
+        mockAdminIdCard = sinon.createStubInstance(IdCard);
+        mockSecurityContext.card = mockAdminIdCard;
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
@@ -233,73 +236,54 @@ describe('AdminConnection', () => {
     });
 
     describe('#connectWithCard', () =>{
+        let cardStub;
 
-
-        it ('should connect, login and ping if update not specified (secret based)', () => {
+        beforeEach(() => {
             sinon.spy(cardStore,'get');
-
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getConnectionProfile.returns({});
-            mockIdCard.getUserName.returns('fred');
-            mockIdCard.getBusinessNetworkName.returns('network');
-            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
-            cardStore.put('testCardname',mockIdCard);
+            cardStub = sinon.createStubInstance(IdCard);
+            cardStub.getConnectionProfile.returns({});
+            cardStub.getUserName.returns('fred');
+            cardStub.getBusinessNetworkName.returns('network');
+            cardStub.getCredentials.returns({});
+            cardStub.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',cardStub);
 
             sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+        });
+
+        it ('should connect and login when card has secret', () => {
             return adminConnection.connect('testCardname').then(()=>{
-                sinon.assert.calledOnce(cardStore.get);
-                sinon.assert.calledWith(cardStore.get,'testCardname');
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
                 sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login,'fred','password');
-                sinon.assert.notCalled(mockConnection.ping);
             });
         });
 
-        it ('should connect, login and ping if update not specified (certificate based)', () => {
-            sinon.spy(cardStore,'get');
+        it ('should connect and login when card has certificates', () => {
+            cardStub.getCredentials.returns({certificate:'cert',privateKey:'key'});
+            cardStub.getEnrollmentCredentials.returns(null);
 
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getConnectionProfile.returns({});
-            mockIdCard.getUserName.returns('fred');
-            mockIdCard.getBusinessNetworkName.returns('network');
-            mockIdCard.getCredentials.returns({certificate:'cert',privateKey:'key'});
-            cardStore.put('testCardname',mockIdCard);
-
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
             return adminConnection.connect('testCardname').then(()=>{
-                sinon.assert.calledOnce(cardStore.get);
-                sinon.assert.calledWith(cardStore.get,'testCardname');
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
                 sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login,'fred','na');
-                sinon.assert.notCalled(mockConnection.ping);
             });
         });
 
-
-        it ('should connect, login and ping if update specified', () => {
-            sinon.spy(cardStore,'get');
-
-            let mockIdCard = sinon.createStubInstance(IdCard);
-            mockIdCard.getConnectionProfile.returns({});
-            mockIdCard.getUserName.returns('fred');
-            mockIdCard.getBusinessNetworkName.returns('network');
-            mockIdCard.getEnrollmentCredentials.returns({secret:'password'});
-            cardStore.put('testCardname',mockIdCard);
-
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
-            return adminConnection.connect('testCardname',true).then(()=>{
-                sinon.assert.calledOnce(cardStore.get);
-                sinon.assert.calledWith(cardStore.get,'testCardname');
-                sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
-                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData,{},'network');
-                sinon.assert.calledOnce(mockConnection.login);
-                sinon.assert.calledWith(mockConnection.login,'fred','password');
+        it('should ping if card contains business network name', () => {
+            return adminConnection.connect('testCardname').then(()=>{
                 sinon.assert.calledOnce(mockConnection.ping);
                 sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+            });
+        });
+
+        it('should not ping if card does not contain business network name', () => {
+            cardStub.getBusinessNetworkName.returns('');
+
+            return adminConnection.connect('testCardname').then(()=>{
+                sinon.assert.notCalled(mockConnection.ping);
             });
         });
     });
@@ -452,9 +436,9 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card:mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {});
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {card:mockAdminIdCard});
             });
         });
 
@@ -466,9 +450,9 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1,card:mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1});
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1,card:mockAdminIdCard});
             });
         });
 
@@ -845,7 +829,16 @@ describe('AdminConnection', () => {
         });
 
         it('should build the start transaction using additional modelled properties from the start options', () => {
-            const startOptions = { logLevel: 'DEBUG' };
+            const userMetadata = {
+                userName: 'user',
+                businessNetwork: 'penguin-network'
+            };
+            const connection = config;
+            connection.card='user@penguin-network';
+            connection.name='connectionName';
+            let userCard = new IdCard(userMetadata, connection);
+            userCard.setCredentials({certificate: 'card cert', privateKey: 'String' });
+            const startOptions = { logLevel: 'DEBUG' , card : userCard };
             return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
@@ -865,7 +858,7 @@ describe('AdminConnection', () => {
                             },
                             {
                                 $class: 'org.hyperledger.composer.system.BindIdentity',
-                                certificate: 'such cert',
+                                certificate: 'card cert',
                                 participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
                                 timestamp: '1970-01-01T00:00:00.000Z',
                                 transactionId: '47bc3a67-5599-4460-9745-6a291df4f879'

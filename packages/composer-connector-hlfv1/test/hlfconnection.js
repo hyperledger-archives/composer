@@ -2043,7 +2043,8 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         txId: mockTransactionID,
                         fcn: 'myfunc',
-                        args: ['arg1', 'arg2']
+                        args: ['arg1', 'arg2'],
+                        targets: [mockPeer]
                     });
                     result.equals(response).should.be.true;
                 });

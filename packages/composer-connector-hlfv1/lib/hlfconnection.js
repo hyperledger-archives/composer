@@ -738,9 +738,11 @@ class HLFConnection extends Connection {
         });
 
         let txId = this.client.newTransactionID();
+        let peerArray = [this.channel.getPeers()[0]];
 
         // Submit the query request.
         const request = {
+            targets: peerArray,
             chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
