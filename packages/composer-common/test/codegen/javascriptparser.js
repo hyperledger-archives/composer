@@ -286,10 +286,10 @@ describe('JavascriptParser', () => {
         });
     });
 
-    describe('#locateComment', () => {
+    describe('#searchForComment', () => {
         let commentSpy;
         beforeEach(() => {
-            commentSpy = sandbox.spy(JavascriptParser, 'locateComment');
+            commentSpy = sandbox.spy(JavascriptParser, 'searchForComment');
         });
 
         it('should handle comments not directly before function', () => {
