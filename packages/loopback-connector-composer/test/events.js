@@ -19,6 +19,7 @@ const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
+const IdCard = require('composer-common').IdCard;
 const loopback = require('loopback');
 
 const chai = require('chai');
@@ -34,6 +35,7 @@ describe('Event unit tests', () => {
     let dataSource;
     let businessNetworkConnection;
     let factory;
+    let idCard;
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -52,14 +54,15 @@ describe('Event unit tests', () => {
                 return adminConnection.deploy(businessNetworkDefinition);
             })
             .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard(idCard);
+            })
+            .then(() => {
                 app = loopback();
                 const connectorSettings = {
                     name: 'composer',
                     connector: connector,
-                    connectionProfileName: 'defaultProfile',
-                    businessNetworkIdentifier: 'bond-network',
-                    participantId: 'admin',
-                    participantPwd: 'adminpw',
+                    card: 'admin@bond-network',
                     namespaces: true,
                     fs: bfs_fs
                 };

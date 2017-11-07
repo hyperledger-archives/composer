@@ -19,6 +19,7 @@ const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
+const IdCard = require('composer-common').IdCard;
 const loopback = require('loopback');
 
 const chai = require('chai');
@@ -129,6 +130,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let assetRegistry;
         let serializer;
         let adminConnection;
+        let idCard;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -147,14 +149,15 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.deploy(businessNetworkDefinition);
             })
             .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard(idCard);
+            })
+            .then(() => {
                 app = loopback();
                 const connectorSettings = {
                     name: 'composer',
                     connector: connector,
-                    connectionProfileName: 'defaultProfile',
-                    businessNetworkIdentifier: 'bond-network',
-                    participantId: 'admin',
-                    participantPwd: 'adminpw',
+                    card: 'admin@bond-network',
                     namespaces: namespaces,
                     fs: bfs_fs
                 };
