@@ -35,8 +35,9 @@ class JavaScriptParser {
    * @param {string} fileContents - the text of the JS file to parse
    * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
    * @param {number} [ecmaVersion] - the ECMAScript version to use
+   * @param {boolean} [engineMode] - true if being used by engine for TP/ACL function Parsing
    */
-    constructor(fileContents, includePrivates, ecmaVersion) {
+    constructor(fileContents, includePrivates, ecmaVersion, engineMode = true) {
         let comments = [];
         this.tokens = [];
 
@@ -83,31 +84,39 @@ class JavaScriptParser {
         this.classes = [];
         this.functions = [];
 
-        // Originally let nodesToProcess = ast.body;
-        // but modified to use the walk method to get
-        // Functions, and Classes
-        let nodesToProcess = [];
-        const walk = require('acorn/dist/walk');
-        walk.simple(ast, {
-            FunctionDeclaration(node) {
-                if (node.id && node.id.name){
+        let nodesToProcess = ast.body;
+
+        // engine mode only wants to look at the top level function definitions
+        // but the js doc generator wants to look at everything so this parser
+        // needs to handle both requirements.
+        if (!engineMode) {
+            nodesToProcess = [];
+            const walk = require('acorn/dist/walk');
+            walk.simple(ast, {
+                FunctionDeclaration(node) {
+                    if (node.id && node.id.name){
+                        nodesToProcess.push(node);
+                    }
+                },
+                FunctionExpression(node) {
+                    if (node.id && node.id.name){
+                        nodesToProcess.push(node);
+                    }
+                },
+                ClassDeclaration(node) {
                     nodesToProcess.push(node);
                 }
-            },
-            FunctionExpression(node) {
-                if (node.id && node.id.name){
-                    nodesToProcess.push(node);
-                }
-            },
-            ClassDeclaration(node) {
-                nodesToProcess.push(node);
-            }
-        });
+            });
+        }
 
         for (let n = 0; n < nodesToProcess.length; n++) {
             let statement = nodesToProcess[n];
 
-            let lineNumber=statement.loc.start.line;
+            // record the end of the previous node, required for engineMode only
+            let previousEnd = -1;
+            if (n !== 0) {
+                previousEnd = nodesToProcess[n-1].end;
+            }
 
             if (statement.type === 'VariableDeclaration') {
                 let variableDeclarations = statement.declarations;
@@ -125,8 +134,14 @@ class JavaScriptParser {
                     }
                 }
             }
-            else if (statement.type === 'FunctionDeclaration' || statement.type==='FunctionExpression') {
-                let closestComment = JavaScriptParser.findCommentBefore( comments,lineNumber);
+            else if (statement.type === 'FunctionDeclaration' || (statement.type === 'FunctionExpression' && !engineMode)) {
+                let closestComment;
+                // different approaches to finding comments depending on mode as they are not compatible.
+                if (!engineMode) {
+                    closestComment = JavaScriptParser.findCommentBefore(comments, statement.loc.start.line);
+                } else {
+                    closestComment = JavaScriptParser.searchForComment(statement.start, statement.end, previousEnd, comments);
+                }
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -165,7 +180,12 @@ class JavaScriptParser {
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore( comments,lineNumber);
+                let closestComment;
+                if (!engineMode) {
+                    closestComment = JavaScriptParser.findCommentBefore(comments, statement.loc.start.line);
+                } else {
+                    closestComment = JavaScriptParser.searchForComment(statement.start, statement.end, previousEnd, comments);
+                }
                 let privateClass = false;
                 let d;
                 if(closestComment >= 0) {
@@ -182,10 +202,19 @@ class JavaScriptParser {
                     for(let n=0; n < statement.body.body.length; n++) {
                         let thing = statement.body.body[n];
 
-                        lineNumber=thing.loc.start.line;
-
                         if (thing.type === 'MethodDefinition') {
-                            let closestComment = JavaScriptParser.findCommentBefore( comments,lineNumber);
+                            let closestComment;
+                            if (!engineMode) {
+                                closestComment = JavaScriptParser.findCommentBefore(comments, thing.loc.start.line);
+                            } else {
+                                // previousEnd is the end of the node before the ClassDeclaration
+                                let previousThingEnd = previousEnd;
+                                if (n !== 0) {
+                                    // record the end of the previous thing inside the ClassDeclaration
+                                    previousThingEnd = statement.body.body[n-1].end;
+                                }
+                                closestComment = JavaScriptParser.searchForComment(thing.key.start, thing.key.end, previousThingEnd, comments);
+                            }
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
@@ -228,7 +257,6 @@ class JavaScriptParser {
                 }
             }
         }
-
     }
 
     /**
@@ -281,7 +309,10 @@ class JavaScriptParser {
     }
 
     /**
-     * Find the comments that are above and closest to the start of the range.
+     * Find the comments that are directly above a specific line number.
+     * This is used when order of the nodes cannot be guaranteed but
+     * limitation is that all comments must directly precede what they
+     * are commenting (ie no blank lines)
      *
      * @param {string[]} comments - the end of the range
      * @param {integer} lineNumber - current linenumber
@@ -295,12 +326,41 @@ class JavaScriptParser {
             let comment = comments[n];
             let endComment = parseInt(comment.loc.end.line);
 
-            if ( (lineNumber-endComment) === 1 ){
-                // i.e. on the line before
+            if ( (lineNumber - endComment) === 1) {
                 foundIndex = n;
                 break;
             }
 
+        }
+        return foundIndex;
+    }
+
+    /**
+     * Find the comments that are above and closest to the start of the range.
+     * This is used in engineMode and supports locating comments that aren't
+     * directly before a TP function. It assumes that nodes will be in order
+     *
+     * @param {integer} rangeStart - the start of the range
+     * @param {integer} rangeEnd - the end of the range
+     * @param {integer} stopPoint - the point to stop searching for previous comments
+     * @param {string[]} comments - the end of the range
+     * @return {integer} the comment index or -1 if there are no comments
+     * @private
+     */
+    static searchForComment(rangeStart, rangeEnd, stopPoint, comments) {
+        let foundIndex = -1;
+        let distance = -1;
+
+        for(let n=0; n < comments.length; n++) {
+            let comment = comments[n];
+            let endComment = comment.end;
+            if(rangeStart > endComment && comment.start > stopPoint) {
+
+                if(distance === -1 || rangeStart - endComment < distance) {
+                    distance = rangeStart - endComment;
+                    foundIndex = n;
+                }
+            }
         }
         return foundIndex;
     }
