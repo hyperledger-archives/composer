@@ -236,6 +236,7 @@ module.exports = function (Card) {
     Card.importCard = (ignored, name, req, options) => {
         const userId = options.accessToken.userId;
         const form = Util.createIncomingForm();
+        const cardStore = new LoopBackCardStore(Card, userId);
         return new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
                 if (err) {
@@ -259,7 +260,16 @@ module.exports = function (Card) {
                 const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
                 name = card.getUserName() + '@' + locationName;
             }
-            const cardStore = new LoopBackCardStore(Card, options.accessToken.userId);
+            // Put the card into the card store.
+            return cardStore.put(name, card);
+        }).then(() => {
+            // Get the card back from the card store. This obviously looks a bit weird,
+            // but importantly this will configure the LoopBack wallet on the connection
+            // profile stored within the card.
+            return cardStore.get(name);
+        }).then((card) => {
+            // Then we import the card into the card store using the admin connection.
+            // This imports the credentials from the card into the LoopBack wallet.
             const adminConnection = new AdminConnection({ cardStore });
             return adminConnection.importCard(name, card);
         }).then(() => {
