@@ -18,11 +18,7 @@
     "dataSource": "db",
     "public": false
   },
-  "Wallet": {
-    "dataSource": "db",
-    "public": false
-  },
-  "WalletIdentity": {
+  "Card": {
     "dataSource": "db",
     "public": false
   },

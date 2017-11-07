@@ -15,54 +15,9 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
-const LoopBackWallet = require('../../lib/loopbackwallet');
-const QueryAnalyzer = require('composer-common').QueryAnalyzer;
-const ModelUtil = require('composer-common').ModelUtil;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
-
-/**
- * Find or create the system wallet for storing identities in.
- * @param {Object} app The LoopBack application.
- * @returns {Promise} A promise that will be resolved with the system wallet,
- * or be rejected with an error.
- */
-function findOrCreateSystemWallet(app) {
-    let filter = {
-        where: {
-            createdAsSystem: true
-        }
-    };
-    let data = {
-        description: 'System wallet',
-        createdAsSystem: true
-    };
-    return app.models.Wallet.findOrCreate(filter, data)
-        .then((parts) => {
-            return parts[0];
-        });
-}
-
-/**
- * Find or create the identity in the specified Composer configuration.
- * @param {Object} app The LoopBack application.
- * @param {Object} composer The Composer configuration.
- * @param {Object} wallet The wallet.
- * @returns {Promise} A promise that will be resolved when complete, or rejected
- * with an error.
- */
-function findOrCreateIdentity(app, composer, wallet) {
-    let filter = {
-        where: {
-            enrollmentID: composer.participantId
-        }
-    };
-    let data = {
-        walletId: wallet.id,
-        enrollmentID: composer.participantId,
-        enrollmentSecret: composer.participantPwd
-    };
-    return app.models.WalletIdentity.findOrCreate(filter, data);
-}
+const ModelUtil = require('composer-common').ModelUtil;
+const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 
 /**
  * Create a Composer data source using the specified Composer configuration.
@@ -75,10 +30,7 @@ function createDataSource(app, composer) {
     const connectorSettings = {
         name: 'composer',
         connector: connector,
-        connectionProfileName: composer.connectionProfileName,
-        businessNetworkIdentifier: composer.businessNetworkIdentifier,
-        participantId: composer.participantId,
-        participantPwd: composer.participantPwd,
+        card: composer.card,
         namespaces: composer.namespaces,
         multiuser: composer.multiuser,
         fs: composer.fs,
@@ -766,28 +718,6 @@ module.exports = function (app, callback) {
     }
     let dataSource;
     return Promise.resolve()
-    .then(() => {
-
-        // If this isn't the memory connector, then we want to persist the enrollment certificates.
-        // This means that the Composer APIs will fall back to using the default filesystem wallet.
-        const isMemory = app.datasources.db.name === 'Memory';
-        if (isMemory) {
-            return;
-        }
-
-        // Find or create the system wallet.
-        return findOrCreateSystemWallet(app)
-            .then((wallet) => {
-
-                // Create a LoopBack wallet for the system wallet.
-                composer.wallet = new LoopBackWallet(app, wallet);
-
-                // Ensure that the specified identity exists.
-                return findOrCreateIdentity(app, composer, wallet);
-
-            });
-
-    })
     .then(() => {
 
         // Create an instance of the LoopBack data source that uses the connector.

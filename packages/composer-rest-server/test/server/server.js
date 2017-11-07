@@ -20,6 +20,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const IdCard = require('composer-common').IdCard;
 const path = require('path');
 const server = require('../../server/server');
 const WebSocket = require('ws');
@@ -39,6 +40,7 @@ const certContents = fs.readFileSync(certFile, 'utf8');
 describe('server', () => {
 
     let composerConfig;
+    let idCard;
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -54,15 +56,16 @@ describe('server', () => {
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
+        })
+        .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard(idCard);
         });
     });
 
     beforeEach(() => {
         composerConfig = {
-            connectionProfileName: 'defaultProfile',
-            businessNetworkIdentifier: 'bond-network',
-            participantId: 'admin',
-            participantPwd: 'adminpw',
+            card: 'admin@bond-network',
             fs: bfs_fs
         };
         delete process.env.COMPOSER_DATASOURCES;
@@ -105,7 +108,7 @@ describe('server', () => {
     });
 
     it('should handle errors from any of the boot scripts', () => {
-        composerConfig.businessNetworkIdentifier = 'org.acme.doesnotexist';
+        composerConfig.card = 'nocardherelulz';
         return server(composerConfig)
             .should.be.rejectedWith();
     });
