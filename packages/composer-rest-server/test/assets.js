@@ -149,7 +149,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
-                return adminConnection.importCard(idCard);
+                return adminConnection.importCard('admin@bond-network', idCard);
             })
             .then(() => {
                 return server({

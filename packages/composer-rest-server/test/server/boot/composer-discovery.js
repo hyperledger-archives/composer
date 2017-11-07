@@ -54,7 +54,7 @@ describe('composer-discovery boot script', () => {
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
-            return adminConnection.importCard(idCard);
+            return adminConnection.importCard('admin@bond-network', idCard);
         });
     });
 

@@ -261,7 +261,7 @@ module.exports = function (Card) {
             }
             const cardStore = new LoopBackCardStore(Card, options.accessToken.userId);
             const adminConnection = new AdminConnection({ cardStore });
-            return adminConnection.importCard(card, name);
+            return adminConnection.importCard(name, card);
         }).then(() => {
             return getDefaultCard(userId);
         }).then((defaultCard) => {
