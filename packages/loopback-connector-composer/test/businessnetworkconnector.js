@@ -15,6 +15,7 @@
 'use strict';
 
 const AssetRegistry = require('composer-client/lib/assetregistry');
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
 const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnectionwrapper');
@@ -75,16 +76,9 @@ describe('BusinessNetworkConnector', () => {
     let factory;
     let introspector;
     let mockQueryFile;
+    let mockCardStore;
 
     beforeEach(() => {
-
-        settings = {
-            connectionProfileName : 'MockProfileName',
-            businessNetworkIdentifier : 'MockBusinessNetId',
-            participantId : 'MockEnrollmentId',
-            participantPwd : 'MockEnrollmentPwd',
-            multiuser: true
-        };
 
         // create real instances
         modelManager = new ModelManager();
@@ -92,17 +86,24 @@ describe('BusinessNetworkConnector', () => {
         introspector = new Introspector(modelManager);
         factory = new Factory(modelManager);
 
-        // // create mocks
+        // create mocks
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         mockSerializer = sinon.createStubInstance(Serializer);
+        mockCardStore = sinon.createStubInstance(BusinessNetworkCardStore);
 
-        // // setup mocks
+        // setup mocks
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
         mockBusinessNetworkConnection.ping.resolves();
         mockBusinessNetworkConnection.disconnect.resolves();
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
+
+        settings = {
+            card: 'admin@biznet',
+            cardStore: mockCardStore,
+            multiuser: true
+        };
 
         sandbox = sinon.sandbox.create();
 
@@ -125,6 +126,7 @@ describe('BusinessNetworkConnector', () => {
             modelSchema.settings = modelSchema.options;
             testConnector.getModelDefinition.withArgs(modelSchema.name).returns(modelSchema);
         });
+
     });
 
     afterEach(() => {
@@ -172,32 +174,11 @@ describe('BusinessNetworkConnector', () => {
             });
         });
 
-        it('should throw if connectionProfileName not specified', () => {
-            delete settings.connectionProfileName;
+        it('should throw if card not specified', () => {
+            delete settings.card;
             (() => {
                 testConnector = new BusinessNetworkConnector(settings);
-            }).should.throw(/connectionProfileName not specified/);
-        });
-
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            delete settings.businessNetworkIdentifier;
-            (() => {
-                testConnector = new BusinessNetworkConnector(settings);
-            }).should.throw(/businessNetworkIdentifier not specified/);
-        });
-
-        it('should throw if participantId not specified', () => {
-            delete settings.participantId;
-            (() => {
-                testConnector = new BusinessNetworkConnector(settings);
-            }).should.throw(/participantId not specified/);
-        });
-
-        it('should throw if participantPwd not specified', () => {
-            delete settings.participantPwd;
-            (() => {
-                testConnector = new BusinessNetworkConnector(settings);
-            }).should.throw(/participantPwd not specified/);
+            }).should.throw(/card not specified/);
         });
 
     });
@@ -219,14 +200,26 @@ describe('BusinessNetworkConnector', () => {
             testConnector.getConnectionWrapper({}).should.equal(mockBusinessNetworkConnectionWrapper);
         });
 
-        it('should throw if no enrollment ID or enrollment secret specified', () => {
+        it('should throw if no card specified', () => {
             (() => {
                 testConnector.getConnectionWrapper({
                     accessToken: {
                         id: '999'
-                    }
+                    },
+                    cardStore: mockCardStore
                 });
-            }).should.throw(/No enrollment ID or enrollment secret/);
+            }).should.throw(/A business network card has not been specified/);
+        });
+
+        it('should throw if no card store specified', () => {
+            (() => {
+                testConnector.getConnectionWrapper({
+                    accessToken: {
+                        id: '999'
+                    },
+                    card: 'admin@biznet'
+                });
+            }).should.throw(/A business network card store has not been specified/);
         });
 
         it('should create a new connection wrapper if not already cached', () => {
@@ -234,8 +227,8 @@ describe('BusinessNetworkConnector', () => {
                 accessToken: {
                     id: '999'
                 },
-                enrollmentID: 'admin',
-                enrollmentSecret: 'adminpw'
+                card: 'admin2@biznet',
+                cardStore: mockCardStore
             });
             connectionWrapper.should.not.equal(mockBusinessNetworkConnectionWrapper);
             connectionWrapper.should.be.an.instanceOf(BusinessNetworkConnectionWrapper);
@@ -246,15 +239,15 @@ describe('BusinessNetworkConnector', () => {
                 accessToken: {
                     id: '999'
                 },
-                enrollmentID: 'admin',
-                enrollmentSecret: 'adminpw'
+                card: 'admin@biznet',
+                cardStore: mockCardStore
             });
             const connectionWrapper2 = testConnector.getConnectionWrapper({
                 accessToken: {
                     id: '999'
                 },
-                enrollmentID: 'admin',
-                enrollmentSecret: 'adminpw'
+                card: 'admin@biznet',
+                cardStore: mockCardStore
             });
             connectionWrapper1.should.not.equal(mockBusinessNetworkConnectionWrapper);
             connectionWrapper1.should.be.an.instanceOf(BusinessNetworkConnectionWrapper);
@@ -1105,7 +1098,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an update error from the composer api for an asset that does not exist', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
-                mockAssetRegistry.update.rejects(new Error('does not exist'));
+                mockAssetRegistry.update.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
                 testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { 'theValue' : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
@@ -1228,7 +1221,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an update error from the composer api for an asset that does not exist', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
-                mockAssetRegistry.update.rejects(new Error('does not exist'));
+                mockAssetRegistry.update.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
                 testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
@@ -1694,7 +1687,7 @@ describe('BusinessNetworkConnector', () => {
         });
 
         it('should handle asset errors for assets that do not exist', () => {
-            mockAssetRegistry.update.onFirstCall().rejects(new Error('does not exist'));
+            mockAssetRegistry.update.onFirstCall().rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             mockSerializer.fromJSON.onFirstCall().returns(asset);
 
             return new Promise((resolve, reject) => {
@@ -1795,7 +1788,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should handle an error when calling composer remove for an asset that does not exist', () => {
             mockAssetRegistry.get.resolves(resourceToDelete);
-            mockAssetRegistry.remove.rejects(new Error('does not exist'));
+            mockAssetRegistry.remove.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
                 testConnector.destroy('org.acme.base.BaseAsset', 'foo' , { test: 'options' }, (error) => {
                     if(error) {
@@ -1927,7 +1920,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should handle an error when calling composer remove for an asset that does not exist', () => {
             mockAssetRegistry.get.resolves(resourceToDelete);
-            mockAssetRegistry.remove.rejects(new Error('does not exist'));
+            mockAssetRegistry.remove.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
                 testConnector.destroyAll('org.acme.base.BaseAsset', { 'theValue' : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
@@ -2055,7 +2048,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should return a 404 error getting the specified identity in the identity registry', () => {
             mockBusinessNetworkConnection.getIdentityRegistry.resolves(mockIdentityRegistry);
-            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('the thing does not exist'));
+            mockIdentityRegistry.get.withArgs('id1').rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             mockSerializer.toJSON.withArgs(identity).returns({ identityId: 'id1', $class: 'sometx' });
             const cb = sinon.stub();
             return testConnector.getIdentityByID('id1', { test: 'options' }, cb)
@@ -2503,7 +2496,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should return a 404 error getting the specified transaction in the transaction registry', () => {
             mockBusinessNetworkConnection.getHistorian.resolves(mockHistorian);
-            mockHistorian.get.withArgs('tx1').rejects(new Error('the thing does not exist'));
+            mockHistorian.get.withArgs('tx1').rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             mockSerializer.toJSON.withArgs(transaction).returns({ transactionId: 'tx1', $class: 'sometx' });
             const cb = sinon.stub();
             return testConnector.getHistorianRecordByID('tx1', { test: 'options' }, cb)

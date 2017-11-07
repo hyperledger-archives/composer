@@ -14,13 +14,13 @@
 
 'use strict';
 
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnectionwrapper');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Introspector = require('composer-common').Introspector;
 const ModelManager = require('composer-common').ModelManager;
 const Serializer = require('composer-common').Serializer;
-const Wallet = require('composer-common').Wallet;
 
 const chai = require('chai');
 chai.should();
@@ -30,7 +30,6 @@ const sinon = require('sinon');
 
 describe('BusinessNetworkConnectionWrapper', () => {
 
-    let mockWallet;
     let settings;
     let mockBusinessNetworkConnection;
     let businessNetworkConnectionWrapper;
@@ -38,15 +37,9 @@ describe('BusinessNetworkConnectionWrapper', () => {
     let mockSerializer;
     let mockModelManager;
     let mockIntrospector;
+    let mockCardStore;
 
     beforeEach(() => {
-        mockWallet = sinon.createStubInstance(Wallet);
-        settings = {
-            connectionProfileName : 'MockProfileName',
-            businessNetworkIdentifier : 'MockBusinessNetId',
-            participantId : 'MockEnrollmentId',
-            participantPwd : 'MockEnrollmentPwd'
-        };
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         mockSerializer = sinon.createStubInstance(Serializer);
@@ -56,6 +49,12 @@ describe('BusinessNetworkConnectionWrapper', () => {
         mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
         mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
         mockBusinessNetworkDefinition.getIntrospector.returns(mockIntrospector);
+        mockCardStore = sinon.createStubInstance(BusinessNetworkCardStore);
+        settings = {
+            card: 'admin@biznet',
+            cardStore: mockCardStore,
+            multiuser: true
+        };
         businessNetworkConnectionWrapper = new BusinessNetworkConnectionWrapper(settings);
         businessNetworkConnectionWrapper.businessNetworkConnection = mockBusinessNetworkConnection;
     });
@@ -69,41 +68,11 @@ describe('BusinessNetworkConnectionWrapper', () => {
             businessNetworkConnectionWrapper.connecting.should.be.false;
         });
 
-        it('should create a new business network connection wrapper with the specified wallet', () => {
-            settings.wallet = mockWallet;
-            const businessNetworkConnectionWrapper = new BusinessNetworkConnectionWrapper(settings);
-            businessNetworkConnectionWrapper.businessNetworkConnection.should.be.an.instanceOf(BusinessNetworkConnection);
-            businessNetworkConnectionWrapper.additionalConnectOptions.wallet.should.equal(mockWallet);
-            businessNetworkConnectionWrapper.connected.should.be.false;
-            businessNetworkConnectionWrapper.connecting.should.be.false;
-        });
-
-        it('should throw if connectionProfileName not specified', () => {
-            delete settings.connectionProfileName;
+        it('should throw if card not specified', () => {
+            delete settings.card;
             (() => {
                 new BusinessNetworkConnectionWrapper(settings);
-            }).should.throw(/connectionProfileName not specified/);
-        });
-
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            delete settings.businessNetworkIdentifier;
-            (() => {
-                new BusinessNetworkConnectionWrapper(settings);
-            }).should.throw(/businessNetworkIdentifier not specified/);
-        });
-
-        it('should throw if participantId not specified', () => {
-            delete settings.participantId;
-            (() => {
-                new BusinessNetworkConnectionWrapper(settings);
-            }).should.throw(/participantId not specified/);
-        });
-
-        it('should throw if participantPwd not specified', () => {
-            delete settings.participantPwd;
-            (() => {
-                new BusinessNetworkConnectionWrapper(settings);
-            }).should.throw(/participantPwd not specified/);
+            }).should.throw(/card not specified/);
         });
 
     });
@@ -140,10 +109,10 @@ describe('BusinessNetworkConnectionWrapper', () => {
     describe('#connect', () => {
 
         it('should connect to the business network', () => {
-            mockBusinessNetworkConnection.connectWithDetails.resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
             return businessNetworkConnectionWrapper.connect()
                 .then((businessNetworkConnection) => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                     businessNetworkConnectionWrapper.businessNetwork.should.equal(mockBusinessNetworkDefinition);
                     businessNetworkConnectionWrapper.serializer.should.equal(mockSerializer);
                     businessNetworkConnectionWrapper.modelManager.should.equal(mockModelManager);
@@ -155,7 +124,7 @@ describe('BusinessNetworkConnectionWrapper', () => {
         });
 
         it('should handle errors connecting to the business network', () => {
-            mockBusinessNetworkConnection.connectWithDetails.rejects(new Error('such error'));
+            mockBusinessNetworkConnection.connect.rejects(new Error('such error'));
             return businessNetworkConnectionWrapper.connect()
                 .should.be.rejectedWith(/such error/);
         });

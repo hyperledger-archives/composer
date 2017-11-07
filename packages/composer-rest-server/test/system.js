@@ -18,6 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
@@ -93,6 +94,7 @@ describe('System REST API unit tests', () => {
     let businessNetworkConnection;
     let participantRegistry;
     let serializer;
+    let idCard;
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -111,11 +113,12 @@ describe('System REST API unit tests', () => {
             return adminConnection.deploy(businessNetworkDefinition);
         })
         .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
+        })
+        .then(() => {
             return server({
-                connectionProfileName: 'defaultProfile',
-                businessNetworkIdentifier: 'bond-network',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
+                card: 'admin@bond-network',
                 fs: bfs_fs,
                 namespaces: 'never'
             });

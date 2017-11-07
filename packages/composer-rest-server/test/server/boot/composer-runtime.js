@@ -18,7 +18,7 @@ const boot = require('loopback-boot');
 const composerRuntime = require('../../../server/boot/composer-runtime');
 const loopback = require('loopback');
 require('loopback-component-passport');
-const LoopBackWallet = require('../../../lib/loopbackwallet');
+const LoopBackCardStore = require('../../../lib/loopbackcardstore');
 const path = require('path');
 
 require('chai').should();
@@ -29,9 +29,8 @@ describe('composer-runtime boot script', () => {
 
     let composerConfig;
     let app;
-    let userModel, WalletModel, WalletIdentityModel;
+    let user, Card;
     let useSpy;
-    let user;
     let sandbox;
 
     beforeEach(() => {
@@ -46,16 +45,14 @@ describe('composer-runtime boot script', () => {
             });
         })
         .then(() => {
-            userModel = app.models.user;
-            WalletModel = app.models.Wallet;
-            WalletIdentityModel = app.models.WalletIdentity;
+            const user = app.models.user;
+            Card = app.models.Card;
             const dataSource = loopback.createDataSource({
                 connector: loopback.Memory
             });
-            userModel.attachTo(dataSource);
-            WalletModel.attachTo(dataSource);
-            WalletIdentityModel.attachTo(dataSource);
-            return userModel.create({ email: 'alice@email.com', password: 'password' });
+            user.attachTo(dataSource);
+            Card.attachTo(dataSource);
+            return user.create({ email: 'alice@email.com', password: 'password' });
         })
         .then((user_) => {
             user = user_;
@@ -144,6 +141,9 @@ describe('composer-runtime boot script', () => {
                         userId: '999'
                     }
                 }
+            },
+            req: {
+                get: sinon.stub()
             }
         };
         return fn(ctx, cb)
@@ -152,7 +152,29 @@ describe('composer-runtime boot script', () => {
             });
     });
 
-    it('should ignore requests with an access token for a user that does not have a default wallet', () => {
+    it('should ignore requests with an access token without a user ID', () => {
+        composerConfig = {
+            multiuser: true
+        };
+        composerRuntime(app);
+        const fn = useSpy.args[0][0]; // First call, first argument.
+        const cb = sinon.stub();
+        const ctx = {
+            args: {
+                options: {
+                    accessToken: {
+                    }
+                }
+            },
+            req: {
+                get: sinon.stub()
+            }
+        };
+        fn(ctx, cb);
+        sinon.assert.calledOnce(cb);
+    });
+
+    it('should ignore requests with an access token for a user that does not have a default card', () => {
         composerConfig = {
             multiuser: true
         };
@@ -166,6 +188,9 @@ describe('composer-runtime boot script', () => {
                         userId: user.id
                     }
                 }
+            },
+            req: {
+                get: sinon.stub()
             }
         };
         return fn(ctx, cb)
@@ -174,7 +199,7 @@ describe('composer-runtime boot script', () => {
             });
     });
 
-    it('should ignore requests with an access token for a user that has a default wallet that does not exist', () => {
+    it('should configure the options with the default card', () => {
         composerConfig = {
             multiuser: true
         };
@@ -188,18 +213,23 @@ describe('composer-runtime boot script', () => {
                         userId: user.id
                     }
                 }
+            },
+            req: {
+                get: sinon.stub()
             }
         };
-        return user.updateAttribute('defaultWallet', '999')
+        return Card.create({ userId: user.id, name: 'admin@bond-network', default: true })
             .then(() => {
                 return fn(ctx, cb);
             })
             .then(() => {
                 sinon.assert.calledOnce(cb);
+                ctx.args.options.cardStore.should.be.an.instanceOf(LoopBackCardStore);
+                ctx.args.options.card.should.equal('admin@bond-network');
             });
     });
 
-    it('should ignore requests with an access token for a wallet that does not have a default identity', () => {
+    it('should configure the options with a card specified in a header', () => {
         composerConfig = {
             multiuser: true
         };
@@ -213,85 +243,16 @@ describe('composer-runtime boot script', () => {
                         userId: user.id
                     }
                 }
+            },
+            req: {
+                get: sinon.stub()
             }
         };
-        return WalletModel.create({ userId: user.id, description: 'Test wallet' })
-            .then((wallet) => {
-                return user.updateAttribute('defaultWallet', wallet.id);
-            })
-            .then(() => {
-                return fn(ctx, cb);
-            })
-            .then(() => {
-                sinon.assert.calledOnce(cb);
-            });
-    });
-
-    it('should ignore requests with an access token for a wallet that has a default identity that does not exist', () => {
-        composerConfig = {
-            multiuser: true
-        };
-        composerRuntime(app);
-        const fn = useSpy.args[0][0]; // First call, first argument.
-        const cb = sinon.stub();
-        const ctx = {
-            args: {
-                options: {
-                    accessToken: {
-                        userId: user.id
-                    }
-                }
-            }
-        };
-        return WalletModel.create({ userId: user.id, description: 'Test wallet', defaultIdentity: '999' })
-            .then((wallet) => {
-                return user.updateAttribute('defaultWallet', wallet.id);
-            })
-            .then(() => {
-                return fn(ctx, cb);
-            })
-            .then(() => {
-                sinon.assert.calledOnce(cb);
-            });
-    });
-
-    it('should configure the options with the default wallet and default identity', () => {
-        composerConfig = {
-            multiuser: true
-        };
-        composerRuntime(app);
-        const fn = useSpy.args[0][0]; // First call, first argument.
-        const cb = sinon.stub();
-        const ctx = {
-            args: {
-                options: {
-                    accessToken: {
-                        userId: user.id
-                    }
-                }
-            }
-        };
-        let wallet;
-        return WalletModel.create({ userId: user.id, description: 'Test wallet', defaultIdentity: '999' })
-            .then((wallet_) => {
-                wallet = wallet_;
-                return WalletIdentityModel.create({ walletId: wallet.id, enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
-            })
-            .then((identity) => {
-                return wallet.updateAttribute('defaultIdentity', identity.id);
-            })
-            .then(() => {
-                return user.updateAttribute('defaultWallet', wallet.id);
-            })
-            .then(() => {
-                return fn(ctx, cb);
-            })
-            .then(() => {
-                sinon.assert.calledOnce(cb);
-                ctx.args.options.wallet.should.be.an.instanceOf(LoopBackWallet);
-                ctx.args.options.enrollmentID.should.equal('admin');
-                ctx.args.options.enrollmentSecret.should.equal('adminpw');
-            });
+        ctx.req.get.withArgs('X-Composer-Card').returns('alice1@bond-network');
+        fn(ctx, cb);
+        sinon.assert.calledOnce(cb);
+        ctx.args.options.cardStore.should.be.an.instanceOf(LoopBackCardStore);
+        ctx.args.options.card.should.equal('alice1@bond-network');
     });
 
     it('should handle any errors', () => {
@@ -308,9 +269,12 @@ describe('composer-runtime boot script', () => {
                         userId: '999'
                     }
                 }
+            },
+            req: {
+                get: sinon.stub()
             }
         };
-        sandbox.stub(userModel, 'findById').rejects(new Error('such error'));
+        sandbox.stub(Card, 'findOne').rejects(new Error('such error'));
         return fn(ctx, cb)
             .then(() => {
                 sinon.assert.calledOnce(cb);

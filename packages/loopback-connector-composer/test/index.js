@@ -36,10 +36,7 @@ describe('loopback-connector-composer', () => {
 
         it('should create and return a new instance of the connector', () => {
             const settings = {
-                connectionProfileName : 'MockProfileName',
-                businessNetworkIdentifier : 'MockBusinessNetId',
-                participantId : 'MockEnrollmentId',
-                participantPwd : 'MockEnrollmentPwd'
+                card : 'admin@biznet'
             };
             let connector = connectorModule.createConnector(settings);
             connector.should.be.an.instanceOf(BusinessNetworkConnector);
