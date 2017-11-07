@@ -153,19 +153,22 @@ class Registry extends EventEmitter {
     getAll() {
         return this.dataCollection.getAll()
             .then((objects) => {
-                return objects.map((object) => {
-                    object = Registry.removeInternalProperties(object);
-                    return this.serializer.fromJSON(object);
-                }).reduce((promise, resource) => {
-                    return promise.then((resources) => {
-                        return this.accessController.check(resource, 'READ')
+                return objects.reduce((promiseChain, resource) => {
+                    return promiseChain.then((newResources) => {
+                        let object = Registry.removeInternalProperties(resource);
+                        try {
+                            let resourceToCheckAccess = this.serializer.fromJSON(object);
+                            return this.accessController.check(resourceToCheckAccess, 'READ')
                             .then(() => {
-                                resources.push(resource);
-                                return resources;
-                            })
-                            .catch((error) => {
-                                return resources;
+                                newResources.push(resourceToCheckAccess);
+                                return newResources;
+                            }).catch((e) => {
+                                return newResources;
                             });
+                        } catch (err) {
+                            return newResources;
+                        }
+
                     });
                 }, Promise.resolve([]));
             });
