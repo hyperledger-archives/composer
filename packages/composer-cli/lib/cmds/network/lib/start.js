@@ -19,9 +19,8 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const LogLevel = require('../../network/lib/loglevel');
 const ora = require('ora');
-
+const Create = require('../../card/lib/create');
 /**
  * <p>
  * Composer start command
@@ -46,24 +45,19 @@ class Start {
         let adminConnection;
         let businessNetworkName;
         let spinner;
-        let loglevel;
+        let logLevel = argv.loglevel;
+        let cardName = argv.card;
+        let card;
+        let filename;
 
-        if (argv.loglevel) {
-            // validate log level as yargs cannot at this time
-            // https://github.com/yargs/yargs/issues/849
-            loglevel = argv.loglevel.toUpperCase();
-            if (!LogLevel.validLogLevel(loglevel)) {
-                return Promise.reject(new Error('loglevel unspecified or not one of (INFO|WARNING|ERROR|DEBUG)'));
-            }
-        }
-
-        return (() => {
+        // needs promise resolve here in case the archive errors
+        return Promise.resolve().then(() => {
             console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
             let archiveFileContents = null;
             // Read archive file contents
             archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })()
+        })
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
@@ -72,18 +66,24 @@ class Start {
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.startId, argv.startSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
+
+            return adminConnection.connect(cardName);
         })
-        .then((result) => {
+        .then(() => {
+            // need to get the card now for later use
+            return adminConnection.getCard(cardName);
+        })
+        .then((_card) => {
+            card = _card;
             if (updateBusinessNetwork === false) {
                 spinner = ora('Starting business network definition. This may take a minute...').start();
 
                 // Build the start options.
                 let startOptions = cmdUtil.parseOptions(argv);
-                if (loglevel) {
-                    startOptions.logLevel = loglevel;
+                if (logLevel) {
+                    startOptions.logLevel = logLevel;
                 }
-
+                startOptions.card = card;
                 // Build the bootstrap tranactions.
                 let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
 
@@ -102,8 +102,38 @@ class Start {
                 return adminConnection.update(businessNetworkDefinition);
             }
         }).then((result) => {
+
+            if (!updateBusinessNetwork){
+                // need to create a card for the admin and then write it to disk for the user
+                // to import
+                // set if the options have been given into the metadata
+                let metadata= {
+                    version : 1,
+                    userName : argv.networkAdmin,
+                    businessNetwork : businessNetworkDefinition.getName()
+                };
+                // copy across any other parameters that might be used
+                let createArgs = {};
+                if (argv.file){
+                    createArgs.file = argv.file;
+                }
+
+                if (argv.networkAdminEnrollSecret){
+                    metadata.enrollmentSecret = 'adminpw';
+                } else {
+                    // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
+                    createArgs.certificate = argv.networkAdminCertificateFile;
+                }
+
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((_filename)=>{
+                    filename = _filename;
+                    return;
+                });
+            }
+            return result;
+        }).then((result)=>{
             spinner.succeed();
-            console.log();
+            console.log('Successfully created business network card to '+filename);
 
             return result;
         }).catch((error) => {

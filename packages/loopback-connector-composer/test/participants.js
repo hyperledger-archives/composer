@@ -65,7 +65,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 type : 'embedded'
             })
             .then(() => {
-                return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -125,7 +125,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
                 });
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
@@ -140,7 +140,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
             .then( ()=>{
                 return adminConnection.reset('bond-network');
             })

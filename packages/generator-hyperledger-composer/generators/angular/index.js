@@ -366,7 +366,7 @@ module.exports = yeoman.Base.extend({
         let completedApp = new Promise((resolve, reject) => {
 
             if (liveNetwork) {
-                return businessNetworkConnection.connect(connectionProfileName, networkIdentifier, enrollmentId, enrollmentSecret)
+                return businessNetworkConnection.connectWithDetails(connectionProfileName, networkIdentifier, enrollmentId, enrollmentSecret)
                     .then((result) => {
                         businessNetworkDefinition = result;
                         return businessNetworkConnection.disconnect();

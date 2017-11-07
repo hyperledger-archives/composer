@@ -54,12 +54,10 @@ describe('composer card import CLI', function() {
         const args = {
             file: cardFileName
         };
-        const cardName = 'CARD_NAME';
-        adminConnectionStub.importCard.resolves(cardName);
+        adminConnectionStub.importCard.resolves();
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
-            sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.instanceOf(IdCard), sinon.match.falsy);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(cardName));
+            sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.string, sinon.match.instanceOf(IdCard));
         });
     });
 
@@ -73,7 +71,7 @@ describe('composer card import CLI', function() {
         adminConnectionStub.importCard.resolves(args.name);
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
-            sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.instanceOf(IdCard), cardName);
+            sinon.assert.calledWith(adminConnectionStub.importCard, cardName, sinon.match.instanceOf(IdCard));
             sinon.assert.calledWith(consoleLogSpy, sinon.match(cardName));
         });
     });

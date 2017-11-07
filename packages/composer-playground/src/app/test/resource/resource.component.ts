@@ -7,7 +7,8 @@ import {
     ClassDeclaration,
     AssetDeclaration,
     ParticipantDeclaration,
-    TransactionDeclaration
+    TransactionDeclaration,
+    Field
 } from 'composer-common';
 import leftPad = require('left-pad');
 
@@ -104,14 +105,28 @@ export class ResourceComponent implements OnInit {
     }
 
     /**
+     * Returns true if the Identifying field of the Class that is being created has
+     * a validator associated with it ie. its ID field must conform to a regex
+     */
+    private idFieldHasRegex() {
+        // a non-null validator on an identifying field returns true
+        let idf: Field = this.resourceDeclaration.getProperty(this.resourceDeclaration.getIdentifierFieldName());
+        return idf.getValidator() ? true : false;
+    }
+
+    /**
      * Generate the json description of a resource
      */
     private generateResource(withSampleData ?: boolean): void {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let factory = businessNetworkDefinition.getFactory();
-        let idx = Math.round(Math.random() * 9999).toString();
-        idx = leftPad(idx, 4, '0');
+
         let id = '';
+        if (!this.idFieldHasRegex()) {
+            let idx = Math.round(Math.random() * 9999).toString();
+            id = leftPad(idx, 4, '0');
+        }
+
         try {
             const generateParameters = {
                 generate: withSampleData ? 'sample' : 'empty',
@@ -125,19 +140,35 @@ export class ResourceComponent implements OnInit {
                 id,
                 generateParameters);
             let serializer = this.clientService.getBusinessNetwork().getSerializer();
-
             const serializeValidationOptions = {
                 validate: false
             };
-
-            let json = serializer.toJSON(resource, serializeValidationOptions);
-            this.resourceDefinition = JSON.stringify(json, null, 2);
+            let replacementJSON = serializer.toJSON(resource, serializeValidationOptions);
+            let existingJSON = JSON.parse(this.resourceDefinition);
+            if (existingJSON) {
+                this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
+            } else {
+              // Initial popup, no previous data to protect
+              this.resourceDefinition = JSON.stringify(replacementJSON, null, 2);
+            }
             this.onDefinitionChanged();
         } catch (error) {
             // We can't generate a sample instance for some reason.
             this.definitionError = error.toString();
-            this.resourceDefinition = '';
         }
+    }
+
+    private updateExistingJSON(previousJSON, toUpdateWithJSON): object {
+        for (let key in toUpdateWithJSON) {
+            if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
+                if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
+                    toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
+                } else if (previousJSON[key].toString().length > 0 && previousJSON[key] !== 0) {
+                    toUpdateWithJSON[key] = previousJSON[key];
+                }
+            }
+        }
+        return toUpdateWithJSON;
     }
 
     /**

@@ -19,9 +19,10 @@ const BaseException = require('./baseexception');
 /**
  * Exception throws when a composer file is semantically invalid
  * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @see See {@link BaseException}
  * @class
  * @memberof module:composer-common
+ * @public
  */
 class BaseFileException extends BaseException {
 

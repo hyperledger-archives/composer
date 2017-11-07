@@ -73,14 +73,10 @@ describe('TransactionRegistry', () => {
         it('should invoke the chain-code and return the list of transaction registries', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', () => {
-                return Promise.resolve(
-                    [
-                        {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'},
-                        {id: '6165d4c2-73ee-43a6-b5b5-bac512a4894e', name: 'wow such registry'}
-                    ]
-                );
-            });
+            sandbox.stub(Registry, 'getAllRegistries').resolves([
+                {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'},
+                {id: '6165d4c2-73ee-43a6-b5b5-bac512a4894e', name: 'wow such registry'}
+            ]);
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
@@ -108,11 +104,7 @@ describe('TransactionRegistry', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Registry, 'getAllRegistries').rejects(new Error('failed to invoke chain-code'));
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
@@ -156,11 +148,9 @@ describe('TransactionRegistry', () => {
         it('should invoke the chain-code and return the transaction registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.resolve(
-                    {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'}
-                );
-            });
+            sandbox.stub(Registry, 'getRegistry').resolves(
+                {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'}
+            );
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
@@ -184,11 +174,7 @@ describe('TransactionRegistry', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Registry, 'getRegistry').rejects(new Error('failed to invoke chain-code'));
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
@@ -238,9 +224,7 @@ describe('TransactionRegistry', () => {
         it('should invoke the chain-code and return the transaction registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'addRegistry', () => {
-                return Promise.resolve();
-            });
+            sandbox.stub(Registry, 'addRegistry').resolves();
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
@@ -264,11 +248,7 @@ describe('TransactionRegistry', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'addRegistry', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Registry, 'addRegistry').rejects(new Error('failed to invoke chain-code'));
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry

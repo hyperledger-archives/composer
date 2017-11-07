@@ -51,11 +51,9 @@ class AdminConnection {
     /**
      * Create an instance of the AdminConnection class.
      * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
-     * @param {Object} [options.fs] - specify an fs implementation to use.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
     constructor(options) {
-        // @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
 
         const method = 'constructor';
         LOG.entry(method, options);
@@ -112,6 +110,7 @@ class AdminConnection {
      * @param {string} connectionProfile - The name of the connection profile
      * @param {Object} data - The connection profile data
      * @return {Promise} A promise that indicates that the connection profile is deployed
+     * @private
      */
     createProfile(connectionProfile, data) {
         return this.connectionProfileManager.getConnectionProfileStore().save(connectionProfile, data);
@@ -119,25 +118,83 @@ class AdminConnection {
 
     /**
      * Import a business network card.
-     * @private
+     * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
-     * @param {String} [name] Name by which this card should be referred
-     * @return {Promise} Resolved with the name by which the card is referred as a {@link String}.
+     * @return {Promise} Resolved when the card is imported
      */
-    importCard(card, name) {
-        if (!name) {
-            const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
-            name = card.getUserName() + '@' + locationName;
-        }
-        return this.cardStore.put(name, card).then(() => {
-            return name;
-        });
+    importCard(name, card) {
+        let connectionProfileData;
+        return this.cardStore.put(name, card)
+            .then(() => {
+                connectionProfileData = card.getConnectionProfile();
+                connectionProfileData.cardName=name;
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            })
+            .then((connectionManager)=>{
+                let certificate = card.getCredentials().certificate;
+                let privateKey = card.getCredentials().privateKey;
+                if (certificate && privateKey){
+                    return connectionManager.importIdentity(connectionProfileData.name,connectionProfileData, card.getUserName(), certificate, privateKey);
+                } else {
+                    return; // use secret
+                }
+            });
     }
 
     /**
+     * Get a specific Business Network cards
+     * @param {String} cardName of the card to get
+     * @return {Promise} promise resolved with a business network card
+     */
+    getCard(cardName) {
+        return this.cardStore.get(cardName);
+    }
+
+    /** Exports an network card.
+     * Should the card not actually contain the certificates in the card, a exportIdentity will be
+     * performed to get the details of the cards
+     * @param {String} cardName The name of the card that needs to be exported
+     * @return {Promise} resolved with an instance of the network id card populated
+     */
+    exportCard(cardName) {
+        let card;
+        return this.cardStore.get(cardName)
+            .then((result)=>{
+                card=result;
+                let credentials = card.getCredentials();
+                //anything set? if so don't go and get the credentials again
+                if (Object.keys(credentials).length!==0){
+                    return card;
+                } else {
+                    // check to make sure the credentials are present and if not then extract them.
+                    let connectionProfileData = card.getConnectionProfile();
+                    connectionProfileData.cardName = cardName;
+                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+                        .then((connectionManager)=>{
+                            return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+                        })
+                        .then( (result)=>{
+                            if (result){
+                                //{ certificate: String, privateKey: String }
+                                card.setCredentials(result);
+                                // put back the card, so that it has the ceritificates sotre
+                                return this.cardStore.put(cardName,card);
+                            } else {
+                                if(!card.getEnrollmentCredentials()){
+                                    // no secret either!
+                                    throw new Error(`Card ${cardName} has no credentials or secret so is invalid`);
+                                }
+                            }
+                        }).then(()=>{
+                            return card;
+                        });
+                }
+            });
+
+    }
+    /**
      * List all Business Network cards.
-     * @private
-     * @return {Promise} resolved with a {@link Map} of {@link IdCard} objects keyed by their {@link String} names.
+     * @return {Promise} resolved with a  Map of idcard objects keyed by their  String names.
      */
     getAllCards() {
         return this.cardStore.getAll();
@@ -145,7 +202,6 @@ class AdminConnection {
 
     /**
      * Delete an existing card.
-     * @private
      * @param {String} name Name of the card to delete.
      * @returns {Promise} Resolves if an existing card was deleted; rejected otherwise.
      */
@@ -168,6 +224,7 @@ class AdminConnection {
      * });
      * @param {string} connectionProfile - The name of the connection profile
      * @return {Promise} A promise that indicates that the connection profile is deployed
+     * @private
      */
     deleteProfile(connectionProfile) {
         return this.connectionProfileManager.getConnectionProfileStore().delete(connectionProfile);
@@ -186,6 +243,7 @@ class AdminConnection {
      *   });
      * @param {string} connectionProfile - The name of the connection profile
      * @return {Promise} A promise that is resolved with the connection profile data.
+     * @private
      */
     getProfile(connectionProfile) {
         return this.connectionProfileManager.getConnectionProfileStore().load(connectionProfile);
@@ -205,6 +263,7 @@ class AdminConnection {
      *     }
      *   });
      * @return {Promise} A promise that is resolved with the connection profile data.
+     * @private
      */
     getAllProfiles() {
         return this.connectionProfileManager.getConnectionProfileStore().loadAll();
@@ -214,7 +273,9 @@ class AdminConnection {
 
     /**
      * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile. The connection profile must exist in the profile store.
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
      * @example
      * // Connect to Hyperledger Fabric
      * var adminConnection = new AdminConnection();
@@ -230,8 +291,9 @@ class AdminConnection {
      * @param {string} enrollmentSecret the enrollment secret of the user
      * @param {string} businessNetworkIdentifier the id of the network (for update) or null
      * @return {Promise} A promise that indicates the connection is complete
+     * @private
      */
-    connect(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
+    connectWithDetails(connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
                 this.connection = connection;
@@ -242,6 +304,59 @@ class AdminConnection {
                 if (businessNetworkIdentifier) {
                     return this.ping(this.securityContext);
                 }
+            });
+    }
+
+    /**
+     * Connects and logs in to the Hyperledger Fabric using a named connection
+     * profile.
+     *
+     * The connection profile must exist in the profile store.
+     * @example
+     * // Connect to Hyperledger Fabric
+     * var adminConnection = new AdminConnection();
+     * adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(){
+     *     // Connected.
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     * @param {String} cardName - The name of the business network card
+     * @return {Promise} A promise that when resolved indicates the connection is complete
+     */
+    connect(cardName) {
+        const method = 'connectWithCard';
+        LOG.entry(method,cardName);
+
+        let card;
+
+        return this.cardStore.get(cardName)
+            .then((card_)=>{
+                card = card_;
+                return this.connectionProfileManager.connectWithData(
+                    card.getConnectionProfile(),
+                    card.getBusinessNetworkName(),
+                    {cardName:cardName});
+            })
+            .then((connection) => {
+                this.connection = connection;
+                let secret = card.getEnrollmentCredentials();
+                if (!secret){
+                    secret='na';
+                } else {
+                    secret=secret.secret;
+                }
+                return connection.login(card.getUserName(),secret);
+            })
+            .then((securityContext) => {
+                this.securityContext = securityContext;
+                this.securityContext.card = card;
+                if (card.getBusinessNetworkName()) {
+                    return this.ping(this.securityContext);
+                }
+            }).then(()=>{
+                return;
             });
     }
 
@@ -360,10 +475,18 @@ class AdminConnection {
         const method = '_buildStartTransaction';
         LOG.entry(method, businessNetworkDefinition, startOptions);
 
+        let identityName, identityCertificate;
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
-        let identityName, identityCertificate;
-        return this._getCurrentIdentity()
+        return Promise.resolve()
+            .then(()=>{
+
+                if (startOptions.card){
+                    return startOptions.card.getCredentials();
+                } else {
+                    return this._getCurrentIdentity();
+                }
+            })
             .then((identity) => {
 
                 // Extract the current identity name and certificate.
@@ -482,13 +605,13 @@ class AdminConnection {
         LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
 
+        deployOptions.card = this.securityContext.card;
+
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
             .then((startTransactionJSON) => {
-
                 // Now we can deploy the business network.
                 return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
-
             })
             .then(() => {
                 LOG.exit(method);
@@ -726,7 +849,6 @@ class AdminConnection {
             return this.connection.queryChainCode(this.securityContext, 'getLogLevel', []);
         })
         .then((response) => {
-            console.log(response.toString());
             return Promise.resolve(JSON.parse(response));
         });
     }
@@ -777,6 +899,7 @@ class AdminConnection {
      * @param {string} certificate The signer cert in PEM format
      * @param {string} privateKey The private key in PEM format
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @private
      */
     importIdentity(connectionProfile, id, certificate, privateKey) {
         let savedConnectionManager;
@@ -817,6 +940,7 @@ class AdminConnection {
      * @param {string} enrollmentID The ID to enroll
      * @param {string} enrollmentSecret The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @private
      */
     requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
         let savedConnectionManager;
@@ -838,6 +962,7 @@ class AdminConnection {
      * @param {String} connectionProfileName Name of the connection profile.
      * @param {String} id Name of the identity.
      * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
+     * @private
      */
     exportIdentity(connectionProfileName, id) {
         let savedConnectionManager;

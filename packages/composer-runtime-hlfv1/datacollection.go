@@ -20,6 +20,8 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
+import "time"
+
 // DataCollection is a Go wrapper around an instance of the DataCollection JavaScript class.
 type DataCollection struct {
 	VM           *duktape.Context
@@ -30,6 +32,7 @@ type DataCollection struct {
 // NewDataCollection creates a Go wrapper around a new instance of the DataCollection JavaScript class.
 func NewDataCollection(vm *duktape.Context, dataService *DataService, stub shim.ChaincodeStubInterface, collectionID string) (result *DataCollection) {
 	logger.Debug("Entering NewDataCollection", vm, dataService, &stub)
+	
 	defer func() { logger.Debug("Exiting NewDataCollection", result) }()
 
 	// Ensure the JavaScript stack is reset.
@@ -77,10 +80,16 @@ func NewDataCollection(vm *duktape.Context, dataService *DataService, stub shim.
 // getAll retreieves all of the objects in this collection from the world state.
 func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.getAll", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataCollection.getAll total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+	
 	defer func() { logger.Debug("Exiting DataCollection.getAll", result) }()
 
 	// Validate the arguments from JavaScript.
 	vm.RequireFunction(0)
+
+	increment := time.Now();
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
@@ -93,6 +102,9 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 		}
 		return 0
 	}
+
+	logger.Debug("@perf DataCollection.getAll GetStateByPartialCompositeKey duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
 
 	// Must close iterator to free resources.
 	defer iterator.Close()
@@ -121,17 +133,27 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 
 	}
 
+	logger.Debug("@perf DataCollection.getAll key-iterator duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(0)
 	vm.PushNull()
 	vm.Dup(arrIdx)
 	vm.Pcall(2)
+
+	logger.Debug("@perf DataCollection.getAll callback duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	
 	return 0
 }
 
 // get retrieves a specific object in this collection from the world state.
 func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.get", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataCollection.get total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+	
 	defer func() { logger.Debug("Exiting DataCollection.get", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -149,6 +171,8 @@ func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 		}
 		return 0
 	}
+
+	increment := time.Now();
 
 	// Get the collection.
 	value, err := dataCollection.Stub.GetState(key)
@@ -168,6 +192,9 @@ func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.get GetState duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Parse the current value.
 	vm.PushString(string(value))
 	vm.JsonDecode(-1)
@@ -179,12 +206,18 @@ func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+	
+	logger.Debug("@perf DataCollection.get callback duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
 	return 0
 }
 
 // exists checks to see if an object exists in this collection in the world state.
 func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.exists", vm)
+
+	start := time.Now()
+	defer func() { logger.Debug("@perf DataCollection.exists total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataCollection.exists", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -203,6 +236,8 @@ func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	increment := time.Now();
+
 	// Get the object.
 	value, err := dataCollection.Stub.GetState(key)
 	if err != nil {
@@ -214,6 +249,9 @@ func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.get GetState duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(1)
 	vm.PushNull()
@@ -221,12 +259,18 @@ func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+
+	logger.Debug("@perf DataCollection.get callback duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
 	return 0
 }
 
 // add adds an object to this collection in the world satte.
 func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.add", vm)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf DataCollection.add total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataCollection.add", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -272,6 +316,8 @@ func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 		}
 	}
 
+	increment := time.Now();
+
 	// Store the object in the collection.
 	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
@@ -283,18 +329,28 @@ func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.get PutState duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(3)
 	vm.PushNull()
 	if vm.Pcall(1) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+	
+	logger.Debug("@perf DataCollection.get callback duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	
 	return 0
 }
 
 // update updates an existing object in this collection in the world state.
 func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.update", vm)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf DataCollection.update total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataCollection.update", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -319,6 +375,8 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	increment := time.Now();
+
 	// Check to see if the object already exists.
 	existingValue, err := dataCollection.Stub.GetState(key)
 	if err != nil {
@@ -337,6 +395,9 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.update GetState duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Store the object in the collection.
 	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
@@ -348,18 +409,27 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.update PutState duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(2)
 	vm.PushNull()
 	if vm.Pcall(1) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+
+	logger.Debug("@perf DataCollection.update callback duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
 	return 0
 }
 
 // remove removes an object from this collection in the world state.
 func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 	logger.Debug("Entering DataCollection.remove", vm)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf DataCollection.remove total duration for [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting DataCollection.remove", result) }()
 
 	// Validate the arguments from JavaScript.
@@ -377,6 +447,8 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 		}
 		return 0
 	}
+
+	increment := time.Now();
 
 	// Check to see if the object already exists.
 	existingValue, err := dataCollection.Stub.GetState(key)
@@ -396,6 +468,9 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.remove GetState duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Remove the object from the collection.
 	err = dataCollection.Stub.DelState(key)
 	if err != nil {
@@ -407,11 +482,17 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 		return 0
 	}
 
+	logger.Debug("@perf DataCollection.remove DelState duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	increment = time.Now();
+
 	// Call the callback.
 	vm.Dup(1)
 	vm.PushNull()
 	if vm.Pcall(1) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+
+	logger.Debug("@perf DataCollection.remove callback duration for collection [", dataCollection.CollectionID, "] and transaction [", dataCollection.Stub.GetTxID(),"] :", time.Now().Sub(increment))
+	
 	return 0
 }

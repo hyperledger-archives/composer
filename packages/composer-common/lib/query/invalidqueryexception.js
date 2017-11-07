@@ -19,7 +19,7 @@ const BaseFileException = require('../basefileexception');
 /**
  * Exception thrown for invalid queries
  * @extends BaseFileException
- * @see See [BaseFileException]{@link module:composer-common.BaseFileException}
+ * @see See {@link BaseFileException}
  * @class
  * @memberof module:composer-common
  */

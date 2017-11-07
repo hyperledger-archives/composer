@@ -13,14 +13,15 @@
  */
 
 'use strict';
-
 const Admin = require('composer-admin');
+const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+
 
 const UpdateCMD = require('../../lib/cmds/network/updateCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const Update = require('../../lib/cmds/network/lib/update.js');
 const Deploy = require('../../lib/cmds/network/lib/deploy.js');
-
+const IdCard = require('composer-common').IdCard;
 require('chai').should();
 
 const chai = require('chai');
@@ -35,14 +36,16 @@ let mockAdminConnection;
 describe('composer update network CLI unit tests', function () {
 
     let sandbox;
+    let testCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
+        mockAdminConnection.getCard.resolves(testCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
@@ -82,4 +85,28 @@ describe('composer update network CLI unit tests', function () {
 
     });
 
+    describe('using network cards', ()=>{
+        it('Good path with update enabled', function () {
+            let businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+
+            let testBusinessNetworkArchive;
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
+            let argv = {card: 'cardName'};
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return businessNetworkDefinition.toArchive()
+                .then((archive) => {
+                    testBusinessNetworkArchive = archive;
+                    return UpdateCMD.handler(argv,true);
+                })
+                .then ((result) => {
+                    argv.thePromise.should.be.a('promise');
+                    sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+                    sinon.assert.calledOnce(mockAdminConnection.connect);
+                    sinon.assert.calledWith(mockAdminConnection.connect,'cardName');
+
+                });
+        });
+    });
 });

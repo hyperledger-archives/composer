@@ -32,51 +32,26 @@ class Undeploy {
     */
     static handler(argv) {
         let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
-
+        let cardName = argv.card;
         let spinner;
 
-        return (() => {
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
-        })
-          .then((result) => {
-              spinner = ora('Undeploying business network definition. This may take some seconds...').start();
-              return adminConnection.undeploy(businessNetworkName);
 
-          }).then((result) => {
-              spinner.succeed();
-              return result;
-          }).catch((error) => {
-
-              if (spinner) {
-                  spinner.fail();
-              }
-
-              throw error;
-          });
+        adminConnection = cmdUtil.createAdminConnection();
+        return adminConnection.connect(cardName)
+            .then(() => {
+                // nothing is returned from connect
+                return adminConnection.getCard(cardName);
+            })
+            .then((card)=>{
+                spinner = ora('Undeploying business network definition. This may take some seconds...').start();
+                return adminConnection.undeploy(card.getBusinessNetworkName());
+            }).then((result) => {
+                spinner.succeed();
+                return result;
+            }).catch((error) => {
+                spinner.fail();
+                throw error;
+            });
     }
 
 }

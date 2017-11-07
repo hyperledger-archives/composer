@@ -20,7 +20,7 @@ const fs = require('fs');
 const Deploy = require('../../lib/cmds/network/lib/deploy.js');
 const DeployCmd = require('../../lib/cmds/network/deployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
-
+const IdCard = require('composer-common').IdCard;
 require('chai').should();
 
 const chai = require('chai');
@@ -39,16 +39,18 @@ let mockAdminConnection;
 describe('composer deploy network CLI unit tests', function () {
 
     let sandbox;
+    let testCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
 
         businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
-
+        testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
+        mockAdminConnection.getCard.withArgs('cardname').resolves(testCard);
 
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
@@ -68,12 +70,13 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, optional parameter -O /path/to/options.json specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,optionsFile: '/path/to/options.json'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                       ,optionsFile: '/path/to/options.json'
+                       ,networkAdmin: 'admin'
+                       ,networkAdminEnrollSecret:'true'
+            };
+
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             const optionsObject = {
@@ -102,24 +105,35 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
-                        bootstrapTransactions: [],
-                        endorsementPolicy: optionsObject.endorsementPolicy
-                    });
+                  sinon.match(  {
+                      bootstrapTransactions: [{
+                          $class: 'org.hyperledger.composer.system.AddParticipant',
+                          resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                          targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                          timestamp: sinon.match.any,
+                          transactionId: sinon.match.any
+                      }, {
+                          $class: 'org.hyperledger.composer.system.IssueIdentity',
+                          identityName: 'admin',
+                          participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                          timestamp: sinon.match.any,
+                          transactionId: sinon.match.any
+                      }],
+                      endorsementPolicy: optionsObject.endorsementPolicy
+                  }));
             });
         });
 
         it('Good path, optional parameter -o endorsementPolicyFile= specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,option: 'endorsementPolicyFile=/path/to/some/file.json'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,option: 'endorsementPolicyFile=/path/to/some/file.json'
+                        ,networkAdmin: 'admin'
+                        ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -133,25 +147,36 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
-                        bootstrapTransactions: [],
+                    sinon.match({
+                        bootstrapTransactions: [{
+                            $class: 'org.hyperledger.composer.system.AddParticipant',
+                            resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                            targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                            timestamp: sinon.match.any,
+                            transactionId: sinon.match.any
+                        }, {
+                            $class: 'org.hyperledger.composer.system.IssueIdentity',
+                            identityName: 'admin',
+                            participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                            timestamp: sinon.match.any,
+                            transactionId: sinon.match.any
+                        }],
                         endorsementPolicyFile: '/path/to/some/file.json'
-                    });
+                    }));
             });
         });
 
 
         it('Good path, optional parameter -o endorsementPolicy= specified.', function () {
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,networkAdmin: 'admin'
+                        ,networkAdminEnrollSecret:'true'
+                        ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -165,51 +190,35 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
-                        bootstrapTransactions: [],
+                    sinon.match({
+                        bootstrapTransactions: [{
+                            $class: 'org.hyperledger.composer.system.AddParticipant',
+                            resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                            targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                            timestamp: sinon.match.any,
+                            transactionId: sinon.match.any
+                        }, {
+                            $class: 'org.hyperledger.composer.system.IssueIdentity',
+                            identityName: 'admin',
+                            participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                            timestamp: sinon.match.any,
+                            transactionId: sinon.match.any
+                        }],
                         endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
-                    });
+                    }));
             });
         });
 
 
         it('Good path, all parms correctly specified.', function () {
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,networkAdmin: 'admin'
+                        ,networkAdminEnrollSecret:'true'};
 
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'};
-            let connectionProfileName = argv.connectionProfileName;
-
-            sandbox.stub(Deploy, 'getArchiveFileContents');
-
-            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return DeployCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
-                sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
-            });
-        });
-
-        it('Good path, all parms correctly specified, including optional loglevel.', function () {
-
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'
-                       ,loglevel: 'DEBUG'};
-            let connectionProfileName = argv.connectionProfileName;
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -223,21 +232,32 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG'});
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [{
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                        timestamp: sinon.match.any,
+                        transactionId: sinon.match.any
+                    }, {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        identityName: 'admin',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                        timestamp: sinon.match.any,
+                        transactionId: sinon.match.any
+                    }] }));
             });
         });
 
-        it('Good path, no enrollment secret, all other parms correctly specified.', function () {
+        it('Good path, all parms correctly specified, including optional logLevel.', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
-
-            let argv = {enrollId: 'WebAppAdmin'
+            let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
-                       ,connectionProfileName: 'testProfile'};
-            let connectionProfileName = argv.connectionProfileName;
+                       ,loglevel: 'DEBUG'
+                       ,networkAdmin: 'admin'
+                       ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -251,11 +271,26 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [{
+                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                        resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                        timestamp: sinon.match.any,
+                        transactionId: sinon.match.any
+                    }, {
+                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                        identityName: 'admin',
+                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                        timestamp: sinon.match.any,
+                        transactionId: sinon.match.any
+                    }], logLevel: 'DEBUG'}));
             });
         });
+
+
 
         const sanitize = (result) => {
             result.forEach((tx) => {
@@ -267,15 +302,10 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, network administrator specified', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
 
-            let argv = {enrollId: 'WebAppAdmin'
-                        ,archiveFile: 'testArchiveFile.zip'
-                        ,connectionProfileName: 'testProfile'
+            let argv = {card:'cardname'
                         ,networkAdmin: ['admin1']
                         ,networkAdminEnrollSecret: [true]};
-            let connectionProfileName = argv.connectionProfileName;
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -289,7 +319,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 const deployOptions = mockAdminConnection.deploy.args[0][1];
                 sanitize(deployOptions.bootstrapTransactions);
@@ -315,16 +345,10 @@ describe('composer deploy network CLI unit tests', function () {
 
         it('Good path, network administrator and bootstrap transactions specified', function () {
 
-            let enrollmentSecret = 'DJY27pEnl16d';
-            sandbox.stub(CmdUtil, 'prompt').resolves({enrollmentSecret:enrollmentSecret});
-
-            let argv = {enrollId: 'WebAppAdmin'
-                                    ,archiveFile: 'testArchiveFile.zip'
-                                    ,connectionProfileName: 'testProfile'
-                                    ,networkAdmin: ['admin1']
-                                    ,networkAdminEnrollSecret: [true]
-                                    ,optionsFile: '/path/to/options.json'};
-            let connectionProfileName = argv.connectionProfileName;
+            let argv = {card:'cardname'
+                        ,networkAdmin: ['admin1']
+                        ,networkAdminEnrollSecret: [true]
+                        ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             const optionsObject = {
@@ -347,7 +371,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 const deployOptions = mockAdminConnection.deploy.args[0][1];
                 sanitize(deployOptions.bootstrapTransactions);
@@ -374,15 +398,6 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('show throw an error if loglevel not valid', function() {
-            let argv = {enrollId: 'WebAppAdmin'
-                       ,enrollSecret: 'DJY27pEnl16d'
-                       ,loglevel: 'BAD'
-                       ,archiveFile: 'testArchiveFile.zip'};
-            return DeployCmd.handler(argv)
-                .should.be.rejectedWith(/or not one of/);
-
-        });
     });
 
     describe('Deploy getArchiveFileContents() method tests', function () {
@@ -413,4 +428,20 @@ describe('composer deploy network CLI unit tests', function () {
 
     });
 
+    describe('using business network card',()=>{
+
+        it('Failure of the archive functions', function () {
+
+            let argv = {card:'cardname'
+            ,networkAdmin: ['admin1']
+            ,networkAdminEnrollSecret: [true]
+            ,archiveFile: 'testArchiveFile.zip'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).throws(new Error('failure'));
+            return DeployCmd.handler(argv)
+                        .should.be.rejectedWith(/failure/);
+        });
+
+    });
 });

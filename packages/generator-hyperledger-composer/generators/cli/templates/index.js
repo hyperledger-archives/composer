@@ -24,7 +24,7 @@ let businessNetworkDefinition;
 let assetRegistry;
 
 // create the connection
-businessNetworkConnection.connect(connectionProfile, businessNetworkIdentifier, participantId, participantPwd)
+businessNetworkConnection.connectWithDetails(connectionProfile, businessNetworkIdentifier, participantId, participantPwd)
   .then((result) => {
       businessNetworkDefinition = result;
       console.log('Connected: BusinessNetworkDefinition obtained=' + businessNetworkDefinition.getIdentifier());

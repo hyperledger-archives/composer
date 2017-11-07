@@ -66,4 +66,4 @@ query Q17 {
 
 - [Applying queries to a business network.](../business-network/query.html)
 - [Emitting events from transactions.](../business-network/publishing-events.html)
-- [{{site.data.conrefs.composer_full}} API documentation.](../api-doc-inline/api-doc-index.html)
+- [{{site.data.conrefs.composer_full}} API documentation.](../api/api-doc-index.html)

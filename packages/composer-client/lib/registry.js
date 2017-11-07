@@ -345,7 +345,7 @@ class Registry {
      * Get all of the resources in the registry, and resolve all of their relationships
      * to other assets, participants, and transactions. The result is a JavaScript
      * object, and should only be used for visualization purposes. You cannot use
-     * the {@link add} or {@link update} functions with a resolved resource.
+     * the {@link #add add} or {@link #update update} functions with a resolved resource.
      *
      * @return {Promise} A promise that will be resolved with an array of JavaScript
      * objects representing the resources and all of their resolved relationships.
@@ -362,7 +362,7 @@ class Registry {
      * Get a specific resource in the registry, and resolve all of its relationships
      * to other assets, participants, and transactions. The result is a JavaScript
      * object, and should only be used for visualization purposes. You cannot use
-     * the {@link add} or {@link update} functions with a resolved resource.
+     * the  {@link #add add} or {@link #update update} functions with a resolved resource.
      *
      * @param {string} id The unique identifier of the asset.
      * @return {Promise} A promise that will be resolved with a JavaScript object

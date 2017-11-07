@@ -20,7 +20,7 @@ const LOG = Logger.getLog('Factory');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:composer-runtime#getFactory getFactory}
+ * You must use the {@link runtime-api#getFactory getFactory}
  * method instead.
  *
  * @class Factory
@@ -28,13 +28,6 @@ const LOG = Logger.getLog('Factory');
  * and relationships.
  * @memberof module:composer-runtime
  * @public
- */
-
-/**
- * A class that represents a factory in the transaction processor API. The
- * transaction processor API should expose no internal properties or internal
- * methods which could be accessed or misused.
- * @private
  */
 class Factory {
 
@@ -51,8 +44,7 @@ class Factory {
          * Create a new resource (an instance of an asset, participant, or transaction). The
          * properties of the new instance should be set as standard JavaScript
          * object properties. The new instance can then be stored in a registry
-         * using the appropriate registry APIs, for example {@link
-         * module:composer-runtime.AssetRegistry AssetRegistry}.
+         * using the appropriate registry APIs, for example {@link AssetRegistry}.
          * @example
          * // Get the factory.
          * var factory = getFactory();

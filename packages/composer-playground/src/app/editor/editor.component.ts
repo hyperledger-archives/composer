@@ -456,9 +456,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     text: 'Business network updated successfully',
                     icon: '#icon-deploy_24'
                 });
-                if ((<any> window).usabilla_live) {
-                    (<any> window).usabilla_live('trigger', 'manual trigger');
-                }
             })
             .catch((error) => {
                 this.deploying = false;

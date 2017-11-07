@@ -22,6 +22,8 @@ import (
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
+import "time"
+
 // Composer is the chaincode class. It is an implementation of the
 // Chaincode interface.
 type Composer struct {
@@ -50,6 +52,10 @@ func NewComposer() (result *Composer) {
 // createJavaScript creates a new JavaScript virtual machine with the JavaScript code loaded.
 func (composer *Composer) createJavaScript() {
 	logger.Debug("Entering Composer.createJavaScript")
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf Composer.createJavaScript total duration :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting Composer.createJavaScript") }()
 
 	// Create a new JavaScript virtual machine.
@@ -117,6 +123,10 @@ func (composer *Composer) createJavaScript() {
 // Init can read from and write to the world state.
 func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Init", &stub, function, arguments)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf Composer.Init total duration for [", stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting Composer.Init", string(result), err) }()
 
 	// Start a scope for locking the JavaScript virtual machine.
@@ -151,6 +161,10 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 // Invoke can read from and write to the world state.
 func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Invoke", &stub, function, arguments)
+
+	start := time.Now()	
+	defer func() { logger.Debug("@perf Composer.Invoke total duration for [", stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+
 	defer func() { logger.Debug("Exiting Composer.Invoke", string(result), err) }()
 
 	// Start a scope for locking the JavaScript virtual machine.

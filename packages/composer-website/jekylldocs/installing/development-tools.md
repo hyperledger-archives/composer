@@ -22,8 +22,8 @@ The following are prerequisites for installing the required development tools:
 - Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 - Docker Engine: Version 17.03 or higher
 - Docker-Compose: Version 1.8 or higher
-- Node: 6.x (note versions 7 and higher are not supported)
-- npm: v3.x or v5.x
+- Node: 8.9 or higher (note version 9 is not supported)
+- npm: v5.x
 - git: 2.9.x or higher
 - Python: 2.7.x
 - A code editor of your choice, we recommend VSCode.
@@ -116,7 +116,7 @@ docker rmi $(docker images dev-* -q)
         cd ~/fabric-tools
         ./downloadFabric.sh
         ./startFabric.sh
-        ./createComposerProfile.sh
+        ./createPeerAdminCard.sh
 
     Then at the end of your development session
 
@@ -125,7 +125,7 @@ docker rmi $(docker images dev-* -q)
         ./teardownFabric.sh
 
 
-> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
+> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks.
 
 
 ## Script details
@@ -155,14 +155,14 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create {{site.data.conrefs.composer_full}} Profile**
+**Create business network card for the peer administrator**
 
 Issue from the `fabric-tools` directory
 ```
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 ```
 
-Note: this creates a {{site.data.conrefs.composer_full}} profile specifically to connect to the development fabric you've already started.
+Note: this creates and imports a business network card to connect to the development fabric you've already started.
 
 **Teardown Fabric**
 

@@ -40,6 +40,7 @@ class Bind {
         let participantId = argv.participantId;
         let certificateFile = argv.certificateFile;
         let certificate;
+
         try {
             certificate = fs.readFileSync(certificateFile).toString();
         } catch(error) {
@@ -67,7 +68,7 @@ class Bind {
             enrollSecret = argv.enrollSecret;
             businessNetworkName = argv.businessNetworkName;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            return businessNetworkConnection.connectWithDetails(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
         })
         .then(() => {
             return businessNetworkConnection.bindIdentity(participantId, certificate);

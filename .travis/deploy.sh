@@ -17,7 +17,7 @@ if [ "${ABORT_BUILD}" = "true" ]; then
 fi
 
 # Check that this is the right node.js version.
-if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "6" ]; then
+if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "8" ]; then
     echo Not executing as not running primary node.js version.
     exit 0
 fi
@@ -108,7 +108,6 @@ if [ -z "${TRAVIS_TAG}" ]; then
     cf push composer-playground-unstable -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env composer-playground-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
     cf set-env composer-playground-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
-    cf set-env composer-playground-unstable USABILLA_ID ${USABILLA_ID}
     cf set-env composer-playground-unstable COMPOSER_CONFIG '{"webonly":true}'
     cf start composer-playground-unstable
     popd
@@ -146,7 +145,6 @@ else
     cf push composer-playground -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env composer-playground CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
     cf set-env composer-playground CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
-    cf set-env composer-playground USABILLA_ID ${USABILLA_ID}
     cf set-env composer-playground COMPOSER_CONFIG '{"webonly":true}'
     cf start composer-playground
     popd

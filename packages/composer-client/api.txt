@@ -1,12 +1,12 @@
 class AssetRegistry extends Registry {
-   + Promise getAllAssetRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 
-   + Promise getAssetRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
-   + Promise assetRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
-   + Promise addAssetRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
-   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise getAllAssetRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 
+   ~ Promise getAssetRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise assetRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
+   ~ Promise addAssetRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class BusinessNetworkConnection extends EventEmitter {
-   + void constructor(Object,ConnectionProfileStore,Object) 
+   + void constructor(Object,BusinessNetworkCardStore) 
    + BusinessNetworkDefinition getBusinessNetwork() 
    + Promise getAllAssetRegistries(boolean) 
    + Promise getAssetRegistry(string) 
@@ -21,7 +21,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise transactionRegistryExists(string) 
    + Promise getHistorian() 
    + Promise getIdentityRegistry() 
-   + Promise connect(string,string,string,string,Object) 
+   + Promise connect(String,Object) 
    + Promise getRegistry(String) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 
@@ -39,20 +39,20 @@ class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 
 }
 class ParticipantRegistry extends Registry {
-   + Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 
-   + Promise getParticipantRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
-   + Promise participantRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
-   + Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
-   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 
+   ~ Promise getParticipantRegistry(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise participantRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
 }
 class Query {
 }
 class Registry {
-   + Promise getAllRegistries(SecurityContext,string,boolean) 
-   + Promise getRegistry(SecurityContext,string,string) 
-   + Promise existsRegistry(SecurityContext,string,string) 
-   + Promise addRegistry(SecurityContext,string,string,string) 
-   + void constructor(string,string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
+   ~ Promise getAllRegistries(SecurityContext,string,boolean) 
+   ~ Promise getRegistry(SecurityContext,string,string) 
+   ~ Promise existsRegistry(SecurityContext,string,string) 
+   ~ Promise addRegistry(SecurityContext,string,string,string) 
+   ~ void constructor(string,string,string,SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection) 
    + Promise addAll(Resource[]) 
    + Promise add(Resource) 
    + Promise updateAll(Resource[]) 
@@ -69,5 +69,5 @@ class TransactionRegistry extends Registry {
    + Promise getAllTransactionRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 
    + Promise getTransactionRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
    + Promise addTransactionRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
-   + Promise transactionRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
+   ~ Promise transactionRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
 }
