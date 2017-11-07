@@ -162,28 +162,6 @@ class IdCard {
     }
 
     /**
-     * Allows for partial credentials to be set
-     * @param {String} certificate certificate contents to set
-     */
-    setCertificate(certificate){
-        const method = 'setCertificate';
-        LOG.entry(method);
-        this.credentials.certificate = certificate  || '';
-        LOG.exit(method);
-    }
-
-    /**
-     * Allows for partial credentials to be set
-     * @param {String} privateKey privateKey contents to set
-     */
-    setPrivateKey(privateKey){
-        const method = 'setPrivateKey';
-        LOG.entry(method);
-        this.credentials.privateKey = privateKey || '';
-        LOG.exit(method);
-    }
-
-    /**
      * Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to
      * enroll with a business network and obtain certificates.
      * <p>
