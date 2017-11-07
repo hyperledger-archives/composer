@@ -946,9 +946,7 @@ describe('AdminConnection', () => {
 
     describe('Business Network Cards', function() {
         let peerAdminCard;
-        let peerAdminCardExpectedName;
         let userCard;
-        let userCardExpectedName;
 
         beforeEach(function() {
             const peerAdminMetadata = {
@@ -963,10 +961,8 @@ describe('AdminConnection', () => {
             connection.card='user@penguin-network';
             connection.name='connectionName';
             peerAdminCard = new IdCard(peerAdminMetadata, connection);
-            peerAdminCardExpectedName = peerAdminCard.getUserName() + '@' + peerAdminCard.getConnectionProfile().name;
 
             userCard = new IdCard(userMetadata, connection);
-            userCardExpectedName = userCard.getUserName() + '@' + userCard.getBusinessNetworkName();
         });
 
         describe('#importCard', function() {
@@ -976,44 +972,33 @@ describe('AdminConnection', () => {
                 sinon.spy(userCard,'getCredentials');
             });
 
-            it('should import card with name & credentials', function() {
+            it('should import card to card store', function() {
                 const cardName = 'conga';
-                userCard.setCredentials({certificate: 'String', privateKey: 'String' });
-                return adminConnection.importCard(userCard, cardName).then(() => {
+                return adminConnection.importCard(cardName, userCard).then(() => {
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
                 });
             });
 
-            it('should import card with name', function() {
+            it('should not import identity if card does not contain credentials', function() {
                 const cardName = 'conga';
-                return adminConnection.importCard(userCard, cardName).then(() => {
-                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                return adminConnection.importCard(cardName, userCard).then(() => {
+                    return sinon.assert.notCalled(mockConnectionManager.importIdentity);
                 });
             });
 
-            it('should generate name for user card when no name supplied', function() {
-                return adminConnection.importCard(userCard).then(() => {
-                    return cardStore.get(userCardExpectedName).should.eventually.deep.equal(userCard);
+            it('should import identity if card contains credentials', function() {
+                const certificate = 'CERTIFICATE_DATA';
+                const privateKey = 'PRIVATE_KEY_DATA';
+                userCard.setCredentials({certificate: certificate, privateKey: privateKey });
+                return adminConnection.importCard('conga', userCard).then(() => {
+                    return sinon.assert.calledWith(mockConnectionManager.importIdentity,
+                        userCard.getConnectionProfile().name,
+                        sinon.match.object,
+                        userCard.getUserName(),
+                        certificate,
+                        privateKey
+                    );
                 });
-            });
-
-            it('should generate name for PeerAdmin card when no name supplied', function() {
-                return adminConnection.importCard(peerAdminCard).then(() => {
-                    return cardStore.get(peerAdminCardExpectedName).should.eventually.deep.equal(peerAdminCard);
-                });
-            });
-
-            it('should return provided card name', function() {
-                const cardName = 'conga';
-                return adminConnection.importCard(userCard, cardName).should.eventually.equal(cardName);
-            });
-
-            it('should return generated name for user card when no name supplied', function() {
-                return adminConnection.importCard(userCard).should.eventually.equal(userCardExpectedName);
-            });
-
-            it('should return generated name for PeerAdmin card when no name supplied', function() {
-                return adminConnection.importCard(peerAdminCard).should.eventually.equal(peerAdminCardExpectedName);
             });
         });
 
@@ -1073,12 +1058,14 @@ describe('AdminConnection', () => {
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
 
+                const cardName = 'conga';
+
                 sinon.spy(userCard,'setCredentials');
-                return cardStore.put(userCardExpectedName, userCard).then(() => {
-                    return adminConnection.exportCard(userCardExpectedName);
+                return cardStore.put(cardName, userCard).then(() => {
+                    return adminConnection.exportCard(cardName);
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
-                    result.getUserName().should.deep.equal('user');
+                    result.getUserName().should.equal('user');
                     sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
                     sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
                 });
@@ -1090,12 +1077,13 @@ describe('AdminConnection', () => {
                 userCard.setCredentials({ certificate: 'String', privateKey: 'String' });
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
+                const cardName = 'conga';
 
-                return cardStore.put(userCardExpectedName, userCard).then(() => {
-                    return adminConnection.exportCard(userCardExpectedName);
+                return cardStore.put(cardName, userCard).then(() => {
+                    return adminConnection.exportCard(cardName);
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
-                    result.getUserName().should.deep.equal('user');
+                    result.getUserName().should.equal('user');
                 });
 
             });
@@ -1104,9 +1092,10 @@ describe('AdminConnection', () => {
                 mockConnectionManager.exportIdentity = sinon.stub();
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
+                const cardName = 'conga';
 
-                return cardStore.put(userCardExpectedName, userCard).then(() => {
-                    return adminConnection.exportCard(userCardExpectedName);
+                return cardStore.put(cardName, userCard).then(() => {
+                    return adminConnection.exportCard(cardName);
                 }).should.eventually.be.rejectedWith(/no credentials or secret so is invalid/);
 
             });
@@ -1125,10 +1114,10 @@ describe('AdminConnection', () => {
                     enrollmentSecret: 'humbolt'
                 };
                 userCard = new IdCard(userMetadata, connection);
+                const cardName = 'conga';
 
-
-                return cardStore.put(userCardExpectedName, userCard).then(() => {
-                    return adminConnection.exportCard(userCardExpectedName);
+                return cardStore.put(cardName, userCard).then(() => {
+                    return adminConnection.exportCard(cardName);
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
                     result.getUserName().should.deep.equal('user');
