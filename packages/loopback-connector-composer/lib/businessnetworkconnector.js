@@ -43,14 +43,8 @@ class BusinessNetworkConnector extends Connector {
         super('composer', settings);
 
         // Check for required properties.
-        if (!settings.connectionProfileName) {
-            throw new Error('connectionProfileName not specified');
-        } else if (!settings.businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
-        } else if (!settings.participantId) {
-            throw new Error('participantId not specified');
-        } else if (!settings.participantPwd) {
-            throw new Error('participantPwd not specified');
+        if (!settings.card) {
+            throw new Error('card not specified');
         }
 
         // Assign defaults for any optional properties.
@@ -91,15 +85,16 @@ class BusinessNetworkConnector extends Connector {
         if (this.settings.multiuser && options && options.accessToken) {
 
             // Check that the LoopBack application has supplied the required information.
-            if (!options.enrollmentID || !options.enrollmentSecret) {
-                throw new Error('No enrollment ID or enrollment secret has been provided');
+            if (!options.card) {
+                throw new Error('A business network card has not been specified');
+            } else if (!options.cardStore) {
+                throw new Error('A business network card store has not been specified');
             }
 
-            // The connection wrapper key is a hash of the user ID, enrollment ID, and enrollment secret.
+            // The connection wrapper key is a hash of the access token and business network card.
             const key = crypto.createHmac('sha256', 'such secret')
                 .update(options.accessToken.id)
-                .update(options.enrollmentID)
-                .update(options.enrollmentSecret)
+                .update(options.card)
                 .digest('hex');
 
             // Check to see if a connection wrapper already exists for the key, if not create one.
@@ -107,9 +102,8 @@ class BusinessNetworkConnector extends Connector {
             if (!connectionWrapper) {
                 debug('Creating new connection wrapper for key', key);
                 const settings = Object.assign(this.settings, {
-                    participantId: options.enrollmentID,
-                    participantPwd: options.enrollmentSecret,
-                    wallet: options.wallet
+                    cardStore: options.cardStore,
+                    card: options.card
                 });
                 connectionWrapper = new BusinessNetworkConnectionWrapper(settings);
                 this.connectionWrappers.set(key, connectionWrapper);
@@ -364,7 +358,7 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     callback(null, []);
                     return;
                 }
@@ -594,7 +588,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('replaceById', 'error thrown doing update', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -693,7 +687,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('destroy', 'error thrown doing remove', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -787,7 +781,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('update', 'error thrown doing update', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -831,7 +825,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('destroyAll', 'error thrown doing remove', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -887,7 +881,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('getIdentityByID', 'error thrown doing getIdentityByID', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -1075,7 +1069,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('getHistorianRecordByID', 'error thrown doing getHistorianRecordByID', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
