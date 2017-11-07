@@ -314,6 +314,8 @@ module.exports = function (Card) {
         const adminConnection = new AdminConnection({ cardStore });
         return adminConnection.exportCard(name)
             .then((card) => {
+                // Delete the wallet on the way out, this is internal to the REST server.
+                delete card.connectionProfile.wallet;
                 return card.toArchive({ type: 'nodebuffer' });
             })
             .then((cardData) => {

@@ -24,7 +24,7 @@ const ldapserver = require('./ldapserver');
 const server = require('../server/server');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-http'));
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
@@ -328,6 +328,7 @@ describe('Multiple user REST API unit tests', () => {
                 })
                 .then((card) => {
                     card.getUserName().should.equal('alice1');
+                    should.equal(card.getConnectionProfile().wallet, undefined);
                 });
         });
 
