@@ -46,6 +46,7 @@ class Deploy {
         let logLevel = argv.loglevel;
         let cardName = argv.card;
         let card;
+        let filename;
 
 
         console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
@@ -74,6 +75,11 @@ class Deploy {
 
         })
         .then(() => {
+            // need to get the card now for later use
+            return adminConnection.getCard(cardName);
+        })
+        .then((_card)=>{
+            card = _card;
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
                 // Build the deploy options.
@@ -123,15 +129,15 @@ class Deploy {
                     createArgs.certificate = argv.networkAdminCertificateFile;
                 }
 
-                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((fileName)=>{
-                    console.log('Successfully created business network card to '+fileName);
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((_filename)=>{
+                    filename = _filename;
                     return;
                 });
             }
             return result;
         }).then((result)=>{
             spinner.succeed();
-            console.log();
+            console.log('Successfully created business network card to '+filename);
             return result;
         })
         .catch((error) => {

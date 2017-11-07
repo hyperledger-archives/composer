@@ -47,6 +47,8 @@ class Start {
         let spinner;
         let logLevel = argv.loglevel;
         let cardName = argv.card;
+        let card;
+        let filename;
 
         // needs promise resolve here in case the archive errors
         return Promise.resolve().then(() => {
@@ -67,7 +69,12 @@ class Start {
 
             return adminConnection.connect(cardName);
         })
-        .then((result) => {
+        .then(() => {
+            // need to get the card now for later use
+            return adminConnection.getCard(cardName);
+        })
+        .then((_card) => {
+            card = _card;
             if (updateBusinessNetwork === false) {
                 spinner = ora('Starting business network definition. This may take a minute...').start();
 
@@ -76,7 +83,7 @@ class Start {
                 if (logLevel) {
                     startOptions.logLevel = logLevel;
                 }
-
+                startOptions.card = card;
                 // Build the bootstrap tranactions.
                 let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
 
@@ -118,15 +125,15 @@ class Start {
                     createArgs.certificate = argv.networkAdminCertificateFile;
                 }
 
-                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((fileName)=>{
-                    console.log('Successfully created business network card to '+fileName);
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((_filename)=>{
+                    filename = _filename;
                     return;
                 });
             }
             return result;
         }).then((result)=>{
             spinner.succeed();
-            console.log();
+            console.log('Successfully created business network card to '+filename);
 
             return result;
         }).catch((error) => {
