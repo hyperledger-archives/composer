@@ -119,6 +119,27 @@ describe('Concept', function () {
             const obj = serializer.fromJSON(jsObject);
             obj.getIdentifier().should.equal('123');
         });
+
+        it('should generate a concept from JSON', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel, 'concept.cto');
+            const factory = new Factory(modelManager);
+            const serializer = new Serializer(factory, modelManager);
+            const jsObject = JSON.parse('{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}');
+            const obj = serializer.fromJSON(jsObject);
+            obj.isConcept().should.be.true;
+        });
+
+        it('should generate an ENUM from JSON', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel, 'concept.cto');
+            const factory = new Factory(modelManager);
+            const serializer = new Serializer(factory, modelManager);
+            const jsObject = JSON.parse('{"$class":"org.acme.biznet.assetStatus"}');
+            const obj = serializer.fromJSON(jsObject);
+            obj.isEnum().should.be.true;
+        });
+
     });
 
     describe('#isConcept', () => {
