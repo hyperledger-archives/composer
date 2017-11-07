@@ -44,59 +44,20 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['connectionProfileName', 'businessNetworkName', 'enrollmentId', 'enrollmentSecret', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
+                    names.should.deep.equal(['card', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
                 });
         });
 
-        it('should validate the length of the connection profile name', () => {
+        it('should validate the length of the business network card', () => {
             return Util.getConnectionSettings()
                 .then(() => {
                     sinon.assert.calledOnce(inquirer.prompt);
                     const questions = inquirer.prompt.args[0][0]; // First call, first argument.
                     const question = questions.find((question) => {
-                        return question.name === 'connectionProfileName';
+                        return question.name === 'card';
                     });
                     question.validate('').should.match(/Please enter/);
-                    question.validate('hlfabric').should.be.true;
-                });
-        });
-
-        it('should validate the length of the business network identifier', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'businessNetworkName';
-                    });
-                    question.validate('').should.match(/Please enter/);
-                    question.validate('org-acme-biznet').should.be.true;
-                });
-        });
-
-        it('should validate the length of the enrollment ID', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'enrollmentId';
-                    });
-                    question.validate('').should.match(/Please enter/);
-                    question.validate('admin').should.be.true;
-                });
-        });
-
-        it('should validate the length of the enrollment secret', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'enrollmentSecret';
-                    });
-                    question.validate('').should.match(/Please enter/);
-                    question.validate('adminpw').should.be.true;
+                    question.validate('admin@org-acme-biznet').should.be.true;
                 });
         });
 
