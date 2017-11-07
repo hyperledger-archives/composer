@@ -18,7 +18,7 @@ linkchecker --version
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-npm install -g npm@4 lerna@2 @alrra/travis-scripts asciify gnomon
+npm install -g lerna@2 @alrra/travis-scripts asciify gnomon
 
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg

@@ -104,10 +104,10 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
-                        bootstrapTransactions: [],
-                        endorsementPolicy: optionsObject.endorsementPolicy
-                    });
+                  sinon.match(  {
+                      bootstrapTransactions: [],
+                      endorsementPolicy: optionsObject.endorsementPolicy
+                  }));
             });
         });
 
@@ -132,10 +132,10 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
+                    sinon.match({
                         bootstrapTransactions: [],
                         endorsementPolicyFile: '/path/to/some/file.json'
-                    });
+                    }));
             });
         });
 
@@ -161,10 +161,10 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
                 sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
-                    {
+                    sinon.match({
                         bootstrapTransactions: [],
                         endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
-                    });
+                    }));
             });
         });
 
@@ -188,7 +188,8 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [] }));
             });
         });
 
@@ -212,7 +213,8 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [], logLevel: 'DEBUG'});
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [], logLevel: 'DEBUG'}));
             });
         });
 
@@ -235,7 +237,8 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [] }));
             });
         });
 
@@ -395,7 +398,8 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardName');
                 sinon.assert.calledOnce(mockAdminConnection.deploy);
-                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition, { bootstrapTransactions: [] });
+                sinon.assert.calledWith(mockAdminConnection.deploy, businessNetworkDefinition,
+                    sinon.match({ bootstrapTransactions: [] }));
             });
         });
         it('Failure of the archive functions', function () {
