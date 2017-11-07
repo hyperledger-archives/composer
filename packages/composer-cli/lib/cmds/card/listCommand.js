@@ -18,7 +18,9 @@ const List = require ('./lib/list.js');
 
 module.exports.command = 'list';
 module.exports.describe = 'List all business network cards';
-module.exports.builder = {};
+module.exports.builder = {
+    name: {alias: 'n', required: false, describe: 'The name used to identify the card', type: 'string' }
+};
 
 module.exports.handler = (argv) => {
     return argv.thePromise = List.handler(argv);
