@@ -8,7 +8,7 @@ ARG VERSION=latest
 
 # Need to install extra dependencies for native modules.
 RUN npm install --unsafe --production -g pm2 composer-rest-server@${VERSION} && \
-    npm cache clean
+    npm cache clean --force
 
 # Create the composer user ID.
 RUN useradd composer
