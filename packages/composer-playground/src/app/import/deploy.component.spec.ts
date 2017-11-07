@@ -181,7 +181,7 @@ describe('DeployComponent', () => {
             tick();
 
             addEmptyNetworkOption.should.have.been.calledWith([{name: 'modelTwo'}, {name: 'modelOne'}]);
-            selectNetworkStub.should.have.been.calledWith({name: 'modelOne'});
+            selectNetworkStub.should.have.been.calledWith({name: 'empty'});
             component['npmInProgress'].should.equal(false);
             component['sampleNetworks'].should.deep.equal([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
         }));
