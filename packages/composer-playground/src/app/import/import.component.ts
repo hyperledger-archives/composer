@@ -56,7 +56,7 @@ export abstract class ImportComponent implements OnInit {
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
                 this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-                this.selectNetwork(this.sampleNetworks[1]);
+                this.selectNetwork(this.sampleNetworks[0]);
                 this.npmInProgress = false;
 
             })
