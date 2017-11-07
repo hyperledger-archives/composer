@@ -19,7 +19,7 @@ const Import = require ('./lib/export.js');
 module.exports.command = 'export [options]';
 module.exports.describe = 'Export a business network card';
 module.exports.builder = {
-    file: {alias: 'f', required: true, describe: 'The card file name', type: 'string' },
+    file: {alias: 'f', required: false, describe: 'The card file name', type: 'string' },
     name: {alias: 'n', required: true, describe: 'The name used to identify the card', type: 'string' }
 };
 
