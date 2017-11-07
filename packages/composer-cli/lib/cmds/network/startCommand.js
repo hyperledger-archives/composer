@@ -26,7 +26,8 @@ module.exports.builder = {
     networkAdmin: { alias: 'A', required: false, description: 'The identity name of the business network administrator', type: 'string' },
     networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
     networkAdminEnrollSecret: { alias: 'S', required: false, description: 'Use enrollment secret for the business network administrator', type: 'boolean', default: undefined },
-    card: { alias: 'c', required: true, description: 'The cardname to use to start the network', type:'string'}
+    card: { alias: 'c', required: false, description: 'The cardname to use to start the network', type:'string'},
+    file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
 };
 
 module.exports.handler = (argv) => {
