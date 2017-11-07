@@ -349,7 +349,7 @@ tar xvzf fabric-dev-servers.tar.gz
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
 ./downloadFabric.sh
 ./startFabric.sh
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 </code></pre></div>
 <p>Then at the end of your development session</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
@@ -359,7 +359,7 @@ tar xvzf fabric-dev-servers.tar.gz
 </ol>
 
 <blockquote>
-<p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.</p>
+<p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks.</p>
 </blockquote>
 
 <h2 id="script-details">Script details</h2>
@@ -389,14 +389,14 @@ tar xvzf fabric-dev-servers.tar.gz
 ./stopFabric.sh
 </code></p>
 
-<p><strong>Create Hyperledger Composer Profile</strong></p>
+<p><strong>Create business network card for the peer administrator</strong></p>
 
 <p>Issue from the <code>fabric-tools</code> directory
 <code>
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 </code></p>
 
-<p>Note: this creates a Hyperledger Composer profile specifically to connect to the development fabric you&#39;ve already started.</p>
+<p>Note: this creates and imports a business network card to connect to the development fabric you&#39;ve already started.</p>
 
 <p><strong>Teardown Fabric</strong></p>
 
