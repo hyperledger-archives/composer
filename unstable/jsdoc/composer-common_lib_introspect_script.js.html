@@ -137,7 +137,7 @@ class Script {
         let data = {errorStatement:''};
         let parser;
         try {
-            parser = new JavaScriptParser(this.contents, false, 5,{});
+            parser = new JavaScriptParser(this.contents, false, 5);
         } catch (cause) {
             // consider adding a toHex method in the exception to put out the pure hex values of the file.
             const error = new SyntaxError('Failed to parse ' + this.identifier + ': ' + cause.message+'\n'+data.errorStatement);
