@@ -102,7 +102,7 @@ function processFile(file, fileProcessor) {
     let filePath = path.parse(file);
     if (filePath.ext === '.js' && filePath.base !== 'parser.js') {  //ignore the generated parsers
         let fileContents = fs.readFileSync(file, 'utf8');
-        const parser = new JavaScriptParser(fileContents, program.private);
+        const parser = new JavaScriptParser(fileContents, program.private, null, false);
         fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
     }
 }
