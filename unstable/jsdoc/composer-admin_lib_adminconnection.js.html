@@ -204,15 +204,11 @@ class AdminConnection {
 
     /**
      * Import a business network card.
+     * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
-     * @param {String} [name] Name by which this card should be referred
-     * @return {Promise} Resolved with the name by which the card is referred as a  String
+     * @return {Promise} Resolved when the card is imported
      */
-    importCard(card, name) {
-        if (!name) {
-            const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
-            name = card.getUserName() + '@' + locationName;
-        }
+    importCard(name, card) {
         let connectionProfileData;
         return this.cardStore.put(name, card)
             .then(() => {
@@ -228,9 +224,6 @@ class AdminConnection {
                 } else {
                     return; // use secret
                 }
-            })
-            .then( ()=>{
-                return name;
             });
     }
 

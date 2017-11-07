@@ -431,13 +431,13 @@ Calling an api after disconnect and before connect will give an error.</p>
 
 <h2 id="importcard">importCard</h2>
 
-<p><em>Promise importCard( IdCard card, [String name] )</em></p>
+<p><em>Promise importCard( String name, IdCard card )</em></p>
 
 <p>Import a business network card.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Resolved with the name by which the card is referred as a  String</p>
+<p><code>Promise</code> - Resolved when the card is imported</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -450,16 +450,16 @@ Calling an api after disconnect and before connect will give an error.</p>
 </tr>
 </thead><tbody>
 <tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">Name by which this card should be referred</td>
+</tr>
+<tr>
 <td style="text-align: left"><strong>card</strong></td>
 <td style="text-align: left">IdCard</td>
 <td style="text-align: left">false</td>
 <td style="text-align: left">The card to import</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">Name by which this card should be referred</td>
 </tr>
 </tbody></table>
 
