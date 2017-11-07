@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.15.0 {25f10e3ea34abac22d3a0fdaaf50fee0} 2017-10-31
+Version 0.15.0 {0cf0932f6245dc1f4c47347bf0988a43} 2017-10-31
 - Remove importIdentity, requestIdentity and exportIdentity from AdminConnection public API
 - Remove connect profile functions from AdminConnection public API
 - Add card function to AdminConnection public API

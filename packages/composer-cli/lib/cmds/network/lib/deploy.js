@@ -66,7 +66,7 @@ class Deploy {
             // if we are performing an update we have to actually connect to the network
             // we want to update!
 
-            return adminConnection.connect(cardName, updateBusinessNetwork);
+            return adminConnection.connect(cardName);
 
         })
         .then(() => {
