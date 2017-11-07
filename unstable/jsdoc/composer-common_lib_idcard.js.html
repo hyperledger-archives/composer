@@ -408,7 +408,7 @@ class IdCard {
         const connectionPath = path.resolve(cardDirectory, CONNECTION_FILENAME);
         const credentialsPath = path.resolve(cardDirectory, CREDENTIALS_DIRNAME);
 
-        return fs.access(cardDirectory).catch(cause => {
+        return fs.stat(cardDirectory).catch(cause => {
             throw newErrorWithCause('Unable to read card directory: ' + cardDirectory, cause);
         }).then(() => {
             return fs.readFile(metadataPath, readOptions).catch(cause => {
