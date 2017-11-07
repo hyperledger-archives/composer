@@ -53,7 +53,7 @@ class List {
             cardNames.forEach((e)=>{
                 let tableLine = [];
                 let idCard = cardMap.get(e);
-                console.log(idCard);
+
                 tableLine.push(e);
                 tableLine.push(idCard.getUserName());
                 tableLine.push(idCard.getBusinessNetworkName());
