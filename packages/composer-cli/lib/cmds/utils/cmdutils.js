@@ -270,6 +270,16 @@ class CmdUtil {
         let businessNetworkConnection = new BusinessNetworkConnection();
         return businessNetworkConnection;
     }
+
+    /**
+     * Get a default name for a given business network card.
+     * @param {IdCard} card A business network card
+     * @returns {String} A card name
+     */
+    static getDefaultCardName(card) {
+        const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
+        return card.getUserName() + '@' + locationName;
+    }
 }
 
 module.exports = CmdUtil;
