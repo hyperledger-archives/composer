@@ -21,7 +21,8 @@ module.exports.describe = 'Installs the Hyperledger Composer runtime for a busin
 module.exports.builder = {
     option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
     optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to install the network', type:'string'}
+    card: { alias: 'c', required: true, describe: 'The cardname to use to install the network', type:'string'},
+    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
 };
 
 module.exports.handler = (argv) => {
