@@ -1088,7 +1088,7 @@ describe('AdminConnection', () => {
 
             });
 
-            it('Card exists, but with no credentials or secret',()=>{
+            it('should still export a card with no secret or credentials',()=>{
                 mockConnectionManager.exportIdentity = sinon.stub();
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
@@ -1096,7 +1096,10 @@ describe('AdminConnection', () => {
 
                 return cardStore.put(cardName, userCard).then(() => {
                     return adminConnection.exportCard(cardName);
-                }).should.eventually.be.rejectedWith(/no credentials or secret so is invalid/);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.equal('user');
+                });
 
             });
 

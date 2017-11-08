@@ -55,6 +55,20 @@ class Util {
     }
 
     /**
+     * Check if the cardname is valid
+     *
+     * @param {string} description the description
+     * @return {*} return true or error message
+     */
+    static validateCardName(name) {
+        if(name !== null && name !== undefined && name !== '') {
+            return true;
+        } else {
+            return 'CardName cannot be null or empty.';
+        }
+    }
+
+    /**
      * Check if the namespace is valid
      *
      * @param {string} namespace the name space of the first files

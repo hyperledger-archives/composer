@@ -629,7 +629,7 @@ Switch to the terminal, change directory to the dist folder containing the `my-n
 ```
 cd dist
 
-composer network update -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
+composer network update -a my-network.bna -p hlfv1 -i admin -s randomString
 
 ```
 

@@ -12,7 +12,7 @@ excerpt: Composer Archive Create CLI
 
 The `composer archive create` utility is used to create a business network archive from the contents of a directory.
 
-To create an archive from source flles (ie business network definition project files) present in the current 'working' directory:
+To create an archive from source files (ie business network definition project files) present in the current 'working' directory:
 
 ```bash
 composer archive create -a <business-network-archive>
@@ -29,12 +29,14 @@ composer archive create --sourceType dir --sourceName <dirpath> -a digitalproper
 ### Options
 
 ```
---help             Show help  [boolean]
+composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network
+
+Options:
+  --help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
   --archiveFile, -a  Business network archive file name. Default is based on the Identifier of the BusinessNetwork  [string]
-  --inputDir, -d     Location to create the archive from e.g. NPM module directory
-  --moduleName, -m   Name of the npm module to use
-
+  --sourceType, -t   The type of the input containg the files used to create the archive [ module | dir ]  [required]
+  --sourceName, -n   The Location to create the archive from e.g. NPM module directory or Name of the npm module to use  [required]
 Only one of either inputDir or moduleName must be specified.
 ```
 

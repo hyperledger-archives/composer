@@ -8,7 +8,7 @@
   "scripts": {
     "ng": "ng",
 <% if(apiServer == 'generate'){ %>
-    "app": "composer-rest-server -n <%= networkIdentifier %> -p <%= connectionProfileName %> -i <%= enrollmentId %> -s <%= enrollmentSecret %> -N <%= apiNamespace %> -P <%= apiPort %>",
+    "app": "composer-rest-server --card <%= cardName %> -N <%= apiNamespace %> -P <%= apiPort %>",
     "start": "concurrently \"ng serve --host 0.0.0.0\" \"npm run app\"",
 <% }else{ %>
     "start": "ng serve",

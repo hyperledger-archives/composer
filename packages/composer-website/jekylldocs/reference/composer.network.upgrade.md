@@ -28,8 +28,5 @@ composer network upgrade [options]
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name whose runtime will be upgraded  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --upgradeId, -i              The id of the user permitted to upgrade the runtime  [string] [required]
-  --upgradeSecret, -s          The secret of the user permitted to upgrade the runtime, if required  [string]
+  -c, --card                   The business network card defining the network to upgrade. [string]
 ```
