@@ -15,7 +15,7 @@ The `composer runtime install` command is used to install the {{site.data.conref
 _Please Note_: The `--businessNetworkName, -n` option **must** contain the same name as the business network name you intend to run on the {{site.data.conrefs.hlf_full}} peers. Only business networks with names matching the `--businessNetworkName, -n` option given in this command will successfully run.
 
 ```
-composer runtime install -n <businessNetworkName> -p <connectionProfileName> -i <installId> -s <installSecret>
+composer runtime install -n <businessNetworkName> -c <peer-admin-card>
 ```
 
 ### Options
@@ -23,12 +23,10 @@ composer runtime install -n <businessNetworkName> -p <connectionProfileName> -i 
 composer runtime install [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --option, -o                 Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O            A file containing options that are specific to connection  [string]
-  --installId, -i              The id of the user permitted to install the runtime  [string] [required]
-  --installSecret, -s          The secret of the user permitted to install the runtime, if required  [string]
+  --help                     Show help  [boolean]
+  -v, --version              Show version number  [boolean]
+  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O          A file containing options that are specific to connection  [string]
+  --card, -c                 The cardname to use to install the network  [string] [required]
+  --businessNetworkName, -n  The business network name  [string] [required]
 ```
