@@ -96,6 +96,17 @@ describe('System REST API unit tests', () => {
     let serializer;
     let idCard;
 
+    const binaryParser = (res, cb) => {
+        res.setEncoding('binary');
+        res.data = '';
+        res.on('data', (chunk) => {
+            res.data += chunk;
+        });
+        res.on('end', () => {
+            cb(null, new Buffer(res.data, 'binary'));
+        });
+    };
+
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
         const adminConnection = new AdminConnection({ fs: bfs_fs });
@@ -249,10 +260,15 @@ describe('System REST API unit tests', () => {
                         issuer: true
                     }
                 })
+                .buffer()
+                .parse(binaryParser)
                 .then((res) => {
-                    res.should.be.json;
-                    res.body.userID.should.equal('alice2');
-                    res.body.userSecret.should.be.a('string');
+                    res.should.have.status(200);
+                    res.body.should.be.an.instanceOf(Buffer);
+                    return IdCard.fromArchive(res.body);
+                })
+                .then((card) => {
+                    card.getUserName().should.equal('alice2');
                 });
         });
 
