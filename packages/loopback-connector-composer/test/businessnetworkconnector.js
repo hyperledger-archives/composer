@@ -22,6 +22,7 @@ const BusinessNetworkConnectionWrapper = require('../lib/businessnetworkconnecti
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const EventEmitter = require('events');
 const Factory = require('composer-common').Factory;
+const IdCard = require('composer-common').IdCard;
 const IdentityRegistry = require('composer-client/lib/identityregistry');
 const Introspector = require('composer-common').Introspector;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
@@ -77,6 +78,7 @@ describe('BusinessNetworkConnector', () => {
     let introspector;
     let mockQueryFile;
     let mockCardStore;
+    let mockCard;
 
     beforeEach(() => {
 
@@ -91,6 +93,7 @@ describe('BusinessNetworkConnector', () => {
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockCardStore = sinon.createStubInstance(BusinessNetworkCardStore);
+        mockCard = sinon.createStubInstance(IdCard);
 
         // setup mocks
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
@@ -98,6 +101,9 @@ describe('BusinessNetworkConnector', () => {
         mockBusinessNetworkConnection.disconnect.resolves();
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
+        mockCard.getBusinessNetworkName.returns('biznet');
+        mockCard.getConnectionProfile.returns({ type: 'hlfv1', name: 'hlfv1' });
+        mockBusinessNetworkConnection.getCard.returns(mockCard);
 
         settings = {
             card: 'admin@biznet',
@@ -2094,7 +2100,14 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, participant, userID, options);
                     const result = cb.args[0][1]; // First call, second argument (error, identity)
-                    result.should.deep.equal(identity);
+                    return IdCard.fromArchive(result);
+                })
+                .then((card) => {
+                    card.should.be.an.instanceOf(IdCard);
+                    card.getUserName().should.equal(userID);
+                    card.getBusinessNetworkName().should.equal('biznet');
+                    card.getConnectionProfile().should.deep.equal({ type: 'hlfv1', name: 'hlfv1' });
+                    card.getEnrollmentCredentials().secret.should.equal('suchs3cret');
                 });
         });
 

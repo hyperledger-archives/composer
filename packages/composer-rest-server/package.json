@@ -35,6 +35,7 @@
   "dependencies": {
     "body-parser": "1.17.0",
     "clui": "0.3.1",
+    "composer-admin": "0.15.0",
     "composer-common": "0.15.0",
     "compression": "1.0.3",
     "connect-ensure-login": "0.1.1",
@@ -64,7 +65,6 @@
     "chai-as-promised": "6.0.0",
     "chai-http": "3.0.0",
     "clone": "2.1.1",
-    "composer-admin": "0.15.0",
     "composer-client": "0.15.0",
     "composer-connector-embedded": "0.15.0",
     "eslint": "3.17.1",
