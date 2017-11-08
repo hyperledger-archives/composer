@@ -235,12 +235,29 @@ describe('BusinessNetworkConnection', () => {
         const enrollmentSecret = 'password';
         const keyValStore = '/conga/conga/conga';
         let mockIdCard;
+        let idcard;
 
         beforeEach(() => {
+
+            const metadata = {
+                userName: 'Pingu',
+                roles: [ 'PeerAdmin', 'ChannelAdmin' ]
+            };
+            const connection ={};
+            connection.card='user@penguin-network';
+            connection.name='connectionName';
+
+            idcard =  new IdCard(metadata, connection);
+            const certificate = 'CERTIFICATE_DATA';
+            const privateKey = 'PRIVATE_KEY_DATA';
+            idcard.setCredentials({certificate: certificate, privateKey: privateKey });
+
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
             let mockCardStore = sinon.createStubInstance(CardStore);
             mockIdCard = sinon.createStubInstance(IdCard);
-            mockCardStore.get.resolves(mockIdCard);
+            mockCardStore.get.withArgs('cardName').resolves(mockIdCard);
+            mockCardStore.get.withArgs('CARD_NAME').resolves(mockIdCard);
+            mockCardStore.get.withArgs('credentialsCardName').resolves(idcard);
             mockIdCard.getEnrollmentCredentials.returns({secret: enrollmentSecret});
             mockIdCard.getUserName.returns(userName);
             mockIdCard.getConnectionProfile.returns({ keyValStore: keyValStore });
@@ -267,12 +284,19 @@ describe('BusinessNetworkConnection', () => {
 
 
         it('Correct with with existing card name & additional options',()=>{
-
-
             return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
                 .then((result)=>{
                     sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
                     businessNetworkConnection.getCard().should.equal(mockIdCard);
+                });
+        });
+
+        it('Correct with with existing card name & additional options, without using the enrollmentsecret',()=>{
+
+            return businessNetworkConnection.connect('credentialsCardName', { some: 'other', options: true })
+                .then((result)=>{
+                    sinon.assert.calledWith(mockConnection.login, 'Pingu', 'na');
+                    businessNetworkConnection.getCard().should.equal(idcard);
                 });
         });
 
