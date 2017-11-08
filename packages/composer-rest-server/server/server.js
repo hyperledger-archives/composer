@@ -44,7 +44,7 @@ module.exports = function (composer) {
         // model dependent on whether or not the multiple user option has been specified.
         const models = require('./model-config.json');
         const multiuser = !!composer.multiuser;
-        models.Wallet.public = multiuser;
+        models.Card.public = multiuser;
 
         // Allow environment variable overrides for the datasources.json file.
         let dataSources = require('./datasources.json');

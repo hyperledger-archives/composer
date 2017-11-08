@@ -76,7 +76,7 @@ class AdminConnection {
             );
         }
 
-        this.cardStore = options.cardStore || new FileSystemCardStore();
+        this.cardStore = options.cardStore || new FileSystemCardStore({ fs: options.fs || fs });
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
@@ -118,15 +118,11 @@ class AdminConnection {
 
     /**
      * Import a business network card.
+     * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
-     * @param {String} [name] Name by which this card should be referred
-     * @return {Promise} Resolved with the name by which the card is referred as a  String
+     * @return {Promise} Resolved when the card is imported
      */
-    importCard(card, name) {
-        if (!name) {
-            const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
-            name = card.getUserName() + '@' + locationName;
-        }
+    importCard(name, card) {
         let connectionProfileData;
         return this.cardStore.put(name, card)
             .then(() => {
@@ -142,9 +138,6 @@ class AdminConnection {
                 } else {
                     return; // use secret
                 }
-            })
-            .then( ()=>{
-                return name;
             });
     }
 
@@ -330,10 +323,9 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      * @param {String} cardName - The name of the business network card
-     * @param {boolean} update true if this is for an update operation
-     * @return {Promise} A promise that indicates the connection is complete
+     * @return {Promise} A promise that when resolved indicates the connection is complete
      */
-    connect(cardName, update) {
+    connect(cardName) {
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 
@@ -359,9 +351,12 @@ class AdminConnection {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
-                if (update) {
+                this.securityContext.card = card;
+                if (card.getBusinessNetworkName()) {
                     return this.ping(this.securityContext);
                 }
+            }).then(()=>{
+                return;
             });
     }
 
@@ -480,10 +475,18 @@ class AdminConnection {
         const method = '_buildStartTransaction';
         LOG.entry(method, businessNetworkDefinition, startOptions);
 
+        let identityName, identityCertificate;
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
-        let identityName, identityCertificate;
-        return this._getCurrentIdentity()
+        return Promise.resolve()
+            .then(()=>{
+
+                if (startOptions.card){
+                    return startOptions.card.getCredentials();
+                } else {
+                    return this._getCurrentIdentity();
+                }
+            })
             .then((identity) => {
 
                 // Extract the current identity name and certificate.
@@ -602,13 +605,13 @@ class AdminConnection {
         LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
 
+        deployOptions.card = this.securityContext.card;
+
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
             .then((startTransactionJSON) => {
-
                 // Now we can deploy the business network.
                 return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
-
             })
             .then(() => {
                 LOG.exit(method);

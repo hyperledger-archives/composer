@@ -17,6 +17,7 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const prompt = require('prompt');
 
@@ -485,6 +486,24 @@ describe('composer transaction cmdutils unit tests', () => {
             CmdUtil.createBusinessNetworkConnection().should.be.an.instanceOf(BusinessNetworkConnection);
         });
 
+    });
+
+    describe('#getDefaultCardName', () => {
+        it('should return name based on card name and business network name for user card', () => {
+            const metadata = { userName: 'conga', businessNetwork: 'penguin-network' };
+            const connectionProfile = { name: 'profile-name' };
+            const card = new IdCard(metadata, connectionProfile);
+            const result = CmdUtil.getDefaultCardName(card);
+            result.should.include(metadata.userName).and.include(metadata.businessNetwork);
+        });
+
+        it('should return name based on card name and connection profile name for PeerAdmin card', () => {
+            const metadata = { userName: 'PeerAdmin', roles: [ 'PeerAdmin', 'ChannelAdmin' ] };
+            const connectionProfile = { name: 'profile-name' };
+            const card = new IdCard(metadata, connectionProfile);
+            const result = CmdUtil.getDefaultCardName(card);
+            result.should.include(metadata.userName).and.include(connectionProfile.name);
+        });
     });
 
 });

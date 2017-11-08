@@ -67,19 +67,22 @@ class Registry extends EventEmitter {
     getAll() {
         return this.dataCollection.getAll()
             .then((objects) => {
-                return objects.map((object) => {
-                    object = Registry.removeInternalProperties(object);
-                    return this.serializer.fromJSON(object);
-                }).reduce((promise, resource) => {
-                    return promise.then((resources) => {
-                        return this.accessController.check(resource, 'READ')
+                return objects.reduce((promiseChain, resource) => {
+                    return promiseChain.then((newResources) => {
+                        let object = Registry.removeInternalProperties(resource);
+                        try {
+                            let resourceToCheckAccess = this.serializer.fromJSON(object);
+                            return this.accessController.check(resourceToCheckAccess, 'READ')
                             .then(() => {
-                                resources.push(resource);
-                                return resources;
-                            })
-                            .catch((error) => {
-                                return resources;
+                                newResources.push(resourceToCheckAccess);
+                                return newResources;
+                            }).catch((e) => {
+                                return newResources;
                             });
+                        } catch (err) {
+                            return newResources;
+                        }
+
                     });
                 }, Promise.resolve([]));
             });
@@ -175,7 +178,9 @@ class Registry extends EventEmitter {
 
         return Promise.resolve().then(() => {
             if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
             }
         })
             .then(() => {
@@ -238,21 +243,20 @@ class Registry extends EventEmitter {
     update(resource, options) {
         let id;
         let object;
+
         return Promise.resolve().then(() => {
             if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot update type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
             }
-        })
-            .then(() => {
-                options = options || {};
-                id = resource.getIdentifier();
-                object = this.serializer.toJSON(resource, {
-                    convertResourcesToRelationships: options.convertResourcesToRelationships
-                });
-                object = this.addInternalProperties(object);
+            options = options || {};
+            id = resource.getIdentifier();
+            object = this.serializer.toJSON(resource, {
+                convertResourcesToRelationships: options.convertResourcesToRelationships                });                object = this.addInternalProperties(object);
 
-                return this.dataCollection.get(id);
-            })
+            return this.dataCollection.get(id);
+        })
             .then((oldResource) => {
                 return this.serializer.fromJSON(oldResource);
             })
