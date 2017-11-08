@@ -168,6 +168,7 @@ class BusinessNetworkConnection extends EventEmitter {
         this.securityContext = null;
         this.businessNetwork = null;
         this.dynamicQueryFile = null;
+        this.card = null;
     }
 
     /**
@@ -529,23 +530,31 @@ class BusinessNetworkConnection extends EventEmitter {
         const method = 'connectWithCard';
         LOG.entry(method,cardName);
 
-        let card;
-
         return this.cardStore.get(cardName)
             .then((retrievedCard)=>{
-                card = retrievedCard;
+                this.card = retrievedCard;
                 if (!additionalConnectOptions) {
                     additionalConnectOptions = {};
                 }
                 additionalConnectOptions.cardName = cardName;
-                return this.connectionProfileManager.connectWithData(card.getConnectionProfile(), card.getBusinessNetworkName(), additionalConnectOptions);
+                return this.connectionProfileManager.connectWithData(this.card.getConnectionProfile(), this.card.getBusinessNetworkName(), additionalConnectOptions);
             })
             .then((connection) => {
                 LOG.exit(method);
-                return this._connectionLogin(connection,card.getUserName(),card.getEnrollmentCredentials().secret);
+                return this._connectionLogin(connection,this.card.getUserName(),this.card.getEnrollmentCredentials().secret);
 
             });
 
+    }
+
+    /**
+     * Get the business network card used by this connection, if a business network card was used.
+     * @return {IdCard} The business network card used by this connection, or null if a business
+     * network card was not used.
+     * @private
+     */
+    getCard() {
+        return this.card;
     }
 
     /**
@@ -655,6 +664,7 @@ class BusinessNetworkConnection extends EventEmitter {
                 this.securityContext = null;
                 this.businessNetwork = null;
                 this.dynamicQueryFile = null;
+                this.card = null;
                 LOG.exit(method);
             });
     }
