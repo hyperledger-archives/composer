@@ -20,12 +20,12 @@ You must provide both a certificate and a private key pair to configure the REST
 
 You can enable HTTPS and TLS using the sample certificate and private key pair by using the `-t` argument to the command line:
 
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t
+    composer-rest-server -c alice1@my-network -t
 
 Alternatively, you can enable HTTPS and TLS using the sample certificate and private key pair by using the `COMPOSER_TLS` environment variable:
 
     export COMPOSER_TLS=true
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+    composer-rest-server -c alice1@my-network
 
 When you have successfully enabled HTTPS and TLS, you will see that the output of the REST server specifies an `https://` URL instead of a `http://` URL:
 
@@ -38,13 +38,13 @@ This configuration is only recommended for ease of use during initial developmen
 
 You can enable HTTPS and TLS by providing your own certificate and private key pair. The certificate and private key pair must be provided as two separate files in the PEM format. The files must be available on the file system of the system running the REST server, and the REST server must have read access to those files.
 
-You can configure the THE REST server to use your certificate and private key pair files by using the '-c' (certificate file) and '-k' (private key file) arguments to the command line:
+You can configure the THE REST server to use your certificate and private key pair files by using the '-e' (certificate file) and '-k' (private key file) arguments to the command line:
 
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t -c /tmp/cert.pem -k /tmp/key.pem
+    composer-rest-server -c alice1@my-network -t -e /tmp/cert.pem -k /tmp/key.pem
 
 Alternatively, you can configure the THE REST server to use your certificate and private key pair files by using the `COMPOSER_TLS_CERTIFICATE` and `COMPOSER_TLS_KEY` environment variables:
 
     export COMPOSER_TLS=true
     export COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
     export COMPOSER_TLS_KEY=/tmp/key.pem
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+    composer-rest-server -c alice1@my-network

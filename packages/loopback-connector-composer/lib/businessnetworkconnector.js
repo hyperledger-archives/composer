@@ -21,6 +21,7 @@ const Connector = require('loopback-connector').Connector;
 const crypto = require('crypto');
 const debug = require('debug')('loopback:connector:composer');
 const EventEmitter = require('events');
+const IdCard = require('composer-common').IdCard;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
@@ -900,9 +901,22 @@ class BusinessNetworkConnector extends Connector {
      */
     issueIdentity(participant, userID, issueOptions, options, callback) {
         debug('issueIdentity', participant, userID, issueOptions, options);
+        let issuingCard;
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                // Save the current business network card so we can create a new one.
+                issuingCard = businessNetworkConnection.getCard();
                 return businessNetworkConnection.issueIdentity(participant, userID, issueOptions);
+            })
+            .then((result) => {
+                const metadata = {
+                    userName: result.userID,
+                    version: 1,
+                    enrollmentSecret: result.userSecret,
+                    businessNetwork: issuingCard.getBusinessNetworkName()
+                };
+                const newCard = new IdCard(metadata, issuingCard.getConnectionProfile());
+                return newCard.toArchive({ type: 'nodebuffer' });
             })
             .then((result) => {
                 callback(null, result);
