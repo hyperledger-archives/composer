@@ -55,15 +55,18 @@ export abstract class ImportComponent implements OnInit {
         this.npmInProgress = true;
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
-                this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-                this.selectNetwork(this.sampleNetworks[1]);
-                this.npmInProgress = false;
-
+                this.initNetworkList(sampleNetworkList);
             })
             .catch((error) => {
-                this.npmInProgress = false;
+                this.initNetworkList([]);
                 this.alertService.errorStatus$.next(error);
             });
+    }
+
+    private initNetworkList(sampleNetworkList): void {
+        this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
+        this.selectNetwork(this.sampleNetworks[0]);
+        this.npmInProgress = false;
     }
 
     selectNetwork(network): void {

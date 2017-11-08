@@ -55,9 +55,8 @@
                 </div>
             </div>
             <div *ngIf="!npmInProgress" class="sample-network-list-container">
-                <div class="sample-network-list"
-                     [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}" id="base-samples">
-                    <div class="sample-network-list-item"
+                <div class="sample-network-list" [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}" id="base-samples">
+                    <div class="sample-network-list-item" *ngIf="sampleNetworks.length>1"
                          [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
                          (click)="selectNetwork(sampleNetworks[1])">
                         <img *ngIf="sampleNetworks[1].networkImage" src="{{sampleNetworks[1].networkImage}}">
@@ -99,7 +98,7 @@
 
                 <h3>Samples on npm</h3>
 
-                <div class="sample-network-list" id="npm-samples">
+                <div class="sample-network-list" id="npm-samples" *ngIf="sampleNetworks.length>1">
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetwork.name === chosenNetwork.name}"
                          *ngFor=" let sampleNetwork of sampleNetworks | slice:2; let networkIndex=index"
@@ -111,6 +110,9 @@
                         <div class="sample-network-name">{{sampleNetwork.name}}</div>
                     </div>
                 </div>
+                <div *ngIf="sampleNetworks.length==1">
+                    <p class="error-message">Error: could not connect to NPM to retrieve any samples.</p>
+                </div>        
             </div>
         </div>
     </section>
