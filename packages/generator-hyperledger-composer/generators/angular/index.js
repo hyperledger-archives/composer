@@ -129,7 +129,7 @@ module.exports = yeoman.Base.extend({
                     {
                         type: 'input',
                         name: 'cardName',
-                        message: 'Name of the network card:',
+                        message: 'Name of the Business Network card:',
                         store: true,
                         validate: Util.cardName
                     },
@@ -565,7 +565,8 @@ module.exports = yeoman.Base.extend({
             apiServer: apiServer,
             apiIP: apiIP,
             apiPort: apiPort,
-            apiNamespace: apiNamespace
+            apiNamespace: apiNamespace,
+            cardName: cardName
         };
     },
 
