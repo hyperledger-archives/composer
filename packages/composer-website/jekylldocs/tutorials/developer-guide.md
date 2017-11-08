@@ -147,7 +147,7 @@ After the runtime has been installed, a business network can be deployed to the 
 
 #### Retrieving the correct credentials
 
-A `PeerAdmin` business network card with the correct credentials is already created as part of development environment installation. In other circumstances the `composer identity import` command must be used to [collect the correct `PeerAdmin` credentials](../iabwdiawd).
+A `PeerAdmin` business network card with the correct credentials is already created as part of development environment installation.
 
 #### Deploying the business network
 

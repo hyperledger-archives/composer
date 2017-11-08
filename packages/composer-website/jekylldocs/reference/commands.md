@@ -117,10 +117,6 @@ List all identities in a business network: [composer identity list](./composer.i
 
 Revoke an identity from a participant: [composer identity revoke](./composer.identity.revoke.html)
 
-`composer identity import`
-
-Import an identity to your local identity wallet: [composer identity import](./composer.identity.import.html)
-
 ## Transaction execution
 
 `composer transaction submit`
