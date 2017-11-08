@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const Export = require('../../lib/cmds/card/lib/export.js');
 const fs = require('fs');
 
 const IdCard = require('composer-common').IdCard;
@@ -51,10 +52,11 @@ describe('composer card create CLI', function() {
         sandbox.restore();
     });
 
-    it('should create a valid card file with (secret) supplied details', function() {
+    it('should create card with no credentials when only secret specified', function() {
         sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName);
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
             connectionProfileFile: 'filename',
             file: 'filename',
@@ -67,6 +69,10 @@ describe('composer card create CLI', function() {
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
             sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                const credentials = card.getCredentials();
+                return !credentials.certificate && !credentials.privateKey;
+            }, 'No credentials'));
         });
     });
 
@@ -101,12 +107,13 @@ describe('composer card create CLI', function() {
 
 
 
-    it('create card with certificate and private key',()=>{
+    it('should create card with no enrollment credentials when only certificate and private key specified',()=>{
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
         sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
             connectionProfileFile: 'filename',
             certificate : 'certfile',
@@ -119,6 +126,9 @@ describe('composer card create CLI', function() {
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
             sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                return card.getEnrollmentCredentials() === null;
+            }, 'No enrollment credentials'));
         });
     });
 
