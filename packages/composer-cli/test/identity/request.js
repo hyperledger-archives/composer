@@ -21,7 +21,7 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
 const os = require('os');
 const mkdirp = require('mkdirp');
-
+const IdCard = require('composer-common').IdCard;
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -29,12 +29,13 @@ chai.use(require('chai-as-promised'));
 
 const PROFILE_NAME = 'myprofile';
 const USER_ID = 'SuccessKid';
-const USER_SECRET = 'SomeSecret';
+const USER_SECRET = 'humbolt';
 
 describe('composer identity request CLI unit tests', () => {
 
     let sandbox;
     let mockAdminConnection;
+    let testCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -42,6 +43,10 @@ describe('composer identity request CLI unit tests', () => {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
         sandbox.stub(mkdirp, 'sync').returns();
+
+        testCard = new IdCard({ userName: 'SuccessKid' , businessNetwork :'penguin-network',enrollmentSecret:'humbolt'}, { name: 'myprofile' });
+        testCard.setCredentials({certificate:'cert',privateKey:'nottelling'});
+        mockAdminConnection.getCard.resolves(testCard);
     });
 
     afterEach(() => {
@@ -50,9 +55,7 @@ describe('composer identity request CLI unit tests', () => {
 
     it('should request an identity using the specified profile and store in specified path', () => {
         let argv = {
-            connectionProfileName: PROFILE_NAME,
-            enrollId: USER_ID,
-            enrollSecret: USER_SECRET,
+            cardName : 'cardName',
             path: '/'
         };
         let fsStub = sandbox.stub(fs, 'writeFileSync');
@@ -76,9 +79,7 @@ describe('composer identity request CLI unit tests', () => {
 
     it('should request an identity using the specified profile', () => {
         let argv = {
-            connectionProfileName: PROFILE_NAME,
-            enrollId: USER_ID,
-            enrollSecret: USER_SECRET
+            cardName : 'cardName',
         };
         let fsStub = sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(os, 'homedir').returns('/x');
@@ -103,9 +104,7 @@ describe('composer identity request CLI unit tests', () => {
 
     it('should fail gracefully if requestIdentity fails', () => {
         let argv = {
-            connectionProfileName: PROFILE_NAME,
-            enrollId: USER_ID,
-            enrollSecret: USER_SECRET
+            cardName : 'cardName',
         };
 
         mockAdminConnection.requestIdentity.withArgs(PROFILE_NAME, USER_ID, USER_SECRET).rejects('Error', 'some error');

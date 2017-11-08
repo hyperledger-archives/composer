@@ -15,6 +15,7 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
+const IdCard = require('composer-common').IdCard;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const ModelUtil = require('composer-common').ModelUtil;
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
@@ -376,30 +377,28 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
         dataSource: dataSource,
         public: false
     });
-    const IssueIdentityResponse = app.loopback.createModel({
-        name: 'IssueIdentityResponse',
-        description: 'The response to the issueIdentity method',
-        base: 'Model',
-        properties: {
-            userID: {
-                type: 'string',
-                required: true
-            },
-            userSecret: {
-                type: 'string',
-                required: true
-            }
-        },
-        hidden: [ 'id' ]
-    });
-    app.model(IssueIdentityResponse, {
-        dataSource: dataSource,
-        public: false
-    });
 
     // Define and register the method.
-    System.issueIdentity = (data, options, callback) => {
-        connector.issueIdentity(data.participant, data.userID, data.options, options, callback);
+    System.issueIdentity = (data, res, options) => {
+        let cardData;
+        return new Promise((resolve, reject) => {
+            connector.issueIdentity(data.participant, data.userID, data.options, options, (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result);
+            });
+        }).then((cardData_) => {
+            cardData = cardData_;
+            return IdCard.fromArchive(cardData);
+        })
+        .then((card) => {
+            const name = card.getUserName() + '@' + card.getBusinessNetworkName();
+            res.setHeader('Content-Disposition', `attachment; filename=${name}.card`);
+            res.setHeader('Content-Length', cardData.length);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            return cardData;
+        });
     };
     System.remoteMethod(
         'issueIdentity', {
@@ -412,12 +411,19 @@ function registerIssueIdentityMethod(app, dataSource, System, connector) {
                     source: 'body'
                 }
             }, {
+                arg: 'res',
+                type: 'object',
+                http: {
+                    source: 'res'
+                }
+            }, {
                 arg: 'options',
                 type: 'object',
                 http: 'optionsFromRequest'
             }],
             returns: {
-                type: 'IssueIdentityResponse',
+                arg: 'cardFile',
+                type: 'file',
                 root: true
             },
             http: {

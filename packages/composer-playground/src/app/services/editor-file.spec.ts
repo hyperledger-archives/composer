@@ -422,4 +422,11 @@ transaction SampleTransaction {
             validateQuerySpy.should.not.have.been.called;
         });
     });
+
+    describe('getDisplayId', () => {
+        it('should get the display id', () => {
+            let result = file.getDisplayId();
+            result.should.equal('fileDisplayID');
+        });
+    });
 });

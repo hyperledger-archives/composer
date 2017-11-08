@@ -163,7 +163,7 @@ class AdminConnection {
                 card=result;
                 let credentials = card.getCredentials();
                 //anything set? if so don't go and get the credentials again
-                if (Object.keys(credentials).length!==0){
+                if (credentials.certificate || credentials.privateKey) {
                     return card;
                 } else {
                     // check to make sure the credentials are present and if not then extract them.
@@ -179,11 +179,6 @@ class AdminConnection {
                                 card.setCredentials(result);
                                 // put back the card, so that it has the ceritificates sotre
                                 return this.cardStore.put(cardName,card);
-                            } else {
-                                if(!card.getEnrollmentCredentials()){
-                                    // no secret either!
-                                    throw new Error(`Card ${cardName} has no credentials or secret so is invalid`);
-                                }
                             }
                         }).then(()=>{
                             return card;

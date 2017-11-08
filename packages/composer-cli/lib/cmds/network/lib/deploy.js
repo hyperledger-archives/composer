@@ -123,7 +123,7 @@ class Deploy {
                 }
 
                 if (argv.networkAdminEnrollSecret){
-                    metadata.enrollmentSecret = 'adminpw';
+                    metadata.enrollmentSecret = argv.networkAdminEnrollSecret;
                 } else {
                     // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
                     createArgs.certificate = argv.networkAdminCertificateFile;

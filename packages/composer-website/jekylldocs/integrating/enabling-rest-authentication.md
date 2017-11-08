@@ -61,7 +61,7 @@ Once the environment variable `COMPOSER_PROVIDERS` has been set, you can use the
 
 For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:
 
-    composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -a true
+    composer-rest-server -c admin@my-network -a true
 
 Now, navigate to the REST API explorer at [http://localhost:3000/explorer/](http://localhost:3000/explorer/). If authentication has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an `HTTP 401 Authorization Required` message.
 
