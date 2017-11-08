@@ -455,7 +455,15 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((connection) => {
                 LOG.exit(method);
-                return this._connectionLogin(connection,this.card.getUserName(),this.card.getEnrollmentCredentials().secret);
+
+                let secret = this.card.getEnrollmentCredentials();
+                if (!secret){
+                    secret='na';
+                } else {
+                    secret=secret.secret;
+                }
+
+                return this._connectionLogin(connection,this.card.getUserName(),secret);
 
             });
 

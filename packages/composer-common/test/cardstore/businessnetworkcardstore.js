@@ -15,6 +15,7 @@
 'use strict';
 
 const BusinessNetworkCardStore = require('../../lib/cardstore/businessnetworkcardstore');
+const IdCard = require('../../lib/idcard');
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -22,6 +23,24 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('BusinessNetworkCardStore', function() {
+    describe('#getDefaultCardName', function() {
+        it('should return name based on card name and business network name for user card', () => {
+            const metadata = { userName: 'conga', businessNetwork: 'penguin-network' };
+            const connectionProfile = { name: 'profile-name' };
+            const card = new IdCard(metadata, connectionProfile);
+            const result = BusinessNetworkCardStore.getDefaultCardName(card);
+            result.should.include(metadata.userName).and.include(metadata.businessNetwork);
+        });
+
+        it('should return name based on card name and connection profile name for PeerAdmin card', () => {
+            const metadata = { userName: 'PeerAdmin', roles: [ 'PeerAdmin', 'ChannelAdmin' ] };
+            const connectionProfile = { name: 'profile-name' };
+            const card = new IdCard(metadata, connectionProfile);
+            const result = BusinessNetworkCardStore.getDefaultCardName(card);
+            result.should.include(metadata.userName).and.include(connectionProfile.name);
+        });
+    });
+
     describe('#get', function() {
         it('should throw as abstract method', function() {
             const store = new BusinessNetworkCardStore();
