@@ -19,9 +19,9 @@ const IllegalModelException = require('./introspect/illegalmodelexception');
 const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
-
 const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODELS = require('./systemmodel');
+
 
 /**
  * <p>
@@ -145,7 +145,7 @@ class ModelManager {
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
         } else {
-            throw new Error('namespace already exists');
+            throw new Error ('namespace '+m.getNamespace()+' in model file ' +m.getName()+' already defined in '+this.modelFiles[m.getNamespace().getName()]  );
         }
 
         return m;
@@ -238,7 +238,7 @@ class ModelManager {
                         newModelFiles.push(m);
                     }
                     else {
-                        throw new Error('namespace already exists');
+                        throw new Error ('namespace '+m.getNamespace()+' in model file ' +m.getName()+' already defined in '+this.modelFiles[m.getNamespace()].getName());
                     }
                 } else {
                     if (modelFile.isSystemModelFile()) {
@@ -249,7 +249,7 @@ class ModelManager {
                         newModelFiles.push(modelFile);
                     }
                     else {
-                        throw new Error('namespace already exists');
+                        throw new Error ('namespace '+modelFile.getNamespace()+' in model file '+modelFile.getName()+' already defined in '+this.modelFiles[modelFile.getNamespace()].getName());
                     }
                 }
             }
