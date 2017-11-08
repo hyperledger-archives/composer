@@ -176,25 +176,24 @@ describe('DeployComponent', () => {
         let addEmptyNetworkOption;
         beforeEach(() => {
             selectNetworkStub = sinon.stub(component, 'selectNetwork');
-            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
         });
 
         it('should get the list of sample networks', fakeAsync(() => {
             mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
-
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
             component.onShow();
             component['npmInProgress'].should.equal(true);
             tick();
 
             addEmptyNetworkOption.should.have.been.calledWith([{name: 'modelTwo'}, {name: 'modelOne'}]);
-            selectNetworkStub.should.have.been.calledWith({name: 'empty'});
+            selectNetworkStub.should.have.been.calledWith({name: 'modelOne'});
             component['npmInProgress'].should.equal(false);
             component['sampleNetworks'].should.deep.equal([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
         }));
 
         it('should handle error', fakeAsync(() => {
             mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
-
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}]);
             component.onShow();
             component['npmInProgress'].should.equal(true);
             tick();
@@ -202,7 +201,6 @@ describe('DeployComponent', () => {
             addEmptyNetworkOption.should.have.been.calledWith([]);
             selectNetworkStub.should.have.been.calledWith({name: 'empty'});
             component['npmInProgress'].should.equal(false);
-            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
     });
 

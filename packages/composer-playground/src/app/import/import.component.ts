@@ -59,7 +59,6 @@ export abstract class ImportComponent implements OnInit {
             })
             .catch((error) => {
                 this.initNetworkList([]);
-                this.alertService.errorStatus$.next(error);
             });
     }
 
@@ -165,6 +164,7 @@ rule NetworkAdminSystem {
         let newOrder = [];
         newOrder.push(this.EMPTY_BIZNET);
 
+        console.log('>>', networks);
         for (let i = 0; i < networks.length; i++) {
             newOrder.push(networks[i]);
         }
@@ -231,7 +231,11 @@ rule NetworkAdminSystem {
 
     private initNetworkList(sampleNetworkList): void {
         this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-        this.selectNetwork(this.sampleNetworks[0]);
+        if (this.sampleNetworks.length === 1) {
+            this.selectNetwork(this.sampleNetworks[0]);
+        } else {
+            this.selectNetwork(this.sampleNetworks[1]);
+        }
         this.npmInProgress = false;
     }
 }
