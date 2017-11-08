@@ -222,10 +222,6 @@ module.exports = yeoman.Base.extend({
 
                     if (liveNetwork) {
                         cardName = answers.cardName;
-                        // networkIdentifier = answers.networkIdentifier;
-                        // connectionProfileName = answers.connectionProfileName;
-                        // enrollmentId = answers.enrollmentId;
-                        // enrollmentSecret = answers.enrollmentSecret;
                         apiServer = answers.apiServer;
 
                         if (apiServer === 'generate') {
