@@ -31,16 +31,8 @@ module.exports.builder = function (yargs) {
         file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
     });
 
-    // enforce one argument per key
-    yargs.nargs({
-        'a':1,
-        'l':1,
-        'A':1,
-        'C':1,
-        'S':1,
-        'c':1,
-        'f':1
-    });
+    // enforce the option after these options
+    yargs.requiresArg(['file','archiveFile','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
 
     yargs.conflicts('C','S');
 

@@ -21,7 +21,7 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
 const os = require('os');
 const mkdirp = require('mkdirp');
-//const IdCard = require('composer-common').IdCard;
+const IdCard = require('composer-common').IdCard;
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -29,13 +29,13 @@ chai.use(require('chai-as-promised'));
 
 const PROFILE_NAME = 'myprofile';
 const USER_ID = 'SuccessKid';
-const USER_SECRET = 'SomeSecret';
+const USER_SECRET = 'humbolt';
 
 describe('composer identity request CLI unit tests', () => {
 
     let sandbox;
     let mockAdminConnection;
-   // let testcard;
+    let testCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -44,7 +44,9 @@ describe('composer identity request CLI unit tests', () => {
         sandbox.stub(process, 'exit');
         sandbox.stub(mkdirp, 'sync').returns();
 
-       // testCard = new IdCard({ userName: 'conga' , businessNetwork :'penguin-network'}, { name: 'profileName' });
+        testCard = new IdCard({ userName: 'SuccessKid' , businessNetwork :'penguin-network',enrollmentSecret:'humbolt'}, { name: 'myprofile' });
+        testCard.setCredentials({certificate:'cert',privateKey:'nottelling'});
+        mockAdminConnection.getCard.resolves(testCard);
     });
 
     afterEach(() => {
