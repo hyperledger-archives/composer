@@ -38,9 +38,11 @@ describe('composer identity bind CLI unit tests', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-        mockBusinessNetworkConnection.connect.withArgs('cardName').resolves(
-            { userSecret: 'suchsecret'
-            });
+        mockBusinessNetworkConnection.connect.withArgs('cardName').resolves();
+        mockBusinessNetworkConnection.bindIdentity.withArgs('org.doge.Doge#DOGE_1', pem, sinon.match.object).resolves({
+            userID: 'dogeid1',
+            userSecret: 'suchsecret'
+        });
         sandbox.stub(fs, 'readFileSync').withArgs('admin.pem').returns(pem);
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
@@ -51,22 +53,6 @@ describe('composer identity bind CLI unit tests', () => {
     });
 
     it('should bind an existing identity using the specified profile', () => {
-        let argv = {
-            card:'cardName',
-            participantId: 'org.doge.Doge#DOGE_1',
-            certificateFile: 'admin.pem'
-        };
-        return Bind.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardName');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.bindIdentity);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.bindIdentity, 'org.doge.Doge#DOGE_1', pem);
-            });
-    });
-
-    it('should prompt for the enrollment secret if not specified', () => {
         let argv = {
             card:'cardName',
             participantId: 'org.doge.Doge#DOGE_1',
