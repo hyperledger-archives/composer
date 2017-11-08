@@ -21,7 +21,7 @@ const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const fs = require('fs');
 const os = require('os');
 const mkdirp = require('mkdirp');
-
+const IdCard = require('composer-common').IdCard;
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -35,6 +35,7 @@ describe('composer identity request CLI unit tests', () => {
 
     let sandbox;
     let mockAdminConnection;
+    let testcard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -42,6 +43,8 @@ describe('composer identity request CLI unit tests', () => {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
         sandbox.stub(mkdirp, 'sync').returns();
+
+        testCard = new IdCard({ userName: 'conga' , businessNetwork :'penguin-network'}, { name: 'profileName' });
     });
 
     afterEach(() => {
@@ -50,9 +53,7 @@ describe('composer identity request CLI unit tests', () => {
 
     it('should request an identity using the specified profile and store in specified path', () => {
         let argv = {
-            connectionProfileName: PROFILE_NAME,
-            enrollId: USER_ID,
-            enrollSecret: USER_SECRET,
+            cardName = 'cardName',
             path: '/'
         };
         let fsStub = sandbox.stub(fs, 'writeFileSync');
