@@ -32,7 +32,7 @@ export class SampleBusinessNetworkService {
                 return response.json();
             })
             .catch((error) => {
-                throw('Error connecting to: '+URL);
+                throw('Error connecting to: ' + URL);
             });
     }
 

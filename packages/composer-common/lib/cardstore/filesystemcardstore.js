@@ -87,7 +87,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         }
 
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.access(cardPath).then(
+        return this.thenifyFs.stat(cardPath).then(
             resolved => {
                 throw new Error('Card already exists: ' + cardName);
             },
@@ -135,7 +135,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         const method = 'delete';
 
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.access(cardPath).then(() => {
+        return this.thenifyFs.stat(cardPath).then(() => {
             return thenifyRimraf(cardPath, this.rimrafOptions);
         }).catch(cause => {
             LOG.debug(method, cause);

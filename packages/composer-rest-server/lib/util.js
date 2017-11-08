@@ -14,6 +14,7 @@
 
 'use strict';
 
+const formidable = require('formidable');
 const inquirer = require('inquirer');
 const path = require('path');
 
@@ -34,51 +35,14 @@ class Util {
     static getConnectionSettings() {
         let questions = [
             {
-                name: 'connectionProfileName',
+                name: 'card',
                 type: 'input',
-                message: 'Enter your Connection Profile Name:',
+                message: 'Enter the name of the business network card to use:',
                 validate: function (value) {
                     if (value.length) {
                         return true;
                     } else {
-                        return 'Please enter the name of the Connection Profile you wish to use \n \
-                                (hint: this is usually the name of the directory in $HOME containing the connection.json file)';
-                    }
-                }
-            },
-            {
-                name: 'businessNetworkName',
-                type: 'input',
-                message: 'Enter your Business Network name :',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your Business Network name';
-                    }
-                }
-            },
-            {
-                name: 'enrollmentId',
-                type: 'input',
-                message: 'Enter your enrollment ID :',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your enrollment ID';
-                    }
-                }
-            },
-            {
-                name: 'enrollmentSecret',
-                type: 'secret',
-                message: 'Enter your enrollment secret :',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your enrollment secret';
+                        return 'Please enter the name of the business network card to use';
                     }
                 }
             },
@@ -141,6 +105,14 @@ class Util {
         ];
 
         return inquirer.prompt(questions);
+    }
+
+    /**
+     * Create a formidable IncomingForm object.
+     * @return {IncomingForm} The new formidable IncomingForm object.
+     */
+    static createIncomingForm() {
+        return new formidable.IncomingForm();
     }
 
 }

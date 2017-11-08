@@ -85,6 +85,8 @@ export class TransactionComponent implements OnInit {
     onTransactionSelect(transactionType) {
         this.selectedTransaction = transactionType;
         this.selectedTransactionName = this.selectedTransaction.getName();
+        this.resourceDefinition = null;
+        this.includeOptionalFields = false;
         this.generateTransactionDeclaration();
     }
 
@@ -148,7 +150,7 @@ export class TransactionComponent implements OnInit {
             if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
                 if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
                     toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
-                } else if (typeof previousJSON[key] === 'string' && previousJSON[key].length > 0) {
+                } else if (previousJSON[key].toString().length > 0 && previousJSON[key] !== 0) {
                     toUpdateWithJSON[key] = previousJSON[key];
                 }
             }

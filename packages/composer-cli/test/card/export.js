@@ -26,10 +26,9 @@ const sinon = require('sinon');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('composer card import CLI', function() {
+describe('composer card export CLI', function() {
     const sandbox = sinon.sandbox.create();
     const cardFileName = '/TestCard.card';
-    let cardBuffer;
     let adminConnectionStub;
     let consoleLogSpy;
     let testCard;
@@ -41,17 +40,14 @@ describe('composer card import CLI', function() {
         sandbox.stub(process, 'exit');
 
         testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
-        return testCard.toArchive({ type:'nodebuffer' }).then(buffer => {
-            cardBuffer = buffer;
-        });
     });
 
     afterEach(function() {
         sandbox.restore();
     });
 
-    it('should export valid card file with default name', function() {
-        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).returns(cardBuffer);
+    it('should export to specified file name', function() {
+        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName);
         const args = {
             file: cardFileName,
             name : 'CARD_NAME'
@@ -60,7 +56,21 @@ describe('composer card import CLI', function() {
         adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.exportCard);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('CARD_NAME'));
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.name));
+        });
+    });
+
+    it('should export to default file name if none specified', function() {
+        const args = {
+            name : 'CARD_NAME'
+        };
+        const expectedFileName = args.name + '.card';
+        sandbox.stub(fs, 'writeFileSync').withArgs(expectedFileName);
+
+        adminConnectionStub.exportCard.resolves(testCard);
+        return ExportCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(adminConnectionStub.exportCard);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(expectedFileName));
         });
     });
 

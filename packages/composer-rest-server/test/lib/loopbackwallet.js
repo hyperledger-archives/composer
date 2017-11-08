@@ -27,8 +27,7 @@ chai.use(require('chai-as-promised'));
 describe('LoopBackWallet', () => {
 
     let app;
-    let userModel, WalletModel, WalletIdentityModel;
-    let user, wallet, lbWallet;
+    let Card, card, lbCard;
 
     beforeEach(() => {
         app = loopback();
@@ -41,81 +40,40 @@ describe('LoopBackWallet', () => {
             });
         })
         .then(() => {
-            userModel = app.models.user;
-            WalletModel = app.models.Wallet;
-            WalletIdentityModel = app.models.WalletIdentity;
+            const user = app.models.user;
+            Card = app.models.Card;
             const dataSource = loopback.createDataSource({
                 connector: loopback.Memory
             });
-            userModel.attachTo(dataSource);
-            WalletModel.attachTo(dataSource);
-            WalletIdentityModel.attachTo(dataSource);
-            return userModel.create({ email: 'alice@email.com', password: 'password' });
+            user.attachTo(dataSource);
+            Card.attachTo(dataSource);
+            return user.create({ email: 'alice@email.com', password: 'password' });
         })
-        .then((user_) => {
-            user = user_;
-            return WalletModel.create({ userId: user.id, description: 'Test wallet' });
+        .then((user) => {
+            return Card.create({ userId: user.id, name: 'admin@biznet', base64: 'aGVsbG8gd29ybGQK', data: { test1: 'hello this is a cert', test2: 'nay' } });
         })
-        .then((wallet_) => {
-            wallet = wallet_;
-            return new Promise((resolve, reject) => {
-                WalletIdentityModel.create([
-                    {
-                        walletId: wallet.id,
-                        enrollmentID: 'testuser0',
-                        enrollmentSecret: 'suchs3cret',
-                        data: {
-                            testA: 'i like biscuits',
-                            testB: 'everybody likes biscuits'
-                        }
-                    },
-                    {
-                        walletId: wallet.id,
-                        enrollmentID: 'testuser1',
-                        enrollmentSecret: 'testpass',
-                        data: {
-                            test1: 'hello this is a cert',
-                            test2: 'hello this is another cert'
-                        }
-                    },
-                    {
-                        walletId: wallet.id,
-                        enrollmentID: 'testuser2',
-                        enrollmentSecret: 'manypass',
-                        data: {
-                            testA1: 'i drive a blue car',
-                            testB2: 'you drive a green car'
-                        }
-                    }
-                ], (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve();
-                });
-            });
-        })
-        .then(() => {
-            lbWallet = new LoopBackWallet(app, wallet, 'testuser1');
+        .then((card_) => {
+            card = card_;
+            lbCard = new LoopBackWallet(card);
         });
     });
 
     describe('#list', () => {
 
         it('should return an empty array when no keys exist', () => {
-            return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } })
-                .then((identity) => {
-                    identity.data = {};
-                    return identity.save();
+            return Card.findOne({ where: { name: 'admin@biznet' } })
+                .then((card) => {
+                    card.data = {};
+                    return card.save();
                 })
                 .then(() => {
-                    return lbWallet.list();
+                    return lbCard.list();
                 })
                 .should.eventually.be.deep.equal([]);
         });
 
         it('should return a list of keys', () => {
-            return lbWallet.list()
+            return lbCard.list()
                 .should.eventually.be.deep.equal(['test1', 'test2']);
         });
 
@@ -124,12 +82,12 @@ describe('LoopBackWallet', () => {
     describe('#contains', () => {
 
         it('should return false for a key that does not exist', () => {
-            return lbWallet.contains('test0')
+            return lbCard.contains('test0')
                 .should.eventually.be.false;
         });
 
         it('should return true for a key that does exist', () => {
-            return lbWallet.contains('test2')
+            return lbCard.contains('test2')
                 .should.eventually.be.true;
         });
 
@@ -138,12 +96,12 @@ describe('LoopBackWallet', () => {
     describe('#get', () => {
 
         it('should return undefined for a key that does not exist', () => {
-            return lbWallet.get('testA')
+            return lbCard.get('test0')
                 .should.eventually.be.undefined;
         });
 
         it('should return the value for a key that does exist', () => {
-            return lbWallet.get('test1')
+            return lbCard.get('test1')
                 .should.eventually.be.equal('hello this is a cert');
         });
 
@@ -152,12 +110,12 @@ describe('LoopBackWallet', () => {
     describe('#add', () => {
 
         it('should set the value for a key', () => {
-            return lbWallet.add('testA', 'hello this is a test set cert')
+            return lbCard.add('testA', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
+                    return Card.findOne({ where: { name: 'admin@biznet' } });
                 })
-                .then((identity) => {
-                    identity.data.testA.should.equal('hello this is a test set cert');
+                .then((card) => {
+                    card.data.testA.should.equal('hello this is a test set cert');
                 });
         });
 
@@ -166,12 +124,12 @@ describe('LoopBackWallet', () => {
     describe('#update', () => {
 
         it('should update the value for a key', () => {
-            return lbWallet.update('test2', 'hello this is a test set cert')
+            return lbCard.update('test2', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
+                    return Card.findOne({ where: { name: 'admin@biznet' } });
                 })
-                .then((identity) => {
-                    identity.data.test2.should.equal('hello this is a test set cert');
+                .then((card) => {
+                    card.data.test2.should.equal('hello this is a test set cert');
                 });
         });
 
@@ -180,12 +138,12 @@ describe('LoopBackWallet', () => {
     describe('#remove', () => {
 
         it('should remove the key', () => {
-            return lbWallet.remove('test2')
+            return lbCard.remove('test2')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser1' } });
+                    return Card.findOne({ where: { name: 'admin@biznet' } });
                 })
-                .then((identity) => {
-                    should.equal(identity.data.test2, undefined);
+                .then((card) => {
+                    should.equal(card.data.test2, undefined);
                 });
         });
 

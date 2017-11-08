@@ -63,12 +63,6 @@ export abstract class ImportComponent implements OnInit {
             });
     }
 
-    private initNetworkList(sampleNetworkList): void {
-        this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-        this.selectNetwork(this.sampleNetworks[0]);
-        this.npmInProgress = false;
-    }
-
     selectNetwork(network): void {
         this.chosenNetwork = network;
         this.updateBusinessNetworkNameAndDesc(network);
@@ -164,20 +158,16 @@ rule NetworkAdminSystem {
 
     closeSample() {
         this.sampleDropped = false;
-        this.selectNetwork(this.sampleNetworks[1]);
+        this.selectNetwork(this.sampleNetworks[0]);
     }
 
     addEmptyNetworkOption(networks: any[]): any[] {
-
         let newOrder = [];
-
-        // Append new network option to the list.
         newOrder.push(this.EMPTY_BIZNET);
 
         for (let i = 0; i < networks.length; i++) {
             newOrder.push(networks[i]);
         }
-
         return newOrder;
     }
 
@@ -237,5 +227,11 @@ rule NetworkAdminSystem {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
+    }
+
+    private initNetworkList(sampleNetworkList): void {
+        this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
+        this.selectNetwork(this.sampleNetworks[0]);
+        this.npmInProgress = false;
     }
 }
