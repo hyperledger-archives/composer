@@ -1,0 +1,132 @@
+{
+    "name": "Card",
+    "description": "Business network cards for the authenticated user",
+    "plural": "wallet",
+    "swagger": {
+        "tag": {
+            "name": "Wallet"
+        }
+    },
+    "base": "PersistedModel",
+    "forceId": true,
+    "idInjection": true,
+    "properties": {
+        "name": {
+            "type": "String",
+            "description": "The name of the business network card"
+        },
+        "base64": {
+            "type": "String",
+            "description": "The base64 encoded business network card"
+        },
+        "data": {
+            "type": "Object",
+            "description": "The data for the business network card",
+            "default": {}
+        },
+        "default": {
+            "type": "Boolean",
+            "default": false,
+            "description": "Is this the default business network card?"
+        }
+    },
+    "validations": [],
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "user",
+            "foreignKey": "userId"
+        }
+    },
+    "acls": [
+        {
+            "accessType": "*",
+            "permission": "DENY",
+            "principalId": "$everyone",
+            "principalType": "ROLE"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "find"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "create"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$owner",
+            "principalType": "ROLE"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "getAll"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "getAllCards"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "getCardByName"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "existsCardByName"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "deleteCardByName"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "importCard"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "exportCard"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "setDefault"
+        }
+    ],
+    "methods": [],
+    "hidden": [
+        "base64",
+        "data",
+        "id",
+        "userId"
+    ]
+}

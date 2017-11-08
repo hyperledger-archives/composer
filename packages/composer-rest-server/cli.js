@@ -29,17 +29,14 @@ const defaultTlsKey = path.resolve(__dirname, 'key.pem');
 const yargs = require('yargs')
     .wrap(null)
     .usage('Usage: $0 [options]')
-    .option('p', { alias: 'connectionProfileName', describe: 'The connection profile name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
-    .option('n', { alias: 'businessNetworkName', describe: 'The business network identifier', type: 'string', default: process.env.COMPOSER_BUSINESS_NETWORK })
-    .option('i', { alias: 'enrollId', describe: 'The enrollment ID of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
-    .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
-    .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
-    .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
+    .option('c', { alias: 'card', describe: 'The name of the business network card to use', type: 'string', default: process.env.COMPOSER_CARD || undefined })
+    .option('n', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
+    .option('p', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .option('a', { alias: 'authentication', describe: 'Enable authentication for the REST API using Passport', type: 'boolean', default: process.env.COMPOSER_AUTHENTICATION || false })
     .option('m', { alias: 'multiuser', describe: 'Enable multiple user and identity management using wallets (implies -a)', type: 'boolean', default: process.env.COMPOSER_MULTIUSER || false })
     .option('w', { alias: 'websockets', describe: 'Enable event publication over WebSockets', type: 'boolean', default: process.env.COMPOSER_WEBSOCKETS || true })
     .option('t', { alias: 'tls', describe: 'Enable TLS security for the REST API', type: 'boolean', default: process.env.COMPOSER_TLS || false })
-    .option('c', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
+    .option('e', { alias: 'tlscert', describe: 'File containing the TLS certificate', type: 'string', default: process.env.COMPOSER_TLS_CERTIFICATE || defaultTlsCertificate })
     .option('k', { alias: 'tlskey', describe: 'File containing the TLS private key', type: 'string', default: process.env.COMPOSER_TLS_KEY || defaultTlsKey })
     .alias('v', 'version')
     .version(version)
@@ -52,7 +49,7 @@ const yargs = require('yargs')
 // and then check to see that none of the required arguments have
 // been supplied via environment variables have been specified either.
 const interactive = process.argv.slice(2).length === 0 && // No command line arguments supplied.
-                    ['n', 'p', 'i', 's'].every((flag) => {
+                    ['c'].every((flag) => {
                         return yargs[flag] === undefined;
                     });
 let promise;
@@ -62,10 +59,7 @@ if (interactive) {
         .then((answers) => {
             // augment the app with the extra config that we've just collected
             const composer = {
-                connectionProfileName: answers.connectionProfileName,
-                businessNetworkIdentifier: answers.businessNetworkName,
-                participantId: answers.enrollmentId,
-                participantPwd: answers.enrollmentSecret,
+                card: answers.card,
                 namespaces: answers.namespaces,
                 authentication: answers.authentication,
                 multiuser: answers.multiuser,
@@ -77,17 +71,14 @@ if (interactive) {
             console.log('\nTo restart the REST server using the same options, issue the following command:');
             let cmd = [ 'composer-rest-server' ];
             const args = {
-                '-p': 'connectionProfileName',
-                '-n': 'businessNetworkIdentifier',
-                '-i': 'participantId',
-                '-s': 'participantPwd',
-                '-N': 'namespaces',
-                '-P': 'port',
+                '-c': 'card',
+                '-n': 'namespaces',
+                '-p': 'port',
                 '-a': 'authentication',
                 '-m': 'multiuser',
                 '-w': 'websockets',
                 '-t': 'tls',
-                '-c': 'tlscert',
+                '-e': 'tlscert',
                 '-k': 'tlskey'
             };
             for (let arg in args) {
@@ -109,21 +100,18 @@ if (interactive) {
     }
 
     // make sure we have args for all required parms otherwise error
-    if (yargs.p === undefined || yargs.n === undefined || yargs.i === undefined || yargs.s === undefined) {
+    if (yargs.c === undefined) {
         promise = Promise.reject('Missing parameter. Please run composer-rest-server -h to see usage details');
     } else {
         promise = Promise.resolve({
-            connectionProfileName: yargs.p,
-            businessNetworkIdentifier: yargs.n,
-            participantId: yargs.i,
-            participantPwd: yargs.s,
-            namespaces: yargs.N,
-            port: yargs.P,
+            card: yargs.c,
+            namespaces: yargs.n,
+            port: yargs.p,
             authentication: yargs.a,
             multiuser: yargs.m,
             websockets: yargs.w,
             tls: yargs.t,
-            tlscert: yargs.c,
+            tlscert: yargs.e,
             tlskey: yargs.k
         });
     }

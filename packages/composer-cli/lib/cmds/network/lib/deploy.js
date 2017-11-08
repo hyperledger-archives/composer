@@ -15,6 +15,7 @@
 'use strict';
 
 const Admin = require('composer-admin');
+const Create = require('../../card/lib/create');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
@@ -44,13 +45,17 @@ class Deploy {
         let spinner;
         let logLevel = argv.loglevel;
         let cardName = argv.card;
+        let card;
+        let filename;
 
 
         console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
+        adminConnection = cmdUtil.createAdminConnection();
+        // Read archive file contents
+        return adminConnection.getCard(cardName)
+        .then(()=>{
 
-            // Read archive file contents
-        return Promise.resolve().then(()=>{
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
@@ -62,7 +67,7 @@ class Deploy {
             console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
             console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
             console.log();
-            adminConnection = cmdUtil.createAdminConnection();
+
             // if we are performing an update we have to actually connect to the network
             // we want to update!
 
@@ -70,6 +75,11 @@ class Deploy {
 
         })
         .then(() => {
+            // need to get the card now for later use
+            return adminConnection.getCard(cardName);
+        })
+        .then((_card)=>{
+            card = _card;
             if (updateBusinessNetwork === false) {
                 spinner = ora('Deploying business network definition. This may take a minute...').start();
                 // Build the deploy options.
@@ -77,7 +87,7 @@ class Deploy {
                 if (logLevel) {
                     deployOptions.logLevel = logLevel;
                 }
-
+                deployOptions.card = card;
                 // Build the bootstrap tranactions.
                 let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
 
@@ -96,11 +106,41 @@ class Deploy {
                 return adminConnection.update(businessNetworkDefinition);
             }
         }).then((result) => {
-            spinner.succeed();
-            console.log();
 
+            if (!updateBusinessNetwork){
+                // need to create a card for the admin and then write it to disk for the user
+                // to import
+                // set if the options have been given into the metadata
+                let metadata= {
+                    version : 1,
+                    userName : argv.networkAdmin,
+                    businessNetwork : businessNetworkDefinition.getName()
+                };
+                // copy across any other parameters that might be used
+                let createArgs = {};
+                if (argv.file){
+                    createArgs.file = argv.file;
+                }
+
+                if (argv.networkAdminEnrollSecret){
+                    metadata.enrollmentSecret = 'adminpw';
+                } else {
+                    // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
+                    createArgs.certificate = argv.networkAdminCertificateFile;
+                }
+
+                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((_filename)=>{
+                    filename = _filename;
+                    return;
+                });
+            }
             return result;
-        }).catch((error) => {
+        }).then((result)=>{
+            spinner.succeed();
+            console.log('Successfully created business network card to '+filename);
+            return result;
+        })
+        .catch((error) => {
             if (spinner) {
                 spinner.fail();
             }
