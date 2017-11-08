@@ -18,12 +18,12 @@ The REST server can be configured to subscribe to business events that are emitt
 
 You can enable WebSockets using the `-w` argument to the command line:
 
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -w
+    composer-rest-server -c alice1@my-network -w
 
 Alternatively, you can enable WebSockets by using the `COMPOSER_WEBSOCKETS` environment variable:
 
     export COMPOSER_WEBSOCKETS=true
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+    composer-rest-server -c alice1@my-network
 
 When you have successfully enabled WebSockets, you will be able to connect a WebSocket client to the base URL displayed in the output of the REST server:
 
