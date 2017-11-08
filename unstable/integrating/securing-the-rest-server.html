@@ -263,11 +263,11 @@ ga('send', 'pageview');
 <h2 id="enabling-https-and-tls-by-using-the-sample-certificate-and-private-key-pair">Enabling HTTPS and TLS by using the sample certificate and private key pair</h2>
 
 <p>You can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>-t</code> argument to the command line:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c alice1@my-network -t
 </code></pre></div>
 <p>Alternatively, you can enable HTTPS and TLS using the sample certificate and private key pair by using the <code>COMPOSER_TLS</code> environment variable:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
-composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+composer-rest-server -c alice1@my-network
 </code></pre></div>
 <p>When you have successfully enabled HTTPS and TLS, you will see that the output of the REST server specifies an <code>https://</code> URL instead of a <code>http://</code> URL:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: https://localhost:3000
@@ -279,14 +279,14 @@ Browse your REST API at https://localhost:3000/explorer
 
 <p>You can enable HTTPS and TLS by providing your own certificate and private key pair. The certificate and private key pair must be provided as two separate files in the PEM format. The files must be available on the file system of the system running the REST server, and the REST server must have read access to those files.</p>
 
-<p>You can configure the THE REST server to use your certificate and private key pair files by using the &#39;-c&#39; (certificate file) and &#39;-k&#39; (private key file) arguments to the command line:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -t -c /tmp/cert.pem -k /tmp/key.pem
+<p>You can configure the THE REST server to use your certificate and private key pair files by using the &#39;-e&#39; (certificate file) and &#39;-k&#39; (private key file) arguments to the command line:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c alice1@my-network -t -e /tmp/cert.pem -k /tmp/key.pem
 </code></pre></div>
 <p>Alternatively, you can configure the THE REST server to use your certificate and private key pair files by using the <code>COMPOSER_TLS_CERTIFICATE</code> and <code>COMPOSER_TLS_KEY</code> environment variables:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_TLS=true
 export COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
 export COMPOSER_TLS_KEY=/tmp/key.pem
-composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+composer-rest-server -c alice1@my-network
 </code></pre></div>
             
           </section>

@@ -262,32 +262,29 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">composer-rest-server
 </code></pre></div>
 <p>You will then be asked to enter a few simple details about your business network. An example of consuming a deployed business network is shown below.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">
- _   _                       _          _                 
-| | | |_   _ _ __   ___ _ __| | ___  __| | __ _  ___ _ __
-| |_| | | | | <span class="s1">'_ \ / _ \ '</span>__| |/ _ <span class="se">\/</span> _<span class="sb">`</span> |/ _<span class="sb">`</span> |/ _ <span class="se">\ </span><span class="s1">'__|
-|  _  | |_| | |_) |  __/ |  | |  __/ (_| | (_| |  __/ |   
-|_| |_|\__, | .__/ \___|_|  |_|\___|\__,_|\__, |\___|_|   
-       |___/|_|                           |___/           
-  ____                                          
- / ___|___  _ __ ___  _ __   ___  ___  ___ _ __
-| |   / _ \| '</span>_ <span class="sb">`</span> _ <span class="se">\|</span> <span class="s1">'_ \ / _ \/ __|/ _ \ '</span>__|
-| |__| <span class="o">(</span>_<span class="o">)</span> | | | | | | |_<span class="o">)</span> | <span class="o">(</span>_<span class="o">)</span> <span class="se">\_</span>_ <span class="se">\ </span> __/ |   
- <span class="se">\_</span>___<span class="se">\_</span>__/|_| |_| |_| .__/ <span class="se">\_</span>__/|___/<span class="se">\_</span>__|_|   
-                     |_|                                                     
-? Enter your Fabric Connection Profile Name: hlfv1
-? Enter your Business Network Identifier : digitalproperty-network
-? Enter your Fabric username : admin
-? Enter your secret: adminpw
-Loopback Connector <span class="k">for </span>Hyperledger Composer
-Models Loaded Now
-Browse your REST API at http://0.0.0.0:3000/explorer
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">? Enter the name of the business network card to use: admin@basic-sample-network
+? Specify <span class="k">if </span>you want namespaces <span class="k">in </span>the generated REST API: always use namespaces
+? Specify <span class="k">if </span>you want to <span class="nb">enable </span>authentication <span class="k">for </span>the REST API using Passport: No
+? Specify <span class="k">if </span>you want to <span class="nb">enable </span>event publication over WebSockets: Yes
+? Specify <span class="k">if </span>you want to <span class="nb">enable </span>TLS security <span class="k">for </span>the REST API: No
+
+To restart the REST server using the same options, issue the following <span class="nb">command</span>:
+   composer-rest-server <span class="nt">-c</span> admin@basic-sample-network <span class="nt">-n</span> always <span class="nt">-w</span> <span class="nb">true
+
+</span>Discovering types from business network definition ...
+Discovered types from business network definition
+Generating schemas <span class="k">for </span>all types <span class="k">in </span>business network definition ...
+Generated schemas <span class="k">for </span>all types <span class="k">in </span>business network definition
+Adding schemas <span class="k">for </span>all types to Loopback ...
+Added schemas <span class="k">for </span>all types to Loopback
+Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
 </code></pre></div>
 <h2 id="looking-at-the-generated-apis">Looking at the generated APIs</h2>
 
 <p>Launch your browser and go to the URL given (<a href="http://0.0.0.0:3000/explorer">http://0.0.0.0:3000/explorer</a>).  You&#39;ll see a screen similar to this.</p>
 
-<p><img src="./images/loopback-1.png" alt="LoopBack-1"></p>
+<p><img src="../assets/img/tutorials/developer/lb_explorer.png" alt="LoopBack-1"></p>
 
 <h1 id="summary">Summary</h1>
 
