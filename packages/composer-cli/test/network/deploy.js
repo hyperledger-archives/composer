@@ -22,7 +22,7 @@ const DeployCmd = require('../../lib/cmds/network/deployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const IdCard = require('composer-common').IdCard;
 require('chai').should();
-
+const Create = require('../../lib/cmds/card/lib/create');
 const chai = require('chai');
 const sinon = require('sinon');
 chai.should();
@@ -55,6 +55,8 @@ describe('composer deploy network CLI unit tests', function () {
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
+
+        sandbox.stub(Create,'createCard').resolves();
 
         return businessNetworkDefinition.toArchive()
             .then((archive) => {
@@ -103,6 +105,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+                sinon.assert.calledOnce(Create.createCard);
 
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
@@ -133,7 +136,7 @@ describe('composer deploy network CLI unit tests', function () {
                         ,archiveFile: 'testArchiveFile.zip'
                         ,option: 'endorsementPolicyFile=/path/to/some/file.json'
                         ,networkAdmin: 'admin'
-                        ,networkAdminEnrollSecret:'true'};
+                        ,networkAdminEnrollSecret:'secret-secret'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -175,7 +178,7 @@ describe('composer deploy network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
-                        ,networkAdminEnrollSecret:'true'
+                        ,networkAdminEnrollSecret:'secret-secret'
                         ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -217,7 +220,7 @@ describe('composer deploy network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
-                        ,networkAdminEnrollSecret:'true'};
+                        ,networkAdminEnrollSecret:'secret-secret'};
 
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -257,7 +260,7 @@ describe('composer deploy network CLI unit tests', function () {
                        ,archiveFile: 'testArchiveFile.zip'
                        ,loglevel: 'DEBUG'
                        ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
+                       ,networkAdminEnrollSecret:'secret-secret'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -305,7 +308,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                         ,networkAdmin: ['admin1']
-                        ,networkAdminEnrollSecret: [true]};
+                        ,networkAdminEnrollSecret: ['secret-secret']};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
 
@@ -347,7 +350,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                         ,networkAdmin: ['admin1']
-                        ,networkAdminEnrollSecret: [true]
+                        ,networkAdminEnrollSecret: ['secret-secret']
                         ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -434,7 +437,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
             ,networkAdmin: ['admin1']
-            ,networkAdminEnrollSecret: [true]
+            ,networkAdminEnrollSecret: ['secret-secret']
             ,archiveFile: 'testArchiveFile.zip'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
