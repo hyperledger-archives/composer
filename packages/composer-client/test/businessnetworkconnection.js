@@ -234,11 +234,12 @@ describe('BusinessNetworkConnection', () => {
         const userName = 'FredBloggs';
         const enrollmentSecret = 'password';
         const keyValStore = '/conga/conga/conga';
+        let mockIdCard;
 
         beforeEach(() => {
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
             let mockCardStore = sinon.createStubInstance(CardStore);
-            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard = sinon.createStubInstance(IdCard);
             mockCardStore.get.resolves(mockIdCard);
             mockIdCard.getEnrollmentCredentials.returns({secret: enrollmentSecret});
             mockIdCard.getUserName.returns(userName);
@@ -271,6 +272,7 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
                 .then((result)=>{
                     sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
+                    businessNetworkConnection.getCard().should.equal(mockIdCard);
                 });
         });
 
@@ -282,6 +284,7 @@ describe('BusinessNetworkConnection', () => {
                         sinon.match.any,
                         sinon.match.any,
                         sinon.match.has('cardName', cardName));
+                    businessNetworkConnection.getCard().should.equal(mockIdCard);
                 });
         });
 
@@ -293,6 +296,7 @@ describe('BusinessNetworkConnection', () => {
                         sinon.match.any,
                         sinon.match.any,
                         sinon.match.has('cardName', cardName));
+                    businessNetworkConnection.getCard().should.equal(mockIdCard);
                 });
         });
 
