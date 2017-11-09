@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -282,10 +282,12 @@ ga('send', 'pageview');
         "orderers": [
             {
                 "url": "grpcs://",
+                "hostnameOverride": "",
                 "cert": ""
             },
             {
                 "url": "grpcs://",
+                "hostnameOverride": "",
                 "cert": ""
             }
         ],
@@ -299,11 +301,13 @@ ga('send', 'pageview');
             {
                 "requestURL": "grpcs://",
                 "eventURL": "grpcs://",
+                "hostnameOverride": "",
                 "cert": ""
             },
             {
                 "requestURL": "grpcs://",
                 "eventURL": "grpcs://",
+                "hostnameOverride": "",
                 "cert": ""
             }
         ],
@@ -350,7 +354,8 @@ _Please note: The simplified version of the connection profile will only work if
 <li><code>ca</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of <code>ca</code> as shown in the first Hyperledger Fabric v1.0 example above.</li>
 <li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
 <li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
-<li><p><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</p></li>
+<li><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</li>
+<li><code>hostnameOverride</code> is used in a test environment only, when the server certificate&#39;s hostname does not match the actual host endpoint that the server process runs at, the application can work around the client TLS verify failure by setting this property to the value of the server certificate&#39;s hostname.</li>
 <li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
 <div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----
 </code></pre></div></li>

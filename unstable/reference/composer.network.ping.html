@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -261,37 +261,22 @@ ga('send', 'pageview');
 <p>The <code>composer network ping</code> utility is used to verify the connection to a business network deployed to a Hyperledger Fabric.
 Note that ping also returns the participant information for the identity that was used to connect to the network, if
 an identity has been issued for the participant.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n &lt;business-network-name&gt; -p &lt;connection-profile-name&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang=""> --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help         Show help  [boolean]
+  -v, --version  Show version number  [boolean]
+  --card, -c     The cardname to use to ping the network  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
+The connection to the network was successfully tested: tutorial-network
+    version: 0.15.0-20171108090428
+    participant: org.hyperledger.composer.system.NetworkAdmin#admin
 
-<p>Given:
-```
-composer identity issue -p hlfv1 -n &#39;digitalproperty-network&#39; -i admin -s adminpw -u fred -a &quot;resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890&quot;</p>
-
-<p>An identity was issued to the participant &#39;resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890&#39;
-The participant can now connect to the business network with the following details:
-  userID = fred
-  userSecret = lgBOchfiZRUU</p>
-<div class="highlight"><pre><code class="language-" data-lang="">The example of pinging the network, to test with the issued identity: 
+Command succeeded
 </code></pre></div>
-<p>composer network ping -n digitalproperty-network -p hlfv1 -i fred -s lgBOchfiZRUU </p>
-
-<p>The connection to the network was successfully tested: digitalproperty-network
-    version: 0.11.3-20170817015027
-    participant: net.biz.digitalPropertyNetwork.Person#PID:1234567890</p>
-
-<p>Command succeeded
-```</p>
-
             
           </section>
         </div>

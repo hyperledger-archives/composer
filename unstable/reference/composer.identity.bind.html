@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -274,7 +274,7 @@ Options:
   --enrollId, -i               The enrollment ID of the user  [string] [required]
   --enrollSecret, -s           The enrollment secret of the user  [string]
   --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
+  --certificateFile, -c        File containing the certificate  [string] [required]
 </code></pre></div>
 <h2 id="options">Options</h2>
 
@@ -301,7 +301,7 @@ Example: <code>maeid1</code></p>
 Business Network.<br>
 Example: <code>Xurw3yU9zI0l</code></p>
 
-<p><code>--publicKeyFile, -c</code></p>
+<p><code>--certificateFile, -c</code></p>
 
 <p>The path a file containing the certificate for the existing identity in PEM format.<br>
 Example: <code>/tmp/cert.pem</code></p>

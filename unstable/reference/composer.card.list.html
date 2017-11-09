@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Import Command | Hyperledger Composer</title>
+    <title>Hyperledger Composer Card List | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Identity Import Command</p>
+          <p>Hyperledger Composer Card List</p>
           </div>
 
           <nav class="context-nav">
@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -254,60 +254,17 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-identity-import">Composer Identity Import</h1>
+              <h1 id="composer-card-list">Composer Card List</h1>
 
-<hr>
-
-<p>The <code>composer identity import</code> command imports peer admin identities from a running instance of Hyperledger Fabric into a defined <code>keyValStore</code>. These admin identities can then be used to deploy business networks to that peer.</p>
-
-<p>All the options are required. The <code>userId</code> doesn&#39;t have to match any information defined in the signer certificate of the admin identity for the peer, it is purely a label for your own convenience.</p>
-
-<h2 id="syntax-example">Syntax example</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
+<p>List all business network cards stored in the local wallet, or if a card is specified, display details of that business network card.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card list --name admin@tutorial-network
 </code></pre></div>
-<h2 id="options">Options</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity import [options]
-
-Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --userId, -u                 The user ID for the new identity  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
-  --privateKeyFile, -k         File containing the private key  [string] [required]
+<h2 id="syntax">Syntax</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help         Show help  [boolean]
+  -v, --version  Show version number  [boolean]
+  --name, -n     The name used to identify the card  [string]
 </code></pre></div>
-<h4 id="define-connection-profile-name">Define connection profile name</h4>
-
-<p><code>-p</code> or <code>--connectionProfileName</code></p>
-
-<p>Example: <code>-p hlfv1</code></p>
-
-<hr>
-
-<h4 id="define-user-id-for-new-identity">Define user ID for new identity</h4>
-
-<p><code>-u</code> or <code>--userId</code></p>
-
-<p>Example: <code>-u Org1PeerAdmin</code></p>
-
-<hr>
-
-<h4 id="define-signers-public-certificate">Define signers public certificate</h4>
-
-<p><code>-c</code> or <code>--publicKeyFile</code></p>
-
-<p>Example: <code>-c admin.pem</code></p>
-
-<hr>
-
-<h4 id="define-signers-private-key-file">Define signers private key file</h4>
-
-<p><code>-k</code> or <code>--privateKeyFile</code></p>
-
-<p>Example: <code>-k 9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk</code></p>
-
-<hr>
-
             
           </section>
         </div>

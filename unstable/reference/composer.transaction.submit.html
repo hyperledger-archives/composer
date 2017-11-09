@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -258,8 +258,7 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer transaction submit</code> command submits a transaction to a business network.
-&lt;!-- There will be a link to a conceptual topic about transactions here when it&#39;s written. --&gt;</p>
+<p>The <code>composer transaction submit</code> command submits a transaction to a business network.</p>
 
 <hr>
 
@@ -270,38 +269,16 @@ composer transaction submit [options]
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+  -c, --card                   The name of the business network card to use [string] [required]
   --data, -d                   Transactions JSON object as a string  [string] [required]
 </code></pre></div>
 <hr>
 
 <h2 id="options">Options</h2>
 
-<p><code>--connectionProfileName, -p</code></p>
-
-<p>The connection profile name.<br>
-Example: <code>defaultProfile</code></p>
-
-<p><code>--businessNetworkName, -n</code></p>
-
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
-
-<p><code>--enrollId, -i</code></p>
-
-<p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
-
-<p><code>--enrollSecret, -s</code></p>
-
-<p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
+<p><code>--card, -c</code>
+The name of the business network card to use. The business network card is used to determine connection and business network details.
+Example: <code>admin@tutorial-network</code></p>
 
 <p><code>--data, -d</code></p>
 

@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -259,21 +259,20 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network update</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a &lt;business-network-archive&gt;  -p &lt;connectionProfileName&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a &lt;business-network-archive&gt; -c &lt;card-name&gt;
 </code></pre></div>
 <p>The business network definition must have been previously deployed to the Fabric. The business network definition
 is replaced within the same chaincode container.</p>
 
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help              Show help  [boolean]
+  -v, --version       Show version number  [boolean]
+  --card, -c          The card to use to update the network  [string] [required]
+  --archiveFile , -a  The business network archive file [string] [required]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s RandomString
+<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a digitalPropertyNetwork.bna -c admin@digitalPropertyNetwork
 Deploying business network from archive: digitalPropertyNetwork.bna
 Business network definition:
     Identifier: digitalproperty-network@0.0.1

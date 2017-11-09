@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -260,7 +260,7 @@ ga('send', 'pageview');
 
 <p>The <code>composer network deploy</code> utility is used to deploy a business network archive from local disk to a Hyperledger Fabric v1.0 network.
 Before using this command, read the topic <a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a &lt;business-network-archive&gt; -p &lt;connection-profile-name&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network deploy [options]
@@ -269,18 +269,17 @@ Options:
   --help                             Show help  [boolean]
   -v, --version                      Show version number  [boolean]
   --archiveFile, -a                  The business network archive file name  [string] [required]
-  --connectionProfileName, -p        The connection profile name  [string] [required]
-  --enrollId, -i                     The enrollment ID of the user  [string] [required]
-  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
-  --enrollSecret, -s                 The enrollment secret of the user  [string]
   --networkAdmin, -A                 The identity name of the business network administrator  [string]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
   --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
+  --card, -c                         The cardname to use to deploy the network  [string]
+  --file, -f                         File name of the card to be created  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
 
 Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:

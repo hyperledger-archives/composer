@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -257,16 +257,14 @@ ga('send', 'pageview');
               <h1 id="hyperledger-composer-network-loglevel">Hyperledger Composer Network loglevel</h1>
 
 <p>The <code>composer network loglevel</code> command is used to return or define the log level of the composer runtime. If the <code>newlevel</code> option is specified it will change the current level to the specified value. If <code>newlevel</code> is not specified, this command will return the current logging level.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network loglevel -n &lt;business-network-name&gt; -p &lt;connection-profile-name&gt; -l &lt;new-log-level&gt; -i &lt;enrollment-ID&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network loglevel -c admin@tutorial-network
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">--help                       Show help  [boolean]
--v, --version                Show version number  [boolean]
---businessNetworkName, -n    The business network name  [string] [required]
---connectionProfileName, -p  The connection profile name  [string] [required]
---newlevel, -l               the new logging level (INFO/WARNING/ERROR/DEBUG)  [string]
---enrollId, -i               The enrollment ID of the user  [string] [required]
---enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help          Show help  [boolean]
+  -v, --version   Show version number  [boolean]
+  --newlevel, -l  the new logging level  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
+  --card, -c      The cardname to use to change the log level the network  [string]
 </code></pre></div>
             
           </section>

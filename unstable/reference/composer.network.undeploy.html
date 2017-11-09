@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -261,22 +261,20 @@ ga('send', 'pageview');
 <p>The <code>composer network undeploy</code> command <strong>permanently disables a business network</strong>. Once a business network has been undeployed, it cannot be redeployed.</p>
 
 <p><strong>Please Note</strong>: When using the <code>undeploy</code> command with a business network running on Hyperledger Fabric v1.0, the business network remains running, but will become unresponsive. The business network <strong>cannot be redeployed or updated once the <code>undeploy</code> command has been issued.</strong> This is because the business network is already deployed, but has been set to be unresponsive.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -n &lt;business-network-name&gt; -p &lt;connection-profile-name&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -c &lt;card-name&gt;
 </code></pre></div>
 <p>Note that <strong>after undeploy the business network definition can no longer be used</strong>, however the docker container
 associated with the business network definition is still running. The docker container for the business network
 definition must be explicitly stopped and removed if no longer needed.</p>
 
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help         Show help  [boolean]
+  -v, --version  Show version number  [boolean]
+  --card, -c     The business network card to use to undeploy the network  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -n digitalproperty-network -p hlfv1 -i PeerAdmin -s randomString
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -c admin@tutorial-network
 Undeploying business network definition. This may take some seconds...
 Command completed successfully.
 </code></pre></div>
