@@ -29,6 +29,13 @@ class BusinessNetworkMetadata {
    + string getVersion() 
    + string getIdentifier() 
 }
+class BusinessNetworkCardStore {
+   + String getDefaultCardName(IdCard) 
+   + Promise get(String) 
+   + Promise put(String,IdCard) 
+   + Promise getAll() 
+   + Promise delete(String) 
+}
 class Factory {
    + void constructor(ModelManager) 
    + Resource newResource(string,string,string,Object,boolean,string,boolean,boolean) throws TypeNotFoundException
@@ -46,6 +53,20 @@ class FileWallet extends Wallet {
    + Promise add(string,string) 
    + Promise update(string,string) 
    + Promise remove(string) 
+}
+class IdCard {
+   + String getUserName() 
+   + String getDescription() 
+   + String getBusinessNetworkName() 
+   + Object getConnectionProfile() 
+   + Object getCredentials() 
+   + void setCredentials(Object) 
+   + Object getEnrollmentCredentials() 
+   + String[] getRoles() 
+   + Promise fromArchive() 
+   + Promise toArchive(Object,String) 
+   + Promise fromDirectory(String,undefined) 
+   + Promise toDirectory(String,undefined) 
 }
 class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 

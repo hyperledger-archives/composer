@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Deploying and Updating Business Networks
+title: Deploying Business Networks
 category: tasks
 section: business-network
 index-order: 503
 sidebar: sidebars/accordion-toc0.md
-excerpt: How to deploy or update Business Networks
+excerpt: How to deploy a business network
 ---
 
-# Deploying and Updating Business Networks
+# Deploying Business Networks
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (.bna) file. The `composer archive create` command is used to create a business network archive file from a business network definition folder on disk.
 
@@ -26,7 +26,7 @@ To update the business network definition for an already deployed business netwo
 
 In {{site.data.conrefs.hlf_full}} v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install {{site.data.conrefs.hlf_full}} chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.
 
-To make that identity and its certificates available, your must import the identity into the credential store used by {{site.data.conrefs.composer_full}}. To import the identity, use the [`composer identity import`](../reference/composer.identity.import.html) command. When importing an identity, you do not assign it a secret, however the [`composer network deploy`](../reference/composer.network.deploy.html) command requires a secret. If you are using an imported identity, you can enter any value for the secret, and it will be ignored.
+To make that identity and its certificates available, your must import the identity into the credential store used by {{site.data.conrefs.composer_full}}. To import the identity, use the [`composer identity import`](../reference/composer.card.import.html) command. When importing an identity, you do not assign it a secret, however the [`composer network deploy`](../reference/composer.network.deploy.html) command requires a secret. If you are using an imported identity, you can enter any value for the secret, and it will be ignored.
 
 {{site.data.conrefs.composer_full}} provides a sample {{site.data.conrefs.hlf_full}} v1.0 network. The peer administrator for this network is called `PeerAdmin`, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other {{site.data.conrefs.hlf_full}} v1.0 networks.
 

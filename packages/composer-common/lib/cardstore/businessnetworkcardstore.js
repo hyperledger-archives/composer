@@ -17,17 +17,26 @@
 /**
  * Manages persistence of business network cards.
  *
- * @private
  * @abstract
  * @class
  * @memberof module:composer-common
  */
 class BusinessNetworkCardStore {
     /**
+     * Get a default name for a given business network card.
+     * @param {IdCard} card A business network card
+     * @returns {String} A card name
+     */
+    static getDefaultCardName(card) {
+        const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
+        return card.getUserName() + '@' + locationName;
+    }
+
+    /**
      * Gets a card from the store.
      * @abstract
      * @param {String} cardName The name of the card to get
-     * @return {Promise} A promise that is resolved with a {@link IdCard}.
+     * @return {Promise} A promise that is resolved with an IdCard.
      */
     get(cardName) {
         return Promise.reject(new Error('Abstract function called'));
@@ -48,8 +57,8 @@ class BusinessNetworkCardStore {
     /**
      * Gets all cards from the store.
      * @abstract
-     * @return {Promise} A promise that is resolved with a {@link Map} where
-     * the keys are identity card names and the values are {@link IdCard} objects.
+     * @return {Promise} A promise that is resolved with a Map where
+     * the keys are identity card names and the values are IdCard objects.
      */
     getAll() {
         return Promise.reject(new Error('Abstract function called'));
