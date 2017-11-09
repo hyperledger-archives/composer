@@ -406,17 +406,13 @@ rule SystemACL {
 </code></pre></div>
 <p>The <code>composer runtime install</code> command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the name of the business network.</p></li>
 <li><p>To deploy the business network, from the <code>tutorial-network</code> directory, run the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin.card
 </code></pre></div>
 <p>The <code>composer network start</code> command requires a business network card, as well as the name of the admin identity for the business network, the file path of the <code>.bna</code> and the name of the file to be created ready to import as a business network card.</p></li>
 <li><p>To import the network administrator identity as a usable business network card, run the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file networkadmin
-</code></pre></div></li>
-</ol>
-
-<p>The <code>composer card import</code> command requires the filename specified in <code>composer network start</code> to create a card.</p>
-
-<ol>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file networkadmin.card
+</code></pre></div>
+<p>The <code>composer card import</code> command requires the filename specified in <code>composer network start</code> to create a card.</p></li>
 <li><p>To check that the business network has been deployed successfully, run the following command to ping the network:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
 </code></pre></div></li>

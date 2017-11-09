@@ -256,56 +256,33 @@ ga('send', 'pageview');
             
               <h1 id="queries-tutorial-using-the-composer-query-language-and-rest-apis">Queries Tutorial using the Composer Query language and REST APIs</h1>
 
-<p>In this tutorial, we will build on the &#39;Commodity Trading&#39; developer tutorial, extending it to show the use of queries in Composer. This tutorial demonstrates the power of the native Composer query language, as a means to filter results returned using criteria - and furthermore, to perform certain actions or operations on result sets, such as updating or removing assets using a transaction function that uses queries. Once you&#39;ve done the tutorial, feel free to try out your own queries!</p>
+<p>In this tutorial, we will build on the <a href="./developer-guide.html">developer tutorial</a>, extending it to demonstrate  queries. The native  query language can filter results returned using criteria and can be invoked in transactions to perform operations, such as updating or removing assets on result sets.</p>
 
-<p>Queries are defined in  a query file (suffix .qry) in the parent directory of the business network definition. They are used to select assets or participants that meet certain criteria or conditions you define in the WHERE clause of a query. For the purposes of this tutorial, we will use the simple, defined sample queries in <code>queries.qry</code> from the <code>trade-network</code> sample network to get going - they are described in the file itself. In the main &#39;Commodity Trading&#39; <a href="developer-guide.html">Developer-Tutorial</a>, we cloned the Composer <code>sample-networks</code> git repository, and created a new network &#39;my-network&#39; from <code>basic-sample-network</code> in the samples directory - this tutorial uses that network to get going.</p>
+<p>Queries are defined in a query file (<code>.qry</code>) in the parent directory of the business network definition. Queries contain a WHERE clause, which defines the criteria by which assets or participants are selected.</p>
 
-<p>It is recommended to do the <a href="developer-guide.html">Developer-Tutorial</a> first, where the business network <code>my-network</code> has first been deployed and setup steps are performed. Alternatively, you can  if you wish, do this tutorial from &#39;scratch&#39; but observe these following 3 steps:</p>
+<p>This tutorial uses the <code>tutorial-network</code> business network developed and deployed in the <a href="developer-guide.html">Developer-Tutorial</a>.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before beginning this tutorial:</p>
+
+<ul>
+<li>Complete the <a href="../installing/development-tools.html">development environment installation</a>.</li>
+<li>Complete the <a href="./developer-guide.html">developer tutorial</a>.</li>
+</ul>
+
+<h2 id="step-one-updating-the-business-network">Step One: Updating the business network</h2>
+
+<p>The business network created in the developer tutorial must be updated. The updated business network contains two events and an additional transactions.</p>
+
+<h4 id="update-the-model-file">Update the model file</h4>
+
+<p>The model file must be updated to contain events and a new transaction.</p>
 
 <ol>
-<li>Build a new &#39;my-network&#39; VSCode project (as shown in the Developer tutorial where its based on the <code>basic-sample-network</code> project)</li>
-<li>Edit your package.json, once again changing the &#39;name&#39; field to <code>my-network</code>, the &#39;description&#39; to &#39;My Commodity Trading network&#39; and modify the &#39;prepublish&#39; script (at the end) to change the filename of the business network archive (.bna) - ie to &#39;my-network.bna&#39;</li>
-<li>Finally, you must use the <code>composer network deploy</code> command later on here (i.e. not &#39;composer network update&#39;) to deploy the BNA file as a new network (ie that step is referred to later on in this tutorial).</li>
-</ol>
-
-<h2 id="re-open-your-commodities-trading-my-network-project">Re-open your Commodities Trading &#39;my-network&#39; project</h2>
-
-<p>In your project folder (in VSCode) open the folder <code>my-network</code> which is still the basis for our sample Trade project.</p>
-
-<p>Using VSCode, open the my-network folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
-</video>
-
-<h2 id="update-your-commodities-trade-model-file">Update your &#39;Commodities Trade&#39; Model File</h2>
-
-<p>Replace your <code>sample.cto</code> file contents, with the contents of the updated model shown below. This effectively enhances our Commodities Trade Network to add new transaction processor &#39;RemoveHighQuantityCommodities&#39; (that will use queries from <code>queries.qry</code> defined later) and events (used in our business transaction logic file <code>lib/logic.js</code> to notify of significant events).</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * Commodity trading network
- */
-namespace org.acme.mynetwork
-
-asset Commodity identified by tradingSymbol {
-    o String tradingSymbol
-    o String description
-    o String mainExchange
-    o Double quantity
-    --&gt; Trader owner
-}
-
-participant Trader identified by tradeId {
-    o String tradeId
-    o String firstName
-    o String lastName
-}
-
-transaction Trade {
-    --&gt; Commodity commodity
-    --&gt; Trader newOwner
-}
-
-event TradeNotification {
+<li><p>Open the model (<code>.cto</code>) file for the <code>tutorial-network</code>.</p></li>
+<li><p>Add the following events and transaction to the model:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">event TradeNotification {
     --&gt; Commodity commodity
 }
 
@@ -315,44 +292,31 @@ transaction RemoveHighQuantityCommodities {
 event RemoveNotification {
     --&gt; Commodity commodity
 }
-</code></pre></div>
-<p>Save your changes to <code>models/sample.cto</code></p>
+</code></pre></div></li>
+<li><p>Save the changes to your model.</p></li>
+</ol>
 
-<h2 id="update-transaction-logic-to-use-queries-events">Update Transaction logic to use Queries &amp; Events</h2>
+<h4 id="update-transaction-logic-to-use-queries-and-events">Update transaction logic to use queries and events</h4>
 
 <p>Now that the domain model has been updated, we can write the additional business logic that gets executed when a transaction is submitted for processing. In this tutorial we have added events and queries to the business logic below.</p>
 
-<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the current logic.</p>
-
-<p>Now select all the contents and delete it - replacing it with the entire code sample shown below:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
+<ol>
+<li><p>Open the transaction processor function file <code>lib/logic.js</code>.</p></li>
+<li><p>Replace the transaction logic with the following JavaScript:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.acme.biznet.Trade} trade - the trade to be processed
  * @transaction
  */
 function tradeCommodity(trade) {
 
     // set the new owner of the commodity
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
+    return getAssetRegistry('org.acme.biznet.Commodity')
         .then(function (assetRegistry) {
 
             // emit a notification that a trade has occurred
-            var tradeNotification = getFactory().newEvent('org.acme.mynetwork', 'TradeNotification');
+            var tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
             tradeNotification.commodity = trade.commodity;
             emit(tradeNotification);
 
@@ -363,12 +327,12 @@ function tradeCommodity(trade) {
 
 /**
  * Remove all high volume commodities
- * @param {org.acme.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
+ * @param {org.acme.biznet.RemoveHighQuantityCommodities} remove - the remove to be processed
  * @transaction
  */
 function removeHighQuantityCommodities(remove) {
 
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
+    return getAssetRegistry('org.acme.biznet.Commodity')
         .then(function (assetRegistry) {
             return query('selectCommoditiesWithHighQuantity')
                     .then(function (results) {
@@ -379,7 +343,7 @@ function removeHighQuantityCommodities(remove) {
                             var trade = results[n];
 
                             // emit a notification that a trade was removed
-                            var removeNotification = getFactory().newEvent('org.acme.mynetwork', 'RemoveNotification');
+                            var removeNotification = getFactory().newEvent('org.acme.biznet', 'RemoveNotification');
                             removeNotification.commodity = trade;
                             emit(removeNotification);
 
@@ -392,575 +356,187 @@ function removeHighQuantityCommodities(remove) {
                     });
         });
 }
+</code></pre></div></li>
+<li><p>Save your changes to <code>logic.js</code>.</p></li>
+</ol>
 
-</code></pre></div>
 <p>The first function <code>tradeCommodity</code> will change the owner property on a commodity (with a new owner Participant) on an incoming Trade transaction and emit a Notification event to that effect. It then persists the modified Commodity back into the asset registry which is used to store Commodity instances.</p>
 
 <p>The second function calls a named query &#39;selectCommoditiesWithHighQuantity&#39; (defined in <code>queries.qry</code>) which will return all Commodity asset records that have a quantity &gt; 60 ; emit an event ; and remove the Commodity from the AssetRegistry.</p>
 
-<p>Save your changes to <code>lib/sample.js</code></p>
+<h2 id="step-two-create-a-query-definition-file">Step Two: Create a query definition file</h2>
 
-<h2 id="create-your-query-definition-file-for-your-business-network">Create your Query Definition File for your Business Network</h2>
+<p>The queries used by the Transaction Processor logic are defined in a file which must be called <code>queries.qry</code>. Each query entry defines the resources and criteria against which the query is executed.</p>
 
-<p>The queries used by the Transaction Processor logic are defined in a file called <code>queries.qry</code>. Each query entry defines the resources and criteria against which the query is executed.</p>
-
-<p>In your project view, create a new file under <code>my-network</code> top level directory called <code>queries.qry</code> and paste the contents of these defined queries into the editor - there is a description provided for each query definition ; the parameters passed into the query (by the TP function) are distinguished by a leading <code>_$</code> below to signify the parameter supplied to the query at runtime.</p>
+<ol>
+<li><p>In the <code>tutorial-network</code> directory, create a new file called <code>queries.qry</code>.</p></li>
+<li><p>Copy and paste the following code into <code>queries.qry</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/** Sample queries for Commodity Trading business network
 */
 
 query selectCommodities {
   description: "Select all commodities"
   statement:
-      SELECT org.acme.mynetwork.Commodity
+      SELECT org.acme.biznet.Commodity
 }
 
 query selectCommoditiesByExchange {
   description: "Select all commodities based on their main exchange"
   statement:
-      SELECT org.acme.mynetwork.Commodity
+      SELECT org.acme.biznet.Commodity
           WHERE (mainExchange==_$exchange)
 }
 
 query selectCommoditiesByOwner {
   description: "Select all commodities based on their owner"
   statement:
-      SELECT org.acme.mynetwork.Commodity
+      SELECT org.acme.biznet.Commodity
           WHERE (owner == _$owner)
 }
 
 query selectCommoditiesWithHighQuantity {
   description: "Select commodities based on quantity"
   statement:
-      SELECT org.acme.mynetwork.Commodity
+      SELECT org.acme.biznet.Commodity
           WHERE (quantity &gt; 60)
 }
+</code></pre></div></li>
+<li><p>Save your changes to <code>queries.qry</code>.</p></li>
+</ol>
+
+<h2 id="step-three-regenerate-your-business-network-archive">Step Three: Regenerate your business network archive</h2>
+
+<p>After changing the files in a business network, the business network must be repackaged as a business network archive (<code>.bna</code>) and redeployed to the  instance.</p>
+
+<ol>
+<li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
+<li><p>Run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.1.bna
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-four-deploy-the-updated-business-network-definition">Step Four: Deploy the updated business network definition</h2>
+
+<p>We need to deploy the modified network to become the latest edition on the blockchain! We are using the newly created archive business network archive file to update the existing deployed business network; this is the same business network name, that we used during the Developer Tutorial.</p>
+
+<ol>
+<li><p>Switch to the terminal, change directory to the folder containing the <code>tutorial-network.bna</code>.</p></li>
+<li><p>Run the following command to update the business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a tutorial-network@0.0.1.bna -c admin@tutorial-network
+</code></pre></div></li>
+<li><p>Run the following command to test that the network is deployed:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@tutorial-network
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-five-regenerate-the-rest-apis-for-the-updated-business-network">Step Five: Regenerate the REST APIs for the updated Business Network</h2>
+
+<p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this business network.</p>
+
+<ol>
+<li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
+<li><p>Use the following command to launch the REST server:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server
+</code></pre></div></li>
+<li><p>Enter <code>admin@tutorial-network</code> as the card name.</p></li>
+<li><p>Select <strong>never use namespaces</strong> when asked whether to use namespaces in the generated API.</p></li>
+<li><p>Select <strong>No</strong> when asked whether to secure the generated API.</p></li>
+<li><p>Select <strong>Yes</strong> when asked whether to enable event publication.</p></li>
+<li><p>Select <strong>No</strong> when asked whether to enable TSL security.</p></li>
+</ol>
+
+<h2 id="step-six-test-the-rest-apis-and-create-some-data">Step Six: Test the REST APIs and create some data</h2>
 
-</code></pre></div>
-<h3 id="update-your-access-control-rules-acls">Update your Access Control Rules (ACLs)</h3>
-
-<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Replace the entire contents of <code>permissions.acl</code> with the rules below.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * Access control rules for mynetwork
- */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
-    operation: ALL
-    resource: "org.acme.mynetwork.*"
-    action: ALLOW
-}
-
-rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "ANY"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
-}
-</code></pre></div>
-<p>Save your changes to <code>permissions.acl</code></p>
-
-<h3 id="re-generate-your-business-network-archive-bna">Re-generate your Business Network archive (BNA)</h3>
-
-<p>Due to the changes in our business network,  we need to re-generate the Business Network Archive (BNA) file for your newly updated business network definition. This new network will later be updated to the Composer runtime, and become the latest deployed network. From the previous tutorial, we have already done an <code>npm install</code> of our business network.</p>
-
-<p>Switch back to the terminal, then from the <code>my-network</code> project directory,  type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">
-composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
-
-</code></pre></div>
-<p>The output should be similar to the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">
-Creating Business Network Archive
-
-Looking for package.json of Business Network Definition in /home/user/my-network
-
-Found:
-Description:My very first Hyperledger Composer Network
-Name:my-network
-Identifier:my-network@0.0.1
-
-Written Business Network Definition Archive file to ./dist/my-network.bna
-Command completed successfully.
-
-Command succeeded
-
-
-The `composer archive create` command has updated the file called `my-network.bna` in the `dist` folder.
-
-</code></pre></div>
-<h2 id="write-and-perform-unit-tests-to-include-queries">Write and Perform Unit Tests, to include Queries</h2>
-
-<p>All code should have unit tests - even your business network logic (why, of course!)</p>
-
-<p>We are now going to add a simple unit test for the business network definition, testing the logic of our queries as well as the rudimentary asset, participant and transaction tests. The unit test will run against the embedded runtime. The embedded runtime actually stores the state of &#39;the blockchain&#39; in-memory in a Node.js process.</p>
-
-<p>From your project working directory (my-network), open the file <code>test/sample.js</code> and inspect the contents.</p>
-
-<p>The test code below will replace the namespace, types and logic of the unit test pertaining to <code>my-network</code> as shown below. For convenience, you can copy the entire script contents below and replace the current sample.js file contents entirely:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-'use strict';
-
-const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
-const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const path = require('path');
-
-require('chai').should();
-
-const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.acme.mynetwork';
-
-describe('Commodity Trading', () =&gt; {
-
-    // let adminConnection;
-    let businessNetworkConnection;
-
-    before(() =&gt; {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type: 'embedded'
-        })
-            .then(() =&gt; {
-                return adminConnection.connect('defaultProfile', 'admin', 'adminpw');
-            })
-            .then(() =&gt; {
-                return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
-            })
-            .then((businessNetworkDefinition) =&gt; {
-                return adminConnection.deploy(businessNetworkDefinition);
-            })
-            .then(() =&gt; {
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'my-network', 'admin', 'adminpw');
-            });
-    });
-
-    describe('#tradeCommodity', () =&gt; {
-
-        it('should be able to trade a commodity', () =&gt; {
-            const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-
-            // create the traders
-            const dan = factory.newResource(NS, 'Trader', 'dan@email.com');
-            dan.firstName = 'Dan';
-            dan.lastName = 'Selman';
-
-            const simon = factory.newResource(NS, 'Trader', 'simon@email.com');
-            simon.firstName = 'Simon';
-            simon.lastName = 'Stone';
-
-            // create the commodity
-            const commodity = factory.newResource(NS, 'Commodity', 'EMA');
-            commodity.description = 'Corn';
-            commodity.mainExchange = 'Euronext';
-            commodity.quantity = 100;
-            commodity.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
-
-            // create the trade transaction
-            const trade = factory.newTransaction(NS, 'Trade');
-            trade.newOwner = factory.newRelationship(NS, 'Trader', simon.$identifier);
-            trade.commodity = factory.newRelationship(NS, 'Commodity', commodity.$identifier);
-
-            // the owner should of the commodity should be dan
-            commodity.owner.$identifier.should.equal(dan.$identifier);
-
-            // create the second commodity
-            const commodity2 = factory.newResource(NS, 'Commodity', 'XYZ');
-            commodity2.description = 'Soya';
-            commodity2.mainExchange = 'Chicago';
-            commodity2.quantity = 50;
-            commodity2.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
-
-            // register for events from the business network
-            businessNetworkConnection.on('event', (event) =&gt; {
-                console.log( 'Received event: ' + event.getFullyQualifiedIdentifier() + ' for commodity ' + event.commodity.getIdentifier() );
-            });
-
-            // Get the asset registry.
-            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
-                .then((assetRegistry) =&gt; {
-
-                    // add the commodities to the asset registry.
-                    return assetRegistry.addAll([commodity,commodity2])
-                        .then(() =&gt; {
-                            return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
-                        })
-                        .then((participantRegistry) =&gt; {
-                            // add the traders
-                            return participantRegistry.addAll([dan, simon]);
-                        })
-                        .then(() =&gt; {
-                            // submit the transaction
-                            return businessNetworkConnection.submitTransaction(trade);
-                        })
-                        .then(() =&gt; {
-                            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
-                        })
-                        .then((assetRegistry) =&gt; {
-                            // re-get the commodity
-                            return assetRegistry.get(commodity.$identifier);
-                        })
-                        .then((newCommodity) =&gt; {
-                            // the owner of the commodity should now be simon
-                            newCommodity.owner.$identifier.should.equal(simon.$identifier);
-                        })
-                        .then(() =&gt; {
-                            // use a query
-                            return businessNetworkConnection.query('selectCommoditiesByExchange', {exchange : 'Euronext'});
-                        })
-                        .then((results) =&gt; {
-                            // check results
-                            results.length.should.equal(1);
-                            results[0].getIdentifier().should.equal('EMA');
-                        })
-                        .then(() =&gt; {
-                            // use another query
-                            return businessNetworkConnection.query('selectCommoditiesByOwner', {owner : 'resource:' + simon.getFullyQualifiedIdentifier()});
-                        })
-                        .then((results) =&gt; {
-                            //  check results
-                            results.length.should.equal(1);
-                            results[0].getIdentifier().should.equal('EMA');
-                        })
-                        .then(() =&gt; {
-                            // submit the remove transaction
-                            const remove = factory.newTransaction(NS, 'RemoveHighQuantityCommodities');
-                            return businessNetworkConnection.submitTransaction(remove);
-                        })
-                        .then(() =&gt; {
-                            // use a query
-                            return businessNetworkConnection.query('selectCommodities');
-                        })
-                        .then((results) =&gt; {
-                            // check results, should only have 1 commodity left
-                            results.length.should.equal(1);
-                            results[0].getIdentifier().should.equal('XYZ');
-                        });
-                });
-        });
-    });
-});
-
-</code></pre></div>
-<p>Save your changes to <code>test/sample.js</code></p>
-
-<p>Next, open the file <code>features/sample.feature</code> in your project folder and replace the entire contents with this Cucumber test definition file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">#
-# Licensed under the Apache License, Version 2   (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2  
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-Feature: Sample
-    Background:
-        Given I have deployed the business network definition ..
-        And I have added the following participants of type org.acme.mynetwork.Trader
-            | tradeId         | firstName | lastName |
-            | alice@email.com | Alice     | A        |
-            | bob@email.com   | Bob       | B        |
-        And I have added the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-        And I have issued the participant org.acme.mynetwork.Trader#alice@email.com with the identity alice1
-        And I have issued the participant org.acme.mynetwork.Trader#bob@email.com with the identity bob1
-    Scenario: Alice can read all of the assets
-        When I use the identity alice1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Bob can read all of the assets
-        When I use the identity alice1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Alice can add assets that she owns
-        When I use the identity alice1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-    Scenario: Bob can add assets that he owns
-        When I use the identity bob1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-    Scenario: Alice can update her assets
-        When I use the identity alice1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-    Scenario: Bob can update his assets
-        When I use the identity bob1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-    Scenario: Alice can remove her assets
-        When I use the identity alice1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-    Scenario: Bob can remove his assets
-        When I use the identity bob1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-    Scenario: Alice can submit a transaction for her assets
-        When I use the identity alice1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner      |
-            | 1         | bob@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | bob@email.com |
-    Scenario: Bob can submit a transaction for his assets
-        When I use the identity bob1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner        |
-            | 2         | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity   | owner           |
-            | 2             | Two         | Paris        | 2          | alice@email.com   |
-
-</code></pre></div>
-<p>Check that the unit tests pass by switching back to the terminal and typing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm test
-</code></pre></div>
-<p>You should see output similar to the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~user@ubuntu $ npm test
-
-&gt; my-network@0.1.6 pretest /home/ibm/my-network
-&gt; npm run lint
-
-
-&gt; my-network@0.1.6 lint /home/ibm/my-network
-&gt; eslint .
-
-
-&gt; my-network@0.1.6 postlint /home/ibm/my-network
-&gt; npm run licchk
-
-
-&gt; my-network@0.1.6 licchk /home/ibm/my-network
-&gt; license-check
-
-
-&gt; my-network@0.1.6 postlicchk /home/ibm/my-network
-&gt; npm run doc
-
-
-&gt; my-network@0.1.6 doc /home/ibm/my-network
-&gt; jsdoc --pedantic --recurse -c jsdoc.json
-
-
-&gt; my-network@0.1.6 test /home/ibm/my-network
-&gt; npm run test-inner
-
-
-&gt; my-network@0.1.6 test-inner /home/ibm/my-network
-&gt; mocha -t 0 --recursive &amp;&amp; cucumber-js
-
-
-Commodity Trading
-
-#tradeCommodity
-Received event: org.acme.mynetwork.TradeNotification#8452bb3a-ea1d-4433-bf17-a1268c94456f#0 for commodity EMA
-Received event: org.acme.mynetwork.RemoveNotification#81252aa3b-ea2c-3143-be2b-a1234c91266c#0 for commodity EMA
-✓ should be able to trade a commodity (62ms)
-
-1 passing (556ms)
-
-
-Feature: Sample
-
-</code></pre></div>
-<p>And the cucumber tests defined in the file <code>features/sample.feature</code> will produce the following output (redacted):</p>
-
-<p><img src="../assets/img/tutorials/query/cucumber-output.png" alt="Cucumber test output"></p>
-
-<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="http://composer-playground.mybluemix.net">http://composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your <code>my-network</code> folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current network definition in Playground.</p>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/unstable/assets/img/tutorials/query/import_query.mp4" type="video/mp4" />
-</video>
-
-<p>You can browse the structure of the updated Trade Commodity business network by pressing the link on the left, check out the contents of the model, script files, query files and access control.</p>
-
-<h2 id="deploy-the-updated-business-network-definition-to-the-runtime-fabric">Deploy the updated Business Network Definition to the runtime Fabric</h2>
-
-<p>We need to deploy our modified network (my-network) to become the latest edition on the blockchain! We are using the newly created archive business network archive file (suffix .bna) file to update the existing business network on the runtime Hyperledger Fabric; this is the same business network name, that we used during the Developer Tutorial guide. (Remember: if you did not complete the Developer tutorial before this tutorial, use the command  <code>composer network deploy</code> and not <code>composer network update</code> )</p>
-
-<p>Switch to the terminal, change directory to the dist folder containing the <code>my-network.bna</code> file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd dist
-
-composer network update -a my-network.bna -p hlfv1 -i admin -s randomString
-
-</code></pre></div>
-<p>You should get output similar to below:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">
-Deploying business network from archive: my-network.bna
-Business network definition:
-    Identifier: my-network@0.0.1
-    Description: My very first Hyperledger Composer Network
-
-✔ Updating business network definition. This may take a few seconds...
-
-
-Command succeeded
-
-
-</code></pre></div>
-<p>You can test that it deployed OK:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -p hlfv1 -i admin -s adminpw
-</code></pre></div>
-<h2 id="regenerate-the-rest-apis-for-the-updated-business-network">Regenerate the REST APIs for the updated Business Network</h2>
-
-<p>We will now integrate the newly updated business network with queries added, and expose the REST APIs for this sample business network.</p>
-
-<p>Launch the Composer REST server by changing directory to the &#39;my-network&#39; folder as shown below:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd ..
-composer-rest-server
-</code></pre></div>
-<p>Answer the questions posed at startup as shown. These allow the composer-rest-server to connect to Hyperledger Fabric and configure how the REST API is generated.</p>
-
-<p><img src="../assets/img/tutorials/query/rest-server-generate.png" alt="Generate / Discover REST APIs for new Business Network"></p>
-
-<h2 id="test-the-trading-rest-apis-and-create-some-data">Test the Trading REST APIs and create some data</h2>
-
-<p>If the composer-rest-server started successfully you should see these two lines are output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000
-Browse your REST API at http://localhost:3000/explorer
-</code></pre></div>
 <p>Open a web browser and navigate to <a href="http://localhost:3000/explorer" target="blank">http://<span></span>localhost:3000/explorer</a> . You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.</p>
 
-<p>We should be able to see that the REST Endpoint called &#39;Query&#39; has been added and, upon expanding, reveals the list of REST Query operations defined in the business network <code>my-network</code></p>
+<p>We should be able to see that the REST Endpoint called &#39;Query&#39; has been added and, upon expanding, reveals the list of REST Query operations defined in the business network <code>tutorial-network</code></p>
 
 <p><img src="../assets/img/tutorials/query/rest-explorer-discover.png" alt="Queries exposed as REST Endpoints"></p>
 
 <p>Before we proceed, we need to create some data, to demonstrate queries adequately. Using the sample JSON data provided, create 3 Traders (Participants)and some more Commodities (Assets) using the REST APIs.</p>
 
-<p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">
-{
-  "$class": "org.acme.mynetwork.Trader",
+<ol>
+<li><p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.biznet.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
 }
-
-</code></pre></div>
-<p>then click &#39;Try it out&#39; to create the Participant. The &#39;Response Code&#39; (scroll down) should be 200 (SUCCESS)</p>
-
-<p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200</p>
+</code></pre></div></li>
+<li><p>Click &#39;Try it out&#39; to create the Participant. The &#39;Response Code&#39; (scroll down) should be 200 (SUCCESS)</p></li>
+<li><p>Create another trader by copying the following JSON:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.acme.biznet.Trader",
   "tradeId": "TRADER2",
   "firstName": "Jack",
   "lastName": "Sock"
 }
-</code></pre></div>
-<p>Once again, copy the JSON data below -  click &#39;Try it out&#39; and check the code again is 200.</p>
+</code></pre></div></li>
+<li><p>Create a third trader by coping the following JSON:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.acme.biznet.Trader",
   "tradeId": "TRADER3",
   "firstName": "Rainer",
   "lastName": "Valens"
 }
-
-</code></pre></div>
-<p><img src="../assets/img/tutorials/query/add-trader.png" alt="Trader 1 example - Participant"></p>
-
-<p>Now scroll up to the top and click on &#39;Commodity&#39; object in the REST Explorer. Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:</p>
+</code></pre></div></li>
+<li><p>Now scroll up to the top and click on &#39;Commodity&#39; object in the REST Explorer.</p></li>
+<li><p>Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:</p></li>
+</ol>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Commodity",
+  "$class": "org.acme.biznet.Commodity",
   "tradingSymbol": "EMA",
   "description": "Corn",
   "mainExchange": "EURONEXT",
   "quantity": 10,
-  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+  "owner": "resource:org.acme.biznet.Trader#TRADER1"
 }
-</code></pre></div>
-<p>and</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Commodity",
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.biznet.Commodity",
   "tradingSymbol": "CC",
   "description": "Cocoa",
   "mainExchange": "ICE",
   "quantity": 80,
-  "owner": "resource:org.acme.mynetwork.Trader#TRADER2"
+  "owner": "resource:org.acme.biznet.Trader#TRADER2"
 }
 </code></pre></div>
-<h2 id="perform-queries-using-the-commodity-trading-rest-api-explorer">Perform Queries using the Commodity Trading REST API Explorer</h2>
+<h2 id="step-seven-perform-queries-using-the-commodity-trading-rest-api-explorer">Step Seven: Perform queries using the commodity trading REST API explorer</h2>
 
 <p>Now that we have some Assets and Participants, we can test out some queries using the generated Query REST operations.</p>
 
-<h3 id="perform-simple-rest-query">Perform Simple REST Query</h3>
+<h4 id="perform-a-simple-rest-query">Perform a simple REST query</h4>
 
-<p>Now that we have &#39;data&#39;, we can try out some queries.</p>
+<p>Now that we have assets and participants, we can try out some queries.</p>
 
-<p>The simplest REST query we can try out first is our named query &#39;selectCommodities&#39;.</p>
+<p>The simplest REST query we can try out first is our named query <code>selectCommodities</code>.</p>
 
-<p>Expand the &#39;Queries&#39; (REST Endpoint) and you will see the named queries we defined in our model.</p>
+<p>Expand the &#39;Query&#39; REST Endpoint and you will see the named queries we defined in our model.</p>
 
 <p>These queries are now exposed as REST queries and for which a /GET operation is generated, Note that the description of the query (that we defined in our model definition) is shown on the right hand side.</p>
 
 <p><img src="../assets/img/tutorials/query/commodity-rest-endpointhdr.png" alt="Commodities: REST Endpoint"></p>
 
-<p>Expand &#39;selectCommodities&#39; and click the &#39;Try it Out&#39; button.</p>
+<ol>
+<li><p>Expand the <code>selectCommodities</code> query.</p></li>
+<li><p>Click the &#39;Try it Out&#39; button.</p></li>
+</ol>
 
 <p><img src="../assets/img/tutorials/query/query-select-commodities.png" alt="Setup REST query: select all Commodities"></p>
 
-<p>It will return all existing Commodities - there should be at least 2 Commodities.</p>
+<p>It will return all existing Commodities - there should be 2 assets returned.</p>
 
 <p><img src="../assets/img/tutorials/query/query-commodity-results.png" alt="Query Results: All Commodities"></p>
 
 <h3 id="perform-filtered-rest-queries">Perform Filtered REST Queries</h3>
 
-<p>Let&#39;s select all Commodities by their main Exchange - for example &#39;EURONEXT&#39; main exchange.</p>
+<p>Let&#39;s select all Commodities by their Exchange - for example &#39;EURONEXT&#39; main exchange.</p>
 
-<p>Expand query Endpoint &#39;selectCommoditiesByExchange&#39; and scroll to the &#39;Parameters&#39; section. Enter &#39;EURONEXT&#39; in the &#39;Exchange&#39; parameter, and click &#39;Try it Out&#39;.</p>
+<ol>
+<li><p>Expand query Endpoint &#39;selectCommoditiesByExchange&#39; and scroll to the &#39;Parameters&#39; section.</p></li>
+<li><p>Enter &#39;EURONEXT&#39; in the &#39;Exchange&#39; parameter.</p></li>
+<li><p>Click &#39;Try it Out&#39;.</p></li>
+</ol>
 
 <p><img src="../assets/img/tutorials/query/query-selectby-exchange.png" alt="Setup REST query by Exchange"></p>
 
@@ -974,11 +550,11 @@ Browse your REST API at http://localhost:3000/explorer
 
 <p><img src="../assets/img/tutorials/query/querydef-recall-high-qty-commodities.png" alt="Recollect Query definition"></p>
 
-<p>We use the query &#39;removeHighQuantityCommodities&#39; in the Transaction Processor logic written in the <code>lib/sample.js</code> script file. If you execute this /GET operation in the REST Explorer, you&#39;ll see it selects only those assets greater than 60 in quantity.</p>
+<p>We use the <code>selectCommoditiesWithHighQuantity</code> query in the <code>removeHighQuantityCommodities</code> transaction. If you execute this /GET operation in the REST Explorer, you&#39;ll see it selects only those assets greater than 60 in quantity.</p>
 
 <p><img src="../assets/img/tutorials/query/functiondef-recall-high-qty-commodities.png" alt="Recollect Transaction logic using query"></p>
 
-<p>Now let&#39;s use the query to perform a removal of high quantity commodites.</p>
+<p>Now let&#39;s use the query to perform a removal of high quantity Commodities.</p>
 
 <p>First check for yourself how many Commodities are present (use the &#39;Commodity&#39; /GET operation) and you should see at least two Commodities, one of which (Cocoa) has a quantity &gt; 60.</p>
 
