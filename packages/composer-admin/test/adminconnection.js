@@ -64,6 +64,9 @@ class StubCardStore extends BusinessNetworkCardStore {
      */
     put(cardName, card) {
         return Promise.resolve().then(() => {
+            if (this.cards.has(cardName)) {
+                throw new Error('Card already exists: ' + cardName);
+            }
             this.cards.set(cardName, card);
         });
     }
@@ -1053,8 +1056,9 @@ describe('AdminConnection', () => {
         describe('#exportCard', ()=> {
 
             it('Card exists, but no credentials, call to export identity is correct executed',()=>{
+                const credentials = { certificate: 'String', privateKey: 'String' };
                 mockConnectionManager.exportIdentity = sinon.stub();
-                mockConnectionManager.exportIdentity.resolves({ certificate: 'String', privateKey: 'String' });
+                mockConnectionManager.exportIdentity.resolves(credentials);
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
 
@@ -1066,8 +1070,7 @@ describe('AdminConnection', () => {
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
                     result.getUserName().should.equal('user');
-                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
-                    sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
+                    result.getCredentials().should.equal(credentials);
                 });
 
             });
