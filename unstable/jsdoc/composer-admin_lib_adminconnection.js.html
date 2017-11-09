@@ -263,10 +263,7 @@ class AdminConnection {
                             if (result){
                                 //{ certificate: String, privateKey: String }
                                 card.setCredentials(result);
-                                // put back the card, so that it has the ceritificates sotre
-                                return this.cardStore.put(cardName,card);
                             }
-                        }).then(()=>{
                             return card;
                         });
                 }
