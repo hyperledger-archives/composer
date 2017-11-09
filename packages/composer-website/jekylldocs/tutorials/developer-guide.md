@@ -161,15 +161,15 @@ Deploying a business network to the {{site.data.conrefs.hlfv1}} requires the {{s
 
 2. To deploy the business network, from the `tutorial-network` directory, run the following command:
 
-        composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin
+        composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin.card
 
     The `composer network start` command requires a business network card, as well as the name of the admin identity for the business network, the file path of the `.bna` and the name of the file to be created ready to import as a business network card.
 
 3. To import the network administrator identity as a usable business network card, run the following command:
 
-        composer card import --file networkadmin
+        composer card import --file networkadmin.card
 
-  The `composer card import` command requires the filename specified in `composer network start` to create a card.
+    The `composer card import` command requires the filename specified in `composer network start` to create a card.
 
 4. To check that the business network has been deployed successfully, run the following command to ping the network:
 
