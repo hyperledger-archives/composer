@@ -50,7 +50,7 @@
                     {{ id.name }}
                 </div>
                 <div class="issued-to cell-24">
-                    {{ id.participant.$identifier }}
+                  <span placement="top" container="body" ngbTooltip="{{ id.participant.$namespace }}.{{ id.participant.$type }}">{{ id.participant.$identifier }} ({{ id.participant.$type }})</span>
                 </div>
                 <div class="status cell-24">
                     {{ id.state }}
