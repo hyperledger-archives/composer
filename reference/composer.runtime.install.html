@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -259,20 +261,18 @@ ga('send', 'pageview');
 <p>The <code>composer runtime install</code> command is used to install the Hyperledger Composer runtime on the Hyperledger Fabric peers of the blockchain network you are connecting to. This command must be run before the <code>composer network start</code> command.</p>
 
 <p><em>Please Note</em>: The <code>--businessNetworkName, -n</code> option <strong>must</strong> contain the same name as the business network name you intend to run on the Hyperledger Fabric peers. Only business networks with names matching the <code>--businessNetworkName, -n</code> option given in this command will successfully run.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n &lt;businessNetworkName&gt; -p &lt;connectionProfileName&gt; -i &lt;installId&gt; -s &lt;installSecret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n &lt;businessNetworkName&gt; -c &lt;peer-admin-card&gt;
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">composer runtime install [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --option, -o                 Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O            A file containing options that are specific to connection  [string]
-  --installId, -i              The id of the user permitted to install the runtime  [string] [required]
-  --installSecret, -s          The secret of the user permitted to install the runtime, if required  [string]
+  --help                     Show help  [boolean]
+  -v, --version              Show version number  [boolean]
+  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O          A file containing options that are specific to connection  [string]
+  --card, -c                 The cardname to use to install the network  [string] [required]
+  --businessNetworkName, -n  The business network name  [string] [required]
 </code></pre></div>
             
           </section>

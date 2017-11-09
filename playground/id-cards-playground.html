@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -313,34 +315,6 @@ ga('send', 'pageview');
 
 <p><strong>Important</strong>: Exported identity cards should be handled with care since they contain unprotected credentials. We recommend that you only send identity cards that have been encrypted.</p>
 
-<h3 id="creating-business-network-card-credentials">Creating Business Network Card Credentials</h3>
-
-<p>It is possible to provide credentials to a user to enable them to create a Business Network Card and then use it to connect to the business network for which the credentials are valid.
-1. From the <strong>Business Networks</strong> page, select an identity to use to connect to your business network. Click <strong>Connect Now</strong>. <em>Please note:</em> You must use an identity that has permission to create new identities.</p>
-
-<ol>
-<li><p>If required, create the participant to which you intend to assign the identity:</p>
-
-<ul>
-<li>click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</li>
-<li>complete the Participant defintion and click <strong>Create New</strong>.</li>
-</ul>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/playground/vs_code_3.mp4" type="video/mp4" />
-</video></li>
-<li><p>Click the name of your identity in the upper right, and click <strong>ID Registry</strong> within the drop down.</p></li>
-<li><p>Click <strong>+Issue New ID</strong>.</p></li>
-<li><p>Choose an <strong>ID Name</strong>, and input an existing <strong>Participant</strong> to associate the new identity with. A look-ahead service is provided to auto-complete on known Participants.</p></li>
-<li><p>Click <strong>Create New</strong>.</p></li>
-<li><p>Take note of the Enrollment ID and Secret that is displayed. It is essential to record this information before proceeding as it is this information that must be provided to a user to enable them to create their Business Network Card. Once you have recorded the Enrollment ID and Secret, click <strong>OK</strong>.</p>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/playground/vs_code_4.mp4" type="video/mp4" />
-</video></li>
-<li><p>Provide the Enrollment ID and Secret to the user that you wish to connect via the generated Enrollment ID. In addition to the Enrollment ID and Secret, they will need to know the name of the business network for which their identity is valid and the Connection Profile that enables conection to the runtime on which the target business network is deployed.</p></li>
-</ol>
-
 <hr>
 
 <h2 id="gaining-access-to-a-business-network"><a name="gain"></a>Gaining Access To A Business Network</h2>
@@ -369,19 +343,6 @@ ga('send', 'pageview');
 <li><p>If you have previously connected to the deployed runtime, select it from the displayed list, click <strong>Next</strong> and proceed to step 4; otherwise select the radio option to connect to a new Blockchain and click <strong>Next</strong>.</p></li>
 <li><p>Specify the Connection Profile details that were provided to you and click <strong>Save</strong>.</p></li>
 <li><p>Enter the <em>certificate</em>, <em>private key</em>, an <em>Business Network Card name</em> and <em>business network name</em>, and click <strong>Create</strong>.</p></li>
-</ol>
-
-<p>The Business Network Card should now be displayed in the <strong>Business Networks</strong> page.</p>
-
-<p>A Business Network Card can be created using an ID and secret, through knowledge of the following: a <em>Enrollment ID</em> and <em>Enrollment Secret</em>, generated by an admin of a business network; the <em>Business network name</em> for which the credentials are valid; the <em>Connection Profile</em> details for the runtime on which the target business network is deployed.</p>
-
-<p>To create a Business Network Card from the <strong>Business Networks</strong> page using an <em>enrollment ID</em> and <em>enrollment secret</em>:</p>
-
-<ol>
-<li><p>After receiving an enrollment ID and enrollment secret, click the <strong>Connect using credentials</strong> button in the upper right of the <strong>Business Networks</strong> page.</p></li>
-<li><p>If you have previously connected to the deployed runtime, select it from the displayed list, click <strong>Next</strong> and proceed to step 4; otherwise select the radio option to connect to a new Blockchain and click <strong>Next</strong>.</p></li>
-<li><p>Specify the Connection Profile details that were provided to you and click <strong>Save</strong>.</p></li>
-<li><p>Enter the <em>enrollment ID</em>, <em>enrollment secret</em> and <em>business network name</em>, and click <strong>Create</strong>.</p></li>
 </ol>
 
 <p>The Business Network Card should now be displayed in the <strong>Business Networks</strong> page.</p>

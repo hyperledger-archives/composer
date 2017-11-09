@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -266,8 +268,8 @@ ga('send', 'pageview');
 <li>Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12</li>
 <li>Docker Engine: Version 17.03 or higher</li>
 <li>Docker-Compose: Version 1.8 or higher</li>
-<li>Node: 6.x (note versions 7 and higher are not supported)</li>
-<li>npm: v3.x or v5.x</li>
+<li>Node: 8.9 or higher (note version 9 is not supported)</li>
+<li>npm: v5.x</li>
 <li>git: 2.9.x or higher</li>
 <li>Python: 2.7.x</li>
 <li>A code editor of your choice, we recommend VSCode.</li>
@@ -349,7 +351,7 @@ tar xvzf fabric-dev-servers.tar.gz
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
 ./downloadFabric.sh
 ./startFabric.sh
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 </code></pre></div>
 <p>Then at the end of your development session</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
@@ -359,7 +361,7 @@ tar xvzf fabric-dev-servers.tar.gz
 </ol>
 
 <blockquote>
-<p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.</p>
+<p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks.</p>
 </blockquote>
 
 <h2 id="script-details">Script details</h2>
@@ -389,14 +391,14 @@ tar xvzf fabric-dev-servers.tar.gz
 ./stopFabric.sh
 </code></p>
 
-<p><strong>Create Hyperledger Composer Profile</strong></p>
+<p><strong>Create PeerAdmin Card</strong></p>
 
-<p>Issue from the <code>fabric-tools</code> directory
+<p>Create a business network card for the peer administrator specific to the  instance running.
 <code>
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 </code></p>
 
-<p>Note: this creates a Hyperledger Composer profile specifically to connect to the development fabric you&#39;ve already started.</p>
+<p>Note: this creates and imports a business network card to connect to the development fabric you&#39;ve already started.</p>
 
 <p><strong>Teardown Fabric</strong></p>
 

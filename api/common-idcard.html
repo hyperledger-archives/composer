@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Import Command | Hyperledger Composer</title>
+    <title>IdCard (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Identity Import Command</p>
+          <p>IdCard (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -252,59 +254,359 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-identity-import">Composer Identity Import</h1>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
 
-<hr>
+<h1 id="idcard">IdCard</h1>
 
-<p>The <code>composer identity import</code> command imports peer admin identities from a running instance of Hyperledger Fabric into a defined <code>keyValStore</code>. These admin identities can then be used to deploy business networks to that peer.</p>
+<p>An ID card. Encapsulates credentials and other information required to connect to a specific business network
+as a specific user.
+<p>
+Instances of this class should be created using IdCard.fromArchive or IdCard.fromDirectory.</p>
 
-<p>All the options are required. The <code>userId</code> doesn&#39;t have to match any information defined in the signer certificate of the admin identity for the peer, it is purely a label for your own convenience.</p>
+<h3 id="details">Details</h3>
 
-<h2 id="syntax-example">Syntax example</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
-</code></pre></div>
-<h2 id="options">Options</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity import [options]
+<ul>
+<li><strong>Module</strong> common</li>
+</ul>
 
-Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --userId, -u                 The user ID for the new identity  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
-  --privateKeyFile, -k         File containing the private key  [string] [required]
-</code></pre></div>
-<h4 id="define-connection-profile-name">Define connection profile name</h4>
+<h3 id="see-also">See also</h3>
 
-<p><code>-p</code> or <code>--connectionProfileName</code></p>
+<h2 id="method-summary">Method Summary</h2>
 
-<p>Example: <code>-p hlfv1</code></p>
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#fromarchive">fromArchive</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Create an IdCard from a card archive. <p> Valid types for <em>zipData</em> are any of the types supported by JSZip.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#fromdirectory">fromDirectory</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Create an IdCard from a directory consisting of the content of an ID card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getbusinessnetworkname">getBusinessNetworkName</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Name of the business network to which the ID card applies. Generally this will be present but may be omitted for system cards.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getconnectionprofile">getConnectionProfile</a></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">Connection profile for this card. <p> This is a mandatory field.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getcredentials">getCredentials</a></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">Credentials associated with this card, and which are used to connect to the associated business network. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getdescription">getDescription</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Free text description of the card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getenrollmentcredentials">getEnrollmentCredentials</a></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to enroll with a business network and obtain certificates. <p> For an ID/secret enrollment scheme, the credentials are expected to be of the form: <em>{ secret: String }</em>.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getroles">getRoles</a></td>
+<td style="text-align: left"><code>String[]</code></td>
+<td style="text-align: left">Special roles for which this ID can be used, which can include: <ul>   <li>PeerAdmin</li>   <li>ChannelAdmin</li>   <li>Issuer</li> </ul></td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getusername">getUserName</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Name of the user identity associated with the card. This should be unique within the scope of a given business network and connection profile. <p> This is a mandatory field.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#setcredentials">setCredentials</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Credentials to associate with this card. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#toarchive">toArchive</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Generate a card archive representing this ID card. <p> The default value for the <em>options.type</em> parameter is <em>arraybuffer</em>. See JSZip documentation for other valid values.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#todirectory">toDirectory</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Save the content of an IdCard a directory.</td>
+</tr>
+</tbody></table>
 
-<hr>
+<h1 id="method-details">Method Details</h1>
 
-<h4 id="define-user-id-for-new-identity">Define user ID for new identity</h4>
+<h2 id="getusername">getUserName</h2>
 
-<p><code>-u</code> or <code>--userId</code></p>
+<p><em>String getUserName(  )</em></p>
 
-<p>Example: <code>-u Org1PeerAdmin</code></p>
+<p>Name of the user identity associated with the card. This should be unique within the scope of a given business network and connection profile. <p> This is a mandatory field.</p>
 
-<hr>
+<h3 id="returns">Returns</h3>
 
-<h4 id="define-signers-public-certificate">Define signers public certificate</h4>
+<p><code>String</code> - Name of the user identity.</p>
 
-<p><code>-c</code> or <code>--publicKeyFile</code></p>
+<h3 id="parameters">Parameters</h3>
 
-<p>Example: <code>-c admin.pem</code></p>
+<p>No parameters</p>
 
-<hr>
+<h2 id="getdescription">getDescription</h2>
 
-<h4 id="define-signers-private-key-file">Define signers private key file</h4>
+<p><em>String getDescription(  )</em></p>
 
-<p><code>-k</code> or <code>--privateKeyFile</code></p>
+<p>Free text description of the card.</p>
 
-<p>Example: <code>-k 9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk</code></p>
+<h3 id="returns">Returns</h3>
 
-<hr>
+<p><code>String</code> - card description.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getbusinessnetworkname">getBusinessNetworkName</h2>
+
+<p><em>String getBusinessNetworkName(  )</em></p>
+
+<p>Name of the business network to which the ID card applies. Generally this will be present but may be omitted for system cards.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>String</code> - business network name.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getconnectionprofile">getConnectionProfile</h2>
+
+<p><em>Object getConnectionProfile(  )</em></p>
+
+<p>Connection profile for this card. <p> This is a mandatory field.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - connection profile.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getcredentials">getCredentials</h2>
+
+<p><em>Object getCredentials(  )</em></p>
+
+<p>Credentials associated with this card, and which are used to connect to the associated business network. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - credentials.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="setcredentials">setCredentials</h2>
+
+<p><em>void setCredentials( Object credentials )</em></p>
+
+<p>Credentials to associate with this card. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>credentials</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">credentials.</td>
+</tr>
+</tbody></table>
+
+<h2 id="getenrollmentcredentials">getEnrollmentCredentials</h2>
+
+<p><em>Object getEnrollmentCredentials(  )</em></p>
+
+<p>Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to enroll with a business network and obtain certificates. <p> For an ID/secret enrollment scheme, the credentials are expected to be of the form: <em>{ secret: String }</em>.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Object</code> - enrollment credentials, or null if none exist.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getroles">getRoles</h2>
+
+<p><em>String[] getRoles(  )</em></p>
+
+<p>Special roles for which this ID can be used, which can include: <ul>   <li>PeerAdmin</li>   <li>ChannelAdmin</li>   <li>Issuer</li> </ul></p>
+
+<h3 id="returns">Returns</h3>
+
+<p>`` - roles.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="fromarchive">fromArchive</h2>
+
+<p><em>Promise fromArchive( String; ArrayBuffer; Uint8Array; Buffer; Blob; Promise zipdata )</em></p>
+
+<p>Create an IdCard from a card archive. <p> Valid types for <em>zipData</em> are any of the types supported by JSZip.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise to the instantiated IdCard.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>zipData</strong></td>
+<td style="text-align: left">String; ArrayBuffer; Uint8Array; Buffer; Blob; Promise</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">card archive data.</td>
+</tr>
+</tbody></table>
+
+<h2 id="toarchive">toArchive</h2>
+
+<p><em>Promise toArchive( [Object options] )</em></p>
+
+<p>Generate a card archive representing this ID card. <p> The default value for the <em>options.type</em> parameter is <em>arraybuffer</em>. See JSZip documentation for other valid values.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise of the generated ZIP file; by default an ArrayBuffer.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">JSZip generation options.</td>
+</tr>
+</tbody></table>
+
+<h3 id="sub-options">Sub-options</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options.type</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">type of the resulting ZIP file data.</td>
+</tr>
+</tbody></table>
+
+<h2 id="fromdirectory">fromDirectory</h2>
+
+<p><em>Promise fromDirectory( String carddirectory, [ fs] )</em></p>
+
+<p>Create an IdCard from a directory consisting of the content of an ID card.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise that resolves to an IdCard.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardDirectory</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">directory containing card data.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>fs</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">Node file system API implementation to use for reading card data. Defaults to the Node implementation.</td>
+</tr>
+</tbody></table>
+
+<h2 id="todirectory">toDirectory</h2>
+
+<p><em>Promise toDirectory( String carddirectory, [ fs] )</em></p>
+
+<p>Save the content of an IdCard a directory.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Promise that resolves then the save is complete.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardDirectory</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">directory to save card data.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>fs</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left">true</td>
+<td style="text-align: left">Node file system API implementation to use for writing card data. Defaults to the Node implementation.</td>
+</tr>
+</tbody></table>
 
             
           </section>

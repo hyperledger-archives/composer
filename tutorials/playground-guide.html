@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -258,7 +260,7 @@ ga('send', 'pageview');
 
 <h2 id="step-one-open-the-hyperledger-composer-playground">Step One: Open the Hyperledger Composer Playground</h2>
 
-<p>Open <a href="http://composer-playground.mybluemix.net" target="blank">Composer Playground</a>. You should see the <strong>My Wallet</strong> screen. The <strong>My Wallet</strong> page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don&#39;t worry about this too much for the time being, as we&#39;re going to create our own network.</p>
+<p>Open <a href="http://composer-playground.mybluemix.net" target="blank">Composer Playground</a>. You should see the <strong>My Business Network</strong> screen. The <strong>My Business Network</strong> page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don&#39;t worry about this too much for the time being, as we&#39;re going to create our own network.</p>
 
 <h2 id="step-two-creating-a-new-business-network">Step Two: Creating a new business network</h2>
 
@@ -436,7 +438,7 @@ function tradeCommodity(trade) {
 
 <p>Now that we have two <em>Traders</em> and a <em>Commodity</em> to trade between them, we can test our <em>Trade</em> transaction.</p>
 
-<p>Transactions are the basis of all change in a Hyperledger Composer business network, if you want to experiment with your own after this tutorial, try creating another business network from the <strong>My Wallet</strong> screen and using a more advanced business network template.</p>
+<p>Transactions are the basis of all change in a Hyperledger Composer business network, if you want to experiment with your own after this tutorial, try creating another business network from the <strong>My Business Network</strong> screen and using a more advanced business network template.</p>
 
 <p>To test the <em>Trade</em> transaction:</p>
 
@@ -461,10 +463,10 @@ function tradeCommodity(trade) {
 
 <h2 id="logging-out-of-the-business-network">Logging out of the business network</h2>
 
-<p>Now that transactions have successfully run, we should log out of the business network, ending up at the <strong>My Wallet</strong> screen where we started.</p>
+<p>Now that transactions have successfully run, we should log out of the business network, ending up at the <strong>My Business Network</strong> screen where we started.</p>
 
 <ol>
-<li>In the upper-right of the screen is a button labelled <strong>admin</strong>. This lists your current identity, to log out, click <strong>admin</strong> to open the dropdown menu, and click <strong>Log Out</strong>.</li>
+<li>In the upper-right of the screen is a button labelled <strong>admin</strong>. This lists your current identity, to log out, click <strong>admin</strong> to open the dropdown menu, and click <strong>My Business Networks</strong>.</li>
 </ol>
 
 <h2 id="what-next">What next?</h2>

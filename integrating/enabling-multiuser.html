@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -257,7 +259,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity <strong>alice1</strong> to digitally sign all transactions:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c alice1@my-network
 </code></pre></div>
 <p>This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.</p>
 
@@ -276,56 +278,38 @@ ga('send', 'pageview');
 <p>You can use the <code>-m true</code> argument to start the REST server with multiple user mode enabled. Once multiple user mode is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
 
 <p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -m true
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c admin@my-network -m true
 </code></pre></div>
 <p>The <code>-m true</code> argument automatically enables REST API authentication. You can alternatively supply both arguments, <code>-a true -m true</code>, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.</p>
 
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>No enrollment ID or enrollment secret has been provided</code> error message.</p>
+<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>A business network card has not been specified</code> error message.</p>
 
 <p>If you see a <code>HTTP 401 Authorization Required</code> error message, you have not authenticated correctly to the REST API.</p>
 
-<h2 id="adding-a-blockchain-identity-to-the-default-wallet">Adding a Blockchain identity to the default wallet</h2>
+<h2 id="adding-a-business-network-card-to-the-wallet">Adding a business network card to the wallet</h2>
 
-<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
+<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and that you have created a business network card for this Blockchain identity stored in the file <code>alice1@my-network.card</code>.</p>
 
-<p>Follow these steps to add a Blockchain identity to the default wallet:</p>
+<p>Follow these steps to add a business network card to the wallet:</p>
 
 <ol>
-<li>Navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</li>
-<li><p>List all of the authenticated clients wallets by expanding the <strong>Wallet</strong> category and calling the <code>GET /wallets</code> operation.
-The response from the operation should be similiar to the following:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Default wallet"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre></div>
-<p>Each wallet has a unique ID that will be used in subsequent REST API calls for interacting with the wallet. Note down the value of the <code>id</code> property for the wallet with the description <code>Default wallet</code>, in this example <code>1</code>.</p></li>
-<li><p>List the Blockchain identities in the default wallet by calling the <code>GET /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2.
-The response from the operation should be:</p>
+<li>Navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>, and then navigate to the wallet APIs by expanding the <strong>Wallet</strong> category.</li>
+<li><p>Check that the wallet does not contain any business network cards by calling the <code>GET /wallet</code> operation. The response from the operation should be:</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[]</span><span class="w">
-</span></code></pre></div>
-<p>This means that there are no Blockchain identities in the default wallet.</p></li>
-<li><p>Add the Blockchain identity to the default wallet by calling the <code>POST /wallets/{id}/identities</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>data</code> parameter set to the following JSON payload (do not include the <code>id</code> property in the JSON payload):</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="s2">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>The response from the operation should be similiar to the following:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="s2">"enrollmentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"enrollmentSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"suchs3cret"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>The Blockchain identity for <code>alice1</code> has now been added to the default wallet. Each Blockchain identity has a unique ID that will be used in subsequent REST API calls for interacting with the Blockchain identity. Note down the value of the <code>id</code> property for the Blockchain identity, in this example <code>2</code>.</p></li>
-<li><p>Set the Blockchain identity as the default Blockchain identity for the default wallet by calling the <code>POST /wallets/{id}/identities/{fk}/setDefault</code> operation with the <code>id</code> parameter set to the unique wallet ID noted from step 2, and the <code>fk</code> parameter set to the unique Blockchain identity ID noted from step 4.
-The response from the operation should be:</p>
+</span></code></pre></div></li>
+<li><p>Import the business network card into the wallet by calling the <code>POST /wallet/import</code> operation. You must specify the business network card file <code>alice1@my-network.card</code> by clicking the <strong>Choose File</strong> button. The response from the operation should be:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">no content
 </code></pre></div>
-<p>The Blockchain identity has now been set as the default Blockchain identity for the default wallet.</p></li>
+<p>The business network card <code>alice1@my-network</code> has now been imported into the wallet.</p></li>
+<li><p>Check that the wallet does contain the business network card <code>alice1@my-network</code> by calling the <code>GET /wallet</code> operation. The response from the operation should be:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice1@my-network"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div>
+<p>The business network card <code>alice1@my-network</code> is displayed. The value of the <code>default</code> property is <code>true</code>, which means that this business network card will be used by default when interacting with the business network.</p></li>
 </ol>
 
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.</p>

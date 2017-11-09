@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -272,7 +274,7 @@ Options:
   --enrollId, -i               The enrollment ID of the user  [string] [required]
   --enrollSecret, -s           The enrollment secret of the user  [string]
   --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
+  --certificateFile, -c        File containing the certificate  [string] [required]
 </code></pre></div>
 <h2 id="options">Options</h2>
 
@@ -299,7 +301,7 @@ Example: <code>maeid1</code></p>
 Business Network.<br>
 Example: <code>Xurw3yU9zI0l</code></p>
 
-<p><code>--publicKeyFile, -c</code></p>
+<p><code>--certificateFile, -c</code></p>
 
 <p>The path a file containing the certificate for the existing identity in PEM format.<br>
 Example: <code>/tmp/cert.pem</code></p>

@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -258,7 +260,7 @@ ga('send', 'pageview');
 
 <p>The <code>composer archive create</code> utility is used to create a business network archive from the contents of a directory.</p>
 
-<p>To create an archive from source flles (ie business network definition project files) present in the current &#39;working&#39; directory:</p>
+<p>To create an archive from source files (ie business network definition project files) present in the current &#39;working&#39; directory:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">composer archive create <span class="nt">-a</span> &lt;business-network-archive&gt;
 </code></pre></div>
 <p>or</p>
@@ -267,12 +269,14 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">composer archive create <span class="nt">--sourceType</span> dir <span class="nt">--sourceName</span> &lt;dirpath&gt; <span class="nt">-a</span> digitalproperty-network.bna
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">--help             Show help  [boolean]
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network
+
+Options:
+  --help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
   --archiveFile, -a  Business network archive file name. Default is based on the Identifier of the BusinessNetwork  [string]
-  --inputDir, -d     Location to create the archive from e.g. NPM module directory
-  --moduleName, -m   Name of the npm module to use
-
+  --sourceType, -t   The type of the input containg the files used to create the archive [ module | dir ]  [required]
+  --sourceName, -n   The Location to create the archive from e.g. NPM module directory or Name of the npm module to use  [required]
 Only one of either inputDir or moduleName must be specified.
 </code></pre></div>
 <h2 id="example-command-and-output">Example Command and Output</h2>

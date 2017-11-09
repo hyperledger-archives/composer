@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -305,7 +307,7 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <td style="text-align: left"><a href="#connect">connect</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.</td>
+<td style="text-align: left">Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
@@ -439,16 +441,10 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>options.connectionProfileStore</strong></td>
-<td style="text-align: left">ConnectionProfileStore</td>
+<td style="text-align: left"><strong>options.cardStore</strong></td>
+<td style="text-align: left">BusinessNetworkCardStore</td>
 <td style="text-align: left">true</td>
-<td style="text-align: left">specify a connection profile store to use.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>options.fs</strong></td>
-<td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
-<td style="text-align: left">specify an fs implementation to use.</td>
+<td style="text-align: left">specify a card store implementation to use.</td>
 </tr>
 </tbody></table>
 
@@ -1124,14 +1120,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h2 id="connect">connect</h2>
 
-<p><em>Promise connect( string connectionprofile, string businessnetwork, string enrollmentid, string enrollmentsecret, [Object additionalconnectoptions] )</em></p>
+<p><em>Promise connect( String cardname, [Object additionalconnectoptions] )</em></p>
 
-<p>Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.</p>
+<p>Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect and log in to HLF</span>
 <span class="kd">var</span> <span class="nx">businessNetwork</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="k">return</span> <span class="nx">businessNetwork</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'testprofile'</span><span class="p">,</span> <span class="s1">'businessNetworkIdentifier'</span><span class="p">,</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span> <span class="s1">'DJY27pEnl16d'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">businessNetwork</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardName'</span><span class="p">)</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">){</span>
     <span class="c1">// Connected</span>
 <span class="p">});</span>
@@ -1151,28 +1147,10 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>connectionProfile</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
 <td style="text-align: left">false</td>
-<td style="text-align: left">The name of the connection profile</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>businessNetwork</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">The identifier of the business network</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>enrollmentID</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the enrolment ID of the user</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>enrollmentSecret</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the enrolment secret of the user</td>
+<td style="text-align: left">businessNetworkCard Name (must have been imported already)</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>additionalConnectOptions</strong></td>
@@ -1185,7 +1163,7 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect and log in to HLF</span>
 <span class="kd">var</span> <span class="nx">businessNetwork</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="k">return</span> <span class="nx">businessNetwork</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'testprofile'</span><span class="p">,</span> <span class="s1">'businessNetworkIdentifier'</span><span class="p">,</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span> <span class="s1">'DJY27pEnl16d'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">businessNetwork</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardName'</span><span class="p">)</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">){</span>
     <span class="c1">// Connected</span>
 <span class="p">});</span>
@@ -1311,7 +1289,7 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <td style="text-align: left"><strong>transaction</strong></td>
 <td style="text-align: left">Resource</td>
 <td style="text-align: left">false</td>
-<td style="text-align: left">The transaction to submit. Use {@link Factory#newTransaction newTransaction} to create this object.</td>
+<td style="text-align: left">The transaction to submit. Use <a href="common-factory#newtransaction">newTransaction</a> to create this object.</td>
 </tr>
 </tbody></table>
 

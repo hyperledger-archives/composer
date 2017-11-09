@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -278,6 +280,10 @@ ga('send', 'pageview');
 <td style="text-align: left">Exception throws when a composer file is semantically invalid</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="common-businessnetworkcardstore">BusinessNetworkCardStore</a></td>
+<td style="text-align: left">Manages persistence of business network cards.</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></td>
 <td style="text-align: left"><p> A BusinessNetworkDefinition defines a set of Participants that exchange Assets by sending Transactions. This class manages the metadata and domain-specific types for the network as well as a set of executable scripts. </p></td>
 </tr>
@@ -292,6 +298,10 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="common-factory">Factory</a></td>
 <td style="text-align: left">Use the Factory to create instances of Resource: transactions, participants and assets. <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p></td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-idcard">IdCard</a></td>
+<td style="text-align: left">An ID card. Encapsulates credentials and other information required to connect to a specific business network as a specific user. <p> Instances of this class should be created using IdCard.fromArchive or IdCard.fromDirectory.</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="common-identifiable">Identifiable</a></td>

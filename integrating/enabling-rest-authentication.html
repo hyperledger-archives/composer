@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -307,7 +309,7 @@ ga('send', 'pageview');
 <p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-a true</code> argument to start the REST server with authentication enabled. Once authentication is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
 
 <p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -a true
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c admin@my-network -a true
 </code></pre></div>
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If authentication has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
 

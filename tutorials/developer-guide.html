@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -254,79 +256,51 @@ ga('send', 'pageview');
             
               <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer Tutorial for creating a Hyperledger Composer solution</h1>
 
-<p><em>Note:</em> this tutorial was written against the latest Hyperledger Composer build on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment.</p>
+<p>This tutorial will walk you through building a Hyperledger Composer blockchain solution from scratch. In the space of a few hours you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network and generating/running a sample Angular 2 application that interacts with a blockchain network.</p>
 
-<p>This tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a few hours and probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network, and in doing so, generating/running a sample Angular 2 based application (the tutorial is around a simple Commodity Trading use case) that interacts with a blockchain network. The idea is you can easily create your own use case, once you&#39;ve completed this end-to-end tutorial - furthermore, you can use the same blockchain environment to do so.</p>
+<p>This tutorial gives an overview of the techniques and resources available to apply to your own use case.</p>
 
-<h2 id="install-hyperledger-composer">Install Hyperledger Composer</h2>
+<p><em>Note:</em> This tutorial was written against the latest Hyperledger Composer build on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment.</p>
 
-<p>First, make sure you have installed Hyperledger Composer. Follow this <a href="../installing/development-tools.html">Development Environment Install guide</a> where it also describes the pre-requisites required ; as well as installing Hyperledger Composer, it has instructions to quickly build your Hyperledger Fabric blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman application generator and some pre-requisite Angular 2 packages.</p>
+<h2 id="prerequisites">Prerequisites</h2>
 
-<h2 id="install-an-editor-eg-vscode-and-its-hyperledger-composer-extension-for-syntax-highlighting">Install an Editor (eg. VSCode - and its Hyperledger Composer Extension for Syntax Highlighting)</h2>
+<p>Before beginning this tutorial:</p>
 
-<p>If you have not already installed this, install the <a href="https://code.visualstudio.com/">VSCode editor</a> an Open Source code editor for your dev environment. For Linux, download the package and install using the installation manager (eg. Ubuntu use dpkg  <code>dpkg -i file.deb</code> ).</p>
+<ul>
+<li><a href="../installing/development-tools.html">Set up your development environment</a></li>
+<li>Install an editor e.g. VSCode or Atom</li>
+</ul>
 
-<p>After installation, launch VSCode and select <code>View &gt; Command Palette...</code> then type <code>extensions</code> and select the <code>Extensions: Install Extensions</code> option. In the &quot;Search Extensions in Marketplace&quot; text field type <code>Composer</code> and install the Hyperledger Composer extension. You may have to &#39;Reload&#39; the extension (if prompted) to activate it.</p>
+<h2 id="step-one-creating-a-business-network-structure">Step One: Creating a business network structure</h2>
 
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/developer/vs_code_install.mp4" type="video/mp4" />
-</video>
+<p>The key concept for  is the <strong>business network definition (BND)</strong>. It defines the data model, transaction logic and access control rules for your blockchain solution. To create a BND,  we need to create a suitable project structure on disk.</p>
 
-<h2 id="create-a-business-network-definition">Create a Business Network Definition</h2>
+<p>The easiest way to get started is to use the Yeoman generator to create a skeleton business network. This will create a directory containing all of the components of a business network.</p>
 
-<p>The key concept for Composer is the <strong>business network definition (BND)</strong>. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on Hyperledger Fabric. To create a BND,  we need to create a suitable project structure on disk.</p>
+<ol>
+<li><p>Create a skeleton business network using Yeoman. This command will require a business network name, description, author name, author email address, license selection and namespace.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer:businessnetwork
+</code></pre></div></li>
+<li><p>Enter <code>tutorial-network</code> for the network name, and desired information for description, author name, and author email.</p></li>
+<li><p>Select <code>Apache-2.0</code> as the license.</p></li>
+<li><p>Select <code>org.acme.biznet</code> as the namespace.</p></li>
+</ol>
 
-<p>The easiest way to get started is to clone an <strong>existing sample business network</strong>. Open up a command prompt and clone the Composer sample networks GitHub repository. For Linux, perform this as a non-root user.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/hyperledger/composer-sample-networks.git
-</code></pre></div>
-<p>Then, make a copy of this directory in your project, called &#39;my-network&#39;.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
-</code></pre></div>
-<p>You should now have a folder called <code>my-network</code> (as the basis for our project) that we can start to modify. Using VSCode,  open the <code>my-network</code> folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.</p>
+<h2 id="step-two-defining-a-business-network">Step Two: Defining a business network</h2>
 
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
-</video>
+<p>A business network is made up of assets, participants, transactions, access control rules, and optionally events and queries. In the skeleton business network created in the previous steps, there is a model (<code>.cto</code>) file which will contain the class definitions for all assets, participants, and transactions in the business network. The skeleton business network also contains an access control (<code>permissions.acl</code>) document with basic access control rules, a script (<code>logic.js</code>) file containing transaction processor functions, and a <code>package.json</code> file containing business network metadata.</p>
 
-<h3 id="update-your-package-json-file">Update your package.json file</h3>
+<h4 id="modelling-assets-participants-and-transactions">Modelling assets, participants, and transactions</h4>
 
-<p>The metadata (name, version, description etc) for the business network definition is stored in the <code>package.json</code> file. Edit this file to change the name to <code>my-network</code>, the description to <code>My Commodity Trading network</code> and modify the <code>prepublish</code> script to change the name of the business network archive to <code>my-network.bna</code> at the end.</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1.6"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My Commodity Trading network"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"networkImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"networkImageanimated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist ; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.json"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"test-inner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha -t 0 --recursive &amp;&amp; cucumber-js"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"test-cover"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nyc npm run test-inner"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run test-inner"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-</span></code></pre></div>
-<p>Save your changes to <code>package.json</code></p>
+<p>The first document to update is the model (<code>.cto</code>) file. This file is written using the <a href="../reference/cto_language.html">Hyperledger Composer Modelling Language</a>. The model file contains the definitions of each class of asset, transaction, participant, and event. It implicitly extends the Hyperledger Composer System Model described in the modelling language documentation.</p>
 
-<h3 id="update-your-readme-md-file">Update your README.md file</h3>
-
-<p>Open the <code>README.md</code> file and update the markdown with a short description of the business network.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""># My Commodity Trading network
-</code></pre></div>
-<p>Save your changes to <code>README.md</code></p>
-
-<h2 id="define-your-domain-model">Define your Domain Model</h2>
-
-<p>Open the file <code>models/sample.cto</code> and inspect the contents. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network. You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace; do note that you can import types from one namespace into other namespaces.</p>
-
-<p>As an example, we&#39;re going to replace the entire contents of the file &#39;sample.cto&#39; with a simplistic model (below) to track the ownership of commodities on the blockchain:</p>
+<ol>
+<li><p>Open the <code>org.acme.biznet.cto</code> model file.</p></li>
+<li><p>Replace the contents with the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
-namespace org.acme.mynetwork
+namespace org.acme.biznet
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -343,586 +317,135 @@ transaction Trade {
     --&gt; Commodity commodity
     --&gt; Trader newOwner
 }
-</code></pre></div>
-<p>Save your changes to <code>models/sample.cto</code></p>
+</code></pre></div></li>
+<li><p>Save your changes to <code>org.acme.biznet.cto</code>.</p></li>
+</ol>
 
-<p>The domain model defines a single asset (Commodity) and single participant (Trader) and a single transaction (Trade) that is used to modify the owner of a commodity.</p>
+<h4 id="adding-javascript-transaction-logic">Adding JavaScript transaction logic</h4>
 
-<h2 id="write-transaction-processor-functions">Write Transaction Processor Functions</h2>
+<p>In the model file, a <code>Trade</code> transaction was defined, specifying a relationship to an  asset, and a participant. The transaction processor function file contains the JavaScript logic to execute the transactions defined in the model file.</p>
 
-<p>Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
+<p>The <code>Trade</code> transaction is intended to simply accept the identifier of the <code>Commodity</code> asset which is being traded, and the identifier of the <code>Trader</code> participant to set as the new owner.</p>
 
-<p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
-
-<p>Now replace the entire contents of <code>sample.js</code> with the function below (including the license header info)</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */</span>
-
-<span class="cm">/**
+<ol>
+<li><p>Open the <code>logic.js</code> script file.</p></li>
+<li><p>Replace the contents with the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.acme.biznet.Trade} trade - the trade to be processed
  * @transaction
- */</span>
-<span class="kd">function</span> <span class="nx">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="p">.</span><span class="nx">newOwner</span><span class="p">;</span>
-    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">)</span>
-        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span><span class="p">);</span>
-        <span class="p">});</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
+ */
+function tradeCommodity(trade) {
+    trade.commodity.owner = trade.newOwner;
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
+        .then(function (assetRegistry) {
+            return assetRegistry.update(trade.commodity);
+        });
+}
+</code></pre></div></li>
+<li><p>Save your changes to <code>logic.js</code>.</p></li>
+</ol>
 
-<p>Save your changes to <code>lib/sample.js</code></p>
+<h4 id="adding-access-control">Adding access control</h4>
 
-<h2 id="update-your-access-control-rules">Update your Access Control Rules</h2>
-
-<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Replace the entire contents of <code>permissions.acl</code> with the rule below.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">/<span class="k">**</span>
- <span class="k">*</span> Access control rules <span class="k">for </span>mynetwork
- <span class="k">*</span>/
-rule Default <span class="o">{</span>
-    description: <span class="s2">"Allow all participants access to all resources"</span>
-    participant: <span class="s2">"ANY"</span>
+<ol>
+<li><p>Create a <code>permissions.acl</code> file in the <code>tutorial-network</code> directory.</p></li>
+<li><p>Add the following access control rules to <code>permissions.acl</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Access control rules for mynetwork
+ */
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
     operation: ALL
-    resource: <span class="s2">"org.acme.mynetwork.*"</span>
+    resource: "org.acme.biznet.*"
     action: ALLOW
-<span class="o">}</span>
+}
 
-rule SystemACL <span class="o">{</span>
-  description:  <span class="s2">"System ACL to permit all access"</span>
-  participant: <span class="s2">"ANY"</span>
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
   operation: ALL
-  resource: <span class="s2">"org.hyperledger.composer.system.**"</span>
+  resource: "org.hyperledger.composer.system.**"
   action: ALLOW
-<span class="o">}</span>
-
-</code></pre></div>
-<p>Save your changes to <code>permissions.acl</code></p>
-
-<h2 id="generate-the-business-network-archive">Generate the Business Network Archive</h2>
-
-<p>To check that the structure of the files is valid, you can now generate a Business Network Archive (BNA) file for your business network definition. The BNA file is the deployable unit -- a file that can be deployed to the Composer runtime for execution.</p>
-
-<p>Switch back to the terminal and type:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd </span>my-network
-npm install
-</code></pre></div>
-<p>You should see the following output similar to the following (versions/modules change below):</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">
-  │ │ └─┬ strip-ansi@4.0.0
-  │ │   └── ansi-regex@3.0.0
-  │ ├── which-module@2.0.0
-  │ ├── y18n@3.2.1
-  │ └── yargs-parser@7.0.0
-  └─┬ yargs-parser@5.0.0
-    └── camelcase@3.0.0
-<span class="err">$</span>
-</code></pre></div>
-<h2 id="write-unit-tests">Write Unit Tests</h2>
-
-<p>All code should have unit tests - even your business network logic!</p>
-
-<p>We are now going to add a simple unit test for the business network definition. The unit test will run against the <strong>embedded</strong>  runtime. The embedded runtime actually stores the state of &#39;the blockchain&#39; in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this guide).</p>
-
-<p>From your project working directory (my-network), open the file <code>test/sample.js</code> and inspect the contents.</p>
-
-<p>The test code below will replace the namespace, types and logic of the unit test pertaining to &#39;my-network&#39; as shown below. For convenience, you can copy the entire script contents below and replace the current <code>sample.js</code> file contents entirely:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */</span>
-
-<span class="s1">'use strict'</span><span class="p">;</span>
-
-<span class="kd">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
-<span class="kd">const</span> <span class="nx">BrowserFS</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'browserfs/dist/node/index'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
-<span class="kd">const</span> <span class="nx">BusinessNetworkDefinition</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-common'</span><span class="p">).</span><span class="nx">BusinessNetworkDefinition</span><span class="p">;</span>
-<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
-
-<span class="nx">require</span><span class="p">(</span><span class="s1">'chai'</span><span class="p">).</span><span class="nx">should</span><span class="p">();</span>
-
-<span class="kd">const</span> <span class="nx">bfs_fs</span> <span class="o">=</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">BFSRequire</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
-<span class="kd">const</span> <span class="nx">NS</span> <span class="o">=</span> <span class="s1">'org.acme.mynetwork'</span><span class="p">;</span>
-
-<span class="nx">describe</span><span class="p">(</span><span class="s1">'Commodity Trading'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-    <span class="c1">// let adminConnection;</span>
-    <span class="kd">let</span> <span class="nx">businessNetworkConnection</span><span class="p">;</span>
-
-    <span class="nx">before</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-        <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">initialize</span><span class="p">(</span><span class="k">new</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">.</span><span class="nx">InMemory</span><span class="p">());</span>
-        <span class="kd">const</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
-        <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">createProfile</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="p">{</span>
-            <span class="na">type</span><span class="p">:</span> <span class="s1">'embedded'</span>
-        <span class="p">})</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">);</span>
-            <span class="p">})</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromDirectory</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">));</span>
-            <span class="p">})</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">deploy</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
-            <span class="p">})</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
-                <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="s1">'my-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">);</span>
-            <span class="p">});</span>
-    <span class="p">});</span>
-
-    <span class="nx">describe</span><span class="p">(</span><span class="s1">'#tradeCommodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-        <span class="nx">it</span><span class="p">(</span><span class="s1">'should be able to trade a commodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-            <span class="kd">const</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getBusinessNetwork</span><span class="p">().</span><span class="nx">getFactory</span><span class="p">();</span>
-
-            <span class="c1">// create the traders</span>
-            <span class="kd">const</span> <span class="nx">dan</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'dan@email.com'</span><span class="p">);</span>
-            <span class="nx">dan</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Dan'</span><span class="p">;</span>
-            <span class="nx">dan</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Selman'</span><span class="p">;</span>
-
-            <span class="kd">const</span> <span class="nx">simon</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'simon@email.com'</span><span class="p">);</span>
-            <span class="nx">simon</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Simon'</span><span class="p">;</span>
-            <span class="nx">simon</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Stone'</span><span class="p">;</span>
-
-            <span class="c1">// create the commodity</span>
-            <span class="kd">const</span> <span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="s1">'EMA'</span><span class="p">);</span>
-            <span class="nx">commodity</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="s1">'Corn'</span><span class="p">;</span>
-            <span class="nx">commodity</span><span class="p">.</span><span class="nx">mainExchange</span> <span class="o">=</span> <span class="s1">'Euronext'</span><span class="p">;</span>
-            <span class="nx">commodity</span><span class="p">.</span><span class="nx">quantity</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-            <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-
-            <span class="c1">// create the trade transaction</span>
-            <span class="kd">const</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trade'</span><span class="p">);</span>
-            <span class="nx">trade</span><span class="p">.</span><span class="nx">newOwner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-            <span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-
-            <span class="c1">// the owner should of the commodity should be dan</span>
-            <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-
-            <span class="c1">// Get the asset registry.</span>
-            <span class="kd">let</span> <span class="nx">commodityRegistry</span><span class="p">;</span>
-            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Commodity'</span><span class="p">)</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="nx">commodityRegistry</span> <span class="o">=</span> <span class="nx">assetRegistry</span><span class="p">;</span>
-                    <span class="c1">// add the commodity to the asset registry.</span>
-                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">commodity</span><span class="p">);</span>
-                <span class="p">})</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Trader'</span><span class="p">);</span>
-                <span class="p">})</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="c1">// add the traders</span>
-                    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">dan</span><span class="p">,</span> <span class="nx">simon</span><span class="p">]);</span>
-                <span class="p">})</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="c1">// submit the transaction</span>
-                    <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
-                <span class="p">})</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="c1">// re-get the commodity</span>
-                    <span class="k">return</span> <span class="nx">commodityRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-                <span class="p">})</span>
-                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">newCommodity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-                    <span class="c1">// the owner of the commodity should now be simon</span>
-                    <span class="nx">newCommodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
-                <span class="p">});</span>
-        <span class="p">});</span>
-    <span class="p">});</span>
-<span class="p">});</span>
-</code></pre></div>
-<p>Save your changes to <code>sample.js</code></p>
-
-<p>Next, open the file <code>features/sample.feature</code> in your project folder and replace the entire contents with this Cucumber test definition file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">#
-# Licensed under the Apache License, Version 2   (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2  
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-Feature: Sample
-    Background:
-        Given I have deployed the business network definition ..
-        And I have added the following participants of type org.acme.mynetwork.Trader
-            | tradeId         | firstName | lastName |
-            | alice@email.com | Alice     | A        |
-            | bob@email.com   | Bob       | B        |
-        And I have added the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-        And I have issued the participant org.acme.mynetwork.Trader#alice@email.com with the identity alice1
-        And I have issued the participant org.acme.mynetwork.Trader#bob@email.com with the identity bob1
-    Scenario: Alice can read all of the assets
-        When I use the identity alice1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Bob can read all of the assets
-        When I use the identity bob1
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | alice@email.com |
-            | 2             | Two         | Paris        | 2          | bob@email.com   |
-    Scenario: Alice can add assets that she owns
-        When I use the identity alice1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 3             | Three       | New York     | 3          | alice@email.com |
-    Scenario: Bob can add assets that he owns
-        When I use the identity bob1
-        And I add the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 4             | Four        | Rome         | 4          | bob@email.com   |
-    Scenario: Alice can update her assets
-        When I use the identity alice1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 5        | alice@email.com |
-    Scenario: Bob can update his assets
-        When I use the identity bob1
-        And I update the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 2             | Two         | Paris        | 6        | bob@email.com   |
-    Scenario: Alice can remove her assets
-        When I use the identity alice1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 1             |
-    Scenario: Bob can remove his assets
-        When I use the identity bob1
-        And I remove the following asset of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-        Then I should not have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol |
-            | 2             |
-    Scenario: Alice can submit a transaction for her assets
-        When I use the identity alice1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner      |
-            | 1         | bob@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity | owner           |
-            | 1             | One         | London       | 1          | bob@email.com |
-    Scenario: Bob can submit a transaction for his assets
-        When I use the identity bob1
-        And I submit the following transaction of type org.acme.mynetwork.Trade
-            | commodity | newOwner        |
-            | 2         | alice@email.com |
-        Then I should have the following assets of type org.acme.mynetwork.Commodity
-            | tradingSymbol | description | mainExchange | quantity   | owner           |
-            | 2             | Two         | Paris        | 2          | alice@email.com   |
-
-</code></pre></div>
-<p>Check that the unit tests pass by switching back to the terminal and typing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm test
-</code></pre></div>
-<p>You should see output similar to the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~user@ubuntu $ npm test
-
-&gt; my-network@0.1.6 pretest /home/ibm/my-network
-&gt; npm run lint
-
-
-&gt; my-network@0.1.6 lint /home/ibm/my-network
-&gt; eslint .
-
-
-&gt; my-network@0.1.6 postlint /home/ibm/my-network
-&gt; npm run licchk
-
-
-&gt; my-network@0.1.6 licchk /home/ibm/my-network
-&gt; license-check
-
-
-&gt; my-network@0.1.6 postlicchk /home/ibm/my-network
-&gt; npm run doc
-
-
-&gt; my-network@0.1.6 doc /home/ibm/my-network
-&gt; jsdoc --pedantic --recurse -c jsdoc.json
-
-
-&gt; my-network@0.1.6 test /home/ibm/my-network
-&gt; npm run test-inner
-
-
-&gt; my-network@0.1.6 test-inner /home/ibm/my-network
-&gt; mocha -t 0 --recursive &amp;&amp; cucumber-js
-
-
-Commodity Trading
-#tradeCommodity
-✓ should be able to trade a commodity (62ms)
-
-
-1 passing (556ms)
-
-
-Feature: Sample
-
-</code></pre></div>
-<p>And the cucumber tests defined in the file <code>features/sample.feature</code> will produce the following output:</p>
-
-<p><img src="../assets/img/tutorials/developer/cucumber-output.png" alt="Cucumber test output"></p>
-
-<h2 id="import-into-playground-and-test">Import into Playground and Test</h2>
-
-<p>Ensure you are at the top level project folder (my-network). Generate the BNA file using the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">mkdir dist
-composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
-</code></pre></div>
-<p>Note: the command <code>npm run prepublish</code> achieves the same thing (ie a command defined in our <code>package.json</code> file), but we wanted to show you the command sequence at this point in the tutorial and for your own projects, in time.</p>
-
-<p>The output of the archive command will look similar to this:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">
-Creating Business Network Archive
-
-Looking <span class="k">for </span>package.json of Business Network Definition <span class="k">in</span> /home/user/my-network
-
-Found:
-Description: My Commodity Trading network
-Name:my-network
-Identifier:my-network@0.0.1
-
-Written Business Network Definition Archive file to ./dist/my-network.bna
-Command completed successfully.
-
-Command succeeded
-</code></pre></div>
-<p>The <code>composer archive create</code> command has created a file called <code>my-network.bna</code> in the <code>dist</code> folder.</p>
-
-<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it. This automatically deploys the new business network.</p>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
-</video>
-
-<p>You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.</p>
-
-<p>Next, navigate to the &quot;Test&quot; tab at the top and create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the &quot;Create New Participant&quot; button.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
-  <span class="s2">"$class"</span><span class="p">:</span> <span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span>
-  <span class="s2">"tradeId"</span><span class="p">:</span> <span class="s2">"TRADER1"</span><span class="p">,</span>
-  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Jenny"</span><span class="p">,</span>
-  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Jones"</span>
-<span class="p">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
-  "tradeId": "TRADER2",
-  "firstName": "Amy",
-  "lastName": "Williams"
 }
+</code></pre></div></li>
+<li><p>Save your changes to <code>permissions.acl</code>.</p></li>
+</ol>
+
+<h2 id="step-three-generate-a-business-network-archive">Step Three: Generate a business network archive</h2>
+
+<p>Now that the business network has been defined, it must be packaged into a deployable business network archive (<code>.bna</code>) file.</p>
+
+<ol>
+<li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
+<li><p>From the <code>tutorial-network</code> directory, run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -t dir -n .
+</code></pre></div></li>
+</ol>
+
+<p>After the command has run, a business network archive file called <code>tutorial-network@0.0.1.bna</code> has been created in the <code>tutorial-network</code> directory.</p>
+
+<h2 id="step-four-deploying-the-business-network">Step Four: Deploying the business network</h2>
+
+<p>After creating the <code>.bna</code> file, the business network can be deployed to the instance of . Normally, information from the Fabric administrator is required to create a <code>PeerAdmin</code> identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a <code>PeerAdmin</code> identity has been created already.</p>
+
+<p>After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administrate the business network after deployment. This identity is referred to as a network admin.</p>
+
+<h4 id="retrieving-the-correct-credentials">Retrieving the correct credentials</h4>
+
+<p>A <code>PeerAdmin</code> business network card with the correct credentials is already created as part of development environment installation.</p>
+
+<h4 id="deploying-the-business-network">Deploying the business network</h4>
+
+<p>Deploying a business network to the  requires the Hyperledger Composer chaincode to be installed on the peer, then the business network archive (<code>.bna</code>) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.</p>
+
+<ol>
+<li><p>To install the composer runtime, run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
 </code></pre></div>
-<p>The Participant registry with the two entries should look like this:</p>
-
-<p><img src="../assets/img/tutorials/developer/trader_registry.png" alt="Trader Participant Registry"></p>
-
-<p>Create a new instance of a Commodity (asset) by navigating to the Commodity registry on the left and then click the &quot;Create New Asset&quot; button. Create the commodity and assign the owner to be &#39;TRADER1&#39;.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Commodity",
-  "tradingSymbol": "ABC",
-  "description": "Test commodity",
-  "mainExchange": "Euronext",
-  "quantity": 72.297,
-  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
-}
+<p>The <code>composer runtime install</code> command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the name of the business network.</p></li>
+<li><p>To deploy the business network, from the <code>tutorial-network</code> directory, run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin.card
 </code></pre></div>
-<p>The Asset registry should look like this:</p>
-
-<p><img src="../assets/img/tutorials/developer/commodity_registry.png" alt="Commodity Registry"></p>
-
-<p>Next, submit a <code>Trade</code> transaction by clicking the &quot;Submit Transaction&quot; button, bottom left, to move the commodity from TRADER1 to TRADER2.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trade",
-  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
-  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
-}
+<p>The <code>composer network start</code> command requires a business network card, as well as the name of the admin identity for the business network, the file path of the <code>.bna</code> and the name of the file to be created ready to import as a business network card.</p></li>
+<li><p>To import the network administrator identity as a usable business network card, run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file networkadmin.card
 </code></pre></div>
-<p>After processing, you should now see the transaction in the transaction registry.</p>
+<p>The <code>composer card import</code> command requires the filename specified in <code>composer network start</code> to create a card.</p></li>
+<li><p>To check that the business network has been deployed successfully, run the following command to ping the network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
+</code></pre></div></li>
+</ol>
 
-<p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
+<p>The <code>composer network ping</code> command requires a business network card to identify the network to ping.</p>
 
-<p>As a result, the owner of the commodity ABC should now be owned TRADER2.</p>
+<h2 id="step-five-generating-a-rest-server">Step Five: Generating a REST server</h2>
 
-<p><img src="../assets/img/tutorials/developer/commodity_registry_after.png" alt="Commodity registry"></p>
+<p>Hyperledger Composer can generate a bespoke REST API based on a business network. For developing a web application, the REST API provides a useful layer of language-neutral abstraction.</p>
 
-<h2 id="deploy-to-the-running-hyperledger-fabric">Deploy to the running Hyperledger Fabric</h2>
+<ol>
+<li><p>To create the REST API, navigate to the <code>tutorial-network</code> directory and run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server
+</code></pre></div></li>
+<li><p>Enter <code>admin@tutorial-network</code> as the card name.</p></li>
+<li><p>Select <strong>never use namespaces</strong> when asked whether to use namespaces in the generated API.</p></li>
+<li><p>Select <strong>No</strong> when asked whether to secure the generated API.</p></li>
+<li><p>Select <strong>Yes</strong> when asked whether to enable event publication.</p></li>
+<li><p>Select <strong>No</strong> when asked whether to enable TSL security.</p></li>
+</ol>
 
-<p>So far, we&#39;ve created our business network definition, written a unit test and interactively tested the solution in the Playground.</p>
+<p>The generated API is connected to the deployed blockchain and business network.</p>
 
-<p>Now it is time to deploy to a <strong>real</strong> blockchain! We are going to deploy the BNA (suffix .bna) file to Hyperledger Fabric v1.0; this blockchain environment was set up earlier in this guide.</p>
+<!--After generating a REST API,
 
-<p>Switch to the terminal, change directory to the <code>dist</code> folder containing the <code>my-network.bna</code> file and type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd dist
-composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
-</code></pre></div>
-<p><em>Note: The flag &#39;-p&#39; specifies the name of the connection profile to use to connect to the Hyperledger Fabric network. The flags &#39;-A admin&#39; and &#39;-S&#39; specifies that the &#39;admin&#39; identity should be configured as a business network administrator. You will use the &#39;admin&#39; identity in subsequent commands to administer your business network.</em></p>
-
-<p>After approximately 30 seconds or so, the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
-
-Deploying business network from archive: my-network.bna
-Business network definition:
-    Identifier: my-network@0.1.3
-    Description: My Commodity Trading network
-
-✔ Deploying business network definition. This may take a minute...
+## Step Six: Generating an application
 
 
-Command succeeded
-</code></pre></div>
-<p>You can verify that the network has been deployed by typing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -p hlfv1 -i admin -s adminpw
-</code></pre></div>
-<p>Which should give the following output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
+**This section doesn't work yet so be chill k?**
 
-The connection to the network was successfully tested: my-network
-    version: 0.12.0
-    participant: org.hyperledger.composer.system.NetworkAdmin#admin
-
-Command succeeded
-</code></pre></div>
-<h2 id="generate-rest-api">Generate REST API</h2>
-
-<p>To integrate with the deployed business network (creating assets/participants and submitting transactions) we can either use the Composer Node SDK or we can generate a REST API.</p>
-
-<p>If you are creating a web application (or running in a non Node.js environment) the REST API provides a useful layer of language-neutral abstraction.</p>
-
-<p>To create the REST API we need to launch the <code>composer-rest-server</code> and tell it how to connect to our deployed business network. The <code>composer-rest-server</code> was installed when you installed the development environment.</p>
-
-<p>Note that the module composer-rest-server would have been installed when you installed the Development environment.</p>
-
-<p>Now launch the server by changing directory to the <code>my-network</code> folder and type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd ..
-composer-rest-server
-</code></pre></div>
-<p>Answer the questions posed at startup as shown in the diagram below. These allow the composer-rest-server to connect to Hyperledger Fabric and configure how the REST API is generated.</p>
-
-<p><img src="../assets/img/tutorials/developer/composer-rest-server.png" alt="Composer REST Server"></p>
-
-<h2 id="test-rest-api">Test REST API</h2>
-
-<p>If the composer-rest-server started successfully you should see these two lines are output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000
-Browse your REST API at http://localhost:3000/explorer
-</code></pre></div>
-<p>Open a web browser and navigate to <a href="http://localhost:3000/explorer" target="blank">http://<span></span>localhost:3000/explorer</a></p>
-
-<p>You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.</p>
-
-<p><img src="../assets/img/tutorials/developer/lb_explorer.png" alt="LoopBack Explorer"></p>
-
-<p>First, use the <code>POST</code> method on Trader to create a new instance of a Trader - first select &#39;List Operations&#39; alongside the Trader to see the operations available.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
-  "tradeId": "TRADER1",
-  "firstName": "Jenny",
-  "lastName": "Jones"
-}
-</code></pre></div>
-<p>Enter the values and then press the &quot;Try it Out&quot; button to submit. You should see an HTTP 200 response indicating that the Trader was successfully created and stored on the blockchain.</p>
-
-<p><img src="../assets/img/tutorials/developer/lb_create_trader.png" alt="Create trader"></p>
-
-<p>Use the <code>GET</code> operation/method on <code>Trader</code> (leave the filter parameter blank) and press the &quot;Try it Out&quot; button. You should see your Trader returned.</p>
-
-<p><img src="../assets/img/tutorials/developer/lb_get_trader.png" alt="Get trader"></p>
-
-<p>Similarly you can create/read/update/delete Commodities by using the appropriate HTTP request methods. You can submit a <code>Trade</code> transaction using an HTTP POST method on the <code>/Trade</code> API endpoint.</p>
-
-<h2 id="generate-your-skeleton-web-application">Generate your Skeleton Web Application</h2>
-
-<p>You are now ready to create a skeleton Angular web application to interact with your business network.</p>
-
-<p>Shut the <code>composer-rest-server</code> process down by pressing CTRL-C in the terminal window.</p>
-
-<p>Run the Hyperledger Composer generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer
-</code></pre></div>
-<p><img src="../assets/img/tutorials/developer/composer-yo-generator.png" alt="Composer Yo Generator"></p>
-
-<p>You should see that the generator has created Angular components for the asset types:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">create src/app/Commodity/Commodity.component.ts
-create src/app/Commodity/Commodity.service.ts
-create src/app/Commodity/Commodity.component.spec.ts
-create src/app/Commodity/Commodity.component.html
-create src/app/Commodity/Commodity.component.css
-</code></pre></div>
-<p>Wait a couple of minutes for the install of the application dependencies to complete.</p>
-
-<p>Next, change directory to your new Angular application directory (eg. my-app) - <em>this may be located in your home directory (eg. /home/joe):</em></p>
-
-<p>Then start the application using <code>npm start</code> eg.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd my-app
-npm start
-</code></pre></div>
-<p>Your application is running. You should see the <code>composer-rest-server</code> start, and then Angular webpacks the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a></p>
-
-<p>If you navigate to this URL and press the &quot;Assets&quot; drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the Hyperledger Fabric in the table (we have not stored them on blockchain yet!). You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.</p>
-
-<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
-<source src="/composer/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
-</video>
-
-<h1 id="congratulations">Congratulations!</h1>
-
-<p>Well done, you&#39;ve now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!</p>
-
-<h2 id="related-links">Related Links</h2>
-
-<ul>
-<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying a business network</a></li>
-<li><a href="../reference/composer.network.deploy.html">Network deploy command</a></li>
-</ul>
+`yo hyperledger-composer`
+-->
 
             
           </section>

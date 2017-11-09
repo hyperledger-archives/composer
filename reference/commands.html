@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -275,6 +277,28 @@ administrative, operational, and development tasks.</p>
 
 <p>Verify the contents of a Business Network Archive on disk: <a href="./composer.archive.list.html">composer archive list</a></p>
 
+<h2 id="business-network-card-management">Business Network Card Management</h2>
+
+<p><code>composer card create</code></p>
+
+<p>Creates a business network card from a connection profile, business network name, and certificates: <a href="./composer.card.create.html">composer card create</a></p>
+
+<p><code>composer card delete</code></p>
+
+<p>Deletes a business network card which you have imported locally: <a href="./composer.card.delete.html">composer card delete</a></p>
+
+<p><code>composer card import</code></p>
+
+<p>Imports a created card into your local wallet: <a href="./composer.card.import.html">composer card import</a></p>
+
+<p><code>composer card export</code></p>
+
+<p>Exports and packages a card from your wallet: <a href="./composer.card.export.html">composer card export</a></p>
+
+<p><code>composer card list</code></p>
+
+<p>Lists all cards currently in your wallet: <a href="./composer.card.list.html">composer card list</a></p>
+
 <h2 id="business-network-management">Business Network management</h2>
 
 <p><code>composer network deploy</code></p>
@@ -338,10 +362,6 @@ administrative, operational, and development tasks.</p>
 <p><code>composer identity revoke</code></p>
 
 <p>Revoke an identity from a participant: <a href="./composer.identity.revoke.html">composer identity revoke</a></p>
-
-<p><code>composer identity import</code></p>
-
-<p>Import an identity to your local identity wallet: <a href="./composer.identity.import.html">composer identity import</a></p>
 
 <h2 id="transaction-execution">Transaction execution</h2>
 

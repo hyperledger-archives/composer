@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -261,11 +263,11 @@ ga('send', 'pageview');
 <h2 id="enabling-websockets">Enabling WebSockets</h2>
 
 <p>You can enable WebSockets using the <code>-w</code> argument to the command line:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret -w
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c alice1@my-network -w
 </code></pre></div>
 <p>Alternatively, you can enable WebSockets by using the <code>COMPOSER_WEBSOCKETS</code> environment variable:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_WEBSOCKETS=true
-composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+composer-rest-server -c alice1@my-network
 </code></pre></div>
 <p>When you have successfully enabled WebSockets, you will be able to connect a WebSocket client to the base URL displayed in the output of the REST server:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000

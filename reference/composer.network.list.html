@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -257,55 +259,53 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network list</code> utility is used to connect to a business network and retrieve metadata and asset information.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n &lt;business-network-id&gt;  -p &lt;connectionProfileName&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network list -c admin@tutorial-network
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --registry, -r               List specific registry  [string]
-  --asset, -a                  List specific asset  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help          Show help  [boolean]
+  -v, --version   Show version number  [boolean]
+  --registry, -r  List specific registry  [string]
+  --asset, -a     List specific asset  [string]
+  --card, -c      The card name used to list the network  [string]
 </code></pre></div>
 <h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network list -n digitalproperty-network -p hlfv1 -i admin -s adminpw
+<div class="highlight"><pre><code class="language-" data-lang="">composer network list -c admin@tutorial-network
 
 ✔ List business network digitalproperty-network
 name:       digitalproperty-network
-models: 
+models:
   - org.hyperledger.composer.system
   - net.biz.digitalPropertyNetwork
-scripts: 
+scripts:
   - lib/DigitalLandTitle.js
-registries: 
-  net.biz.digitalPropertyNetwork.LandTitle: 
+registries:
+  net.biz.digitalPropertyNetwork.LandTitle:
     id:           net.biz.digitalPropertyNetwork.LandTitle
     name:         Asset registry for net.biz.digitalPropertyNetwork.LandTitle
     registryType: Asset
-    assets: 
-      LID:1148: 
+    assets:
+      LID:1148:
         $class:      net.biz.digitalPropertyNetwork.LandTitle
         titleId:     LID:1148
         owner:       resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890
         information: A nice house in the country
         forSale:     true
-      LID:6789: 
+      LID:6789:
         $class:      net.biz.digitalPropertyNetwork.LandTitle
         titleId:     LID:6789
         owner:       resource:net.biz.digitalPropertyNetwork.Person#PID:1234567890
         information: A small flat in the city
-  net.biz.digitalPropertyNetwork.SalesAgreement: 
+  net.biz.digitalPropertyNetwork.SalesAgreement:
     id:           net.biz.digitalPropertyNetwork.SalesAgreement
     name:         Asset registry for net.biz.digitalPropertyNetwork.SalesAgreement
     registryType: Asset
-  net.biz.digitalPropertyNetwork.Person: 
+  net.biz.digitalPropertyNetwork.Person:
     id:           net.biz.digitalPropertyNetwork.Person
     name:         Participant registry for net.biz.digitalPropertyNetwork.Person
     registryType: Participant
-    assets: 
-      PID:1234567890: 
+    assets:
+      PID:1234567890:
         $class:    net.biz.digitalPropertyNetwork.Person
         personId:  PID:1234567890
         firstName: Fred

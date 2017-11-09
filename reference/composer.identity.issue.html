@@ -128,7 +128,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
 <li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
-<li><a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
 <li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
 <li><a href="../business-network/testing.html">Testing Business Networks</a></li>
 <li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
@@ -197,10 +197,12 @@ ga('send', 'pageview');
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
 <li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
 <li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
@@ -256,65 +258,49 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer identity issue</code> command issues a new identity to a participant in a
-participant registry relating to a business network. See the task <a href="../managing/identity-issue.html">Issuing a new identity to a participant</a>
-for a walkthrough of using this command or the API.</p>
+<p>The <code>composer identity issue</code> command issues a new identity to a participant in a participant registry relating to a business network. See the task <a href="../managing/identity-issue.html">Issuing a new identity to a participant</a> for a walkthrough of using this command or the API.</p>
 
 <h2 id="syntax">Syntax</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">$ composer identity issue
-composer identity issue [options]
+
+Business Network Cards
+  --card, -c  Name of the network card to use for issuing  [string]
+  --file, -f  The card file name for the new identity  [string]
+
+Identity Options
+  --newUserId, -u      The user ID for the new identity  [string]
+  --participantId, -a  The participant to issue the new identity to  [string] [required]
+  --issuer, -x         If the new identity should be able to issue other new identities  [boolean]
 
 Options:
-  --help                       Show help  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --newUserId, -u              The user ID for the new identity  [string] [required]
-  --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --issuer, -x                 If the new identity should be able to issue other new identities  [boolean] [required]
-  --option, -o                 Options that are specific specific to a connection. Multiple options are specified by repeating this option  [string]
-  --optionFile, -O             A file containing options that are specific to connection  [string]
+  --help             Show help  [boolean]
+  -v, --version      Show version number  [boolean]
+  --option, -o       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O  A file containing options that are specific to connection  [string]
+
 </code></pre></div>
 <h2 id="options">Options</h2>
 
-<p><code>--connectionProfileName, -p</code></p>
+<p><code>--card, -c</code></p>
 
-<p>The connection profile name.<br>
-Example: <code>hlfv1</code></p>
+<p>The name of the business network card to use to issue the identity.
+Example: <code>admin@tutorial-network</code></p>
 
-<p><code>--businessNetworkName, -n</code></p>
+<p><code>--file, -f</code></p>
 
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
+<p>The file name of the card file to be created, note this is not the name of the identity to be created.
+Example: <code>DanSelman</code></p>
 
-<p><code>--enrollId, -i</code></p>
+<p><code>--newUserId, -u</code>
+The user ID for the new identity, this is the name of the new identity.
+Example: <code>Dan</code></p>
 
-<p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
+<p><code>--participantId, -a</code>
+The fully qualified identifier (in URI form) of the participant that the identity should be issued to.<br>
+Example: <code>resource:net.biz.tutorial-network.Person#DanSelman@biznet.org</code></p>
 
-<p><code>--enrollSecret, -s</code></p>
-
-<p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
-
-<p><code>--newUserId, -u</code></p>
-
-<p>The user ID of the new identity that should be issued.<br>
-Example: <code>lennyid1</code></p>
-
-<p><code>--participantId, -a</code></p>
-
-<p>The fully qualified identifier (in URI form) of the participant that the identity should be issued to.<br>
-Example: <code>resource:net.biz.digitalPropertyNetwork.Person#lenny@biznet.org</code></p>
-
-<p><code>--issuer, -x</code></p>
-
-<p>Specify this option if the participant is trusted, and should be permitted to use
-the new identity to issue other new identities.</p>
+<p><code>--issuer, -x</code>
+Whether the new identity will be able to issue other new identities.</p>
 
             
           </section>
