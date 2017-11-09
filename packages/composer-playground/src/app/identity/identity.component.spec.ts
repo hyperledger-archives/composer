@@ -2,7 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { Component } from '@angular/core';
+import { Component, Input, Output, Directive } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
@@ -29,6 +29,15 @@ let should = chai.should();
 })
 class MockFooterComponent {
 
+}
+
+@Directive({
+    selector: '[ngbTooltip]'
+})
+class MockToolTipDirective {
+    @Input() public ngbTooltip: string;
+    @Input() public placement: string;
+    @Input() public container: string;
 }
 
 describe(`IdentityComponent`, () => {
@@ -78,7 +87,8 @@ describe(`IdentityComponent`, () => {
             imports: [FormsModule],
             declarations: [
                 IdentityComponent,
-                MockFooterComponent
+                MockFooterComponent,
+                MockToolTipDirective
             ],
             providers: [
                 {provide: NgbModal, useValue: mockModal},
