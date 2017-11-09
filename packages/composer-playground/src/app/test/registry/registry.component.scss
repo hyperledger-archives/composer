@@ -68,7 +68,7 @@ registry {
                 display: flex;
 
                 .resource-icon {
-                    align-self: flex-end;
+                    margin-left: $space-small;
                 }
 
                 &.expanded {

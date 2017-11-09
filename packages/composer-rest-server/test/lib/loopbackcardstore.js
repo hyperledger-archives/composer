@@ -102,6 +102,24 @@ describe('LoopBackCardStore', () => {
                 });
         });
 
+        it('should replace the specified business network card', () => {
+            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return cardStore.put('charlie1@bond-network', idCard)
+                .then(() => {
+                    return Card.count({ name: 'charlie1@bond-network' });
+                })
+                .then((count) => {
+                    count.should.equal(1);
+                    return cardStore.put('charlie1@bond-network', idCard);
+                })
+                .then(() => {
+                    return Card.count({ name: 'charlie1@bond-network' });
+                })
+                .then((count) => {
+                    count.should.equal(1);
+                });
+        });
+
     });
 
     describe('#getAll', () => {
