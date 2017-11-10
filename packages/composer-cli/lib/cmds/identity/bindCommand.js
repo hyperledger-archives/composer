@@ -19,10 +19,7 @@ const Bind = require ('./lib/bind.js');
 module.exports.command = 'bind [options]';
 module.exports.describe = 'Bind an existing identity to a participant in a participant registry';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
+    card: {alias: 'c', required: true, describe: 'Name of the network card to use', type: 'string'},
     participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
     certificateFile: { alias: 'c', required: true, describe: 'File containing the certificate', type: 'string' }
 };

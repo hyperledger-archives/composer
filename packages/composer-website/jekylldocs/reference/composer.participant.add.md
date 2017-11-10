@@ -20,45 +20,22 @@ The `data` option must contain a serialized JSON representation of the participa
 $ composer participant add
 composer participant add [options]
 
+Participant options
+  --card, -c  The cardname to use to add the participant  [string] [required]
+  --data, -d  Serialized participant JSON object as a string  [string] [required]
+
 Options:
-  --help                       Show help  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --data, -d                   Serialized participant JSON object as a string  [string] [required]
+  --help         Show help  [boolean]
+  -v, --version  Show version number  [boolean]
 ```
 
 ## Options
 
-`--connectionProfileName, -p`
-
-The connection profile name.  
-
-Example: `hlfv1`
-
-`--businessNetworkName, -n`
-
-The name of the deployed Business Network to connect to.  
-
-Example: `digitalproperty-network`
-
-`--enrollId, -i`
-
-The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-
-Example: `maeid1`
-
-`--enrollSecret, -s`
-
-The enrollment secret of the identity that should be used to connect to deployed
-Business Network.  
-
-Example: `Xurw3yU9zI0l`
+`--card, -c`
+The business network card, defining the business network and identity to use.
+Example: `admin@tutorial-network`
 
 `--data, -d`
-
 The serialized JSON representation of the participant to add to the participant registry. The data must be valid according to the model of the participant.  
 
 Example: `'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'`

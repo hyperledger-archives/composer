@@ -64,6 +64,9 @@ class StubCardStore extends BusinessNetworkCardStore {
      */
     put(cardName, card) {
         return Promise.resolve().then(() => {
+            if (this.cards.has(cardName)) {
+                throw new Error('Card already exists: ' + cardName);
+            }
             this.cards.set(cardName, card);
         });
     }
@@ -1053,8 +1056,9 @@ describe('AdminConnection', () => {
         describe('#exportCard', ()=> {
 
             it('Card exists, but no credentials, call to export identity is correct executed',()=>{
+                const credentials = { certificate: 'String', privateKey: 'String' };
                 mockConnectionManager.exportIdentity = sinon.stub();
-                mockConnectionManager.exportIdentity.resolves({ certificate: 'String', privateKey: 'String' });
+                mockConnectionManager.exportIdentity.resolves(credentials);
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
 
@@ -1066,8 +1070,7 @@ describe('AdminConnection', () => {
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
                     result.getUserName().should.equal('user');
-                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
-                    sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
+                    result.getCredentials().should.equal(credentials);
                 });
 
             });
@@ -1088,7 +1091,7 @@ describe('AdminConnection', () => {
 
             });
 
-            it('Card exists, but with no credentials or secret',()=>{
+            it('should still export a card with no secret or credentials',()=>{
                 mockConnectionManager.exportIdentity = sinon.stub();
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
@@ -1096,7 +1099,10 @@ describe('AdminConnection', () => {
 
                 return cardStore.put(cardName, userCard).then(() => {
                     return adminConnection.exportCard(cardName);
-                }).should.eventually.be.rejectedWith(/no credentials or secret so is invalid/);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.equal('user');
+                });
 
             });
 

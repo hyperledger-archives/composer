@@ -14,7 +14,7 @@ In this step by step tutorial we'll walk through setting up a business network, 
 
 ## Step One: Open the {{site.data.conrefs.composer_full}} Playground
 
-Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Wallet** screen. The **My Wallet** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
+Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Business Network** screen. The **My Business Network** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
 
 ## Step Two: Creating a new business network
 
@@ -207,7 +207,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
 
 Now that we have two _Traders_ and a _Commodity_ to trade between them, we can test our _Trade_ transaction.
 
-Transactions are the basis of all change in a {{site.data.conrefs.composer_full}} business network, if you want to experiment with your own after this tutorial, try creating another business network from the **My Wallet** screen and using a more advanced business network template.
+Transactions are the basis of all change in a {{site.data.conrefs.composer_full}} business network, if you want to experiment with your own after this tutorial, try creating another business network from the **My Business Network** screen and using a more advanced business network template.
 
 To test the _Trade_ transaction:
 
@@ -236,9 +236,9 @@ To test the _Trade_ transaction:
 
 ## Logging out of the business network
 
-Now that transactions have successfully run, we should log out of the business network, ending up at the **My Wallet** screen where we started.
+Now that transactions have successfully run, we should log out of the business network, ending up at the **My Business Network** screen where we started.
 
-1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **Log Out**.
+1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **My Business Networks**.
 
 ## What next?
 
