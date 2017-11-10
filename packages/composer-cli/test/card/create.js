@@ -173,7 +173,6 @@ describe('composer card create CLI', function() {
             sinon.assert.calledOnce(fs.readFileSync);
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
             sinon.assert.calledOnce(fs.writeFileSync);
-            //fs.writeFileSync.args[0][1]
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
             sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
                 const roles = card.getRoles();
