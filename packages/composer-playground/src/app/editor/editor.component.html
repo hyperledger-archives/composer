@@ -29,7 +29,7 @@
             </button>
         </div>
         <div>
-            <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
+            <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!fileService.isDirty() || !noError">
                 Update
             </button>
         </div>
