@@ -111,8 +111,11 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         }).then(fileNames => {
             const getPromises = [];
             fileNames.forEach(cardName => {
-                const promise = this.get(cardName).then(card => {
+                const promise = IdCard.fromDirectory(this._cardPath(cardName), this.fs).then(card => {
                     results.set(cardName, card);
+                }).catch(cause => {
+                    // Ignore any spurious files or directories in the store directory
+                    LOG.debug(method, cause);
                 });
                 getPromises.push(promise);
             });
