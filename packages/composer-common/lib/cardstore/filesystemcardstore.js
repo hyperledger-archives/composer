@@ -87,20 +87,14 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         }
 
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.stat(cardPath).then(
-            resolved => {
-                throw new Error('Card already exists: ' + cardName);
-            },
-            rejected => {
-                return card.toDirectory(cardPath, this.fs)
-                    .catch(cause => {
-                        LOG.error(method, cause);
-                        const error = new Error('Failed to save card: ' + cardName);
-                        error.cause = cause;
-                        throw error;
-                    });
-            }
-        );
+        return thenifyRimraf(cardPath, this.rimrafOptions).then(() => {
+            return card.toDirectory(cardPath, this.fs);
+        }).catch(cause => {
+            LOG.error(method, cause);
+            const error = new Error('Failed to save card: ' + cardName);
+            error.cause = cause;
+            throw error;
+        });
     }
 
     /**
