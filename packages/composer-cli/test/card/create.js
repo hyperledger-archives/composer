@@ -138,9 +138,10 @@ describe('composer card create CLI', function() {
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
         sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
             connectionProfileFile: 'filename',
-            roles : 'PeerAdmin,Issuer,ChannelAdmin',
+            role : ['PeerAdmin', 'Issuer', 'ChannelAdmin'],
             user:'fred'
         };
 
@@ -149,6 +150,35 @@ describe('composer card create CLI', function() {
             sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
             sinon.assert.calledOnce(fs.writeFileSync);
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                return card.getRoles().length === 3;
+            }, 'Incorrect roles'));
+        });
+    });
+
+    it('create card with single role',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
+        const args = {
+            connectionProfileFile: 'filename',
+            role : 'PeerAdmin',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            //fs.writeFileSync.args[0][1]
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                const roles = card.getRoles();
+                return Array.isArray(roles) && roles[0] === 'PeerAdmin';
+            }, 'Incorrect roles'));
         });
     });
 
