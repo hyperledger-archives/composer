@@ -59,7 +59,7 @@ describe('composer identity issue CLI unit tests', () => {
 
         cardCreateSpy = sandbox.spy(Create,'createCard');
 
-        mockAdminConnection.getCard.returns(testCard);
+        mockAdminConnection.exportCard.returns(testCard);
     });
 
     afterEach(() => {

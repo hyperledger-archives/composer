@@ -42,7 +42,7 @@ class IssueCard {
         return Promise.resolve()
             .then(() => {
 
-                return cmdUtil.createAdminConnection().getCard(cardName);
+                return cmdUtil.createAdminConnection().exportCard(cardName);
             })
             .then((result) =>{
                 issuingCard = result;
