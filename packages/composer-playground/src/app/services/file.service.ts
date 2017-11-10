@@ -468,7 +468,7 @@ export class FileService {
             if (this.getModelFile(oldId)) {
                 this.updateBusinessNetworkFile(oldId, editorFile.getContent(), editorFile.getType());
             } else {
-                this.currentBusinessNetwork.getModelManager().addModelFile(editorFile.getContent());
+                this.currentBusinessNetwork.getModelManager().addModelFile(editorFile.getContent(), editorFile.getDisplayId());
             }
         } else if (editorFile.isAcl()) {
             if (this.getAclFile()) {

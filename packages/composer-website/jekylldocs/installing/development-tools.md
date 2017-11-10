@@ -155,9 +155,9 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create business network card for the peer administrator**
+**Create PeerAdmin Card**
 
-Issue from the `fabric-tools` directory
+Create a business network card for the peer administrator specific to the {{site.data.conrefs.hlfv1}} instance running.
 ```
 ./createPeerAdminCard.sh
 ```

@@ -42,12 +42,7 @@ editor-file {
 
 .CodeMirror {
   font-family: Source Code Pro;
-}
-
-.CodeMirror, .CodeMirror-scroll {
-  // account for the padding introduced by the '.scrollbar-padding' class
-  min-height: calc(64vh - #{2*$space-medium});
-  max-height: calc(64vh - #{2*$space-medium});
+  height: calc(100vh - 320px);
 }
 
 .ps.ps--active-x>.ps__scrollbar-x-rail,

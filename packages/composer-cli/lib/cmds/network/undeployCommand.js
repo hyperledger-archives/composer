@@ -19,7 +19,7 @@ const Undeploy = require ('./lib/undeploy.js');
 module.exports.command = 'undeploy [options]';
 module.exports.describe = 'Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric.';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to download the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to connect and undeploy the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

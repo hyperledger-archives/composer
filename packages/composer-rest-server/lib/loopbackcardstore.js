@@ -68,7 +68,10 @@ class LoopBackCardStore extends BusinessNetworkCardStore {
     put(cardName, card) {
         return card.toArchive({ type: 'nodebuffer' })
             .then((cardData) => {
-                return this.Card.create({
+                return this.Card.upsertWithWhere({
+                    userId: this.userId,
+                    name: cardName
+                }, {
                     name: cardName,
                     base64: cardData.toString('base64'),
                     data: {},

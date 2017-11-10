@@ -19,7 +19,7 @@ const Ping = require ('./lib/ping.js');
 module.exports.command = 'ping [options]';
 module.exports.describe = 'Test a connection to a business network';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to ping the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to ping the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

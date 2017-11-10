@@ -14,7 +14,7 @@ The `composer network deploy` utility is used to deploy a business network archi
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 ```
-composer network deploy -a <business-network-archive> -p <connection-profile-name> -i <enrollment-id> -s <enrollment-secret>
+composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
 ```
 
 ### Options
@@ -25,21 +25,21 @@ Options:
   --help                             Show help  [boolean]
   -v, --version                      Show version number  [boolean]
   --archiveFile, -a                  The business network archive file name  [string] [required]
-  --connectionProfileName, -p        The connection profile name  [string] [required]
-  --enrollId, -i                     The enrollment ID of the user  [string] [required]
-  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
-  --enrollSecret, -s                 The enrollment secret of the user  [string]
   --networkAdmin, -A                 The identity name of the business network administrator  [string]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
   --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
+  --card, -c                         The cardname to use to deploy the network  [string]
+  --file, -f                         File name of the card to be created  [string]
 ```
+
 
 ## Example Output
 
 ```
-composer network deploy -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s randomString -A admin -S
+composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
 
 Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:

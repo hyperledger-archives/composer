@@ -1769,7 +1769,7 @@ describe('FileService', () => {
 
             fileService.updateBusinessNetwork('oldId', editorFile);
 
-            mockModelManager.addModelFile.should.have.been.calledWith('myContent');
+            mockModelManager.addModelFile.should.have.been.calledWith('myContent', 'myDisplayId');
         }));
 
         it('should update a script file', inject([FileService], (fileService: FileService) => {
