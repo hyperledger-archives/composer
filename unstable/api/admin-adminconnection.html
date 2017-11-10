@@ -328,11 +328,6 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">List all Business Network cards.</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#getcard">getCard</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get a specific Business Network cards</td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#getloglevel">getLogLevel</a></td>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get the current logging level of a business network. The connection must be connected for this method to succeed.</td>
@@ -340,7 +335,7 @@ Calling an api after disconnect and before connect will give an error.</p>
 <tr>
 <td style="text-align: left"><a href="#importcard">importCard</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Import a business network card.</td>
+<td style="text-align: left">Import a business network card. If a card of this name exists, it is replaced.</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#install">install</a></td>
@@ -435,7 +430,7 @@ Calling an api after disconnect and before connect will give an error.</p>
 
 <p><em>Promise importCard( String name, IdCard card )</em></p>
 
-<p>Import a business network card.</p>
+<p>Import a business network card. If a card of this name exists, it is replaced.</p>
 
 <h3 id="returns">Returns</h3>
 
@@ -462,34 +457,6 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">IdCard</td>
 <td style="text-align: left">false</td>
 <td style="text-align: left">The card to import</td>
-</tr>
-</tbody></table>
-
-<h2 id="getcard">getCard</h2>
-
-<p><em>Promise getCard( String cardname )</em></p>
-
-<p>Get a specific Business Network cards</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><code>Promise</code> - promise resolved with a business network card</p>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>cardName</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">of the card to get</td>
 </tr>
 </tbody></table>
 
