@@ -53,7 +53,7 @@ class Deploy {
         let archiveFileContents = null;
         adminConnection = cmdUtil.createAdminConnection();
         // Read archive file contents
-        return adminConnection.getCard(cardName)
+        return adminConnection.exportCard(cardName)
         .then(()=>{
 
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
@@ -76,7 +76,7 @@ class Deploy {
         })
         .then(() => {
             // need to get the card now for later use
-            return adminConnection.getCard(cardName);
+            return adminConnection.exportCard(cardName);
         })
         .then((_card)=>{
             card = _card;

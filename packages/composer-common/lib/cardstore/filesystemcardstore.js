@@ -87,20 +87,14 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         }
 
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.stat(cardPath).then(
-            resolved => {
-                throw new Error('Card already exists: ' + cardName);
-            },
-            rejected => {
-                return card.toDirectory(cardPath, this.fs)
-                    .catch(cause => {
-                        LOG.error(method, cause);
-                        const error = new Error('Failed to save card: ' + cardName);
-                        error.cause = cause;
-                        throw error;
-                    });
-            }
-        );
+        return thenifyRimraf(cardPath, this.rimrafOptions).then(() => {
+            return card.toDirectory(cardPath, this.fs);
+        }).catch(cause => {
+            LOG.error(method, cause);
+            const error = new Error('Failed to save card: ' + cardName);
+            error.cause = cause;
+            throw error;
+        });
     }
 
     /**
@@ -117,8 +111,11 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
         }).then(fileNames => {
             const getPromises = [];
             fileNames.forEach(cardName => {
-                const promise = this.get(cardName).then(card => {
+                const promise = IdCard.fromDirectory(this._cardPath(cardName), this.fs).then(card => {
                     results.set(cardName, card);
+                }).catch(cause => {
+                    // Ignore any spurious files or directories in the store directory
+                    LOG.debug(method, cause);
                 });
                 getPromises.push(promise);
             });

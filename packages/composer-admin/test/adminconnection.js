@@ -25,6 +25,7 @@ const Factory = require('composer-common').Factory;
 const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdCard = require('composer-common').IdCard;
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const ModelManager = require('composer-common').ModelManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -37,61 +38,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-
-/**
- * Stub card store implementation.
- */
-class StubCardStore extends BusinessNetworkCardStore {
-    /**
-     * Constructor.
-     */
-    constructor() {
-        super();
-        this.cards = new Map();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    get(cardName) {
-        return Promise.resolve().then(() => {
-            return this.cards.get(cardName);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    put(cardName, card) {
-        return Promise.resolve().then(() => {
-            if (this.cards.has(cardName)) {
-                throw new Error('Card already exists: ' + cardName);
-            }
-            this.cards.set(cardName, card);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getAll() {
-        return Promise.resolve().then(() => {
-            return this.cards;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    delete(cardName) {
-        return Promise.resolve().then(() => {
-            if (!this.cards.delete(cardName)) {
-                throw new Error('Card not found: ' + cardName);
-            }
-        });
-    }
-
-}
 
 describe('AdminConnection', () => {
     const testProfileName = 'TEST_PROFILE';
@@ -141,7 +87,7 @@ describe('AdminConnection', () => {
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        cardStore = new StubCardStore();
+        cardStore = new MemoryCardStore();
         const adminConnectionOptions = {
             cardStore: cardStore
         };
@@ -1003,19 +949,6 @@ describe('AdminConnection', () => {
                     );
                 });
             });
-        });
-
-        describe('#getCard', ()=>{
-            it('should return valid card if one exists', ()=>{
-                const cardName = 'conga-card';
-                return cardStore.put(cardName, peerAdminCard).then(() => {
-                    return adminConnection.getCard('conga-card');
-                }).then((result) => {
-                    result.should.be.instanceOf(IdCard);
-                    result.getUserName().should.deep.equal('PeerAdmin');
-                });
-            });
-
         });
 
         describe('#getAllCards', function() {

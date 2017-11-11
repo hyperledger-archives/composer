@@ -79,12 +79,15 @@ describe('FileSystemCardStore', function() {
     describe('#put', function() {
         let tmpStorePath;
         let minimalCard;
+        let credentialsCard;
         let cardStore;
 
         beforeEach(function() {
-            const cardMetadata = { userName: 'conga' };
-            const cardConnectionProfile = { name: 'hlfv1' };
-            minimalCard = new IdCard(cardMetadata, cardConnectionProfile);
+            const minimalMetadata = { userName: 'conga' };
+            const minimalConnectionProfile = { name: 'hlfv1' };
+            minimalCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+            credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+            credentialsCard.setCredentials({ certificate: 'cert', privateKey: 'key' });
 
             return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
                 tmpStorePath = path;
@@ -101,10 +104,8 @@ describe('FileSystemCardStore', function() {
         it('should put a minimal identity card', function() {
             const cardName = 'minimal';
             return cardStore.put(cardName, minimalCard).then(() => {
-                return cardStore.get(cardName)
-                    .should.eventually.be.an.instanceof(IdCard)
-                    .that.deep.equals(minimalCard);
-            });
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
         });
 
         it('should throw on empty card name', function() {
@@ -112,27 +113,27 @@ describe('FileSystemCardStore', function() {
         });
 
         it('should throw on put error due to write permissions', function() {
+            const cardName = 'conga';
             return thenifyFs.chmod(tmpStorePath, 0o000).then(() => {
-                const cardName = 'conga';
-                return cardStore.put(cardName, minimalCard)
-                    .should.be.rejectedWith(cardName);
-            });
+                return cardStore.put(cardName, minimalCard);
+            }).should.be.rejectedWith(cardName);
         });
 
         it('should handle @ character in card name', function() {
             const cardName = 'conga@hyperledger';
             return cardStore.put(cardName, minimalCard).then(() => {
-                return cardStore.get(cardName)
-                    .should.eventually.be.an.instanceof(IdCard)
-                    .that.deep.equals(minimalCard);
-            });
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
+
         });
 
-        it('should throw on duplicate card', function() {
-            const cardName = 'minimal';
-            return cardStore.put(cardName, minimalCard).then(() => {
+        it('should replace (not only overwrite) existing card', function() {
+            const cardName = 'conga';
+            return cardStore.put(cardName, credentialsCard).then(() => {
                 return cardStore.put(cardName, minimalCard);
-            }).should.be.rejectedWith(cardName);
+            }).then(() => {
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
         });
     });
 
