@@ -73,7 +73,7 @@ describe('composer card list CLI', function() {
             testCard.setCredentials({certificate:'cert',privateKey:'key'});
             let args={'name':'cardname'};
 
-            adminConnectionStub.getCard.resolves(testCard);
+            adminConnectionStub.exportCard.resolves(testCard);
             return ListCmd.handler(args).then(()=>{
 
 
@@ -83,7 +83,7 @@ describe('composer card list CLI', function() {
         it('show card details for one card',()=>{
             let testCard = new IdCard({ userName: 'conga',enrollmentSecret:'secret' }, { name: 'profileName' });
             let args={'name':'cardname'};
-            adminConnectionStub.getCard.resolves(testCard);
+            adminConnectionStub.exportCard.resolves(testCard);
             return ListCmd.handler(args).then(()=>{
 
 

@@ -203,7 +203,7 @@ describe('composer card create CLI', function() {
         });
     });
 
-    it('create card with two roles',()=>{
+    it('create card with one  role',()=>{
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
@@ -212,7 +212,7 @@ describe('composer card create CLI', function() {
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
             connectionProfileFile: 'filename',
-            role : ['PeerAdmin,ChannelAdmin'],
+            role : 'PeerAdmin',
             user:'fred'
         };
 
