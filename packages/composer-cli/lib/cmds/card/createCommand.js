@@ -17,19 +17,25 @@
 const Create = require ('./lib/create.js');
 const checkFn = (argv,options)=>{
 
-
-    if (!argv.s){
+    if (!argv.enrollSecret){
+        console.log(argv);
         // no secret given, so both certificate and key are a must
-        if (!(argv.c && argv.k)){
+        if (!(argv.certificate && argv.privateKey)){
             throw new Error('privateKey and certificate should both be specified');
         }
 
     } else {
         // we have a secret, so if any of the certificate are given this is wrong
-        if (argv.c  || argv.k){
+        if (argv.certificate  || argv.privateKey){
             throw new Error('Either the enrollSecret or the privateKey and certificate combination should be specified');
         }
     }
+
+    ['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey'].forEach((e)=>{
+        if (Array.isArray(argv[e])){
+            throw new Error(`Option ${e} can only be specified once`);
+        }
+    });
 
     return true;
 };
@@ -42,7 +48,7 @@ module.exports.builder = function (yargs) {
     yargs.options({
         file: {alias: 'f', required: false, describe: 'File name of the card archive to be created', type: 'string' },
         businessNetworkName: {alias: 'n', required: false, describe: 'The business network name', type: 'string' },
-        connectionProfileFile: {alias: 'p', required: true, describe: 'Filename of the connection profile json file', type: 'string' },
+        connectionProfileFile: {alias: 'p', required: true, describe: 'Path of the connection profile json file', type: 'string' },
         user: { alias: 'u', required: true, describe: 'The name of the identity for the card', type: 'string' },
         enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
         certificate: { alias: 'c', required: false, describe:'File containing the user\'s certificate.', type: 'string'},
@@ -59,6 +65,7 @@ module.exports.builder = function (yargs) {
 
     yargs.check(checkFn);
 
+    return yargs;
 };
 
 module.exports.handler = (argv) => {
