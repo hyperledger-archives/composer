@@ -27,7 +27,7 @@
                 </div>
                 <div class="actions" *ngIf="cardRef!==currentIdentity">
                     <button class="clear" (click)="setCurrentIdentity(cardRef)">Use now</button>
-                    <button class="clear" (click)="removeIdentity(cardRef); $event.stopPropagation()">Remove</button>
+                    <button class="clear" (click)="openRemoveModal(cardRef); $event.stopPropagation()">Remove</button>
                 </div>
             </div>
         </div>
