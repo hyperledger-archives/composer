@@ -49,7 +49,7 @@ class Request {
                 fs.writeFileSync(path.join(actualLocation, enrollId + '-pub.pem'), result.certificate);
                 fs.writeFileSync(path.join(actualLocation, enrollId + '-priv.pem'), result.key);
                 fs.writeFileSync(path.join(actualLocation, result.caName + '-root.pem'), result.rootCertificate);
-                console.log(`'${enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
+                cmdUtil.log(`'${enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
             });
     }
 }

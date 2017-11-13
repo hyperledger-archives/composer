@@ -16,16 +16,42 @@
 
 const Create = require ('./lib/create.js');
 
+// enforces singletons
+const checkFn = (argv,options) => {
+
+    ['archiveFile','sourceType','sourceName'].forEach((e)=>{
+        if (Array.isArray(argv[e])){
+            throw new Error(`Option ${e} can only be specified once`);
+        }
+    });
+
+    return true;
+};
+module.exports._checkFn = checkFn;
 module.exports.command = 'create [options]';
 module.exports.describe = 'Create a Business Network Archive';
 module.exports.builder = function (yargs){
 
-    return yargs.option('archiveFile',{alias: 'a', required: false,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
-            .option('sourceType',{alias: 't', required: true, describe:'The type of the input containg the files used to create the archive [ module | dir ]'})
-            .option('sourceName',{alias: 'n', required: true, describe:'The Location to create the archive from e.g. NPM module directory or Name of the npm module to use'})
-            .usage('composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network');
+    yargs.options({
+        'archiveFile' : {alias: 'a', required: false, describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' },
+        'sourceType'  : {alias: 't', required: true, describe:'The type of the input containing the files used to create the archive', choices: ['module','dir']},
+        'sourceName'  : {alias: 'n', required: true, describe:'The Location to create the archive from e.g. NPM module directory or Name of the npm module to use'}
+    });
+    yargs.usage('composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network');
+
+    // enforce the option after these options
+    yargs.requiresArg(['archiveFile','sourceType','sourceName']);
+
+    // enforce singletons
+    yargs.check(checkFn);
+
+    // grouping for the card options - moves them away from the standard --version etc.
+    yargs.group(['archiveFile','sourceType','sourceName'],'Archive options');
+
+    return yargs;
 };
 
 module.exports.handler = (argv) => {
     return argv.thePromise = Create.handler(argv);
 };
+
